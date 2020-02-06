@@ -46,22 +46,17 @@ import io.swagger.annotations.ApiResponses;
 public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
-    public static final String CAMERA_HISTORY_PATH = "/camera-history";
 
-    private final V2VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
-    private final CameraPresetHistoryService cameraPresetHistoryService;
     private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
-    public BetaController(final V2VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
-                          final TmsDataDatex2Service tmsDataDatex2Service, final CameraPresetHistoryService cameraPresetHistoryService,
+    public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
+                          final TmsDataDatex2Service tmsDataDatex2Service,
                           final V2Datex2DataService v2Datex2DataService) {
-        this.trafficSignsService = trafficSignsService;
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
-        this.cameraPresetHistoryService = cameraPresetHistoryService;
         this.v2Datex2DataService = v2Datex2DataService;
     }
 
@@ -142,45 +137,5 @@ public class BetaController {
         return tmsDataDatex2Service.findPublishableTmsDataDatex2();
     }
 
-    @ApiOperation("Weather camera history for given camera or preset")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/history", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
-    public List<CameraHistoryDto> getCameraOrPresetHistory(
-        @ApiParam(value = "Camera or preset id(s)", required = true)
-        @RequestParam(value = "id")
-        final List<String> cameraOrPresetIds,
 
-        @ApiParam("Return the latest url for the image from the history at the given date time. " +
-                      "If the time is not given then the history of last 24h is returned.")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam(value = "at", required = false)
-        final ZonedDateTime at) {
-
-        return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetIds, at);
-    }
-
-    @ApiOperation(value = "Find weather camera history presences",
-                  notes = "History presence tells if history exists for given time interval.")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/presences", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
-    public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
-
-        @ApiParam(value = "Camera or preset id")
-        @RequestParam(required = false)
-        final String cameraOrPresetId,
-
-        @ApiParam("Return history presence from given date time onwards. " +
-                  "If the time is not given then current time is used.")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam(value = "from", required = false)
-        final ZonedDateTime from,
-
-        @ApiParam("Return history presence ending to given date time. " +
-                  "If the end time is not given then the history of last 24h is returned.")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam(value = "to", required = false)
-        final ZonedDateTime to) {
-
-        return cameraPresetHistoryService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
-    }
 }

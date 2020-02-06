@@ -69,7 +69,7 @@ public class Datex2SimpleMessageUpdater {
         return datex2UpdateService.updateDatex2Data(unmarshalled);
     }
 
-    private List<Datex2MessageDto> convert(List<Pair<String, Instant>> messages) {
+    private List<Datex2MessageDto> convert(final List<Pair<String, Instant>> messages) {
         return messages.stream()
             .map(m -> convert(m.getLeft(), Datex2MessageType.TRAFFIC_INCIDENT, DateHelper.toZonedDateTimeAtUtc(m.getRight())))
             .flatMap(m -> m.stream())
@@ -106,7 +106,7 @@ public class Datex2SimpleMessageUpdater {
             .count();
         final long newCount = sp.getSituations().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
 
-        log.info("situations.updated={} situations.new={}", updatedCount, newCount);
+        log.info("situationsUpdated={} situationsNew={}", updatedCount, newCount);
 
         return sp.getSituations().stream()
             .filter(s -> V2Datex2HelperService.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))

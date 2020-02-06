@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.controller.v2;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTION_WEATHER_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
@@ -24,10 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
+
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
@@ -45,13 +50,14 @@ import io.swagger.annotations.ApiResponses;
 public class V2DataController {
     private final ForecastSectionDataService forecastSectionDataService;
     private final V2VariableSignService v2VariableSignService;
+    private final CameraPresetHistoryService cameraPresetHistoryService;
     private final WeatherService weatherService;
 
-    public V2DataController(final ForecastSectionDataService forecastSectionDataService,
-                            final V2VariableSignService v2VariableSignService,
-                            final  WeatherService weatherService) {
+    public V2DataController(final ForecastSectionDataService forecastSectionDataService, final V2VariableSignService v2VariableSignService,
+                            final CameraPresetHistoryService cameraPresetHistoryService, final  WeatherService weatherService) {
         this.forecastSectionDataService = forecastSectionDataService;
         this.v2VariableSignService = v2VariableSignService;
+        this.cameraPresetHistoryService = cameraPresetHistoryService;
         this.weatherService = weatherService;
     }
 
@@ -153,5 +159,48 @@ public class V2DataController {
         final ZonedDateTime since) {
 
         return weatherService.findWeatherHistoryData(stationId, sensorId, since);
+    }
+
+    @ApiOperation("Weather camera history for given camera or preset")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/history", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
+    public List<CameraHistoryDto> getCameraOrPresetHistory(
+
+        @ApiParam(value = "Camera or preset id(s)", required = true)
+        @RequestParam(value = "id")
+        final List<String> cameraOrPresetIds,
+
+        @ApiParam("Return the latest url for the image from the history at the given date time. " +
+                      "If the time is not given then the history of last 24h is returned.")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam(value = "at", required = false)
+        final ZonedDateTime at) {
+
+        return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetIds, at);
+    }
+
+    @ApiOperation(value = "Find weather camera history presences",
+                  notes = "History presence tells if history exists for given time interval.")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/presences", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera images history"))
+    public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
+
+        @ApiParam(value = "Camera or preset id")
+        @RequestParam(required = false)
+        final String cameraOrPresetId,
+
+        @ApiParam("Return history presence from given date time onwards. " +
+                      "If the time is not given then current time is used.")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam(value = "from", required = false)
+        final ZonedDateTime from,
+
+        @ApiParam("Return history presence ending to given date time. " +
+                      "If the end time is not given then the history of last 24h is returned.")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam(value = "to", required = false)
+        final ZonedDateTime to) {
+
+        return cameraPresetHistoryService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
     }
 }
