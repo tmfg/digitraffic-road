@@ -10,13 +10,9 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,21 +27,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
-import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
-import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -61,25 +54,27 @@ public class BetaController {
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String MAINTENANCE_REALIZATIONS_PATH = "/maintenance/realizations";
 
-
+    private final V2VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
-    private final CameraPresetHistoryService cameraPresetHistoryService;
     private final Datex2DataService datex2DataService;
     private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
+    private final CameraPresetHistoryService cameraPresetHistoryService;
     private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     public BetaController(final V2VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service, final CameraPresetHistoryService cameraPresetHistoryService,
-                          final Datex2DataService datex2DataService, final V2MaintenanceRealizationDataService maintenanceRealizationDataService) {
-        this.trafficSignsService = trafficSignsService;
-    public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
-                          final TmsDataDatex2Service tmsDataDatex2Service,
+                          final Datex2DataService datex2DataService, final V2MaintenanceRealizationDataService maintenanceRealizationDataService,
                           final V2Datex2DataService v2Datex2DataService) {
+        this.trafficSignsService = trafficSignsService;
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
+        this.cameraPresetHistoryService = cameraPresetHistoryService;
+        this.datex2DataService = datex2DataService;
+        this.maintenanceRealizationDataService = maintenanceRealizationDataService;
         this.v2Datex2DataService = v2Datex2DataService;
+
     }
 
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
@@ -199,8 +194,7 @@ public class BetaController {
             @RequestParam(defaultValue = "72.0")
             @DecimalMin("59.0")
             @DecimalMax("72.0")
-            final double yMax
-    ) {
+            final double yMax) {
 
         final Instant fromParam = from != null ? from.toInstant() : Instant.now().minus(1, HOURS);
                                                               // Just to be sure all events near now in future will be fetched

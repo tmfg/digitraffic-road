@@ -44,4 +44,9 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
         testHelper.flushAndClearSession();
     }
 
+    public void test() {
+
+
+    }
+
 }
