@@ -10,6 +10,7 @@ import java.time.Instant;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -19,6 +20,7 @@ import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationUpdateService;
 
+@Import(value = { V2MaintenanceRealizationServiceTestHelper.class })
 public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
 
     @Autowired
