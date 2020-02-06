@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.xml.transform.StringSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +46,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     private final String incident1_past_id = "GUID50005166";
     private final String incident2_active_id = "GUID50006936";
     private final String incident3_active_id = "GUID50013339";
+    private final String incident4_active_id_invalid_json_duration = "GUID60013339";
     private final String incident1_past_estimated_minimum = "PT6H";
     private final String incident2_active_estimated_minimum = "PT7H";
     private final String incident3_active_estimated_minimum = "PT8H";
@@ -61,10 +61,13 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         final String incident2 = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessage-2016-11-17-18-34-36-299.xml");
         // GUID50013339 active
         final String incident3 = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessage-2017-08-10-15-59-34-896.xml");
+        // GUID60013339 active
+        final String incident4 = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessage-invalid-duration.xml");
 
         updateFromImsMessage(incident1, TRAFFIC_INCIDENT);
         updateFromImsMessage(incident2, TRAFFIC_INCIDENT);
         updateFromImsMessage(incident3, TRAFFIC_INCIDENT);
+        updateFromImsMessage(incident4, TRAFFIC_INCIDENT);
     }
 
     @Test
@@ -79,6 +82,10 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         assertTextExistInMessage(incident2_active_id, json);
         assertTextExistInMessage(incident3_active_id, xml);
         assertTextExistInMessage(incident3_active_id, json);
+
+        assertTextExistInMessage(incident4_active_id_invalid_json_duration, xml);
+        assertTextNotExistInMessage(incident4_active_id_invalid_json_duration, json);
+
         assertTextNotExistInMessage(incident1_past_estimated_minimum, json);
         assertTextExistInMessage(incident2_active_estimated_minimum, json);
         assertTextExistInMessage(incident3_active_estimated_minimum, json);
