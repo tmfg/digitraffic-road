@@ -1,23 +1,25 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
+import static fi.livi.digitraffic.tie.model.RoadStationType.CAMERA_STATION;
+
 import java.time.ZonedDateTime;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TieosoiteVO;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.v1.RoadAddress;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadAddress;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationAttributeUpdater;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2016._10._06.EsiasentoVO;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.Julkisuus;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.JulkisuusTaso;
-import fi.livi.ws.wsdl.lotju.kamerametatiedot._2018._06._15.KameraVO;
-import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
 
 public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 
@@ -42,13 +44,16 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         final boolean isPublicNew = from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso();
         final boolean changed = to.updatePublicity(isPublicNew, publicityStartTimeNew);
         if ( changed ) {
-            log.info("method=updateCameraPresetAtributes cameraPublicityChanged fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
+            log.info("method=updateRoadStationAttributes {} roadStationPublicityChanged naturalId={} lotuId={} " +
+                     "fromPublic={} toPublic={} fromPreviousPublic={} toPreviousPublic={} " +
                      "fromPublicityStartTime={} toPublicityStartTime={}",
-                     isPublicOld, to.internalIsPublic(), isPublicPreviousOld, to.isPublicPrevious(), publicityStartTimeOld, to.getPublicityStartTime());
+                     to.getType(), CAMERA_STATION.equals(to.getType()) ? "C" + to.getNaturalId() : to.getNaturalId(), to.getLotjuId(),
+                     isPublicOld, to.internalIsPublic(), isPublicPreviousOld, to.isPublicPrevious(),
+                     publicityStartTimeOld, to.getPublicityStartTime());
         }
 
         to.setNaturalId(from.getVanhaId().longValue());
-        to.setType(RoadStationType.CAMERA_STATION);
+        to.setType(CAMERA_STATION);
         to.setName(from.getNimi());
         to.setNameFi(from.getNimiFi());
         to.setNameSv(from.getNimiSe());

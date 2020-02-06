@@ -2,15 +2,15 @@ package fi.livi.digitraffic.tie.service.v1.weather;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TieosoiteVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.v1.RoadAddress;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadAddress;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationAttributeUpdater;
-import fi.livi.ws.wsdl.lotju.metatiedot._2015._09._29.TieosoiteVO;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 
 public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 

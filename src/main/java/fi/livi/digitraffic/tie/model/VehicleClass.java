@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.ws.wsdl.lotju.lammetatiedot._2018._03._12.AjoneuvoluokkaTyyppi;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.AjoneuvoluokkaTyyppi;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(description = "Vehicle class", value = "VehicleClass")

@@ -15,13 +15,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataService;
-import fi.livi.digitraffic.tie.service.RoadStationService;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 
 @ConditionalOnNotWebApplication
 @Service

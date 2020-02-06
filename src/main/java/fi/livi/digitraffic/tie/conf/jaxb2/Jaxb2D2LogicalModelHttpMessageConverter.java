@@ -12,7 +12,7 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 
 import com.google.common.collect.Sets;
 
-import fi.livi.digitraffic.tie.lotju.xsd.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 
 public class Jaxb2D2LogicalModelHttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
     private static final Logger log = LoggerFactory.getLogger(Jaxb2D2LogicalModelHttpMessageConverter.class);

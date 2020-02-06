@@ -19,14 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.converter.feature.WeatherStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.WeatherStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
-import fi.livi.digitraffic.tie.model.WeatherStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
-import fi.livi.ws.wsdl.lotju.tiesaa._2017._05._02.TiesaaAsemaVO;
 
 @Service
 public class WeatherStationService extends AbstractWeatherStationAttributeUpdater {

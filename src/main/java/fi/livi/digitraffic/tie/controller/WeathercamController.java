@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService.HistoryStatus;
 
-// TODO DPO-949 restore
-//@RestController
+@RestController
 @Validated
 @RequestMapping(WEATHERCAM_PATH)
 @ConditionalOnWebApplication
