@@ -47,6 +47,10 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     private final String incident1_past_id = "GUID50005166";
     private final String incident2_active_id = "GUID50006936";
     private final String incident3_active_id = "GUID50013339";
+    private final String incident1_past_estimated_minimum = "PT6H";
+    private final String incident2_active_estimated_minimum = "PT7H";
+    private final String incident3_active_estimated_minimum = "PT8H";
+    private final String incident3_active_estimated_maximum = "PT12H";
 
     @Before
     public void updateData() throws IOException {
@@ -75,6 +79,10 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         assertTextExistInMessage(incident2_active_id, json);
         assertTextExistInMessage(incident3_active_id, xml);
         assertTextExistInMessage(incident3_active_id, json);
+        assertTextNotExistInMessage(incident1_past_estimated_minimum, json);
+        assertTextExistInMessage(incident2_active_estimated_minimum, json);
+        assertTextExistInMessage(incident3_active_estimated_minimum, json);
+        assertTextExistInMessage(incident3_active_estimated_maximum, json);
     }
 
     @Test

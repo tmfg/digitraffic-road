@@ -105,7 +105,7 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         // One active with json
         initDataFromFile("TrafficIncidentImsMessage.xml");
         // One active without json
-        initDataFromFile("TrafficIncidentImsMessageWithOutJson.xml");
+        initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
         assertActiveMessageFound(GUID_WITH_JSON, true, true);
         assertActiveMessageFound(GUID_NO_JSON, true, false);
@@ -116,7 +116,7 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         // One active with json
         initDataFromFile("TrafficIncidentImsMessage.xml");
         // One active without json
-        initDataFromFile("TrafficIncidentImsMessageWithOutJson.xml");
+        initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
         // Both guid should be found
         assertFoundBySituationId(GUID_WITH_JSON, true, true);

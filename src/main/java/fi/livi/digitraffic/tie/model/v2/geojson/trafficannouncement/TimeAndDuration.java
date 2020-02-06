@@ -21,13 +21,13 @@ public class TimeAndDuration {
     @ApiModelProperty(value = "End time of the situation. If the end time has been passed, the situation can be assumed to be over. If end time is not given, there will be follow-up announcement about the situation.")
     public ZonedDateTime endTime;
 
-    @ApiModelProperty(value = "If exact endtime is not known, duration may be estimated informally eq. '1 - 3 hours'.")
-    public String estimatedDuration;
+    @ApiModelProperty(value = "If exact endtime is not known, duration may be estimated.")
+    public EstimatedDuration estimatedDuration;
 
     public TimeAndDuration() {
     }
 
-    public TimeAndDuration(ZonedDateTime startTime, ZonedDateTime endTime, String estimatedDuration) {
+    public TimeAndDuration(ZonedDateTime startTime, ZonedDateTime endTime, EstimatedDuration estimatedDuration) {
         super();
         this.startTime = startTime;
         this.endTime = endTime;
