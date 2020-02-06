@@ -120,7 +120,6 @@ public class V2Datex2HelperService {
                 log.error("Failed to convert valid Duration from json: {}", imsJson);
                 return null;
             }
-            log.info("Violations {}", violations);
 
             if ( isValidGeojson(feature) ) {
                 feature.getProperties().setMessageType(messageType);
