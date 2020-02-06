@@ -154,11 +154,11 @@ public class V2DataController {
         @ApiParam(value = "Sensor id", required = true)
         @PathVariable final long sensorId,
         @ApiParam("Fetch history after given time in ISO date time format {yyyy-MM-dd'T'HH:mm:ss.SSSZ}")
-        @RequestParam(value="since", required = false)
+        @RequestParam(value="from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime since) {
+        final ZonedDateTime from) {
 
-        return weatherService.findWeatherHistoryData(stationId, sensorId, since);
+        return weatherService.findWeatherHistoryData(stationId, sensorId, from);
     }
 
     @ApiOperation("Weather camera history for given camera or preset")

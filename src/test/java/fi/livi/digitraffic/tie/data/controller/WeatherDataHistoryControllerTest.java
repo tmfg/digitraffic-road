@@ -30,7 +30,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
         get.contentType(MediaType.APPLICATION_JSON);
 
         ResultActions result = mockMvc.perform(get);
-        //log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
+        log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
     }
 
@@ -75,7 +75,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
 
     @Test
     public void insideTimeWindow() throws Exception {
-        getJson("/20000?from=" + ZonedDateTime.now().minusHours(1).toInstant() + "&to=" + ZonedDateTime.now().minusMinutes(45).toInstant())
+        getJson("/20000?from=" + ZonedDateTime.now().minusMinutes(58).toInstant() + "&to=" + ZonedDateTime.now().minusMinutes(45).toInstant())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)));
     }
