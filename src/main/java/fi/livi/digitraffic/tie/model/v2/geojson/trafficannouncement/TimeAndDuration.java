@@ -27,7 +27,7 @@ public class TimeAndDuration {
     public TimeAndDuration() {
     }
 
-    public TimeAndDuration(ZonedDateTime startTime, ZonedDateTime endTime, EstimatedDuration estimatedDuration) {
+    public TimeAndDuration(final ZonedDateTime startTime, final ZonedDateTime endTime, final EstimatedDuration estimatedDuration) {
         super();
         this.startTime = startTime;
         this.endTime = endTime;
