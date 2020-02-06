@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.time.Instant;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,6 +45,7 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
         testHelper.flushAndClearSession();
     }
 
+    @Test
     public void test() {
 
 
