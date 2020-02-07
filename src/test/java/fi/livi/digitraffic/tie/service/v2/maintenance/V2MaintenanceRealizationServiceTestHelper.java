@@ -5,7 +5,10 @@ import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizatio
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,28 @@ public class V2MaintenanceRealizationServiceTestHelper {
         "classpath:harja/controller/toteumakirjaus-monta-reittitoteumaa-3-tehtavaa.json";
     public final static String SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH =
         "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa-siirtymalla-ja-yhdella-pisteella.json";
+
+    public final static Pair<Double, Double> RANGE_X = Pair.of(19.0, 32.0);
+    public final static Pair<Double, Double> RANGE_Y = Pair.of(59.0, 72.0);
+
+    public final static Instant SINGLE_REALISATIONS_3_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:28:16Z").toInstant();
+    public final static Instant MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:15:42Z").toInstant();
+
+    /*  SINGLE_REALISATIONS_3_TASKS should have following points for realization with task 12911L, 1368L
+           WGS84                 ETRS-TM35FIN
+        1. x=25.87174 y=64.26403 P: 7126921 m I: 445338 m - Pukkila
+        2. x=25.95947 y=64.17967 P: 7117449 m I: 449434 m - Piippola
+        3. x=26.33006 y=64.10373 P: 7108745 m I: 467354 m - Pyhäntä
+
+        Bounding box min x=26.3 y=64.1 max x=27.0 y=65.0 should contain Pyhäntä point
+        Bounding box min x=26.34 y=64.1 max x=27.0 y=65.0 should not contain any points */
+    public final static Pair<Double, Double> RANGE_X_AROUND_TASK = Pair.of(26.3, 27.0);
+    public final static Pair<Double, Double> RANGE_Y_AROUND_TASK = Pair.of(64.1, 65.0);
+    public final static Set<Long> TASK_IDS_INSIDE_BOX = new HashSet<>(Arrays.asList(12911L, 1368L));
+    public final static Set<Integer> TASK_IDS_INSIDE_BOX_INTS = new HashSet<>(Arrays.asList(12911, 1368));
+    public final static Pair<Double, Double> RANGE_X_OUTSIDE_TASK = Pair.of(26.34, 27.0);
+    public final static Pair<Double, Double> RANGE_Y_OUTSIDE_TASK = Pair.of(64.1, 65.0);
+
 
     @Autowired
     public V2MaintenanceRealizationServiceTestHelper(final ObjectMapper objectMapper,
