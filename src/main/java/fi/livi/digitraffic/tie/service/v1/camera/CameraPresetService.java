@@ -125,21 +125,22 @@ public class CameraPresetService {
     }
 
     @Transactional
-    public void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final boolean isImagePublic, final ImageUpdateInfo updateInfo) {
+    public void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final boolean isImagePublic, final boolean isPresetPublic,
+                                             final ImageUpdateInfo updateInfo) {
         // Update version data only if write has succeeded
         if (updateInfo.isSuccess()) {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
-                    isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC));
+                    isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC), isPresetPublic);
 
             cameraPresetHistoryRepository.save(history);
         }
-
-        if (cameraPreset.isPublic() != isImagePublic) {
-            cameraPreset.setPublic(isImagePublic);
+        // Preset can be public when camera is secret. If camera is secret then public presets are not returned by the api.
+        if (cameraPreset.isPublic() != isPresetPublic) {
+            cameraPreset.setPublic(isPresetPublic);
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
             log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
-                cameraPreset.getPresetId(), !isImagePublic, isImagePublic, updateInfo.getLastUpdated());
+                cameraPreset.getPresetId(), !isPresetPublic, isPresetPublic, updateInfo.getLastUpdated());
         } else if (updateInfo.isSuccess()) {
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
         }
