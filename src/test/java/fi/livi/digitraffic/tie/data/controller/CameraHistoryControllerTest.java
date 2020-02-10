@@ -52,9 +52,9 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         final String versionId = RandomStringUtils.randomAlphanumeric(32);
         final String cameraId = getCameraIdFromPresetId(presetId);
         entityManager.createNativeQuery(
-            "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created)\n" +
+            "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created, preset_public)\n" +
             "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  31575, timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " +
-                IMAGE_SIZE + ", NOW())")
+                IMAGE_SIZE + ", NOW(), "+ true +")")
             .executeUpdate();
         return versionId;
     }
