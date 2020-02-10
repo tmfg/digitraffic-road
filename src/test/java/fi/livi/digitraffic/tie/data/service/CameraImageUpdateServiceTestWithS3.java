@@ -35,7 +35,8 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageReader;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3 {
@@ -52,7 +53,10 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
     private CameraImageUpdateService service;
 
     @Autowired
-    private CameraPresetHistoryService cameraPresetHistoryService;
+    private CameraPresetHistoryUpdateService cameraPresetHistoryUpdateService;
+
+    @Autowired
+    private CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
     @Test
     public void versionHistoryAndPresetPublicityForTwoPresets() throws IOException {
@@ -70,8 +74,8 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
             cameraPresetService.save(cp);
             presetIds.add(cp.getPresetId());
 
-            cameraPresetHistoryService.deleteAllWithPresetId(cp.getPresetId());
-            Assert.assertTrue(cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(cp.getPresetId()).isEmpty());
+            cameraPresetHistoryUpdateService.deleteAllWithPresetId(cp.getPresetId());
+            Assert.assertTrue(cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp.getPresetId()).isEmpty());
 
             // Init image data for all loop indexes
             try {
@@ -96,7 +100,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
                 checkLatestS3ObjectAndHistory(cp.getPresetId(), lastModified, true, isPublicPreset, loopIndex);
 
                 // Check version history
-                final CameraPresetHistory latestHistory = cameraPresetHistoryService.findLatestWithPresetIdIncSecret(cp.getPresetId());
+                final CameraPresetHistory latestHistory = cameraPresetHistoryDataService.findLatestWithPresetIdIncSecretInternal(cp.getPresetId());
                 checkVersionedS3ObjectAndHistory(cp.getPresetId(), lastModified, true, isPublicPreset, loopIndex, latestHistory);
             });
         });
@@ -104,7 +108,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
         // Now check that full history haven't changed
         presetIds.forEach(presetId -> {
             final AtomicInteger loopIndex = new AtomicInteger(1);
-            final List<CameraPresetHistory> history = cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(presetId);
+            final List<CameraPresetHistory> history = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetId);
 
             history.forEach(h -> {
 
@@ -129,8 +133,8 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
 
         final CameraPreset cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst().get();
 
-        cameraPresetHistoryService.deleteAllWithPresetId(cp.getPresetId());
-        Assert.assertTrue(cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(cp.getPresetId()).isEmpty());
+        cameraPresetHistoryUpdateService.deleteAllWithPresetId(cp.getPresetId());
+        Assert.assertTrue(cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp.getPresetId()).isEmpty());
 
         try {
             when(cameraImageReader.readImage(eq(cp.getLotjuId()), any()))
@@ -157,7 +161,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
         handleKuvaAndCheckLatestS3ObjectAndHistory(cp, initialLastModified.plusMinutes(4), false, false, 4);
 
         // Get history and check it is still correct
-        final List<CameraPresetHistory> history = cameraPresetHistoryService.findAllByPresetIdInclSecretAsc(presetId);
+        final List<CameraPresetHistory> history = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetId);
         Assert.assertEquals(4, history.size());
 
         // Check version history to match matrix
@@ -214,7 +218,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
         assertLastModified(lastModified, imageS3Object);
 
         // Check latest history data
-        final CameraPresetHistory latestHistory = cameraPresetHistoryService.findLatestWithPresetIdIncSecret(key.substring(0, key.length()-4));
+        final CameraPresetHistory latestHistory = cameraPresetHistoryDataService.findLatestWithPresetIdIncSecretInternal(key.substring(0, key.length()-4));
         Assert.assertEquals(shouldBePublic, latestHistory.getPublishable());
         Assert.assertEquals(lastModified, latestHistory.getLastModified());
     }

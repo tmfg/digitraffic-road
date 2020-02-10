@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHERCAM_PATH;
+import static fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService.HistoryStatus;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
 
 @RestController
 @Validated
@@ -28,11 +29,11 @@ public class WeathercamController {
 
     private static final String VERSION_ID_PARAM = "versionId";
 
-    private CameraPresetHistoryService cameraPresetHistoryService;
+    private CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
     @Autowired
-    public WeathercamController(final CameraPresetHistoryService cameraPresetHistoryService) {
-        this.cameraPresetHistoryService = cameraPresetHistoryService;
+    public WeathercamController(final CameraPresetHistoryDataService cameraPresetHistoryDataService) {
+        this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "{imageName}")
@@ -40,15 +41,15 @@ public class WeathercamController {
         @PathVariable final String imageName,
         @RequestParam(value=VERSION_ID_PARAM) final String versionId) {
 
-        final HistoryStatus historyStatus = cameraPresetHistoryService.resolveHistoryStatusForVersion(imageName, versionId);
+        final HistoryStatus historyStatus = cameraPresetHistoryDataService.resolveHistoryStatusForVersion(imageName, versionId);
         log.info("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
 
-        if ( !historyStatus.equals(HistoryStatus.PUBLIC) ) {
+        if ( !historyStatus.equals(PUBLIC) ) {
             return createNotFoundResponse();
         }
 
         final ResponseEntity<Void> response = ResponseEntity.status(HttpStatus.FOUND)
-            .location(cameraPresetHistoryService.createS3UriForVersion(imageName, versionId))
+            .location(cameraPresetHistoryDataService.createS3UriForVersion(imageName, versionId))
             .build();
 
         log.info("method=imageVersion response={}", response);

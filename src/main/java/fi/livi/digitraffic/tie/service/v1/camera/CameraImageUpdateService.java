@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.ImageManipulationService;
 
@@ -36,7 +38,6 @@ public class CameraImageUpdateService {
     private final CameraImageS3Writer cameraImageS3Writer;
     private final byte[] noiseImage;
     private final ResourceLoader resourceLoader;
-    private final CameraPresetHistoryService cameraPresetHistoryService;
 
     public static final int RETRY_COUNT = 3;
 
@@ -53,14 +54,12 @@ public class CameraImageUpdateService {
         final CameraPresetService cameraPresetService,
         final CameraImageReader imageReader,
         final CameraImageS3Writer cameraImageS3Writer,
-        final ResourceLoader resourceLoader,
-        final CameraPresetHistoryService cameraPresetHistoryService) throws IOException {
+        final ResourceLoader resourceLoader) throws IOException {
         this.retryDelayMs = retryDelayMs;
         this.cameraPresetService = cameraPresetService;
         this.imageReader = imageReader;
         this.cameraImageS3Writer = cameraImageS3Writer;
         this.resourceLoader = resourceLoader;
-        this.cameraPresetHistoryService = cameraPresetHistoryService;
         this.noiseImage = readImageFromResource(NOISE_IMG);
     }
 
@@ -186,6 +185,16 @@ public class CameraImageUpdateService {
             }
             return null;
         });
+    }
+
+    public void hideCurrentImagesForCamera(final RoadStation rs) {
+        Map<Long, CameraPreset> presets = cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
+        presets.values().forEach(this::hideCurrentImageForPreset);
+    }
+
+    public void hideCurrentImageForPreset(final CameraPreset preset) {
+        final String imageKey = getPresetImageKey(preset.getPresetId());
+        cameraImageS3Writer.writeCurrentImage(noiseImage, imageKey, Instant.now().toEpochMilli());
     }
 
     private RetryTemplate getRetryTemplate() {

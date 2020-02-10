@@ -20,22 +20,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresenceDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
-import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service
-public class CameraPresetHistoryService {
+public class CameraPresetHistoryDataService {
     private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
-    private CameraPresetHistoryRepository cameraPresetHistoryRepository;
+    private final CameraPresetHistoryRepository cameraPresetHistoryRepository;
     private final String s3WeathercamKeyRegexp;
     private final String s3WeathercamBucketUrl;
     private final int historyMaxAgeHours;
@@ -58,12 +56,12 @@ public class CameraPresetHistoryService {
     }
 
     @Autowired
-    public CameraPresetHistoryService(final CameraPresetHistoryRepository cameraPresetHistoryRepository,
-                                      @Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,
-                                      @Value("${dt.amazon.s3.weathercam.region}") final String s3WeathercamRegion,
-                                      @Value("${dt.amazon.s3.weathercam.key.regexp}") final String s3WeathercamKeyRegexp,
-                                      @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours,
-                                      @Value("${weathercam.baseUrl}") final String weathercamBaseUrl) {
+    public CameraPresetHistoryDataService(final CameraPresetHistoryRepository cameraPresetHistoryRepository,
+                                          @Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,
+                                          @Value("${dt.amazon.s3.weathercam.region}") final String s3WeathercamRegion,
+                                          @Value("${dt.amazon.s3.weathercam.key.regexp}") final String s3WeathercamKeyRegexp,
+                                          @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours,
+                                          @Value("${weathercam.baseUrl}") final String weathercamBaseUrl) {
         this.cameraPresetHistoryRepository = cameraPresetHistoryRepository;
         this.s3WeathercamKeyRegexp = s3WeathercamKeyRegexp;
         this.historyMaxAgeHours = historyMaxAgeHours;
@@ -77,13 +75,8 @@ public class CameraPresetHistoryService {
         return String.format("http://%s.s3-%s.amazonaws.com", s3WeathercamBucketName, s3WeathercamRegion);
     }
 
-    @Transactional
-    public void saveHistory(final CameraPresetHistory history) {
-        cameraPresetHistoryRepository.save(history);
-    }
-
     @Transactional(readOnly = true)
-    public CameraPresetHistory findHistoryVersionInclSecret(final String presetId, final String versionId) {
+    public CameraPresetHistory findHistoryVersionInclSecretInternal(final String presetId, final String versionId) {
         return cameraPresetHistoryRepository.findByIdPresetIdAndIdVersionId(presetId, versionId).orElse(null);
     }
 
@@ -242,33 +235,15 @@ public class CameraPresetHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public CameraPresetHistory findLatestWithPresetIdIncSecret(final String presetId) {
+    public CameraPresetHistory findLatestWithPresetIdIncSecretInternal(final String presetId) {
         return cameraPresetHistoryRepository.findLatestByPresetId(presetId).orElse(null);
     }
 
     /** Orderer from oldest to newest
      * Only for internal use */
     @Transactional(readOnly = true)
-    public List<CameraPresetHistory> findAllByPresetIdInclSecretAsc(final String presetId) {
+    public List<CameraPresetHistory> findAllByPresetIdInclSecretAscInternal(final String presetId) {
         return cameraPresetHistoryRepository.findByIdPresetIdOrderByLastModifiedAsc(presetId);
-    }
-
-    @Transactional
-    public int deleteAllWithPresetId(final String presetId) {
-        return cameraPresetHistoryRepository.deleteByIdPresetId(presetId);
-    }
-
-    @Transactional
-    public void updatePresetHistoryPublicityForCamera(final RoadStation rs) {
-        // If statTime is null it means now -> no history to update or
-        // if startTime is in the future -> no history to update
-        if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(ZonedDateTime.now())) {
-            final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
-            log.info("method=updatePresetHistoryPublicityForCamera cameraId={} toPublic={} fromPublicityStartTime={}",
-                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
-            cameraPresetHistoryRepository.updatePresetHistoryPublicityForCameraId(
-                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
-        }
     }
 
     /**
@@ -289,7 +264,7 @@ public class CameraPresetHistoryService {
             return HistoryStatus.ILLEGAL_KEY;
         }
         // C1234567.jpg -> C1234567
-        final CameraPresetHistory history = findHistoryVersionInclSecret(getPresetIdFromImageName(presetImageName), versionId);
+        final CameraPresetHistory history = findHistoryVersionInclSecretInternal(getPresetIdFromImageName(presetImageName), versionId);
         final ZonedDateTime oldestLimit = getOldestTimeLimit();
 
         if (history == null) {

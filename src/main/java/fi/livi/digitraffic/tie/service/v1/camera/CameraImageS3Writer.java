@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 @Component
@@ -49,39 +50,74 @@ public class CameraImageS3Writer {
         this.s3WeathercamKeyRegexp = s3WeathercamKeyRegexp;
     }
 
-    /**
-     * @return S3 versionId
-     */
     public String writeImage(final byte[] currentImageData, final byte[] versionedImageData,
                              final String imageKey, final long timestampEpochMillis) {
+        writeCurrentImage(currentImageData, imageKey, timestampEpochMillis);
+        return writeVersionedImage(versionedImageData, imageKey, timestampEpochMillis);
+
+    }
+
+    /**
+     * Writes given image as current weather camera image
+     * @param currentImageData image bytes to write
+     * @param imageKey s3 key
+     * @param timestampEpochMillis image timestamp
+     */
+    public void writeCurrentImage(final byte[] currentImageData, final String imageKey, final long timestampEpochMillis) {
         try {
             checkS3KeyFormat(imageKey);
-            final String versionedKey = getVersionedKey(imageKey);
-            final ObjectMetadata metadata = new ObjectMetadata();
-            final String lastModifiedInHeaderFormat = getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
-            metadata.addUserMetadata(LAST_MODIFIED_USER_METADATA_HEADER, lastModifiedInHeaderFormat);
+            final ObjectMetadata metadata = createS3Metadata(timestampEpochMillis, currentImageData.length);
+
             if (log.isDebugEnabled()) {
-                log.debug("method=writeImage s3Key={} lastModified: {}", imageKey, lastModifiedInHeaderFormat);
+                log.debug("method=writeCurrentImage s3Key={} lastModified: {}", imageKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER));
             }
-            metadata.setContentType("image/jpeg");
 
             // Put current image
             metadata.setContentLength(currentImageData.length);
             amazonS3Client.putObject(bucketName, imageKey, new ByteArrayInputStream(currentImageData), metadata);
-
-            // Put versions image
-            metadata.setContentLength(versionedImageData.length);
-            final PutObjectResult result = amazonS3Client.putObject(bucketName, versionedKey, new ByteArrayInputStream(versionedImageData), metadata);
-            if (log.isDebugEnabled()) {
-                log.debug("method=writeImage versioned s3Key={} lastModified: {} versionId={}",
-                          versionedKey, lastModifiedInHeaderFormat, result.getVersionId());
-            }
-            return result.getVersionId();
         } catch (Exception e) {
-            log.warn("method=writeImage Failed to write image to S3 s3Key={} . mostSpecificCauseMessage={} . stackTrace={}",
+            log.error("method=writeCurrentImage Failed to write image to S3 s3Key={} . mostSpecificCauseMessage={} . stackTrace={}",
                      imageKey, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
             throw e;
         }
+    }
+
+    /**
+     * Writes image version for given image
+     * @param versionedImageData image bytes to write
+     * @param imageKey current image s3 key. Key will be appended with version suffix.
+     * @param timestampEpochMillis image timestamp
+     * @return s3 version id
+     */
+    private String writeVersionedImage(final byte[] versionedImageData,
+                                       final String imageKey,
+                                       final long timestampEpochMillis) {
+        final String versionedKey = getVersionedKey(imageKey);
+
+        try {
+            checkS3KeyFormat(imageKey);
+            final ObjectMetadata metadata = createS3Metadata(timestampEpochMillis, versionedImageData.length);
+
+            // Put versions image
+            final PutObjectResult result = amazonS3Client.putObject(bucketName, versionedKey, new ByteArrayInputStream(versionedImageData), metadata);
+            if (log.isDebugEnabled()) {
+                log.debug("method=writeVersionedImage versioned s3Key={} lastModified: {} versionId={}", versionedKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER), result.getVersionId());
+            }
+            return result.getVersionId();
+        } catch (Exception e) {
+            log.error("method=writeVersionedImage Failed to write image to S3 s3Key={} . mostSpecificCauseMessage={} . stackTrace={}",
+                      versionedKey, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
+            throw e;
+        }
+    }
+
+    private ObjectMetadata createS3Metadata(final long timestampEpochMillis, final long contentLength) {
+        final ObjectMetadata metadata = new ObjectMetadata();
+        final String lastModifiedInHeaderFormat = getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
+        metadata.addUserMetadata(LAST_MODIFIED_USER_METADATA_HEADER, lastModifiedInHeaderFormat);
+        metadata.setContentType("image/jpeg");
+        metadata.setContentLength(contentLength);
+        return metadata;
     }
 
     /**

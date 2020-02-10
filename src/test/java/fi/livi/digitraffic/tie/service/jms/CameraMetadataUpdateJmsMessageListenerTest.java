@@ -5,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -17,19 +20,23 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
@@ -49,6 +56,9 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     @MockBean
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
 
+    @SpyBean
+    private CameraImageUpdateService cameraImageUpdateService;
+
     private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
     private JMSMessageListener cameraMetadataJmsMessageListener;
 
@@ -61,6 +71,8 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
 
     @Test
     public void cameraMetadataUpdateReceiveMessages() {
+
+        doNothing().when(cameraImageUpdateService).hideCurrentImageForPreset(any(CameraPreset.class));
 
         // Create camera with preset to lotju
         final KameraVO kamera_T1 = createKamera(Instant.now());
@@ -75,6 +87,8 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
+        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
+
         reset(lotjuCameraStationMetadataClient);
         {
             final CameraPreset preset1 = cameraPresetService.findCameraPresetByLotjuId(esiasento_T1_1.getId());
@@ -94,6 +108,8 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
+        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
+
         reset(lotjuCameraStationMetadataClient);
         {
             final CameraPreset preset1 = cameraPresetService.findCameraPresetByLotjuId(esiasento_T1_1.getId());
@@ -113,6 +129,8 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_2.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasentos(eq(kamera_T1.getId()));
+        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
+
         reset(lotjuCameraStationMetadataClient);
         {
             final CameraPreset preset1 = cameraPresetService.findCameraPresetByLotjuId(esiasento_T1_1.getId());
@@ -137,6 +155,11 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
+        // camera T1 has 2 public presets, camera changes to secret -> 2 presets to secret
+        verify(cameraImageUpdateService, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(kamera_T1.getId())));
+        verify(cameraImageUpdateService, VerificationModeFactory.times(2)).hideCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(kamera_T1.getId())));
+
         reset(lotjuCameraStationMetadataClient);
         {
             final CameraPreset preset1 = cameraPresetService.findCameraPresetByLotjuId(esiasento_T1_1.getId());
@@ -151,6 +174,12 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
+
+        // camera T1 has 2 public presets, camera changes to secret -> 2 presets to secret
+        verify(cameraImageUpdateService, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(kamera_T1.getId())));
+        verify(cameraImageUpdateService, VerificationModeFactory.times(2)).hideCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(kamera_T1.getId())));
+
         reset(lotjuCameraStationMetadataClient);
         {
             final CameraPreset preset1 = cameraPresetService.findCameraPresetByLotjuId(esiasento_T1_1.getId());
