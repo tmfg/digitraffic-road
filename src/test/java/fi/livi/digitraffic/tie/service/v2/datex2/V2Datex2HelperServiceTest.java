@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
+import static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncement.Language.FI;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -24,6 +26,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.AlertCLocation;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Contact;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.EstimatedDuration;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.JsonMessage;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Location;
@@ -140,7 +143,7 @@ public class V2Datex2HelperServiceTest extends AbstractServiceTest {
             .withReleaseTime(DATE_TIME)
             .withAnnouncements(Collections.singletonList(
                 new TrafficAnnouncement()
-                    .withLanguage("fi")
+                    .withLanguage(FI)
                     .withTitle("Title")
                     .withLocation(createLocation())
                     .withLocationDetails(createLocationDetails())
@@ -159,7 +162,7 @@ public class V2Datex2HelperServiceTest extends AbstractServiceTest {
     }
 
     private TimeAndDuration createTimeAndDuration() {
-        return new TimeAndDuration(DATE_TIME, DATE_TIME.plusHours(2), "2-4 h");
+        return new TimeAndDuration(DATE_TIME, DATE_TIME.plusHours(2), new EstimatedDuration().withInformal("Yli 6 tuntia").withMaximum("PT8H").withMinimum("PT6H"));
     }
 
     private LocationDetails createLocationDetails() {

@@ -20,7 +20,7 @@
                     "id": "urn:JSONMessage",
                     "type": "object",
                     "additionalProperties": true,
-                    "$ref": "JSONMessage_2_3_0.json",
+                    "$ref": "JSONMessage_0_2_4.json",
                     "required": true
         },
         "geometry": {
