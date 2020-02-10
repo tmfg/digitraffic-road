@@ -173,7 +173,11 @@ Sähköposti: helsinki.liikennekeskus@liikennevirasto.fi</value>
                 ],
                 "comment": "TESTI TESTI TESTI\nML",
                 "timeAndDuration": {
-                    "startTime": "2016-09-12T20:51:00.587+03:00"
+                    "startTime": "2016-09-12T20:51:00.587+03:00",
+                    "estimatedDuration": {
+                        "minimum": "PT6H",
+                        "informal": "Yli 6 tuntia"
+                    }
                 },
                 "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
                 "sender": "Liikenneviraston tieliikennekeskus Helsinki"

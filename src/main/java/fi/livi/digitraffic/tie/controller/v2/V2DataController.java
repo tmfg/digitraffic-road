@@ -146,14 +146,12 @@ public class V2DataController {
         @RequestParam(required = false)
         final String cameraOrPresetId,
 
-        @ApiParam("Return history presence from given date time onwards. " +
-                      "If the time is not given then current time is used.")
+        @ApiParam("Return history presence from given date time onwards. If the start time is not given then value of now - 24h is used.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "from", required = false)
         final ZonedDateTime from,
 
-        @ApiParam("Return history presence ending to given date time. " +
-                      "If the end time is not given then the history of last 24h is returned.")
+        @ApiParam("Return history presence ending to given date time. If the end time is not given then now is used.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "to", required = false)
         final ZonedDateTime to) {
