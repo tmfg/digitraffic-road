@@ -126,7 +126,7 @@ public class CameraImageUpdateService {
                 image = ImageManipulationService.removeJpgExifMetadata(image);
             } catch (Exception e) {
                 // Let's use original
-                log.warn("Failed to remove Exif metadata from image, using original image", e);
+                log.warn(String.format("Failed to remove Exif metadata from image with presetId=%s, using original image", presetId), e);
             }
             writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
         } catch (final CameraImageReadFailureException e) {
