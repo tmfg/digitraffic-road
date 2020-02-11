@@ -6,7 +6,6 @@ import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 import java.net.URI;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -90,9 +89,9 @@ public class CameraPresetHistoryDataService {
         final List<CameraPresetHistory> history =
             atTime != null ?
                 cameraPresetHistoryRepository.findLatestPublishableByCameraAndPresetIdsAndTimeOrderByPresetIdAndLastModifiedDesc(
-                    fixEmptyIdsList(cameraIds), fixEmptyIdsList(presetIds), atTime.toInstant(), getOldestTimeLimit().toInstant()) :
+                    cameraIds, presetIds, atTime.toInstant(), getOldestTimeLimit().toInstant()) :
                 cameraPresetHistoryRepository.findAllPublishableByCameraAndPresetIdsOrderByPresetIdAndLastModifiedDesc(
-                    fixEmptyIdsList(cameraIds), fixEmptyIdsList(presetIds), getOldestTimeLimit().toInstant());
+                    cameraIds, presetIds, getOldestTimeLimit().toInstant());
 
         return convertToCameraHistory(history);
     }
@@ -113,21 +112,6 @@ public class CameraPresetHistoryDataService {
                 String.format("Parameter camera or presetId should be either 6 or 8 chars long. Illegal parameters: %s.",
                     illegalIds.stream().collect(Collectors.joining(", "))));
         }
-    }
-
-    private List<String> fixEmptyIdsList(List<String> cameraOrPresetIds) {
-        return cameraOrPresetIds.isEmpty() ? Collections.singletonList("NONE") : cameraOrPresetIds;
-    }
-
-    private List<String> parseCameraIds(final List<String> cameraOrPresetIds) {
-        return cameraOrPresetIds.stream().filter(id -> id.length() == 6).collect(Collectors.toList());
-    }
-    private List<String> parsePresetIds(final List<String> cameraOrPresetIds) {
-        return cameraOrPresetIds.stream().filter(id -> id.length() == 8).collect(Collectors.toList());
-    }
-
-    private ZonedDateTime getOldestTimeLimit() {
-        return getZonedDateTimeNowAtUtc().minus(historyMaxAgeHours, ChronoUnit.HOURS);
     }
 
     /**
@@ -282,8 +266,19 @@ public class CameraPresetHistoryDataService {
             createImageVersionKey(getPresetIdFromImageName(imageName)), versionId));
     }
 
+    private ZonedDateTime getOldestTimeLimit() {
+        return getZonedDateTimeNowAtUtc().minus(historyMaxAgeHours, ChronoUnit.HOURS);
+    }
+
     private String createPublicUrlForVersion(final String presetId, final String versionId) {
         return String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId);
+    }
+    private List<String> parseCameraIds(final List<String> cameraOrPresetIds) {
+        return cameraOrPresetIds.stream().filter(CameraPresetHistoryDataService::isCameraId).collect(Collectors.toList());
+    }
+
+    private List<String> parsePresetIds(final List<String> cameraOrPresetIds) {
+        return cameraOrPresetIds.stream().filter(CameraPresetHistoryDataService::isPresetId).collect(Collectors.toList());
     }
 
     private static boolean isCameraId(final String cameraId) {

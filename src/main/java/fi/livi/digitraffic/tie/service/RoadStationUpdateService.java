@@ -64,8 +64,8 @@ public class RoadStationUpdateService {
 
     @Transactional
     public boolean updateRoadStation(final LamAsemaVO from) {
-        RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.TMS_STATION, from.getId());
-        if (rs == null) { // Ei löydy kannnasta
+        final RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.TMS_STATION, from.getId());
+        if (rs == null) { // Not found from db
             return false;
         }
         if (from.getVanhaId() == null) {
@@ -78,7 +78,7 @@ public class RoadStationUpdateService {
 
     @Transactional
     public boolean updateRoadStation(final TiesaaAsemaVO from) {
-        RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, from.getId());
+        final RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, from.getId());
         if (rs == null) { // Ei löydy kannnasta
             return false;
         }
@@ -92,7 +92,7 @@ public class RoadStationUpdateService {
 
     @Transactional
     public boolean updateRoadStation(final KameraVO from) {
-        RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, from.getId());
+        final RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, from.getId());
         if (rs == null) { // Ei löydy kannnasta
             return false;
         }
@@ -110,13 +110,13 @@ public class RoadStationUpdateService {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaUpdate<RoadStation> update = cb.createCriteriaUpdate(RoadStation.class);
         final Root<RoadStation> root = update.from(RoadStation.class);
-        EntityType<RoadStation> rootModel = root.getModel();
+        final EntityType<RoadStation> rootModel = root.getModel();
         update.set("obsoleteDate", LocalDate.now());
 
-        List<Predicate> predicates = new ArrayList<>();
+        final List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
         predicates.add( cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))) );
-        for (List<Long> ids : Iterables.partition(roadStationsLotjuIdsNotToObsolete, 1000)) {
+        for (final List<Long> ids : Iterables.partition(roadStationsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
         update.where(cb.and(predicates.toArray(new Predicate[0])));

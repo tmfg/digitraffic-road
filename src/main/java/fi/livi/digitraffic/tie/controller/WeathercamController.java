@@ -44,7 +44,7 @@ public class WeathercamController {
         final HistoryStatus historyStatus = cameraPresetHistoryDataService.resolveHistoryStatusForVersion(imageName, versionId);
         log.info("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
 
-        if ( !historyStatus.equals(PUBLIC) ) {
+        if ( historyStatus != PUBLIC ) {
             return createNotFoundResponse();
         }
 

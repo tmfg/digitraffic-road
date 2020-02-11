@@ -68,7 +68,7 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
 
     @Modifying
     @Query(value = "UPDATE camera_preset_history history\n" +
-                   "SET publishable = :isPublic AND preset_public \n" +
+                   "SET publishable = (:isPublic AND preset_public)\n" +
                    "WHERE history.publishable <> :isPublic\n" +
                    "  AND history.last_modified >= :fromTime\n" +
                    "  AND history.camera_id = :cameraId",

@@ -69,7 +69,7 @@ public class CameraImageS3Writer {
             final ObjectMetadata metadata = createS3Metadata(timestampEpochMillis, currentImageData.length);
 
             if (log.isDebugEnabled()) {
-                log.debug("method=writeCurrentImage s3Key={} lastModified: {}", imageKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER));
+                log.debug("method=writeCurrentImage s3Key={} lastModified={}", imageKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER));
             }
 
             // Put current image
@@ -101,7 +101,7 @@ public class CameraImageS3Writer {
             // Put versions image
             final PutObjectResult result = amazonS3Client.putObject(bucketName, versionedKey, new ByteArrayInputStream(versionedImageData), metadata);
             if (log.isDebugEnabled()) {
-                log.debug("method=writeVersionedImage versioned s3Key={} lastModified: {} versionId={}", versionedKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER), result.getVersionId());
+                log.debug("method=writeVersionedImage s3Key={} lastModified: {} versionId={}", versionedKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER), result.getVersionId());
             }
             return result.getVersionId();
         } catch (Exception e) {
