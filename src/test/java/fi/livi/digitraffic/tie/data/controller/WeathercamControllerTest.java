@@ -22,7 +22,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Config;
+import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
@@ -38,7 +38,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     private CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
     @Autowired
-    private WeathercamS3Config weathercamS3Config;
+    private WeathercamS3Properties weathercamS3Properties;
 
     private final String imageName = "C7777701.jpg";
     private final String versionId = "qwerty";
@@ -102,7 +102,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     }
 
     private String getVersionedRedirectUrl(final String imageName, final String versionId) {
-        return weathercamS3Config.getS3UriForVersion(imageName, versionId).toString();
+        return weathercamS3Properties.getS3UriForVersion(imageName, versionId).toString();
     }
 
     private CameraPresetHistory createHistory(final String imageName, final String versionId, final boolean publishable, final ZonedDateTime lastModified) {

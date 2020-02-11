@@ -1,65 +1,17 @@
 package fi.livi.digitraffic.tie.conf.amazon;
 
-import java.net.URI;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
-
+@Configuration
 public class WeathercamS3Config {
 
-    private final String s3WeathercamBucketName;
-    private final String s3WeathercamRegion;
-    private final String s3WeathercamKeyRegexp = "^C([0-9]{7})\\.jpg$";
-    private final int historyMaxAgeHours;
-    private final String weathercamBaseUrl;
-
-    public WeathercamS3Config(final String s3WeathercamBucketName, final String s3WeathercamRegion,
-                              final int historyMaxAgeHours, final String weathercamBaseUrl) {
-
-        this.s3WeathercamBucketName = s3WeathercamBucketName;
-        this.s3WeathercamRegion = s3WeathercamRegion;
-        this.historyMaxAgeHours = historyMaxAgeHours;
-        this.weathercamBaseUrl = weathercamBaseUrl;
-    }
-
-    public String getS3WeathercamBucketName() {
-        return s3WeathercamBucketName;
-    }
-
-    public String getS3WeathercamRegion() {
-        return s3WeathercamRegion;
-    }
-
-    public String getS3WeathercamKeyRegexp() {
-        return s3WeathercamKeyRegexp;
-    }
-
-    public int getHistoryMaxAgeHours() {
-        return historyMaxAgeHours;
-    }
-
-    public String getWeathercamBaseUrl() {
-        return weathercamBaseUrl;
-    }
-
-    public String getS3WeathercamBucketUrl() {
-        return String.format("http://%s.s3-%s.amazonaws.com", getS3WeathercamBucketName(), getS3WeathercamRegion());
-    }
-
-    public String getPublicUrlForVersion(final String presetId, final String versionId) {
-        return String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId);
-    }
-
-    public URI getS3UriForVersion(final String imageName, final String versionId) {
-        URI uri = URI.create(String.format("%s/%s?versionId=%s", getS3WeathercamBucketUrl(),
-            getImageVersionKey(getPresetIdFromImageName(imageName)), versionId));
-        return uri;
-    }
-
-    private String getImageVersionKey(final String presetId) {
-        return presetId + CameraImageS3Writer.IMAGE_VERSION_KEY_SUFFIX;
-    }
-
-    public String getPresetIdFromImageName(final String imageName) {
-        return imageName.substring(0,8);
+    @Bean
+    public WeathercamS3Properties weathercamConfig(@Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,
+                                                   @Value("${dt.amazon.s3.weathercam.region}") final String s3WeathercamRegion,
+                                                   @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours,
+                                                   @Value("${weathercam.baseUrl}") final String weathercamBaseUrl) {
+        return new WeathercamS3Properties(s3WeathercamBucketName, s3WeathercamRegion, historyMaxAgeHours, weathercamBaseUrl);
     }
 }

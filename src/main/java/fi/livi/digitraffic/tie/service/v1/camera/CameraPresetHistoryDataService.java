@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Config;
+import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresenceDto;
@@ -32,7 +32,7 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 public class CameraPresetHistoryDataService {
     private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
     private final CameraPresetHistoryRepository cameraPresetHistoryRepository;
-    private final WeathercamS3Config weathercamS3Config;
+    private final WeathercamS3Properties weathercamS3Properties;
 
     public static final int MAX_IDS_SIZE = 5000;
 
@@ -52,9 +52,9 @@ public class CameraPresetHistoryDataService {
 
     @Autowired
     public CameraPresetHistoryDataService(final CameraPresetHistoryRepository cameraPresetHistoryRepository,
-                                          final WeathercamS3Config weathercamS3Config) {
+                                          final WeathercamS3Properties weathercamS3Properties) {
         this.cameraPresetHistoryRepository = cameraPresetHistoryRepository;
-        this.weathercamS3Config = weathercamS3Config;
+        this.weathercamS3Properties = weathercamS3Properties;
     }
 
     @Transactional(readOnly = true)
@@ -196,7 +196,7 @@ public class CameraPresetHistoryDataService {
             presetId,
             history.stream().map(h ->
                 new PresetHistoryDataDto(toZonedDateTimeAtUtc(h.getLastModified()),
-                                         weathercamS3Config.getPublicUrlForVersion(h.getPresetId(), h.getVersionId()),
+                                         weathercamS3Properties.getPublicUrlForVersion(h.getPresetId(), h.getVersionId()),
                                          h.getSize()))
                 .collect(Collectors.toList()));
     }
@@ -227,11 +227,11 @@ public class CameraPresetHistoryDataService {
     @Transactional(readOnly = true)
     public HistoryStatus resolveHistoryStatusForVersion(final String presetImageName, final String versionId) {
 
-        if (!presetImageName.matches(weathercamS3Config.getS3WeathercamKeyRegexp())) {
+        if (!presetImageName.matches(weathercamS3Properties.getS3WeathercamKeyRegexp())) {
             return HistoryStatus.ILLEGAL_KEY;
         }
         // C1234567.jpg -> C1234567
-        final CameraPresetHistory history = findHistoryVersionInclSecretInternal(weathercamS3Config.getPresetIdFromImageName(presetImageName), versionId);
+        final CameraPresetHistory history = findHistoryVersionInclSecretInternal(weathercamS3Properties.getPresetIdFromImageName(presetImageName), versionId);
         final ZonedDateTime oldestLimit = getOldestTimeLimit();
 
         if (history == null) {
@@ -247,7 +247,7 @@ public class CameraPresetHistoryDataService {
 
 
     private ZonedDateTime getOldestTimeLimit() {
-        return getZonedDateTimeNowAtUtc().minus(weathercamS3Config.getHistoryMaxAgeHours(), ChronoUnit.HOURS);
+        return getZonedDateTimeNowAtUtc().minus(weathercamS3Properties.getHistoryMaxAgeHours(), ChronoUnit.HOURS);
     }
 
 
