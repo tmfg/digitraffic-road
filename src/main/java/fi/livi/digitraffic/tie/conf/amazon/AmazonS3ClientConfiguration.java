@@ -34,9 +34,8 @@ public class AmazonS3ClientConfiguration {
     @Bean
     public WeathercamS3Config weathercamConfig(@Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,
                                                @Value("${dt.amazon.s3.weathercam.region}") final String s3WeathercamRegion,
-                                               @Value("${dt.amazon.s3.weathercam.key.regexp}") final String s3WeathercamKeyRegexp,
                                                @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours,
                                                @Value("${weathercam.baseUrl}") final String weathercamBaseUrl) {
-        return new WeathercamS3Config(s3WeathercamBucketName, s3WeathercamRegion, s3WeathercamKeyRegexp, historyMaxAgeHours, weathercamBaseUrl);
+        return new WeathercamS3Config(s3WeathercamBucketName, s3WeathercamRegion, historyMaxAgeHours, weathercamBaseUrl);
     }
 }

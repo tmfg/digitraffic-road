@@ -8,16 +8,15 @@ public class WeathercamS3Config {
 
     private final String s3WeathercamBucketName;
     private final String s3WeathercamRegion;
-    private final String s3WeathercamKeyRegexp;
+    private final String s3WeathercamKeyRegexp = "^C([0-9]{7})\\.jpg$";
     private final int historyMaxAgeHours;
     private final String weathercamBaseUrl;
 
-    public WeathercamS3Config(final String s3WeathercamBucketName, final String s3WeathercamRegion, final String s3WeathercamKeyRegexp,
+    public WeathercamS3Config(final String s3WeathercamBucketName, final String s3WeathercamRegion,
                               final int historyMaxAgeHours, final String weathercamBaseUrl) {
 
         this.s3WeathercamBucketName = s3WeathercamBucketName;
         this.s3WeathercamRegion = s3WeathercamRegion;
-        this.s3WeathercamKeyRegexp = s3WeathercamKeyRegexp;
         this.historyMaxAgeHours = historyMaxAgeHours;
         this.weathercamBaseUrl = weathercamBaseUrl;
     }
