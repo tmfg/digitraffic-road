@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Config;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
 
@@ -30,10 +31,13 @@ public class WeathercamController {
     private static final String VERSION_ID_PARAM = "versionId";
 
     private CameraPresetHistoryDataService cameraPresetHistoryDataService;
+    private WeathercamS3Config weathercamS3Config;
 
     @Autowired
-    public WeathercamController(final CameraPresetHistoryDataService cameraPresetHistoryDataService) {
+    public WeathercamController(final CameraPresetHistoryDataService cameraPresetHistoryDataService,
+                                final WeathercamS3Config weathercamS3Config) {
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
+        this.weathercamS3Config = weathercamS3Config;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "{imageName}")
@@ -49,7 +53,7 @@ public class WeathercamController {
         }
 
         final ResponseEntity<Void> response = ResponseEntity.status(HttpStatus.FOUND)
-            .location(cameraPresetHistoryDataService.createS3UriForVersion(imageName, versionId))
+            .location(weathercamS3Config.getS3UriForVersion(imageName, versionId))
             .build();
 
         log.info("method=imageVersion response={}", response);

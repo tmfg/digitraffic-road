@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Config;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
@@ -60,6 +61,9 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
     @SpyBean
     private CameraPresetService cameraPresetService;
+
+    @Autowired
+    private WeathercamS3Config weathercamS3Config;
 
     @Autowired
     private CameraPresetHistoryRepository cameraPresetHistoryRepository;
@@ -464,7 +468,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final String image = "C1234567.jpg";
         final String imageVersions = "C1234567-versions.jpg";
         final String version = "ABCDEFG123456";
-        final URI url = cameraPresetHistoryDataService.createS3UriForVersion(image, version);
+        final URI url = weathercamS3Config.getS3UriForVersion(image, version);
         final String expected = "http://" + s3WeathercamBucketName + ".s3-" + s3WeathercamRegion + ".amazonaws.com/" + imageVersions + "?versionId=" + version;
         Assert.assertEquals(expected, url.toString());
     }

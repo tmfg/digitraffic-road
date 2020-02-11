@@ -9,21 +9,20 @@ import java.net.URI;
 import java.time.ZonedDateTime;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Config;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
@@ -38,20 +37,11 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @MockBean
     private CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
-    @Value("${dt.amazon.s3.weathercam.bucketName}")
-    private String s3WeathercamBucketName;
-    @Value("${dt.amazon.s3.weathercam.region}")
-    private String s3WeathercamRegion;
+    @Autowired
+    private WeathercamS3Config weathercamS3Config;
 
     private final String imageName = "C7777701.jpg";
     private final String versionId = "qwerty";
-
-    @Before
-    public void setUp() {
-        final String url = ReflectionTestUtils.invokeMethod(cameraPresetHistoryDataService, "createS3WeathercamBucketUrl",
-                                                            s3WeathercamBucketName, s3WeathercamRegion);
-        ReflectionTestUtils.setField(cameraPresetHistoryDataService, "s3WeathercamBucketUrl", url);
-    }
 
     @Test
     public void getPublicImage() throws Exception {
@@ -61,9 +51,6 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
 
         Mockito.when(cameraPresetHistoryDataService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.PUBLIC);
-
-        Mockito.when(cameraPresetHistoryDataService.createS3UriForVersion(eq(imageName), eq(versionId)))
-            .thenCallRealMethod();
 
         MockHttpServletResponse response = requestImage(imageName, versionId);
         assertResponse(response, HttpStatus.FOUND, getVersionedRedirectUrl(imageName, versionId));
@@ -115,7 +102,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     }
 
     private String getVersionedRedirectUrl(final String imageName, final String versionId) {
-        return String.format("http://%s.s3-%s.amazonaws.com/%s-versions.jpg?versionId=%s", s3WeathercamBucketName, s3WeathercamRegion, getPresetId(imageName), versionId);
+        return weathercamS3Config.getS3UriForVersion(imageName, versionId).toString();
     }
 
     private CameraPresetHistory createHistory(final String imageName, final String versionId, final boolean publishable, final ZonedDateTime lastModified) {
