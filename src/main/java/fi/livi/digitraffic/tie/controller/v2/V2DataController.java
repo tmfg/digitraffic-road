@@ -143,7 +143,7 @@ public class V2DataController {
     public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
 
         @ApiParam(value = "Camera or preset id")
-        @RequestParam(required = false)
+        @RequestParam(value = "id", required = false)
         final String cameraOrPresetId,
 
         @ApiParam("Return history presence from given date time onwards. If the start time is not given then value of now - 24h is used.")
