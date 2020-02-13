@@ -4,11 +4,18 @@ import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 public class SensorValueHistory {
     @Id
+    @GenericGenerator(name = "SEQ_SENSOR_VALUE_HISTORY", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_SENSOR_VALUE_HISTORY"))
+    @GeneratedValue(generator = "SEQ_SENSOR_VALUE_HISTORY")
     private Long id;
 
     @Column(name = "road_station_id")

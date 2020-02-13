@@ -4,7 +4,6 @@ CREATE TABLE SENSOR_VALUE_HISTORY (
     id NUMERIC(12,0) PRIMARY KEY,
     road_station_id NUMERIC(10,0) NOT NULL,
     road_station_sensor_id NUMERIC(10,0) NOT NULL,
---    sensor_type NUMERIC(1,0) REFERENCES ROAD_STATION_TYPE (type),
     value NUMERIC(10,2) NOT NULL,
     measured TIMESTAMP(0) WITH TIME ZONE NOT NULL,
     time_window_start TIMESTAMP(0) WITH TIME ZONE,

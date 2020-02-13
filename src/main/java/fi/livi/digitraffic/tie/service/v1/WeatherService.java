@@ -83,21 +83,21 @@ public class WeatherService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueHistoryDto> findWeatherHistoryData(final long id, final ZonedDateTime from, final ZonedDateTime to) {
+    public List<SensorValueHistoryDto> findWeatherHistoryData(final long stationId, final ZonedDateTime from, final ZonedDateTime to) {
         if (to == null) {
-            return sensorValueHistoryRepository.streamByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(id, getSinceTime(from));
+            return sensorValueHistoryRepository.findByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(stationId, getSinceTime(from));
         }
 
         if (from.isAfter(to)) {
             throw new IllegalArgumentException("From > to");
         }
 
-        return sensorValueHistoryRepository.streamByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(id, getSinceTime(from), to);
+        return sensorValueHistoryRepository.findByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(stationId, getSinceTime(from), to);
     }
 
     @Transactional(readOnly = true)
     public List<SensorValueHistoryDto> findWeatherHistoryData(final long stationId, final long sensorId, final ZonedDateTime since) {
-        return sensorValueHistoryRepository.streamByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(stationId, sensorId, getSinceTime(since));
+        return sensorValueHistoryRepository.findByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(stationId, sensorId, getSinceTime(since));
     }
 
     private ZonedDateTime getSinceTime(final ZonedDateTime since) {

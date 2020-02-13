@@ -128,16 +128,18 @@ public class V2DataController {
     @ApiOperation("List the history of sensor values from the weather road station")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
-                   @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
+                   @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter(s)")})
     public List<SensorValueHistoryDto> weatherDataHistory(
         @ApiParam(value = "Weather station id", required = true)
         @PathVariable
         final long stationId,
-        @ApiParam("Fetch history after given time in ISO date time format {yyyy-MM-dd'T'HH:mm:ss.SSSZ}")
-        @RequestParam(value="from", required = true)
+
+        @ApiParam("Fetch history after given date time")
+        @RequestParam(value="from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from,
-        @ApiParam("Limit history to given time in ISO date time format {yyyy-MM-dd'T'HH:mm:ss.SSSZ}")
+
+        @ApiParam("Limit history to given date time")
         @RequestParam(value="to", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to) {
@@ -147,13 +149,16 @@ public class V2DataController {
 
     @ApiOperation("List the history of sensor value from the weather road station")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"))
+    @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
+                  @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
     public List<SensorValueHistoryDto> weatherDataHistory(
         @ApiParam(value = "Weather Station id", required = true)
         @PathVariable final long stationId,
+
         @ApiParam(value = "Sensor id", required = true)
         @PathVariable final long sensorId,
-        @ApiParam("Fetch history after given time in ISO date time format {yyyy-MM-dd'T'HH:mm:ss.SSSZ}")
+
+        @ApiParam("Fetch history after given time")
         @RequestParam(value="from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from) {

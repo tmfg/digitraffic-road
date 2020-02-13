@@ -37,7 +37,6 @@ public class SensorValueHistoryDao {
             .addValue("measured", p.getMeasured(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber())
             .addValue("road_station_id", p.getRoadStationId(), JDBCType.NUMERIC.getVendorTypeNumber())
             .addValue("road_station_sensor_id", p.getSensorLotjuId(), JDBCType.NUMERIC.getVendorTypeNumber())
-            //.addValue("sensorType", p.getStationType(), JDBCType.VARCHAR.getVendorTypeNumber())
             .addValue("timeWindowStart", p.getTimeWindowStart(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber())
             .addValue("timeWindowEnd", p.getTimeWindowEnd(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber()))
             .toArray(MapSqlParameterSource[]::new);

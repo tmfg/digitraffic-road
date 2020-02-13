@@ -221,20 +221,24 @@ public class SensorDataUpdateService {
     private void updateSensorHistoryData(final List<SensorValueUpdateParameterDto> params, final RoadStationType roadStationType) {
         if (CollectionUtils.isEmpty(params)) {
             log.info("method=updateSensorHistoryData for {} stations insertCount=0 tookMs=0", roadStationDao);
+
+            return;
         }
 
         final StopWatch stopWatch = StopWatch.createStarted();
 
         final int[] inserted = sensorValueHistoryDao.insertSensorData(params);
 
-        log.info("method=updateSensorData for {} stations insertCount={} tookMs={}", roadStationType, countSum(inserted), stopWatch.getTime());
+        log.info("method=updateSensorHistoryData for {} stations insertCount={} tookMs={}", roadStationType, inserted.length, stopWatch.getTime());
     }
 
     @Transactional
     public void cleanWeatherHistoryData(final ZonedDateTime before) {
-        log.info("Clean historydata older than {}", before);
+        final StopWatch stopWatch = StopWatch.createStarted();
 
-        sensorValueHistoryDao.cleanSensorData(before);
+        final int returnValue = sensorValueHistoryDao.cleanSensorData(before);
+
+        log.info("method=cleanWeatherHistoryData older than {} removeCount={} tookMs={}", before, returnValue, stopWatch.getTime());
     }
 
     private static List<LotjuAnturiWrapper<Lam.Anturi>> wrapLamData(final List<Lam> lams) {
