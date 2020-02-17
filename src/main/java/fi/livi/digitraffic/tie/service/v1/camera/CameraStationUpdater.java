@@ -134,7 +134,6 @@ public class CameraStationUpdater {
 
     private boolean updateCameraStation(final long cameraLotjuId) {
 
-
         // If camera station doesn't exist, we have to create it and the presets.
         if (roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, cameraLotjuId) == null) {
             final Pair<Integer, Integer> updated = updateCameraStationAndPresets(cameraLotjuId);

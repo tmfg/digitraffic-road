@@ -26,11 +26,11 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
-import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
-import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
+import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
+import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -45,13 +45,13 @@ import io.swagger.annotations.ApiResponses;
 public class V2DataController {
     private final ForecastSectionDataService forecastSectionDataService;
     private final V2VariableSignService v2VariableSignService;
-    private final CameraPresetHistoryService cameraPresetHistoryService;
+    private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
     public V2DataController(final ForecastSectionDataService forecastSectionDataService, final V2VariableSignService v2VariableSignService,
-                            final CameraPresetHistoryService cameraPresetHistoryService) {
+                            final CameraPresetHistoryDataService cameraPresetHistoryDataService) {
         this.forecastSectionDataService = forecastSectionDataService;
         this.v2VariableSignService = v2VariableSignService;
-        this.cameraPresetHistoryService = cameraPresetHistoryService;
+        this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
@@ -133,7 +133,7 @@ public class V2DataController {
         @RequestParam(value = "at", required = false)
         final ZonedDateTime at) {
 
-        return cameraPresetHistoryService.findCameraOrPresetPublicHistory(cameraOrPresetIds, at);
+        return cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(cameraOrPresetIds, at);
     }
 
     @ApiOperation(value = "Find weather camera history presences",
@@ -143,21 +143,19 @@ public class V2DataController {
     public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
 
         @ApiParam(value = "Camera or preset id")
-        @RequestParam(required = false)
+        @RequestParam(value = "id", required = false)
         final String cameraOrPresetId,
 
-        @ApiParam("Return history presence from given date time onwards. " +
-                      "If the time is not given then current time is used.")
+        @ApiParam("Return history presence from given date time onwards. If the start time is not given then value of now - 24h is used.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "from", required = false)
         final ZonedDateTime from,
 
-        @ApiParam("Return history presence ending to given date time. " +
-                      "If the end time is not given then the history of last 24h is returned.")
+        @ApiParam("Return history presence ending to given date time. If the end time is not given then now is used.")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam(value = "to", required = false)
         final ZonedDateTime to) {
 
-        return cameraPresetHistoryService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
+        return cameraPresetHistoryDataService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
     }
 }

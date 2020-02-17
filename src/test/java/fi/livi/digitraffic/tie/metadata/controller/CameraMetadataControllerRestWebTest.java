@@ -12,25 +12,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
-import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.service.RoadStationUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.service.RoadStationService;
 
+@Import(RoadStationUpdateService.class)
 public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
-
-    @Autowired
-    private RoadStationService roadStationService;
 
     @Autowired
     private CameraPresetService cameraPresetService;
@@ -38,7 +36,12 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
     @Before
     public void initData() {
         // Obsolete all existing stations
-        roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.CAMERA_STATION, Collections.emptyList());
+        entityManager.createNativeQuery(
+            "UPDATE road_station rs " +
+                     "SET obsolete_date = now() " +
+                     "WHERE rs.obsolete_date is null " +
+                     "  AND rs.road_station_type = '" + RoadStationType.CAMERA_STATION + "'").executeUpdate();
+
         CameraPreset cp = generateDummyPreset();
 
         cameraPresetService.save(cp);
