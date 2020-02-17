@@ -4,7 +4,6 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 
@@ -16,9 +15,6 @@ public class CameraStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
-
-    @Autowired
-    private CameraImageUpdateService cameraImageUpdateService;
 
     @Override
     protected void doExecute(JobExecutionContext context) {

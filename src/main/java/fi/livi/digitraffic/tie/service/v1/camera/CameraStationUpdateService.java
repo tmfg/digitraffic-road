@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
@@ -118,7 +119,12 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         }
 
         final RoadStation rs = roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId());
-        cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
+        // Can happen if camera is new and doesn't have any presets yet
+        if (rs == null) {
+            log.info("No presets for camera {}", ToStringHelper.toString(kamera));
+        } else {
+            cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
+        }
         return Pair.of(updated, inserted);
     }
 
