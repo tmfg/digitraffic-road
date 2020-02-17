@@ -10,6 +10,9 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealiz
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_Y_AROUND_TASK;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_Y_OUTSIDE_TASK;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.SINGLE_REALISATIONS_3_TASKS_SENDING_TIME;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -17,7 +20,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Locale;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -70,8 +72,8 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME,
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", Matchers.hasSize(3)));
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(3)));
     }
 
     @Test
@@ -79,7 +81,10 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
         final ResultActions result = getJson(
             MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME, MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME,
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
-//        Assert.assertEquals(2, result.features.size());
+        result
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(2)));
     }
 
     @Test
@@ -88,8 +93,8 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
             MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME,
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", Matchers.hasSize(5)));
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(5)));
     }
 
     @Test
@@ -98,8 +103,8 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusMillis(1), SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", Matchers.hasSize(0)));
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(0)));
     }
 
     @Test
@@ -108,10 +113,10 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
             RANGE_X_AROUND_TASK.getLeft(), RANGE_Y_AROUND_TASK.getLeft(), RANGE_X_AROUND_TASK.getRight(), RANGE_Y_AROUND_TASK.getRight())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", Matchers.hasSize(1)))
-            .andExpect(jsonPath("features[0].properties.tasks[*].id", Matchers.containsInAnyOrder(12911, 1368)))
-            .andExpect(jsonPath("features[0].properties.tasks", Matchers.hasSize(2)));
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(1)))
+            .andExpect(jsonPath("features[0].properties.tasks[*].id", containsInAnyOrder(12911, 1368)))
+            .andExpect(jsonPath("features[0].properties.tasks", hasSize(2)));
     }
 
     @Test
@@ -120,7 +125,7 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
             RANGE_X_OUTSIDE_TASK.getLeft(), RANGE_Y_OUTSIDE_TASK.getLeft(), RANGE_X_OUTSIDE_TASK.getRight(), RANGE_Y_OUTSIDE_TASK.getRight())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", Matchers.hasSize(0)));
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(0)));
     }
 }

@@ -10,6 +10,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
@@ -153,12 +155,12 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
     public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(
 
-            @ApiParam(value = "Return realization data received after given time in ISO date time format. Default is -1h from now.")
+            @ApiParam(value = "Return realization data received after given time in ISO date time format. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime from,
 
-            @ApiParam(value = "Return realization data received before given time in ISO date time format. Default is now.")
+            @ApiParam(value = "Return realization data received before given time in ISO date time format. Default is now.", defaultValue = "2020-01-01T13:00Z")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime to,
@@ -169,19 +171,19 @@ public class BetaController {
             @DecimalMax("32.0")
             final double xMin,
 
-            @ApiParam(allowableValues = "range[59, 72]", value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+            @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
             @RequestParam(defaultValue = "59.0")
             @DecimalMin("59.0")
             @DecimalMax("72.0")
             final double yMin,
 
-            @ApiParam(allowableValues = "range[19.0, 32.0]", value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+            @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
             @RequestParam(defaultValue = "32")
             @DecimalMin("19.0")
             @DecimalMax("32.0")
             final double xMax,
 
-            @ApiParam(allowableValues = "range[59, 72]", value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+            @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
             @RequestParam(defaultValue = "72.0")
             @DecimalMin("59.0")
             @DecimalMax("72.0")
@@ -191,6 +193,18 @@ public class BetaController {
                                                               // Just to be sure all events near now in future will be fetched
         final Instant toParam = to != null ? to.toInstant() : Instant.now().plus(1, HOURS);
 
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("Time from must be before to");
+        } else if (from.plusHours(24).isBefore(to)) {
+            throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
+        }
         return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax);
+    }
+
+    @ApiOperation(value = "Road maintenance realizations task")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations tasks"))
+    public List<MaintenanceRealizationTask> findMaintenanceRealizationsTasks() {
+        return maintenanceRealizationDataService.findAllRealizationsTasks();
     }
 }

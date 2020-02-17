@@ -222,8 +222,6 @@ public class V2MaintenanceRealizationServiceTestHelper {
         Assert.assertEquals(ERROR, all.get(0).getStatus());
     }
 
-
-
     public void checkCoordinateCount(final MaintenanceRealization realization, final int count) {
         Assert.assertEquals(count, realization.getLineString().getCoordinates().length);
         Assert.assertEquals(count, realization.getRealizationPoints().size());

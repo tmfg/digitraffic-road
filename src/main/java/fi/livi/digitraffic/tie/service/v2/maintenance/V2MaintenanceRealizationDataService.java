@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,8 +49,6 @@ public class V2MaintenanceRealizationDataService {
     private final V2MaintenanceRealizationPointRepository v2RealizationPointRepository;
     private final DataStatusService dataStatusService;
 
-    private Map<Long, MaintenanceTask> tasksMap;
-
     @Autowired
     public V2MaintenanceRealizationDataService(final V2MaintenanceRealizationRepository v2RealizationRepository,
                                                final V2MaintenanceRealizationDataRepository v2RealizationDataRepository,
@@ -78,6 +75,11 @@ public class V2MaintenanceRealizationDataService {
         final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
         final MaintenanceRealizationFeatureCollection fc = new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
         return fc;
+    }
+
+    @Transactional
+    public List<MaintenanceRealizationTask> findAllRealizationsTasks() {
+        return v2MaintenanceTaskRepository.findAllByOrderById();
     }
 
     private List<MaintenanceRealizationFeature> convertToFeatures(final List<MaintenanceRealization> all) {

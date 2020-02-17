@@ -35,24 +35,6 @@ class V2MaintenanceRealizationDataHolder {
         this.sendingTime = sendingTime;
     }
 
-//    public void resetWithRealizationData(final MaintenanceRealizationData realizationData, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime) {
-//        reset();
-//        this.realizationData = realizationData;
-//        this.sendingSystem = sendingSystem;
-//        this.messageId = messageId;
-//        this.sendingTime = sendingTime;
-//    }
-
-//    private void reset() {
-//        coordinates = new ArrayList<>();
-//        coordinateTimes = new ArrayList<>();
-//        tasks = new HashSet<>();
-//        realizationData = null;
-//        sendingSystem = null;
-//        messageId = null;
-//        sendingTime = null;
-//    }
-
     public void resetCoordinatesAndTasks() {
         coordinates = new ArrayList<>();
         coordinateTimes = new ArrayList<>();
