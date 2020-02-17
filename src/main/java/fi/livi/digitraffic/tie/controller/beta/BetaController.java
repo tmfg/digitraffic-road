@@ -17,7 +17,6 @@ import javax.validation.constraints.DecimalMin;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,10 +31,7 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
-import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
 import io.swagger.annotations.Api;
@@ -54,24 +50,18 @@ public class BetaController {
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String MAINTENANCE_REALIZATIONS_PATH = "/maintenance/realizations";
 
-    private final V2VariableSignService trafficSignsService;
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
-    private final Datex2DataService datex2DataService;
     private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
-    private final CameraPresetHistoryService cameraPresetHistoryService;
     private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
-    public BetaController(final V2VariableSignService trafficSignsService, final TmsStationDatex2Service tmsStationDatex2Service,
-                          final TmsDataDatex2Service tmsDataDatex2Service, final CameraPresetHistoryService cameraPresetHistoryService,
-                          final Datex2DataService datex2DataService, final V2MaintenanceRealizationDataService maintenanceRealizationDataService,
-                          final V2Datex2DataService v2Datex2DataService) {
-        this.trafficSignsService = trafficSignsService;
+    public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
+                          final TmsDataDatex2Service tmsDataDatex2Service,
+                          final V2Datex2DataService v2Datex2DataService,
+                          final V2MaintenanceRealizationDataService maintenanceRealizationDataService) {
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
-        this.cameraPresetHistoryService = cameraPresetHistoryService;
-        this.datex2DataService = datex2DataService;
         this.maintenanceRealizationDataService = maintenanceRealizationDataService;
         this.v2Datex2DataService = v2Datex2DataService;
 
