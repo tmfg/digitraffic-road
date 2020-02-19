@@ -1,4 +1,4 @@
-create table navaid_fault (
+create table aton_fault (
 	id bigint primary key,
 	entry_timestamp timestamp(0) with time zone not null,
 	fixed_timestamp timestamp(0) with time zone,
@@ -6,11 +6,11 @@ create table navaid_fault (
 	state text not null,
 	type text not null, 
 	fixed boolean not null,
-	navaid_id int not null,
-	navaid_name_fi text not null,
-	navaid_name_se text not null,
-	navaid_type_fi text not null,
-	navaid_type_se text not null,
+	aton_id int not null,
+	aton_name_fi text not null,
+	aton_name_se text not null,
+	aton_type_fi text not null,
+	aton_type_se text not null,
 	fairway_number int not null,
 	fairway_name_fi text not null,
 	fairway_name_se text not null,
