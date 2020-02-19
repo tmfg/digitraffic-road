@@ -115,7 +115,7 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(1)))
-            .andExpect(jsonPath("features[0].properties.tasks[*].id", containsInAnyOrder(12911, 1368)))
+            .andExpect(jsonPath("features[0].properties.tasks[*]", containsInAnyOrder(12911, 1368)))
             .andExpect(jsonPath("features[0].properties.tasks", hasSize(2)));
     }
 

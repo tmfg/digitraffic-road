@@ -30,6 +30,8 @@ import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
@@ -52,6 +54,9 @@ public class BetaController {
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String MAINTENANCE_REALIZATIONS_PATH = "/maintenance/realizations";
+    public static final String MAINTENANCE_REALIZATIONS_TASKS_PATH = "/tasks";
+    public static final String MAINTENANCE_REALIZATIONS_OPERATIONS_PATH = "/operations";
+    public static final String MAINTENANCE_REALIZATIONS_CATEGORIES_PATH = "/categories";
 
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
@@ -201,10 +206,24 @@ public class BetaController {
         return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax);
     }
 
-    @ApiOperation(value = "Road maintenance realizations task")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Road maintenance realizations tasks")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_TASKS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations tasks"))
     public List<MaintenanceRealizationTask> findMaintenanceRealizationsTasks() {
         return maintenanceRealizationDataService.findAllRealizationsTasks();
+    }
+
+    @ApiOperation(value = "Road maintenance realizations task operations")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_OPERATIONS_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations tasks"))
+    public List<MaintenanceRealizationTaskOperation> findMaintenanceRealizationsTaskOperations() {
+        return maintenanceRealizationDataService.findAllRealizationsTaskOperations();
+    }
+
+    @ApiOperation(value = "Road maintenance realizations task categories")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_CATEGORIES_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations tasks"))
+    public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
+        return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
     }
 }

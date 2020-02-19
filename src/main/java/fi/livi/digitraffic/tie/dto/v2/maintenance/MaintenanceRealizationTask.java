@@ -9,19 +9,28 @@ public class MaintenanceRealizationTask {
     @ApiModelProperty(value = "Id of the task", required = true)
     public final long id;
 
-    @ApiModelProperty(value = "Task", required = true)
-    public final String task;
+    @ApiModelProperty(value = "Task in Finnish", required = true)
+    public final String fi;
 
-    @ApiModelProperty(value = "Operation", required = true)
-    public final String operation;
+    @ApiModelProperty(value = "Task in Swedish")
+    public final String sv;
 
-    @ApiModelProperty(value = "Operation specifier", required = true)
-    public final String operationSpecifier;
+    @ApiModelProperty(value = "Task in English")
+    public final String en;
 
-    public MaintenanceRealizationTask(final long id, final String task, final String operation, final String operationSpecifier) {
+    @ApiModelProperty(value = "Operation id", required = true)
+    public final MaintenanceRealizationTaskOperation operation;
+
+    @ApiModelProperty(value = "Category id", required = true)
+    public final MaintenanceRealizationTaskCategory categoryId;
+
+    public MaintenanceRealizationTask(final long id, final String fi, final String sv, final String en,
+                                      final MaintenanceRealizationTaskOperation operation, final MaintenanceRealizationTaskCategory categoryId) {
         this.id = id;
-        this.task = task;
+        this.fi = fi;
+        this.sv = sv;
+        this.en = en;
         this.operation = operation;
-        this.operationSpecifier = operationSpecifier;
+        this.categoryId = categoryId;
     }
 }

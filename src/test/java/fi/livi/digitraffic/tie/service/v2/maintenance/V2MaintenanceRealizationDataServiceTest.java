@@ -85,7 +85,7 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
             RANGE_X_AROUND_TASK.getLeft(), RANGE_Y_AROUND_TASK.getLeft(), RANGE_X_AROUND_TASK.getRight(), RANGE_Y_AROUND_TASK.getRight());
         Assert.assertEquals(1, result.features.size());
-        final Set<Long> taskIds = result.features.get(0).getProperties().tasks.stream().map(t -> t.id).collect(Collectors.toSet());
+        final Set<Long> taskIds = result.features.get(0).getProperties().tasks.stream().collect(Collectors.toSet());
         Assert.assertEquals(TASK_IDS_INSIDE_BOX, taskIds);
     }
 

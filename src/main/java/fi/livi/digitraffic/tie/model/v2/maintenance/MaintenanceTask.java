@@ -4,7 +4,10 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
@@ -21,13 +24,21 @@ public class MaintenanceTask {
     private Long id;
 
     @Column
-    private String task;
+    private String fi;
 
     @Column
-    private String operation;
+    private String sv;
 
     @Column
-    private String operationSpecifier;
+    private String en;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="OPERATION_ID", referencedColumnName = "ID", nullable = false, insertable = false, updatable = false)
+    private MaintenanceTaskOperation operation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="CATEGORY_ID", referencedColumnName = "ID", nullable = false, insertable = false, updatable = false)
+    private MaintenanceTaskCategory category;
 
     public MaintenanceTask() {
         // For Hibernate
@@ -37,16 +48,24 @@ public class MaintenanceTask {
         return id;
     }
 
-    public String getOperation() {
+    public String getFi() {
+        return fi;
+    }
+
+    public String getSv() {
+        return sv;
+    }
+
+    public String getEn() {
+        return en;
+    }
+
+    public MaintenanceTaskOperation getOperation() {
         return operation;
     }
 
-    public String getOperationSpecifier() {
-        return operationSpecifier;
-    }
-
-    public String getTask() {
-        return task;
+    public MaintenanceTaskCategory getCategory() {
+        return category;
     }
 
     @Override
@@ -62,11 +81,8 @@ public class MaintenanceTask {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        MaintenanceTask that = (MaintenanceTask) o;
-        return id.equals(that.id) &&
-            task.equals(that.task) &&
-            operation.equals(that.operation) &&
-            operationSpecifier.equals(that.operationSpecifier);
+        final MaintenanceTask that = (MaintenanceTask) o;
+        return id.equals(that.id);
     }
 
     @Override

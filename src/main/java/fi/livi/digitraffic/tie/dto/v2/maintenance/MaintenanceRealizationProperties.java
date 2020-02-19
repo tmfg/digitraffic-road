@@ -15,12 +15,12 @@ public class MaintenanceRealizationProperties {
     public ZonedDateTime sendingTime;
 
     @ApiModelProperty(value = "Tasks done during maintenance work", required = true)
-    public final Set<MaintenanceRealizationTask> tasks;
+    public final Set<Long> tasks;
 
     @ApiModelProperty(value = "Coordinates details", required = true)
     public final List<MaintenanceRealizationCoordinateDetails> coordinateDetails;
 
-    public MaintenanceRealizationProperties(final ZonedDateTime sendingTime, final Set<MaintenanceRealizationTask> tasks, final List<MaintenanceRealizationCoordinateDetails> coordinateDetails) {
+    public MaintenanceRealizationProperties(final ZonedDateTime sendingTime, final Set<Long> tasks, final List<MaintenanceRealizationCoordinateDetails> coordinateDetails) {
         this.sendingTime = sendingTime;
         this.tasks = tasks;
         this.coordinateDetails = coordinateDetails;

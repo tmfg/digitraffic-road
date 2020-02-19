@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,6 +29,8 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationProperties;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
@@ -35,6 +38,8 @@ import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationPoint;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTaskCategory;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTaskOperation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
@@ -79,16 +84,33 @@ public class V2MaintenanceRealizationDataService {
 
     @Transactional
     public List<MaintenanceRealizationTask> findAllRealizationsTasks() {
-        return v2MaintenanceTaskRepository.findAllByOrderById();
+        return v2MaintenanceTaskRepository.findAllByOrderById().stream()
+            .map(t -> createMaintenanceRealizationTask(t)).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<MaintenanceRealizationTaskOperation> findAllRealizationsTaskOperations() {
+        return v2MaintenanceTaskRepository.findAllOperationsOrderById();
+//        return v2MaintenanceTaskRepository.findAllOperationsOrderById().stream()
+//            .map(o -> createMaintenanceRealizationOperation(o)).collect(Collectors.toList());
+    }
+
+//    private MaintenanceRealizationTaskOperation createMaintenanceRealizationOperation(final MaintenanceRealizationTaskOperation o) {
+//        return new MaintenanceRealizationTaskOperation(o.id, o.);
+//    }
+
+    @Transactional
+    public List<MaintenanceRealizationTaskCategory> findAllRealizationsTaskCategories() {
+        return v2MaintenanceTaskRepository.findAllCategoriesOrderById();
     }
 
     private List<MaintenanceRealizationFeature> convertToFeatures(final List<MaintenanceRealization> all) {
         return all.stream().map(r -> {
 
-                final Set<MaintenanceRealizationTask> tasks = convertToMaintenanceRealizationTasks(r.getTasks());
+                final Set<Long> taskIds = convertToMaintenanceRealizationTaskIds(r.getTasks());
                 final List<List<Double>> coordinates = convertToCoordinates(r.getLineString());
                 final List<MaintenanceRealizationCoordinateDetails> coordinateDetails = convertToMaintenanceCoordinateDetails(r.getRealizationPoints());
-                final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(toZonedDateTimeAtUtc(r.getSendingTime()), tasks, coordinateDetails);
+                final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(toZonedDateTimeAtUtc(r.getSendingTime()), taskIds, coordinateDetails);
                 return new MaintenanceRealizationFeature(new LineString(coordinates), properties);
 
         }).collect(Collectors.toList());
@@ -104,9 +126,17 @@ public class V2MaintenanceRealizationDataService {
         return points.stream().map(p -> new MaintenanceRealizationCoordinateDetails(toZonedDateTimeAtUtc(p.getTime()))).collect(Collectors.toList());
     }
 
-    private Set<MaintenanceRealizationTask> convertToMaintenanceRealizationTasks(final Set<MaintenanceTask> tasks) {
+    private MaintenanceRealizationTask createMaintenanceRealizationTask(MaintenanceTask t) {
+        final MaintenanceTaskCategory c = t.getCategory();
+        final MaintenanceTaskOperation o = t.getOperation();
+        return new MaintenanceRealizationTask(t.getId(), t.getFi(), t.getSv(), t.getEn(),
+            new MaintenanceRealizationTaskOperation(o.getId(), o.getFi(), o.getSv(), o.getEn()),
+            new MaintenanceRealizationTaskCategory(c.getId(), c.getFi(), c.getSv(), c.getEn()));
+    }
+
+    private Set<Long> convertToMaintenanceRealizationTaskIds(final Set<MaintenanceTask> tasks) {
         return tasks.stream()
-            .map(t -> new MaintenanceRealizationTask(t.getId(), t.getTask(), t.getOperation(), t.getOperationSpecifier()))
+            .map(MaintenanceTask::getId)
             .collect(Collectors.toSet());
     }
 }
