@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
@@ -64,7 +63,6 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
 
-    @Rollback(false)
     @Test
     public void handleUnhandledWorkMachineRealizations() throws IOException {
         testHelper.initializeMultipleRealisations2Tasks();

@@ -215,14 +215,14 @@ public class BetaController {
 
     @ApiOperation(value = "Road maintenance realizations task operations")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_OPERATIONS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations tasks"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task operations"))
     public List<MaintenanceRealizationTaskOperation> findMaintenanceRealizationsTaskOperations() {
         return maintenanceRealizationDataService.findAllRealizationsTaskOperations();
     }
 
     @ApiOperation(value = "Road maintenance realizations task categories")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_CATEGORIES_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations tasks"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task categories"))
     public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
         return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
     }
