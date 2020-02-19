@@ -78,8 +78,7 @@ public class V2MaintenanceRealizationDataService {
         final ZonedDateTime lastChecked = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED));
         final List<MaintenanceRealization> found = v2RealizationRepository.findByAgeAndBoundingBox(from, to, xMin, yMin, xMax, yMax);
         final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
-        final MaintenanceRealizationFeatureCollection fc = new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
-        return fc;
+        return new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
     }
 
     @Transactional
@@ -91,13 +90,7 @@ public class V2MaintenanceRealizationDataService {
     @Transactional
     public List<MaintenanceRealizationTaskOperation> findAllRealizationsTaskOperations() {
         return v2MaintenanceTaskRepository.findAllOperationsOrderById();
-//        return v2MaintenanceTaskRepository.findAllOperationsOrderById().stream()
-//            .map(o -> createMaintenanceRealizationOperation(o)).collect(Collectors.toList());
     }
-
-//    private MaintenanceRealizationTaskOperation createMaintenanceRealizationOperation(final MaintenanceRealizationTaskOperation o) {
-//        return new MaintenanceRealizationTaskOperation(o.id, o.);
-//    }
 
     @Transactional
     public List<MaintenanceRealizationTaskCategory> findAllRealizationsTaskCategories() {
