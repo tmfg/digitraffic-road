@@ -18,8 +18,7 @@ import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.RoadStationUpdateService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataService;
 
@@ -29,19 +28,16 @@ public class WeatherStationUpdater  {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherStationUpdater.class);
 
-    private final RoadStationService roadStationService;
+    private final RoadStationUpdateService roadStationUpdateService;
     private final WeatherStationService weatherStationService;
-    private final DataStatusService dataStatusService;
     private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
 
     @Autowired
-    public WeatherStationUpdater(final RoadStationService roadStationService,
+    public WeatherStationUpdater(final RoadStationUpdateService roadStationUpdateService,
                                  final WeatherStationService weatherStationService,
-                                 final DataStatusService dataStatusService,
                                  final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
-        this.roadStationService = roadStationService;
+        this.roadStationUpdateService = roadStationUpdateService;
         this.weatherStationService = weatherStationService;
-        this.dataStatusService = dataStatusService;
         this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
     }
 
@@ -61,7 +57,7 @@ public class WeatherStationUpdater  {
         int updated = 0;
         for (TiesaaAsemaVO from : allTiesaaAsemas) {
             try {
-                if (roadStationService.updateRoadStation(from)) {
+                if (roadStationUpdateService.updateRoadStation(from)) {
                     updated++;
                 }
             } catch (Exception e) {
@@ -84,7 +80,7 @@ public class WeatherStationUpdater  {
         invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
 
         List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaAsemaVO::getId).collect(Collectors.toList());
-        int obsoleted = roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.WEATHER_STATION, notToObsoleteLotjuIds);
+        int obsoleted = roadStationUpdateService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.WEATHER_STATION, notToObsoleteLotjuIds);
 
         for (TiesaaAsemaVO tsa : toUpdate) {
             UpdateStatus result = weatherStationService.updateOrInsertWeatherStation(tsa);

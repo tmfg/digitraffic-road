@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTa
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.VALIAIKAISESTI_SALAINEN;
 import static java.lang.Thread.sleep;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotE
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
@@ -45,6 +47,9 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
 
     @MockBean
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
+
+    @MockBean
+    private CameraPresetHistoryUpdateService cameraPresetHistoryUpdateService;
 
     @After
     public void restoreData() {
@@ -188,6 +193,8 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
         // Update cameras from lotju
         runUpdateCameraMetadataJob();
 
+        verify(cameraPresetHistoryUpdateService, times(times*kameras.size())).updatePresetHistoryPublicityForCamera(any(RoadStation.class));
+
         // Verify lotju calls
         verify(lotjuCameraStationMetadataClient, times(times)).getKameras();
         kameras.keySet().forEach(kamera -> {
@@ -210,8 +217,4 @@ public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWitho
         TestTransaction.end();
         TestTransaction.start();
     }
-
-
-
-
 }

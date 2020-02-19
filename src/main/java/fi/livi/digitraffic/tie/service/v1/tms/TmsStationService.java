@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.dao.v1.RoadAddressRepository;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -36,7 +35,6 @@ import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.RoadDistrictService;
-import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 
 @Service
@@ -45,24 +43,18 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     private final TmsStationRepository tmsStationRepository;
     private final DataStatusService dataStatusService;
-    private final RoadStationService roadStationService;
     private final RoadDistrictService roadDistrictService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
-    private final RoadAddressRepository roadAddressRepository;
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
                              final DataStatusService dataStatusService,
-                             final RoadStationService roadStationService,
                              final RoadDistrictService roadDistrictService,
-                             final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter,
-                             final RoadAddressRepository roadAddressRepository) {
+                             final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter) {
         this.tmsStationRepository = tmsStationRepository;
         this.dataStatusService = dataStatusService;
-        this.roadStationService = roadStationService;
         this.roadDistrictService = roadDistrictService;
         this.tmsStationMetadata2FeatureConverter = tmsStationMetadata2FeatureConverter;
-        this.roadAddressRepository = roadAddressRepository;
     }
 
     @Transactional(readOnly = true)

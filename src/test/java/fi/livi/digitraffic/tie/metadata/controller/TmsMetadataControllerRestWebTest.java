@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,13 +30,9 @@ import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
-import fi.livi.digitraffic.tie.service.RoadStationService;
 
 @Import({ RoadDistrictService.class})
 public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
-
-    @Autowired
-    private RoadStationService roadStationService;
 
     @Autowired
     private TmsStationRepository tmsStationRepository;
@@ -50,7 +45,11 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Before
     public void initData() {
-        roadStationService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.TMS_STATION, Collections.emptyList());
+        entityManager.createNativeQuery(
+            "UPDATE road_station rs " +
+                "SET obsolete_date = now() " +
+                "WHERE rs.obsolete_date is null " +
+                "  AND rs.road_station_type = '" + RoadStationType.TMS_STATION + "'").executeUpdate();
         TmsStation ts = generateDummyTmsStation();
         tmsStationRepository.save(ts);
 
