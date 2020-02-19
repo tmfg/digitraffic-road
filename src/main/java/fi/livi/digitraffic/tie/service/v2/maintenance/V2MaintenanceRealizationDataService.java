@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationPointRepository;
@@ -30,7 +28,6 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationProperti
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
-import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -47,8 +44,6 @@ public class V2MaintenanceRealizationDataService {
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceRealizationDataService.class);
     private final V2MaintenanceRealizationRepository v2RealizationRepository;
     private final V2MaintenanceRealizationDataRepository v2RealizationDataRepository;
-    private final ObjectWriter jsonWriter;
-    private final ObjectReader jsonReader;
     private final V2MaintenanceTaskRepository v2MaintenanceTaskRepository;
     private final V2MaintenanceRealizationPointRepository v2RealizationPointRepository;
     private final DataStatusService dataStatusService;
@@ -62,8 +57,6 @@ public class V2MaintenanceRealizationDataService {
                                                final DataStatusService dataStatusService) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2RealizationDataRepository = v2RealizationDataRepository;
-        this.jsonWriter = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
-        this.jsonReader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         this.v2MaintenanceTaskRepository = v2MaintenanceTaskRepository;
         this.v2RealizationPointRepository = v2RealizationPointRepository;
         this.dataStatusService = dataStatusService;
