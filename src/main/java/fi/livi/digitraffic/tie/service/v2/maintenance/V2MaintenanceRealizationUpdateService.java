@@ -72,11 +72,6 @@ public class V2MaintenanceRealizationUpdateService {
         tasksMap = v2MaintenanceTaskRepository.findAll().stream().collect(Collectors.toMap(MaintenanceTask::getId, Function.identity()));
     }
 
-    @PostConstruct
-    public void init() {
-
-    }
-
     @Transactional
     public void saveNewWorkMachineRealization(final Long jobId, final ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus) throws JsonProcessingException {
         final String json = jsonWriter.writeValueAsString(reittitoteumanKirjaus);
