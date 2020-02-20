@@ -194,13 +194,15 @@ public class BetaController {
             @DecimalMax("72.0")
             final double yMax) {
 
-        final Instant fromParam = from != null ? from.toInstant() : Instant.now().minus(1, HOURS);
+        // Make sure newest is also fetched
+        final Instant now = Instant.now().plusSeconds(1);
+        final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
                                                               // Just to be sure all events near now in future will be fetched
-        final Instant toParam = to != null ? to.toInstant() : Instant.now().plus(1, HOURS);
+        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
 
-        if (from.isAfter(to)) {
+        if (fromParam.isAfter(toParam)) {
             throw new IllegalArgumentException("Time from must be before to");
-        } else if (from.plusHours(24).isBefore(to)) {
+        } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
             throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
         }
         return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax);
