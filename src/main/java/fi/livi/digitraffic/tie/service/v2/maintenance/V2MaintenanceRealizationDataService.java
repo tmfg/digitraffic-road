@@ -15,10 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationPointRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTaskRepository;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationCoordinateDetails;
@@ -43,22 +39,15 @@ public class V2MaintenanceRealizationDataService {
 
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceRealizationDataService.class);
     private final V2MaintenanceRealizationRepository v2RealizationRepository;
-    private final V2MaintenanceRealizationDataRepository v2RealizationDataRepository;
     private final V2MaintenanceTaskRepository v2MaintenanceTaskRepository;
-    private final V2MaintenanceRealizationPointRepository v2RealizationPointRepository;
     private final DataStatusService dataStatusService;
 
     @Autowired
     public V2MaintenanceRealizationDataService(final V2MaintenanceRealizationRepository v2RealizationRepository,
-                                               final V2MaintenanceRealizationDataRepository v2RealizationDataRepository,
-                                               final ObjectMapper objectMapper,
                                                final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
-                                               final V2MaintenanceRealizationPointRepository v2RealizationPointRepository,
                                                final DataStatusService dataStatusService) {
         this.v2RealizationRepository = v2RealizationRepository;
-        this.v2RealizationDataRepository = v2RealizationDataRepository;
         this.v2MaintenanceTaskRepository = v2MaintenanceTaskRepository;
-        this.v2RealizationPointRepository = v2RealizationPointRepository;
         this.dataStatusService = dataStatusService;
     }
 
