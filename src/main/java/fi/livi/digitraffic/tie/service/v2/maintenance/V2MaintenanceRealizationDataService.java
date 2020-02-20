@@ -68,8 +68,9 @@ public class V2MaintenanceRealizationDataService {
                                                                                final double xMax, final double yMax) {
         final ZonedDateTime lastUpdated = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA));
         final ZonedDateTime lastChecked = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED));
-        final List<MaintenanceRealization> found = v2RealizationRepository.findByAgeAndBoundingBox(from, to, xMin, yMin, xMax, yMax);
-        final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
+        final List<Long> foundIds = v2RealizationRepository.findIdsByAgeAndBoundingBox(from, to, xMin, yMin, xMax, yMax);
+        final List<MaintenanceRealization> realizations = v2RealizationRepository.findByIds(foundIds);
+        final List<MaintenanceRealizationFeature> features = convertToFeatures(realizations);
         return new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
     }
 
