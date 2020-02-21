@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.StopWatch;
+import org.locationtech.jts.geom.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationProperti
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
@@ -51,30 +53,34 @@ public class V2MaintenanceRealizationDataService {
         this.dataStatusService = dataStatusService;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(final Instant from, final Instant to,
                                                                                final double xMin, final double yMin,
                                                                                final double xMax, final double yMax) {
-        final ZonedDateTime lastUpdated = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA));
-        final ZonedDateTime lastChecked = DateHelper.toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED));
-        final List<Long> foundIds = v2RealizationRepository.findIdsByAgeAndBoundingBox(from, to, xMin, yMin, xMax, yMax);
-        final List<MaintenanceRealization> realizations = v2RealizationRepository.findByIds(foundIds);
-        final List<MaintenanceRealizationFeature> features = convertToFeatures(realizations);
+        final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA));
+        final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED));
+
+        final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
+
+        final StopWatch start = StopWatch.createStarted();
+        final List<MaintenanceRealization> found = v2RealizationRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area);
+        log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} tookMs={}", xMin, xMax, yMin, yMax, start.getTime());
+        final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
         return new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MaintenanceRealizationTask> findAllRealizationsTasks() {
         return v2MaintenanceTaskRepository.findAllByOrderById().stream()
             .map(t -> createMaintenanceRealizationTask(t)).collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MaintenanceRealizationTaskOperation> findAllRealizationsTaskOperations() {
         return v2MaintenanceTaskRepository.findAllOperationsOrderById();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MaintenanceRealizationTaskCategory> findAllRealizationsTaskCategories() {
         return v2MaintenanceTaskRepository.findAllCategoriesOrderById();
     }

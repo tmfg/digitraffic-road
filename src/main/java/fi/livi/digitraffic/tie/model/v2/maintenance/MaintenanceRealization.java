@@ -79,7 +79,8 @@ public class MaintenanceRealization {
         // For Hibernate
     }
 
-    public MaintenanceRealization(final MaintenanceRealizationData wmrd, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime, LineString lineString, Set<MaintenanceTask> tasks) {
+    public MaintenanceRealization(final MaintenanceRealizationData wmrd, final String sendingSystem, final Integer messageId,
+                                  final ZonedDateTime sendingTime, final LineString lineString, final Set<MaintenanceTask> tasks) {
         this.realizationData = wmrd;
         this.sendingSystem = sendingSystem;
         this.messageId = messageId;
