@@ -11,6 +11,9 @@ import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverter;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.dao.SensorValueHistoryDao;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
+import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.dao.v1.workmachine.WorkMachineObservationDao;
 import fi.livi.digitraffic.tie.helper.FileGetService;
@@ -21,7 +24,9 @@ import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.v1.FreeFlowSpeedService;
+import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.service.v1.TmsDataService;
+import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageReader;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
@@ -44,13 +49,15 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
           Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
           V2Datex2UpdateService.class, V2Datex2HelperService.class,
           CameraPresetHistoryService.class, FlywayService.class,
+          //SensorDataUpdateService.class,
+          WeatherService.class, SensorDataUpdateService.class,
 
           // converters
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,
           ObjectMapper.class,
 
           // daos
-          TmsSensorConstantDao.class, WorkMachineObservationDao.class,
+          TmsSensorConstantDao.class, WorkMachineObservationDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
 
           // configurations
           AmazonS3ClientTestConfiguration.class
