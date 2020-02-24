@@ -56,14 +56,17 @@ public class V2MaintenanceRealizationDataService {
     @Transactional(readOnly = true)
     public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(final Instant from, final Instant to,
                                                                                final double xMin, final double yMin,
-                                                                               final double xMax, final double yMax) {
+                                                                               final double xMax, final double yMax,
+                                                                               final List<Long> taskIds) {
         final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA));
         final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_REALIZATION_DATA_CHECKED));
 
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceRealization> found = v2RealizationRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area);
+        final List<MaintenanceRealization> found = taskIds.isEmpty() ?
+            v2RealizationRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area):
+            v2RealizationRepository.findByAgeAndBoundingBoxAndTaskIds(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area, taskIds);
         log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} tookMs={}", xMin, xMax, yMin, yMax, start.getTime());
         final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
         return new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);

@@ -192,7 +192,11 @@ public class BetaController {
             @RequestParam(defaultValue = "72.0")
             @DecimalMin("59.0")
             @DecimalMax("72.0")
-            final double yMax) {
+            final double yMax,
+
+            @ApiParam(value = "Task ids to include")
+            @RequestParam(value = "taskId")
+            final List<Long> taskIds) {
 
         // Make sure newest is also fetched
         final Instant now = Instant.now().plusSeconds(1);
@@ -205,7 +209,7 @@ public class BetaController {
         } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
             throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
         }
-        return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax);
+        return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
     }
 
     @ApiOperation(value = "Road maintenance realizations tasks")
