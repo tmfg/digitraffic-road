@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -139,8 +140,13 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     }
 
     @Test
-    public void postRealization() throws Exception {
-        postRealization("toteuma.json", status().isOk());
+    public void postSingleRealization() throws Exception {
+        postRealization("toteumakirjaus-yksi-reittitoteuma.json", status().isOk());
+    }
+
+    @Test
+    public void postMultipleRealization() throws Exception {
+        postRealization("toteumakirjaus-monta-reittitoteumaa.json", status().isOk());
     }
 
     private void postTrackingJson(final String fileName) throws Exception {

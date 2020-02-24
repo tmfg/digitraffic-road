@@ -1,17 +1,26 @@
 package fi.livi.digitraffic.tie.scheduler;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
@@ -42,8 +51,13 @@ public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
 
+    @SpyBean
+    private CameraImageUpdateService cameraImageUpdateService;
+
     @Test
     public void testUpdateRoadStationStatuses() {
+
+        doNothing().when(cameraImageUpdateService).hideCurrentImageForPreset(any(CameraPreset.class));
 
         lotjuLAMMetatiedotServiceMock.initStateAndService();
         lotjuTiesaaPerustiedotServiceMock.initStateAndService();
@@ -67,6 +81,11 @@ public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS
         tmsStationUpdater.updateTmsStationsStatuses();
         weatherStationUpdater.updateWeatherStationsStatuses();
         cameraStationUpdater.updateCameraStationsStatuses();
+
+        // camera 2 has 5 public but camera is not public -> 5 presets to secret
+        verify(cameraImageUpdateService, times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(2L)));
+        verify(cameraImageUpdateService, times(5)).hideCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateService, times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
 
         List<RoadStation> allAfterChange = roadStationService.findAll();
 

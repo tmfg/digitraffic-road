@@ -3,10 +3,8 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 
-import java.net.URI;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -16,30 +14,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
+import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresenceDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
-import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service
-public class CameraPresetHistoryService {
+public class CameraPresetHistoryDataService {
     private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
-    private CameraPresetHistoryRepository cameraPresetHistoryRepository;
-    private final String s3WeathercamKeyRegexp;
-    private final String s3WeathercamBucketUrl;
-    private final int historyMaxAgeHours;
-    private final String weathercamBaseUrl;
+    private final CameraPresetHistoryRepository cameraPresetHistoryRepository;
+    private final WeathercamS3Properties weathercamS3Properties;
 
     public static final int MAX_IDS_SIZE = 5000;
 
@@ -58,32 +51,14 @@ public class CameraPresetHistoryService {
     }
 
     @Autowired
-    public CameraPresetHistoryService(final CameraPresetHistoryRepository cameraPresetHistoryRepository,
-                                      @Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,
-                                      @Value("${dt.amazon.s3.weathercam.region}") final String s3WeathercamRegion,
-                                      @Value("${dt.amazon.s3.weathercam.key.regexp}") final String s3WeathercamKeyRegexp,
-                                      @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours,
-                                      @Value("${weathercam.baseUrl}") final String weathercamBaseUrl) {
+    public CameraPresetHistoryDataService(final CameraPresetHistoryRepository cameraPresetHistoryRepository,
+                                          final WeathercamS3Properties weathercamS3Properties) {
         this.cameraPresetHistoryRepository = cameraPresetHistoryRepository;
-        this.s3WeathercamKeyRegexp = s3WeathercamKeyRegexp;
-        this.historyMaxAgeHours = historyMaxAgeHours;
-        this.weathercamBaseUrl = weathercamBaseUrl;
-        this.s3WeathercamBucketUrl = createS3WeathercamBucketUrl(s3WeathercamBucketName, s3WeathercamRegion);
-    }
-
-    private String createS3WeathercamBucketUrl(
-            String s3WeathercamBucketName,
-            String s3WeathercamRegion) {
-        return String.format("http://%s.s3-%s.amazonaws.com", s3WeathercamBucketName, s3WeathercamRegion);
-    }
-
-    @Transactional
-    public void saveHistory(final CameraPresetHistory history) {
-        cameraPresetHistoryRepository.save(history);
+        this.weathercamS3Properties = weathercamS3Properties;
     }
 
     @Transactional(readOnly = true)
-    public CameraPresetHistory findHistoryVersionInclSecret(final String presetId, final String versionId) {
+    public CameraPresetHistory findHistoryVersionInclSecretInternal(final String presetId, final String versionId) {
         return cameraPresetHistoryRepository.findByIdPresetIdAndIdVersionId(presetId, versionId).orElse(null);
     }
 
@@ -97,9 +72,9 @@ public class CameraPresetHistoryService {
         final List<CameraPresetHistory> history =
             atTime != null ?
                 cameraPresetHistoryRepository.findLatestPublishableByCameraAndPresetIdsAndTimeOrderByPresetIdAndLastModifiedDesc(
-                    fixEmptyIdsList(cameraIds), fixEmptyIdsList(presetIds), atTime.toInstant(), getOldestTimeLimit().toInstant()) :
+                    cameraIds, presetIds, atTime.toInstant(), getOldestTimeLimit().toInstant()) :
                 cameraPresetHistoryRepository.findAllPublishableByCameraAndPresetIdsOrderByPresetIdAndLastModifiedDesc(
-                    fixEmptyIdsList(cameraIds), fixEmptyIdsList(presetIds), getOldestTimeLimit().toInstant());
+                    cameraIds, presetIds, getOldestTimeLimit().toInstant());
 
         return convertToCameraHistory(history);
     }
@@ -120,21 +95,6 @@ public class CameraPresetHistoryService {
                 String.format("Parameter camera or presetId should be either 6 or 8 chars long. Illegal parameters: %s.",
                     illegalIds.stream().collect(Collectors.joining(", "))));
         }
-    }
-
-    private List<String> fixEmptyIdsList(List<String> cameraOrPresetIds) {
-        return cameraOrPresetIds.isEmpty() ? Collections.singletonList("NONE") : cameraOrPresetIds;
-    }
-
-    private List<String> parseCameraIds(final List<String> cameraOrPresetIds) {
-        return cameraOrPresetIds.stream().filter(id -> id.length() == 6).collect(Collectors.toList());
-    }
-    private List<String> parsePresetIds(final List<String> cameraOrPresetIds) {
-        return cameraOrPresetIds.stream().filter(id -> id.length() == 8).collect(Collectors.toList());
-    }
-
-    private ZonedDateTime getOldestTimeLimit() {
-        return getZonedDateTimeNowAtUtc().minus(historyMaxAgeHours, ChronoUnit.HOURS);
     }
 
     /**
@@ -236,39 +196,21 @@ public class CameraPresetHistoryService {
             presetId,
             history.stream().map(h ->
                 new PresetHistoryDataDto(toZonedDateTimeAtUtc(h.getLastModified()),
-                                         createPublicUrlForVersion(h.getPresetId(), h.getVersionId()),
+                                         weathercamS3Properties.getPublicUrlForVersion(h.getPresetId(), h.getVersionId()),
                                          h.getSize()))
                 .collect(Collectors.toList()));
     }
 
     @Transactional(readOnly = true)
-    public CameraPresetHistory findLatestWithPresetIdIncSecret(final String presetId) {
+    public CameraPresetHistory findLatestWithPresetIdIncSecretInternal(final String presetId) {
         return cameraPresetHistoryRepository.findLatestByPresetId(presetId).orElse(null);
     }
 
     /** Orderer from oldest to newest
      * Only for internal use */
     @Transactional(readOnly = true)
-    public List<CameraPresetHistory> findAllByPresetIdInclSecretAsc(final String presetId) {
+    public List<CameraPresetHistory> findAllByPresetIdInclSecretAscInternal(final String presetId) {
         return cameraPresetHistoryRepository.findByIdPresetIdOrderByLastModifiedAsc(presetId);
-    }
-
-    @Transactional
-    public int deleteAllWithPresetId(final String presetId) {
-        return cameraPresetHistoryRepository.deleteByIdPresetId(presetId);
-    }
-
-    @Transactional
-    public void updatePresetHistoryPublicityForCamera(final RoadStation rs) {
-        // If statTime is null it means now -> no history to update or
-        // if startTime is in the future -> no history to update
-        if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(ZonedDateTime.now())) {
-            final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
-            log.info("method=updatePresetHistoryPublicityForCamera cameraId={} toPublic={} fromPublicityStartTime={}",
-                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
-            cameraPresetHistoryRepository.updatePresetHistoryPublicityForCameraId(
-                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
-        }
     }
 
     /**
@@ -285,11 +227,11 @@ public class CameraPresetHistoryService {
     @Transactional(readOnly = true)
     public HistoryStatus resolveHistoryStatusForVersion(final String presetImageName, final String versionId) {
 
-        if (!presetImageName.matches(s3WeathercamKeyRegexp)) {
+        if (!presetImageName.matches(weathercamS3Properties.getS3WeathercamKeyRegexp())) {
             return HistoryStatus.ILLEGAL_KEY;
         }
         // C1234567.jpg -> C1234567
-        final CameraPresetHistory history = findHistoryVersionInclSecret(getPresetIdFromImageName(presetImageName), versionId);
+        final CameraPresetHistory history = findHistoryVersionInclSecretInternal(weathercamS3Properties.getPresetIdFromImageName(presetImageName), versionId);
         final ZonedDateTime oldestLimit = getOldestTimeLimit();
 
         if (history == null) {
@@ -302,13 +244,19 @@ public class CameraPresetHistoryService {
         return HistoryStatus.PUBLIC;
     }
 
-    public URI createS3UriForVersion(final String imageName, final String versionId) {
-        return URI.create(String.format("%s/%s?versionId=%s", s3WeathercamBucketUrl,
-            createImageVersionKey(getPresetIdFromImageName(imageName)), versionId));
+
+
+    private ZonedDateTime getOldestTimeLimit() {
+        return getZonedDateTimeNowAtUtc().minus(weathercamS3Properties.getHistoryMaxAgeHours(), ChronoUnit.HOURS);
     }
 
-    private String createPublicUrlForVersion(final String presetId, final String versionId) {
-        return String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId);
+
+    private List<String> parseCameraIds(final List<String> cameraOrPresetIds) {
+        return cameraOrPresetIds.stream().filter(CameraPresetHistoryDataService::isCameraId).collect(Collectors.toList());
+    }
+
+    private List<String> parsePresetIds(final List<String> cameraOrPresetIds) {
+        return cameraOrPresetIds.stream().filter(CameraPresetHistoryDataService::isPresetId).collect(Collectors.toList());
     }
 
     private static boolean isCameraId(final String cameraId) {
@@ -317,13 +265,5 @@ public class CameraPresetHistoryService {
 
     private static boolean isPresetId(final String presetId) {
         return presetId.length() == 8;
-    }
-
-    private static String getPresetIdFromImageName(final String imageName) {
-        return imageName.substring(0,8);
-    }
-
-    private static String createImageVersionKey(String presetId) {
-        return presetId + CameraImageS3Writer.IMAGE_VERSION_KEY_SUFFIX;
     }
 }

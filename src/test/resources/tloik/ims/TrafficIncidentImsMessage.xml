@@ -119,7 +119,11 @@ http://extranet.liikennevirasto.fi/webloik/kartta/liikennetilanne/50001238</valu
                 ],
                 "comment": "TESTI TESTI TESTI\nML",
                 "timeAndDuration": {
-                    "startTime": "2019-12-13T14:43:18.388+02:00"
+                    "startTime": "2019-12-13T14:43:18.388+02:00",
+                    "estimatedDuration": {
+                        "minimum": "PT6H",
+                        "informal": "Yli 6 tuntia"
+                    }
                 },
                 "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
                 "sender": "Liikenneviraston tieliikennekeskus Helsinki"

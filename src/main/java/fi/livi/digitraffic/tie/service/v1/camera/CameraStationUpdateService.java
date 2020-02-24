@@ -14,42 +14,49 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.RoadStationUpdateService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 
+@ConditionalOnNotWebApplication
 @Service
 public class CameraStationUpdateService extends AbstractCameraStationAttributeUpdater {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractCameraStationAttributeUpdater.class);
 
     private final CameraPresetService cameraPresetService;
+    private final RoadStationUpdateService roadStationUpdateService;
     private final RoadStationService roadStationService;
     private final WeatherStationService weatherStationService;
     private final EntityManager entityManager;
-    private final CameraPresetHistoryService cameraPresetHistoryService;
+    private final CameraPresetHistoryUpdateService cameraPresetHistoryUpdateService;
 
     @Autowired
     public CameraStationUpdateService(final CameraPresetService cameraPresetService,
+                                      final RoadStationUpdateService roadStationUpdateService,
                                       final RoadStationService roadStationService,
                                       final WeatherStationService weatherStationService,
                                       final EntityManager entityManager,
-                                      final CameraPresetHistoryService cameraPresetHistoryService) {
+                                      final CameraPresetHistoryUpdateService cameraPresetHistoryUpdateService) {
         this.cameraPresetService = cameraPresetService;
+        this.roadStationUpdateService = roadStationUpdateService;
         this.roadStationService = roadStationService;
         this.weatherStationService = weatherStationService;
         this.entityManager = entityManager;
-        this.cameraPresetHistoryService = cameraPresetHistoryService;
+        this.cameraPresetHistoryUpdateService = cameraPresetHistoryUpdateService;
     }
 
     /**
@@ -109,6 +116,14 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                 }
                 inserted++;
             }
+        }
+
+        final RoadStation rs = roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId());
+        // Can happen if camera is new and doesn't have any presets yet
+        if (rs == null) {
+            log.info("No presets for camera {}", ToStringHelper.toString(kamera));
+        } else {
+            cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
         }
         return Pair.of(updated, inserted);
     }
@@ -181,9 +196,6 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         try {
             final RoadStation rs = to.getRoadStation();
             final boolean updated = updateRoadStationAttributes(kameraFrom, rs);
-            // Update history every time in case JMS message handling has failed
-            cameraPresetHistoryService.updatePresetHistoryPublicityForCamera(rs);
-
             return updated || hash != HashCodeBuilder.reflectionHashCode(to);
         } catch (Exception e) {
             log.error("method=updateCameraPresetAtributes : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed",
@@ -199,7 +211,12 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
      */
     @Transactional
     public boolean updateCamera(final KameraVO kamera) {
-        return roadStationService.updateRoadStation(kamera);
+        final boolean updated = roadStationUpdateService.updateRoadStation(kamera);
+
+        final RoadStation rs = roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId());
+        // Update history every time in case JMS message handling has failed
+        cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
+        return updated;
     }
 
     /**
@@ -211,6 +228,9 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
     @Transactional
     public boolean updatePreset(final EsiasentoVO esiasento, final KameraVO kamera) {
         final CameraPreset preset = cameraPresetService.findCameraPresetByLotjuId(esiasento.getId());
-        return updateCameraPresetAtributes(kamera, esiasento, preset);
+        // Update history every time in case JMS message handling has failed
+        boolean updated = updateCameraPresetAtributes(kamera, esiasento, preset);
+        cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(preset.getRoadStation());
+        return updated;
     }
 }

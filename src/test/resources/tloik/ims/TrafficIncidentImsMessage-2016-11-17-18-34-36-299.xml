@@ -164,7 +164,11 @@ Sähköposti: tampere.liikennekeskus@liikennevirasto.fi</value>
                 ],
                 "comment": "",
                 "timeAndDuration": {
-                    "startTime": "2016-11-17T18:32:05.334+02:00"
+                    "startTime": "2016-11-17T18:32:05.334+02:00",
+                    "estimatedDuration": {
+                        "minimum": "PT7H",
+                        "informal": "Yli 7 tuntia"
+                    }
                 },
                 "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
                 "sender": "Liikenneviraston tieliikennekeskus Helsinki"

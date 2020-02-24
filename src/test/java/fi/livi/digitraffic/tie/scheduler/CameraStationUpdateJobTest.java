@@ -4,15 +4,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
@@ -22,11 +29,14 @@ public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
 
-    @Autowired
+    @SpyBean
     private CameraPresetService cameraPresetService;
 
     @Autowired
     private LotjuKameraPerustiedotServiceEndpointMock lotjuKameraPerustiedotServiceMock;
+
+    @SpyBean
+    private CameraImageUpdateService cameraImageUpdateService;
 
     @Test
     public void testUpdateKameras() {
@@ -44,9 +54,16 @@ public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
         assertEquals(8, presetsInitial.size());
         presetsInitial.forEach(cp -> entityManager.detach(cp));
 
+        doNothing().when(cameraImageUpdateService).hideCurrentImageForPreset(any(CameraPreset.class));
+
         // Update 121 camera to active, 56 removed and 2 not public
         lotjuKameraPerustiedotServiceMock.setStateAfterChange(true);
         cameraStationUpdater.updateCameras();
+
+        // 2 has 5 public but camera is not public -> 5 presets to secret
+        verify(cameraImageUpdateService, times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(2L)));
+        verify(cameraImageUpdateService, times(5)).hideCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateService, times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
 
         final List<CameraPreset> presetsAfterUpdate = cameraPresetService.findAllPublishableCameraPresets();
         final long cameraCountAfterUpdate = presetsAfterUpdate.stream().map(cp -> cp.getCameraId()).distinct().count();
