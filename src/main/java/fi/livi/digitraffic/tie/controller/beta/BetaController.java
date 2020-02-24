@@ -170,32 +170,32 @@ public class BetaController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime to,
 
-            @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+            @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
             @RequestParam(defaultValue = "19.0")
             @DecimalMin("19.0")
             @DecimalMax("32.0")
             final double xMin,
 
-            @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+            @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
             @RequestParam(defaultValue = "59.0")
             @DecimalMin("59.0")
             @DecimalMax("72.0")
             final double yMin,
 
-            @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+            @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
             @RequestParam(defaultValue = "32")
             @DecimalMin("19.0")
             @DecimalMax("32.0")
             final double xMax,
 
-            @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+            @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
             @RequestParam(defaultValue = "72.0")
             @DecimalMin("59.0")
             @DecimalMax("72.0")
             final double yMax,
 
             @ApiParam(value = "Task ids to include")
-            @RequestParam(value = "taskId")
+            @RequestParam(value = "taskId", required = false)
             final List<Long> taskIds) {
 
         // Make sure newest is also fetched

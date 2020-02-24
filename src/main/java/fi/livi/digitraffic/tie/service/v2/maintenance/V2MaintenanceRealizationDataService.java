@@ -64,7 +64,7 @@ public class V2MaintenanceRealizationDataService {
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceRealization> found = taskIds.isEmpty() ?
+        final List<MaintenanceRealization> found = taskIds == null || taskIds.isEmpty() ?
             v2RealizationRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area):
             v2RealizationRepository.findByAgeAndBoundingBoxAndTaskIds(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area, taskIds);
         log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} tookMs={}", xMin, xMax, yMin, yMax, start.getTime());
