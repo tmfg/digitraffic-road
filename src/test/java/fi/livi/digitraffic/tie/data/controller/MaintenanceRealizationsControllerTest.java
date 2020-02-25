@@ -62,25 +62,29 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findMaintenanceRealizationsWithinTime() throws Exception {
+        int count1 = getRandomId(0, 10);
+        int coun2 = getRandomId(0, 10);
         final ZonedDateTime startNow = getNowWithZeroNanos();
         final ZonedDateTime startInPast = startNow.minusHours(1);
-        generateSingleRealisationsWithTasksAndSingleRoute(3, startNow);
-        generateSingleRealisationWithTasksAndMultipleRoutes(2, startInPast);
+        generateSingleRealisationsWithTasksAndSingleRoute(count1, startNow);
+        generateSingleRealisationWithTasksAndMultipleRoutes(coun2, startInPast);
 
         getJson(
             startNow.toInstant(), startNow.toInstant(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(3)));
+            .andExpect(jsonPath("features", hasSize(count1)));
     }
 
     @Test
     public void findMaintenanceRealizationsWithinTimeInPast() throws Exception {
+        int count1 = getRandomId(0, 10);
+        int count2 = getRandomId(0, 10);
         final ZonedDateTime startNow = getNowWithZeroNanos();
         final ZonedDateTime startInPast = startNow.minusHours(1);
-        generateSingleRealisationsWithTasksAndSingleRoute(3, startNow);
-        generateSingleRealisationWithTasksAndMultipleRoutes(2, startInPast);
+        generateSingleRealisationsWithTasksAndSingleRoute(count1, startNow);
+        generateSingleRealisationWithTasksAndMultipleRoutes(count2, startInPast);
 
         final ResultActions result = getJson(
             startInPast.toInstant(), startInPast.toInstant(),
@@ -88,15 +92,17 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
         result
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(2)));
+            .andExpect(jsonPath("features", hasSize(count2)));
     }
 
     @Test
     public void findMaintenanceMultipleRealizationsWithinTime() throws Exception {
+        int count1 = getRandomId(0, 10);
+        int count2 = getRandomId(0, 10);
         final ZonedDateTime startNow = getNowWithZeroNanos();
         final ZonedDateTime startInPast = startNow.minusHours(1);
-        generateSingleRealisationsWithTasksAndSingleRoute(3, startNow);
-        generateSingleRealisationWithTasksAndMultipleRoutes(2, startInPast);
+        generateSingleRealisationsWithTasksAndSingleRoute(count1, startNow);
+        generateSingleRealisationWithTasksAndMultipleRoutes(count2, startInPast);
 
         final ResultActions result = getJson(
             startInPast.toInstant(), startNow.toInstant(),
@@ -104,13 +110,14 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
         result
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(5)));
+            .andExpect(jsonPath("features", hasSize(count1 + count2)));
     }
 
     @Test
     public void findMaintenanceRealizationsNotWithinTime() throws Exception {
+        int count = getRandomId(0, 10);
         final ZonedDateTime startNow = getNowWithZeroNanos();
-        generateSingleRealisationsWithTasksAndSingleRoute(3, startNow);
+        generateSingleRealisationsWithTasksAndSingleRoute(count, startNow);
 
         getJson(
             startNow.plusSeconds(1).toInstant(), startNow.plusHours(24).toInstant(),
