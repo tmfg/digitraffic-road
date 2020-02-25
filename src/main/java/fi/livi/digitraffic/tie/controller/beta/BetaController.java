@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
@@ -36,6 +38,7 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
+import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
@@ -57,22 +60,26 @@ public class BetaController {
     public static final String MAINTENANCE_REALIZATIONS_TASKS_PATH = "/tasks";
     public static final String MAINTENANCE_REALIZATIONS_OPERATIONS_PATH = "/operations";
     public static final String MAINTENANCE_REALIZATIONS_CATEGORIES_PATH = "/categories";
+    public static final String WEATHER_HISTORY_DATA_PATH = "weather-history";
 
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
     private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
     private final V2Datex2DataService v2Datex2DataService;
+    private final WeatherService weatherService;
 
     @Autowired
     public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service,
                           final V2Datex2DataService v2Datex2DataService,
-                          final V2MaintenanceRealizationDataService maintenanceRealizationDataService) {
+                          final V2MaintenanceRealizationDataService maintenanceRealizationDataService,
+                          final WeatherService weatherService
+    ) {
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.maintenanceRealizationDataService = maintenanceRealizationDataService;
         this.v2Datex2DataService = v2Datex2DataService;
-
+        this.weatherService = weatherService;
     }
 
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
@@ -227,5 +234,46 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task categories"))
     public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
         return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
+    }
+
+    @ApiOperation("List the history of sensor values from the weather road station")
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
+                   @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter(s)")})
+    public List<SensorValueHistoryDto> weatherDataHistory(
+        @ApiParam(value = "Weather station id", required = true)
+        @PathVariable
+        final long stationId,
+
+        @ApiParam("Fetch history after given date time")
+        @RequestParam(value="from", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime from,
+
+        @ApiParam("Limit history to given date time")
+        @RequestParam(value="to", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime to) {
+
+        return weatherService.findWeatherHistoryData(stationId, from, to);
+    }
+
+    @ApiOperation("List the history of sensor value from the weather road station")
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
+                  @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
+    public List<SensorValueHistoryDto> weatherDataHistory(
+        @ApiParam(value = "Weather Station id", required = true)
+        @PathVariable final long stationId,
+
+        @ApiParam(value = "Sensor id", required = true)
+        @PathVariable final long sensorId,
+
+        @ApiParam("Fetch history after given time")
+        @RequestParam(value="from", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime from) {
+
+        return weatherService.findWeatherHistoryData(stationId, sensorId, from);
     }
 }

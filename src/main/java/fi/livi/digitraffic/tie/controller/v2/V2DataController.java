@@ -125,10 +125,10 @@ public class V2DataController {
         return v2VariableSignService.listVariableSignHistory(deviceId);
     }
 
-    @ApiOperation("List the history of sensor values from the weather road station")
-    @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
-                   @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter(s)")})
+    //@ApiOperation("List the history of sensor values from the weather road station")
+    //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
+    //@ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
+    //               @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter(s)")})
     public List<SensorValueHistoryDto> weatherDataHistory(
         @ApiParam(value = "Weather station id", required = true)
         @PathVariable
@@ -147,10 +147,10 @@ public class V2DataController {
         return weatherService.findWeatherHistoryData(stationId, from, to);
     }
 
-    @ApiOperation("List the history of sensor value from the weather road station")
-    @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
-                  @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
+    //@ApiOperation("List the history of sensor value from the weather road station")
+    //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
+    //@ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
+    //              @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
     public List<SensorValueHistoryDto> weatherDataHistory(
         @ApiParam(value = "Weather Station id", required = true)
         @PathVariable final long stationId,
