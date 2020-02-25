@@ -67,7 +67,8 @@ public class V2MaintenanceRealizationDataService {
         final List<MaintenanceRealization> found = taskIds == null || taskIds.isEmpty() ?
             v2RealizationRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area):
             v2RealizationRepository.findByAgeAndBoundingBoxAndTaskIds(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area, taskIds);
-        log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} tookMs={}", xMin, xMax, yMin, yMax, start.getTime());
+        log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
+                 xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), found.size(), start.getTime());
         final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
         return new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
     }

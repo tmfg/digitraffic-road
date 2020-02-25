@@ -25,9 +25,6 @@ class V2MaintenanceRealizationDataHolder {
     private Integer messageId;
     private ZonedDateTime sendingTime;
 
-    public V2MaintenanceRealizationDataHolder() {
-    }
-
     public V2MaintenanceRealizationDataHolder(final MaintenanceRealizationData realizationData, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime) {
         this.realizationData = realizationData;
         this.sendingSystem = sendingSystem;
