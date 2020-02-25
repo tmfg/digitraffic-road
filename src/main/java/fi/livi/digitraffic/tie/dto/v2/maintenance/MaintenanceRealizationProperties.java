@@ -11,6 +11,10 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "MaintenanceRealizationProperties", description = "Maintenance realization properties")
 public class MaintenanceRealizationProperties {
 
+
+    @ApiModelProperty(value = "If for the realization", required = true)
+    public Long id;
+
     @ApiModelProperty(value = "Time when realization was reported", required = true)
     public ZonedDateTime sendingTime;
 
@@ -20,7 +24,8 @@ public class MaintenanceRealizationProperties {
     @ApiModelProperty(value = "Coordinates details", required = true)
     public final List<MaintenanceRealizationCoordinateDetails> coordinateDetails;
 
-    public MaintenanceRealizationProperties(final ZonedDateTime sendingTime, final Set<Long> tasks, final List<MaintenanceRealizationCoordinateDetails> coordinateDetails) {
+    public MaintenanceRealizationProperties(final long id, final ZonedDateTime sendingTime, final Set<Long> tasks, final List<MaintenanceRealizationCoordinateDetails> coordinateDetails) {
+        this.id = id;
         this.sendingTime = sendingTime;
         this.tasks = tasks;
         this.coordinateDetails = coordinateDetails;

@@ -95,7 +95,7 @@ public class V2MaintenanceRealizationDataService {
                 final Set<Long> taskIds = convertToMaintenanceRealizationTaskIds(r.getTasks());
                 final List<List<Double>> coordinates = convertToCoordinates(r.getLineString());
                 final List<MaintenanceRealizationCoordinateDetails> coordinateDetails = convertToMaintenanceCoordinateDetails(r.getRealizationPoints());
-                final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(toZonedDateTimeAtUtc(r.getSendingTime()), taskIds, coordinateDetails);
+                final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(r.getId(), toZonedDateTimeAtUtc(r.getSendingTime()), taskIds, coordinateDetails);
                 return new MaintenanceRealizationFeature(new LineString(coordinates), properties);
 
         }).collect(Collectors.toList());
