@@ -60,7 +60,7 @@ public class BetaController {
     public static final String MAINTENANCE_REALIZATIONS_TASKS_PATH = "/tasks";
     public static final String MAINTENANCE_REALIZATIONS_OPERATIONS_PATH = "/operations";
     public static final String MAINTENANCE_REALIZATIONS_CATEGORIES_PATH = "/categories";
-    public static final String WEATHER_HISTORY_DATA_PATH = "weather-history";
+    public static final String WEATHER_HISTORY_DATA_PATH = "/weather-history-data";
 
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;

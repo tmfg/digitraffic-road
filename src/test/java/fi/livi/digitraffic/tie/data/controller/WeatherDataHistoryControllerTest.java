@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.controller;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.not;
@@ -31,7 +32,10 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
     private SensorValueHistoryRepository repository;
 
     private ResultActions getJson(final String url) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_V2_BASE_PATH + API_DATA_PART_PATH + WEATHER_HISTORY_DATA_PATH + url);
+        // Beta API
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_BETA_BASE_PATH + WEATHER_HISTORY_DATA_PATH + url);
+        // Actual API
+        //final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_V2_BASE_PATH + API_DATA_PART_PATH + WEATHER_HISTORY_DATA_PATH + url);
 
         get.contentType(MediaType.APPLICATION_JSON);
 
