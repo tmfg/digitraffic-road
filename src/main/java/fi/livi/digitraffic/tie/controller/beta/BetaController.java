@@ -177,29 +177,33 @@ public class BetaController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime to,
 
-            @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+            @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
             @RequestParam(defaultValue = "19.0")
             @DecimalMin("19.0")
             @DecimalMax("32.0")
             final double xMin,
 
-            @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+            @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
             @RequestParam(defaultValue = "59.0")
             @DecimalMin("59.0")
             @DecimalMax("72.0")
             final double yMin,
 
-            @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+            @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
             @RequestParam(defaultValue = "32")
             @DecimalMin("19.0")
             @DecimalMax("32.0")
             final double xMax,
 
-            @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+            @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
             @RequestParam(defaultValue = "72.0")
             @DecimalMin("59.0")
             @DecimalMax("72.0")
-            final double yMax) {
+            final double yMax,
+
+            @ApiParam(value = "Task ids to include")
+            @RequestParam(value = "taskId", required = false)
+            final List<Long> taskIds) {
 
         // Make sure newest is also fetched
         final Instant now = Instant.now().plusSeconds(1);
@@ -212,7 +216,7 @@ public class BetaController {
         } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
             throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
         }
-        return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax);
+        return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
     }
 
     @ApiOperation(value = "Road maintenance realizations tasks")

@@ -5,12 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -26,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationPointRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTaskRepository;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
@@ -39,7 +35,6 @@ import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationPoint;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
@@ -51,7 +46,6 @@ public class V2MaintenanceRealizationUpdateService {
     private final V2MaintenanceRealizationDataRepository v2RealizationDataRepository;
     private final ObjectWriter jsonWriter;
     private final ObjectReader jsonReader;
-    private final V2MaintenanceRealizationPointRepository v2RealizationPointRepository;
     private final DataStatusService dataStatusService;
 
     private final Map<Long, MaintenanceTask> tasksMap;
@@ -61,13 +55,11 @@ public class V2MaintenanceRealizationUpdateService {
                                                  final V2MaintenanceRealizationDataRepository v2RealizationDataRepository,
                                                  final ObjectMapper objectMapper,
                                                  final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
-                                                 final V2MaintenanceRealizationPointRepository v2RealizationPointRepository,
                                                  final DataStatusService dataStatusService) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2RealizationDataRepository = v2RealizationDataRepository;
         this.jsonWriter = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
         this.jsonReader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
-        this.v2RealizationPointRepository = v2RealizationPointRepository;
         this.dataStatusService = dataStatusService;
         tasksMap = v2MaintenanceTaskRepository.findAll().stream().collect(Collectors.toMap(MaintenanceTask::getId, Function.identity()));
     }
@@ -77,7 +69,7 @@ public class V2MaintenanceRealizationUpdateService {
         final String json = jsonWriter.writeValueAsString(reittitoteumanKirjaus);
         MaintenanceRealizationData realization = new MaintenanceRealizationData(jobId, json);
         v2RealizationDataRepository.save(realization);
-        log.info("method=saveWorkMachineRealizationData jsonData={}", json);
+        log.debug("method=saveWorkMachineRealizationData jsonData={}", json);
     }
 
     @Transactional
@@ -150,24 +142,17 @@ public class V2MaintenanceRealizationUpdateService {
             final MaintenanceRealization realization = creteRealization(holder);
             v2RealizationRepository.save(realization);
 
-            final List<MaintenanceRealizationPoint> realizationPoints = createMaintenanceRealizationPoints(realization, holder.getCoordinateTimes());
-            v2RealizationPointRepository.saveAll(realizationPoints);
-
         } else if (holder.containsCoordinateData()){
             log.error("RealizationData id {} invalid LineString size {}", holder.getRealizationData().getId(), holder.getCoordinates().size());
         }
     }
 
-    private List<MaintenanceRealizationPoint> createMaintenanceRealizationPoints(final MaintenanceRealization realization,
-                                                                                 final List<ZonedDateTime> coordinateTimes) {
-        final AtomicInteger order = new AtomicInteger();
-        return coordinateTimes.stream().map(time -> new MaintenanceRealizationPoint(realization.getId(), order.getAndIncrement(), time)).collect(Collectors.toList());
-    }
-
     private MaintenanceRealization creteRealization(final V2MaintenanceRealizationDataHolder holder) {
         final LineString lineString = PostgisGeometryHelper.createLineStringWithZ(holder.getCoordinates());
+
         return new MaintenanceRealization(holder.getRealizationData(), holder.getSendingSystem(), holder.getMessageId(),
-                                          holder.getSendingTime(), lineString, holder.getTasks());
+                                          holder.getSendingTime(), holder.getStartTime(), holder.getEndTime(), lineString,
+                                          holder.getTasks());
     }
 
     private boolean isTransition(List<TehtavatSchema> tehtavat) {

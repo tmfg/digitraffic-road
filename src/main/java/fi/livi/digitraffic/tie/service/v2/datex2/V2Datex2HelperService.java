@@ -113,6 +113,10 @@ public class V2Datex2HelperService {
     public TrafficAnnouncementFeature convertToFeatureJsonObject(final String imsJson, final Datex2MessageType messageType) {
         try {
             final TrafficAnnouncementFeature feature = featureJsonReader.readValue(imsJson);
+            if ( isInvalidGeojson(feature) ) {
+                log.error("Failed to convert valid GeoJSON Feature from json: {}", imsJson);
+                return null;
+            }
             final List<ConstraintViolation<EstimatedDuration>> violations = getDurationViolations(feature);
 
             if (!violations.isEmpty()) {
@@ -120,14 +124,7 @@ public class V2Datex2HelperService {
                 log.error("Failed to convert valid Duration from json: {}", imsJson);
                 return null;
             }
-
-            if ( isValidGeojson(feature) ) {
-                feature.getProperties().setMessageType(messageType);
-                return feature;
-            } else {
-                log.error("Failed to convert valid GeoJSON Feature from json: {}", imsJson);
-                return null;
-            }
+            return feature;
         } catch (JsonProcessingException e) {
             log.error("method=convertToJsonObject error while converting JSON to TrafficAnnouncementFeature jsonValue=\n" + imsJson, e);
             throw new RuntimeException(e);
@@ -145,7 +142,7 @@ public class V2Datex2HelperService {
         return Collections.emptySet();
     }
 
-    private static boolean isValidGeojson(TrafficAnnouncementFeature feature) {
-        return feature.getProperties() != null && feature.getGeometry() != null;
+    private static boolean isInvalidGeojson(final TrafficAnnouncementFeature feature) {
+        return feature.getProperties() == null || feature.getGeometry() == null;
     }
 }

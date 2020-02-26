@@ -8,10 +8,13 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
 
@@ -32,6 +35,23 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.external.harja.ReittitoteumanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.Lahettaja;
+import fi.livi.digitraffic.tie.external.harja.entities.MaaraSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.OrganisaatioSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.ReittiSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.Reittipiste;
+import fi.livi.digitraffic.tie.external.harja.entities.ReittitoteumaSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.ReittitoteumatSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.Suorittaja;
+import fi.livi.digitraffic.tie.external.harja.entities.TehtavaSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.TehtavatSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.ToteumaSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.TyokoneSchema;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
@@ -56,6 +76,21 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
     public final static Pair<Double, Double> RANGE_X = Pair.of(19.0, 32.0);
     public final static Pair<Double, Double> RANGE_Y = Pair.of(59.0, 72.0);
+
+    // select 'Pair.of(' ||  id || ', "' || fi || '"),' from maintenance_task;
+    public static final Pair<Integer, String>[] TASKS = new Pair[] {
+        Pair.of(1357, "Harjaus"),
+        Pair.of(6883, "Harjaus ja roskien poisto"),
+        Pair.of(1438, "Huonokuntoisten viittojen ja opastetaulujen uusiminen"),
+        Pair.of(1437, "Hylättyjen ajoneuvojen siirto"),
+        Pair.of(1436, "Katupölynsidonta"),
+        Pair.of(1435, "Kolmannen osapuolen vahinkojen korjaukset"),
+        Pair.of(6956, "Kolmansien osapuolien vahinkojen korjaukset"),
+        Pair.of(1356, "Koneellinen niitto"),
+        Pair.of(1355, "Koneellinen vesakonraivaus"),
+        Pair.of(6893, "Liikennemerkkien, opasteiden ja liikenteenohjauslaitteiden hoito sekä reunapaalujen kp"),
+        Pair.of(5677, "Liikenneympäristön hoito - Ei yksilöity")
+    };
 
     public final static Instant SINGLE_REALISATIONS_3_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:28:16Z").toInstant();
     public final static Instant MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:15:42Z").toInstant();
@@ -224,7 +259,6 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
     public void checkCoordinateCount(final MaintenanceRealization realization, final int count) {
         Assert.assertEquals(count, realization.getLineString().getCoordinates().length);
-        Assert.assertEquals(count, realization.getRealizationPoints().size());
     }
 
     public void checkContainsOnlyTasksWithIds(final MaintenanceRealization realization, final long... taskids) {
@@ -261,6 +295,132 @@ public class V2MaintenanceRealizationServiceTestHelper {
             readResourceContent(SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH);
         saveRealizationAsPlainText(jsonSingleRealisationWith3TasksTransitAndPoint);
 
+    }
+
+    /**
+     * Generate single realizations with data in single realization.
+     * (Data in JSON reittitoteuma-property not in reittitoteumat)
+     *
+     * @param countOfDifferentRealizations how many realizations with different tasks
+     * @param startTime
+     * @throws IOException
+     */
+    public void generateSingleRealisationsWithTasksAndSingleRoute(final int countOfDifferentRealizations, final ZonedDateTime startTime)
+        throws JsonProcessingException {
+        final ReittitoteumanKirjausRequestSchema toteuma = createReittitoteumanKirjaus(countOfDifferentRealizations, startTime);
+        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, toteuma);
+    }
+
+    /**
+     * Generate single realization with data in multiple realizations.
+     * (Data in JSON reittitoteumat-property not in reittitoteuma)
+     *
+     * @param countOfDifferentRealizations how many realizations with different tasks
+     * @param startTime
+     * @throws JsonProcessingException
+     */
+    public void generateSingleRealisationWithTasksAndMultipleRoutes(final int countOfDifferentRealizations, final ZonedDateTime startTime)
+        throws JsonProcessingException {
+        final ReittitoteumanKirjausRequestSchema toteuma = createReittitoteumatKirjaus(countOfDifferentRealizations, startTime);
+        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, toteuma);
+    }
+
+    private ReittitoteumanKirjausRequestSchema createReittitoteumanKirjaus(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
+        return new ReittitoteumanKirjausRequestSchema(
+            createOtsikko(startTime),
+            createReittitoteuma(countOfDifferentRealizations, startTime), null);
+
+    }
+
+    private ReittitoteumanKirjausRequestSchema createReittitoteumatKirjaus(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
+        ReittitoteumaSchema reittitoteuma = createReittitoteuma(countOfDifferentRealizations, startTime);
+        final List<ReittiSchema> reitti = reittitoteuma.getReitti();
+        int coordinateCount = reitti.size();
+
+        List<ReittitoteumatSchema> reittitoteumat =
+            IntStream.range(0, coordinateCount)
+                .filter(n -> n % 2 == 0)
+                .mapToObj(i -> {
+
+                    ReittiSchema reitti1 = reitti.get(i);
+                    ReittiSchema reitti2 = reitti.get(i+1);
+
+                return new ReittitoteumatSchema(
+                    new ReittitoteumaSchema(
+                        createToteuma(countOfDifferentRealizations, startTime),
+                        Arrays.asList(reitti1, reitti2),
+                        reittitoteuma.getTyokone()));
+            }).collect(Collectors.toList());
+
+        return new ReittitoteumanKirjausRequestSchema(
+            createOtsikko(startTime),
+            null, reittitoteumat);
+
+
+    }
+
+    private ReittitoteumaSchema createReittitoteuma(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
+        return new ReittitoteumaSchema(
+            createToteuma(countOfDifferentRealizations, startTime), createReitti(countOfDifferentRealizations, startTime), createTyokone());
+    }
+
+    private TyokoneSchema createTyokone() {
+        return new TyokoneSchema(TyokoneSchema.Tyyppi.KUORMA_AUTO, "KA-123", "Scania");
+    }
+
+    private List<ReittiSchema> createReitti(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
+        return IntStream.range(0, countOfDifferentRealizations)
+            .mapToObj(i -> createReittiWithTaskIdx(i, startTime))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    private List<ReittiSchema> createReittiWithTaskIdx(final int idx, final ZonedDateTime startTime) {
+        return IntStream.range(0, 100).mapToObj(i -> {
+
+            // x = 19.0 to 28.99... and y = 59.0 to 68.99...
+            final double xLongitude = 19.0 + idx + (i + 1) * 0.1;
+            final double yLatitude = 59.0 + idx + (i + 1) * 0.1;
+            final double z = 0.0;
+            // Source data has koordinates in ETRS89 format
+            final Point etrs89 = CoordinateConverter.convertFromWGS84ToETRS89(new Point(xLongitude, yLatitude, z));
+            final KoordinaattisijaintiSchema koordinaattisjainti =
+                new KoordinaattisijaintiSchema(etrs89.getLongitude(), etrs89.getLatitude(), etrs89.getAltitude());
+
+            return new ReittiSchema(
+                new Reittipiste(
+                    startTime.plusSeconds(i * 10),
+                    koordinaattisjainti,
+                    Arrays.asList(createTehtava(idx), createTehtava(idx + 1)),
+                    Collections.emptyList(), Collections.emptyList(), null));
+        })
+        .collect(Collectors.toList());
+    }
+
+    public static final String COMPANY = "Tie huolto Oy";
+    public static final String COMPANY_ID = "8561566-0";
+    private ToteumaSchema createToteuma(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
+        return new ToteumaSchema(
+            new TunnisteSchema(321), 1, startTime, startTime.plusSeconds(99*10),
+            new Suorittaja(COMPANY, COMPANY_ID), ToteumaSchema.Toteumatyyppi.KOKONAISHINTAINEN,
+            createTehtavat(countOfDifferentRealizations), Collections.emptyList());
+    }
+
+    private List<TehtavatSchema> createTehtavat(final int countOfDifferentTasks) {
+        return IntStream.range(0, countOfDifferentTasks)
+            .mapToObj(i -> createTehtava(i)).collect(Collectors.toList());
+    }
+
+    private TehtavatSchema createTehtava(final int taskIdx) {
+        return new TehtavatSchema(new TehtavaSchema(TASKS[taskIdx].getKey(), new MaaraSchema("km", 100.0), TASKS[taskIdx].getValue()));
+    }
+
+    private OtsikkoSchema createOtsikko(final ZonedDateTime startTime) {
+        return new OtsikkoSchema(
+            new Lahettaja("Tievoima",
+            new OrganisaatioSchema("Tie huolto Oy", "8561566-0")),
+            new TunnisteSchema(123),
+            startTime);
     }
 
     public String getFormatedRealizationJson(final String realizationJsonPath) throws IOException {

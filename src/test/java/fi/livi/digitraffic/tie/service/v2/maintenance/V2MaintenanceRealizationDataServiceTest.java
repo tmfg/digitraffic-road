@@ -11,6 +11,7 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealiz
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.TASK_IDS_INSIDE_BOX;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     public void findMaintenanceRealizationsWithinTime1() throws IOException {
         final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME,
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight(), Collections.emptyList());
         Assert.assertEquals(3, result.features.size());
     }
 
@@ -59,7 +60,7 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     public void findMaintenanceRealizationsWithinTime2() throws IOException {
         final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
             MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME, MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME,
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight(), Collections.emptyList());
         Assert.assertEquals(2, result.features.size());
     }
 
@@ -67,7 +68,7 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     public void findMaintenanceRealizationsWithinTimeBoth() throws IOException {
         final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
             MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME,
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight(), Collections.emptyList());
         Assert.assertEquals(5, result.features.size());
     }
 
@@ -75,7 +76,7 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     public void findMaintenanceRealizationsNotWithinTime() throws IOException {
         final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusMillis(1), SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight(), Collections.emptyList());
         Assert.assertEquals(0, result.features.size());
     }
 
@@ -83,7 +84,8 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     public void findMaintenanceRealizationsOnePointWithinBoundingBox() throws IOException {
         final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
-            RANGE_X_AROUND_TASK.getLeft(), RANGE_Y_AROUND_TASK.getLeft(), RANGE_X_AROUND_TASK.getRight(), RANGE_Y_AROUND_TASK.getRight());
+            RANGE_X_AROUND_TASK.getLeft(), RANGE_Y_AROUND_TASK.getLeft(), RANGE_X_AROUND_TASK.getRight(), RANGE_Y_AROUND_TASK.getRight(),
+            Collections.emptyList());
         Assert.assertEquals(1, result.features.size());
         final Set<Long> taskIds = result.features.get(0).getProperties().tasks.stream().collect(Collectors.toSet());
         Assert.assertEquals(TASK_IDS_INSIDE_BOX, taskIds);
@@ -93,7 +95,8 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     public void findMaintenanceRealizationsOutsideBoundingBox() throws IOException {
         final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
             SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
-            RANGE_X_OUTSIDE_TASK.getLeft(), RANGE_Y_OUTSIDE_TASK.getLeft(), RANGE_X_OUTSIDE_TASK.getRight(), RANGE_Y_OUTSIDE_TASK.getRight());
+            RANGE_X_OUTSIDE_TASK.getLeft(), RANGE_Y_OUTSIDE_TASK.getLeft(), RANGE_X_OUTSIDE_TASK.getRight(), RANGE_Y_OUTSIDE_TASK.getRight(),
+            Collections.emptyList());
         Assert.assertEquals(0, result.features.size());
     }
 }

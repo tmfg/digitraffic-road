@@ -2,14 +2,9 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.beta.BetaController.MAINTENANCE_REALIZATIONS_PATH;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X_AROUND_TASK;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X_OUTSIDE_TASK;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_Y;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_Y_AROUND_TASK;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_Y_OUTSIDE_TASK;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.SINGLE_REALISATIONS_3_TASKS_SENDING_TIME;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.TASKS;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -18,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -30,6 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper;
@@ -49,8 +47,7 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
         final String url = API_BETA_BASE_PATH + MAINTENANCE_REALIZATIONS_PATH +
             String.format(Locale.US, "?from=%s&to=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f", from.toString(), to.toString(), xMin, yMin, xMax, yMax);
         log.info("Get URL: {}", url);
-        final MockHttpServletRequestBuilder get =
-            MockMvcRequestBuilders.get(url);
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
         log.info("Response:\n{}", result.andReturn().getResponse().getContentAsString());
@@ -60,47 +57,77 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
     @Before
     public void initData() throws IOException {
         testHelper.clearDb();
-        testHelper.initializeSingleRealisations3Tasks();
-        testHelper.initializeMultipleRealisations2Tasks();
-        maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         testHelper.flushAndClearSession();
     }
 
     @Test
-    public void findMaintenanceRealizationsWithinTime1() throws Exception {
+    public void findMaintenanceRealizationsWithinTime() throws Exception {
+        int count1 = getRandomId(0, 10);
+        int coun2 = getRandomId(0, 10);
+        final ZonedDateTime startNow = getNowWithZeroNanos();
+        final ZonedDateTime startInPast = startNow.minusHours(1);
+        generateSingleRealisationsWithTasksAndSingleRoute(count1, startNow);
+        generateSingleRealisationWithTasksAndMultipleRoutes(coun2, startInPast);
+
         getJson(
-            SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME,
+            startNow.toInstant(), startNow.toInstant(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(3)));
+            .andExpect(jsonPath("features", hasSize(count1)));
     }
 
     @Test
-    public void findMaintenanceRealizationsWithinTime2() throws Exception {
+    public void findMaintenanceRealizationsWithinTimeInPast() throws Exception {
+        int count1 = getRandomId(0, 10);
+        int count2 = getRandomId(0, 10);
+        final ZonedDateTime startNow = getNowWithZeroNanos();
+        final ZonedDateTime startInPast = startNow.minusHours(1);
+        generateSingleRealisationsWithTasksAndSingleRoute(count1, startNow);
+        generateSingleRealisationWithTasksAndMultipleRoutes(count2, startInPast);
+
         final ResultActions result = getJson(
-            MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME, MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME,
+            startInPast.toInstant(), startInPast.toInstant(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
         result
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(2)));
+            .andExpect(jsonPath("features", hasSize(count2)));
     }
 
     @Test
-    public void findMaintenanceRealizationsWithinTimeBoth() throws Exception {
+    public void findMaintenanceMultipleRealizationsWithinTime() throws Exception {
+        int count1 = getRandomId(0, 10);
+        int count2 = getRandomId(0, 10);
+        final ZonedDateTime startNow = getNowWithZeroNanos();
+        final ZonedDateTime startInPast = startNow.minusHours(1);
+        generateSingleRealisationsWithTasksAndSingleRoute(count1, startNow);
+        generateSingleRealisationWithTasksAndMultipleRoutes(count2, startInPast);
+
         final ResultActions result = getJson(
-            MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME,
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
+            startInPast.toInstant(), startNow.toInstant(),
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
+        result
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(5)));
+            .andExpect(jsonPath("features", hasSize(count1 + count2)));
     }
 
     @Test
     public void findMaintenanceRealizationsNotWithinTime() throws Exception {
-        final ResultActions result = getJson(
-            SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusMillis(1), SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
+        int count = getRandomId(0, 10);
+        final ZonedDateTime startNow = getNowWithZeroNanos();
+        generateSingleRealisationsWithTasksAndSingleRoute(count, startNow);
+
+        getJson(
+            startNow.plusSeconds(1).toInstant(), startNow.plusHours(24).toInstant(),
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(0)));
+
+        getJson(
+            startNow.minusHours(24).toInstant(), startNow.minusSeconds(1).toInstant(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -109,23 +136,59 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findMaintenanceRealizationsOnePointWithinBoundingBox() throws Exception {
-        final ResultActions result = getJson(
-            SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
-            RANGE_X_AROUND_TASK.getLeft(), RANGE_Y_AROUND_TASK.getLeft(), RANGE_X_AROUND_TASK.getRight(), RANGE_Y_AROUND_TASK.getRight())
+        final ZonedDateTime startNow = getNowWithZeroNanos();
+        generateSingleRealisationsWithTasksAndSingleRoute(1, startNow);
+
+        // generated coordinates are x = 19.0 to 28.99... and y = 59.0 to 68.99...
+        final double xMin = 28.0;
+        final double xMax = 29.0;
+        final double yMin = 68.0;
+        final double yMax = 69.0;
+
+        getJson(
+            startNow.toInstant(), startNow.toInstant(),
+            xMin, yMin, xMax, yMax)
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(1)))
-            .andExpect(jsonPath("features[0].properties.tasks[*]", containsInAnyOrder(12911, 1368)))
+            .andExpect(jsonPath("features[0].properties.tasks[*]", containsInAnyOrder(TASKS[0].getKey(), TASKS[1].getKey())))
             .andExpect(jsonPath("features[0].properties.tasks", hasSize(2)));
     }
 
     @Test
     public void findMaintenanceRealizationsOutsideBoundingBox() throws Exception {
-        final ResultActions result = getJson(
-            SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
-            RANGE_X_OUTSIDE_TASK.getLeft(), RANGE_Y_OUTSIDE_TASK.getLeft(), RANGE_X_OUTSIDE_TASK.getRight(), RANGE_Y_OUTSIDE_TASK.getRight())
+        final ZonedDateTime startNow = getNowWithZeroNanos();
+        generateSingleRealisationsWithTasksAndSingleRoute(1, startNow);
+
+        // generated coordinates are x = 19.0 to 28.99... and y = 59.0 to 68.99...
+        final double xMin = 29.0;
+        final double xMax = 32;
+        final double yMin = 69;
+        final double yMax = 72;
+
+        getJson(
+            startNow.toInstant(), startNow.toInstant(),
+            xMin, yMin, xMax, yMax)
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(0)));
+    }
+
+    private void generateSingleRealisationsWithTasksAndSingleRoute(final int countOfDifferentRealizations, final ZonedDateTime startTime)
+        throws JsonProcessingException {
+        testHelper.generateSingleRealisationsWithTasksAndSingleRoute(countOfDifferentRealizations, startTime);
+        maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        testHelper.flushAndClearSession();
+    }
+
+    private void generateSingleRealisationWithTasksAndMultipleRoutes(int countOfDifferentRealizations, ZonedDateTime startTime)
+        throws JsonProcessingException {
+        testHelper.generateSingleRealisationWithTasksAndMultipleRoutes(countOfDifferentRealizations, startTime);
+        maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        testHelper.flushAndClearSession();
+    }
+
+    private ZonedDateTime getNowWithZeroNanos() {
+        return ZonedDateTime.now().withNano(0);
     }
 }
