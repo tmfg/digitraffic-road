@@ -21,13 +21,18 @@ public class MaintenanceRealizationProperties {
     @ApiModelProperty(value = "Tasks done during maintenance work", required = true)
     public final Set<Long> tasks;
 
-    @ApiModelProperty(value = "Coordinates details", required = true)
-    public final List<MaintenanceRealizationCoordinateDetails> coordinateDetails;
+    @ApiModelProperty(value = "Start time of maintenance work tasks", required = true)
+    public ZonedDateTime startTime;
 
-    public MaintenanceRealizationProperties(final long id, final ZonedDateTime sendingTime, final Set<Long> tasks, final List<MaintenanceRealizationCoordinateDetails> coordinateDetails) {
+    @ApiModelProperty(value = "End time of maintenance work tasks", required = true)
+    public ZonedDateTime endTime;
+
+
+    public MaintenanceRealizationProperties(final long id, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime, final Set<Long> tasks) {
         this.id = id;
         this.sendingTime = sendingTime;
         this.tasks = tasks;
-        this.coordinateDetails = coordinateDetails;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }

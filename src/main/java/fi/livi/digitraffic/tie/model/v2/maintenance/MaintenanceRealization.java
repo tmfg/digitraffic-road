@@ -47,6 +47,12 @@ public class MaintenanceRealization {
     private ZonedDateTime sendingTime;
 
     @Column
+    private ZonedDateTime startTime;
+
+    @Column
+    private ZonedDateTime endTime;
+
+    @Column
     private Integer messageId;
 
     @NotNull
@@ -59,11 +65,6 @@ public class MaintenanceRealization {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="REALIZATION_DATA_ID", referencedColumnName = "ID", nullable = false, updatable = false)
     private MaintenanceRealizationData realizationData;
-
-    @Fetch(FetchMode.JOIN)
-    @OneToMany(mappedBy = "realization", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @OrderColumn(name = "ORDER_NUMBER", nullable = false, updatable = false)
-    private List<MaintenanceRealizationPoint> realizationPoints;
 
     @Fetch(FetchMode.JOIN)
     @OneToMany(fetch = FetchType.EAGER)
@@ -80,12 +81,15 @@ public class MaintenanceRealization {
     }
 
     public MaintenanceRealization(final MaintenanceRealizationData wmrd, final String sendingSystem, final Integer messageId,
-                                  final ZonedDateTime sendingTime, final LineString lineString, final Set<MaintenanceTask> tasks) {
+                                  final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                  final LineString lineString, final Set<MaintenanceTask> tasks) {
         this.realizationData = wmrd;
         this.sendingSystem = sendingSystem;
         this.messageId = messageId;
         this.sendingTime = sendingTime;
         this.jobId = wmrd.getJobId();
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.lineString = lineString;
         this.tasks.addAll(tasks);
     }
@@ -106,6 +110,14 @@ public class MaintenanceRealization {
         return sendingTime;
     }
 
+    public ZonedDateTime getStartTime() {
+        return startTime;
+    }
+
+    public ZonedDateTime getEndTime() {
+        return endTime;
+    }
+
     public Integer getMessageId() {
         return messageId;
     }
@@ -120,10 +132,6 @@ public class MaintenanceRealization {
 
     public MaintenanceRealizationData getRealizationData() {
         return realizationData;
-    }
-
-    public List<MaintenanceRealizationPoint> getRealizationPoints() {
-        return realizationPoints;
     }
 
     public Set<MaintenanceTask> getTasks() {

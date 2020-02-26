@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTaskRepository;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationCoordinateDetails;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationProperties;
@@ -30,7 +29,6 @@ import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealization;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationPoint;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTaskCategory;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTaskOperation;
@@ -94,8 +92,12 @@ public class V2MaintenanceRealizationDataService {
 
                 final Set<Long> taskIds = convertToMaintenanceRealizationTaskIds(r.getTasks());
                 final List<List<Double>> coordinates = convertToCoordinates(r.getLineString());
-                final List<MaintenanceRealizationCoordinateDetails> coordinateDetails = convertToMaintenanceCoordinateDetails(r.getRealizationPoints());
-                final MaintenanceRealizationProperties properties = new MaintenanceRealizationProperties(r.getId(), toZonedDateTimeAtUtc(r.getSendingTime()), taskIds, coordinateDetails);
+                final MaintenanceRealizationProperties properties =
+                    new MaintenanceRealizationProperties(r.getId(),
+                                                         toZonedDateTimeAtUtc(r.getSendingTime()),
+                                                         toZonedDateTimeAtUtc(r.getStartTime()),
+                                                         toZonedDateTimeAtUtc(r.getEndTime()),
+                                                         taskIds);
                 return new MaintenanceRealizationFeature(new LineString(coordinates), properties);
 
         }).collect(Collectors.toList());
@@ -105,10 +107,6 @@ public class V2MaintenanceRealizationDataService {
         return Arrays.stream(lineString.getCoordinates())
             .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ()))
             .collect(Collectors.toList());
-    }
-
-    private List<MaintenanceRealizationCoordinateDetails> convertToMaintenanceCoordinateDetails(final List<MaintenanceRealizationPoint> points) {
-        return points.stream().map(p -> new MaintenanceRealizationCoordinateDetails(toZonedDateTimeAtUtc(p.getTime()))).collect(Collectors.toList());
     }
 
     private MaintenanceRealizationTask createMaintenanceRealizationTask(MaintenanceTask t) {

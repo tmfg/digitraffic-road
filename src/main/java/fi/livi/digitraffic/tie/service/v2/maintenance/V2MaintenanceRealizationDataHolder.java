@@ -18,12 +18,13 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTask;
 class V2MaintenanceRealizationDataHolder {
 
     private List<Coordinate> coordinates = new ArrayList<>();
-    private List<ZonedDateTime> coordinateTimes = new ArrayList<>();
     private Set<MaintenanceTask> tasks = new HashSet<>();
     private MaintenanceRealizationData realizationData;
     private String sendingSystem;
     private Integer messageId;
     private ZonedDateTime sendingTime;
+    private ZonedDateTime startTime;
+    private ZonedDateTime endTime;
 
     public V2MaintenanceRealizationDataHolder(final MaintenanceRealizationData realizationData, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime) {
         this.realizationData = realizationData;
@@ -34,22 +35,31 @@ class V2MaintenanceRealizationDataHolder {
 
     public void resetCoordinatesAndTasks() {
         coordinates = new ArrayList<>();
-        coordinateTimes = new ArrayList<>();
         tasks = new HashSet<>();
     }
 
-    public void addCoordinate(final Coordinate coordinate, final ZonedDateTime time, final List<MaintenanceTask> tasks) {
+    public void addCoordinate(final Coordinate coordinate, final ZonedDateTime time, final List<MaintenanceTask> maintenanceTasks) {
         coordinates.add(coordinate);
-        coordinateTimes.add(time);
-        this.tasks.addAll(tasks);
+        if (startTime == null) {
+            startTime = time;
+        }
+        if (endTime == null || endTime.isBefore(time)) {
+            endTime = time;
+        }
+
+        if (tasks.isEmpty()) {
+            tasks.addAll(maintenanceTasks);
+        } else if (!tasks.containsAll(maintenanceTasks) || !maintenanceTasks.containsAll(tasks)) {
+            throw new IllegalArgumentException(String.format("Tasks can't change in one realization, new realization should be made. " +
+                "MaintenanceRealizationData id: %d", realizationData.getId()));
+        }
+    }
+
+    public void addCoordinateTime(final ZonedDateTime time) {
     }
 
     public List<Coordinate> getCoordinates() {
         return coordinates;
-    }
-
-    public List<ZonedDateTime> getCoordinateTimes() {
-        return coordinateTimes;
     }
 
     public Set<MaintenanceTask> getTasks() {
@@ -78,6 +88,14 @@ class V2MaintenanceRealizationDataHolder {
 
     public ZonedDateTime getSendingTime() {
         return sendingTime;
+    }
+
+    public ZonedDateTime getStartTime() {
+        return startTime;
+    }
+
+    public ZonedDateTime getEndTime() {
+        return endTime;
     }
 
     public boolean containsCoordinateData() {
