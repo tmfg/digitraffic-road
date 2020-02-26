@@ -18,7 +18,7 @@ public class SensorValueHistoryDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     private static final String INSERT = "INSERT INTO SENSOR_VALUE_HISTORY (id, road_station_id, road_station_sensor_id, value, measured) " +
-        "VALUES (nextval('seq_sensor_value'), :road_station_id, :road_station_sensor_id, :value, :measured)";
+        "VALUES (nextval('seq_sensor_value_history'), :road_station_id, :road_station_sensor_id, :value, :measured)";
 
     private static final String CLEAN = "DELETE FROM SENSOR_VALUE_HISTORY WHERE measured < :remove_before";
 
