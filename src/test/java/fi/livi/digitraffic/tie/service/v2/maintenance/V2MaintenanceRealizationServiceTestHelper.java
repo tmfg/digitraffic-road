@@ -74,6 +74,9 @@ public class V2MaintenanceRealizationServiceTestHelper {
     public final static String SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH =
         "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa-siirtymalla-ja-yhdella-pisteella.json";
 
+    public final static String MULTIPLE_REALISATIONS_STRANGE_PATH =
+        "classpath:harja/controller/hassu-monta-reittitoteumaa.json";
+
     public final static Pair<Double, Double> RANGE_X = Pair.of(19.0, 32.0);
     public final static Pair<Double, Double> RANGE_Y = Pair.of(59.0, 72.0);
 
@@ -281,6 +284,12 @@ public class V2MaintenanceRealizationServiceTestHelper {
     public void initializeMultipleRealisations2Tasks() throws IOException {
         final String jsonSingleRealisations3Tasks =
             readResourceContent(MULTIPLE_REALISATIONS_2_TASKS_PATH);
+        saveRealizationAsJson(jsonSingleRealisations3Tasks);
+    }
+
+    public void initializeMultipleRealisationsStrange() throws IOException {
+        final String jsonSingleRealisations3Tasks =
+            readResourceContent(MULTIPLE_REALISATIONS_STRANGE_PATH);
         saveRealizationAsJson(jsonSingleRealisations3Tasks);
     }
 

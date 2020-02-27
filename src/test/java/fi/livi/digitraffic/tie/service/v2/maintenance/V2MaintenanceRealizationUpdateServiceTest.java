@@ -10,11 +10,13 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
@@ -167,4 +169,11 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         Assert.assertEquals(ERROR, all.get(0).getStatus());
     }
 
+    @Ignore("Just for internal testing")
+    @Rollback(false)
+    @Test
+    public void saveNewWorkMachineRealizationWithStrangeMultipleRealization() throws IOException {
+        testHelper.initializeMultipleRealisationsStrange();
+        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+    }
 }

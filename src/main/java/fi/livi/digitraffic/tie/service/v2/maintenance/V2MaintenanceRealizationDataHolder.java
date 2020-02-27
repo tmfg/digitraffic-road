@@ -35,6 +35,8 @@ class V2MaintenanceRealizationDataHolder {
 
     public void resetCoordinatesAndTasks() {
         coordinates = new ArrayList<>();
+        startTime = null;
+        endTime = null;
         tasks = new HashSet<>();
     }
 
@@ -53,9 +55,6 @@ class V2MaintenanceRealizationDataHolder {
             throw new IllegalArgumentException(String.format("Tasks can't change in one realization, new realization should be made. " +
                 "MaintenanceRealizationData id: %d", realizationData.getId()));
         }
-    }
-
-    public void addCoordinateTime(final ZonedDateTime time) {
     }
 
     public List<Coordinate> getCoordinates() {
