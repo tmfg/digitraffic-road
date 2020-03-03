@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller.beta;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -10,6 +11,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.DecimalMax;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
@@ -36,6 +39,7 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
@@ -62,17 +66,19 @@ public class BetaController {
     private final TmsDataDatex2Service tmsDataDatex2Service;
     private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
     private final V2Datex2DataService v2Datex2DataService;
+    private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
     @Autowired
     public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service,
                           final V2Datex2DataService v2Datex2DataService,
-                          final V2MaintenanceRealizationDataService maintenanceRealizationDataService) {
+                          final V2MaintenanceRealizationDataService maintenanceRealizationDataService,
+                          final CameraPresetHistoryDataService cameraPresetHistoryDataService) {
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.maintenanceRealizationDataService = maintenanceRealizationDataService;
         this.v2Datex2DataService = v2Datex2DataService;
-
+        this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
     }
 
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
@@ -231,5 +237,22 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task categories"))
     public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
         return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
+    }
+
+    @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/changes", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera history changes"))
+    public CameraHistoryChangesDto getCameraOrPresetHistoryChanges(
+
+        @ApiParam(value = "Camera or preset id(s)")
+        @RequestParam(value = "id", required = false)
+        final List<String> cameraOrPresetIds,
+
+        @ApiParam(value = "Return changes int the history after given time", required = true)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam
+        final ZonedDateTime after) {
+
+        return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 }

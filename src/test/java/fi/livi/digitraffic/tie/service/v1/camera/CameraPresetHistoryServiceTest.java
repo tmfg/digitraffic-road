@@ -39,13 +39,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
@@ -84,6 +89,9 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
     @Value("${dt.amazon.s3.weathercam.region}")
     private String s3WeathercamRegion;
+
+    @MockBean
+    private CameraImageS3Writer cameraImageS3Writer;
 
     @Before
     public void cleanHistory() {
@@ -163,7 +171,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final CameraPreset cp = cameraPresetService.findCameraPresetByPresetId(modifiedPresetId);
         final RoadStation rs = cp.getRoadStation();
         all.forEach(e -> entityManager.detach(e));
-
         // Public 0. and 1., secret 2., 3. and 4.
         final CameraPresetHistory middle = all.get(2);
         rs.updatePublicity(true);
@@ -443,23 +450,92 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         final HistoryStatus statusPublic =
             cameraPresetHistoryDataService.resolveHistoryStatusForVersion(presetId + ".jpg", publicHistory.getVersionId());
-        Assert.assertEquals(HistoryStatus.PUBLIC, statusPublic);
+        assertEquals(HistoryStatus.PUBLIC, statusPublic);
 
         final HistoryStatus statusOld =
             cameraPresetHistoryDataService.resolveHistoryStatusForVersion(presetId + ".jpg", publicHistoryTooOld.getVersionId());
-        Assert.assertEquals(HistoryStatus.TOO_OLD, statusOld);
+        assertEquals(HistoryStatus.TOO_OLD, statusOld);
 
         final HistoryStatus statusSecret =
             cameraPresetHistoryDataService.resolveHistoryStatusForVersion(presetId + ".jpg", secretHistory.getVersionId());
-        Assert.assertEquals(HistoryStatus.SECRET, statusSecret);
+        assertEquals(HistoryStatus.SECRET, statusSecret);
 
         final HistoryStatus statusNotFound =
             cameraPresetHistoryDataService.resolveHistoryStatusForVersion(presetId + ".jpg", "FooBar123");
-        Assert.assertEquals(HistoryStatus.NOT_FOUND, statusNotFound);
+        assertEquals(HistoryStatus.NOT_FOUND, statusNotFound);
 
         final HistoryStatus statusIllegalKey =
             cameraPresetHistoryDataService.resolveHistoryStatusForVersion(presetId.substring(0,7) + ".jpg", publicHistory.getVersionId());
-        Assert.assertEquals(HistoryStatus.ILLEGAL_KEY, statusIllegalKey);
+        assertEquals(HistoryStatus.ILLEGAL_KEY, statusIllegalKey);
+    }
+
+    @Test
+    public void findcameraOrPresetChanges() {
+
+        // Generate preset history
+        final int historySize = RandomUtils.nextInt(21, 28);
+        final List<String> presetIds = generateHistoryForPublicPresets(2, historySize);
+        final CameraPreset cp1 = cameraPresetService.findCameraPresetByPresetId(presetIds.get(1));
+        final RoadStation rs1 = cp1.getRoadStation();
+        final List<ZonedDateTime> changeTimes = new ArrayList<>();
+        final List<CameraPresetHistory> allBefore = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp1.getPresetId());
+
+        // Must end transaction to save different timestamps to db
+        endTransactionAndStartNew();
+        sleep(1000);
+
+        // Generate 3 changes in the history
+        IntStream.range(1,4).forEach(i -> {
+            boolean changeTo = i % 2 == 0; // 1:false -> 2:true -> 3:false
+            final int index = historySize * i/4;
+            log.info("Index {}/{} to {}", index, historySize, changeTo);
+            final CameraPresetHistory h = allBefore.get(index);
+            rs1.updatePublicity(changeTo, h.getLastModified());
+            changeTimes.add(h.getLastModified());
+            cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs1);
+            // Must end transaction to save different timestamps to db
+            endTransactionAndStartNew();
+            sleep(1000);
+        });
+        flushAndClearSession();
+
+        final List<CameraPresetHistory> allAfter = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp1.getPresetId());
+
+        IntStream.range(1,4).forEach(i -> {
+            final boolean changeTo = i % 2 == 0; // 1:false -> 2:true -> 3:false
+            final int changesCount = 4 - i;
+            final int index = historySize * i/4;
+            final ZonedDateTime changedOn = allAfter.get(index).getModified();
+            log.info("Find changes from index {} of {} to {}", index, historySize, changeTo, changedOn);
+
+            final List<PresetHistoryChangesDto> changesAfter =
+                cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn, Collections.singletonList(cp1.getPresetId()))
+                    .changes;
+            final CameraHistoryChangesDto changesBeforeDto =
+                cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn.minusSeconds(1), Collections.singletonList(cp1.getPresetId()));
+            final List<PresetHistoryChangesDto> changesBefore = changesBeforeDto.changes;
+
+
+            // When fetching changes before and after change, there should be one more change in former
+            assertTrue(changesAfter.size()+1 == changesBefore.size());
+            assertCollectionSize(changesCount, changesBefore);
+
+            final PresetHistoryChangesDto oldestChange = changesBefore.get(0);
+            log.info("Found {} change to {}, lastModified on {} and modified on {}",
+                     oldestChange.getPresetId(), oldestChange.getPublishableTo(), oldestChange.getLastModified(), oldestChange.getModified());
+            // First change in result should match change status
+            assertEquals(changeTo, changesBefore.get(0).getPublishableTo());
+            // Last change in result should have the latest change time
+            assertEquals(changesBefore.get(changesBefore.size()-1).getModified(), changesBeforeDto.latestChange);
+        });
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -469,7 +545,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final String version = "ABCDEFG123456";
         final URI url = weathercamS3Properties.getS3UriForVersion(image, version);
         final String expected = "http://" + s3WeathercamBucketName + ".s3-" + s3WeathercamRegion + ".amazonaws.com/" + imageVersions + "?versionId=" + version;
-        Assert.assertEquals(expected, url.toString());
+        assertEquals(expected, url.toString());
     }
 
     @Test
@@ -494,21 +570,20 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         Assert.assertFalse(historyBefore.get(0).getPublishable()); // T1
         Assert.assertFalse(historyBefore.get(1).getPublishable()); // T2
         Assert.assertFalse(historyBefore.get(2).getPublishable()); // T3
-        Assert.assertTrue(historyBefore.get(3).getPublishable()); // T4
+        assertTrue(historyBefore.get(3).getPublishable()); // T4
 
         // Set camera to public from the T1. Preset history at T2 should remain secret. Others should be public.
         final RoadStation rs = preset.getRoadStation();
         rs.updatePublicity(true, T1);
-        entityManager.flush();
-        entityManager.clear();
+        flushAndClearSession();
 
         cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
 
         List<CameraPresetHistory> historyAfter = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(preset.getPresetId());
-        Assert.assertTrue(historyAfter.get(0).getPublishable()); // T1
+        assertTrue(historyAfter.get(0).getPublishable()); // T1
         Assert.assertFalse(historyAfter.get(1).getPublishable()); // T2
-        Assert.assertTrue(historyAfter.get(2).getPublishable()); // T3
-        Assert.assertTrue(historyAfter.get(3).getPublishable()); // T4
+        assertTrue(historyAfter.get(2).getPublishable()); // T3
+        assertTrue(historyAfter.get(3).getPublishable()); // T4
     }
 
     private String generateHistoryForCamera(final int historySize, final ZonedDateTime lastModified) {
@@ -540,7 +615,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     private CameraPresetHistory generateHistory(final CameraPreset preset, final ZonedDateTime lastModified, final boolean publishable) {
         final String versionId = RandomStringUtils.randomAlphanumeric(32);
         final CameraPresetHistory history =
-            new CameraPresetHistory(preset.getPresetId(), versionId, preset.getId(), lastModified, publishable, 10, getZonedDateTimeNowAtUtc(), preset.isPublic());
+            new CameraPresetHistory(preset.getPresetId(), versionId, preset.getId(), lastModified, publishable, 10, preset.isPublic());
         cameraPresetHistoryUpdateService.saveHistory(history);
         entityManager.flush();
         return history;
@@ -548,5 +623,16 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
     private static List<String> generateCameraIds(final int count) {
         return IntStream.range(0, count).mapToObj(i -> String.format("C%s", StringUtils.leftPad(String.valueOf(i), 5, "0"))).collect(Collectors.toList());
+    }
+
+    private void endTransactionAndStartNew() {
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+        TestTransaction.start();
+    }
+
+    private void flushAndClearSession() {
+        entityManager.flush();
+        entityManager.clear();
     }
 }

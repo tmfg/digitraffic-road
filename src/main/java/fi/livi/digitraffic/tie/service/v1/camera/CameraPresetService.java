@@ -131,7 +131,7 @@ public class CameraPresetService {
         if (updateInfo.isSuccess()) {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
-                    isImagePublic, updateInfo.getSizeBytes(), ZonedDateTime.now(ZoneOffset.UTC), isPresetPublic);
+                                        isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
 
             cameraPresetHistoryRepository.save(history);
         }
