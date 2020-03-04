@@ -111,7 +111,6 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<PresetHistoryPresenceDto> findCameraPresetHistoryPresenceByCameraIdAndTime(final String cameraId, final Instant fromTime, final Instant toTime, final Instant oldestTimeLimit);
 
-
     @Query(value =
         "select post_history.preset_id presetId\n" +
         "     , post_history.camera_id cameraId\n" +
@@ -138,4 +137,9 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
                "FROM camera_preset_history h",
            nativeQuery = true)
     Instant getLatestChangesTime();
+
+    @Modifying
+    @Query(value = "delete FROM camera_preset_history h WHERE h.last_modified < now() - :hours * interval '1 hour'", nativeQuery = true)
+    void deleteOlderThanHours(final int hours);
+
 }

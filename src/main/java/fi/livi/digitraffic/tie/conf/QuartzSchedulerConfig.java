@@ -43,6 +43,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import fi.livi.digitraffic.tie.scheduler.AutowiringSpringBeanJobFactory;
+import fi.livi.digitraffic.tie.scheduler.CameraHistoryDeleteJob;
 import fi.livi.digitraffic.tie.scheduler.CameraMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.CameraStationsStatusMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.Datex2RoadworksMessageUpdateJob;
@@ -155,151 +156,161 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean cameraMetadataUpdateJobDetail() {
+    public JobDetailFactoryBean cameraMetadataUpdateJob() {
         return createJobDetail(CameraMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean tmsStationMetadataUpdateJobDetail() {
+    public JobDetailFactoryBean tmsStationMetadataUpdateJob() {
         return createJobDetail(TmsStationMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean weatherStationMetadataUpdateJobDetail() {
+    public JobDetailFactoryBean weatherStationMetadataUpdateJob() {
         return createJobDetail(WeatherStationMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean cameraStationsStatusMetadataUpdateJobDetail() {
+    public JobDetailFactoryBean cameraStationsStatusMetadataUpdateJob() {
         return createJobDetail(CameraStationsStatusMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean tmsStationsStatusMetadataUpdateJobDetail() {
+    public JobDetailFactoryBean tmsStationsStatusMetadataUpdateJob() {
         return createJobDetail(TmsStationsStatusMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean tmsStationSensorConstantsMetadataUpdateJobDetail() {
+    public JobDetailFactoryBean tmsStationSensorConstantsMetadataUpdateJob() {
         return createJobDetail(TmsStationSensorConstantsMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean weatherStationsStatusMetadataUpdateJobDetail() {
+    public JobDetailFactoryBean weatherStationsStatusMetadataUpdateJob() {
         return createJobDetail(WeatherStationsStatusMetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean locationMetadataUpdateJobDetail() { return createJobDetail(LocationMetadataUpdateJob.class); }
+    public JobDetailFactoryBean locationMetadataUpdateJob() { return createJobDetail(LocationMetadataUpdateJob.class); }
 
     @Bean
-    public JobDetailFactoryBean datex2TrafficAlertMessageUpdateJobDetail() {
+    public JobDetailFactoryBean datex2TrafficAlertMessageUpdateJob() {
         return createJobDetail(Datex2TrafficAlertMessageUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean datex2RoadworksMessageUpdateJobDetail() {
+    public JobDetailFactoryBean datex2RoadworksMessageUpdateJob() {
         return createJobDetail(Datex2RoadworksMessageUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean datex2WeightRestrictionsMessageUpdateJobDetail() {
+    public JobDetailFactoryBean datex2WeightRestrictionsMessageUpdateJob() {
         return createJobDetail(Datex2WeightRestrictionsMessageUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean forecastSectionV1MetadataUpdateJobDetail() {
+    public JobDetailFactoryBean forecastSectionV1MetadataUpdateJob() {
         return createJobDetail(ForecastSectionV1MetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean forecastSectionV2MetadataUpdateJobDetail() {
+    public JobDetailFactoryBean forecastSectionV2MetadataUpdateJob() {
         return createJobDetail(ForecastSectionV2MetadataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean forecastSectionV1DataUpdateJobDetail() {
+    public JobDetailFactoryBean forecastSectionV1DataUpdateJob() {
         return createJobDetail(ForecastSectionV1DataUpdateJob.class);
     }
 
     @Bean
-    public JobDetailFactoryBean forecastSectionV2DataUpdateJobDetail() {
+    public JobDetailFactoryBean forecastSectionV2DataUpdateJob() {
         return createJobDetail(ForecastSectionV2DataUpdateJob.class);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJobDetail) {
-        return createTrigger(cameraMetadataUpdateJobDetail);
+    public JobDetailFactoryBean cameraHistoryDeleteJob() {
+        return createJobDetail(CameraHistoryDeleteJob.class);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> tmsStationMetadataUpdateJobTrigger(final JobDetail tmsStationMetadataUpdateJobDetail) {
-        return createTrigger(tmsStationMetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJob) {
+        return createTrigger(cameraMetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> tmsStationSensorConstantsUpdateJobTrigger(final JobDetail tmsStationSensorConstantsMetadataUpdateJobDetail) {
-        return createTrigger(tmsStationSensorConstantsMetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> tmsStationMetadataUpdateJobTrigger(final JobDetail tmsStationMetadataUpdateJob) {
+        return createTrigger(tmsStationMetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> weatherStationMetadataUpdateJobTrigger(final JobDetail weatherStationMetadataUpdateJobDetail) {
-        return createTrigger(weatherStationMetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> tmsStationSensorConstantsUpdateJobTrigger(final JobDetail tmsStationSensorConstantsMetadataUpdateJob) {
+        return createTrigger(tmsStationSensorConstantsMetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> cameraStationsStatusMetadataUpdateJobTrigger(final JobDetail cameraStationsStatusMetadataUpdateJobDetail) {
-        return createTrigger(cameraStationsStatusMetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> weatherStationMetadataUpdateJobTrigger(final JobDetail weatherStationMetadataUpdateJob) {
+        return createTrigger(weatherStationMetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> tmsStationsStatusMetadataUpdateJobTrigger(final JobDetail tmsStationsStatusMetadataUpdateJobDetail) {
-        return createTrigger(tmsStationsStatusMetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> cameraStationsStatusMetadataUpdateJobTrigger(final JobDetail cameraStationsStatusMetadataUpdateJob) {
+        return createTrigger(cameraStationsStatusMetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> weatherStationsStatusMetadataUpdateJobTrigger(final JobDetail weatherStationsStatusMetadataUpdateJobDetail) {
-        return createTrigger(weatherStationsStatusMetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> tmsStationsStatusMetadataUpdateJobTrigger(final JobDetail tmsStationsStatusMetadataUpdateJob) {
+        return createTrigger(tmsStationsStatusMetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJobDetail) {
-        return createTrigger(locationMetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> weatherStationsStatusMetadataUpdateJobTrigger(final JobDetail weatherStationsStatusMetadataUpdateJob) {
+        return createTrigger(weatherStationsStatusMetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> datex2TrafficAlertMessageUpdateJobTrigger(final JobDetail datex2TrafficAlertMessageUpdateJobDetail) {
-        return createTrigger(datex2TrafficAlertMessageUpdateJobDetail);
+    public FactoryBean<? extends Trigger> locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJob) {
+        return createTrigger(locationMetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> datex2RoadworksMessageUpdateJobTrigger(final JobDetail datex2RoadworksMessageUpdateJobDetail) {
-        return createTrigger(datex2RoadworksMessageUpdateJobDetail);
+    public FactoryBean<? extends Trigger> datex2TrafficAlertMessageUpdateJobTrigger(final JobDetail datex2TrafficAlertMessageUpdateJob) {
+        return createTrigger(datex2TrafficAlertMessageUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> datex2WeightRestrictionsMessageUpdateJobTrigger(final JobDetail datex2WeightRestrictionsMessageUpdateJobDetail) {
-        return createTrigger(datex2WeightRestrictionsMessageUpdateJobDetail);
+    public FactoryBean<? extends Trigger> datex2RoadworksMessageUpdateJobTrigger(final JobDetail datex2RoadworksMessageUpdateJob) {
+        return createTrigger(datex2RoadworksMessageUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> forecastSectionV1MetadataUpdateJobTrigger(final JobDetail forecastSectionV1MetadataUpdateJobDetail) {
-        return createTrigger(forecastSectionV1MetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> datex2WeightRestrictionsMessageUpdateJobTrigger(final JobDetail datex2WeightRestrictionsMessageUpdateJob) {
+        return createTrigger(datex2WeightRestrictionsMessageUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> forecastSectionV2MetadataUpdateJobTrigger(final JobDetail forecastSectionV2MetadataUpdateJobDetail) {
-        return createTrigger(forecastSectionV2MetadataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> forecastSectionV1MetadataUpdateJobTrigger(final JobDetail forecastSectionV1MetadataUpdateJob) {
+        return createTrigger(forecastSectionV1MetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> forecastSectionV1DataUpdateJobTrigger(final JobDetail forecastSectionV1DataUpdateJobDetail) {
-        return createTrigger(forecastSectionV1DataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> forecastSectionV2MetadataUpdateJobTrigger(final JobDetail forecastSectionV2MetadataUpdateJob) {
+        return createTrigger(forecastSectionV2MetadataUpdateJob);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> forecastSectionV2DataUpdateJobTrigger(final JobDetail forecastSectionV2DataUpdateJobDetail) {
-        return createTrigger(forecastSectionV2DataUpdateJobDetail);
+    public FactoryBean<? extends Trigger> forecastSectionV1DataUpdateJobTrigger(final JobDetail forecastSectionV1DataUpdateJob) {
+        return createTrigger(forecastSectionV1DataUpdateJob);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> forecastSectionV2DataUpdateJobTrigger(final JobDetail forecastSectionV2DataUpdateJob) {
+        return createTrigger(forecastSectionV2DataUpdateJob);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> cameraHistoryDeleteJobTrigger(final JobDetail cameraHistoryDeleteJob) {
+        return createTrigger(cameraHistoryDeleteJob);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {

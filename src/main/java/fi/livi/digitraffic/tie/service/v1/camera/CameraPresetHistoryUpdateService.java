@@ -54,4 +54,9 @@ public class CameraPresetHistoryUpdateService {
             cameraImageUpdateService.hideCurrentImagesForCamera(rs);
         }
     }
+
+    @Transactional
+    public void deleteOlderThanHoursHistory(final int hours) {
+        cameraPresetHistoryRepository.deleteOlderThanHours(hours);
+    }
 }

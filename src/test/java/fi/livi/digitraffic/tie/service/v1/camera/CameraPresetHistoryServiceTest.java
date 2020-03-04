@@ -33,6 +33,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
@@ -52,6 +54,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
+import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
@@ -583,6 +586,47 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         Assert.assertFalse(historyAfter.get(1).getPublishable()); // T2
         assertTrue(historyAfter.get(2).getPublishable()); // T3
         assertTrue(historyAfter.get(3).getPublishable()); // T4
+    }
+
+    @Test
+    public void deleteOlderThanHours() {
+        final int historySize = RandomUtils.nextInt(40, 80);
+        // handle possible gap between server and db times
+        final ZonedDateTime lastModified = getZonedDateTimeNowAtUtc().plusSeconds(10);
+        // History for 39 hours backwards
+        final String cameraId = generateHistoryForCamera(historySize, lastModified);
+        final List<CameraHistoryDto> history = cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
+        final long presetCount = history.get(0).cameraHistory.stream().map(h -> h.getPresetId()).distinct().count();
+        final List<CameraPresetHistory> allBeforeDelete = cameraPresetHistoryRepository.findAll();
+        log.info("all {} presets {}", allBeforeDelete.size(), presetCount);
+        Assert.assertEquals(historySize*presetCount, allBeforeDelete.size());
+        flushAndClearSession();
+
+        // after delete there should be left only newer than 24 hours -> 25 left/preset
+        cameraPresetHistoryUpdateService.deleteOlderThanHoursHistory(24);
+        final List<CameraPresetHistory> allAfterDelete = cameraPresetHistoryRepository.findAll();
+        log.info("Before {} after delete {}", allBeforeDelete.size(), allAfterDelete.size());
+        Assert.assertEquals(25*presetCount, allAfterDelete.size());
+
+        // All presets should have history of 25
+        final Map<String, List<CameraPresetHistory>> historyPerPreset =
+            allAfterDelete.stream().collect(Collectors.groupingBy(CameraPresetHistory::getPresetId));
+        historyPerPreset.values().forEach(h -> AssertHelper.assertCollectionSize(25, h));
+
+        // All history should be newer than 25 h
+        final ZonedDateTime oldestLimit = lastModified.minusHours(24);
+        allAfterDelete.forEach(h -> Assert.assertTrue(h.getLastModified().isAfter(oldestLimit)));
+    }
+
+    @Ignore("Internal testing")
+    @Rollback(false)
+    @Test
+    public void generateHistoryForInternalTesting() {
+        final int historySize = RandomUtils.nextInt(40, 80);
+        // handle possible gap between server and db times
+        final ZonedDateTime lastModified = getZonedDateTimeNowAtUtc().plusSeconds(10);
+        // History for 39 hours backwards
+        final String cameraId = generateHistoryForCamera(historySize, lastModified);
     }
 
     private String generateHistoryForCamera(final int historySize, final ZonedDateTime lastModified) {
