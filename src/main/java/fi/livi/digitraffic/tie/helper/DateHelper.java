@@ -146,6 +146,14 @@ public final class DateHelper {
         }
         return null;
     }
+
+    public static ZonedDateTime withoutMillis(final ZonedDateTime from) {
+        if (from != null) {
+            return from.with(MILLI_OF_SECOND, 0);
+        }
+        return null;
+    }
+
     public static ZonedDateTime toZonedDateTimeWithoutMillis(final Instant from) {
         if (from != null) {
             return toZonedDateTimeAtUtc(withoutMillis(from));
