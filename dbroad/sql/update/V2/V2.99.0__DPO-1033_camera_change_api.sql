@@ -6,7 +6,8 @@ WHERE last_modified < now() - interval '25 hour';
 ALTER TABLE camera_preset_history
     ADD COLUMN IF NOT EXISTS preset_seq BIGINT DEFAULT 0,
     ADD COLUMN IF NOT EXISTS created_tmp TIMESTAMPTZ(0) DEFAULT now(),
-    ADD COLUMN IF NOT EXISTS modified TIMESTAMPTZ(0) DEFAULT now();
+    ADD COLUMN IF NOT EXISTS modified TIMESTAMPTZ(0) DEFAULT now(),
+    ADD COLUMN IF NOT EXISTS last_modified_tmp TIMESTAMPTZ(0) DEFAULT now();
 
 UPDATE camera_preset_history tgt
 SET preset_seq = (
@@ -18,23 +19,23 @@ SET preset_seq = (
         WHERE src.preset_id = tgt.preset_id
           AND src.last_modified = tgt.last_modified),
     created_tmp = created,
-    modified = last_modified;
+    modified = last_modified,
+    last_modified_tmp = last_modified;
 
-UPDATE camera_preset_history
-SET preset_seq = 0,
-    created_tmp = created,
-    modified = last_modified;
-
--- replace old created with new created
+-- replace old columns with new ones
 ALTER TABLE camera_preset_history
-    DROP COLUMN created;
+    DROP COLUMN created,
+    DROP COLUMN last_modified;
 ALTER TABLE camera_preset_history
     RENAME COLUMN created_tmp TO created;
+ALTER TABLE camera_preset_history
+    RENAME COLUMN last_modified_tmp TO last_modified;
 -- not null constraints to all
 ALTER TABLE camera_preset_history
     ALTER COLUMN preset_seq SET NOT NULL,
     ALTER COLUMN created SET NOT NULL,
-    ALTER COLUMN modified SET NOT NULL;
+    ALTER COLUMN modified SET NOT NULL,
+    ALTER COLUMN last_modified SET NOT NULL;
 
 -- Function to update sequence number per preset
 CREATE OR REPLACE FUNCTION update_preset_seq_column()
