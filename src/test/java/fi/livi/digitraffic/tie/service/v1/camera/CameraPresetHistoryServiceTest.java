@@ -298,9 +298,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         // history should exist for camera
         assertFalse(allPresetPresences.isEmpty());
-        allPresetPresences.stream().filter(h -> h.getCameraId().equals(cameraId)).forEach(h -> {
-            assertTrue(h.isHistoryPresent());
-        });
+        allPresetPresences.stream().filter(h -> h.getCameraId().equals(cameraId)).forEach(h -> assertTrue(h.isHistoryPresent()));
 
         // Other cameras presences should not exist
         assertFalse(allPresetPresences.stream().anyMatch(h -> !h.getCameraId().equals(cameraId)));
@@ -411,7 +409,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final String presetIdToDelete = presetIds.get(0);
         final String presetIdNotToDelete = presetIds.get(2);
         // Make sure there is other presets
-        assertTrue(presetIds.stream().filter(id -> !id.equals(presetIdNotToDelete)).findFirst().isPresent());
+        assertTrue(presetIds.stream().anyMatch(id -> !id.equals(presetIdNotToDelete)));
 
         final CameraHistoryPresencesDto presetPresencesToDelete =
             cameraPresetHistoryDataService.findCameraOrPresetHistoryPresences(presetIdToDelete, null, null);
@@ -509,7 +507,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
             final int changesCount = 4 - i;
             final int index = historySize * i/4;
             final ZonedDateTime changedOn = allAfter.get(index).getModified();
-            log.info("Find changes from index {} of {} to {}", index, historySize, changeTo, changedOn);
+            log.info("Find changes from index {}/{} change to {} on {}", index, historySize, changeTo, changedOn);
 
             final List<PresetHistoryChangesDto> changesAfter =
                 cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn, Collections.singletonList(cp1.getPresetId()))
@@ -520,7 +518,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
 
             // When fetching changes before and after change, there should be one more change in former
-            assertTrue(changesAfter.size()+1 == changesBefore.size());
+            assertEquals(changesAfter.size() + 1, changesBefore.size());
             assertCollectionSize(changesCount, changesBefore);
 
             final PresetHistoryChangesDto oldestChange = changesBefore.get(0);
@@ -597,7 +595,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         // History for 39 hours backwards
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         final List<CameraHistoryDto> history = cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
-        final long presetCount = history.get(0).cameraHistory.stream().map(h -> h.getPresetId()).distinct().count();
+        final long presetCount = history.get(0).cameraHistory.stream().map(PresetHistoryDto::getPresetId).distinct().count();
         final List<CameraPresetHistory> allBeforeDelete = cameraPresetHistoryRepository.findAll();
         log.info("all {} presets {}", allBeforeDelete.size(), presetCount);
         Assert.assertEquals(historySize*presetCount, allBeforeDelete.size());
@@ -616,9 +614,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         // All history should be equal or newer than 24 h
         final ZonedDateTime oldestLimit = lastModified.minusHours(24).minusSeconds(1);
-        allAfterDelete.forEach(h -> {
-            log.info("current {} limit {}", DateHelper.toZonedDateTimeAtUtc(h.getLastModified()), oldestLimit);
-            Assert.assertTrue(h.getLastModified().isAfter(oldestLimit));});
+        allAfterDelete.forEach(h -> Assert.assertTrue(h.getLastModified().isAfter(oldestLimit)));
     }
 
     @Ignore("Internal testing")

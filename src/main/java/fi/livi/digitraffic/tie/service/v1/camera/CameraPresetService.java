@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -124,9 +122,9 @@ public class CameraPresetService {
         return cameraPresetRepository.findByLotjuId(presetLotjuId);
     }
 
-    @Transactional
-    public void updateCameraPresetAndHistory(final CameraPreset cameraPreset, final boolean isImagePublic, final boolean isPresetPublic,
+    public void updateCameraPresetAndHistory(final long cameraPresetLotjuId, final boolean isImagePublic, final boolean isPresetPublic,
                                              final ImageUpdateInfo updateInfo) {
+        final CameraPreset cameraPreset = findCameraPresetByLotjuId(cameraPresetLotjuId);
         // Update version data only if write has succeeded
         if (updateInfo.isSuccess()) {
             final CameraPresetHistory history =

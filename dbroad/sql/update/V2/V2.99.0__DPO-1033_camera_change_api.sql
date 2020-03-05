@@ -1,6 +1,6 @@
--- Delete over 24h history
+-- Delete over 7 d history
 DELETE FROM camera_preset_history
-WHERE last_modified < now() - interval '25 hour';
+WHERE last_modified < now() - interval '168 hour';
 
 -- add some new columns
 ALTER TABLE camera_preset_history
@@ -37,7 +37,7 @@ ALTER TABLE camera_preset_history
     ALTER COLUMN modified SET NOT NULL,
     ALTER COLUMN last_modified SET NOT NULL;
 
--- Function to update sequence number per preset
+-- Function to generate new sequence number on every insert per preset history
 CREATE OR REPLACE FUNCTION update_preset_seq_column()
     RETURNS TRIGGER AS $$
 DECLARE

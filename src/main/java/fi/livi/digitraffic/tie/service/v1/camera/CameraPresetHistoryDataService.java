@@ -86,7 +86,7 @@ public class CameraPresetHistoryDataService {
     /**
      *
      * @param after Return changes after timestamp
-     * @param cameraOrPresetIds List of possible camera and/or preset ids to find. If list is empty all will be include.
+     * @param cameraOrPresetIds List of possible camera and/or preset ids to find. If list is empty all will be included.
      * @return History changes ordered by presetId and lastModified in ascending order
      */
     @Transactional(readOnly = true)
@@ -113,7 +113,7 @@ public class CameraPresetHistoryDataService {
         if (!illegalIds.isEmpty()) {
             throw new IllegalArgumentException(
                 String.format("Parameter camera or presetId should be either 6 or 8 chars long. Illegal parameters: %s.",
-                    illegalIds.stream().collect(Collectors.joining(", "))));
+                    String.join(", ", illegalIds)));
         }
     }
 
@@ -129,10 +129,10 @@ public class CameraPresetHistoryDataService {
      * Finds cameras' and presets' history status. History status tells if
      * history exists for given time interval.
      *
-     * @param cameraOrPresetId
-     * @param fromTime
-     * @param toTime
-     * @return
+     * @param cameraOrPresetId camera or preset id to find
+     * @param fromTime inclusive
+     * @param toTime inclusive
+     * @return Presets history presences
      */
     @Transactional(readOnly = true)
     public CameraHistoryPresencesDto findCameraOrPresetHistoryPresences(final String cameraOrPresetId, final ZonedDateTime fromTime,
