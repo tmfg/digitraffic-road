@@ -93,28 +93,30 @@ public class V2MaintenanceRealizationUpdateService {
         final ReittitoteumanKirjausRequestSchema kirjaus;
         try {
             kirjaus = jsonReader.readValue(wmrd.getJson());
-        } catch (JsonProcessingException e) {
+
+            // Message info
+            final String sendingSystem = kirjaus.getOtsikko().getLahettaja().getJarjestelma();
+            final Integer messageId = kirjaus.getOtsikko().getViestintunniste().getId();
+            final ZonedDateTime sendingTime = kirjaus.getOtsikko().getLahetysaika();
+
+            // Holder for one task-set data
+            final V2MaintenanceRealizationDataHolder currentDataHolder = new V2MaintenanceRealizationDataHolder(wmrd, sendingSystem, messageId, sendingTime);
+
+            // Data is either in reittitoteuma or in reittitoteumat depending of sending system
+            final List<ReittitoteumaSchema> toteumat = getReittitoteumas(kirjaus);
+
+            // Route
+            toteumat.forEach(reittitoteuma -> handleRoute(reittitoteuma.getReitti(), currentDataHolder));
+            saveRealizationIfContainsValidLineString(currentDataHolder);
+
+            wmrd.updateStatusToHandled();
+
+        } catch (Exception e) {
             log.error(String.format("HandleUnhandledRealizations failed for id %d", wmrd.getId()), e);
             wmrd.updateStatusToError();
             return false;
         }
 
-        // Message info
-        final String sendingSystem = kirjaus.getOtsikko().getLahettaja().getJarjestelma();
-        final Integer messageId = kirjaus.getOtsikko().getViestintunniste().getId();
-        final ZonedDateTime sendingTime = kirjaus.getOtsikko().getLahetysaika();
-
-        // Holder for one task-set data
-        final V2MaintenanceRealizationDataHolder currentDataHolder = new V2MaintenanceRealizationDataHolder(wmrd, sendingSystem, messageId, sendingTime);
-
-        // Data is either in reittitoteuma or in reittitoteumat depending of sending system
-        final List<ReittitoteumaSchema> toteumat = getReittitoteumas(kirjaus);
-
-        // Route
-        toteumat.forEach(reittitoteuma -> handleRoute(reittitoteuma.getReitti(), currentDataHolder));
-        saveRealizationIfContainsValidLineString(currentDataHolder);
-
-        wmrd.updateStatusToHandled();
         return true;
     }
 
