@@ -122,6 +122,7 @@ public class CameraPresetService {
         return cameraPresetRepository.findByLotjuId(presetLotjuId);
     }
 
+    @Transactional
     public void updateCameraPresetAndHistory(final long cameraPresetLotjuId, final boolean isImagePublic, final boolean isPresetPublic,
                                              final ImageUpdateInfo updateInfo) {
         final CameraPreset cameraPreset = findCameraPresetByLotjuId(cameraPresetLotjuId);
