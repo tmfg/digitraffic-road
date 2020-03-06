@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
@@ -27,6 +29,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData;
 @Import({ V2MaintenanceRealizationUpdateService.class, JacksonAutoConfiguration.class, V2MaintenanceRealizationServiceTestHelper.class })
 public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTest {
 
+    private static final Logger log = LoggerFactory.getLogger(V2MaintenanceRealizationUpdateServiceTest.class);
     @Autowired
     private V2MaintenanceRealizationUpdateService maintenanceRealizationUpdateService;
 
@@ -173,7 +176,8 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     @Rollback(false)
     @Test
     public void saveNewWorkMachineRealizationWithStrangeMultipleRealization() throws IOException {
-        testHelper.initializeMultipleRealisationsStrange();
+        testHelper.initializeForInternalTesting("virheellisiä-linestringeja.json");
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        log.info("Imported {} realizations", count);
     }
 }

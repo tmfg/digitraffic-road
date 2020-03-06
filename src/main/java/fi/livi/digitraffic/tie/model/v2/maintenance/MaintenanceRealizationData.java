@@ -55,6 +55,9 @@ public class MaintenanceRealizationData {
     @OneToMany(mappedBy = "realizationData", fetch = FetchType.LAZY)
     private Set<MaintenanceRealization> realizationData;
 
+    @Column
+    private String handlingInfo;
+
     public MaintenanceRealizationData() {
         // For Hibernate
     }
@@ -92,6 +95,10 @@ public class MaintenanceRealizationData {
             throw new IllegalStateException(String.format("%s status is already %s cannot be changed to %s", getClass().getSimpleName(), status, Status.ERROR));
         }
         status = Status.ERROR;
+    }
+
+    public void appendHandlingInfo(final String append) {
+        this.handlingInfo = handlingInfo != null ? handlingInfo + ", " + append : append;
     }
 
     @Override

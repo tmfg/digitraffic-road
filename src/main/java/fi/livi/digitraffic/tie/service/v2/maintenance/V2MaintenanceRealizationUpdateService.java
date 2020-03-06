@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -81,7 +82,7 @@ public class V2MaintenanceRealizationUpdateService {
     @Transactional
     public long handleUnhandledRealizations(int maxToHandle) {
         final Stream<MaintenanceRealizationData> data = v2RealizationDataRepository.findUnhandled(maxToHandle);
-        final long count = data.filter(d -> handleWorkMachineRealization(d)).count();
+        final long count = data.filter(this::handleWorkMachineRealization).count();
         if (count > 0) {
             dataStatusService.updateDataUpdated(DataType.MAINTENANCE_REALIZATION_DATA);
         }
@@ -141,7 +142,7 @@ public class V2MaintenanceRealizationUpdateService {
                 final KoordinaattisijaintiSchema koordinaatit = r.getReittipiste().getKoordinaatit();
 
                 final Coordinate pgPoint = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
-                currentDataHolder.addCoordinate(pgPoint, nextCoordinateTime, getMaintenanceTasks(tehtavat));
+                currentDataHolder.addCoordinate(pgPoint, nextCoordinateTime, getMaintenanceTasks(tehtavat, currentDataHolder.getRealizationData()));
             }
         });
     }
@@ -163,7 +164,10 @@ public class V2MaintenanceRealizationUpdateService {
             v2RealizationRepository.save(realization);
             log.info("Saved MaintenanceRealization with {} coordinates", realization.getLineString().getNumPoints());
         } else if (holder.containsCoordinateData()){
-            log.error("RealizationData id {} invalid LineString size {}", holder.getRealizationData().getId(), holder.getCoordinates().size());
+            final String msg = String.format("RealizationData id %d invalid LineString size %d last coordinateIndex %d",
+                holder.getRealizationData().getId(), holder.getCoordinates().size(), holder.getCoordinateIndex());
+            log.error(msg);
+            holder.getRealizationData().appendHandlingInfo(msg);
         }
     }
 
@@ -184,8 +188,8 @@ public class V2MaintenanceRealizationUpdateService {
         final boolean changed = !newTaskIds.equals(previousTaskIds);
         if (changed) {
             log.info("Changed {} from {} to {}", changed,
-                previousTaskIds.stream().map(t -> t.toString()).collect(Collectors.joining(",")),
-                newTaskIds.stream().map(t -> t.toString()).collect(Collectors.joining(",")));
+                previousTaskIds.stream().map(Object::toString).collect(Collectors.joining(",")),
+                newTaskIds.stream().map(Object::toString).collect(Collectors.joining(",")));
         }
         return changed;
     }
@@ -194,8 +198,20 @@ public class V2MaintenanceRealizationUpdateService {
         return tehtavas.stream().filter(t -> t.getTehtava() != null).map(t -> t.getTehtava().getId().longValue()).collect(Collectors.toSet());
     }
 
-    private List<MaintenanceTask> getMaintenanceTasks(final List<TehtavatSchema> tehtavat) {
-        return tehtavat.stream().map(t -> tasksMap.get(t.getTehtava().getId().longValue())).collect(Collectors.toList());
+    private List<MaintenanceTask> getMaintenanceTasks(final List<TehtavatSchema> tehtavat,
+                                                      final MaintenanceRealizationData realizationData) {
+        return tehtavat.stream()
+            .map(t -> {
+                final MaintenanceTask task = tasksMap.get(t.getTehtava().getId().longValue());
+                if (task == null) {
+                    final String msg = String.format("MaintenanceTask with id %d not found", t.getTehtava().getId());
+                    log.error(msg);
+                    realizationData.appendHandlingInfo(msg);
+                }
+                return task;
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     /**
