@@ -344,7 +344,7 @@ public class V2MaintenanceRealizationServiceTestHelper {
         int coordinateCount = reitti.size();
 
         List<ReittitoteumatSchema> reittitoteumat =
-            IntStream.range(0, coordinateCount)
+            IntStream.range(0, countOfDifferentRealizations*2)
                 .filter(n -> n % 2 == 0)
                 .mapToObj(i -> {
 
