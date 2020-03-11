@@ -2,11 +2,12 @@ package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData.Status.ERROR;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData.Status.HANDLED;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.MULTIPLE_REALISATIONS_2_TASKS_PATH;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.REALIZATIONS_8_TASKS_2_PATH;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.SINGLE_REALISATIONS_3_TASKS_PATH;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,9 +61,9 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     @Test
     public void saveNewWorkMachineRealizationMultipleRealization() throws IOException {
-        testHelper.initializeMultipleRealisations2Tasks();
+        testHelper.initialize8Realisations2Tasks();
 
-        final String formattedRealisationJSon = testHelper.getFormatedRealizationJson(MULTIPLE_REALISATIONS_2_TASKS_PATH);
+        final String formattedRealisationJSon = testHelper.getFormatedRealizationJson(REALIZATIONS_8_TASKS_2_PATH);
         final List<MaintenanceRealizationData> data = realizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
@@ -70,9 +71,9 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
     @Test
     public void handleUnhandledWorkMachineRealizations() throws IOException {
-        testHelper.initializeMultipleRealisations2Tasks();
+        testHelper.initialize8Realisations2Tasks();
         testHelper.initializeSingleRealisations3TasksWithIllegalJson();
-        testHelper.initializeMultipleRealisations2Tasks();
+        testHelper.initialize8Realisations2Tasks();
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(2, count);
@@ -115,7 +116,7 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     public void handleUnhandledWorkMachineRealizationsResultsWithMultipleRealization() throws IOException {
         // 1. Realization: 4 points - Tasks: 2864
         // 2. Realization: 12 points - Tasks: 1370
-        testHelper.initializeMultipleRealisations2Tasks();
+        testHelper.initialize8Realisations2Tasks();
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
@@ -123,15 +124,18 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
         // Check the handled data
         final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(2, all.size());
-        final MaintenanceRealization first = all.get(0);
-        final MaintenanceRealization second = all.get(1);
-
-        testHelper.checkContainsOnlyTasksWithIds(first, 2864);
-        testHelper.checkContainsOnlyTasksWithIds(second, 1370);
-
-        testHelper.checkCoordinateCount(first, 4);
-        testHelper.checkCoordinateCount(second, 12);
+        Assert.assertEquals(8, all.size());
+        IntStream.range(0,2).forEach(i ->
+        {
+            final MaintenanceRealization r = all.get(i);
+            testHelper.checkContainsOnlyTasksWithIds(r, 2864);
+            testHelper.checkCoordinateCount(r, 2);
+        });
+        IntStream.range(2,8).forEach(i -> {
+            final MaintenanceRealization r = all.get(i);
+            testHelper.checkContainsOnlyTasksWithIds(r, 1370);
+            testHelper.checkCoordinateCount(r, 2);
+        });
     }
 
     @Test

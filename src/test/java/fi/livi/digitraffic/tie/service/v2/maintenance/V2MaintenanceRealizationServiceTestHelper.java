@@ -69,8 +69,8 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
     public final static String SINGLE_REALISATIONS_3_TASKS_PATH =
         "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa.json";
-    public final static String MULTIPLE_REALISATIONS_2_TASKS_PATH =
-        "classpath:harja/controller/toteumakirjaus-monta-reittitoteumaa-3-tehtavaa.json";
+    public final static String REALIZATIONS_8_TASKS_2_PATH =
+        "classpath:harja/controller/toteumakirjaus-8-reittitoteumaa-2-tehtavaa.json";
     public final static String SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH =
         "classpath:harja/controller/toteumakirjaus-yksi-reittitoteuma-3-tehtavaa-siirtymalla-ja-yhdella-pisteella.json";
 
@@ -93,7 +93,7 @@ public class V2MaintenanceRealizationServiceTestHelper {
     };
 
     public final static Instant SINGLE_REALISATIONS_3_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:28:16Z").toInstant();
-    public final static Instant MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:15:42Z").toInstant();
+    public final static Instant REALIZATIONS_8_TASKS_2_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:15:42Z").toInstant();
 
     /*  SINGLE_REALISATIONS_3_TASKS should have following points for realization with task 12911L, 1368L
            WGS84                 ETRS-TM35FIN
@@ -145,9 +145,9 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
     @Test
     public void saveNewWorkMachineRealizationMultipleRealization() throws IOException {
-        initializeMultipleRealisations2Tasks();
+        initialize8Realisations2Tasks();
 
-        final String formattedRealisationJSon = getFormatedRealizationJson(MULTIPLE_REALISATIONS_2_TASKS_PATH);
+        final String formattedRealisationJSon = getFormatedRealizationJson(REALIZATIONS_8_TASKS_2_PATH);
         final List<MaintenanceRealizationData> data = realizationDataRepository.findAll();
         Assert.assertEquals(1, data.size());
         Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
@@ -155,9 +155,9 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
     @Test
     public void handleUnhandledWorkMachineRealizations() throws IOException {
-        initializeMultipleRealisations2Tasks();
+        initialize8Realisations2Tasks();
         initializeSingleRealisations3TasksWithIllegalJson();
-        initializeMultipleRealisations2Tasks();
+        initialize8Realisations2Tasks();
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(2, count);
@@ -200,7 +200,7 @@ public class V2MaintenanceRealizationServiceTestHelper {
     public void handleUnhandledWorkMachineRealizationsResultsWithMultipleRealization() throws IOException {
         // 1. Realization: 4 points - Tasks: 2864
         // 2. Realization: 12 points - Tasks: 1370
-        initializeMultipleRealisations2Tasks();
+        initialize8Realisations2Tasks();
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         Assert.assertEquals(1, count);
@@ -278,9 +278,9 @@ public class V2MaintenanceRealizationServiceTestHelper {
         saveRealizationAsJson(jsonSingleRealisations3Tasks);
     }
 
-    public void initializeMultipleRealisations2Tasks() throws IOException {
+    public void initialize8Realisations2Tasks() throws IOException {
         final String jsonSingleRealisations3Tasks =
-            readResourceContent(MULTIPLE_REALISATIONS_2_TASKS_PATH);
+            readResourceContent(REALIZATIONS_8_TASKS_2_PATH);
         saveRealizationAsJson(jsonSingleRealisations3Tasks);
     }
 

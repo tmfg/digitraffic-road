@@ -108,7 +108,6 @@ public class V2MaintenanceRealizationUpdateService {
 
             // Route
             toteumat.forEach(reittitoteuma -> handleRoute(reittitoteuma.getReitti(), currentDataHolder));
-            saveRealizationIfContainsValidLineString(currentDataHolder);
 
             wmrd.updateStatusToHandled();
 
@@ -145,6 +144,10 @@ public class V2MaintenanceRealizationUpdateService {
                 currentDataHolder.addCoordinate(pgPoint, nextCoordinateTime, getMaintenanceTasks(tehtavat, currentDataHolder.getRealizationData()));
             }
         });
+        // At the end of each route save it and reset. That way we don't combine it to next realization that might
+        // come from different machine
+        saveRealizationIfContainsValidLineString(currentDataHolder);
+        currentDataHolder.resetCoordinatesAndTasks();
     }
 
     private boolean isNextCoordinateTimeAfterPreviousAndInsideLimit(final ZonedDateTime previousCoordinateTime, final ZonedDateTime nextCoordinateTime) {

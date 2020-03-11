@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.REALIZATIONS_8_TASKS_2_SENDING_TIME;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X_AROUND_TASK;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X_OUTSIDE_TASK;
@@ -43,7 +43,7 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     public void initData() throws IOException {
         testHelper.clearDb();
         testHelper.initializeSingleRealisations3Tasks();
-        testHelper.initializeMultipleRealisations2Tasks();
+        testHelper.initialize8Realisations2Tasks();
         maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         testHelper.flushAndClearSession();
     }
@@ -59,17 +59,17 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
     @Test
     public void findMaintenanceRealizationsWithinTime2() throws IOException {
         final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
-            MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME, MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME,
+            REALIZATIONS_8_TASKS_2_SENDING_TIME, REALIZATIONS_8_TASKS_2_SENDING_TIME,
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight(), Collections.emptyList());
-        Assert.assertEquals(2, result.features.size());
+        Assert.assertEquals(8, result.features.size());
     }
 
     @Test
     public void findMaintenanceRealizationsWithinTimeBoth() throws IOException {
         final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
-            MULTIPLE_REALISATIONS_2_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME,
+            REALIZATIONS_8_TASKS_2_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME,
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight(), Collections.emptyList());
-        Assert.assertEquals(5, result.features.size());
+        Assert.assertEquals(11, result.features.size());
     }
 
     @Test
