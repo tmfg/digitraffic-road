@@ -24,3 +24,6 @@ create index camera_preset_history_search_1_i on camera_preset_history(preset_se
 create index camera_preset_history_search_2_i on camera_preset_history(preset_seq, preset_id, publishable);
 create index camera_preset_history_search_3_i on camera_preset_history(camera_id, modified);
 create index camera_preset_history_search_4_i on camera_preset_history(preset_id, modified);
+create index camera_preset_history_search_5_i on camera_preset_history(camera_id, last_modified);
+create index camera_preset_history_search_6_i on camera_preset_history(preset_id, last_modified);
+create index camera_preset_history_last_modified_i on camera_preset_history(last_modified);
