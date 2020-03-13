@@ -432,6 +432,16 @@ public class V2MaintenanceRealizationServiceTestHelper {
         return writer.writeValueAsString(reader.readValue(readResourceContent(realizationJsonPath)));
     }
 
+    public void checkValidJson(final String json) {
+        // Test reading as object and then back to json
+        try {
+            writer.writeValueAsString(reader.readValue(json));
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+    }
+
     private void saveRealizationAsJson(final String realisationJSon) throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema realization = reader.readValue(realisationJSon);
         maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, realization);

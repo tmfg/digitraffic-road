@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTaskRepository;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeature;
@@ -40,14 +41,17 @@ public class V2MaintenanceRealizationDataService {
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceRealizationDataService.class);
     private final V2MaintenanceRealizationRepository v2RealizationRepository;
     private final V2MaintenanceTaskRepository v2MaintenanceTaskRepository;
+    final private V2MaintenanceRealizationDataRepository v2MaintenanceRealizationDataRepository;
     private final DataStatusService dataStatusService;
 
     @Autowired
     public V2MaintenanceRealizationDataService(final V2MaintenanceRealizationRepository v2RealizationRepository,
                                                final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
+                                               final V2MaintenanceRealizationDataRepository v2MaintenanceRealizationDataRepository,
                                                final DataStatusService dataStatusService) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2MaintenanceTaskRepository = v2MaintenanceTaskRepository;
+        this.v2MaintenanceRealizationDataRepository = v2MaintenanceRealizationDataRepository;
         this.dataStatusService = dataStatusService;
     }
 
@@ -69,6 +73,11 @@ public class V2MaintenanceRealizationDataService {
                  xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), found.size(), start.getTime());
         final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
         return new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
+    }
+
+    @Transactional(readOnly = true)
+    public String findRealizationDataJsonByRealizationId(final long realizationId) {
+        return v2MaintenanceRealizationDataRepository.findJsonByRealizationId(realizationId);
     }
 
     @Transactional(readOnly = true)

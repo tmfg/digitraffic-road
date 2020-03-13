@@ -99,4 +99,15 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
             Collections.emptyList());
         Assert.assertEquals(0, result.features.size());
     }
+
+    @Test
+    public void findRealizationDataJsonByRealizationId() throws IOException {
+        final MaintenanceRealizationFeatureCollection result = maintenanceRealizationDataService.findMaintenanceRealizations(
+            SINGLE_REALISATIONS_3_TASKS_SENDING_TIME, SINGLE_REALISATIONS_3_TASKS_SENDING_TIME.plusSeconds(1),
+            RANGE_X_AROUND_TASK.getLeft(), RANGE_Y_AROUND_TASK.getLeft(), RANGE_X_AROUND_TASK.getRight(), RANGE_Y_AROUND_TASK.getRight(),
+            Collections.emptyList());
+
+        final String json = maintenanceRealizationDataService.findRealizationDataJsonByRealizationId(result.features.get(0).getProperties().id);
+        testHelper.checkValidJson(json);
+    }
 }
