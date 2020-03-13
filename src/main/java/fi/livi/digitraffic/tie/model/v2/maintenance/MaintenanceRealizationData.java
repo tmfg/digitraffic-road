@@ -83,6 +83,10 @@ public class MaintenanceRealizationData {
         return status;
     }
 
+    public String getHandlingInfo() {
+        return handlingInfo;
+    }
+
     public void updateStatusToHandled() {
         if (Status.HANDLED.equals(status)) {
             throw new IllegalStateException(String.format("%s status is already %s", getClass().getSimpleName(), status));

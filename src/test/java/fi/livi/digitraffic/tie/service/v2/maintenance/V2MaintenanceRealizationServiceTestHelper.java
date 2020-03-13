@@ -300,7 +300,6 @@ public class V2MaintenanceRealizationServiceTestHelper {
         final String jsonSingleRealisationWith3TasksTransitAndPoint =
             readResourceContent(SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH);
         saveRealizationAsPlainText(jsonSingleRealisationWith3TasksTransitAndPoint);
-
     }
 
     /**
