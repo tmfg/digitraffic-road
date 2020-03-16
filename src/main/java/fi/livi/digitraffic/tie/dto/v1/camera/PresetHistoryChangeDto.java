@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "PresetHistoryPresence", description = "Image history status for preset at given time interval.")
+@ApiModel(value = "PresetHistoryChange", description = "Camera preset status change in history.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public interface PresetHistoryChangesDto {
+public interface PresetHistoryChangeDto {
 
     @ApiModelProperty("Camera id")
     String getCameraId();
