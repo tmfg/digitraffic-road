@@ -16,9 +16,9 @@ public class CameraHistoryChangesDto {
     public final Instant latestChange;
 
     @ApiModelProperty("Changes of weather camera history")
-    public final List<PresetHistoryChangesDto> changes;
+    public final List<PresetHistoryChangeDto> changes;
 
-    public CameraHistoryChangesDto(final Instant latestChange, final List<PresetHistoryChangesDto> changes) {
+    public CameraHistoryChangesDto(final Instant latestChange, final List<PresetHistoryChangeDto> changes) {
         this.latestChange = latestChange;
         this.changes = changes;
     }
