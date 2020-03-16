@@ -163,14 +163,13 @@ public class V2MaintenanceRealizationUpdateService {
 
     private void saveRealizationIfContainsValidLineString(final V2MaintenanceRealizationDataHolder holder) {
         if (holder.isValidLineString()) {
-
             final MaintenanceRealization realization = creteRealization(holder);
             v2RealizationRepository.save(realization);
             log.info("Saved MaintenanceRealization with {} coordinates", realization.getLineString().getNumPoints());
         } else if (holder.containsCoordinateData()){
             final String msg = String.format("RealizationData id %d invalid LineString size %d last coordinateIndex %d",
                 holder.getRealizationData().getId(), holder.getCoordinates().size(), holder.getCoordinateIndex());
-            log.error(msg);
+            log.warn(msg);
             holder.getRealizationData().appendHandlingInfo(msg);
         }
     }
