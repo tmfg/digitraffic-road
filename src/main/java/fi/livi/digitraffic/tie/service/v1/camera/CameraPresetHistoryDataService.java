@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresenceDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
-import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangesDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
@@ -97,7 +97,7 @@ public class CameraPresetHistoryDataService {
         checkAllParametersUsedAndNotTooLong(cameraOrPresetIds, cameraIds, presetIds);
 
         final Instant latestChange = cameraPresetHistoryRepository.getLatestChangesTime();
-        final List<PresetHistoryChangesDto> changes =
+        final List<PresetHistoryChangeDto> changes =
             cameraPresetHistoryRepository.findCameraPresetHistoryChangesAfter(after.toInstant(), cameraIds, presetIds);
 
         return new CameraHistoryChangesDto(latestChange, changes);

@@ -51,11 +51,10 @@ import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
-import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangesDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
@@ -509,19 +508,19 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
             final ZonedDateTime changedOn = allAfter.get(index).getModified();
             log.info("Find changes from index {}/{} change to {} on {}", index, historySize, changeTo, changedOn);
 
-            final List<PresetHistoryChangesDto> changesAfter =
+            final List<PresetHistoryChangeDto> changesAfter =
                 cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn, Collections.singletonList(cp1.getPresetId()))
                     .changes;
             final CameraHistoryChangesDto changesBeforeDto =
                 cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn.minusSeconds(1), Collections.singletonList(cp1.getPresetId()));
-            final List<PresetHistoryChangesDto> changesBefore = changesBeforeDto.changes;
+            final List<PresetHistoryChangeDto> changesBefore = changesBeforeDto.changes;
 
 
             // When fetching changes before and after change, there should be one more change in former
             assertEquals(changesAfter.size() + 1, changesBefore.size());
             assertCollectionSize(changesCount, changesBefore);
 
-            final PresetHistoryChangesDto oldestChange = changesBefore.get(0);
+            final PresetHistoryChangeDto oldestChange = changesBefore.get(0);
             log.info("Found {} change to {}, lastModified on {} and modified on {}",
                      oldestChange.getPresetId(), oldestChange.getPublishableTo(), oldestChange.getLastModified(), oldestChange.getModified());
             // First change in result should match change status
