@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangesDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistoryPK;
@@ -129,7 +129,7 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
         "ORDER BY post_history.preset_id, post_history.last_modified",
            nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<PresetHistoryChangesDto> findCameraPresetHistoryChangesAfter(final Instant fromTime, final List<String> cameraIds, final List<String> presetIds);
+    List<PresetHistoryChangeDto> findCameraPresetHistoryChangesAfter(final Instant fromTime, final List<String> cameraIds, final List<String> presetIds);
 
     @Query(value =
                "select max(h.modified)\n" +
