@@ -92,8 +92,8 @@ public class V2MaintenanceRealizationServiceTestHelper {
         Pair.of(5677, "Liikenneympäristön hoito - Ei yksilöity")
     };
 
-    public final static Instant SINGLE_REALISATIONS_3_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:28:16Z").toInstant();
-    public final static Instant REALIZATIONS_8_TASKS_2_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:15:42Z").toInstant();
+    public final static Instant SINGLE_REALISATIONS_3_TASKS_END_TIME = ZonedDateTime.parse("2020-01-13T10:48:47Z").toInstant();
+    public final static Instant REALIZATIONS_8_TASKS_2_END_TIME = ZonedDateTime.parse("2020-01-13T12:06:55Z").toInstant();
 
     /*  SINGLE_REALISATIONS_3_TASKS should have following points for realization with task 12911L, 1368L
            WGS84                 ETRS-TM35FIN

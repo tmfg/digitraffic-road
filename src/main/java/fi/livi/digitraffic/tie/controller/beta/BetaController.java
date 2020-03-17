@@ -168,12 +168,12 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
     public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(
 
-            @ApiParam(value = "Return realization data received after given time in ISO date time format. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
+            @ApiParam(value = "Return realizations which has completed after the given time. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime from,
 
-            @ApiParam(value = "Return realization data received before given time in ISO date time format. Default is now.", defaultValue = "2020-01-01T13:00Z")
+            @ApiParam(value = "Return realizations which has completed before the given time. Default is now.", defaultValue = "2020-01-01T13:00Z")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime to,
