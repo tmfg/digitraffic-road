@@ -97,12 +97,9 @@ public class CameraPresetHistoryDataService {
         final List<String> presetIds = parsePresetIds(cameraOrPresetIds);
         checkAllParametersUsedAndNotTooLong(cameraOrPresetIds, cameraIds, presetIds);
 
-        final ZonedDateTime minus24H = getZonedDateTimeNowAtUtc().minusHours(24);
-        final ZonedDateTime fetchAfter = minus24H.isAfter(after) ? minus24H : after;
-
         final Instant latestChange = cameraPresetHistoryRepository.getLatestChangesTime();
         final List<PresetHistoryChangeDto> changes =
-            cameraPresetHistoryRepository.findCameraPresetHistoryChangesAfter(fetchAfter.toInstant(), cameraIds, presetIds);
+            cameraPresetHistoryRepository.findCameraPresetHistoryChangesAfter(after.toInstant(), cameraIds, presetIds);
 
         return new CameraHistoryChangesDto(latestChange, changes);
     }

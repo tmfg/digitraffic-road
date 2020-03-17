@@ -263,6 +263,10 @@ public class BetaController {
         @RequestParam
         final ZonedDateTime after) {
 
+        if (after.plus(24, HOURS).isBefore(ZonedDateTime.now())) {
+            throw new IllegalArgumentException("Minimum value for parameter after is -24h from now.");
+        }
+
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 }
