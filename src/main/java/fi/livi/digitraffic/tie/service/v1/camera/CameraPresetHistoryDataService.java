@@ -29,6 +29,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
@@ -96,9 +97,12 @@ public class CameraPresetHistoryDataService {
         final List<String> presetIds = parsePresetIds(cameraOrPresetIds);
         checkAllParametersUsedAndNotTooLong(cameraOrPresetIds, cameraIds, presetIds);
 
+        final ZonedDateTime minus24H = getZonedDateTimeNowAtUtc().minusHours(24);
+        final ZonedDateTime fetchAfter = minus24H.isAfter(after) ? minus24H : after;
+
         final Instant latestChange = cameraPresetHistoryRepository.getLatestChangesTime();
         final List<PresetHistoryChangeDto> changes =
-            cameraPresetHistoryRepository.findCameraPresetHistoryChangesAfter(after.toInstant(), cameraIds, presetIds);
+            cameraPresetHistoryRepository.findCameraPresetHistoryChangesAfter(fetchAfter.toInstant(), cameraIds, presetIds);
 
         return new CameraHistoryChangesDto(latestChange, changes);
     }

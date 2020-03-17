@@ -258,7 +258,7 @@ public class BetaController {
         @RequestParam(value = "id", required = false)
         final List<String> cameraOrPresetIds,
 
-        @ApiParam(value = "Return changes int the history after given time", required = true)
+        @ApiParam(value = "Return changes int the history after given time. Minimum is -24h from now.", required = true)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam
         final ZonedDateTime after) {
