@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,8 @@ import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationUpdateService;
 
+
+@Ignore
 @Import(value = { V2MaintenanceRealizationServiceTestHelper.class })
 public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(MaintenanceRealizationsControllerTest.class);
