@@ -86,7 +86,7 @@ public class CameraImageUpdateService {
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageKey, isResultPublic);
 
-            cameraPresetService.updateCameraPresetAndHistory(cameraPreset, isResultPublic, kuva.getJulkinen(), transferInfo);
+            cameraPresetService.updateCameraPresetAndHistory(kuva.getEsiasentoId(), isResultPublic, kuva.getJulkinen(), transferInfo);
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId={} s3Key={} readImageStatus={} writeImageStatus={} " +

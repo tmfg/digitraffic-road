@@ -106,7 +106,7 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     }
 
     private CameraPresetHistory createHistory(final String imageName, final String versionId, final boolean publishable, final ZonedDateTime lastModified) {
-        return new CameraPresetHistory(getPresetId(imageName), versionId, -1, lastModified, publishable, 10, ZonedDateTime.now(), true);
+        return new CameraPresetHistory(getPresetId(imageName), versionId, -1, lastModified, publishable, 10, true);
     }
 
     private MockHttpServletResponse requestImage(final String imageName, final String versionId) throws Exception {

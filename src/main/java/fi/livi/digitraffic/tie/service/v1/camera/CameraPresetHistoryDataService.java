@@ -3,8 +3,10 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresenceDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
@@ -79,21 +83,45 @@ public class CameraPresetHistoryDataService {
         return convertToCameraHistory(history);
     }
 
+    /**
+     *
+     * @param after Return changes after timestamp
+     * @param cameraOrPresetIds List of possible camera and/or preset ids to find. If list is empty all will be included.
+     * @return History changes ordered by presetId and lastModified in ascending order
+     */
+    @Transactional(readOnly = true)
+    public CameraHistoryChangesDto findCameraOrPresetHistoryChangesAfter(final ZonedDateTime after, final List<String> cameraOrPresetIds) {
+
+        final List<String> cameraIds = parseCameraIds(cameraOrPresetIds);
+        final List<String> presetIds = parsePresetIds(cameraOrPresetIds);
+        checkAllParametersUsedAndNotTooLong(cameraOrPresetIds, cameraIds, presetIds);
+
+        final Instant latestChange = cameraPresetHistoryRepository.getLatestChangesTime();
+        final List<PresetHistoryChangesDto> changes =
+            cameraPresetHistoryRepository.findCameraPresetHistoryChangesAfter(after.toInstant(), cameraIds, presetIds);
+
+        return new CameraHistoryChangesDto(latestChange, changes);
+    }
+
     private void checkAllParametersUsedAndNotTooLong(final List<String> cameraOrPresetIds,
                                                      final List<String> usedCameraIds, final List<String> usedPresetIds) {
 
-        if (cameraOrPresetIds.size() > MAX_IDS_SIZE) {
-            throw new IllegalArgumentException(
-                String.format("Too long list of id parameters. Maximum is %d pcs and was %d pcs.",
-                              MAX_IDS_SIZE, cameraOrPresetIds.size()));
-        }
+        checkCameraOrPresetIdsMaxSize(cameraOrPresetIds);
 
         final List<String> illegalIds = cameraOrPresetIds.stream().filter(id -> !usedCameraIds.contains(id) && !usedPresetIds.contains(id)).collect(Collectors.toList());
 
         if (!illegalIds.isEmpty()) {
             throw new IllegalArgumentException(
                 String.format("Parameter camera or presetId should be either 6 or 8 chars long. Illegal parameters: %s.",
-                    illegalIds.stream().collect(Collectors.joining(", "))));
+                    String.join(", ", illegalIds)));
+        }
+    }
+
+    private void checkCameraOrPresetIdsMaxSize(final List<String> cameraOrPresetIds) {
+        if (cameraOrPresetIds.size() > MAX_IDS_SIZE) {
+            throw new IllegalArgumentException(
+                String.format("Too long list of id parameters. Maximum is %d pcs and was %d pcs.",
+                    MAX_IDS_SIZE, cameraOrPresetIds.size()));
         }
     }
 
@@ -101,10 +129,10 @@ public class CameraPresetHistoryDataService {
      * Finds cameras' and presets' history status. History status tells if
      * history exists for given time interval.
      *
-     * @param cameraOrPresetId
-     * @param fromTime
-     * @param toTime
-     * @return
+     * @param cameraOrPresetId camera or preset id to find
+     * @param fromTime inclusive
+     * @param toTime inclusive
+     * @return Presets history presences
      */
     @Transactional(readOnly = true)
     public CameraHistoryPresencesDto findCameraOrPresetHistoryPresences(final String cameraOrPresetId, final ZonedDateTime fromTime,
@@ -252,10 +280,16 @@ public class CameraPresetHistoryDataService {
 
 
     private List<String> parseCameraIds(final List<String> cameraOrPresetIds) {
+        if (cameraOrPresetIds == null) {
+            return Collections.emptyList();
+        }
         return cameraOrPresetIds.stream().filter(CameraPresetHistoryDataService::isCameraId).collect(Collectors.toList());
     }
 
     private List<String> parsePresetIds(final List<String> cameraOrPresetIds) {
+        if (cameraOrPresetIds == null) {
+            return Collections.emptyList();
+        }
         return cameraOrPresetIds.stream().filter(CameraPresetHistoryDataService::isPresetId).collect(Collectors.toList());
     }
 
