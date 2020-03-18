@@ -258,13 +258,13 @@ public class BetaController {
         @RequestParam(value = "id", required = false)
         final List<String> cameraOrPresetIds,
 
-        @ApiParam(value = "Return changes int the history after given time. Minimum is -24h from now.", required = true)
+        @ApiParam(value = "Return changes int the history after given time. Given time must be within 24 hours.", required = true)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         @RequestParam
         final ZonedDateTime after) {
 
         if (after.plus(24, HOURS).isBefore(ZonedDateTime.now())) {
-            throw new IllegalArgumentException("Minimum value for parameter after is -24h from now.");
+            throw new IllegalArgumentException("Given time must be within 24 hours.");
         }
 
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
