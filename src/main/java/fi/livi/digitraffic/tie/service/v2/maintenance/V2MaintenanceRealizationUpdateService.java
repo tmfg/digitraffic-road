@@ -158,7 +158,9 @@ public class V2MaintenanceRealizationUpdateService {
         if (!nextIsSameOrAfter || !timeGapInsideTheLimit) {
             log.info("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {}, timeGapInsideTheLimit: {}", previousCoordinateTime, nextCoordinateTime, nextIsSameOrAfter, timeGapInsideTheLimit);
         }
-        return  nextIsSameOrAfter && timeGapInsideTheLimit;
+        // FIXME: DPO-631 Temporally disabled the check of time gap between points to see what is real data quality
+        // return  nextIsSameOrAfter && timeGapInsideTheLimit;
+        return nextIsSameOrAfter;
     }
 
     private void saveRealizationIfContainsValidLineString(final V2MaintenanceRealizationDataHolder holder) {
