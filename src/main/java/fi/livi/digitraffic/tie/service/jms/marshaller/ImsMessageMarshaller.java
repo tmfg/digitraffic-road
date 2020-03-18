@@ -17,7 +17,7 @@ public class ImsMessageMarshaller extends TextMessageMarshaller<ImsMessage> {
 
     @Override
     protected List<ImsMessage> transform(final Object object, final String text) {
-        log.info("method=transform messageText={}", text);
+        log.debug("method=transform messageText={}", text);
         List<ImsMessage> result = super.transform(object, text);
         return result;
     }
