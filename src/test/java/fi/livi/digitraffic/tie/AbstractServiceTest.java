@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
-import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Config;
+import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfig;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverter;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
@@ -60,7 +60,7 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
           TmsSensorConstantDao.class, WorkMachineObservationDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
 
           // configurations
-          AmazonS3ClientTestConfiguration.class, WeathercamS3Config.class
+          AmazonS3ClientTestConfiguration.class, S3PropertiesConfig.class
         })
 @TestPropertySource(properties = { "spring.localstack.enabled=false" })
 public abstract class AbstractServiceTest extends AbstractJpaTest {

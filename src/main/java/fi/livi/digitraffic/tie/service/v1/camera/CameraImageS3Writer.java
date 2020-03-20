@@ -11,6 +11,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.stereotype.Component;
@@ -40,9 +41,8 @@ public class CameraImageS3Writer {
         LAST_MODIFIED_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    CameraImageS3Writer(
-        final AmazonS3 amazonS3Client,
-        final WeathercamS3Properties weathercamS3Properties) {
+    CameraImageS3Writer(@Qualifier("weathercamS3") final AmazonS3 amazonS3Client,
+                        final WeathercamS3Properties weathercamS3Properties) {
         this.amazonS3Client = amazonS3Client;
         this.weathercamS3Properties = weathercamS3Properties;
     }

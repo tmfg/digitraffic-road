@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.conf.amazon;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -33,6 +34,7 @@ public class AmazonS3ClientTestConfiguration {
     }
 
     @ConditionalOnExpression("'${spring.localstack.enabled}' == 'false'")
+    @Qualifier("S3Test")
     @Bean
     public AmazonS3 amazonS3(final @Value("${dt.amazon.s3.weathercam.region}") String region) {
 
