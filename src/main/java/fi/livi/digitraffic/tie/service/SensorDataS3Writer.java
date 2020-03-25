@@ -1,30 +1,24 @@
 package fi.livi.digitraffic.tie.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectResult;
 
 import fi.livi.digitraffic.tie.conf.amazon.S3Properties;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
@@ -43,7 +37,7 @@ public class SensorDataS3Writer {
 
     private final SensorValueHistoryRepository repository;
     private final S3Properties s3Properties;
-    //private final AmazonS3 s3Client;
+    private final AmazonS3 s3Client;
 
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -52,16 +46,18 @@ public class SensorDataS3Writer {
     }
 
     public SensorDataS3Writer(final SensorValueHistoryRepository repository,
-                              @Qualifier("sensorDataProperties") final S3Properties s3Properties/**,
-                              @Qualifier("sensorDataS3") final AmazonS3 s3Client*/) {
+                              final S3Properties sensorDataS3Properties,
+                              final AmazonS3 sensorDataS3Client) {
         this.repository = repository;
-        this.s3Properties = s3Properties;
-        //this.s3Client = s3Client;
+        this.s3Properties = sensorDataS3Properties;
+        this.s3Client = sensorDataS3Client;
     }
 
     @Transactional
-    public boolean writeSensorData(final ZonedDateTime from, final ZonedDateTime to) {
+    public int writeSensorData(final ZonedDateTime from, final ZonedDateTime to) {
         final String filename = FILE_DATE_FORMAT.format(Date.from(from.toInstant())).concat("-sensors");
+        final String CSV_filename = filename.concat(".csv");
+        final String ZIP_filename = filename.concat(".zip");
         final String directorPrefix = DIRECTORY_DATE_FORMAT.format(Date.from(from.toInstant()));
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream(BUFFER_SIZE);
@@ -70,7 +66,7 @@ public class SensorDataS3Writer {
         final AtomicInteger counter = new AtomicInteger(0);
 
         try (ZipOutputStream zos = new ZipOutputStream(bos)) {
-            zos.putNextEntry(new ZipEntry(filename.concat(".csv")));
+            zos.putNextEntry(new ZipEntry(CSV_filename));
 
             zos.write(CSV_HEADER.getBytes());
 
@@ -89,26 +85,29 @@ public class SensorDataS3Writer {
 
             final InputStream inputStream = bos.toInputStream();
 
-            //ObjectMetadata metadata = new ObjectMetadata();
-            //metadata.setContentType("application/zip");
-            //metadata.setContentLength(bos.size());
+            // NOTE! Disabled
+            /**
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType("application/zip");
+            metadata.setContentLength(bos.size());
+
 
             // Write to S3
-            //s3Client.putObject(s3Properties.getS3BucketName(), filename, inputStream, metadata);
-
+            s3Client.putObject(s3Properties.getS3BucketName(), ZIP_filename, inputStream, metadata);
+            */
             // Local copy-to-file hack
-            FileUtils.copyInputStreamToFile(inputStream, new File(filename.concat(".zip")));
+            //FileUtils.copyInputStreamToFile(inputStream, new File(ZIP_filename));
 
-            log.info("Collected values={}, window {} - {}, file {}", counter.get(), from, to, directorPrefix.concat(filename.concat(".zip")));
+            log.info("Collected values={}, window {} - {}, file {}", counter.get(), from, to, directorPrefix.concat(ZIP_filename));
 
-            return true;
+            return counter.get();
         } catch (Exception e) {
             log.error("Failed to process ", e);
 
             //throw e;
         }
 
-        return false;
+        return -1;
     }
 
     private String writeLine(SensorValueHistory history) {

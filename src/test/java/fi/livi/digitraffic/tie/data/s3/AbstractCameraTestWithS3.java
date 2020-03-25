@@ -32,7 +32,7 @@ public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 
         if (versionId != null) {
             gor.setVersionId(versionId);
         }
-        return s3.getObject(gor);
+        return amazonS3.getObject(gor);
     }
 
     protected byte[] readWeathercamS3Data(final String key) {

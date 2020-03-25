@@ -233,12 +233,14 @@ public class SensorDataUpdateService {
     }
 
     @Transactional
-    public void cleanWeatherHistoryData(final ZonedDateTime before) {
+    public int cleanWeatherHistoryData(final ZonedDateTime before) {
         final StopWatch stopWatch = StopWatch.createStarted();
 
         final int returnValue = sensorValueHistoryDao.cleanSensorData(before);
 
         log.info("method=cleanWeatherHistoryData older than {} removeCount={} tookMs={}", before, returnValue, stopWatch.getTime());
+
+        return returnValue;
     }
 
     private static List<LotjuAnturiWrapper<Lam.Anturi>> wrapLamData(final List<Lam> lams) {

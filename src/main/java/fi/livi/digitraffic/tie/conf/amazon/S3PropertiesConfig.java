@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.conf.amazon;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,16 +8,15 @@ import org.springframework.context.annotation.Configuration;
 public class S3PropertiesConfig {
 
     @Bean
-    public WeathercamS3Properties weathercamConfig(@Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,
+    public WeathercamS3Properties weathercamS3Properties(@Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,
                                                    @Value("${dt.amazon.s3.weathercam.region}") final String s3WeathercamRegion,
                                                    @Value("${dt.amazon.s3.weathercam.history.maxAgeHours}") final int historyMaxAgeHours,
                                                    @Value("${weathercam.baseUrl}") final String weathercamBaseUrl) {
         return new WeathercamS3Properties(s3WeathercamBucketName, s3WeathercamRegion, historyMaxAgeHours, weathercamBaseUrl);
     }
 
-    @Qualifier("sensorDataProperties")
     @Bean
-    public S3Properties sensorDataConfig(@Value("${dt.amazon.s3.sensordata.bucketName}") final String s3SensorDataBucketName) {
+    public S3Properties sensorDataS3Properties(@Value("${dt.amazon.s3.sensordata.bucketName}") final String s3SensorDataBucketName) {
         return new S3Properties(s3SensorDataBucketName);
     }
 }

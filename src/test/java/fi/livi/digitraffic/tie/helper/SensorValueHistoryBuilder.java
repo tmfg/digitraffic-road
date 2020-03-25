@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.helper;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -17,12 +18,26 @@ public class SensorValueHistoryBuilder {
 
     private List<SensorValueHistory> list;
     private List<Integer> createdCounts;
+    private ZonedDateTime refTime;
+    private ChronoUnit chronoUnit;
 
     public SensorValueHistoryBuilder(final SensorValueHistoryRepository repository, final Logger log) {
         this.repository = repository;
         this.log = log;
         list = new ArrayList<>();
         createdCounts = new ArrayList<>();
+    }
+
+    public SensorValueHistoryBuilder setReferenceTime(ZonedDateTime refTime) {
+        this.refTime = refTime;
+
+        return this;
+    }
+
+    public SensorValueHistoryBuilder setTimeTruncateUnit(ChronoUnit chronoUnit) {
+        this.chronoUnit = chronoUnit;
+
+        return this;
     }
 
     /**
@@ -43,7 +58,7 @@ public class SensorValueHistoryBuilder {
             list.add(createDummyModel(RandomUtils.nextLong(1, maxStationId),
                 RandomUtils.nextLong(1, maxSensorId),
                 RandomUtils.nextDouble(0, 10),
-                ZonedDateTime.now().minusMinutes(RandomUtils.nextInt(start, stop))));
+                getTime(start, stop)));
         });
 
         createdCounts.add(count);
@@ -59,7 +74,7 @@ public class SensorValueHistoryBuilder {
             list.add(createDummyModel((long)stationId,
                 RandomUtils.nextLong(1, maxSensorId),
                 RandomUtils.nextDouble(0, 10),
-                ZonedDateTime.now().minusMinutes(RandomUtils.nextInt(start, stop))));
+                getTime(start, stop)));
         });
 
         createdCounts.add(count);
@@ -75,7 +90,7 @@ public class SensorValueHistoryBuilder {
             list.add(createDummyModel((long)stationId,
                 (long)sensorId,
                 RandomUtils.nextDouble(0, 10),
-                ZonedDateTime.now().minusMinutes(RandomUtils.nextInt(start, stop))));
+                getTime(start, stop)));
         });
 
         createdCounts.add(count);
@@ -86,6 +101,7 @@ public class SensorValueHistoryBuilder {
 
     public SensorValueHistoryBuilder save() {
         log.info("Total {} elements created", list.size());
+        list.forEach(i -> log.info("elem: {}, meas {}", i.getSensorValue(), i.getMeasuredTime()));
         repository.saveAll(list);
 
         return this;
@@ -93,6 +109,18 @@ public class SensorValueHistoryBuilder {
 
     public int getElementCountAt(int index) {
         return createdCounts.get(index);
+    }
+
+    private ZonedDateTime getTime(int start, int stop) {
+        ZonedDateTime time = refTime != null ?
+                             refTime.minusMinutes(RandomUtils.nextInt(start, stop)) :
+                             ZonedDateTime.now().minusMinutes(RandomUtils.nextInt(start, stop));
+
+        if (chronoUnit != null) {
+            return time.truncatedTo(chronoUnit);
+        }
+
+        return time;
     }
 
     private SensorValueHistory createDummyModel(long roadStation, long sensor, double value, ZonedDateTime time) {

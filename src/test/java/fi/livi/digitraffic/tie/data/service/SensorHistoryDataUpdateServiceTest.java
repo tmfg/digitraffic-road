@@ -36,13 +36,8 @@ public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
 
         Assert.assertNotEquals("Db not initialized", 0, weatherService.findWeatherHistoryData(10, deleteTime, null).size());
 
-        sensorDataUpdateService.cleanWeatherHistoryData(deleteTime);
+        Assert.assertEquals("Wrong amount elements cleaned", builder.getElementCountAt(1), sensorDataUpdateService.cleanWeatherHistoryData(deleteTime));
 
         Assert.assertEquals("Db maintenance failed", builder.getElementCountAt(0), weatherService.findWeatherHistoryData(10, deleteTime, null).size());
-    }
-
-    //@Test
-    public void updateWeatherHistoryData() {
-        // TODO! do test
     }
 }
