@@ -68,8 +68,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         count = builder.getElementCountAt(1);
     }
 
-    // Disabled
-    //@Test
+    @Test
     public void s3Bucket() {
         ZonedDateTime now = ZonedDateTime.now();
 
@@ -77,6 +76,8 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
         Assert.assertEquals("element count mismatch", count, sum);
 
+        // Disabled
+        /**
         ObjectListing list = amazonS3.listObjects(bucketName);
 
         String objectName = list.getObjectSummaries().get(0).getKey();
@@ -85,7 +86,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         S3Object s3Object = amazonS3.getObject(bucketName, objectName);
 
         Assert.assertNotNull("S3 object not found", s3Object);
-
+        */
         //TODO! Check object is .zip and document is .csv and actual content is readable
     }
 }
