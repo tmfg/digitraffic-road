@@ -25,6 +25,7 @@ class V2MaintenanceRealizationDataHolder {
     private ZonedDateTime sendingTime;
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
+    private int coordinateIndex = -1;
 
     public V2MaintenanceRealizationDataHolder(final MaintenanceRealizationData realizationData, final String sendingSystem, final Integer messageId, final ZonedDateTime sendingTime) {
         this.realizationData = realizationData;
@@ -35,11 +36,14 @@ class V2MaintenanceRealizationDataHolder {
 
     public void resetCoordinatesAndTasks() {
         coordinates = new ArrayList<>();
+        startTime = null;
+        endTime = null;
         tasks = new HashSet<>();
     }
 
     public void addCoordinate(final Coordinate coordinate, final ZonedDateTime time, final List<MaintenanceTask> maintenanceTasks) {
         coordinates.add(coordinate);
+        ++coordinateIndex;
         if (startTime == null) {
             startTime = time;
         }
@@ -51,11 +55,8 @@ class V2MaintenanceRealizationDataHolder {
             tasks.addAll(maintenanceTasks);
         } else if (!tasks.containsAll(maintenanceTasks) || !maintenanceTasks.containsAll(tasks)) {
             throw new IllegalArgumentException(String.format("Tasks can't change in one realization, new realization should be made. " +
-                "MaintenanceRealizationData id: %d", realizationData.getId()));
+                "MaintenanceRealizationData id: %d and coordinateIndex: %d", realizationData.getId(), coordinateIndex));
         }
-    }
-
-    public void addCoordinateTime(final ZonedDateTime time) {
     }
 
     public List<Coordinate> getCoordinates() {
@@ -67,7 +68,7 @@ class V2MaintenanceRealizationDataHolder {
     }
 
     public Set<Long> getTaskids() {
-        return tasks.stream().map(t -> t.getId()).collect(Collectors.toSet());
+        return tasks.stream().map(MaintenanceTask::getId).collect(Collectors.toSet());
     }
 
     public boolean isValidLineString() {
@@ -96,6 +97,10 @@ class V2MaintenanceRealizationDataHolder {
 
     public ZonedDateTime getEndTime() {
         return endTime;
+    }
+
+    public int getCoordinateIndex() {
+        return coordinateIndex;
     }
 
     public boolean containsCoordinateData() {

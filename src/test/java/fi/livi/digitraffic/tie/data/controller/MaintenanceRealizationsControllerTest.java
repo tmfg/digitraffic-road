@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.controller.beta.BetaController.MAINTENANCE
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_Y;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.TASKS;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.getGeneratedNewestEndTimeWithEndTime;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationUpdateService;
+
 
 @Import(value = { V2MaintenanceRealizationServiceTestHelper.class })
 public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
@@ -81,13 +83,13 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
     public void findMaintenanceRealizationsWithinTimeInPast() throws Exception {
         int count1 = getRandomId(0, 10);
         int count2 = getRandomId(0, 10);
-        final ZonedDateTime startNow = getNowWithZeroNanos();
-        final ZonedDateTime startInPast = startNow.minusHours(1);
-        generateSingleRealisationsWithTasksAndSingleRoute(count1, startNow);
-        generateSingleRealisationWithTasksAndMultipleRoutes(count2, startInPast);
+        final ZonedDateTime endNow = getNowWithZeroNanos();
+        final ZonedDateTime endInPast = endNow.minusHours(1);
+        generateSingleRealisationsWithTasksAndSingleRoute(count1, endNow);
+        generateSingleRealisationWithTasksAndMultipleRoutes(count2, endInPast);
 
         final ResultActions result = getJson(
-            startInPast.toInstant(), startInPast.toInstant(),
+            getGeneratedNewestEndTimeWithEndTime(endInPast).toInstant(), endInPast.toInstant(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
         result
             .andExpect(status().isOk())
@@ -99,13 +101,13 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
     public void findMaintenanceMultipleRealizationsWithinTime() throws Exception {
         int count1 = getRandomId(0, 10);
         int count2 = getRandomId(0, 10);
-        final ZonedDateTime startNow = getNowWithZeroNanos();
-        final ZonedDateTime startInPast = startNow.minusHours(1);
-        generateSingleRealisationsWithTasksAndSingleRoute(count1, startNow);
-        generateSingleRealisationWithTasksAndMultipleRoutes(count2, startInPast);
+        final ZonedDateTime endNow = getNowWithZeroNanos();
+        final ZonedDateTime endInPast = endNow.minusHours(1);
+        generateSingleRealisationsWithTasksAndSingleRoute(count1, endNow);
+        generateSingleRealisationWithTasksAndMultipleRoutes(count2, endInPast);
 
         final ResultActions result = getJson(
-            startInPast.toInstant(), startNow.toInstant(),
+            getGeneratedNewestEndTimeWithEndTime(endInPast).toInstant(), endNow.toInstant(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight());
         result
             .andExpect(status().isOk())
@@ -116,18 +118,19 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
     @Test
     public void findMaintenanceRealizationsNotWithinTime() throws Exception {
         int count = getRandomId(0, 10);
-        final ZonedDateTime startNow = getNowWithZeroNanos();
-        generateSingleRealisationsWithTasksAndSingleRoute(count, startNow);
+        final ZonedDateTime endNow = getNowWithZeroNanos();
+        generateSingleRealisationsWithTasksAndSingleRoute(count, endNow);
 
         getJson(
-            startNow.plusSeconds(1).toInstant(), startNow.plusHours(24).toInstant(),
+            endNow.plusSeconds(1).toInstant(), endNow.plusHours(24).toInstant(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(0)));
 
+        final ZonedDateTime newest = getGeneratedNewestEndTimeWithEndTime(endNow);
         getJson(
-            startNow.minusHours(24).toInstant(), startNow.minusSeconds(1).toInstant(),
+            newest.minusHours(24).toInstant(), newest.minusSeconds(1).toInstant(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -136,8 +139,8 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findMaintenanceRealizationsOnePointWithinBoundingBox() throws Exception {
-        final ZonedDateTime startNow = getNowWithZeroNanos();
-        generateSingleRealisationsWithTasksAndSingleRoute(1, startNow);
+        final ZonedDateTime endNow = getNowWithZeroNanos();
+        generateSingleRealisationsWithTasksAndSingleRoute(1, endNow);
 
         // generated coordinates are x = 19.0 to 28.99... and y = 59.0 to 68.99...
         final double xMin = 28.0;
@@ -146,7 +149,7 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
         final double yMax = 69.0;
 
         getJson(
-            startNow.toInstant(), startNow.toInstant(),
+            getGeneratedNewestEndTimeWithEndTime(endNow).toInstant(), endNow.toInstant(),
             xMin, yMin, xMax, yMax)
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -157,8 +160,8 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findMaintenanceRealizationsOutsideBoundingBox() throws Exception {
-        final ZonedDateTime startNow = getNowWithZeroNanos();
-        generateSingleRealisationsWithTasksAndSingleRoute(1, startNow);
+        final ZonedDateTime endNow = getNowWithZeroNanos();
+        generateSingleRealisationsWithTasksAndSingleRoute(1, endNow);
 
         // generated coordinates are x = 19.0 to 28.99... and y = 59.0 to 68.99...
         final double xMin = 29.0;
@@ -167,23 +170,23 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
         final double yMax = 72;
 
         getJson(
-            startNow.toInstant(), startNow.toInstant(),
+            getGeneratedNewestEndTimeWithEndTime(endNow).toInstant(), endNow.toInstant(),
             xMin, yMin, xMax, yMax)
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(0)));
     }
 
-    private void generateSingleRealisationsWithTasksAndSingleRoute(final int countOfDifferentRealizations, final ZonedDateTime startTime)
+    private void generateSingleRealisationsWithTasksAndSingleRoute(final int countOfDifferentRealizations, final ZonedDateTime endTime)
         throws JsonProcessingException {
-        testHelper.generateSingleRealisationsWithTasksAndSingleRoute(countOfDifferentRealizations, startTime);
+        testHelper.generateSingleRealisationsWithTasksAndSingleRoute(countOfDifferentRealizations, endTime);
         maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         testHelper.flushAndClearSession();
     }
 
-    private void generateSingleRealisationWithTasksAndMultipleRoutes(int countOfDifferentRealizations, ZonedDateTime startTime)
+    private void generateSingleRealisationWithTasksAndMultipleRoutes(final int countOfDifferentRealizations, final ZonedDateTime endTime)
         throws JsonProcessingException {
-        testHelper.generateSingleRealisationWithTasksAndMultipleRoutes(countOfDifferentRealizations, startTime);
+        testHelper.generateSingleRealisationWithTasksAndMultipleRoutes(countOfDifferentRealizations, endTime);
         maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         testHelper.flushAndClearSession();
     }
@@ -191,4 +194,6 @@ public class MaintenanceRealizationsControllerTest extends AbstractRestWebTest {
     private ZonedDateTime getNowWithZeroNanos() {
         return ZonedDateTime.now().withNano(0);
     }
+
+
 }

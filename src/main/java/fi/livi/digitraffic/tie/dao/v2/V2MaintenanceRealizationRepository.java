@@ -21,7 +21,7 @@ public interface V2MaintenanceRealizationRepository extends JpaRepository<Mainte
     @Query(value =
         "SELECT mr FROM #{#entityName} mr\n" +
         "join mr.tasks task\n" +
-        "WHERE mr.sendingTime BETWEEN :from AND :to\n" +
+        "WHERE mr.endTime BETWEEN :from AND :to\n" +
         "  AND intersects(mr.lineString, :area) = true\n" +
         "ORDER by mr.id")
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
@@ -31,7 +31,7 @@ public interface V2MaintenanceRealizationRepository extends JpaRepository<Mainte
     @Query(value =
         "SELECT mr FROM #{#entityName} mr\n" +
         "join mr.tasks task\n" +
-        "WHERE mr.sendingTime BETWEEN :from AND :to\n" +
+        "WHERE mr.endTime BETWEEN :from AND :to\n" +
         "  AND intersects(mr.lineString, :area) = true\n" +
         "  AND task.id in (:taskIds)" +
         "ORDER by mr.id")

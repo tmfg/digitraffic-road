@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.data.controller;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
+import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
+import static fi.livi.digitraffic.tie.helper.DateHelper.withoutMillis;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,7 +75,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void emptyForTooOldHistory() throws Exception {
         final String presetId = "C0000001";
-        insertTestData(presetId, DateHelper.getZonedDateTimeNowAtUtc().minusHours(25));
+        insertTestData(presetId, getZonedDateTimeNowAtUtcWithoutMillis().minusHours(25));
 
         getJson("/history?id=" + presetId)
             .andExpect(status().isOk())
@@ -84,7 +86,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyExistsWithoutSecret() throws Exception {
         final String presetId = "C0000002";
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
+        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
         final String versionId0 = insertTestData(presetId, now);
         insertTestData(presetId, now.minusMinutes(30), false); // this is not public
         final String versionId1 = insertTestData(presetId, now.minusHours(1));
@@ -108,11 +110,11 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyAtGivenTimeTooOld() throws Exception {
         final String presetId = "C0000003";
-        final ZonedDateTime tooOld = DateHelper.getZonedDateTimeNowAtUtc().minusHours(25);
+        final ZonedDateTime tooOld = getZonedDateTimeNowAtUtcWithoutMillis().minusHours(25);
         insertTestData(presetId, tooOld);
 
         getJson("/history?id=" + presetId + "&at=" +
-            DateHelper.getZonedDateTimeNowAtUtc())
+            getZonedDateTimeNowAtUtcWithoutMillis())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(0)))
         ;
@@ -121,12 +123,12 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyAtGivenTime() throws Exception {
         final String presetId = "C0000003";
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();;
+        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();;
         insertTestData(presetId, now);
         final String versionId = insertTestData(presetId, now.minusHours(1));
 
         getJson("/history?id=" + presetId + "&at=" +
-                DateHelper.toZonedDateTimeAtUtc(now.minusHours(1)))
+                toZonedDateTimeAtUtc(now.minusHours(1)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("[0].cameraId", Matchers.is(getCameraIdFromPresetId(presetId))))
             .andExpect(jsonPath("[0].cameraHistory[0].presetId", Matchers.is(presetId)))
@@ -139,13 +141,13 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyAtGivenTimeWithSecret() throws Exception {
         final String presetId = "C0000003";
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
+        final ZonedDateTime now = withoutMillis(getZonedDateTimeNowAtUtcWithoutMillis());
         insertTestData(presetId, now);
         insertTestData(presetId, now.minusHours(1), false); // This is skipped as not public
         final String versionId = insertTestData(presetId, now.minusHours(2));
 
         getJson("/history?id=" + presetId + "&at=" +
-            DateHelper.toZonedDateTimeAtUtc(now.minusSeconds(1)))
+            toZonedDateTimeAtUtc(now.minusSeconds(1)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("[0].cameraId", Matchers.is(getCameraIdFromPresetId(presetId))))
             .andExpect(jsonPath("[0].cameraHistory[0].presetId", Matchers.is(presetId)))
@@ -160,7 +162,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         final String cameraId = "C00000";
         final String presetId1 = cameraId + "01";
         final String presetId2 = cameraId + "02";
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
+        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
         insertTestData(presetId1, now);
         insertTestData(presetId1, now.minusHours(1), false); // This is skipped as not public
         insertTestData(presetId1, now.minusHours(2));
@@ -204,7 +206,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findWithCameraAndPresetIds() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
+        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
         // 2 presets for camera 1 and 2
         final String c1P1 = "C0000101";
         insertTestData(c1P1, now);
@@ -257,6 +259,10 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
             .andExpect(jsonPath("cameraHistoryPresences[0].cameraId", Matchers.is(getCameraIdFromPresetId(presetId))))
             .andExpect(jsonPath("cameraHistoryPresences[0]..presetHistoryPresences[?(@.presetId == \"" + presetId + "\")].historyPresent", Matchers.contains(status)))
         ;
+    }
+
+    private ZonedDateTime getZonedDateTimeNowAtUtcWithoutMillis() {
+        return withoutMillis(DateHelper.getZonedDateTimeNowAtUtc());
     }
 
     private String getCameraIdFromPresetId(String presetId) {

@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistoryPK;
@@ -109,4 +110,35 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
            nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<PresetHistoryPresenceDto> findCameraPresetHistoryPresenceByCameraIdAndTime(final String cameraId, final Instant fromTime, final Instant toTime, final Instant oldestTimeLimit);
+
+    @Query(value =
+        "select post_history.preset_id presetId\n" +
+        "     , post_history.camera_id cameraId\n" +
+        "     , pre_history.publishable publishableFrom\n" +
+        "     , post_history.publishable publishableTo\n" +
+        "     , post_history.last_modified lastModified\n" +
+        "     , post_history.last_modified last_modified\n" +
+        "     , post_history.modified\n" +
+        "FROM camera_preset_history AS post_history, camera_preset_history AS pre_history\n" +
+        "WHERE post_history.modified > :fromTime\n" +
+        "  and pre_history.preset_id = post_history.preset_id\n" +
+        "  and pre_history.preset_seq = post_history.preset_seq_prev\n" +
+        "  and pre_history.publishable <> post_history.publishable\n" +
+        "  AND ( ( :cameraIds IS NULL AND :presetIds IS NULL ) " +
+        "    OR ( post_history.camera_id in ( :cameraIds ) OR post_history.preset_id in ( :presetIds ) ) )\n" +
+        "ORDER BY post_history.preset_id, post_history.last_modified",
+           nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<PresetHistoryChangeDto> findCameraPresetHistoryChangesAfter(final Instant fromTime, final List<String> cameraIds, final List<String> presetIds);
+
+    @Query(value =
+               "select max(h.modified)\n" +
+               "FROM camera_preset_history h",
+           nativeQuery = true)
+    Instant getLatestChangesTime();
+
+    @Modifying
+    @Query(value = "delete FROM camera_preset_history h WHERE h.last_modified < now() - :hours * interval '1 hour'", nativeQuery = true)
+    void deleteOlderThanHours(final int hours);
+
 }

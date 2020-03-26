@@ -75,7 +75,7 @@ public class V2RoadMaintenanceController {
         @RequestBody ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus)
         throws JsonProcessingException {
 
-        log.info("method=postWorkMachineRealization harjaJobId={} JSON=\n{}", jobId,
+        log.debug("method=postWorkMachineRealization harjaJobId={} JSON=\n{}", jobId,
                  objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(reittitoteumanKirjaus));
 
         v2MaintenanceDataService.saveNewWorkMachineRealization(jobId, reittitoteumanKirjaus);

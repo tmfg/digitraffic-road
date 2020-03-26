@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller.beta;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -11,6 +12,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.DecimalMax;
@@ -29,7 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+
 import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
@@ -39,6 +43,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
@@ -47,6 +52,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Api(tags = "beta")
 @RestController
@@ -61,25 +67,30 @@ public class BetaController {
     public static final String MAINTENANCE_REALIZATIONS_OPERATIONS_PATH = "/operations";
     public static final String MAINTENANCE_REALIZATIONS_CATEGORIES_PATH = "/categories";
     public static final String WEATHER_HISTORY_DATA_PATH = "/weather-history-data";
+    public static final String MAINTENANCE_REALIZATIONS_DATA_PATH = "/data";
 
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
     private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
     private final V2Datex2DataService v2Datex2DataService;
     private final WeatherService weatherService;
+    private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
     @Autowired
     public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service,
                           final V2Datex2DataService v2Datex2DataService,
                           final V2MaintenanceRealizationDataService maintenanceRealizationDataService,
-                          final WeatherService weatherService
-    ) {
+                          final WeatherService weatherService,
+                          final CameraPresetHistoryDataService cameraPresetHistoryDataService
+        ) {
+
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.maintenanceRealizationDataService = maintenanceRealizationDataService;
         this.v2Datex2DataService = v2Datex2DataService;
         this.weatherService = weatherService;
+        this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
     }
 
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
@@ -167,12 +178,12 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
     public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(
 
-            @ApiParam(value = "Return realization data received after given time in ISO date time format. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
+            @ApiParam(value = "Return realizations which has completed after the given time. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime from,
 
-            @ApiParam(value = "Return realization data received before given time in ISO date time format. Default is now.", defaultValue = "2020-01-01T13:00Z")
+            @ApiParam(value = "Return realizations which has completed before the given time. Default is now.", defaultValue = "2020-01-01T13:00Z")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime to,
@@ -217,6 +228,14 @@ public class BetaController {
             throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
         }
         return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
+    }
+
+    @ApiIgnore("This is only for internal debugging and not for the public")
+    @ApiOperation(value = "Road maintenance realizations task source data")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_DATA_PATH + "/{realizationId}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
+    public String findRealizationDataJsonByRealizationId(@PathVariable(value = "realizationId") final long realizationId) {
+        return maintenanceRealizationDataService.findRealizationDataJsonByRealizationId(realizationId);
     }
 
     @ApiOperation(value = "Road maintenance realizations tasks")
@@ -279,5 +298,26 @@ public class BetaController {
         final ZonedDateTime from) {
 
         return weatherService.findWeatherHistoryData(stationId, sensorId, from);
+    }
+    
+    @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/changes", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera history changes"))
+    public CameraHistoryChangesDto getCameraOrPresetHistoryChanges(
+
+        @ApiParam(value = "Camera or preset id(s)")
+        @RequestParam(value = "id", required = false)
+        final List<String> cameraOrPresetIds,
+
+        @ApiParam(value = "Return changes int the history after given time. Given time must be within 24 hours.", required = true)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam
+        final ZonedDateTime after) {
+
+        if (after.plus(24, HOURS).isBefore(ZonedDateTime.now())) {
+            throw new IllegalArgumentException("Given time must be within 24 hours.");
+        }
+
+        return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 }

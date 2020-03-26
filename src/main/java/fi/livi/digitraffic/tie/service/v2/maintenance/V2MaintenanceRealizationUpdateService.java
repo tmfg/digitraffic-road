@@ -1,9 +1,11 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,6 +16,7 @@ import org.locationtech.jts.geom.LineString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,19 +52,23 @@ public class V2MaintenanceRealizationUpdateService {
     private final DataStatusService dataStatusService;
 
     private final Map<Long, MaintenanceTask> tasksMap;
+    private final int distinctObservationGapMinutes;
 
     @Autowired
     public V2MaintenanceRealizationUpdateService(final V2MaintenanceRealizationRepository v2RealizationRepository,
                                                  final V2MaintenanceRealizationDataRepository v2RealizationDataRepository,
                                                  final ObjectMapper objectMapper,
                                                  final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
-                                                 final DataStatusService dataStatusService) {
+                                                 final DataStatusService dataStatusService,
+                                                 @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
+                                                 final int distinctObservationGapMinutes) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2RealizationDataRepository = v2RealizationDataRepository;
         this.jsonWriter = objectMapper.writerFor(ReittitoteumanKirjausRequestSchema.class);
         this.jsonReader = objectMapper.readerFor(ReittitoteumanKirjausRequestSchema.class);
         this.dataStatusService = dataStatusService;
         tasksMap = v2MaintenanceTaskRepository.findAll().stream().collect(Collectors.toMap(MaintenanceTask::getId, Function.identity()));
+        this.distinctObservationGapMinutes = distinctObservationGapMinutes;
     }
 
     @Transactional
@@ -75,7 +82,7 @@ public class V2MaintenanceRealizationUpdateService {
     @Transactional
     public long handleUnhandledRealizations(int maxToHandle) {
         final Stream<MaintenanceRealizationData> data = v2RealizationDataRepository.findUnhandled(maxToHandle);
-        final long count = data.filter(d -> handleWorkMachineRealization(d)).count();
+        final long count = data.filter(this::handleWorkMachineRealization).count();
         if (count > 0) {
             dataStatusService.updateDataUpdated(DataType.MAINTENANCE_REALIZATION_DATA);
         }
@@ -87,28 +94,30 @@ public class V2MaintenanceRealizationUpdateService {
         final ReittitoteumanKirjausRequestSchema kirjaus;
         try {
             kirjaus = jsonReader.readValue(wmrd.getJson());
-        } catch (JsonProcessingException e) {
+
+            // Message info
+            final String sendingSystem = kirjaus.getOtsikko().getLahettaja().getJarjestelma();
+            final Integer messageId = kirjaus.getOtsikko().getViestintunniste().getId();
+            final ZonedDateTime sendingTime = kirjaus.getOtsikko().getLahetysaika();
+
+            // Holder for one task-set data
+            final V2MaintenanceRealizationDataHolder currentDataHolder = new V2MaintenanceRealizationDataHolder(wmrd, sendingSystem, messageId, sendingTime);
+
+            // Data is either in reittitoteuma or in reittitoteumat depending of sending system
+            final List<ReittitoteumaSchema> toteumat = getReittitoteumas(kirjaus);
+
+            // Route
+            toteumat.forEach(reittitoteuma -> handleRoute(reittitoteuma.getReitti(), currentDataHolder));
+
+            wmrd.updateStatusToHandled();
+
+        } catch (Exception e) {
             log.error(String.format("HandleUnhandledRealizations failed for id %d", wmrd.getId()), e);
             wmrd.updateStatusToError();
+            wmrd.appendHandlingInfo(e.getMessage());
             return false;
         }
 
-        // Message info
-        final String sendingSystem = kirjaus.getOtsikko().getLahettaja().getJarjestelma();
-        final Integer messageId = kirjaus.getOtsikko().getViestintunniste().getId();
-        final ZonedDateTime sendingTime = kirjaus.getOtsikko().getLahetysaika();
-
-        // Holder for one task-set data
-        final V2MaintenanceRealizationDataHolder currentDataHolder = new V2MaintenanceRealizationDataHolder(wmrd, sendingSystem, messageId, sendingTime);
-
-        // Data is either in reittitoteuma or in reittitoteumat depending of sending system
-        final List<ReittitoteumaSchema> toteumat = getReittitoteumas(kirjaus);
-
-        // Route
-        toteumat.forEach(reittitoteuma -> handleRoute(reittitoteuma.getReitti(), currentDataHolder));
-        saveRealizationIfContainsValidLineString(currentDataHolder);
-
-        wmrd.updateStatusToHandled();
         return true;
     }
 
@@ -121,29 +130,49 @@ public class V2MaintenanceRealizationUpdateService {
                 saveRealizationIfContainsValidLineString(currentDataHolder);
                 currentDataHolder.resetCoordinatesAndTasks();
             } else {
-                // If current has data
-                if (currentDataHolder.containsCoordinateData() && isTasksChanged(tehtavat, currentDataHolder.getTaskids())) {
+                // If current has data and task is changed -> save and init new realization
+                // If there is longer gap between times in saved points -> save and init new realization
+                final ZonedDateTime nextCoordinateTime = r.getReittipiste().getAika();
+                if (currentDataHolder.containsCoordinateData() &&
+                    (isTasksChanged(tehtavat, currentDataHolder.getTaskids()) || !isNextCoordinateTimeAfterPreviousAndInsideLimit(currentDataHolder.getEndTime(), nextCoordinateTime) )) {
                     saveRealizationIfContainsValidLineString(currentDataHolder);
                     currentDataHolder.resetCoordinatesAndTasks();
                 }
 
                 final KoordinaattisijaintiSchema koordinaatit = r.getReittipiste().getKoordinaatit();
-                final ZonedDateTime datetime = r.getReittipiste().getAika();
 
                 final Coordinate pgPoint = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
-                currentDataHolder.addCoordinate(pgPoint, datetime, getMaintenanceTasks(tehtavat));
+                currentDataHolder.addCoordinate(pgPoint, nextCoordinateTime, getMaintenanceTasks(tehtavat, currentDataHolder.getRealizationData()));
             }
         });
+        // At the end of each route save it and reset. That way we don't combine it to next realization that might
+        // come from different machine
+        saveRealizationIfContainsValidLineString(currentDataHolder);
+        currentDataHolder.resetCoordinatesAndTasks();
+    }
+
+    private boolean isNextCoordinateTimeAfterPreviousAndInsideLimit(final ZonedDateTime previousCoordinateTime, final ZonedDateTime nextCoordinateTime) {
+        // It's allowed for next to be same or after the previous time
+        final boolean nextIsSameOrAfter = !nextCoordinateTime.isBefore(previousCoordinateTime);
+        final boolean timeGapInsideTheLimit = ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
+        if (!nextIsSameOrAfter || !timeGapInsideTheLimit) {
+            log.info("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {}, timeGapInsideTheLimit: {}", previousCoordinateTime, nextCoordinateTime, nextIsSameOrAfter, timeGapInsideTheLimit);
+        }
+        // FIXME: DPO-631 Temporally disabled the check of time gap between points to see what is real data quality
+        // return  nextIsSameOrAfter && timeGapInsideTheLimit;
+        return nextIsSameOrAfter;
     }
 
     private void saveRealizationIfContainsValidLineString(final V2MaintenanceRealizationDataHolder holder) {
         if (holder.isValidLineString()) {
-
             final MaintenanceRealization realization = creteRealization(holder);
             v2RealizationRepository.save(realization);
-
+            log.info("Saved MaintenanceRealization with {} coordinates", realization.getLineString().getNumPoints());
         } else if (holder.containsCoordinateData()){
-            log.error("RealizationData id {} invalid LineString size {}", holder.getRealizationData().getId(), holder.getCoordinates().size());
+            final String msg = String.format("RealizationData id %d invalid LineString size %d last coordinateIndex %d",
+                holder.getRealizationData().getId(), holder.getCoordinates().size(), holder.getCoordinateIndex());
+            log.warn(msg);
+            holder.getRealizationData().appendHandlingInfo(msg);
         }
     }
 
@@ -164,8 +193,8 @@ public class V2MaintenanceRealizationUpdateService {
         final boolean changed = !newTaskIds.equals(previousTaskIds);
         if (changed) {
             log.info("Changed {} from {} to {}", changed,
-                previousTaskIds.stream().map(t -> t.toString()).collect(Collectors.joining(",")),
-                newTaskIds.stream().map(t -> t.toString()).collect(Collectors.joining(",")));
+                previousTaskIds.stream().map(Object::toString).collect(Collectors.joining(",")),
+                newTaskIds.stream().map(Object::toString).collect(Collectors.joining(",")));
         }
         return changed;
     }
@@ -174,8 +203,20 @@ public class V2MaintenanceRealizationUpdateService {
         return tehtavas.stream().filter(t -> t.getTehtava() != null).map(t -> t.getTehtava().getId().longValue()).collect(Collectors.toSet());
     }
 
-    private List<MaintenanceTask> getMaintenanceTasks(final List<TehtavatSchema> tehtavat) {
-        return tehtavat.stream().map(t -> tasksMap.get(t.getTehtava().getId().longValue())).collect(Collectors.toList());
+    private List<MaintenanceTask> getMaintenanceTasks(final List<TehtavatSchema> tehtavat,
+                                                      final MaintenanceRealizationData realizationData) {
+        return tehtavat.stream()
+            .map(t -> {
+                final MaintenanceTask task = tasksMap.get(t.getTehtava().getId().longValue());
+                if (task == null) {
+                    final String msg = String.format("MaintenanceTask with id %d not found", t.getTehtava().getId());
+                    log.error(msg);
+                    realizationData.appendHandlingInfo(msg);
+                }
+                return task;
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     /**

@@ -17,4 +17,12 @@ public interface V2MaintenanceRealizationDataRepository extends JpaRepository<Ma
                     "ORDER BY r.id\n" +
                     "LIMIT :maxSize", nativeQuery = true)
     Stream<MaintenanceRealizationData> findUnhandled(final int maxSize);
+
+    @Query(value =
+        "select data.json\n" +
+        "from maintenance_realization mr\n" +
+        "inner join maintenance_realization_data data on data.id = mr.realization_data_id\n" +
+        "where mr.id = :id", nativeQuery = true)
+    String findJsonByRealizationId(final long id);
+
 }

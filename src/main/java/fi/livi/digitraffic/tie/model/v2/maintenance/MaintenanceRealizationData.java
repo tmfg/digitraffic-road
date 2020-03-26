@@ -53,7 +53,10 @@ public class MaintenanceRealizationData {
     private ZonedDateTime modified;
 
     @OneToMany(mappedBy = "realizationData", fetch = FetchType.LAZY)
-    private Set<MaintenanceRealization> realizationData;
+    private Set<MaintenanceRealization> realizations;
+
+    @Column
+    private String handlingInfo;
 
     public MaintenanceRealizationData() {
         // For Hibernate
@@ -80,6 +83,14 @@ public class MaintenanceRealizationData {
         return status;
     }
 
+    public Set<MaintenanceRealization> getRealizations() {
+        return realizations;
+    }
+
+    public String getHandlingInfo() {
+        return handlingInfo;
+    }
+
     public void updateStatusToHandled() {
         if (Status.HANDLED.equals(status)) {
             throw new IllegalStateException(String.format("%s status is already %s", getClass().getSimpleName(), status));
@@ -92,6 +103,10 @@ public class MaintenanceRealizationData {
             throw new IllegalStateException(String.format("%s status is already %s cannot be changed to %s", getClass().getSimpleName(), status, Status.ERROR));
         }
         status = Status.ERROR;
+    }
+
+    public void appendHandlingInfo(final String append) {
+        this.handlingInfo = handlingInfo != null ? handlingInfo + ", " + append : append;
     }
 
     @Override
