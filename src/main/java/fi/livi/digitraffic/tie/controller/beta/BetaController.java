@@ -299,7 +299,7 @@ public class BetaController {
 
         return weatherService.findWeatherHistoryData(stationId, sensorId, from);
     }
-    
+
     @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/changes", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera history changes"))

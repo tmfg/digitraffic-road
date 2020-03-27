@@ -86,23 +86,22 @@ public class SensorDataS3Writer {
             final InputStream inputStream = bos.toInputStream();
 
             // NOTE! Disabled
-            /**
+            /** */
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("application/zip");
             metadata.setContentLength(bos.size());
 
-
             // Write to S3
             s3Client.putObject(s3Properties.getS3BucketName(), ZIP_filename, inputStream, metadata);
-            */
+
             // Local copy-to-file hack
             //FileUtils.copyInputStreamToFile(inputStream, new File(ZIP_filename));
 
-            log.info("Collected values={}, window {} - {}, file {}", counter.get(), from, to, directorPrefix.concat(ZIP_filename));
+            log.info("Collected addCount={} , window {} - {} , file {}", counter.get(), from, to, directorPrefix.concat(ZIP_filename));
 
             return counter.get();
         } catch (Exception e) {
-            log.error("Failed to process ", e);
+            log.error("Failed to process sensor data archive", e);
 
             //throw e;
         }
