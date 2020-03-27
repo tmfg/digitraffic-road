@@ -75,7 +75,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         int sum = writer.writeSensorData(now.minusHours(1).truncatedTo(ChronoUnit.HOURS), now.truncatedTo(ChronoUnit.HOURS));
 
         Assert.assertEquals("element count mismatch", count, sum);
-        
+
         ObjectListing list = amazonS3.listObjects(bucketName);
 
         String objectName = list.getObjectSummaries().get(0).getKey();
