@@ -376,7 +376,7 @@ public class BetaController {
     @ApiOperation(value = "Road maintenance tracking source data")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + MAINTENANCE_JSON_DATA_PATH + "/{trackingId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance trackings data"))
-    public List<JsonNode> findMaintenanceTrackingDataJsonByRealizationId(@PathVariable(value = "trackingId") final long trackingId) {
+    public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@PathVariable(value = "trackingId") final long trackingId) {
         return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(trackingId);
     }
 
