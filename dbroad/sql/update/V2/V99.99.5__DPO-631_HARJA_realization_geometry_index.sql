@@ -1,0 +1,1 @@
+CREATE INDEX maintenance_realization_line_string_i ON maintenance_realization USING GIST (line_String);
