@@ -19,6 +19,7 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
@@ -241,6 +243,24 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertCollectionSize(1, latestFeatures);
         assertEquals(startTime.plusMinutes(1+9), latestFeatures.get(0).getProperties().endTime);
         assertAllHasOnlyPointGeometries(latestFeatures);
+    }
+
+    @Test
+    public void findTrackingDataJsonsByTrackingId() throws IOException {
+        final List<Tyokone> workMachines = createWorkMachines(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        // Create 2 tracking data that are combined as one tracking
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+
+        final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(20)).features;
+        assertCollectionSize(1, features);
+
+        final List<JsonNode> jsons = v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(features.get(0).getProperties().id);
+        assertCollectionSize(2, jsons);
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,

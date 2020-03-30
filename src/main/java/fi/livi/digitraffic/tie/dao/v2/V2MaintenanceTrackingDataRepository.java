@@ -23,7 +23,7 @@ public interface V2MaintenanceTrackingDataRepository extends JpaRepository<Maint
                     "FROM MAINTENANCE_TRACKING_DATA_TRACKING tracking\n" +
                     "INNER JOIN MAINTENANCE_TRACKING_DATA data on tracking.data_id = data.id\n" +
                     "WHERE tracking.tracking_id = :id\n" +
-                    "ORDER BY data.id", nativeQuery = true)
-    List<String> findJsonByTrackingId(final long id);
+                    "ORDER BY data.id DESC", nativeQuery = true)
+    List<String> findJsonsByTrackingId(final long id);
 
 }

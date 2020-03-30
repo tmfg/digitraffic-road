@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
@@ -66,7 +68,7 @@ public class BetaController {
     public static final String MAINTENANCE_REALIZATIONS_TASKS_PATH = "/tasks";
     public static final String MAINTENANCE_REALIZATIONS_OPERATIONS_PATH = "/operations";
     public static final String MAINTENANCE_REALIZATIONS_CATEGORIES_PATH = "/categories";
-    public static final String MAINTENANCE_REALIZATIONS_DATA_PATH = "/data";
+    public static final String MAINTENANCE_JSON_DATA_PATH = "/data";
 
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
@@ -228,10 +230,10 @@ public class BetaController {
     }
 
     @ApiIgnore("This is only for internal debugging and not for the public")
-    @ApiOperation(value = "Road maintenance realizations task source data")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_DATA_PATH + "/{realizationId}", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Road maintenance realizations source data")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_JSON_DATA_PATH + "/{realizationId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
-    public String findRealizationDataJsonByRealizationId(@PathVariable(value = "realizationId") final long realizationId) {
+    public JsonNode findMaintenanceRealizationDataJsonByRealizationId(@PathVariable(value = "realizationId") final long realizationId) {
         return maintenanceRealizationDataService.findRealizationDataJsonByRealizationId(realizationId);
     }
 
@@ -368,6 +370,14 @@ public class BetaController {
             throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
         }
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
+    }
+
+    @ApiIgnore("This is only for internal debugging and not for the public")
+    @ApiOperation(value = "Road maintenance tracking source data")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + MAINTENANCE_JSON_DATA_PATH + "/{trackingId}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance trackings data"))
+    public List<JsonNode> findMaintenanceTrackingDataJsonByRealizationId(@PathVariable(value = "trackingId") final long trackingId) {
+        return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(trackingId);
     }
 
     @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")

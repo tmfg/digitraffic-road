@@ -16,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTaskRepository;
@@ -75,8 +79,14 @@ public class V2MaintenanceRealizationDataService {
     }
 
     @Transactional(readOnly = true)
-    public String findRealizationDataJsonByRealizationId(final long realizationId) {
-        return v2MaintenanceRealizationDataRepository.findJsonByRealizationId(realizationId);
+    public JsonNode findRealizationDataJsonByRealizationId(final long realizationId) {
+        final ObjectMapper om = new ObjectMapper();
+        final String json = v2MaintenanceRealizationDataRepository.findJsonByRealizationId(realizationId);
+        try {
+            return om.readTree(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional(readOnly = true)

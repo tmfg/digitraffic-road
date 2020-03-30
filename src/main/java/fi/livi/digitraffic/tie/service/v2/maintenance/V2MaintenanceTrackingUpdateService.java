@@ -166,6 +166,7 @@ public class V2MaintenanceTrackingUpdateService {
                 v2MaintenanceTrackingRepository.save(created);
             } else {
                 latestSaved.appendGeometry(geometry);
+                latestSaved.addWorkMachineTrackingData(trackingData);
                 latestSaved.setEndTime(harjaObservationTime);
             }
         }

@@ -16,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
@@ -40,12 +45,15 @@ public class V2MaintenanceTrackingDataService {
 
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingDataService.class);
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
+    private V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository;
     private final DataStatusService dataStatusService;
 
     @Autowired
     public V2MaintenanceTrackingDataService(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
+                                            final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository,
                                             final DataStatusService dataStatusService) {
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
+        this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
         this.dataStatusService = dataStatusService;
     }
 
@@ -91,6 +99,18 @@ public class V2MaintenanceTrackingDataService {
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
         final List<MaintenanceTrackingFeature> features = convertToTrackingFeatures(found, false);
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
+    }
+
+    @Transactional(readOnly = true)
+    public List<JsonNode> findTrackingDataJsonsByTrackingId(final long trackingId) {
+        final ObjectMapper om = new ObjectMapper();
+        return v2MaintenanceTrackingDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
+            try {
+                return om.readTree(j);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
     }
 
     /**

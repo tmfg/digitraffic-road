@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 
@@ -108,7 +110,7 @@ public class V2MaintenanceRealizationDataServiceTest extends AbstractServiceTest
             RANGE_X_AROUND_TASK.getLeft(), RANGE_Y_AROUND_TASK.getLeft(), RANGE_X_AROUND_TASK.getRight(), RANGE_Y_AROUND_TASK.getRight(),
             Collections.emptyList());
 
-        final String json = maintenanceRealizationDataService.findRealizationDataJsonByRealizationId(result.features.get(0).getProperties().id);
-        testHelper.checkValidJson(json);
+        final JsonNode json = maintenanceRealizationDataService.findRealizationDataJsonByRealizationId(result.features.get(0).getProperties().id);
+        Assert.assertNotNull(json);
     }
 }
