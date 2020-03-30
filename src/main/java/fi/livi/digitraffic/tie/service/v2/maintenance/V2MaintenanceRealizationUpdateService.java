@@ -72,9 +72,9 @@ public class V2MaintenanceRealizationUpdateService {
     }
 
     @Transactional
-    public void saveNewWorkMachineRealization(final Long jobId, final ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus) throws JsonProcessingException {
+    public void saveRealizationData(final Long jobId, final ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus) throws JsonProcessingException {
         final String json = jsonWriter.writeValueAsString(reittitoteumanKirjaus);
-        MaintenanceRealizationData realization = new MaintenanceRealizationData(jobId, json);
+        final MaintenanceRealizationData realization = new MaintenanceRealizationData(jobId, json);
         v2RealizationDataRepository.save(realization);
         log.debug("method=saveWorkMachineRealizationData jsonData={}", json);
     }
@@ -82,7 +82,7 @@ public class V2MaintenanceRealizationUpdateService {
     @Transactional
     public long handleUnhandledRealizations(int maxToHandle) {
         final Stream<MaintenanceRealizationData> data = v2RealizationDataRepository.findUnhandled(maxToHandle);
-        final long count = data.filter(this::handleWorkMachineRealization).count();
+        final long count = data.filter(this::handleMaintenanceRealization).count();
         if (count > 0) {
             dataStatusService.updateDataUpdated(DataType.MAINTENANCE_REALIZATION_DATA);
         }
@@ -90,10 +90,9 @@ public class V2MaintenanceRealizationUpdateService {
         return count;
     }
 
-    private boolean handleWorkMachineRealization(final MaintenanceRealizationData wmrd) {
-        final ReittitoteumanKirjausRequestSchema kirjaus;
+    private boolean handleMaintenanceRealization(final MaintenanceRealizationData wmrd) {
         try {
-            kirjaus = jsonReader.readValue(wmrd.getJson());
+            final ReittitoteumanKirjausRequestSchema kirjaus = jsonReader.readValue(wmrd.getJson());
 
             // Message info
             final String sendingSystem = kirjaus.getOtsikko().getLahettaja().getJarjestelma();
@@ -114,7 +113,7 @@ public class V2MaintenanceRealizationUpdateService {
         } catch (Exception e) {
             log.error(String.format("HandleUnhandledRealizations failed for id %d", wmrd.getId()), e);
             wmrd.updateStatusToError();
-            wmrd.appendHandlingInfo(e.getMessage());
+            wmrd.appendHandlingInfo(e.toString());
             return false;
         }
 

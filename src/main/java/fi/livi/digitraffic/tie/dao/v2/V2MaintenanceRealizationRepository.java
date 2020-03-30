@@ -20,7 +20,6 @@ public interface V2MaintenanceRealizationRepository extends JpaRepository<Mainte
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
         "SELECT mr FROM #{#entityName} mr\n" +
-        "join mr.tasks task\n" +
         "WHERE mr.endTime BETWEEN :from AND :to\n" +
         "  AND intersects(mr.lineString, :area) = true\n" +
         "ORDER by mr.id")
@@ -30,7 +29,7 @@ public interface V2MaintenanceRealizationRepository extends JpaRepository<Mainte
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
         "SELECT mr FROM #{#entityName} mr\n" +
-        "join mr.tasks task\n" +
+        "JOIN mr.tasks task\n" +
         "WHERE mr.endTime BETWEEN :from AND :to\n" +
         "  AND intersects(mr.lineString, :area) = true\n" +
         "  AND task.id in (:taskIds)" +

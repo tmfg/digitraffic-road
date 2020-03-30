@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_INTEGRATIONS_BASE_
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_WORK_MACHINE_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.REALIZATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.TRACKINGS_PATH;
+import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,43 +13,39 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.dao.v1.workmachine.WorkMachineObservationRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservation;
-import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineObservationCoordinate;
-import fi.livi.digitraffic.tie.model.v1.maintenance.WorkMachineTask;
-import fi.livi.digitraffic.tie.model.v1.maintenance.harja.WorkMachineTracking;
-import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
-import fi.livi.digitraffic.tie.service.v1.WorkMachineObservationService;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(V2RoadMaintenanceControllerTest.class);
 
     @Autowired
-    private MaintenanceDataService maintenanceDataService;
-
+    private V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository;
     @Autowired
-    private WorkMachineObservationService workMachineObservationService;
-
+    private V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     @Autowired
-    private WorkMachineObservationRepository workMachineObservationRepository;
+    private V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
 
     @Before
     public void cleanDb() {
-        workMachineObservationRepository.deleteAll();
+        v2MaintenanceTrackingRepository.deleteAll();
         if (TestTransaction.isActive()) {
             TestTransaction.flagForCommit();
             TestTransaction.end();
@@ -60,22 +57,22 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     @Test
     public void postWorkMachineTrackingDataOk() throws Exception {
 
-        final int recordsBefore = maintenanceDataService.findAll().size();
+        final int recordsBefore = v2MaintenanceTrackingDataRepository.findAll().size();
 
         postTrackingJson("pisteseuranta.json");
 
-        final int recordsAfter = maintenanceDataService.findAll().size();
+        final int recordsAfter = v2MaintenanceTrackingDataRepository.findAll().size();
         Assert.assertEquals(recordsBefore+1, recordsAfter);
     }
 
     @Test
     public void postWorkMachineTrackingLineStringDataOk() throws Exception {
 
-        final int recordsBefore = maintenanceDataService.findAll().size();
+        final int recordsBefore = v2MaintenanceTrackingDataRepository.findAll().size();
 
         postTrackingJson("viivageometriaseuranta.json");
 
-        final List<WorkMachineTracking> all = maintenanceDataService.findAll();
+        final List<MaintenanceTrackingData> all = v2MaintenanceTrackingDataRepository.findAll();
         Assert.assertEquals(recordsBefore+1, all.size());
     }
 
@@ -83,14 +80,15 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     @Test
     public void postWorkMachineTrackingDataWithNoContentType() throws Exception {
 
-        final int recordsBefore = maintenanceDataService.findAll().size();
+        final int recordsBefore = v2MaintenanceTrackingRepository.findAll().size();
 
         postTracking("pisteseuranta.json", null, status().is5xxServerError());
 
-        final int recordsAfter = maintenanceDataService.findAll().size();
+        final int recordsAfter = v2MaintenanceTrackingRepository.findAll().size();
         Assert.assertEquals(recordsBefore, recordsAfter);
     }
 
+    @Ignore("DPO-631 Temporally disabled the check of time gap between points to see what is real data quality")
     @Test
     public void postWorkMachineTrackingDataAndHandleAsDistinctObservations() throws Exception {
         final long harjaUrakkaId = 999999;
@@ -100,43 +98,34 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         postTrackingJson("linestring_tracking_2.json");
         postTrackingJson("linestring_tracking_3.json");
 
-        maintenanceDataService.updateWorkMachineTrackingTypes();
-        maintenanceDataService.handleUnhandledWorkMachineTrackings(100);
+
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
         entityManager.flush();
         entityManager.clear();
 
-        List<WorkMachineObservation> observations =
-            workMachineObservationService.findWorkMachineObservationsByWorkMachineHarjaIdAndHarjaUrakkaId(harjaTyokoneId, harjaUrakkaId);
+        final List<MaintenanceTracking> observations = v2MaintenanceTrackingRepository
+            .findAllByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedAscIdAsc(harjaTyokoneId, harjaUrakkaId);
 
         Assert.assertEquals("Observations should be divided in two as there is over 30 min gap in observations",
                    2, observations.size());
 
-        final WorkMachineObservation first = observations.get(0);
-        final WorkMachineObservation second = observations.get(1);
+        final MaintenanceTracking first = observations.get(0);
+        final MaintenanceTracking second = observations.get(1);
 
         Assert.assertEquals("First observation should have coordinates from 2 first messages = 10",
-            10, first.getCoordinates().size());
+            10, first.getLineString().getNumPoints());
 
         Assert.assertEquals("Second observation should have coordinates from 3 message = 5",
-            5, second.getCoordinates().size());
+            5, second.getLineString().getNumPoints());
 
-        int counter = 0;
-        for (WorkMachineObservationCoordinate c : first.getCoordinates()) {
-            counter++;
-            if (counter < 6) { // first 5 coordinates
-                Assert.assertEquals(2, c.getWorkMachineTasks().size());
-                c.getWorkMachineTasks().forEach(t -> Arrays.asList(WorkMachineTask.Task.PLOUGHING_AND_SLUSH_REMOVAL, WorkMachineTask.Task.SALTING).contains(t.getTask()));
-            }
-            else { // last 5 coordinates
-                Assert.assertEquals(1, c.getWorkMachineTasks().size());
-                c.getWorkMachineTasks().stream().findFirst().get().getTask().equals(WorkMachineTask.Task.PLOUGHING_AND_SLUSH_REMOVAL);
-            }
-        }
+        Assert.assertEquals(2, first.getTasks().size());
+        Assert.assertTrue(first.getTasks().contains(PLOUGHING_AND_SLUSH_REMOVAL));
+        Assert.assertTrue(first.getTasks().contains(SALTING));
 
-        for (WorkMachineObservationCoordinate c : second.getCoordinates()) {
-            Assert.assertEquals(1, c.getWorkMachineTasks().size());
-            c.getWorkMachineTasks().stream().findFirst().get().getTask().equals(WorkMachineTask.Task.SALTING);
-        }
+        Assert.assertEquals(1, second.getTasks().size());
+        Assert.assertTrue(second.getTasks().contains(SALTING));
+
+
     }
 
     @Test

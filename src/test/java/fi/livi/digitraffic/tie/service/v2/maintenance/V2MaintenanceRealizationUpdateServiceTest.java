@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,8 +47,6 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     @Before
     public void init() {
         testHelper.clearDb();
-        realizationRepository.deleteAllInBatch();
-        realizationDataRepository.deleteAllInBatch();
     }
 
     @Test

@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 
 @ConditionalOnProperty(name = "maintenance.tracking.job.enabled", matchIfMissing = true)
 @ConditionalOnNotWebApplication
 @Component
-public class MaintenanceDataJobConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(MaintenanceDataJobConfiguration.class);
+public class V2MaintenanceTrackingJobConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingJobConfiguration.class);
 
-    private final MaintenanceDataService maintenanceDataService;
+    private final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
 
     @Autowired
-    public MaintenanceDataJobConfiguration(final MaintenanceDataService maintenanceDataService) {
-        this.maintenanceDataService = maintenanceDataService;
+    public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService) {
+        this.v2MaintenanceTrackingUpdateService = v2MaintenanceTrackingUpdateService;
     }
 
     /**
@@ -31,12 +31,12 @@ public class MaintenanceDataJobConfiguration {
      * from source JSON-format to db relations.
      */
     @Scheduled(fixedDelayString = "${maintenance.tracking.job.intervalMs}")
-    public void handleUnhandledMaintenanceTrackings() throws JsonProcessingException {
+    public void handleUnhandledMaintenanceTracking() throws JsonProcessingException {
         final StopWatch start = StopWatch.createStarted();
         int count = 0;
         int totalCount = 0;
         do {
-            count = maintenanceDataService.handleUnhandledWorkMachineTrackings(100);
+            count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
             totalCount += count;
             log.info("method=handleUnhandledWorkMachineTrackings handledCount={} trackings", count);
         } while (count > 0);
