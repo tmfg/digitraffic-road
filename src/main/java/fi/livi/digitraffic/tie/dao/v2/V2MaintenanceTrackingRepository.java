@@ -50,7 +50,6 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                "      AND intersects(t.lastPoint, :area) = true\n" +
                "      AND task in (:tasks)" +
                "    GROUP BY t.workMachine\n" +
-               // TODO how to get groupping with tasks?
                ")\n" +
                "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)

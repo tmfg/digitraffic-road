@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,14 +20,10 @@ public interface V2MaintenanceTrackingDataRepository extends JpaRepository<Maint
     Stream<MaintenanceTrackingData> findUnhandled(final int maxSize);
 
     @Query(value =  "SELECT data.json\n" +
-                    "FROM MAINTENANCE_TRACKING_DATA data\n" +
-                    "WHERE EXISTS(\n" +
-                    "  SELECT null " +
-                    "  FROM MAINTENANCE_TRACKING_DATA_TRACKING t" +
-                    "  WHERE t.tracking_id = :id\n" +
-                    "    AND t.data_id = data.id\n" +
-                    ")\n" +
+                    "FROM MAINTENANCE_TRACKING_DATA_TRACKING tracking\n" +
+                    "INNER JOIN MAINTENANCE_TRACKING_DATA data on tracking.data_id = data.id\n" +
+                    "WHERE tracking.tracking_id = :id\n" +
                     "ORDER BY data.id", nativeQuery = true)
-    String findJsonByTrackingId(final long id);
+    List<String> findJsonByTrackingId(final long id);
 
 }

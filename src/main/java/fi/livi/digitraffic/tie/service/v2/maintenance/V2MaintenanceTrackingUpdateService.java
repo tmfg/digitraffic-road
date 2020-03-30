@@ -162,7 +162,7 @@ public class V2MaintenanceTrackingUpdateService {
                 final MaintenanceTracking created =
                     new MaintenanceTracking(trackingData, workMachine, harjaContractId, sendingSystem, sendingTime,
                         harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
-                        performedTasks, BigDecimal.valueOf(harjaDirection));
+                        performedTasks, harjaDirection != null ? BigDecimal.valueOf(harjaDirection) : null);
                 v2MaintenanceTrackingRepository.save(created);
             } else {
                 latestSaved.appendGeometry(geometry);
