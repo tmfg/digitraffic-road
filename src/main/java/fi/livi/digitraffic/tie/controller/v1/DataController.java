@@ -28,22 +28,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.datex2.response.RoadworksDatex2Response;
+import fi.livi.digitraffic.tie.datex2.response.TrafficDisordersDatex2Response;
+import fi.livi.digitraffic.tie.datex2.response.WeightRestrictionsDatex2Response;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantRootDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraDataService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v1.FreeFlowSpeedService;
-import fi.livi.digitraffic.tie.service.v1.MaintenanceDataService;
 import fi.livi.digitraffic.tie.service.v1.TmsDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
-import fi.livi.digitraffic.tie.datex2.response.RoadworksDatex2Response;
-import fi.livi.digitraffic.tie.datex2.response.TrafficDisordersDatex2Response;
-import fi.livi.digitraffic.tie.datex2.response.WeightRestrictionsDatex2Response;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraDataService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,7 +65,6 @@ public class DataController {
     private final CameraDataService cameraDataService;
     private final ForecastSectionDataService forecastSectionDataService;
     private final Datex2DataService datex2DataService;
-    private final MaintenanceDataService maintenanceDataService;
 
     @Autowired
     public DataController(final TmsDataService tmsDataService,
@@ -74,15 +72,13 @@ public class DataController {
                           final WeatherService weatherService,
                           final CameraDataService cameraDataService,
                           final ForecastSectionDataService forecastSectionDataService,
-                          final Datex2DataService datex2DataService,
-                          final MaintenanceDataService maintenanceDataService) {
+                          final Datex2DataService datex2DataService) {
         this.tmsDataService = tmsDataService;
         this.freeFlowSpeedService = freeFlowSpeedService;
         this.weatherService = weatherService;
         this.cameraDataService = cameraDataService;
         this.forecastSectionDataService = forecastSectionDataService;
         this.datex2DataService = datex2DataService;
-        this.maintenanceDataService = maintenanceDataService;
     }
 
     @ApiOperation("Current free flow speeds")
@@ -303,20 +299,4 @@ public class DataController {
         boolean lastUpdated) {
         return tmsDataService.findPublishableSensorConstants(lastUpdated);
     }
-
-//    // TODO FIXME only for testing, must be removed
-//    @ApiOperation(value = "Work Machine Tracking data")
-//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-tracking", produces = { APPLICATION_JSON_VALUE })
-//    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
-//    public List<WorkMachineTracking> workMachineTrackings() {
-//        return maintenanceDataService.findAll();
-//    }
-//
-//    // TODO FIXME only for testing, must be removed
-//    @ApiOperation(value = "Work Machine Observation data")
-//    @RequestMapping(method = RequestMethod.GET, path = "/work-machine-observation", produces = { APPLICATION_JSON_VALUE })
-//    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of work machine tracking data")})
-//    public List<WorkMachineObservation> workMachineObservations() {
-//        return maintenanceDataService.finAllWorkMachineObservations();
-//    }
 }
