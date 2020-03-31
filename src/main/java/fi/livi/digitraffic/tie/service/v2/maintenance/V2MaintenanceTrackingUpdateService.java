@@ -76,10 +76,15 @@ public class V2MaintenanceTrackingUpdateService {
 
     @Transactional
     public void saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) throws JsonProcessingException {
-        final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
-        final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
-        v2MaintenanceTrackingDataRepository.save(tracking);
-        log.debug("method=saveMaintenanceTrackingData jsonData={}", json);
+        try {
+            final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
+            final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
+            v2MaintenanceTrackingDataRepository.save(tracking);
+            log.debug("method=saveMaintenanceTrackingData jsonData={}", json);
+        } catch (Exception e) {
+            log.error("method=saveMaintenanceTrackingData failed ", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
