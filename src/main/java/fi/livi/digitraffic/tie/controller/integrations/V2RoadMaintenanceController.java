@@ -78,7 +78,7 @@ public class V2RoadMaintenanceController {
         log.debug("method=postWorkMachineRealization harjaJobId={} JSON=\n{}", jobId,
                  objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(reittitoteumanKirjaus));
 
-        v2MaintenanceDataService.saveRealizationData(jobId, reittitoteumanKirjaus);
+        v2MaintenanceDataService.saveMaintenanceRealizationData(jobId, reittitoteumanKirjaus);
 
         return ResponseEntity.ok().build();
     }
