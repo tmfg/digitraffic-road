@@ -48,6 +48,8 @@ public class V2MaintenanceTrackingDataService {
     private V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository;
     private final DataStatusService dataStatusService;
 
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     public V2MaintenanceTrackingDataService(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
                                             final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository,
@@ -103,10 +105,9 @@ public class V2MaintenanceTrackingDataService {
 
     @Transactional(readOnly = true)
     public List<JsonNode> findTrackingDataJsonsByTrackingId(final long trackingId) {
-        final ObjectMapper om = new ObjectMapper();
         return v2MaintenanceTrackingDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
             try {
-                return om.readTree(j);
+                return objectMapper.readTree(j);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

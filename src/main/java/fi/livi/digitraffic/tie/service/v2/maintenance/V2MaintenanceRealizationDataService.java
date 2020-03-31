@@ -47,6 +47,8 @@ public class V2MaintenanceRealizationDataService {
     private final V2MaintenanceRealizationDataRepository v2MaintenanceRealizationDataRepository;
     private final DataStatusService dataStatusService;
 
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     public V2MaintenanceRealizationDataService(final V2MaintenanceRealizationRepository v2RealizationRepository,
                                                final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
@@ -80,10 +82,9 @@ public class V2MaintenanceRealizationDataService {
 
     @Transactional(readOnly = true)
     public JsonNode findRealizationDataJsonByRealizationId(final long realizationId) {
-        final ObjectMapper om = new ObjectMapper();
         final String json = v2MaintenanceRealizationDataRepository.findJsonByRealizationId(realizationId);
         try {
-            return om.readTree(json);
+            return objectMapper.readTree(json);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

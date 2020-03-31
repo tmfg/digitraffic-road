@@ -1,1 +1,2 @@
 CREATE INDEX maintenance_realization_line_string_i ON maintenance_realization USING GIST (line_String);
+CREATE INDEX maintenance_realization__end_time_id ON maintenance_realization USING BTREE (end_time, id);
