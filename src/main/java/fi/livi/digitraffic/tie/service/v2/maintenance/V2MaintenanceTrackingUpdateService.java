@@ -78,7 +78,7 @@ public class V2MaintenanceTrackingUpdateService {
         final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
         final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
         v2MaintenanceTrackingDataRepository.save(tracking);
-        log.debug("method=saveWorkMachineTrackingData jsonData={}", json);
+        log.debug("method=saveMaintenanceTrackingData jsonData={}", json);
     }
 
     @Transactional
