@@ -74,6 +74,7 @@ public class V2MaintenanceTrackingUpdateService {
         this.distinctObservationGapMinutes = distinctObservationGapMinutes;
     }
 
+    @Transactional
     public void saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) throws JsonProcessingException {
         final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
         final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
