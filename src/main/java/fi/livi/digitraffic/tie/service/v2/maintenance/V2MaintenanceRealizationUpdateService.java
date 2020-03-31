@@ -73,10 +73,15 @@ public class V2MaintenanceRealizationUpdateService {
 
     @Transactional
     public void saveRealizationData(final Long jobId, final ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus) throws JsonProcessingException {
-        final String json = jsonWriter.writeValueAsString(reittitoteumanKirjaus);
-        final MaintenanceRealizationData realization = new MaintenanceRealizationData(jobId, json);
-        v2RealizationDataRepository.save(realization);
-        log.debug("method=saveWorkMachineRealizationData jsonData={}", json);
+        try {
+            final String json = jsonWriter.writeValueAsString(reittitoteumanKirjaus);
+            final MaintenanceRealizationData realization = new MaintenanceRealizationData(jobId, json);
+            v2RealizationDataRepository.save(realization);
+            log.debug("method=saveRealizationData jsonData={}", json);
+        } catch (Exception e) {
+            log.error("method=saveRealizationData failed ", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
