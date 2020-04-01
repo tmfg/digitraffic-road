@@ -124,9 +124,7 @@ public class V2MaintenanceRealizationDataService {
     private MaintenanceRealizationTask createMaintenanceRealizationTask(MaintenanceTask t) {
         final MaintenanceTaskCategory c = t.getCategory();
         final MaintenanceTaskOperation o = t.getOperation();
-        return new MaintenanceRealizationTask(t.getId(), t.getFi(), t.getSv(), t.getEn(),
-            new MaintenanceRealizationTaskOperation(o.getId(), o.getFi(), o.getSv(), o.getEn()),
-            new MaintenanceRealizationTaskCategory(c.getId(), c.getFi(), c.getSv(), c.getEn()));
+        return new MaintenanceRealizationTask(t.getId(), t.getFi(), t.getSv(), t.getEn(), o.getId(), c.getId());
     }
 
     private Set<Long> convertToMaintenanceRealizationTaskIds(final Set<MaintenanceTask> tasks) {

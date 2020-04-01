@@ -211,7 +211,7 @@ public class BetaController {
             @DecimalMax("72.0")
             final double yMax,
 
-            @ApiParam(value = "Task ids to include")
+            @ApiParam(value = "Task ids to include. Any realization containing one of the selected tasks will be returned.")
             @RequestParam(value = "taskId", required = false)
             final List<Long> taskIds) {
 
@@ -297,7 +297,7 @@ public class BetaController {
         @DecimalMax("72.0")
         final double yMax,
 
-        @ApiParam(value = "Task ids to include")
+        @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 
@@ -354,7 +354,7 @@ public class BetaController {
         @DecimalMax("72.0")
         final double yMax,
 
-        @ApiParam(value = "Task ids to include")
+        @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 

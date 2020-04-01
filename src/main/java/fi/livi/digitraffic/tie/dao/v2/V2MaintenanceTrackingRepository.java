@@ -41,17 +41,23 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
                "SELECT tracking \n" +
-               "FROM #{#entityName} tracking\n" +
-               "WHERE tracking.id IN (\n" +
-               "    SELECT max(t.id)\n" + // select latest id per machine
-               "    FROM #{#entityName} t\n" +
-               "    JOIN t.tasks task\n" +
-               "    WHERE t.endTime BETWEEN :from AND :to\n" +
-               "      AND intersects(t.lastPoint, :area) = true\n" +
-               "      AND task in (:tasks)" +
-               "    GROUP BY t.workMachine\n" +
-               ")\n" +
-               "ORDER by tracking.id")
+                   "FROM #{#entityName} tracking\n" +
+                   "WHERE tracking.id IN (\n" +
+                   "    SELECT max(t.id)\n" + // select latest id per machine
+                   "    FROM #{#entityName} t\n" +
+                   "    JOIN tracking.tasks taskit\n" +
+                   "    WHERE t.endTime BETWEEN :from AND :to\n" +
+                   "      AND intersects(t.lastPoint, :area) = true\n" +
+                   "      AND exists (\n" +
+                   "        SELECT t " +
+                   "        FROM #{#entityName} t\n" +
+                   "        JOIN t.tasks task\n" +
+                   "        WHERE t = tracking\n" +
+                   "          AND task in (:tasks)" +
+                   "      )\n" +
+                   "    GROUP BY t.workMachine\n" +
+                   ")\n" +
+                   "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTracking> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
 
@@ -69,10 +75,15 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @Query(value =
                "SELECT tracking \n" +
                "FROM #{#entityName} tracking\n" +
-               "JOIN tracking.tasks task\n" +
                "WHERE tracking.endTime BETWEEN :from AND :to\n" +
                "  AND intersects(tracking.lastPoint, :area) = true\n" +
-               "  AND task in (:tasks)" +
+               "  AND exists (\n" +
+               "    SELECT t " +
+               "    FROM #{#entityName} t\n" +
+               "    JOIN t.tasks task\n" +
+               "    WHERE t = tracking\n" +
+               "      AND task in (:tasks)" +
+               " )\n" +
                "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTracking> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
