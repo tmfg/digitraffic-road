@@ -6,8 +6,6 @@
 1. Java 1.8 JDK
 2. Maven
 3. Git client
-4. Oracle 11g database
-
 
 ### Clone project to your computer
 
@@ -27,15 +25,6 @@ If you want to disable some jobs, it can be done by adding following line to app
 ### Run PosgresSQL server
 
 See dbroad directory [README.md](dbroad/README.md)
-### Configure Oracle JDBC driver
-
-Download Oracle JDBC driver and add it to your local Maven repository.
-
-    $ mvn install:install-file -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 \
-      -Dversion=12.1.0.2 -Dpackaging=jar  -DgeneratePom=true -Dfile=ojdbc7-12.1.0.2.jar
-
-**Or** add Maven repository that contains OJDBC-driver to project's pom.xml inside repositories-tag.
-
 
 ### Build project
 
