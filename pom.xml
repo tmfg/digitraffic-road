@@ -360,32 +360,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.sshd/sshd-core -->
-
-<!--        <dependency>-->
-<!--            <groupId>org.apache.sshd</groupId>-->
-<!--            <artifactId>sshd-common</artifactId>-->
-<!--            <version>${org.apache.sshd.version}</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.sshd</groupId>-->
-<!--            <artifactId>sshd-core</artifactId>-->
-<!--            <version>${org.apache.sshd.version}</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.sshd</groupId>-->
-<!--            <artifactId>sshd-sftp</artifactId>-->
-<!--            <version>${org.apache.sshd.version}</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.sshd</groupId>-->
-<!--            <artifactId>sshd-scp</artifactId>-->
-<!--            <version>${org.apache.sshd.version}</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>xyz.fabiano</groupId>
             <artifactId>spring-localstack</artifactId>
