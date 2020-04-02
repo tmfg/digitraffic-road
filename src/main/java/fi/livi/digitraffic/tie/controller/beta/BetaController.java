@@ -11,6 +11,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -370,6 +371,13 @@ public class BetaController {
             throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
         }
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
+    }
+
+    @ApiOperation(value = "Road maintenance tracking tasks")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
+    public List<MaintenanceTrackingTask> getMaintenanceTrackingTasks() {
+        return Arrays.asList(MaintenanceTrackingTask.values());
     }
 
     @ApiIgnore("This is only for internal debugging and not for the public")

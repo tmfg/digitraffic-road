@@ -1,11 +1,14 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
+import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUS_JA_SOHJONPOISTO;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
+import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.CRACK_FILLING;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PAVING;
+import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PLOUGHING_AND_SLUSH_REMOVAL;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_X_MAX;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_X_MIN;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MAX;
@@ -32,7 +35,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -261,6 +263,44 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         final List<JsonNode> jsons = v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(features.get(0).getProperties().id);
         assertCollectionSize(2, jsons);
+    }
+
+    @Test
+    public void findWithMultipleTaks() throws JsonProcessingException {
+        final int machineCount = getRandomId(2, 10);
+        final List<Tyokone> workMachines = createWorkMachines(machineCount);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime endTime = startTime.plusMinutes(9);
+        // Generate 5 trackings for each machine
+        testHelper.saveTrackingData(createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines,
+            AURAUS_JA_SOHJONPOISTO, PAALLYSTEIDEN_JUOTOSTYOT)); // PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING
+        testHelper.saveTrackingData(createMaintenanceTrackingWithLineString(startTime, 10, 2, workMachines,
+            ASFALTOINTI)); // PAVING
+        testHelper.saveTrackingData(createMaintenanceTrackingWithLineString(startTime, 10, 3, workMachines,
+            AURAUS_JA_SOHJONPOISTO, PAALLYSTEIDEN_PAIKKAUS)); // PLOUGHING_AND_SLUSH_REMOVAL, PATCHING
+
+        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        assertEquals(3, handled);
+
+        // First two should be returned
+        final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, endTime, CRACK_FILLING, PAVING).features;
+        assertCollectionSize(machineCount*2, features);
+
+        Set<MaintenanceTrackingTask> tasks = new HashSet<>();
+        features.forEach(f -> tasks.addAll(f.getProperties().tasks));
+
+        assertEquals(new HashSet<>(Arrays.asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING, PAVING)), tasks);
+        final Set<MaintenanceTrackingTask> tasks1 = features.get(0).getProperties().tasks;
+        final Set<MaintenanceTrackingTask> tasks2 = features.get(2).getProperties().tasks;
+
+        if (tasks1.size() == 2) {
+            assertEquals(new HashSet<>(Arrays.asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING)), tasks1);
+            assertEquals(new HashSet<>(Arrays.asList(PAVING)), tasks2);
+        } else {
+            assertEquals(new HashSet<>(Arrays.asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING)), tasks2);
+            assertEquals(new HashSet<>(Arrays.asList(PAVING)), tasks1);
+        }
+
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
