@@ -286,21 +286,15 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, endTime, CRACK_FILLING, PAVING).features;
         assertCollectionSize(machineCount*2, features);
 
-        Set<MaintenanceTrackingTask> tasks = new HashSet<>();
-        features.forEach(f -> tasks.addAll(f.getProperties().tasks));
-
-        assertEquals(new HashSet<>(Arrays.asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING, PAVING)), tasks);
-        final Set<MaintenanceTrackingTask> tasks1 = features.get(0).getProperties().tasks;
-        final Set<MaintenanceTrackingTask> tasks2 = features.get(2).getProperties().tasks;
-
-        if (tasks1.size() == 2) {
-            assertEquals(new HashSet<>(Arrays.asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING)), tasks1);
-            assertEquals(new HashSet<>(Arrays.asList(PAVING)), tasks2);
-        } else {
-            assertEquals(new HashSet<>(Arrays.asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING)), tasks2);
-            assertEquals(new HashSet<>(Arrays.asList(PAVING)), tasks1);
-        }
-
+        // Check that each features tasks are AURAUS_JA_SOHJONPOISTO and PAALLYSTEIDEN_JUOTOSTYOT or ASFALTOINTI
+        features.forEach(f -> {
+            final Set<MaintenanceTrackingTask> tasks = f.getProperties().tasks;
+            if (tasks.size() == 2) {
+                assertEquals(new HashSet<>(Arrays.asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING)), tasks);
+            } else {
+                assertEquals(new HashSet<>(Arrays.asList(PAVING)), tasks);
+            }
+        });
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
