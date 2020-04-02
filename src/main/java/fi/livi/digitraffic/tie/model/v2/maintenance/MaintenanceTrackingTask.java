@@ -50,7 +50,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("Maintenance tracking task")
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-@JsonPropertyOrder({"name", "nameFi", "nameEn", "nameSv"})
+@JsonPropertyOrder({"id", "nameFi", "nameEn", "nameSv"})
 public enum MaintenanceTrackingTask {
 
     PAVING( ASFALTOINTI, "Asfaltointi","Asfaltering","Paving"),
