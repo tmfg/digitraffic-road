@@ -257,7 +257,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.2-android</version>
+            <version>28.2-jre</version>
         </dependency>
 
         <!-- Sonic JMS Library -->
@@ -309,7 +309,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.757</version>
+            <version>1.11.758</version>
         </dependency>
 
         <dependency>
