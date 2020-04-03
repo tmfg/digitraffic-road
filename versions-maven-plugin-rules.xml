@@ -12,7 +12,4 @@
         <ignoreVersion type="regex">(?i).*jre(-?\d+)</ignoreVersion>
         <ignoreVersion type="regex">(?i).*android(?:-?\d+)?</ignoreVersion>
     </ignoreVersions>
-<!--    <rules>-->
-<!--        <rule groupId="com.google.guava" comparisonMethod="maven"/>-->
-<!--    </rules>-->
 </ruleset>
