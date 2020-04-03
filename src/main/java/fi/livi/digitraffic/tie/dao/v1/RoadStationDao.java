@@ -36,4 +36,20 @@ public class RoadStationDao {
                 return map;
             });
     }
+
+    public Map<Long, Long> findPublishableNaturalIdsMappedByRoadStationsId(final RoadStationType stationType) {
+        return jdbcTemplate.query(
+            "SELECT station.id, station.natural_id\n" +
+                "FROM ROAD_STATION station\n" +
+                "WHERE station.road_station_type = :stationType\n" +
+                "  AND station.publishable = true",
+            new MapSqlParameterSource().addValue("stationType", stationType, Types.VARCHAR),
+            rs -> {
+                final Map<Long, Long> map = new HashMap<>();
+                while (rs.next()) {
+                    map.put(rs.getLong("id"), rs.getLong("natural_id"));
+                }
+                return map;
+            });
+    }
 }

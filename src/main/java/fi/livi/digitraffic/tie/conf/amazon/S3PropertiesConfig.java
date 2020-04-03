@@ -16,7 +16,7 @@ public class S3PropertiesConfig {
     }
 
     @Bean
-    public S3Properties sensorDataS3Properties(@Value("${dt.amazon.s3.sensordata.bucketName}") final String s3SensorDataBucketName) {
-        return new S3Properties(s3SensorDataBucketName);
+    public SensorDataS3Properties sensorDataS3Properties(@Value("${dt.amazon.s3.sensordata.bucketName}") final String s3SensorDataBucketName) {
+        return new SensorDataS3Properties(s3SensorDataBucketName);
     }
 }

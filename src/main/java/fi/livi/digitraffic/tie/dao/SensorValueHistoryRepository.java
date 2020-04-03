@@ -26,7 +26,8 @@ public interface SensorValueHistoryRepository extends JpaRepository<SensorValueH
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<SensorValueHistoryDto> findByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(final long station, final long sensor, final ZonedDateTime since);
 
-    Stream<SensorValueHistory> streamAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(final ZonedDateTime from, final ZonedDateTime to);
+    //@QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    //List<SensorValueHistory> findAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(final ZonedDateTime from, final ZonedDateTime to);
 
-    Stream<SensorValueHistory> streamAllByMeasuredTimeBeforeOrderByMeasuredTimeAsc(final ZonedDateTime before);
+    Stream<SensorValueHistory> streamAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(final ZonedDateTime from, final ZonedDateTime to);
 }

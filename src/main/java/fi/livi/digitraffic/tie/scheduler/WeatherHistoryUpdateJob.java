@@ -22,8 +22,13 @@ public class WeatherHistoryUpdateJob extends SimpleUpdateJob {
     protected void doExecute(JobExecutionContext context) throws Exception {
         final ZonedDateTime now = ZonedDateTime.now();
         // Do one hour time window (xx:00 - xx:59)
-        final ZonedDateTime from = now.minusHours(1).truncatedTo(ChronoUnit.HOURS);
         final ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
+        final ZonedDateTime from = to.minusHours(1);
+
+        //final ZonedDateTime to = now.truncatedTo(ChronoUnit.MINUTES);
+        //final ZonedDateTime from = to.minusMinutes(5);
+
+        log.info("Storing sensor history to S3, time window {} - {}", from, to);
 
         // Write one hour time window to S3
         sensorDataS3Writer.writeSensorData(from, to);

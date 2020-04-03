@@ -2,9 +2,11 @@ package fi.livi.digitraffic.tie.service.v1;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,20 +86,34 @@ public class WeatherService {
 
     @Transactional(readOnly = true)
     public List<SensorValueHistoryDto> findWeatherHistoryData(final long stationId, final ZonedDateTime from, final ZonedDateTime to) {
+        // Map natural id (=statioId) to road_station_id (used in sensor_value_history-table)
+        final Optional<Long> road_station_id = roadStationRepository.getRoadStationId(stationId);
+
+        if (!road_station_id.isPresent()) {
+            return Collections.emptyList();
+        }
+
         if (to == null) {
-            return sensorValueHistoryRepository.findByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(stationId, getSinceTime(from));
+            return sensorValueHistoryRepository.findByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(road_station_id.get(), getSinceTime(from));
         }
 
         if (from.isAfter(to)) {
             throw new IllegalArgumentException("From > to");
         }
 
-        return sensorValueHistoryRepository.findByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(stationId, getSinceTime(from), to);
+        return sensorValueHistoryRepository.findByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(road_station_id.get(), getSinceTime(from), to);
     }
 
     @Transactional(readOnly = true)
     public List<SensorValueHistoryDto> findWeatherHistoryData(final long stationId, final long sensorId, final ZonedDateTime since) {
-        return sensorValueHistoryRepository.findByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(stationId, sensorId, getSinceTime(since));
+        // Map natural id (=statioId) to road_station_id (used in sensor_value_history-table)
+        final Optional<Long> road_station_id = roadStationRepository.getRoadStationId(stationId);
+
+        if (!road_station_id.isPresent()) {
+            return Collections.emptyList();
+        }
+
+        return sensorValueHistoryRepository.findByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(road_station_id.get(), sensorId, getSinceTime(since));
     }
 
     private ZonedDateTime getSinceTime(final ZonedDateTime since) {
