@@ -266,7 +266,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void findWithMultipleTaks() throws JsonProcessingException {
+    public void findWithMultipleTasks() throws JsonProcessingException {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
