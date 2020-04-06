@@ -77,3 +77,7 @@ To compile Java-classes from wsdl:s run command
 Check for Maven dependency updates
 
     $ mvn versions:display-dependency-updates
+
+Update Maven dependencies
+
+    $  mvn versions:use-latest-releases versions:update-properties

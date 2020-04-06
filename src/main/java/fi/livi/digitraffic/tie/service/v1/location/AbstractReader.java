@@ -19,7 +19,10 @@ import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 public abstract class AbstractReader<T> {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -30,15 +33,17 @@ public abstract class AbstractReader<T> {
     protected static final char QUOTE = '\"';
 
     private final Charset charset;
-    private final char delimeterCharacter;
-    private final char quoteCharacter;
     protected final String version;
+    private final CSVParser parser;
 
     protected AbstractReader(final Charset charset, final char delimeterCharacter, final String version) {
         this.charset = charset;
-        this.delimeterCharacter = delimeterCharacter;
-        this.quoteCharacter = QUOTE;
         this.version = version;
+        parser = new CSVParserBuilder()
+            .withSeparator(delimeterCharacter)
+            .withQuoteChar(QUOTE)
+            .build();
+
     }
 
     protected AbstractReader(final String version) {
@@ -64,16 +69,14 @@ public abstract class AbstractReader<T> {
     }
 
     public List<T> read(final InputStream inputStream) {
-        try (final CSVReader reader = new CSVReader(new InputStreamReader(inputStream, charset), delimeterCharacter, quoteCharacter)) {
-            return StreamSupport.stream(reader.spliterator(), false).skip(1)
-                    .map(this::convert)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        } catch(final IOException ioe) {
-            log.error("error opening file", ioe);
-        }
-
-        return Collections.emptyList();
+        final CSVReader reader =
+            new CSVReaderBuilder(new InputStreamReader(inputStream, charset))
+                .withCSVParser(parser)
+                .build();
+        return StreamSupport.stream(reader.spliterator(), false).skip(1)
+                .map(this::convert)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     protected abstract T convert(final String[] line);

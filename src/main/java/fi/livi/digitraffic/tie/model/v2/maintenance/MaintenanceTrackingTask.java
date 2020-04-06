@@ -40,52 +40,65 @@ import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TURVA
 
 import java.util.Arrays;
 
-import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("Maintenance tracking task")
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@JsonPropertyOrder({"id", "nameFi", "nameEn", "nameSv"})
 public enum MaintenanceTrackingTask {
 
     PAVING( ASFALTOINTI, "Asfaltointi","Asfaltering","Paving"),
     PLOUGHING_AND_SLUSH_REMOVAL(AURAUS_JA_SOHJONPOISTO,"Auraus ja sohjonpoisto","Plog- och sörjröjning","Ploughing and slush removal"),
     SNOW_PLOUGHING_STICKS_AND_SNOW_FENCES(AURAUSVIITOITUS_JA_KINOSTIMET,"Aurausviitoitus ja kinostimet","Plogkäppsmarkering och snödrivor","Snow-ploughing sticks and snow fences"),
     BRUSHING(HARJAUS, "Harjaus","Borstning","Brushing"),
-    COMPACTION_BY_ROLLING(JYRAYS,"Jyrays","Vibrering","Compaction by rolling"),
+    COMPACTION_BY_ROLLING(JYRAYS,"Jyräys","Vibrering","Compaction by rolling"),
     ROAD_STATE_CHECKING(KELINTARKASTUS, "Kelintarkastus","Väglagsgranskning","Road state checking"),
     MECHANICAL_CUT(KONEELLINEN_NIITTO,"Koneellinen niitto","Vägslotter","Mechanical cut"),
     BRUSH_CLEARING(KONEELLINEN_VESAKONRAIVAUS, "Koneellinen vesakonraivaus"," slyklippning","Brush clearing"),
     HEATING(KUUMENNUS, "Kuumennus","Upphettning","Heating"),
     CLEANSING_OF_REST_AREAS(L_JA_P_ALUEIDEN_PUHDISTUS, "L- ja p-alueiden puhdistus","Rast- och parkeringsplatsernas rengöring","Cleansing of rest areas"),
     CLEANSING_OF_TRAFFIC_SIGNS(LIIKENNEMERKKIEN_PUHDISTUS, "Liikennemerkkien puhdistus","Rengöring av trafikmärken","Cleansing of traffic signs"),
-    MAINTENANCE_OF_GUIDE_SIGNS_AND_REFLECTOR_POSTS(LIIK_OPAST_JA_OHJAUSL_HOITO_SEKA_REUNAPAALUJEN_KUN_PITO, "Liik. opast. ja ohjausl. hoito seka reunapaalujen kun.pito","Trafikanordnigars och kantpålars underhåll","Maintenance of guide signs and reflector posts"),
+    MAINTENANCE_OF_GUIDE_SIGNS_AND_REFLECTOR_POSTS(LIIK_OPAST_JA_OHJAUSL_HOITO_SEKA_REUNAPAALUJEN_KUN_PITO, "Liikenteen opasteiden ja ohjauslaitteiden hoito seka reunapaalujen kunnossapito","Trafikanordnigars och kantpålars underhåll","Maintenance of guide signs and reflector posts"),
     LINE_SANDING(LINJAHIEKOITUS, "Linjahiekoitus","Linjesandning","Line sanding"),
     TRASFER_OF_SNOW(LUMENSIIRTO, "Lumensiirto","Bortforsling av snömassor","Trasfer of snow"),
     LOWERING_OF_SNOWBANKS(LUMIVALLIEN_MADALTAMINEN, "Lumivallien madaltaminen","Nedsänknig av plogvall","Lowering of snowbanks"),
     OTHER(MUU, "Muu","Annat dylikt","Other"),
     DITCHING(OJITUS, "Ojitus","Dikning","Ditching"),
-    CRACK_FILLING(PAALLYSTEIDEN_JUOTOSTYOT, "Paallysteiden juotostyot","Fyllnig av sprickor i beläggningen","Crack filling"),
-    PATCHING(PAALLYSTEIDEN_PAIKKAUS, "Paallysteiden paikkaus","Lappning av beläggning","Patching"),
-    REMOVAL_OF_BULGE_ICE(PAANNEJAAN_POISTO, "Paannejaan poisto","Borttagning av svall-is","Removal of bulge ice"),
+    CRACK_FILLING(PAALLYSTEIDEN_JUOTOSTYOT, "Päällysteiden juotostyöt","Fyllnig av sprickor i beläggningen","Crack filling"),
+    PATCHING(PAALLYSTEIDEN_PAIKKAUS, "Päällysteiden paikkaus","Lappning av beläggning","Patching"),
+    REMOVAL_OF_BULGE_ICE(PAANNEJAAN_POISTO, "Paannejään poisto","Borttagning av svall-is","Removal of bulge ice"),
     LEVELLING_OF_ROAD_SHOULDERS(PALTEEN_POISTO, "Palteen poisto","Kantskärning","Levelling of road shoulders"),
     LEVELLING_OF_ROAD_SURFACE(PINNAN_TASAUS, "Pinnan tasaus","Utjämning av vägytan","Levelling of road surface"),
     SPOT_SANDING(PISTEHIEKOITUS, "Pistehiekoitus","Punktsandning","Spot sanding"),
-    FILLING_OF_ROAD_SHOULDERS(PAALLYSTETYN_TIEN_SORAPIENTAREEN_TAYTTO, "Paallystetyn tien sorapientareen taytto","Belagda vägars kantfyllning","Filling of road shoulders"),
+    FILLING_OF_ROAD_SHOULDERS(PAALLYSTETYN_TIEN_SORAPIENTAREEN_TAYTTO, "Päällystetyn tien sorapientareen täytto","Belagda vägars kantfyllning","Filling of road shoulders"),
     MIXING_OR_STABILIZATION(SEKOITUS_TAI_STABILOINTI, "Sekoitus tai stabilointi","Blandning och stabilisering","Mixing or stabilization"),
     CLEANSING_OF_BRIDGES(SILTOJEN_PUHDISTUS, "Siltojen puhdistus","Rengöring av broar","Cleansing of bridges"),
     SPREADING_OF_CRUSH(SORASTUS, "Sorastus","Grusning","Spreading of crush"),
-    FILLING_OF_GRAVEL_ROAD_SHOULDERS(SORAPIENTAREEN_TAYTTO, "Sorapientareen taytto","Fyllning av gruskanter","Filling of gravel road shoulders"),
-    RESHAPING_GRAVEL_ROAD_SURFACE(SORATEIDEN_MUOKKAUSHOYLAYS, "Sorateiden muokkaushoylays","Grusvägsytans omblandning ","Reshaping gravel road surface"),
-    DUST_BINDING_OF_GRAVEL_ROAD_SURFACE(SORATEIDEN_POLYNSIDONTA, "Sorateiden polynsidonta","Dammbindning av grusväg","Dust binding of gravel road surface"),
+    FILLING_OF_GRAVEL_ROAD_SHOULDERS(SORAPIENTAREEN_TAYTTO, "Sorapientareen täyttö","Fyllning av gruskanter","Filling of gravel road shoulders"),
+    RESHAPING_GRAVEL_ROAD_SURFACE(SORATEIDEN_MUOKKAUSHOYLAYS, "Sorateiden muokkaushöylays","Grusvägsytans omblandning ","Reshaping gravel road surface"),
+    DUST_BINDING_OF_GRAVEL_ROAD_SURFACE(SORATEIDEN_POLYNSIDONTA, "Sorateiden pölynsidonta","Dammbindning av grusväg","Dust binding of gravel road surface"),
     LEVELLING_GRAVEL_ROAD_SURFACE(SORATEIDEN_TASAUS, "Sorateiden tasaus","Utjämning av grusväg","Levelling gravel road surface"),
     PREVENTING_MELTING_WATER_PROBLEMS(SULAMISVEDEN_HAITTOJEN_TORJUNTA, "Sulamisveden haittojen torjunta","Smältvattensbekämpning","Preventing melting water problems"),
     SALTING(SUOLAUS, "Suolaus","Saltning","Salting"),
-    ROAD_MARKINGS(TIEMERKINTA, "Tiemerkinta","Vägmarkering","Road markings"),
+    ROAD_MARKINGS(TIEMERKINTA, "Tiemerkintä","Vägmarkering","Road markings"),
     ROAD_INSPECTIONS(TIESTOTARKASTUS, "Tiestotarkastus","Väggranskning","Road inspections "),
     CLIENTS_QUALITY_CONTROL(TILAAJAN_LAADUNVALVONTA, "Tilaajan laadunvalvonta","Beställarens kvalitetsövervakning","Clients quality control"),
     SAFETY_EQUIPMENT(TURVALAITE, "Turvalaite","Säkerhetsanordning","Safety equipment"),
     UNKNOWN(null,"Tuntematon","Obekant","Unknown");
 
+    @JsonIgnore
     private final String harjaEnumName;
+    @ApiModelProperty("Name in Finnish")
     private final String nameFi;
+    @ApiModelProperty("Name in Swedish")
     private final String nameSv;
+    @ApiModelProperty("Name in English")
     private final String nameEn;
 
     MaintenanceTrackingTask(final SuoritettavatTehtavat harjaEnum, final String nameFi, final String nameSv, final String nameEn) {
@@ -105,6 +118,11 @@ public enum MaintenanceTrackingTask {
 
     public String getNameEn() {
         return nameEn;
+    }
+
+    @ApiModelProperty("Enum id")
+    public String getId() {
+        return this.name();
     }
 
     public String getHarjaEnumName() {
