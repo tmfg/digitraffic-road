@@ -60,7 +60,7 @@ public class V2MaintenanceRealizationUpdateService {
                                                  final ObjectMapper objectMapper,
                                                  final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
                                                  final DataStatusService dataStatusService,
-                                                 @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
+                                                 @Value("${workmachine.realization.distinct.observation.gap.minutes}")
                                                  final int distinctObservationGapMinutes) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2RealizationDataRepository = v2RealizationDataRepository;

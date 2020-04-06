@@ -248,9 +248,7 @@ public class V2MaintenanceTrackingUpdateService {
         if (!nextIsSameOrAfter || !timeGapInsideTheLimit) {
             log.info("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {}, timeGapInsideTheLimit: {}", previousCoordinateTime, nextCoordinateTime, nextIsSameOrAfter, timeGapInsideTheLimit);
         }
-        // FIXME: DPO-631 Temporally disabled the check of time gap between points to see what is real data quality
-        // return  nextIsSameOrAfter && timeGapInsideTheLimit;
-        return  nextIsSameOrAfter;
+        return  nextIsSameOrAfter && timeGapInsideTheLimit;
     }
 
     private MaintenanceTrackingWorkMachine getOrCreateWorkMachine(final long harjaWorkMachineId, final long harjaContractId, final String workMachinetype) {

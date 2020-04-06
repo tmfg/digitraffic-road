@@ -103,6 +103,11 @@ public class V2MaintenanceTrackingDataService {
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
     }
 
+    public MaintenanceTrackingFeature getMaintenanceTrackingById(final long id) {
+        MaintenanceTracking tracking = v2MaintenanceTrackingRepository.getOne(id);
+        return convertToTrackingFeature(tracking, false);
+    }
+
     @Transactional(readOnly = true)
     public List<JsonNode> findTrackingDataJsonsByTrackingId(final long trackingId) {
         return v2MaintenanceTrackingDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
@@ -122,16 +127,20 @@ public class V2MaintenanceTrackingDataService {
      */
     private List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTracking> trackings, final boolean latestPointGeometry) {
         return trackings.stream().map(r -> {
-            final Geometry geometry = convertToGeoJSONGeometry(r, latestPointGeometry);
-            final MaintenanceTrackingProperties properties =
-                new MaintenanceTrackingProperties(r.getId(),
-                    r.getWorkMachine(),
-                    toZonedDateTimeAtUtc(r.getSendingTime()),
-                    toZonedDateTimeAtUtc(r.getStartTime()),
-                    toZonedDateTimeAtUtc(r.getEndTime()),
-                    r.getTasks());
-            return new MaintenanceTrackingFeature(geometry, properties);
+            return convertToTrackingFeature(r, latestPointGeometry);
         }).collect(Collectors.toList());
+    }
+
+    private MaintenanceTrackingFeature convertToTrackingFeature(final MaintenanceTracking tracking, final boolean latestPointGeometry) {
+        final Geometry geometry = convertToGeoJSONGeometry(tracking, latestPointGeometry);
+        final MaintenanceTrackingProperties properties =
+            new MaintenanceTrackingProperties(tracking.getId(),
+                tracking.getWorkMachine(),
+                toZonedDateTimeAtUtc(tracking.getSendingTime()),
+                toZonedDateTimeAtUtc(tracking.getStartTime()),
+                toZonedDateTimeAtUtc(tracking.getEndTime()),
+                tracking.getTasks());
+        return new MaintenanceTrackingFeature(geometry, properties);
     }
 
     /**

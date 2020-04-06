@@ -38,6 +38,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureC
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
@@ -316,6 +317,13 @@ public class BetaController {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
     }
 
+    @ApiOperation(value = "Road maintenance tracking data with tracking id")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
+    public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
+        return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
+    }
+
     @ApiOperation(value = "Road maintenance tracking data")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
@@ -382,10 +390,10 @@ public class BetaController {
 
     @ApiIgnore("This is only for internal debugging and not for the public")
     @ApiOperation(value = "Road maintenance tracking source data")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + MAINTENANCE_JSON_DATA_PATH + "/{trackingId}", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + MAINTENANCE_JSON_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance trackings data"))
-    public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@PathVariable(value = "trackingId") final long trackingId) {
-        return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(trackingId);
+    public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
+        return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(id);
     }
 
     @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")
