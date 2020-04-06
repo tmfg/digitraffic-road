@@ -1,10 +1,15 @@
 package fi.livi.digitraffic.tie.helper;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 
@@ -35,6 +40,10 @@ public class PostgisGeometryHelper {
         return GF.createLineString(lineStringCoordinates.toArray(new Coordinate[0]));
     }
 
+    public static Point createPointWithZ(final Coordinate coordinate) {
+        return GF.createPoint(coordinate);
+    }
+
     public static Polygon createSquarePolygonFromMinMax(final double xMin, final double xMax,
                                                  final double yMin, final double yMax) {
         final Coordinate coordinates[] = new Coordinate[] {
@@ -44,5 +53,16 @@ public class PostgisGeometryHelper {
         };
 
         return GF.createPolygon(coordinates);
+    }
+
+    public static LineString combineToLinestringWithZ(final Geometry firstGeometry, final Geometry secondGeometry) {
+        final Coordinate[] coordinates = ArrayUtils.addAll(firstGeometry.getCoordinates(), secondGeometry.getCoordinates());
+        return createLineStringWithZ(Arrays.asList(coordinates));
+    }
+
+    public static List<List<Double>> convertToGeoJSONGeometryCoordinates(final LineString lineString) {
+        return Arrays.stream(lineString.getCoordinates())
+            .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ()))
+            .collect(Collectors.toList());
     }
 }

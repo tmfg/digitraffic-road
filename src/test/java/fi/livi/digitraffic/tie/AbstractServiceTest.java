@@ -16,7 +16,6 @@ import fi.livi.digitraffic.tie.dao.SensorValueHistoryDao;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
-import fi.livi.digitraffic.tie.dao.v1.workmachine.WorkMachineObservationDao;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -57,7 +56,7 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
           ObjectMapper.class,
 
           // daos
-          TmsSensorConstantDao.class, WorkMachineObservationDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
+          TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
 
           // configurations
           AmazonS3ClientTestConfiguration.class, S3PropertiesConfig.class

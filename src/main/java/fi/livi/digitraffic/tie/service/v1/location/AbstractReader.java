@@ -74,9 +74,9 @@ public abstract class AbstractReader<T> {
                 .withCSVParser(parser)
                 .build();
         return StreamSupport.stream(reader.spliterator(), false).skip(1)
-            .map(this::convert)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+                .map(this::convert)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     protected abstract T convert(final String[] line);

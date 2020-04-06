@@ -185,7 +185,7 @@ public class V2MaintenanceRealizationServiceTestHelper {
     public void generateSingleRealisationsWithTasksAndSingleRoute(final int countOfDifferentRealizations, final ZonedDateTime startTime)
         throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema toteuma = createReittitoteumanKirjaus(countOfDifferentRealizations, startTime);
-        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, toteuma);
+        maintenanceRealizationUpdateService.saveMaintenanceRealizationData(123L, toteuma);
     }
 
     /**
@@ -199,7 +199,7 @@ public class V2MaintenanceRealizationServiceTestHelper {
     public void generateSingleRealisationWithTasksAndMultipleRoutes(final int countOfDifferentRealizations, final ZonedDateTime endTime)
         throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema toteuma = createReittitoteumatKirjaus(countOfDifferentRealizations, endTime);
-        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, toteuma);
+        maintenanceRealizationUpdateService.saveMaintenanceRealizationData(123L, toteuma);
     }
 
     private ReittitoteumanKirjausRequestSchema createReittitoteumanKirjaus(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
@@ -320,7 +320,7 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
     private void saveRealizationAsJson(final String realisationJSon) throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema realization = reader.readValue(realisationJSon);
-        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, realization);
+        maintenanceRealizationUpdateService.saveMaintenanceRealizationData(123L, realization);
     }
 
     public void flushAndClearSession() {
