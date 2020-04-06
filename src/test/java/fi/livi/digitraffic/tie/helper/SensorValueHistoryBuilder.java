@@ -14,8 +14,8 @@ import fi.livi.digitraffic.tie.model.SensorValueHistory;
 
 public class SensorValueHistoryBuilder {
     private final Logger log;
-    private final SensorValueHistoryRepository repository;
 
+    private SensorValueHistoryRepository repository;
     private List<SensorValueHistory> list;
     private List<Integer> createdCounts;
     private ZonedDateTime refTime;
@@ -102,6 +102,7 @@ public class SensorValueHistoryBuilder {
     public SensorValueHistoryBuilder save() {
         log.info("Total {} elements created", list.size());
         list.forEach(i -> log.info("elem: {}, meas {}", i.getSensorValue(), i.getMeasuredTime()));
+
         repository.saveAll(list);
 
         return this;

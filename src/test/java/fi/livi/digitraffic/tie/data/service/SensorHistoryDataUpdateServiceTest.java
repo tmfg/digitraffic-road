@@ -1,15 +1,21 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static org.mockito.Mockito.when;
+
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
@@ -24,8 +30,18 @@ public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
     @Autowired
     protected SensorValueHistoryRepository repository;
 
+    @MockBean
+    protected RoadStationRepository roadStationRepository;
+
+    @Before
+    public void init() {
+        repository.deleteAll();
+    }
+
     @Test
     public void historyMaintenance() {
+        when(roadStationRepository.getRoadStationId(10)).thenReturn(Optional.of(10L));
+
         // Populate db
         SensorValueHistoryBuilder builder = new SensorValueHistoryBuilder(repository, log)
             .buildWithStationId(10, 10, 10, 1, 60)

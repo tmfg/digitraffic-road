@@ -4,6 +4,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.not;
@@ -11,11 +13,16 @@ import static org.hamcrest.Matchers.hasSize;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -23,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 
 public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
@@ -30,6 +38,9 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
 
     @Autowired
     private SensorValueHistoryRepository repository;
+
+    @MockBean
+    protected RoadStationRepository roadStationRepository;
 
     private ResultActions getJson(final String url) throws Exception {
         // Beta API
@@ -42,6 +53,18 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
         ResultActions result = mockMvc.perform(get);
         log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
+    }
+
+    @Before
+    public void roadStationMock() {
+        when(roadStationRepository.getRoadStationId(anyLong())).thenAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Object[] args = invocationOnMock.getArguments();
+
+                return Optional.of((Long)args[0]);
+            }
+        });
     }
 
     @Test
