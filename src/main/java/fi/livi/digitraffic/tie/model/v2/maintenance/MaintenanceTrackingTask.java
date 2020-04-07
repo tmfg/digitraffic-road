@@ -40,17 +40,9 @@ import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TURVA
 
 import java.util.Arrays;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel("Maintenance tracking task")
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-@JsonPropertyOrder({"id", "nameFi", "nameEn", "nameSv"})
 public enum MaintenanceTrackingTask {
 
     PAVING( ASFALTOINTI, "Asfaltointi","Asfaltering","Paving"),
@@ -92,13 +84,9 @@ public enum MaintenanceTrackingTask {
     SAFETY_EQUIPMENT(TURVALAITE, "Turvalaite","Säkerhetsanordning","Safety equipment"),
     UNKNOWN(null,"Tuntematon","Obekant","Unknown");
 
-    @JsonIgnore
     private final String harjaEnumName;
-    @ApiModelProperty("Name in Finnish")
     private final String nameFi;
-    @ApiModelProperty("Name in Swedish")
     private final String nameSv;
-    @ApiModelProperty("Name in English")
     private final String nameEn;
 
     MaintenanceTrackingTask(final SuoritettavatTehtavat harjaEnum, final String nameFi, final String nameSv, final String nameEn) {

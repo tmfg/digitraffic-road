@@ -13,7 +13,9 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -40,6 +42,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCate
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingTaskDto;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
@@ -384,8 +387,9 @@ public class BetaController {
     @ApiOperation(value = "Road maintenance tracking tasks")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
-    public List<MaintenanceTrackingTask> getMaintenanceTrackingTasks() {
-        return Arrays.asList(MaintenanceTrackingTask.values());
+    public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
+        return Arrays.asList(MaintenanceTrackingTask.values()).stream().sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
+            .map(t -> new MaintenanceTrackingTaskDto(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn())).collect(Collectors.toList());
     }
 
     @ApiIgnore("This is only for internal debugging and not for the public")
