@@ -139,7 +139,7 @@ public class V2MaintenanceTrackingDataService {
                 toZonedDateTimeAtUtc(tracking.getSendingTime()),
                 toZonedDateTimeAtUtc(tracking.getStartTime()),
                 toZonedDateTimeAtUtc(tracking.getEndTime()),
-                tracking.getTasks());
+                tracking.getTasks(), tracking.getDirection());
         return new MaintenanceTrackingFeature(geometry, properties);
     }
 

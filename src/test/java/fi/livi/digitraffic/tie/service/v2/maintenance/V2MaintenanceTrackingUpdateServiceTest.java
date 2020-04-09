@@ -8,6 +8,7 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
@@ -35,10 +37,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
+import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
@@ -59,6 +65,9 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
     @Autowired
     private V2MaintenanceTrackingServiceTestHelper testHelper;
+
+    @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
+    private int maxGapInMinutes;
 
     @Before
     public void init() {
@@ -213,5 +222,93 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertCollectionSize(2, trackings);
         assertEquals(1L, trackings.get(0).getWorkMachine().getHarjaUrakkaId().longValue());
         assertEquals(2L, trackings.get(1).getWorkMachine().getHarjaUrakkaId().longValue());
+    }
+
+    @Test
+    public void timeLimitBreaksTrackingInParts() throws JsonProcessingException {
+        final List<Tyokone> workMachines = createWorkMachines(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        // Last point will be in time startTime + 9 min
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        // First point will be over 5 min (6 min) from previous tracking last point
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10+maxGapInMinutes), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(2, trackings);
+        trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
+        final MaintenanceTracking first = trackings.get(0);
+        final MaintenanceTracking second = trackings.get(1);
+    }
+
+    @Test
+    public void timeLimitAndTaskChangeBreaksTrackingInParts() throws JsonProcessingException {
+        final List<Tyokone> workMachines = createWorkMachines(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        // Last point will be in time startTime + 9 min
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        // Second tracking over time gap and task change
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10 + maxGapInMinutes), 10, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(2, trackings);
+        trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
+        final MaintenanceTracking first = trackings.get(0);
+        final MaintenanceTracking second = trackings.get(1);
+
+        assertNotEquals(first.getEndTime(), second.getStartTime());
+        assertNotEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
+    }
+
+    @Test
+    public void taskChangeBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfNextTracking() throws JsonProcessingException {
+        final List<Tyokone> workMachines = createWorkMachines(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        // Last point will be in time startTime + 9 min
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        // First point will be after previous last point -> 10 min after start
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(2, trackings);
+        trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
+        final MaintenanceTracking first = trackings.get(0);
+        final MaintenanceTracking second = trackings.get(1);
+
+        assertEquals(first.getEndTime(), second.getStartTime());
+        assertEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
+    }
+
+    @Test
+    public void taskChangeToTransitionBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfTransitionTracking() throws JsonProcessingException {
+        final List<Tyokone> workMachines = createWorkMachines(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        // Last point will be in time startTime + 9 min
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        // First point will be after previous last point -> 10 min after start
+        final TyokoneenseurannanKirjausRequestSchema transition = createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 1, workMachines);
+        testHelper.saveTrackingData(transition);
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(1, trackings);
+
+        final MaintenanceTracking first = trackings.get(0);
+        final Havainto transitionHavainto = transition.getHavainnot().get(0).getHavainto();
+        final KoordinaattisijaintiSchema koordinaatit = transitionHavainto.getSijainti().getKoordinaatit();
+        final Point transitionFirstPoint = CoordinateConverter.convertFromETRS89ToWGS84(new Point(koordinaatit.getX(), koordinaatit.getY()));
+
+        assertEquals(first.getEndTime(), transitionHavainto.getHavaintoaika());
+        assertEquals(first.getLineString().getEndPoint().getX(), transitionFirstPoint.getLongitude(), 0.01);
+        assertEquals(first.getLineString().getEndPoint().getY(), transitionFirstPoint.getLatitude(), 0.01);
     }
 }

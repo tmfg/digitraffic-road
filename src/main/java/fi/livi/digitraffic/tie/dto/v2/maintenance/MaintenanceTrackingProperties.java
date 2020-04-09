@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dto.v2.maintenance;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
@@ -29,14 +30,18 @@ public class MaintenanceTrackingProperties {
     @ApiModelProperty(value = "End time of maintenance work tasks", required = true)
     public final ZonedDateTime endTime;
 
+    @ApiModelProperty(value = "Direction of the last observation")
+    public BigDecimal direction;
+
     public MaintenanceTrackingProperties(final long id, final MaintenanceTrackingWorkMachine workMachine,
                                          final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                                         final Set<MaintenanceTrackingTask> tasks) {
+                                         final Set<MaintenanceTrackingTask> tasks, BigDecimal direction) {
         this.id = id;
         this.workMachineId = workMachine.getId();
         this.sendingTime = sendingTime;
         this.tasks = tasks;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.direction = direction;
     }
 }

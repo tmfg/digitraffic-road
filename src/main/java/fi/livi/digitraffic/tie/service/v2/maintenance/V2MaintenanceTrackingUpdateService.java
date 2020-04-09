@@ -127,7 +127,7 @@ public class V2MaintenanceTrackingUpdateService {
 
         final Geometry geometry = resolveGeometry(havainto.getSijainti());
         if (geometry != null && !geometry.isEmpty()) {
-            Point lastPoint = resolveLastPoint(geometry);
+            final Point lastPoint = resolveLastPoint(geometry);
             final List<SuoritettavatTehtavat> harjaTasks = havainto.getSuoritettavatTehtavat();
 
             final Set<MaintenanceTrackingTask> performedTasks = harjaTasks == null ?
@@ -152,16 +152,25 @@ public class V2MaintenanceTrackingUpdateService {
                 v2MaintenanceTrackingRepository
                     .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedDescIdDesc(harjaWorkMachineId, harjaContractId);
 
+            final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, latestSaved);
+            final boolean isNextInsideTheTimeLimit = isNextCoordinateTimeInsideTheLimitNullSafe(harjaObservationTime, latestSaved);
+            final boolean isNextSameOrAfter = isNextCoordinateTimeSameOrAfterPreviousNullSafe(harjaObservationTime, latestSaved);
+
             if (isTransition(performedTasks)) {
                 log.info("WorkMachine tracking in transition");
                 // Mark found one to finished as the work machine is in transition after that
-                updateAsFinishedNullSafe(latestSaved);
+                // Append latest point (without the task) to tracking if it's inside time limits.
+                updateAsFinishedNullSafeAndAppendLastGeometry(latestSaved, geometry, harjaObservationTime, isNextInsideTheTimeLimit && isNextSameOrAfter);
                 // If previous is finished or tasks has changed or time gap is too long, we create new tracking for the machine
             } else if (latestSaved == null ||
                 latestSaved.isFinished() ||
-                isTasksChanged(performedTasks, latestSaved.getTasks()) ||
-                !isNextCoordinateTimeAfterPreviousAndInsideLimit(latestSaved.getEndTime(), harjaObservationTime)) {
-                updateAsFinishedNullSafe(latestSaved);
+                isTasksChanged ||
+                !isNextInsideTheTimeLimit ||
+                !isNextSameOrAfter) {
+
+                // Append latest point to tracking if it's inside time limits. This happens only when task changes and
+                // last point will be new tasks first point.
+                updateAsFinishedNullSafeAndAppendLastGeometry(latestSaved, geometry, harjaObservationTime,isNextInsideTheTimeLimit && isNextSameOrAfter);
 
                 final MaintenanceTrackingWorkMachine workMachine = getOrCreateWorkMachine(harjaWorkMachineId, harjaContractId, harjaWorkMachinetype);
 
@@ -171,15 +180,17 @@ public class V2MaintenanceTrackingUpdateService {
                         performedTasks, harjaDirection != null ? BigDecimal.valueOf(harjaDirection) : null);
                 v2MaintenanceTrackingRepository.save(created);
             } else {
-                latestSaved.appendGeometry(geometry);
+                latestSaved.appendGeometry(geometry, harjaObservationTime);
                 latestSaved.addWorkMachineTrackingData(trackingData);
-                latestSaved.setEndTime(harjaObservationTime);
             }
         }
     }
 
-    private void updateAsFinishedNullSafe(MaintenanceTracking trackingToFinish) {
-        if (trackingToFinish != null) {
+    private void updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Geometry latestGeometry, final ZonedDateTime latestGeometryOservationTime, final boolean appendLatestGeometry) {
+        if (trackingToFinish != null && !trackingToFinish.isFinished()) {
+            if (appendLatestGeometry) {
+                trackingToFinish.appendGeometry(latestGeometry, latestGeometryOservationTime);
+            }
             trackingToFinish.setFinished();
         }
     }
@@ -241,14 +252,33 @@ public class V2MaintenanceTrackingUpdateService {
         return Collections.emptyList();
     }
 
-    private boolean isNextCoordinateTimeAfterPreviousAndInsideLimit(final ZonedDateTime previousCoordinateTime, final ZonedDateTime nextCoordinateTime) {
-        // It's allowed for next to be same or after the previous time
-        final boolean nextIsSameOrAfter = !nextCoordinateTime.isBefore(previousCoordinateTime);
-        final boolean timeGapInsideTheLimit = ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
-        if (!nextIsSameOrAfter || !timeGapInsideTheLimit) {
-            log.info("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {}, timeGapInsideTheLimit: {}", previousCoordinateTime, nextCoordinateTime, nextIsSameOrAfter, timeGapInsideTheLimit);
+    private boolean isNextCoordinateTimeInsideTheLimitNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
+        if (previousTracking != null) {
+            final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
+            // It's allowed for next to be same or after the previous time
+            final boolean timeGapInsideTheLimit =
+                ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
+            if (!timeGapInsideTheLimit) {
+                log.info("previousCoordinateTime: {}, nextCoordinateTime: {}, timeGapInsideTheLimit: {}",
+                         previousCoordinateTime, nextCoordinateTime, timeGapInsideTheLimit);
+            }
+            return timeGapInsideTheLimit;
         }
-        return  nextIsSameOrAfter && timeGapInsideTheLimit;
+        return false;
+    }
+
+    private boolean isNextCoordinateTimeSameOrAfterPreviousNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
+        if (previousTracking != null) {
+            final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
+            // It's allowed for next to be same or after the previous time
+            final boolean nextIsSameOrAfter = !nextCoordinateTime.isBefore(previousCoordinateTime);
+            if (!nextIsSameOrAfter) {
+                log.info("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {}",
+                         previousCoordinateTime, nextCoordinateTime, nextIsSameOrAfter);
+            }
+            return nextIsSameOrAfter;
+        }
+        return false;
     }
 
     private MaintenanceTrackingWorkMachine getOrCreateWorkMachine(final long harjaWorkMachineId, final long harjaContractId, final String workMachinetype) {
@@ -270,16 +300,19 @@ public class V2MaintenanceTrackingUpdateService {
         return tehtavat.isEmpty();
     }
 
-    private static boolean isTasksChanged(final Set<MaintenanceTrackingTask> newTasks, final Set<MaintenanceTrackingTask> previousTasks) {
+    private static boolean isTasksChangedNullSafe(final Set<MaintenanceTrackingTask> newTasks, final MaintenanceTracking previousTracking) {
+        if (previousTracking != null) {
+            final Set<MaintenanceTrackingTask> previousTasks = previousTracking.getTasks();
+            final boolean changed = !newTasks.equals(previousTasks);
 
-        final boolean changed = !newTasks.equals(previousTasks);
-
-        if (changed) {
-            log.info("WorkMachineTrackingTask changed from {} to {}",
-                previousTasks.stream().map(Object::toString).collect(Collectors.joining(",")),
-                newTasks.stream().map(Object::toString).collect(Collectors.joining(",")));
+            if (changed) {
+                log.info("WorkMachineTrackingTask changed from {} to {}",
+                    previousTasks.stream().map(Object::toString).collect(Collectors.joining(",")),
+                    newTasks.stream().map(Object::toString).collect(Collectors.joining(",")));
+            }
+            return changed;
         }
-        return changed;
+        return false;
     }
 
     /**

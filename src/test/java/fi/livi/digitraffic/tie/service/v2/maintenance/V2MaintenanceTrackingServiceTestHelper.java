@@ -66,10 +66,10 @@ public class V2MaintenanceTrackingServiceTestHelper {
     public static final double RANGE_Y_MIN = 59.0;
     public static final double RANGE_Y_MAX = 72.0;
 
-    public static final int RANGE_X_MIN_ETRS = 41085;
-    public static final int RANGE_X_MAX_ETRS = 672276;
-    public static final int RANGE_Y_MIN_ETRS = 6567582;
-    public static final int RANGE_Y_MAX_ETRS = 7996087;
+    public static final int RANGE_X_MIN_ETRS = 41086; // 41085.768094711006
+    public static final int RANGE_X_MAX_ETRS = 672275; // 672275.051072051
+    public static final int RANGE_Y_MIN_ETRS = 6567583; // 6567582.7414794015
+    public static final int RANGE_Y_MAX_ETRS = 7996086; // 7996086.925158125
 
     public final static Instant SINGLE_REALISATIONS_3_TASKS_END_TIME = ZonedDateTime.parse("2020-01-13T10:48:47Z").toInstant();
     public final static Instant TrackingS_8_TASKS_2_END_TIME = ZonedDateTime.parse("2020-01-13T12:06:55Z").toInstant();
@@ -107,7 +107,6 @@ public class V2MaintenanceTrackingServiceTestHelper {
     }
 
     public void clearDb() {
-        v2MaintenanceTrackingRepository.deleteAllMaintenanceTrackingTasks();
         v2MaintenanceTrackingRepository.deleteAllInBatch();
         v2MaintenanceTrackingDataRepository.deleteAllInBatch();
     }
