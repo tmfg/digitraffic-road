@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 import io.swagger.annotations.ApiModel;
@@ -15,7 +17,9 @@ public class MaintenanceTrackingProperties {
     @ApiModelProperty(value = "If for the realization", required = true)
     public Long id;
 
-    @ApiModelProperty(value = "Id for work machine for tracking", required = true)
+    // "Value is not allowe to share to public"
+    @JsonIgnore()
+    // @ApiModelProperty(value = "Id for work machine for tracking", required = true)
     public final Long workMachineId;
 
     @ApiModelProperty(value = "Time when tracking was reported", required = true)

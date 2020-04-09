@@ -106,7 +106,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(firstHalfMachines.size())));
+            .andExpect(jsonPath("features", hasSize(firstHalfMachines.size())))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
 
         // Second tracking
         getTrackingsJson(
@@ -114,7 +115,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(secondHalfMachines.size())));
+            .andExpect(jsonPath("features", hasSize(secondHalfMachines.size())))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
 
         // Both
         getTrackingsJson(
@@ -122,7 +124,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount)));
+            .andExpect(jsonPath("features", hasSize(machineCount)))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());;
     }
 
     @Test
@@ -150,7 +153,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(1)));
+            .andExpect(jsonPath("features", hasSize(1)))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
 
         // Search with second task should return trackings for machine 1. and 2.
         getTrackingsJson(
@@ -158,7 +162,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(2)));
+            .andExpect(jsonPath("features", hasSize(2)))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
     }
 
     @Test
@@ -187,7 +192,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount)));
+            .andExpect(jsonPath("features", hasSize(machineCount)))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
         IntStream.range(0, machineCount).forEach(i -> {
             try {
                 latestResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("Point")));
@@ -201,7 +207,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount * 5)));
+            .andExpect(jsonPath("features", hasSize(machineCount * 5)))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
          IntStream.range(0, machineCount * 5).forEach(i -> {
              try {
                  trackingResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("LineString")));
@@ -233,7 +240,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             pointWGS84.getLongitude()-0.1, pointWGS84.getLatitude()-0.1, RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(1)));
+            .andExpect(jsonPath("features", hasSize(1)))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
         // The only tracking should not be found when it's not inside the bounding box
         getTrackingsJson(
             now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
@@ -241,6 +249,5 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(0)));
-
     }
 }
