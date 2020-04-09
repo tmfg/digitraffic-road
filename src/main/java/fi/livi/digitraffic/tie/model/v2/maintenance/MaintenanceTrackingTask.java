@@ -52,7 +52,7 @@ public enum MaintenanceTrackingTask {
     COMPACTION_BY_ROLLING(JYRAYS,"Jyräys","Vibrering","Compaction by rolling"),
     ROAD_STATE_CHECKING(KELINTARKASTUS, "Kelintarkastus","Väglagsgranskning","Road state checking"),
     MECHANICAL_CUT(KONEELLINEN_NIITTO,"Koneellinen niitto","Vägslotter","Mechanical cut"),
-    BRUSH_CLEARING(KONEELLINEN_VESAKONRAIVAUS, "Koneellinen vesakonraivaus"," slyklippning","Brush clearing"),
+    BRUSH_CLEARING(KONEELLINEN_VESAKONRAIVAUS, "Koneellinen vesakonraivaus","Slyklippning","Brush clearing"),
     HEATING(KUUMENNUS, "Kuumennus","Upphettning","Heating"),
     CLEANSING_OF_REST_AREAS(L_JA_P_ALUEIDEN_PUHDISTUS, "L- ja p-alueiden puhdistus","Rast- och parkeringsplatsernas rengöring","Cleansing of rest areas"),
     CLEANSING_OF_TRAFFIC_SIGNS(LIIKENNEMERKKIEN_PUHDISTUS, "Liikennemerkkien puhdistus","Rengöring av trafikmärken","Cleansing of traffic signs"),
