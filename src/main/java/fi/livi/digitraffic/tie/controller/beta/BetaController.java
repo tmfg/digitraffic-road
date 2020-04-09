@@ -177,91 +177,6 @@ public class BetaController {
     private static final String RANGE_Y_TXT = "Values between 59.0 and 72.0.";
     private static final String RANGE_X = "range[19.0, 32.0]";
     private static final String RANGE_Y = "range[59.0, 72.0]";
-    @ApiOperation(value = "Road maintenance realizations data")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
-    public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(
-
-            @ApiParam(value = "Return realizations which have completed after the given time. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final ZonedDateTime from,
-
-            @ApiParam(value = "Return realizations which have completed before the given time. Default is now.", defaultValue = "2020-01-01T13:00Z")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final ZonedDateTime to,
-
-            @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-            @RequestParam(defaultValue = "19.0")
-            @DecimalMin("19.0")
-            @DecimalMax("32.0")
-            final double xMin,
-
-            @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-            @RequestParam(defaultValue = "59.0")
-            @DecimalMin("59.0")
-            @DecimalMax("72.0")
-            final double yMin,
-
-            @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-            @RequestParam(defaultValue = "32")
-            @DecimalMin("19.0")
-            @DecimalMax("32.0")
-            final double xMax,
-
-            @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-            @RequestParam(defaultValue = "72.0")
-            @DecimalMin("59.0")
-            @DecimalMax("72.0")
-            final double yMax,
-
-            @ApiParam(value = "Task ids to include. Any realization containing one of the selected tasks will be returned.")
-            @RequestParam(value = "taskId", required = false)
-            final List<Long> taskIds) {
-
-        // Make sure newest is also fetched
-        final Instant now = Instant.now().plusSeconds(1);
-        final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
-                                                              // Just to be sure all events near now in future will be fetched
-        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
-
-        if (fromParam.isAfter(toParam)) {
-            throw new IllegalArgumentException("Time from must be before to");
-        } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
-            throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
-        }
-        return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
-    }
-
-    @ApiIgnore("This is only for internal debugging and not for the public")
-    @ApiOperation(value = "Road maintenance realizations source data")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_JSON_DATA_PATH + "/{realizationId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
-    public JsonNode findMaintenanceRealizationDataJsonByRealizationId(@PathVariable(value = "realizationId") final long realizationId) {
-        return maintenanceRealizationDataService.findRealizationDataJsonByRealizationId(realizationId);
-    }
-
-    @ApiOperation(value = "Road maintenance realizations tasks")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_TASKS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations tasks"))
-    public List<MaintenanceRealizationTask> findMaintenanceRealizationsTasks() {
-        return maintenanceRealizationDataService.findAllRealizationsTasks();
-    }
-
-    @ApiOperation(value = "Road maintenance realizations task operations")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_OPERATIONS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task operations"))
-    public List<MaintenanceRealizationTaskOperation> findMaintenanceRealizationsTaskOperations() {
-        return maintenanceRealizationDataService.findAllRealizationsTaskOperations();
-    }
-
-    @ApiOperation(value = "Road maintenance realizations task categories")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_CATEGORIES_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task categories"))
-    public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
-        return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
-    }
 
     @ApiOperation(value = "Road maintenance tracking data latest points")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
@@ -327,6 +242,7 @@ public class BetaController {
         return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
+    @ApiIgnore("Realizations are not published for public")
     @ApiOperation(value = "Road maintenance tracking data")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
@@ -419,5 +335,98 @@ public class BetaController {
         }
 
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
+    }
+
+    /*
+     * Realizations are not shared at the moment
+     */
+    @ApiIgnore("Realizations are not published for public")
+    @ApiOperation(value = "Road maintenance realizations data")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
+    public MaintenanceRealizationFeatureCollection findMaintenanceRealizations(
+
+        @ApiParam(value = "Return realizations which have completed after the given time. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime from,
+
+        @ApiParam(value = "Return realizations which have completed before the given time. Default is now.", defaultValue = "2020-01-01T13:00Z")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime to,
+
+        @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
+        @RequestParam(defaultValue = "19.0")
+        @DecimalMin("19.0")
+        @DecimalMax("32.0")
+        final double xMin,
+
+        @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
+        @RequestParam(defaultValue = "59.0")
+        @DecimalMin("59.0")
+        @DecimalMax("72.0")
+        final double yMin,
+
+        @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
+        @RequestParam(defaultValue = "32")
+        @DecimalMin("19.0")
+        @DecimalMax("32.0")
+        final double xMax,
+
+        @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
+        @RequestParam(defaultValue = "72.0")
+        @DecimalMin("59.0")
+        @DecimalMax("72.0")
+        final double yMax,
+
+        @ApiParam(value = "Task ids to include. Any realization containing one of the selected tasks will be returned.")
+        @RequestParam(value = "taskId", required = false)
+        final List<Long> taskIds) {
+
+        // Make sure newest is also fetched
+        final Instant now = Instant.now().plusSeconds(1);
+        final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
+        // Just to be sure all events near now in future will be fetched
+        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
+
+        if (fromParam.isAfter(toParam)) {
+            throw new IllegalArgumentException("Time from must be before to");
+        } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
+            throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
+        }
+        return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
+    }
+
+    @ApiIgnore("This is only for internal debugging and not for the public")
+    @ApiOperation(value = "Road maintenance realizations source data")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_JSON_DATA_PATH + "/{realizationId}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations data"))
+    public JsonNode findMaintenanceRealizationDataJsonByRealizationId(@PathVariable(value = "realizationId") final long realizationId) {
+        return maintenanceRealizationDataService.findRealizationDataJsonByRealizationId(realizationId);
+    }
+
+    @ApiIgnore("Realizations are not published for public")
+    @ApiOperation(value = "Road maintenance realizations tasks")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_TASKS_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations tasks"))
+    public List<MaintenanceRealizationTask> findMaintenanceRealizationsTasks() {
+        return maintenanceRealizationDataService.findAllRealizationsTasks();
+    }
+
+    @ApiIgnore("Realizations are not published for public")
+    @ApiOperation(value = "Road maintenance realizations task operations")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_OPERATIONS_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task operations"))
+    public List<MaintenanceRealizationTaskOperation> findMaintenanceRealizationsTaskOperations() {
+        return maintenanceRealizationDataService.findAllRealizationsTaskOperations();
+    }
+
+    @ApiIgnore("Realizations are not published for public")
+    @ApiOperation(value = "Road maintenance realizations task categories")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_REALIZATIONS_PATH + MAINTENANCE_REALIZATIONS_CATEGORIES_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task categories"))
+    public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
+        return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
     }
 }
