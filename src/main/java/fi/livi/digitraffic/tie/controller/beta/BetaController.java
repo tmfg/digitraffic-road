@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -221,8 +222,7 @@ public class BetaController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 
-        // Make sure newest is also fetched
-        final Instant now = Instant.now().plusSeconds(1);
+        final Instant now = Instant.now();
         final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
         // Just to be sure all events near now in future will be fetched
         final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
@@ -242,7 +242,6 @@ public class BetaController {
         return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
-    @ApiIgnore("Realizations are not published for public")
     @ApiOperation(value = "Road maintenance tracking data")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
@@ -286,8 +285,7 @@ public class BetaController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 
-        // Make sure newest is also fetched
-        final Instant now = Instant.now().plusSeconds(1);
+        final Instant now = Instant.now();
         final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
         // Just to be sure all events near now in future will be fetched
         final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
@@ -304,8 +302,10 @@ public class BetaController {
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
     public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
-        return Arrays.asList(MaintenanceTrackingTask.values()).stream().sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
-            .map(t -> new MaintenanceTrackingTaskDto(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn())).collect(Collectors.toList());
+        return Stream.of(MaintenanceTrackingTask.values())
+            .sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
+            .map(t -> new MaintenanceTrackingTaskDto(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn()))
+            .collect(Collectors.toList());
     }
 
     @ApiIgnore("This is only for internal debugging and not for the public")

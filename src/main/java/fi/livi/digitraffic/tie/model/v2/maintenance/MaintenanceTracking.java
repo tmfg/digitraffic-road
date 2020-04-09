@@ -185,11 +185,12 @@ public class MaintenanceTracking {
         return ToStringHelper.toStringFull(this);
     }
 
-    public void appendGeometry(final Geometry geometryToAppend, final ZonedDateTime geometryObservationTime) {
+    public void appendGeometry(final Geometry geometryToAppend, final ZonedDateTime geometryObservationTime, final BigDecimal direction) {
         LineString result = PostgisGeometryHelper.combineToLinestringWithZ(getCurrentGeometry(), geometryToAppend);
         setLineString(result);
         setLastPoint(result.getEndPoint());
         setEndTime(geometryObservationTime);
+        setDirection(direction);
     }
 
     /**

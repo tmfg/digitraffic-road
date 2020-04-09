@@ -225,10 +225,27 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     }
 
     @Test
+    public void insideTimeLimitCombinesTrackingsAsOne() throws JsonProcessingException {
+        final List<Tyokone> workMachines = createWorkMachines(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        // Last point will be startTime + 9 min
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        // First point will be just 5 min from previous tracking last point -> should combine as same tracking
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(9+maxGapInMinutes), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(1, trackings);
+        assertEquals(20, trackings.get(0).getLineString().getNumPoints());
+    }
+
+    @Test
     public void timeLimitBreaksTrackingInParts() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
-        // Last point will be in time startTime + 9 min
+        // Last point will be startTime + 9 min
         testHelper.saveTrackingData(
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // First point will be over 5 min (6 min) from previous tracking last point
@@ -239,8 +256,11 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
         assertCollectionSize(2, trackings);
         trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
+
         final MaintenanceTracking first = trackings.get(0);
         final MaintenanceTracking second = trackings.get(1);
+        assertNotEquals(first.getEndTime(), second.getStartTime());
+        assertNotEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
     }
 
     @Test
@@ -258,9 +278,9 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
         assertCollectionSize(2, trackings);
         trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
+
         final MaintenanceTracking first = trackings.get(0);
         final MaintenanceTracking second = trackings.get(1);
-
         assertNotEquals(first.getEndTime(), second.getStartTime());
         assertNotEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
     }
