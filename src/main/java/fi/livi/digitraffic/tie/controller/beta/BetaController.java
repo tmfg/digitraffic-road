@@ -11,7 +11,6 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -61,7 +60,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import springfox.documentation.annotations.ApiIgnore;
 
-@Api(tags = "beta")
+@Api(tags = "Beta")
 @RestController
 @Validated
 @RequestMapping(API_BETA_BASE_PATH)
