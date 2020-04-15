@@ -410,7 +410,7 @@ public class BetaController {
 
     private static Pair<Instant, Instant> getFromToParamsIfNotSet(ZonedDateTime from, ZonedDateTime to) {
         // Make sure newest is also fetched
-        final Instant now = Instant.now().plusSeconds(1);
+        final Instant now = Instant.now();
         final Instant fromParam = from != null ? from.toInstant() : now.minus(24, HOURS);
         // Just to be sure all events near now in future will be fetched
         final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
@@ -424,7 +424,7 @@ public class BetaController {
             } else if (from.plus(24, HOURS).isBefore(to)) {
                 throw new IllegalArgumentException("Time between from and to -parameters must be less or equal to 24 h");
             }
-        } else if (from != null && from.plusHours(24).isBefore(ZonedDateTime.now())) {
+        } else if (from != null && from.plus(24, HOURS).isBefore(ZonedDateTime.now())) {
             throw new IllegalArgumentException("From-parameter must in 24 hours when to is not given.");
         }
     }
