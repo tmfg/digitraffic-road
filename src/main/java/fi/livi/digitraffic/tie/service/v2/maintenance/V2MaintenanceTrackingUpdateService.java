@@ -270,7 +270,9 @@ public class V2MaintenanceTrackingUpdateService {
                     final double x = (double) point.get(0);
                     final double y = (double) point.get(1);
                     final double z = point.size() > 2 ? Double.valueOf((Integer) point.get(2)) : 0.0;
-                    log.info(PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z).toString());
+                    final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
+                    log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
+                             x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
                     return PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -279,8 +281,11 @@ public class V2MaintenanceTrackingUpdateService {
             }).collect(Collectors.toList());
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
-            log.info(PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ()).toString());
-            return Collections.singletonList(PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ()));
+            final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
+            log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
+                     koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ(),
+                     coordinate.getX(), coordinate.getY(), coordinate.getZ());
+            return Collections.singletonList(coordinate);
         }
         return Collections.emptyList();
     }

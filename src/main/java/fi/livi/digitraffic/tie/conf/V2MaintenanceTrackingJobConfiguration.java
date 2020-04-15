@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 
 @ConditionalOnProperty(name = "maintenance.tracking.job.enabled", matchIfMissing = true)
@@ -20,10 +21,13 @@ public class V2MaintenanceTrackingJobConfiguration {
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingJobConfiguration.class);
 
     private final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
+    private LockingService lockingService;
 
     @Autowired
-    public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService) {
+    public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
+                                                 final LockingService lockingService) {
         this.v2MaintenanceTrackingUpdateService = v2MaintenanceTrackingUpdateService;
+        this.lockingService = lockingService;
     }
 
     /**
@@ -36,9 +40,13 @@ public class V2MaintenanceTrackingJobConfiguration {
         int count = 0;
         int totalCount = 0;
         do {
-            count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-            totalCount += count;
-            log.info("method=handleUnhandledWorkMachineTrackings handledCount={} trackings", count);
+            if ( lockingService.tryLock("handleUnhandledWorkMachineTrackings", 300) ) {
+                count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+                totalCount += count;
+                log.info("method=handleUnhandledWorkMachineTrackings handledCount={} trackings", count);
+            } else {
+                log.error("method=handleUnhandledWorkMachineTrackings didn't get lock for updating tracking data.");
+            }
         } while (count > 0);
         log.info("method=handleUnhandledWorkMachineTrackings handledTotalCount={} trackings tookMs={}", totalCount, start.getTime());
     }
