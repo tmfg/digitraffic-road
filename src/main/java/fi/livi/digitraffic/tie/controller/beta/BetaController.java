@@ -221,16 +221,13 @@ public class BetaController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 
+        validateTimeBetweenFromAndToMax24h(from, to);
+
         final Instant now = Instant.now();
         final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
         // Just to be sure all events near now in future will be fetched
         final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
 
-        if (fromParam.isAfter(toParam)) {
-            throw new IllegalArgumentException("Time from must be before to");
-        } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
-            throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
-        }
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
     }
 
@@ -383,9 +380,11 @@ public class BetaController {
         @RequestParam(value = "taskId", required = false)
         final List<Long> taskIds) {
 
+        validateTimeBetweenFromAndToMax24h(from, to);
+
         // Make sure newest is also fetched
         final Instant now = Instant.now().plusSeconds(1);
-        final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
+        final Instant fromParam = from != null ? from.toInstant() : now.minus(24, HOURS);
         // Just to be sure all events near now in future will be fetched
         final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
 
@@ -427,5 +426,17 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task categories"))
     public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
         return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
+    }
+
+    private void validateTimeBetweenFromAndToMax24h(final ZonedDateTime from, final ZonedDateTime to) {
+        if (from != null && to != null) {
+            if (from.isAfter(to)) {
+                throw new IllegalArgumentException("Time from must be before to");
+            } else if (from.plus(24, HOURS).isBefore(to)) {
+                throw new IllegalArgumentException("Time between from and to -parameters must be less or equal to 24 h");
+            }
+        } else if (from != null && from.plusHours(24).isBefore(ZonedDateTime.now())) {
+            throw new IllegalArgumentException("From-parameter must in 24 hours when to is not given.");
+        }
     }
 }
