@@ -21,7 +21,9 @@ public class V2MaintenanceTrackingJobConfiguration {
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingJobConfiguration.class);
 
     private final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
-    private LockingService lockingService;
+    private final LockingService lockingService;
+
+    private final static String LOCK_NAME = "V2MaintenanceTrackingJobConfiguration";
 
     @Autowired
     public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
@@ -40,10 +42,11 @@ public class V2MaintenanceTrackingJobConfiguration {
         int count = 0;
         int totalCount = 0;
         do {
-            if ( lockingService.tryLock("handleUnhandledWorkMachineTrackings", 300) ) {
+            if ( lockingService.tryLock(LOCK_NAME, 300) ) {
                 count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
                 totalCount += count;
                 log.info("method=handleUnhandledWorkMachineTrackings handledCount={} trackings", count);
+                lockingService.unlock(LOCK_NAME);
             } else {
                 log.error("method=handleUnhandledWorkMachineTrackings didn't get lock for updating tracking data.");
             }
