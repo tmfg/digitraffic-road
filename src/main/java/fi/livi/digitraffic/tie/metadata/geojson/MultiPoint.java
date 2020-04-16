@@ -5,20 +5,19 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJson LineString Geometry Object")
+@ApiModel(description = "GeoJson MultiPoint Geometry Object")
 @JsonPropertyOrder({ "type", "coordinates"})
-    public class LineString extends Geometry<List<Double>> {
+public class MultiPoint extends Geometry<List<Double>> {
 
     @JsonCreator
-    public LineString(List<List<Double>> coordinates) {
-        super(Type.LineString, coordinates);
+    public MultiPoint(List<List<Double>> coordinates) {
+        super(Type.MultiPoint, coordinates);
     }
 
-    @ApiModelProperty(required = true, allowableValues = "LineString", example = "LineString")
+    @ApiModelProperty(required = true, allowableValues = "MultiPoint", example = "MultiPoint")
     @Override
     public Type getType() {
         return super.getType();

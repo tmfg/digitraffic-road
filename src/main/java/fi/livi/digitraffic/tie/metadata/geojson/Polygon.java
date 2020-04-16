@@ -8,19 +8,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJson MultiLineString Geometry Object")
+@ApiModel(description = "GeoJson Polygon Geometry Object")
 @JsonPropertyOrder({ "type", "coordinates" })
-public class MultiLineString extends Geometry<List<List<Double>>> {
+public class Polygon extends Geometry<List<List<Double>>> {
 
-    public MultiLineString() {
-        super(Type.MultiLineString, new ArrayList<>());
+    public Polygon() {
+        super(Type.Polygon, new ArrayList<>());
     }
 
-    public MultiLineString(final List<List<List<Double>>> coordinates) {
-        super(Type.MultiLineString, coordinates);
+    public Polygon(final List<List<List<Double>>> coordinates) {
+        super(Type.Polygon, coordinates);
     }
 
-    @ApiModelProperty(required = true, allowableValues = "MultiLineString", example = "MultiLineString")
+    @ApiModelProperty(required = true, allowableValues = "Polygon", example = "Polygon")
     @Override
     public Type getType() {
         return super.getType();
@@ -31,9 +31,5 @@ public class MultiLineString extends Geometry<List<List<Double>>> {
     @Override
     public List<List<List<Double>>> getCoordinates() {
         return super.getCoordinates();
-    }
-
-    public void addLineString(final List<List<Double>> coordinates) {
-        getCoordinates().add(coordinates);
     }
 }
