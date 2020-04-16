@@ -19,6 +19,9 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiPolygon;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
 
+/**
+ * Samples from https://en.wikipedia.org/wiki/GeoJSON
+ */
 public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutS3 {
     private static final Logger log = LoggerFactory.getLogger(GeometryJacksonDeserializerTest.class);
 
