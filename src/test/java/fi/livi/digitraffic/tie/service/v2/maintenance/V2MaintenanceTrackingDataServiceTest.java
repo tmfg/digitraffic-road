@@ -254,9 +254,9 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
         // Create 2 tracking data that are combined as one tracking
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
 
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(20)).features;

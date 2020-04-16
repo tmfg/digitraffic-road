@@ -249,10 +249,10 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
         // Last point will be startTime + 9 min
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // First point will be over 5 min (6 min) from previous tracking last point
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10+maxGapInMinutes), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10+maxGapInMinutes), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
 
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
@@ -271,10 +271,10 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // Second tracking over time gap and task change
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10 + maxGapInMinutes), 10, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10 + maxGapInMinutes), 10, 2, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
 
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
@@ -319,10 +319,10 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // First point will be after previous last point -> 10 min after start
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
 
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
@@ -341,9 +341,9 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // First point will be after previous last point -> 10 min after start
-        final TyokoneenseurannanKirjausRequestSchema transition = createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 1, workMachines);
+        final TyokoneenseurannanKirjausRequestSchema transition = createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2,1, workMachines);
         testHelper.saveTrackingData(transition);
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
 
