@@ -228,17 +228,19 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void insideTimeLimitCombinesTrackingsAsOne() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final int observationCountPerTracking = 10;
+        final int jobId = 1;
         // Last point will be startTime + 9 min
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime, observationCountPerTracking, jobId, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // First point will be just 5 min from previous tracking last point -> should combine as same tracking
         testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(9+maxGapInMinutes), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes((observationCountPerTracking-1) + maxGapInMinutes), observationCountPerTracking, jobId, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
 
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
         assertCollectionSize(1, trackings);
-        assertEquals(20, trackings.get(0).getLineString().getNumPoints());
+        assertEquals(observationCountPerTracking * 2, trackings.get(0).getLineString().getNumPoints());
     }
 
     @Test
