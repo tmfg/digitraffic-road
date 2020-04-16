@@ -186,7 +186,7 @@ public class MaintenanceTracking {
     }
 
     public void appendGeometry(final Geometry geometryToAppend, final ZonedDateTime geometryObservationTime, final BigDecimal direction) {
-        LineString result = PostgisGeometryHelper.combineToLinestringWithZ(getCurrentGeometry(), geometryToAppend);
+        final LineString result = PostgisGeometryHelper.combineToLinestringWithZ(getCurrentGeometry(), geometryToAppend);
         setLineString(result);
         setLastPoint(result.getEndPoint());
         setEndTime(geometryObservationTime);

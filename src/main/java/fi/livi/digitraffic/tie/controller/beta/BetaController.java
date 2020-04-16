@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -221,17 +222,10 @@ public class BetaController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 
-        final Instant now = Instant.now();
-        final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
-        // Just to be sure all events near now in future will be fetched
-        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
+        validateTimeBetweenFromAndToMax24h(from, to);
+        Pair<Instant, Instant> fromTo = getFromToParamsIfNotSet(from, to);
 
-        if (fromParam.isAfter(toParam)) {
-            throw new IllegalArgumentException("Time from must be before to");
-        } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
-            throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
-        }
-        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
+        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
     }
 
     @ApiOperation(value = "Road maintenance tracking data with tracking id")
@@ -284,17 +278,10 @@ public class BetaController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 
-        final Instant now = Instant.now();
-        final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
-        // Just to be sure all events near now in future will be fetched
-        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
+        validateTimeBetweenFromAndToMax24h(from, to);
+        Pair<Instant, Instant> fromTo = getFromToParamsIfNotSet(from, to);
 
-        if (fromParam.isAfter(toParam)) {
-            throw new IllegalArgumentException("Time from must be before to");
-        } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
-            throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
-        }
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
     }
 
     @ApiOperation(value = "Road maintenance tracking tasks")
@@ -383,18 +370,10 @@ public class BetaController {
         @RequestParam(value = "taskId", required = false)
         final List<Long> taskIds) {
 
-        // Make sure newest is also fetched
-        final Instant now = Instant.now().plusSeconds(1);
-        final Instant fromParam = from != null ? from.toInstant() : now.minus(1, HOURS);
-        // Just to be sure all events near now in future will be fetched
-        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
+        validateTimeBetweenFromAndToMax24h(from, to);
+        Pair<Instant, Instant> fromTo = getFromToParamsIfNotSet(from, to);
 
-        if (fromParam.isAfter(toParam)) {
-            throw new IllegalArgumentException("Time from must be before to");
-        } else if (fromParam.plus(24, HOURS).isBefore(toParam)) {
-            throw new IllegalArgumentException("Time between from and to must be less or equal to 24 h");
-        }
-        return maintenanceRealizationDataService.findMaintenanceRealizations(fromParam, toParam, xMin, yMin, xMax, yMax, taskIds);
+        return maintenanceRealizationDataService.findMaintenanceRealizations(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
     }
 
     @ApiIgnore("This is only for internal debugging and not for the public")
@@ -427,5 +406,26 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task categories"))
     public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
         return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
+    }
+
+    private static Pair<Instant, Instant> getFromToParamsIfNotSet(ZonedDateTime from, ZonedDateTime to) {
+        // Make sure newest is also fetched
+        final Instant now = Instant.now();
+        final Instant fromParam = from != null ? from.toInstant() : now.minus(24, HOURS);
+        // Just to be sure all events near now in future will be fetched
+        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
+        return Pair.of(fromParam, toParam);
+    }
+
+    private static void validateTimeBetweenFromAndToMax24h(final ZonedDateTime from, final ZonedDateTime to) {
+        if (from != null && to != null) {
+            if (from.isAfter(to)) {
+                throw new IllegalArgumentException("Time from must be before to");
+            } else if (from.plus(24, HOURS).isBefore(to)) {
+                throw new IllegalArgumentException("Time between from and to -parameters must be less or equal to 24 h");
+            }
+        } else if (from != null && from.plus(24, HOURS).isBefore(ZonedDateTime.now())) {
+            throw new IllegalArgumentException("From-parameter must in 24 hours when to is not given.");
+        }
     }
 }

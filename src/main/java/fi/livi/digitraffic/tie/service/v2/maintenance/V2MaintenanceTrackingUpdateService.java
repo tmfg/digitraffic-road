@@ -148,13 +148,13 @@ public class V2MaintenanceTrackingUpdateService {
                 log.info("WorkMachine tracking in transition");
                 // Mark found one to finished as the work machine is in transition after that
                 // Append latest point (without the task) to tracking if it's inside time limits.
-                updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, getDirection(havainto), harjaObservationTime, status.isNextInsideLimits());
+                updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, getDirection(havainto, trackingData.getId()), harjaObservationTime, status.isNextInsideLimits());
             // If previous is finished or tasks has changed or time gap is too long, we create new tracking for the machine
             } else if ( status.is(NEW) ) {
 
                 // Append latest point to tracking if it's inside time limits. This happens only when task changes and
                 // last point will be new tasks first point.
-                updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, getDirection(havainto), harjaObservationTime, status.isNextInsideLimits());
+                updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, getDirection(havainto, trackingData.getId()), harjaObservationTime, status.isNextInsideLimits());
 
                 final MaintenanceTrackingWorkMachine workMachine =
                     getOrCreateWorkMachine(harjaWorkMachineId, harjaContractId, harjaWorkMachine.getTyokonetyyppi());
@@ -164,17 +164,25 @@ public class V2MaintenanceTrackingUpdateService {
                 final MaintenanceTracking created =
                     new MaintenanceTracking(trackingData, workMachine, harjaContractId, sendingSystem, sendingTime,
                         harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
-                        performedTasks, getDirection(havainto));
+                        performedTasks, getDirection(havainto, trackingData.getId()));
                 v2MaintenanceTrackingRepository.save(created);
             } else {
-                previousTracking.appendGeometry(geometry, harjaObservationTime, getDirection(havainto));
+                previousTracking.appendGeometry(geometry, harjaObservationTime, getDirection(havainto, trackingData.getId()));
                 previousTracking.addWorkMachineTrackingData(trackingData);
             }
         }
     }
 
-    private BigDecimal getDirection(final Havainto havainto) {
-        return havainto.getSuunta() != null ? BigDecimal.valueOf(havainto.getSuunta()) : null;
+    private BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {
+        if (havainto.getSuunta() != null) {
+            final BigDecimal value = BigDecimal.valueOf(havainto.getSuunta());
+            if (value.intValue() > 360 || value.intValue() < 0) {
+                log.error("Illegal direction value {} for trackingData id {}. Value should be between 0-360 degrees.", value, trackingDataId);
+                return null;
+            }
+            return value;
+        }
+        return null;
     }
 
     private NextObservationStatus resolveNextObservationStatus(final MaintenanceTracking previousTracking, final Havainto havainto) {
@@ -262,7 +270,9 @@ public class V2MaintenanceTrackingUpdateService {
                     final double x = (double) point.get(0);
                     final double y = (double) point.get(1);
                     final double z = point.size() > 2 ? Double.valueOf((Integer) point.get(2)) : 0.0;
-                    log.info(PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z).toString());
+                    final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
+                    log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
+                             x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
                     return PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -271,8 +281,11 @@ public class V2MaintenanceTrackingUpdateService {
             }).collect(Collectors.toList());
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
-            log.info(PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ()).toString());
-            return Collections.singletonList(PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ()));
+            final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
+            log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
+                     koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ(),
+                     coordinate.getX(), coordinate.getY(), coordinate.getZ());
+            return Collections.singletonList(coordinate);
         }
         return Collections.emptyList();
     }
