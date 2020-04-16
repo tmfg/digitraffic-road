@@ -15,6 +15,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiPoint;
+import fi.livi.digitraffic.tie.metadata.geojson.MultiPolygon;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
 
@@ -144,13 +145,13 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutS3
 
     @Test
     public void multiPolygon() throws JsonProcessingException {
-        final Geometry geom = geoJsonGeometryReader.readValue(MULTI_POLYGON);
+        final MultiPolygon geom = geoJsonGeometryReader.readValue(MULTI_POLYGON);
         log.info(geom.toString());
     }
 
     @Test
     public void multiPolygonWithInnerPolygon() throws JsonProcessingException {
-        final Geometry geom = geoJsonGeometryReader.readValue(MULTI_POLYGON_WITH_INNER_POLYGON);
+        final MultiPolygon geom = geoJsonGeometryReader.readValue(MULTI_POLYGON_WITH_INNER_POLYGON);
         log.info(geom.toString());
     }
 }
