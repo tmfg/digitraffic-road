@@ -13,15 +13,17 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 public class CoordinateConverterTest {
 
-    @Test
-    public void convertFromETRSToWGS84Succeeds() {
-        assertCoordinates(CoordinateConverter.convertFromETRS89ToWGS84(new Point(386261, 6686131)));
-    }
+    private final double TAMPERE_WGS84_X = 23.761290078;
+    private final double TAMPERE_WGS84_Y = 61.497742570;
+    private final double TAMPERE_TM35FIN_X = 327630.0;
+    private final double TAMPERE_TM35FIN_Y = 6822512.0;
+    private final double ALLOWED_DELTA = 0.00002;
 
-    // Reference system https://www.retkikartta.fi/
-    private void assertCoordinates(final Point point) {
-        assertEquals(24.9422, point.getLongitude(), 0.0001);
-        assertEquals(60.2958, point.getLatitude(), 0.0001);
+    @Test
+    public void convertFromETRSToWGS84Values() {
+        final Point wgs84 = CoordinateConverter.convertFromETRS89ToWGS84(new Point(TAMPERE_TM35FIN_X, TAMPERE_TM35FIN_Y));
+        assertEquals(TAMPERE_WGS84_X, wgs84.getLongitude(), ALLOWED_DELTA);
+        assertEquals(TAMPERE_WGS84_Y, wgs84.getLatitude(), ALLOWED_DELTA);
     }
 
     @Ignore

@@ -200,7 +200,8 @@ public class V2MaintenanceTrackingServiceTestHelper {
     private static List<Havainnot> createHavainnot(final ZonedDateTime observationTime, final Tyokone workMachine, final int jobId,
                                                    final int observationCount, final List<SuoritettavatTehtavat> tasks, final boolean lineString) {
 
-        final double coordinateFactor = (RANGE_X_MAX_ETRS - RANGE_X_MIN_ETRS) / observationCount;
+        // This sets speed < 50 km/h between points
+        final double coordinateFactor = 500;//(RANGE_X_MAX_ETRS - RANGE_X_MIN_ETRS) / observationCount;
 
         if (lineString) {
             // LineString observation with {observationCount} points

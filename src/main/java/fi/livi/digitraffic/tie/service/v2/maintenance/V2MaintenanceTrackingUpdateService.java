@@ -193,17 +193,41 @@ public class V2MaintenanceTrackingUpdateService {
         final boolean isNextTimeSameOrAfter = isNextCoordinateTimeSameOrAfterPreviousNullSafe(harjaObservationTime, previousTracking);
         final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, previousTracking);
 
+        final double speedInKmH = resolveSpeedInKmHNullSafe(previousTracking, havainto);
+        final boolean overspeed = speedInKmH >= 120.0;
+
         if (isTransition(performedTasks)) {
-            return new NextObservationStatus(TRANSITION, isNextInsideTheTimeLimit, isNextTimeSameOrAfter);
+            return new NextObservationStatus(TRANSITION, isNextInsideTheTimeLimit, isNextTimeSameOrAfter, overspeed);
         } else if ( previousTracking == null ||
                     previousTracking.isFinished() ||
                     isTasksChanged ||
                     !isNextInsideTheTimeLimit ||
-                    !isNextTimeSameOrAfter) {
-            return new NextObservationStatus(NEW, isNextInsideTheTimeLimit, isNextTimeSameOrAfter);
+                    !isNextTimeSameOrAfter ||
+                    overspeed) {
+            return new NextObservationStatus(NEW, isNextInsideTheTimeLimit, isNextTimeSameOrAfter, overspeed);
         } else {
-            return new NextObservationStatus(SAME, isNextInsideTheTimeLimit, isNextTimeSameOrAfter);
+            return new NextObservationStatus(SAME, isNextInsideTheTimeLimit, isNextTimeSameOrAfter, overspeed);
         }
+    }
+
+    private double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final Havainto nextHavainto) {
+        final Geometry nextGeometry = resolveGeometry(nextHavainto.getSijainti());
+        if (previousTracking != null && nextGeometry != null) {
+            final long diffInSeconds = getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(previousTracking, nextHavainto.getHavaintoaika());
+            final Point nextPoint = resolveLastPoint(nextGeometry);
+            final double speedKmH = PostgisGeometryHelper.speedBetweenWGS84PointsInKmH(previousTracking.getLastPoint(), nextPoint, diffInSeconds);
+            log.debug("Speed {} km/h", speedKmH);
+            return speedKmH;
+        }
+        return 0;
+    }
+
+    private long getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime nextCoordinateTime) {
+        if (previousTracking != null) {
+            final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
+            return previousCoordinateTime.until(nextCoordinateTime, ChronoUnit.SECONDS);
+        }
+        return 0;
     }
 
     private Set<MaintenanceTrackingTask> getMaintenanceTrackingTasksFromHarjaTasks(List<SuoritettavatTehtavat> harjaTasks) {
@@ -251,7 +275,7 @@ public class V2MaintenanceTrackingUpdateService {
      */
     private Geometry resolveGeometry(final GeometriaSijaintiSchema sijainti) {
 
-        List<Coordinate> coordinates = resolveCoordinates(sijainti);
+        final List<Coordinate> coordinates = resolveCoordinates(sijainti);
         if (coordinates.isEmpty()) {
             return null;
         }
@@ -372,12 +396,14 @@ public class V2MaintenanceTrackingUpdateService {
         private final Status status;
         private final boolean nextInsideTheTimeLimit;
         private final boolean nextTimeSameOrAfterPrevious;
+        private final boolean overspeed;
 
         private NextObservationStatus(
-            Status status, boolean nextInsideTheTimeLimit, boolean nextTimeSameOrAfterPrevious) {
+            final Status status, final boolean nextInsideTheTimeLimit, final boolean nextTimeSameOrAfterPrevious, final boolean overspeed) {
             this.status = status;
             this.nextInsideTheTimeLimit = nextInsideTheTimeLimit;
             this.nextTimeSameOrAfterPrevious = nextTimeSameOrAfterPrevious;
+            this.overspeed = overspeed;
         }
 
         public Status getStatus() {
@@ -392,8 +418,12 @@ public class V2MaintenanceTrackingUpdateService {
             return nextTimeSameOrAfterPrevious;
         }
 
+        public boolean isOverspeed() {
+            return overspeed;
+        }
+
         public boolean isNextInsideLimits() {
-            return nextInsideTheTimeLimit && nextTimeSameOrAfterPrevious;
+            return nextInsideTheTimeLimit && nextTimeSameOrAfterPrevious && !overspeed;
         }
 
         public boolean is(final Status isStatus) {

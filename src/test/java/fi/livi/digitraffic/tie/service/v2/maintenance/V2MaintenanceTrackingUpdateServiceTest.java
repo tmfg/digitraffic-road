@@ -288,6 +288,32 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     }
 
     @Test
+    public void overSpeedBreaksTrackingInTwoParts() throws JsonProcessingException {
+        final List<Tyokone> workMachines = createWorkMachines(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        // Last point will be startTime + 9 min
+        final TyokoneenseurannanKirjausRequestSchema kirjaus =
+            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, ASFALTOINTI);
+        // Set coordinates from 6..10 so far that speed between 5th and 6th point exceeds 120 km/h when there is one minute between points.
+        IntStream.range(5,10).forEach(i -> {
+            final KoordinaattisijaintiSchema koordinaatit = kirjaus.getHavainnot().get(i).getHavainto().getSijainti().getKoordinaatit();
+            // Set forward  so far that it exceeds speed 120 km/h when there is one minute between points.
+            koordinaatit.setX(koordinaatit.getX() + 2000);
+        });
+        testHelper.saveTrackingData(kirjaus);
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(2, trackings);
+        trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
+
+        final MaintenanceTracking first = trackings.get(0);
+        final MaintenanceTracking second = trackings.get(1);
+        assertNotEquals(first.getEndTime(), second.getStartTime());
+        assertNotEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
+    }
+
+    @Test
     public void taskChangeBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfNextTracking() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
