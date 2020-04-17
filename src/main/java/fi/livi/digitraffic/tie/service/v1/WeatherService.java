@@ -103,6 +103,10 @@ public class WeatherService {
             );
         }
 
+        if (from == null) {
+            throw new IllegalArgumentException("From is not set");
+        }
+
         if (from.isAfter(to)) {
             throw new IllegalArgumentException("From > to");
         }
