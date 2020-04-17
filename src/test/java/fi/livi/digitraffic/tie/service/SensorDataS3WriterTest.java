@@ -1,9 +1,16 @@
 package fi.livi.digitraffic.tie.service;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,12 +27,17 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.bean.CsvToBeanBuilder;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
 import fi.livi.digitraffic.tie.conf.amazon.SpringLocalstackDockerRunnerWithVersion;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
+import fi.livi.digitraffic.tie.service.v1.location.AbstractReader;
 import xyz.fabiano.spring.localstack.LocalstackService;
 import xyz.fabiano.spring.localstack.annotation.SpringLocalstackProperties;
 
@@ -47,7 +59,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     @Autowired
     SensorDataS3Properties sensorDataS3Properties;
 
-    private int count = 0;
+    private SensorValueHistoryBuilder builder;
 
     @Before
     public void initS3BucketForSensorData() {
@@ -65,18 +77,15 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         int min = time.getMinute();
 
         // Init same db-content
-        SensorValueHistoryBuilder builder = new SensorValueHistoryBuilder(repository, log)
+        builder = new SensorValueHistoryBuilder(repository, log)
             .setReferenceTime(time)
             .buildRandom(10, 10, 10, 0, min)
             .buildRandom(50, 10, 10, min + 1, min + 61)
             .save();
-
-        count = builder.getElementCountAt(1);
     }
 
     protected void createS3Object(final ZonedDateTime time) {
-        String filename = sensorDataS3Properties.getFilename(time, ".zip");
-        String storename = sensorDataS3Properties.getFileStorageName(time, filename);
+        String filename = sensorDataS3Properties.getFileStorageName(time);
 
         String dummyContent = "Lorem ipsum";
 
@@ -85,11 +94,11 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         metadata.setContentLength(dummyContent.getBytes().length);
 
         PutObjectResult result = amazonS3.putObject(sensorDataS3Properties.getS3BucketName(),
-            storename,
+            filename,
             new ByteArrayInputStream(dummyContent.getBytes()),
             metadata);
 
-        log.info("Store object: {}, result: {}", storename, result.toString());
+        log.info("Store object: {}, result: {}", filename, result.toString());
     }
 
     protected void cleanBucket() {
@@ -112,9 +121,13 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
         sensorDataS3Properties.setRefTime(from);
 
+        int origCount = builder.getElementCountAt(1);
         int sum = writer.writeSensorData(from, to);
 
-        Assert.assertEquals("element count mismatch", count, sum);
+        Assert.assertEquals("element count mismatch", origCount, sum);
+
+        //repository.findAll().stream().forEach(item -> log.info("item: {}, measured: {}", item.getRoadStationId(), item.getMeasuredTime()));
+        // Check S3 object
 
         ObjectListing list = amazonS3.listObjects(sensorDataS3Properties.getS3BucketName());
 
@@ -127,6 +140,25 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
         Assert.assertNotNull("S3 object not found", s3Object);
 
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(s3Object.getObjectContent().readAllBytes());
+            ZipInputStream in = new ZipInputStream(bis)) {
+            ZipEntry entry = in.getNextEntry();
+
+            log.info("entry {}", entry.getName());
+
+            List<WeatherSensorValueHistoryDto> items = new CsvToBeanBuilder<WeatherSensorValueHistoryDto>(new InputStreamReader(in))
+                .withType(WeatherSensorValueHistoryDto.class)
+                .withSeparator(',')
+                .build()
+                .parse();
+
+            in.closeEntry();
+
+            log.info("Gotta items {}", items);
+        } catch (Exception e) {
+            log.error("zip error:", e);
+            //Assert.fail("failed to process zip: " + objectName);
+        }
         //TODO! Check object is .zip and document is .csv and actual content is readable
     }
 
@@ -138,19 +170,16 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
         cleanBucket();
 
-        // Initial case when bucket is empty
-        Assert.assertFalse("No history update when initial state", writer.updateSensorDataS3History(from));
-
         int minusHours = RandomUtils.nextInt(3, 7);
 
         // Create test file (now - n hours)
         createS3Object(now.minusHours(minusHours));
 
         // Test missing files update
-        Assert.assertTrue("Missing files update failed", writer.updateSensorDataS3History(from));
+        Assert.assertEquals("No history update when initial state", 22, writer.updateSensorDataS3History(from));
 
         // No updates if no missing files
-        Assert.assertFalse("Invalid history update", writer.updateSensorDataS3History(from));
+        Assert.assertEquals("Invalid history update", 0, writer.updateSensorDataS3History(from));
     }
 }
 

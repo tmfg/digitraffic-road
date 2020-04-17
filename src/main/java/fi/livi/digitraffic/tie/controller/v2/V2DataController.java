@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
@@ -129,7 +129,7 @@ public class V2DataController {
     //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
     //@ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
     //               @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter(s)")})
-    public List<SensorValueHistoryDto> weatherDataHistory(
+    public List<WeatherSensorValueHistoryDto> weatherDataHistory(
         @ApiParam(value = "Weather station id", required = true)
         @PathVariable
         final long stationId,
@@ -151,7 +151,7 @@ public class V2DataController {
     //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
     //@ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
     //              @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
-    public List<SensorValueHistoryDto> weatherDataHistory(
+    public List<WeatherSensorValueHistoryDto> weatherDataHistory(
         @ApiParam(value = "Weather Station id", required = true)
         @PathVariable final long stationId,
 

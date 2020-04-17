@@ -7,19 +7,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherStationDto;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.SensorValueHistory;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
@@ -85,7 +88,7 @@ public class WeatherService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueHistoryDto> findWeatherHistoryData(final long stationId, final ZonedDateTime from, final ZonedDateTime to) {
+    public List<WeatherSensorValueHistoryDto> findWeatherHistoryData(final long stationId, final ZonedDateTime from, final ZonedDateTime to) {
         // Map natural id (=statioId) to road_station_id (used in sensor_value_history-table)
         final Optional<Long> road_station_id = roadStationRepository.getRoadStationId(stationId);
 
@@ -94,18 +97,24 @@ public class WeatherService {
         }
 
         if (to == null) {
-            return sensorValueHistoryRepository.findByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(road_station_id.get(), getSinceTime(from));
+            return mapStationId(
+                stationId,
+                sensorValueHistoryRepository.streamAllByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(road_station_id.get(), getSinceTime(from))
+            );
         }
 
         if (from.isAfter(to)) {
             throw new IllegalArgumentException("From > to");
         }
 
-        return sensorValueHistoryRepository.findByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(road_station_id.get(), getSinceTime(from), to);
+        return mapStationId(
+            stationId,
+            sensorValueHistoryRepository.streamAllByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(road_station_id.get(), getSinceTime(from), to)
+        );
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueHistoryDto> findWeatherHistoryData(final long stationId, final long sensorId, final ZonedDateTime since) {
+    public List<WeatherSensorValueHistoryDto> findWeatherHistoryData(final long stationId, final long sensorId, final ZonedDateTime since) {
         // Map natural id (=statioId) to road_station_id (used in sensor_value_history-table)
         final Optional<Long> road_station_id = roadStationRepository.getRoadStationId(stationId);
 
@@ -113,7 +122,19 @@ public class WeatherService {
             return Collections.emptyList();
         }
 
-        return sensorValueHistoryRepository.findByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(road_station_id.get(), sensorId, getSinceTime(since));
+        return mapStationId(
+            stationId,
+            sensorValueHistoryRepository.streamAllByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(road_station_id.get(), sensorId, getSinceTime(since))
+        );
+    }
+
+    private List<WeatherSensorValueHistoryDto> mapStationId(final long mapId, Stream<SensorValueHistory> stream) {
+        return stream
+            .map(obj -> new WeatherSensorValueHistoryDto(mapId,
+                obj.getSensorId(),
+                obj.getSensorValue(),
+                obj.getMeasuredTime()))
+            .collect(Collectors.toList());
     }
 
     private ZonedDateTime getSinceTime(final ZonedDateTime since) {

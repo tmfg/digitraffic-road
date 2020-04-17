@@ -28,21 +28,15 @@ public class SensorDataS3Properties extends S3Properties {
         refTime = time;
     }
 
-    public final String getFileStorageName(final String filename) {
-        return getFileStorageName(refTime, filename);
+    public final String getFileStorageName() {
+        return getFileStorageName(refTime);
     }
 
-    public final String getFileStorageName(final ZonedDateTime time, final String filename) {
-        return time.format(DIRECTORY_DATE_FORMATTER).concat(filename);
+    public final String getFileStorageName(final ZonedDateTime time) {
+        return time.format(DIRECTORY_DATE_FORMATTER).concat(getFilename(time, ZIP));
     }
 
-    public final String getFilename() {
-        return  getFilename(refTime,"");
-    }
-
-    public final String getFilename(final String suffix) {
-        return getFilename(refTime, suffix);
-    }
+    public final String getFilename(final String suffix) { return getFilename(refTime, suffix); }
 
     public final String getFilename(final ZonedDateTime time, final String suffix) {
         return time.format(FILE_DATE_FORMATTER)

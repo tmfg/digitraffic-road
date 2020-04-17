@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.time.ZonedDateTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -17,14 +16,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 
 import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.SensorValueHistory;
 
@@ -34,7 +34,7 @@ public class SensorDataS3Writer {
     private static final Logger log = LoggerFactory.getLogger(SensorDataS3Writer.class);
 
     private static final String CSV_HEADER = "RoadStationId;SensorId;SensorValue;MeasuredTime;TimeWindowStart;TimeWindowEnd\n";
-
+    private static final String NOT_FOUND = "404";
     private static final int BUFFER_SIZE = 65536;
 
     private final RoadStationService roadStationService;
@@ -54,40 +54,40 @@ public class SensorDataS3Writer {
         this.s3Client = sensorDataS3Client;
     }
 
-    public boolean updateSensorDataS3History(final ZonedDateTime currentTimeWindow) {
-        boolean historyUpdated = false;
+    public int updateSensorDataS3History(final ZonedDateTime currentTimeWindow) {
+        int historyUpdatedCount = 0;
 
-        // Get last modified
-        Optional<S3ObjectSummary> latest = s3Client.listObjectsV2(s3Properties.getS3BucketName()).getObjectSummaries()
-            .stream()
-            //.peek(System.out::println)
-            .max((o1, o2) -> o1.getLastModified().compareTo(o2.getLastModified()));
+        // Get 24h-window and loop through
+        ZonedDateTime windowLoop = currentTimeWindow.minusHours(23);
 
-        if (latest.isPresent() && s3Properties.isValidHistoryFile(latest.get().getKey())) {
-            ZonedDateTime nextTimeWindow = s3Properties.getHistoryStartTime(latest.get().getKey()).plusHours(1);
+        while (windowLoop.isBefore(currentTimeWindow)) {
+            try {
+                ObjectMetadata meta = s3Client.getObjectMetadata(s3Properties.getS3BucketName(), s3Properties.getFileStorageName(windowLoop));
+            } catch (AmazonS3Exception s3Exception) {
+                if (s3Exception.getErrorCode().startsWith(NOT_FOUND)) {
+                    log.warn("Missing history item: {} - {}", windowLoop, windowLoop.plusHours(1));
 
-            log.info("compare last item {} to new {}", nextTimeWindow, currentTimeWindow);
+                    try {
+                        writeSensorData(windowLoop, windowLoop.plusHours(1));
 
-            while (nextTimeWindow.isBefore(currentTimeWindow)) {
-                historyUpdated = true;
-
-                log.warn("Missing history item: {} - {}", nextTimeWindow, nextTimeWindow.plusHours(1));
-
-                try {
-                    writeSensorData(nextTimeWindow, nextTimeWindow.plusHours(1));
-                } catch (Exception e) {
-                    log.error("Failed to fix missing history: " + nextTimeWindow, e);
+                        historyUpdatedCount++;
+                    } catch (Exception e) {
+                        log.error("Failed to fix missing history: " + windowLoop, e);
+                    }
                 }
-
-                // Move to next hour
-                nextTimeWindow = nextTimeWindow.plusHours(1);
+            } catch (Exception e) {
+                log.warn("Unexpected error", e);
             }
+
+            windowLoop = windowLoop.plusHours(1);
         }
 
-        return historyUpdated;
+        log.info("Fixed {} missing history items", historyUpdatedCount);
+
+        return historyUpdatedCount;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public int writeSensorData(final ZonedDateTime from, final ZonedDateTime to) {
         // Set current time window start
         s3Properties.setRefTime(from);
@@ -107,7 +107,7 @@ public class SensorDataS3Writer {
             zos.putNextEntry(new ZipEntry(s3Properties.getFilename(SensorDataS3Properties.CSV)));
 
             // csv-builder
-            StatefulBeanToCsv csvWriter = new StatefulBeanToCsvBuilder<SensorValueHistory>(osw)
+            StatefulBeanToCsv csvWriter = new StatefulBeanToCsvBuilder<WeatherSensorValueHistoryDto>(osw)
                 .withSeparator(';')
                 .withApplyQuotesToAll(false)
                 .build();
@@ -116,7 +116,10 @@ public class SensorDataS3Writer {
                 .map(item -> {
                     counter.getAndIncrement();
 
-                    return mapNaturalId(item);
+                    return new WeatherSensorValueHistoryDto(mapNaturalId(item),
+                        item.getSensorId(),
+                        item.getSensorValue(),
+                        item.getMeasuredTime());
                 })
              );
 
@@ -126,19 +129,19 @@ public class SensorDataS3Writer {
 
             final InputStream inputStream = bos.toInputStream();
 
-            final String fileName = s3Properties.getFilename(SensorDataS3Properties.ZIP);
+            final String fileName = s3Properties.getFileStorageName();
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("application/zip");
             metadata.setContentLength(bos.size());
 
             // Write to S3
-            s3Client.putObject(s3Properties.getS3BucketName(), s3Properties.getFileStorageName(fileName), inputStream, metadata);
+            s3Client.putObject(s3Properties.getS3BucketName(), fileName, inputStream, metadata);
 
             // Local copy-to-file hack
             //FileUtils.copyInputStreamToFile(inputStream, new File(fileName));
 
-            log.info("Collected addCount={} , window {} - {} , file {}", counter.get(), from, to, s3Properties.getFileStorageName(fileName));
+            log.info("Collected addCount={} , window {} - {} , file {}", counter.get(), from, to, fileName);
 
             return counter.get();
         } catch (Exception e) {
@@ -148,11 +151,9 @@ public class SensorDataS3Writer {
         return -1;
     }
 
-    private SensorValueHistory mapNaturalId(SensorValueHistory item) {
+    private long mapNaturalId(SensorValueHistory item) {
         Long id = maps.get(item.getRoadStationId());
 
-        item.setRoadStationId(id != null ? id : -1);
-
-        return item;
+        return id != null ? id : -1;
     }
 }

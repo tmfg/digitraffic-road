@@ -7,13 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
 
-import com.opencsv.bean.CsvBindByPosition;
-import com.opencsv.bean.CsvDate;
-
 @Entity
+@Immutable
+@DynamicUpdate(false)
 public class SensorValueHistory {
     @Id
     @GenericGenerator(name = "SEQ_SENSOR_VALUE_HISTORY", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
@@ -21,30 +22,21 @@ public class SensorValueHistory {
     @GeneratedValue(generator = "SEQ_SENSOR_VALUE_HISTORY")
     private Long id;
 
-    @CsvBindByPosition(position = 0, required = true)
     @Column(name = "road_station_id")
     private Long roadStationId;
 
-    @CsvBindByPosition(position = 1, required = true)
     @Column(name = "road_station_sensor_id")
     private Long sensorId;
 
-    @CsvBindByPosition(position = 2, required = true)
     @Column(name = "value")
     private Double sensorValue;
 
-    @CsvBindByPosition(position = 3, required = true)
-    @CsvDate("yyyy-MM-dd HH:mm:ss\'Z\'")
     @Column(name = "measured")
     private ZonedDateTime measuredTime;
 
-    @CsvBindByPosition(position = 4)
-    @CsvDate("yyyy-MM-dd HH:mm:ss\'Z\'")
     @Column(name = "time_window_start")
     private ZonedDateTime timeWindowStart;
 
-    @CsvBindByPosition(position = 5)
-    @CsvDate("yyyy-MM-dd HH:mm:ss\'Z\'")
     @Column(name = "time_window_end")
     private ZonedDateTime timeWindowEnd;
 

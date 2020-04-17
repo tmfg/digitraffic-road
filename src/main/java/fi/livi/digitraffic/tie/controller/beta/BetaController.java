@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 
-import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
@@ -275,7 +275,7 @@ public class BetaController {
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
                    @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter(s)")})
-    public List<SensorValueHistoryDto> weatherDataHistory(
+    public List<WeatherSensorValueHistoryDto> weatherDataHistory(
         @ApiParam(value = "Weather station id", required = true)
         @PathVariable
         final long stationId,
@@ -297,7 +297,7 @@ public class BetaController {
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
                   @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
-    public List<SensorValueHistoryDto> weatherDataHistory(
+    public List<WeatherSensorValueHistoryDto> weatherDataHistory(
         @ApiParam(value = "Weather Station id", required = true)
         @PathVariable final long stationId,
 
