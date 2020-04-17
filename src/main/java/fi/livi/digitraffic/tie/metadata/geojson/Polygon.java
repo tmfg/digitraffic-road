@@ -27,7 +27,7 @@ public class Polygon extends Geometry<List<List<Double>>> {
     }
 
     @ApiModelProperty(required = true, position = 2, example = "[ [ [100.00000000, 0.00000000], [101.00000000, 1.00000000] ], [ [102.00000000, 2.00000000], [103.00000000, 3.00000000] ] ]",
-                      value = "An array of LineString coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, dataType = "List")
+                      value = "An array of LinearRing coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, dataType = "List")
     @Override
     public List<List<List<Double>>> getCoordinates() {
         return super.getCoordinates();
