@@ -86,6 +86,27 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     }
 
     @Test
+    public void assertNoWorkMachineIdInResult() throws Exception {
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final int machineCount = getRandomId(2, 10);
+        final int observationCount = 10;
+        final List<Tyokone> workMachines = createWorkMachines(machineCount);
+
+        testHelper.saveTrackingData( // end time will be start+9 min
+            createMaintenanceTrackingWithPoints(now, observationCount, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_PAIKKAUS));
+        testHelper.handleUnhandledWorkMachineTrackings();
+
+        // First tracking
+        getTrackingsJson(
+            now.toInstant(), now.plusMinutes(9).toInstant(), new HashSet<>(),
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(machineCount)))
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
+    }
+
+    @Test
     public void findMaintenanceTrackingsWithinTime() throws Exception {
         final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
         final int machineCount = getRandomId(2, 10);
@@ -241,6 +262,5 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(0)));
-
     }
 }

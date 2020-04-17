@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "GeoJSON Feature Object.", value = "MaintenanceRealizationFeature")
-@JsonPropertyOrder({ "type", "id", "geometry", "properties" })
+@JsonPropertyOrder({ "type", "properties", "geometry" })
 public class MaintenanceTrackingFeature implements Feature<Geometry> {
 
     @ApiModelProperty(value = "GeoJSON Point or LineString Geometry Object containing route point(s)", required = true, position = 3)

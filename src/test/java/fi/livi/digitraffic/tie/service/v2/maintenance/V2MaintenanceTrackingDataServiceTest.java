@@ -144,6 +144,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
 
         // Generate 5 different tracking with different tasks for each machine
+        // Each machine successive trackings will bombine next tracking first point as previous tracking last point
         IntStream.range(0, 5).forEach(idx -> {
             final ZonedDateTime start = startTime.plusMinutes(idx*10);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
@@ -169,9 +170,9 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         // Find with tasks
         IntStream.range(0, 5).forEach(idx -> {
-            final ZonedDateTime endTime = startTime.plusMinutes(idx*10+9); // 10 observations end time is 9 min after first
+            final ZonedDateTime endTime = startTime.plusMinutes(idx*10+10); // 10 observations end time is 10 min after first
             final List<MaintenanceTrackingFeature> features =
-                findMaintenanceTrackings(endTime, endTime, getTaskWithIndex(idx)).features;
+                findMaintenanceTrackings(startTime, endTime, getTaskWithIndex(idx)).features;
             assertCollectionSize(machineCount, features);
             features.stream().forEach(f -> assertEquals(getTaskSetWithIndex(idx), f.getProperties().tasks));
         });
@@ -214,11 +215,11 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
 
         // 2 tracking should be made as they have different jobs
-        final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+9)).features;
+        final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+10)).features;
         assertCollectionSize(2, features);
 
         // Only the latest one should be found
-        final List<MaintenanceTrackingFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+9)).features;
+        final List<MaintenanceTrackingFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+10)).features;
         assertCollectionSize(1, latestFeatures);
         assertEquals(startTime.plusMinutes(10+10+9), latestFeatures.get(0).getProperties().endTime);
         assertAllHasOnlyPointGeometries(latestFeatures);

@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_X_MAX;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_X_MIN;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MAX;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MIN;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Ignore;
@@ -23,6 +27,15 @@ public class CoordinateConverterTest {
     @Ignore
     @Test
     public void justConvertForTesting() {
-        System.out.println(CoordinateConverter.convertFromETRS89ToWGS84(new Point(339803.0, 6818579.0)));
+        convertFromWGS84ToETRS89(339803.0, 6818579.0);
+        convertFromWGS84ToETRS89(RANGE_X_MIN, RANGE_Y_MIN);
+        convertFromWGS84ToETRS89(RANGE_X_MAX, RANGE_Y_MAX);
+    }
+
+    private void convertFromWGS84ToETRS89(double x, double y) {
+        final Point from = new Point(x, y);
+        final Point to = CoordinateConverter.convertFromWGS84ToETRS89(from);
+        System.out.println("From: " + from + "\nTo:   " + to);
+
     }
 }
