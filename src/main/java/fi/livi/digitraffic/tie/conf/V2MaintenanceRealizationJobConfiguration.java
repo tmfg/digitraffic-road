@@ -44,6 +44,7 @@ public class V2MaintenanceRealizationJobConfiguration {
                 count = maintenanceUpdateService.handleUnhandledRealizations(100);
                 totalCount += count;
                 log.info("method=handleUnhandledMaintenanceRealizations handledCount={} trackings", count);
+                lockingService.unlock(LOCK_NAME);
             } else {
                 log.error("method=handleUnhandledMaintenanceRealizations didn't get lock for updating realization data.");
             }
