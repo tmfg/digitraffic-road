@@ -24,6 +24,9 @@ import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestProperties;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingProperties;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -60,10 +63,10 @@ public class V2MaintenanceTrackingDataService {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeatureCollection findLatestMaintenanceTrackings(final Instant endTimefrom, final Instant endTimeto,
-                                                                               final double xMin, final double yMin,
-                                                                               final double xMax, final double yMax,
-                                                                               final List<MaintenanceTrackingTask> taskIds) {
+    public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final Instant endTimefrom, final Instant endTimeto,
+                                                                                     final double xMin, final double yMin,
+                                                                                     final double xMax, final double yMax,
+                                                                                     final List<MaintenanceTrackingTask> taskIds) {
         final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA));
         final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA_CHECKED));
 
@@ -77,8 +80,8 @@ public class V2MaintenanceTrackingDataService {
                                                     .findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, taskIds);
         log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
-        final List<MaintenanceTrackingFeature> features = convertToTrackingFeatures(found, true);
-        return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
+        final List<MaintenanceTrackingLatestFeature> features = convertToTrackingLatestFeatures(found);
+        return new MaintenanceTrackingLatestFeatureCollection(lastUpdated, lastChecked, features);
     }
 
     @Transactional(readOnly = true)
@@ -119,15 +122,15 @@ public class V2MaintenanceTrackingDataService {
         }).collect(Collectors.toList());
     }
 
-    /**
-     *
-     * @param trackings to convert
-     * @param latestPointGeometry if true then only the latest point will be returned as the geometry
-     * @return
-     */
     private List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTracking> trackings, final boolean latestPointGeometry) {
         return trackings.stream().map(r -> {
             return convertToTrackingFeature(r, latestPointGeometry);
+        }).collect(Collectors.toList());
+    }
+
+    private List<MaintenanceTrackingLatestFeature> convertToTrackingLatestFeatures(final List<MaintenanceTracking> trackings) {
+        return trackings.stream().map(r -> {
+            return convertToTrackingLatestFeature(r);
         }).collect(Collectors.toList());
     }
 
@@ -143,6 +146,14 @@ public class V2MaintenanceTrackingDataService {
         return new MaintenanceTrackingFeature(geometry, properties);
     }
 
+    private MaintenanceTrackingLatestFeature convertToTrackingLatestFeature(final MaintenanceTracking tracking) {
+        final Geometry geometry = convertToGeoJSONGeometry(tracking, true);
+        final MaintenanceTrackingLatestProperties properties =
+            new MaintenanceTrackingLatestProperties(tracking.getId(),
+                                                    toZonedDateTimeAtUtc(tracking.getEndTime()),
+                                                    tracking.getTasks(), tracking.getDirection());
+        return new MaintenanceTrackingLatestFeature(geometry, properties);
+    }
     /**
      *
      * @param tracking

@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "MaintenanceTrackingProperties", description = "Maintenance tracking properties")
 public class MaintenanceTrackingProperties {
 
-    @ApiModelProperty(value = "If for the realization", required = true)
+    @ApiModelProperty(value = "Id for the tracking", required = true)
     public Long id;
 
     // "Value is not allowe to share to public"

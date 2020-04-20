@@ -43,6 +43,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCate
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingTaskDto;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
@@ -182,7 +183,7 @@ public class BetaController {
     @ApiOperation(value = "Road maintenance tracking data latest points")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
-    public MaintenanceTrackingFeatureCollection findLatestMaintenanceTrackings(
+    public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
         @ApiParam(value = "Return realizations which have completed after the given time. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
         @RequestParam(required = false)
