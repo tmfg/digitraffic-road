@@ -365,7 +365,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Ignore("Just for internal testing")
     @Rollback(false)
     @Test
-    public void handleUnhandledRealizations() throws IOException {
-        final long count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(1000);
+    public void handleUnhandledMaintenanceTrackingData() {
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(1000);
     }
 }
