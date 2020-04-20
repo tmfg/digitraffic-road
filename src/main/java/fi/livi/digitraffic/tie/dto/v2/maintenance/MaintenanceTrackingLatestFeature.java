@@ -14,7 +14,7 @@ public class MaintenanceTrackingLatestFeature implements Feature<Geometry> {
     @ApiModelProperty(value = "GeoJSON Point or LineString Geometry Object containing route point(s)", required = true, position = 3)
     private Geometry geometry;
 
-    @ApiModelProperty(value = "Camera preset properties.", required = true, position = 4)
+    @ApiModelProperty(value = "Latest tracking properties.", required = true, position = 4)
     private final MaintenanceTrackingLatestProperties properties;
 
     public MaintenanceTrackingLatestFeature(final Geometry geometry, final MaintenanceTrackingLatestProperties properties) {

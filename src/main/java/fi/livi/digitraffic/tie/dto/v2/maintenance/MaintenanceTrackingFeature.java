@@ -14,7 +14,7 @@ public class MaintenanceTrackingFeature implements Feature<Geometry> {
     @ApiModelProperty(value = "GeoJSON Point or LineString Geometry Object containing route point(s)", required = true, position = 3)
     private Geometry geometry;
 
-    @ApiModelProperty(value = "Camera preset properties.", required = true, position = 4)
+    @ApiModelProperty(value = "Tracking properties.", required = true, position = 4)
     private final MaintenanceTrackingProperties properties;
 
     public MaintenanceTrackingFeature(final Geometry geometry, final MaintenanceTrackingProperties properties) {
