@@ -26,18 +26,32 @@ public class CoordinateConverterTest {
         assertEquals(TAMPERE_WGS84_Y, wgs84.getLatitude(), ALLOWED_DELTA);
     }
 
-    @Ignore
+//    @Ignore
     @Test
     public void justConvertForTesting() {
-        convertFromWGS84ToETRS89(339803.0, 6818579.0);
-        convertFromWGS84ToETRS89(RANGE_X_MIN, RANGE_Y_MIN);
-        convertFromWGS84ToETRS89(RANGE_X_MAX, RANGE_Y_MAX);
+//        "x": 634398.1651863062,
+//        "y": 7312655.557650042
+//        "x": 622822.4029474625,
+//        "y": 7319670.451404192
+        convertFromETRS89ToWGS84(622822.4029474625, 7319670.451404192);
+//        29.708601000030114, seuraava koordinaatti
+//            65.97316400076167,
+        convertFromWGS84ToETRS89(29.708601000030114, 65.97316400076167);
+//        convertFromWGS84ToETRS89(RANGE_X_MIN, RANGE_Y_MIN);
+//        convertFromWGS84ToETRS89(RANGE_X_MAX, RANGE_Y_MAX);
     }
 
     private void convertFromWGS84ToETRS89(double x, double y) {
         final Point from = new Point(x, y);
         final Point to = CoordinateConverter.convertFromWGS84ToETRS89(from);
-        System.out.println("From: " + from + "\nTo:   " + to);
+        System.out.println("From: " + from + " (WGS84)\nTo:   " + to + " (ETRS89)");
+
+    }
+
+    private void convertFromETRS89ToWGS84(double x, double y) {
+        final Point from = new Point(x, y);
+        final Point to = CoordinateConverter.convertFromETRS89ToWGS84(from);
+        System.out.println("From: " + from +  " (ETRS89)\nTo:   " + to + " (WGS84)");
 
     }
 }

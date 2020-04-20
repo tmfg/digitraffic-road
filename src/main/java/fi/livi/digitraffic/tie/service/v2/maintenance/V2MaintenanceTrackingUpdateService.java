@@ -128,7 +128,7 @@ public class V2MaintenanceTrackingUpdateService {
 
 
     private void handleRoute(final Havainto havainto,
-                             final MaintenanceTrackingData trackingData, String sendingSystem, ZonedDateTime sendingTime) {
+                             final MaintenanceTrackingData trackingData, final String sendingSystem, final ZonedDateTime sendingTime) {
 
         final Geometry geometry = resolveGeometry(havainto.getSijainti());
         if (geometry != null && !geometry.isEmpty()) {
@@ -168,8 +168,20 @@ public class V2MaintenanceTrackingUpdateService {
                 v2MaintenanceTrackingRepository.save(created);
             } else {
                 previousTracking.appendGeometry(geometry, harjaObservationTime, getDirection(havainto, trackingData.getId()));
+                logLastPointDistanceIfOver10Km(previousTracking.getLineString(), geometry, trackingData.getId());
                 previousTracking.addWorkMachineTrackingData(trackingData);
             }
+        }
+    }
+
+    private void logLastPointDistanceIfOver10Km(final LineString lineString, final Geometry geometryAppended, final Long trackingDataId) {
+        // Just debugging to find out cause of jumps
+        final Point end = lineString.getEndPoint();
+        final Point endPrev = lineString.getPointN(lineString.getNumPoints() - 2);
+        final double distanceKm = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(endPrev, end);
+        if (distanceKm > 10) {
+            log.error("method=debugLastPointDistance Last point distance is more than 10 km. LineString: {}, end point: {}, appended end geometry: {}, trackingDataId: {}",
+                lineString.toString(), end.toString(), geometryAppended, trackingDataId);
         }
     }
 

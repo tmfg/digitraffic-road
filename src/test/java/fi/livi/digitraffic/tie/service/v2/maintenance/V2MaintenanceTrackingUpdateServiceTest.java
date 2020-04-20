@@ -23,6 +23,7 @@ import java.util.stream.LongStream;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -358,5 +360,12 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertEquals(first.getEndTime(), transitionHavainto.getHavaintoaika());
         assertEquals(first.getLineString().getEndPoint().getX(), transitionFirstPoint.getLongitude(), 0.01);
         assertEquals(first.getLineString().getEndPoint().getY(), transitionFirstPoint.getLatitude(), 0.01);
+    }
+
+    @Ignore("Just for testing")
+    @Rollback(false)
+    @Test
+    public void handleUnhandledMaintenanceTrackingData() {
+        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(1000);
     }
 }
