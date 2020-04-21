@@ -185,12 +185,12 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-        @ApiParam(value = "Return realizations which have completed after the given time. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
+        @ApiParam(value = "Return realizations which have completed after the given time. Default is -24h from now.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from,
 
-        @ApiParam(value = "Return realizations which have completed before the given time. Default is now.", defaultValue = "2020-01-01T13:00Z")
+        @ApiParam(value = "Return realizations which have completed before the given time. Default is now.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to,
@@ -241,12 +241,12 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return realizations which have completed after the given time. Default is -1h from now.", defaultValue = "2020-01-01T12:00Z")
+        @ApiParam(value = "Return realizations which have completed after the given time. Default is -24h from now.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from,
 
-        @ApiParam(value = "Return realizations which have completed before the given time. Default is now.", defaultValue = "2020-01-01T13:00Z")
+        @ApiParam(value = "Return realizations which have completed before the given time. Default is now.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to,
