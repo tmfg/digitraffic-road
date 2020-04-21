@@ -40,7 +40,7 @@ public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
 
     @Test
     public void historyMaintenance() {
-        when(roadStationRepository.getRoadStationId(10)).thenReturn(Optional.of(10L));
+        when(roadStationRepository.findByRoadStationId(10)).thenReturn(Optional.of(10L));
 
         // Populate db
         SensorValueHistoryBuilder builder = new SensorValueHistoryBuilder(repository, log)

@@ -88,17 +88,17 @@ public class WeatherService {
     }
 
     @Transactional(readOnly = true)
-    public List<WeatherSensorValueHistoryDto> findWeatherHistoryData(final long stationId, final ZonedDateTime from, final ZonedDateTime to) {
-        // Map natural id (=statioId) to road_station_id (used in sensor_value_history-table)
-        final Optional<Long> road_station_id = roadStationRepository.getRoadStationId(stationId);
+    public List<WeatherSensorValueHistoryDto> findWeatherHistoryData(final long roadStationNaturalId, final ZonedDateTime from, final ZonedDateTime to) {
+        // Map roadStationNaturalId to road_station-table id (same id is used in sensor_value_history-table)
+        final Optional<Long> road_station_id = roadStationRepository.findByRoadStationId(roadStationNaturalId);
 
         if (!road_station_id.isPresent()) {
             return Collections.emptyList();
         }
 
         if (to == null) {
-            return mapStationId(
-                stationId,
+            return mapToNaturalId(
+                roadStationNaturalId,
                 sensorValueHistoryRepository.streamAllByRoadStationIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(road_station_id.get(), getSinceTime(from))
             );
         }
@@ -111,28 +111,31 @@ public class WeatherService {
             throw new IllegalArgumentException("From > to");
         }
 
-        return mapStationId(
-            stationId,
+        return mapToNaturalId(
+            roadStationNaturalId,
             sensorValueHistoryRepository.streamAllByRoadStationIdAndMeasuredTimeBetweenOrderByMeasuredTimeAsc(road_station_id.get(), getSinceTime(from), to)
         );
     }
 
     @Transactional(readOnly = true)
-    public List<WeatherSensorValueHistoryDto> findWeatherHistoryData(final long stationId, final long sensorId, final ZonedDateTime since) {
-        // Map natural id (=statioId) to road_station_id (used in sensor_value_history-table)
-        final Optional<Long> road_station_id = roadStationRepository.getRoadStationId(stationId);
+    public List<WeatherSensorValueHistoryDto> findWeatherHistoryData(final long roadStationNaturalId, final long sensorId, final ZonedDateTime since) {
+        // Map roadStationNaturalId to road_station-table id (same id is used in sensor_value_history-table)
+        final Optional<Long> road_station_id = roadStationRepository.findByRoadStationId(roadStationNaturalId);
 
         if (!road_station_id.isPresent()) {
             return Collections.emptyList();
         }
 
-        return mapStationId(
-            stationId,
+        return mapToNaturalId(
+            roadStationNaturalId,
             sensorValueHistoryRepository.streamAllByRoadStationIdAndAndSensorIdAndMeasuredTimeIsGreaterThanOrderByMeasuredTimeAsc(road_station_id.get(), sensorId, getSinceTime(since))
         );
     }
 
-    private List<WeatherSensorValueHistoryDto> mapStationId(final long mapId, Stream<SensorValueHistory> stream) {
+    /**
+     * road_station_id is used only internally -> map back to natural id
+     */
+    private List<WeatherSensorValueHistoryDto> mapToNaturalId(final long mapId, Stream<SensorValueHistory> stream) {
         return stream
             .map(obj -> new WeatherSensorValueHistoryDto(mapId,
                 obj.getSensorId(),

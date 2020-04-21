@@ -83,6 +83,7 @@ public class SensorDataUpdateService {
     public int updateLamData(final List<Lam> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
 
+        // From road_station-table: <lotju_id, id>
         final Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.TMS_STATION);
 
         final long initialDataRowCount = data.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();

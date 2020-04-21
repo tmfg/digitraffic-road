@@ -39,5 +39,5 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
     @Query("SELECT rs.id\n" +
                "FROM RoadStation rs\n" +
                "WHERE rs.naturalId = :naturalId")
-    Optional<Long> getRoadStationId(@Param("naturalId") final long naturalId);
+    Optional<Long> findByRoadStationId(@Param("naturalId") final long naturalId);
 }

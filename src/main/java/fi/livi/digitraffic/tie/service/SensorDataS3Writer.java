@@ -3,7 +3,10 @@ package fi.livi.digitraffic.tie.service;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -42,7 +45,8 @@ public class SensorDataS3Writer {
     private final SensorDataS3Properties s3Properties;
     private final AmazonS3 s3Client;
 
-    private Map<Long, Long> maps;
+    // <road_station_id, natural_id>
+    private Map<Long, Long> roadStationNaturalIdMaps;
 
     public SensorDataS3Writer(final RoadStationService roadStationService,
                               final SensorValueHistoryRepository repository,
@@ -54,37 +58,44 @@ public class SensorDataS3Writer {
         this.s3Client = sensorDataS3Client;
     }
 
-    public int updateSensorDataS3History(final ZonedDateTime currentTimeWindow) {
-        int historyUpdatedCount = 0;
+    public boolean updateSensorDataS3History(final ZonedDateTime currentTimeWindow) {
+        final AtomicBoolean fixedHistoryItems = new AtomicBoolean(false);
 
-        // Get 24h-window and loop through
+        // Do 24h-window and loop through
         ZonedDateTime windowLoop = currentTimeWindow.minusHours(23);
+
+        // Missing time windows
+        List<ZonedDateTime> missingWindows = new ArrayList<>();
 
         while (windowLoop.isBefore(currentTimeWindow)) {
             try {
-                ObjectMetadata meta = s3Client.getObjectMetadata(s3Properties.getS3BucketName(), s3Properties.getFileStorageName(windowLoop));
+                s3Client.getObjectMetadata(s3Properties.getS3BucketName(), s3Properties.getFileStorageName(windowLoop));
             } catch (AmazonS3Exception s3Exception) {
                 if (s3Exception.getErrorCode().startsWith(NOT_FOUND)) {
-                    log.warn("Missing history item: {} - {}", windowLoop, windowLoop.plusHours(1));
+                    log.warn("Found missing history item: {} - {}", windowLoop, windowLoop.plusHours(1));
 
-                    try {
-                        writeSensorData(windowLoop, windowLoop.plusHours(1));
-
-                        historyUpdatedCount++;
-                    } catch (Exception e) {
-                        log.error("Failed to fix missing history: " + windowLoop, e);
-                    }
+                    missingWindows.add(windowLoop);
                 }
             } catch (Exception e) {
-                log.warn("Unexpected error", e);
+                log.warn("Unexpected error with aws/s3", e);
             }
 
             windowLoop = windowLoop.plusHours(1);
         }
 
-        log.info("Fixed {} missing history items", historyUpdatedCount);
+        missingWindows.forEach(missingWindow -> {
+            try {
+                log.info("Fix {} missing history item", missingWindow);
 
-        return historyUpdatedCount;
+                writeSensorData(missingWindow, missingWindow.plusHours(1));
+
+                fixedHistoryItems.set(true);
+            } catch (Exception e) {
+                log.error("Failed to fix missing history: " + missingWindow, e);
+            }
+        });
+
+        return fixedHistoryItems.get();
     }
 
     @Transactional(readOnly = true)
@@ -92,8 +103,9 @@ public class SensorDataS3Writer {
         // Set current time window start
         s3Properties.setRefTime(from);
 
-        // Get road_station_id -> natural_id mappings. NOTE! Only weather stations
-        maps = roadStationService.getNaturalIdMappings(RoadStationType.WEATHER_STATION);
+        // Sensor values are stored using internal road_station_id from road_station-table. But API uses natural road_station ids ->
+        // Map internal road_station_id to naturalId from road_station-table
+        roadStationNaturalIdMaps = roadStationService.getNaturalIdMappings(RoadStationType.WEATHER_STATION);
 
         // Just collecting log data
         final AtomicInteger counter = new AtomicInteger(0);
@@ -116,7 +128,8 @@ public class SensorDataS3Writer {
                 .map(item -> {
                     counter.getAndIncrement();
 
-                    return new WeatherSensorValueHistoryDto(mapNaturalId(item),
+                    // Internal road_station_id must be mapped back to road_station's natural_id (API uses natural ids)
+                    return new WeatherSensorValueHistoryDto(mapToNaturalId(item),
                         item.getSensorId(),
                         item.getSensorValue(),
                         item.getMeasuredTime());
@@ -151,9 +164,10 @@ public class SensorDataS3Writer {
         return -1;
     }
 
-    private long mapNaturalId(SensorValueHistory item) {
-        Long id = maps.get(item.getRoadStationId());
+    private long mapToNaturalId(SensorValueHistory item) {
+        Long naturalId = roadStationNaturalIdMaps.get(item.getRoadStationId());
 
-        return id != null ? id : -1;
+        // NOTE! -1 is just for fail safe
+        return naturalId != null ? naturalId : -1;
     }
 }

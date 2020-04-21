@@ -57,7 +57,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
 
     @Before
     public void roadStationMock() {
-        when(roadStationRepository.getRoadStationId(anyLong())).thenAnswer(new Answer() {
+        when(roadStationRepository.findByRoadStationId(anyLong())).thenAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Object[] args = invocationOnMock.getArguments();

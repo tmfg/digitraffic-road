@@ -25,8 +25,8 @@ public class WeatherHistoryUpdateJob extends SimpleUpdateJob {
         final ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
         final ZonedDateTime from = to.minusHours(1);
 
-        //final ZonedDateTime to = now.truncatedTo(ChronoUnit.MINUTES);
-        //final ZonedDateTime from = to.minusMinutes(5);
+        // Check missing history items. NOTE! DISABLED
+        //sensorDataS3Writer.updateSensorDataS3History(from);
 
         log.info("Storing sensor history to S3, time window {} - {}", from, to);
 

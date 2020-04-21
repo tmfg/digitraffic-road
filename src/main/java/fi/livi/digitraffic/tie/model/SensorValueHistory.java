@@ -22,6 +22,7 @@ public class SensorValueHistory {
     @GeneratedValue(generator = "SEQ_SENSOR_VALUE_HISTORY")
     private Long id;
 
+    // NOTE! roadStationId = id from road_station-table
     @Column(name = "road_station_id")
     private Long roadStationId;
 
