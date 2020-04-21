@@ -30,9 +30,4 @@ import io.swagger.annotations.ApiModelProperty;
     public List<List<Double>> getCoordinates() {
         return super.getCoordinates();
     }
-
-    @Override
-    public String toString() {
-        return ToStringHelper.toStringFull(this );
-    }
 }

@@ -13,7 +13,6 @@ import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverter;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
-import fi.livi.digitraffic.tie.dao.v1.workmachine.WorkMachineObservationDao;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -51,7 +50,7 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
           ObjectMapper.class,
 
           // daos
-          TmsSensorConstantDao.class, WorkMachineObservationDao.class,
+          TmsSensorConstantDao.class,
 
           // configurations
           AmazonS3ClientTestConfiguration.class, WeathercamS3Config.class

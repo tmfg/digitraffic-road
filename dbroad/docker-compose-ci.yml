@@ -7,7 +7,7 @@ networks:
 
 services:
   db:
-    image: postgres:9.6.12-alpine
+    image: postgres:10.12-alpine
     restart: always
     environment:
       POSTGRES_USER: road

@@ -60,7 +60,7 @@ public class V2MaintenanceRealizationUpdateService {
                                                  final ObjectMapper objectMapper,
                                                  final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
                                                  final DataStatusService dataStatusService,
-                                                 @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
+                                                 @Value("${workmachine.realization.distinct.observation.gap.minutes}")
                                                  final int distinctObservationGapMinutes) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2RealizationDataRepository = v2RealizationDataRepository;
@@ -72,17 +72,22 @@ public class V2MaintenanceRealizationUpdateService {
     }
 
     @Transactional
-    public void saveNewWorkMachineRealization(final Long jobId, final ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus) throws JsonProcessingException {
-        final String json = jsonWriter.writeValueAsString(reittitoteumanKirjaus);
-        MaintenanceRealizationData realization = new MaintenanceRealizationData(jobId, json);
-        v2RealizationDataRepository.save(realization);
-        log.debug("method=saveWorkMachineRealizationData jsonData={}", json);
+    public void saveMaintenanceRealizationData(final Long jobId, final ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus) throws JsonProcessingException {
+        try {
+            final String json = jsonWriter.writeValueAsString(reittitoteumanKirjaus);
+            final MaintenanceRealizationData realization = new MaintenanceRealizationData(jobId, json);
+            v2RealizationDataRepository.save(realization);
+            log.debug("method=saveMaintenanceRealizationData jsonData={}", json);
+        } catch (Exception e) {
+            log.error("method=saveRealizationData failed ", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
     public long handleUnhandledRealizations(int maxToHandle) {
         final Stream<MaintenanceRealizationData> data = v2RealizationDataRepository.findUnhandled(maxToHandle);
-        final long count = data.filter(this::handleWorkMachineRealization).count();
+        final long count = data.filter(this::handleMaintenanceRealization).count();
         if (count > 0) {
             dataStatusService.updateDataUpdated(DataType.MAINTENANCE_REALIZATION_DATA);
         }
@@ -90,10 +95,9 @@ public class V2MaintenanceRealizationUpdateService {
         return count;
     }
 
-    private boolean handleWorkMachineRealization(final MaintenanceRealizationData wmrd) {
-        final ReittitoteumanKirjausRequestSchema kirjaus;
+    private boolean handleMaintenanceRealization(final MaintenanceRealizationData wmrd) {
         try {
-            kirjaus = jsonReader.readValue(wmrd.getJson());
+            final ReittitoteumanKirjausRequestSchema kirjaus = jsonReader.readValue(wmrd.getJson());
 
             // Message info
             final String sendingSystem = kirjaus.getOtsikko().getLahettaja().getJarjestelma();
@@ -114,6 +118,7 @@ public class V2MaintenanceRealizationUpdateService {
         } catch (Exception e) {
             log.error(String.format("HandleUnhandledRealizations failed for id %d", wmrd.getId()), e);
             wmrd.updateStatusToError();
+            wmrd.appendHandlingInfo(e.toString());
             return false;
         }
 
@@ -157,19 +162,20 @@ public class V2MaintenanceRealizationUpdateService {
         if (!nextIsSameOrAfter || !timeGapInsideTheLimit) {
             log.info("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {}, timeGapInsideTheLimit: {}", previousCoordinateTime, nextCoordinateTime, nextIsSameOrAfter, timeGapInsideTheLimit);
         }
-        return  nextIsSameOrAfter && timeGapInsideTheLimit;
+        // FIXME: DPO-631 Temporally disabled the check of time gap between points to see what is real data quality
+        // return  nextIsSameOrAfter && timeGapInsideTheLimit;
+        return nextIsSameOrAfter;
     }
 
     private void saveRealizationIfContainsValidLineString(final V2MaintenanceRealizationDataHolder holder) {
         if (holder.isValidLineString()) {
-
             final MaintenanceRealization realization = creteRealization(holder);
             v2RealizationRepository.save(realization);
             log.info("Saved MaintenanceRealization with {} coordinates", realization.getLineString().getNumPoints());
         } else if (holder.containsCoordinateData()){
             final String msg = String.format("RealizationData id %d invalid LineString size %d last coordinateIndex %d",
                 holder.getRealizationData().getId(), holder.getCoordinates().size(), holder.getCoordinateIndex());
-            log.error(msg);
+            log.warn(msg);
             holder.getRealizationData().appendHandlingInfo(msg);
         }
     }

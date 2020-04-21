@@ -27,9 +27,14 @@ public abstract class SimpleUpdateJob extends AbstractUpdateJob {
 
         stopWatch.stop();
 
-        log.info("Quartz jobName={} end jobEndStatus={} jobTimeMs={} last error: {} {}",
-                 jobName, lastError == null ? "SUCCESS" : "FAIL", stopWatch.getTime(),
-                 lastError != null ? lastError.getClass() : null,  lastError != null ? lastError.getMessage() : "");
+        if (lastError != null) {
+            log.info("Quartz jobName={} end jobEndStatus={} jobTimeMs={} lastError: {} {}",
+                     jobName, lastError == null ? "SUCCESS" : "FAIL", stopWatch.getTime(),
+                     lastError != null ? lastError.getClass() : null, lastError != null ? lastError.getMessage() : "");
+        } else {
+            log.info("Quartz jobName={} end jobEndStatus={} jobTimeMs={}",
+                     jobName, lastError == null ? "SUCCESS" : "FAIL", stopWatch.getTime());
+        }
     }
 
     protected abstract void doExecute(final JobExecutionContext context) throws Exception;

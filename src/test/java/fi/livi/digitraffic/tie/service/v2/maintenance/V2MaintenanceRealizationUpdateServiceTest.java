@@ -4,12 +4,13 @@ import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizatio
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData.Status.HANDLED;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.REALIZATIONS_8_TASKS_2_PATH;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.SINGLE_REALISATIONS_3_TASKS_PATH;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -46,8 +47,6 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     @Before
     public void init() {
         testHelper.clearDb();
-        realizationRepository.deleteAllInBatch();
-        realizationDataRepository.deleteAllInBatch();
     }
 
     @Test
@@ -55,8 +54,8 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         testHelper.initializeSingleRealisations3Tasks();
         final String formattedRealisationJSon = testHelper.getFormatedRealizationJson(SINGLE_REALISATIONS_3_TASKS_PATH);
         final List<MaintenanceRealizationData> data = realizationDataRepository.findAll();
-        Assert.assertEquals(1, data.size());
-        Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
+        assertEquals(1, data.size());
+        assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
 
     @Test
@@ -65,8 +64,8 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
 
         final String formattedRealisationJSon = testHelper.getFormatedRealizationJson(REALIZATIONS_8_TASKS_2_PATH);
         final List<MaintenanceRealizationData> data = realizationDataRepository.findAll();
-        Assert.assertEquals(1, data.size());
-        Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
+        assertEquals(1, data.size());
+        assertEquals(formattedRealisationJSon, data.get(0).getJson());
     }
 
     @Test
@@ -76,13 +75,13 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         testHelper.initialize8Realisations2Tasks();
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(2, count);
+        assertEquals(2, count);
 
         final List<MaintenanceRealizationData> data = realizationDataRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(3, data.size());
-        Assert.assertEquals(HANDLED, data.get(0).getStatus());
-        Assert.assertEquals(ERROR, data.get(1).getStatus());
-        Assert.assertEquals(HANDLED, data.get(2).getStatus());
+        assertEquals(3, data.size());
+        assertEquals(HANDLED, data.get(0).getStatus());
+        assertEquals(ERROR, data.get(1).getStatus());
+        assertEquals(HANDLED, data.get(2).getStatus());
     }
 
     @Test
@@ -93,12 +92,12 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         testHelper.initializeSingleRealisations3Tasks();
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(1, count);
+        assertEquals(1, count);
         testHelper.flushAndClearSession();
 
         // Check the handled data
         final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(3, all.size());
+        assertEquals(3, all.size());
         final MaintenanceRealization first = all.get(0);
         final MaintenanceRealization second = all.get(1);
         final MaintenanceRealization third = all.get(2);
@@ -119,12 +118,12 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         testHelper.initialize8Realisations2Tasks();
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(1, count);
+        assertEquals(1, count);
         testHelper.flushAndClearSession();
 
         // Check the handled data
         final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(8, all.size());
+        assertEquals(8, all.size());
         IntStream.range(0,2).forEach(i ->
         {
             final MaintenanceRealization r = all.get(i);
@@ -146,12 +145,12 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
         testHelper.initializeSingleRealisations3TasksWithTransitAndPoint();
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(1, count);
+        assertEquals(1, count);
         testHelper.flushAndClearSession();
 
         // Check the handled data
         final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(2, all.size());
+        assertEquals(2, all.size());
         final MaintenanceRealization first = all.get(0);
         final MaintenanceRealization second = all.get(1);
 
@@ -163,17 +162,30 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     }
 
     @Test
-    public void handleUnhandledWorkMachineRealizationsWithError() throws IOException {
+    public void handleUnhandledWorkMachineRealizationsWithInvalidJson() throws IOException {
         testHelper.initializeSingleRealisations3TasksWithIllegalJson();
 
         // Double check we have right data in db
-        Assert.assertEquals(1, realizationDataRepository.findUnhandled(100).count());
+        assertEquals(1, realizationDataRepository.findUnhandled(100).count());
 
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(0, count);
+        assertEquals(0, count);
         final List<MaintenanceRealizationData> all = realizationDataRepository.findAll();
-        Assert.assertEquals(1, all.size());
-        Assert.assertEquals(ERROR, all.get(0).getStatus());
+        assertEquals(1, all.size());
+        final MaintenanceRealizationData data = all.get(0);
+        assertEquals(ERROR, data.getStatus());
+        assertTrue(data.getHandlingInfo().contains("Cannot deserialize instance of"));
+    }
+
+    @Test
+    public void handleUnhandledWorkMachineRealizationsSinglePointContainsHandlingInfo() throws IOException {
+        // Contain single point that is not valid linestring -> should be in handling info
+        testHelper.initializeSingleRealisations3TasksWithTransitAndPoint();
+
+        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
+        final MaintenanceRealizationData data = realizationDataRepository.findAll().get(0);
+        log.error(data.getHandlingInfo());
+        assertTrue(data.getHandlingInfo().contains("invalid LineString size 1"));
     }
 
     @Ignore("Just for internal testing")

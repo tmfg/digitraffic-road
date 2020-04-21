@@ -51,11 +51,10 @@ import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
-import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangesDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
@@ -509,19 +508,19 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
             final ZonedDateTime changedOn = allAfter.get(index).getModified();
             log.info("Find changes from index {}/{} change to {} on {}", index, historySize, changeTo, changedOn);
 
-            final List<PresetHistoryChangesDto> changesAfter =
+            final List<PresetHistoryChangeDto> changesAfter =
                 cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn, Collections.singletonList(cp1.getPresetId()))
                     .changes;
             final CameraHistoryChangesDto changesBeforeDto =
                 cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn.minusSeconds(1), Collections.singletonList(cp1.getPresetId()));
-            final List<PresetHistoryChangesDto> changesBefore = changesBeforeDto.changes;
+            final List<PresetHistoryChangeDto> changesBefore = changesBeforeDto.changes;
 
 
             // When fetching changes before and after change, there should be one more change in former
             assertEquals(changesAfter.size() + 1, changesBefore.size());
             assertCollectionSize(changesCount, changesBefore);
 
-            final PresetHistoryChangesDto oldestChange = changesBefore.get(0);
+            final PresetHistoryChangeDto oldestChange = changesBefore.get(0);
             log.info("Found {} change to {}, lastModified on {} and modified on {}",
                      oldestChange.getPresetId(), oldestChange.getPublishableTo(), oldestChange.getLastModified(), oldestChange.getModified());
             // First change in result should match change status
@@ -592,7 +591,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final int historySize = RandomUtils.nextInt(40, 80);
         // handle possible gap between server and db times
         final ZonedDateTime lastModified = getZonedDateTimeNowAtUtcWithoutMillis().plusSeconds(10);
-        // History for 39 hours backwards
+        // History for historySize-1 hours backwards
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         final List<CameraHistoryDto> history = cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
         final long presetCount = history.get(0).cameraHistory.stream().map(PresetHistoryDto::getPresetId).distinct().count();
@@ -628,10 +627,21 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
     }
 
+    /**
+     * Generates camera preset history for one camera. Last one timestamp will be
+     * lastModified - (historySize-1) hours.
+     * @param historySize How many history items to generate
+     * @param lastModified Latest history item lastModified time. Others will have times with 1h decrement of previous.
+     * @return Camera id
+     */
     private String generateHistoryForCamera(final int historySize, final ZonedDateTime lastModified) {
-        final Map.Entry<String, List<CameraPreset>> camera = cameraPresetService.findAllPublishableCameraPresets().stream()
-            .collect(Collectors.groupingBy(CameraPreset::getCameraId))
-            .entrySet().stream().filter(e -> e.getValue().size() > 1).findFirst().get();
+        final List<Map.Entry<String, List<CameraPreset>>> all =
+            cameraPresetService.findAllPublishableCameraPresets().stream()
+                .collect(Collectors.groupingBy(CameraPreset::getCameraId))
+                .entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toList());
+        // Get random camera
+        final Map.Entry<String, List<CameraPreset>> camera =
+            all.stream().skip((int) (all.size() * Math.random())).findAny().get();
 
         camera.getValue().forEach(cameraPreset -> IntStream.range(0,historySize)
             .forEach(i -> generateHistory(cameraPreset, lastModified.minusHours(i))));

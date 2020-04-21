@@ -81,9 +81,4 @@ public class Point extends Geometry<Double> implements Serializable {
         }
         return null;
     }
-
-    @Override
-    public String toString() {
-        return ToStringHelper.toStringFull(this);
-    }
 }

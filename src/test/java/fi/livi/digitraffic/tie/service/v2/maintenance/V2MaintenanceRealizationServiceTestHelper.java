@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
-import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData.Status.ERROR;
-import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceRealizationData.Status.HANDLED;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
@@ -21,10 +19,8 @@ import javax.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -92,8 +88,8 @@ public class V2MaintenanceRealizationServiceTestHelper {
         Pair.of(5677, "Liikenneympäristön hoito - Ei yksilöity")
     };
 
-    public final static Instant SINGLE_REALISATIONS_3_TASKS_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:28:16Z").toInstant();
-    public final static Instant REALIZATIONS_8_TASKS_2_SENDING_TIME = ZonedDateTime.parse("2020-01-13T12:15:42Z").toInstant();
+    public final static Instant SINGLE_REALISATIONS_3_TASKS_END_TIME = ZonedDateTime.parse("2020-01-13T10:48:47Z").toInstant();
+    public final static Instant REALIZATIONS_8_TASKS_2_END_TIME = ZonedDateTime.parse("2020-01-13T12:06:55Z").toInstant();
 
     /*  SINGLE_REALISATIONS_3_TASKS should have following points for realization with task 12911L, 1368L
            WGS84                 ETRS-TM35FIN
@@ -131,130 +127,6 @@ public class V2MaintenanceRealizationServiceTestHelper {
     public void clearDb() {
         realizationRepository.deleteAllInBatch();
         realizationDataRepository.deleteAllInBatch();
-    }
-
-    @Test
-    public void saveNewWorkMachineRealizationSingleRealizationEqualsOriginal() throws IOException {
-        initializeSingleRealisations3Tasks();
-
-        final String formattedRealisationJSon = getFormatedRealizationJson(SINGLE_REALISATIONS_3_TASKS_PATH);
-        final List<MaintenanceRealizationData> data = realizationDataRepository.findAll();
-        Assert.assertEquals(1, data.size());
-        Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
-    }
-
-    @Test
-    public void saveNewWorkMachineRealizationMultipleRealization() throws IOException {
-        initialize8Realisations2Tasks();
-
-        final String formattedRealisationJSon = getFormatedRealizationJson(REALIZATIONS_8_TASKS_2_PATH);
-        final List<MaintenanceRealizationData> data = realizationDataRepository.findAll();
-        Assert.assertEquals(1, data.size());
-        Assert.assertEquals(formattedRealisationJSon, data.get(0).getJson());
-    }
-
-    @Test
-    public void handleUnhandledWorkMachineRealizations() throws IOException {
-        initialize8Realisations2Tasks();
-        initializeSingleRealisations3TasksWithIllegalJson();
-        initialize8Realisations2Tasks();
-
-        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(2, count);
-
-        final List<MaintenanceRealizationData> data = realizationDataRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(3, data.size());
-        Assert.assertEquals(HANDLED, data.get(0).getStatus());
-        Assert.assertEquals(ERROR, data.get(1).getStatus());
-        Assert.assertEquals(HANDLED, data.get(2).getStatus());
-    }
-
-    @Test
-    public void handleUnhandledWorkMachineRealizationsResultsWithSingleRealization() throws IOException {
-        // 1. Realization: 3 points - Tasks: 12911, 1368
-        // 2. Realization: 4 points - Tasks: 1368
-        // 3. Realization: 2 points - Tasks: 12911
-        initializeSingleRealisations3Tasks();
-
-        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(1, count);
-        flushAndClearSession();
-
-        // Check the handled data
-        final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(3, all.size());
-        final MaintenanceRealization first = all.get(0);
-        final MaintenanceRealization second = all.get(1);
-        final MaintenanceRealization third = all.get(2);
-
-        checkContainsOnlyTasksWithIds(first, 12911, 1368);
-        checkContainsOnlyTasksWithIds(second, 1368);
-        checkContainsOnlyTasksWithIds(third, 12911);
-
-        checkCoordinateCount(first, 3);
-        checkCoordinateCount(second, 4);
-        checkCoordinateCount(third, 2);
-    }
-
-    @Test
-    public void handleUnhandledWorkMachineRealizationsResultsWithMultipleRealization() throws IOException {
-        // 1. Realization: 4 points - Tasks: 2864
-        // 2. Realization: 12 points - Tasks: 1370
-        initialize8Realisations2Tasks();
-
-        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(1, count);
-        flushAndClearSession();
-
-        // Check the handled data
-        final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(2, all.size());
-        final MaintenanceRealization first = all.get(0);
-        final MaintenanceRealization second = all.get(1);
-
-        checkContainsOnlyTasksWithIds(first, 2864);
-        checkContainsOnlyTasksWithIds(second, 1370);
-
-        checkCoordinateCount(first, 4);
-        checkCoordinateCount(second, 12);
-    }
-
-    @Test
-    public void handleUnhandledWorkMachineRealizationsResultsWithTransitAndSinglePoint() throws IOException {
-        // 1. Realization: 2 points - Tasks: 12911, 1368
-        // 2. Realization: 3 points - Tasks: 1368
-        // 3. Realization: 1points - Tasks: 12911 -> should not be saved
-        initializeSingleRealisations3TasksWithTransitAndPoint();
-
-        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(1, count);
-        flushAndClearSession();
-
-        // Check the handled data
-        final List<MaintenanceRealization> all = realizationRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(2, all.size());
-        final MaintenanceRealization first = all.get(0);
-        final MaintenanceRealization second = all.get(1);
-
-        checkContainsOnlyTasksWithIds(first, 12911, 1368);
-        checkContainsOnlyTasksWithIds(second, 1368);
-
-        checkCoordinateCount(first, 2);
-        checkCoordinateCount(second, 3);
-    }
-
-    @Test
-    public void handleUnhandledWorkMachineRealizationsWithError() throws IOException {
-        initializeSingleRealisations3TasksWithIllegalJson();
-
-        // Double check we have right data in db
-        Assert.assertEquals(1, realizationDataRepository.findUnhandled(100).count());
-
-        final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
-        Assert.assertEquals(0, count);
-        final List<MaintenanceRealizationData> all = realizationDataRepository.findAll();
-        Assert.assertEquals(1, all.size());
-        Assert.assertEquals(ERROR, all.get(0).getStatus());
     }
 
     public void checkCoordinateCount(final MaintenanceRealization realization, final int count) {
@@ -300,7 +172,6 @@ public class V2MaintenanceRealizationServiceTestHelper {
         final String jsonSingleRealisationWith3TasksTransitAndPoint =
             readResourceContent(SINGLE_REALISATIONS_3_TASKS_WITH_TRANSIT_AND_POINT_PATH);
         saveRealizationAsPlainText(jsonSingleRealisationWith3TasksTransitAndPoint);
-
     }
 
     /**
@@ -314,7 +185,7 @@ public class V2MaintenanceRealizationServiceTestHelper {
     public void generateSingleRealisationsWithTasksAndSingleRoute(final int countOfDifferentRealizations, final ZonedDateTime startTime)
         throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema toteuma = createReittitoteumanKirjaus(countOfDifferentRealizations, startTime);
-        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, toteuma);
+        maintenanceRealizationUpdateService.saveMaintenanceRealizationData(123L, toteuma);
     }
 
     /**
@@ -322,13 +193,13 @@ public class V2MaintenanceRealizationServiceTestHelper {
      * (Data in JSON reittitoteumat-property not in reittitoteuma)
      *
      * @param countOfDifferentRealizations how many realizations with different tasks
-     * @param startTime
+     * @param endTime
      * @throws JsonProcessingException
      */
-    public void generateSingleRealisationWithTasksAndMultipleRoutes(final int countOfDifferentRealizations, final ZonedDateTime startTime)
+    public void generateSingleRealisationWithTasksAndMultipleRoutes(final int countOfDifferentRealizations, final ZonedDateTime endTime)
         throws JsonProcessingException {
-        final ReittitoteumanKirjausRequestSchema toteuma = createReittitoteumatKirjaus(countOfDifferentRealizations, startTime);
-        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, toteuma);
+        final ReittitoteumanKirjausRequestSchema toteuma = createReittitoteumatKirjaus(countOfDifferentRealizations, endTime);
+        maintenanceRealizationUpdateService.saveMaintenanceRealizationData(123L, toteuma);
     }
 
     private ReittitoteumanKirjausRequestSchema createReittitoteumanKirjaus(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
@@ -338,10 +209,9 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
     }
 
-    private ReittitoteumanKirjausRequestSchema createReittitoteumatKirjaus(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
-        ReittitoteumaSchema reittitoteuma = createReittitoteuma(countOfDifferentRealizations, startTime);
+    private ReittitoteumanKirjausRequestSchema createReittitoteumatKirjaus(final int countOfDifferentRealizations, final ZonedDateTime endTime) {
+        ReittitoteumaSchema reittitoteuma = createReittitoteuma(countOfDifferentRealizations, endTime);
         final List<ReittiSchema> reitti = reittitoteuma.getReitti();
-        int coordinateCount = reitti.size();
 
         List<ReittitoteumatSchema> reittitoteumat =
             IntStream.range(0, countOfDifferentRealizations*2)
@@ -353,21 +223,21 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
                 return new ReittitoteumatSchema(
                     new ReittitoteumaSchema(
-                        createToteuma(countOfDifferentRealizations, startTime),
+                        createToteuma(countOfDifferentRealizations, endTime),
                         Arrays.asList(reitti1, reitti2),
                         reittitoteuma.getTyokone()));
             }).collect(Collectors.toList());
 
         return new ReittitoteumanKirjausRequestSchema(
-            createOtsikko(startTime),
+            createOtsikko(endTime),
             null, reittitoteumat);
 
 
     }
 
-    private ReittitoteumaSchema createReittitoteuma(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
+    private ReittitoteumaSchema createReittitoteuma(final int countOfDifferentRealizations, final ZonedDateTime endTime) {
         return new ReittitoteumaSchema(
-            createToteuma(countOfDifferentRealizations, startTime), createReitti(countOfDifferentRealizations, startTime), createTyokone());
+            createToteuma(countOfDifferentRealizations, endTime), createReitti(countOfDifferentRealizations, endTime), createTyokone());
     }
 
     private TyokoneSchema createTyokone() {
@@ -382,8 +252,9 @@ public class V2MaintenanceRealizationServiceTestHelper {
     }
 
     private List<ReittiSchema> createReittiWithTaskIdx(final int idx, final ZonedDateTime startTime) {
-        return IntStream.range(0, 100).mapToObj(i -> {
-
+        return IntStream.range(0, 100)
+            .map(i -> 99 - i) // reverse order
+            .mapToObj(i -> {
             // x = 19.0 to 28.99... and y = 59.0 to 68.99...
             final double xLongitude = 19.0 + idx + (i + 1) * 0.1;
             final double yLatitude = 59.0 + idx + (i + 1) * 0.1;
@@ -395,7 +266,7 @@ public class V2MaintenanceRealizationServiceTestHelper {
 
             return new ReittiSchema(
                 new Reittipiste(
-                    startTime.plusSeconds(i * 10),
+                    startTime.minusSeconds(i * 10),
                     koordinaattisjainti,
                     Arrays.asList(createTehtava(idx), createTehtava(idx + 1)),
                     Collections.emptyList(), Collections.emptyList(), null));
@@ -403,11 +274,15 @@ public class V2MaintenanceRealizationServiceTestHelper {
         .collect(Collectors.toList());
     }
 
+    public static ZonedDateTime getGeneratedNewestEndTimeWithEndTime(final ZonedDateTime end) {
+        return end.minusSeconds(99 * 10);
+    }
+
     public static final String COMPANY = "Tie huolto Oy";
     public static final String COMPANY_ID = "8561566-0";
-    private ToteumaSchema createToteuma(final int countOfDifferentRealizations, final ZonedDateTime startTime) {
+    private ToteumaSchema createToteuma(final int countOfDifferentRealizations, final ZonedDateTime endTime) {
         return new ToteumaSchema(
-            new TunnisteSchema(321), 1, startTime, startTime.plusSeconds(99*10),
+            new TunnisteSchema(321), 1, getGeneratedNewestEndTimeWithEndTime(endTime), endTime,
             new Suorittaja(COMPANY, COMPANY_ID), ToteumaSchema.Toteumatyyppi.KOKONAISHINTAINEN,
             createTehtavat(countOfDifferentRealizations), Collections.emptyList());
     }
@@ -433,9 +308,19 @@ public class V2MaintenanceRealizationServiceTestHelper {
         return writer.writeValueAsString(reader.readValue(readResourceContent(realizationJsonPath)));
     }
 
+    public void checkValidJson(final String json) {
+        // Test reading as object and then back to json
+        try {
+            writer.writeValueAsString(reader.readValue(json));
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+    }
+
     private void saveRealizationAsJson(final String realisationJSon) throws JsonProcessingException {
         final ReittitoteumanKirjausRequestSchema realization = reader.readValue(realisationJSon);
-        maintenanceRealizationUpdateService.saveNewWorkMachineRealization(123L, realization);
+        maintenanceRealizationUpdateService.saveMaintenanceRealizationData(123L, realization);
     }
 
     public void flushAndClearSession() {

@@ -53,7 +53,7 @@ public class MaintenanceRealizationData {
     private ZonedDateTime modified;
 
     @OneToMany(mappedBy = "realizationData", fetch = FetchType.LAZY)
-    private Set<MaintenanceRealization> realizationData;
+    private Set<MaintenanceRealization> realizations;
 
     @Column
     private String handlingInfo;
@@ -81,6 +81,14 @@ public class MaintenanceRealizationData {
 
     public Status getStatus() {
         return status;
+    }
+
+    public Set<MaintenanceRealization> getRealizations() {
+        return realizations;
+    }
+
+    public String getHandlingInfo() {
+        return handlingInfo;
     }
 
     public void updateStatusToHandled() {

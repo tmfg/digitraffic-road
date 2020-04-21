@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>road</artifactId>
-    <version>2.27.0</version>
+    <version>2.28.0</version>
     <packaging>jar</packaging>
 
     <name>dt-road</name>
@@ -28,7 +28,10 @@
         <java.version>11</java.version>
         <maven.compiler.release>11</maven.compiler.release>
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
-        <jackson.dataformat.version>2.10.1</jackson.dataformat.version>
+        <jackson.dataformat.version>2.10.3</jackson.dataformat.version>
+        <com.google.protobuf.version>3.11.4</com.google.protobuf.version>
+        <org.apache.cxf.version>3.3.6</org.apache.cxf.version>
+        <org.apache.sshd.version>2.4.0</org.apache.sshd.version>
     </properties>
 
     <repositories>
@@ -141,34 +144,34 @@
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
-            <version>1.2.4.RELEASE</version>
+            <version>1.2.5.RELEASE</version>
         </dependency>
 
         <!-- google protobuf -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.10.0</version>
+            <version>${com.google.protobuf.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
-            <version>3.10.0</version>
+            <version>${com.google.protobuf.version}</version>
         </dependency>
 
         <!-- Helpers and others -->
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-ri</artifactId>
-            <version>2.3.2</version>
+            <version>2.3.2-1</version>
             <type>pom</type>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.9</version>
+            <version>3.10</version>
         </dependency>
 
         <dependency>
@@ -180,7 +183,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.10</version>
+            <version>4.5.12</version>
         </dependency>
 
         <dependency>
@@ -223,14 +226,14 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.5.22</version>
+            <version>1.6.1</version>
         </dependency>
 
         <!-- https://github.com/springfox/springfox/issues/2265 -->
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-models</artifactId>
-            <version>1.5.22</version>
+            <version>1.6.1</version>
         </dependency>
 
         <!-- Static Reader of META-INF/MANIFEST.MF Files -->
@@ -243,7 +246,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.8</version>
+            <version>42.2.12</version>
         </dependency>
 
         <dependency>
@@ -254,7 +257,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.1-jre</version>
+            <version>28.2-jre</version>
         </dependency>
 
         <!-- Sonic JMS Library -->
@@ -279,7 +282,8 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>4.6</version>
+            <version>5.1</version>
+<!--            <version>5.1</version>-->
         </dependency>
 
         <!-- Proj4J is a Java library to transform point coordinates from one geographic coordinate system to another, including datum transformations. -->
@@ -305,7 +309,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.688</version>
+            <version>1.11.758</version>
         </dependency>
 
         <dependency>
@@ -331,56 +335,31 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
-            <version>3.3.4</version>
+            <version>${org.apache.cxf.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>3.3.4</version>
+            <version>${org.apache.cxf.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
-            <version>3.3.4</version>
+            <version>${org.apache.cxf.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.25.1</version>
+            <version>2.26.3</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.sshd/sshd-core -->
-        <dependency>
-            <groupId>org.apache.sshd</groupId>
-            <artifactId>sshd-common</artifactId>
-            <version>2.2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sshd</groupId>
-            <artifactId>sshd-core</artifactId>
-            <version>2.2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sshd</groupId>
-            <artifactId>sshd-sftp</artifactId>
-            <version>2.2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sshd</groupId>
-            <artifactId>sshd-scp</artifactId>
-            <version>2.2.0</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>xyz.fabiano</groupId>
             <artifactId>spring-localstack</artifactId>
@@ -399,6 +378,15 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <rulesUri>file:///${project.basedir}/versions-maven-plugin-rules.xml</rulesUri>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.openclover</groupId>
                 <artifactId>clover-maven-plugin</artifactId>

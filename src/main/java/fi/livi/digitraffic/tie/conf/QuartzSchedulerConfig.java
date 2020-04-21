@@ -123,7 +123,7 @@ public class QuartzSchedulerConfig {
                     for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
                         if (!jobKeys.contains(jobKey)) {
                             try {
-                                log.error("Deleting job={}", jobKey);
+                                log.warn("Deleting job={}", jobKey);
                                 scheduler.deleteJob(jobKey);
                             } catch (SchedulerException e) {
                                 log.error("Deleting job=" + jobKey + " failed", e);

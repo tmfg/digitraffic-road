@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceRealizationRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTaskRepository;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeature;
@@ -40,14 +44,19 @@ public class V2MaintenanceRealizationDataService {
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceRealizationDataService.class);
     private final V2MaintenanceRealizationRepository v2RealizationRepository;
     private final V2MaintenanceTaskRepository v2MaintenanceTaskRepository;
+    private final V2MaintenanceRealizationDataRepository v2MaintenanceRealizationDataRepository;
     private final DataStatusService dataStatusService;
+
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     public V2MaintenanceRealizationDataService(final V2MaintenanceRealizationRepository v2RealizationRepository,
                                                final V2MaintenanceTaskRepository v2MaintenanceTaskRepository,
+                                               final V2MaintenanceRealizationDataRepository v2MaintenanceRealizationDataRepository,
                                                final DataStatusService dataStatusService) {
         this.v2RealizationRepository = v2RealizationRepository;
         this.v2MaintenanceTaskRepository = v2MaintenanceTaskRepository;
+        this.v2MaintenanceRealizationDataRepository = v2MaintenanceRealizationDataRepository;
         this.dataStatusService = dataStatusService;
     }
 
@@ -67,8 +76,18 @@ public class V2MaintenanceRealizationDataService {
             v2RealizationRepository.findByAgeAndBoundingBoxAndTaskIds(toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), area, taskIds);
         log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
                  xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(from), toZonedDateTimeAtUtc(to), found.size(), start.getTime());
-        final List<MaintenanceRealizationFeature> features = convertToFeatures(found);
+        final List<MaintenanceRealizationFeature> features = convertToRealizationFeatures(found);
         return new MaintenanceRealizationFeatureCollection(lastUpdated, lastChecked, features);
+    }
+
+    @Transactional(readOnly = true)
+    public JsonNode findRealizationDataJsonByRealizationId(final long realizationId) {
+        final String json = v2MaintenanceRealizationDataRepository.findJsonByRealizationId(realizationId);
+        try {
+            return objectMapper.readTree(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -87,11 +106,10 @@ public class V2MaintenanceRealizationDataService {
         return v2MaintenanceTaskRepository.findAllCategoriesOrderById();
     }
 
-    private List<MaintenanceRealizationFeature> convertToFeatures(final List<MaintenanceRealization> all) {
+    private List<MaintenanceRealizationFeature> convertToRealizationFeatures(final List<MaintenanceRealization> all) {
         return all.stream().map(r -> {
-
                 final Set<Long> taskIds = convertToMaintenanceRealizationTaskIds(r.getTasks());
-                final List<List<Double>> coordinates = convertToCoordinates(r.getLineString());
+                final List<List<Double>> coordinates = PostgisGeometryHelper.convertToGeoJSONGeometryCoordinates(r.getLineString());
                 final MaintenanceRealizationProperties properties =
                     new MaintenanceRealizationProperties(r.getId(),
                                                          toZonedDateTimeAtUtc(r.getSendingTime()),
@@ -103,18 +121,10 @@ public class V2MaintenanceRealizationDataService {
         }).collect(Collectors.toList());
     }
 
-    private List<List<Double>> convertToCoordinates(final org.locationtech.jts.geom.LineString lineString) {
-        return Arrays.stream(lineString.getCoordinates())
-            .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ()))
-            .collect(Collectors.toList());
-    }
-
     private MaintenanceRealizationTask createMaintenanceRealizationTask(MaintenanceTask t) {
         final MaintenanceTaskCategory c = t.getCategory();
         final MaintenanceTaskOperation o = t.getOperation();
-        return new MaintenanceRealizationTask(t.getId(), t.getFi(), t.getSv(), t.getEn(),
-            new MaintenanceRealizationTaskOperation(o.getId(), o.getFi(), o.getSv(), o.getEn()),
-            new MaintenanceRealizationTaskCategory(c.getId(), c.getFi(), c.getSv(), c.getEn()));
+        return new MaintenanceRealizationTask(t.getId(), t.getFi(), t.getSv(), t.getEn(), o.getId(), c.getId());
     }
 
     private Set<Long> convertToMaintenanceRealizationTaskIds(final Set<MaintenanceTask> tasks) {

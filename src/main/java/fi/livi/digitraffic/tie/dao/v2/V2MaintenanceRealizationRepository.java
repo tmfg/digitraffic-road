@@ -20,8 +20,7 @@ public interface V2MaintenanceRealizationRepository extends JpaRepository<Mainte
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
         "SELECT mr FROM #{#entityName} mr\n" +
-        "join mr.tasks task\n" +
-        "WHERE mr.sendingTime BETWEEN :from AND :to\n" +
+        "WHERE mr.endTime BETWEEN :from AND :to\n" +
         "  AND intersects(mr.lineString, :area) = true\n" +
         "ORDER by mr.id")
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
@@ -30,10 +29,15 @@ public interface V2MaintenanceRealizationRepository extends JpaRepository<Mainte
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
         "SELECT mr FROM #{#entityName} mr\n" +
-        "join mr.tasks task\n" +
-        "WHERE mr.sendingTime BETWEEN :from AND :to\n" +
+        "WHERE mr.endTime BETWEEN :from AND :to\n" +
         "  AND intersects(mr.lineString, :area) = true\n" +
-        "  AND task.id in (:taskIds)" +
+        "  AND exists (\n" +
+        "    SELECT r " +
+        "    FROM #{#entityName} r\n" +
+        "    JOIN r.tasks task\n" +
+        "    WHERE r = mr\n" +
+        "      AND task.id in (:taskIds)" +
+        "  )\n" +
         "ORDER by mr.id")
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceRealization> findByAgeAndBoundingBoxAndTaskIds(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<Long> taskIds);

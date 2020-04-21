@@ -19,18 +19,18 @@ public class MaintenanceRealizationTask {
     public final String en;
 
     @ApiModelProperty(value = "Operation id", required = true)
-    public final MaintenanceRealizationTaskOperation operation;
+    public final long operationId;
 
     @ApiModelProperty(value = "Category id", required = true)
-    public final MaintenanceRealizationTaskCategory categoryId;
+    public final long categoryId;
 
     public MaintenanceRealizationTask(final long id, final String fi, final String sv, final String en,
-                                      final MaintenanceRealizationTaskOperation operation, final MaintenanceRealizationTaskCategory categoryId) {
+                                      final long operationId, final long categoryId) {
         this.id = id;
         this.fi = fi;
         this.sv = sv;
         this.en = en;
-        this.operation = operation;
+        this.operationId = operationId;
         this.categoryId = categoryId;
     }
 }

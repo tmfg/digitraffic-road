@@ -33,7 +33,6 @@ public class MultiLineString extends Geometry<List<List<Double>>> {
         return super.getCoordinates();
     }
 
-
     public void addLineString(final List<List<Double>> coordinates) {
         getCoordinates().add(coordinates);
     }

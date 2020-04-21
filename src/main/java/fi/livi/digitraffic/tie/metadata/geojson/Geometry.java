@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -21,9 +22,12 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Point.class, name = "Point"),
     @JsonSubTypes.Type(value = LineString.class, name = "LineString"),
-    @JsonSubTypes.Type(value = MultiLineString.class, name = "MultiLineString")
+    @JsonSubTypes.Type(value = Polygon.class, name = "Polygon"),
+    @JsonSubTypes.Type(value = MultiLineString.class, name = "MultiLineString"),
+    @JsonSubTypes.Type(value = MultiPoint.class, name = "MultiPoint"),
+    @JsonSubTypes.Type(value = MultiPolygon.class, name = "MultiPolygon")
 })
-@ApiModel(description = "GeoJson Point Geometry Object", value = "Geometry")
+@ApiModel(description = "GeoJson Geometry Object", value = "Geometry")
 @JsonPropertyOrder({ "type", "coordinates"})
 public abstract class Geometry<T> implements Serializable {
 
@@ -84,5 +88,10 @@ public abstract class Geometry<T> implements Serializable {
             .append(getType())
             .append(getCoordinates())
             .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringFull(this);
     }
 }
