@@ -57,8 +57,7 @@ public class V2MaintenanceTrackingUpdateService {
     private final ObjectReader jsonReader;
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     private final DataStatusService dataStatusService;
-
-    private final int distinctObservationGapMinutes;
+    private static int distinctObservationGapMinutes;
 
     @Autowired
     public V2MaintenanceTrackingUpdateService(final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository,
@@ -74,7 +73,7 @@ public class V2MaintenanceTrackingUpdateService {
         this.jsonReader = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
         this.dataStatusService = dataStatusService;
-        this.distinctObservationGapMinutes = distinctObservationGapMinutes;
+        V2MaintenanceTrackingUpdateService.distinctObservationGapMinutes = distinctObservationGapMinutes;
     }
 
     @Transactional
@@ -124,8 +123,6 @@ public class V2MaintenanceTrackingUpdateService {
 
         return true;
     }
-
-
 
     private void handleRoute(final Havainto havainto,
                              final MaintenanceTrackingData trackingData, final String sendingSystem, final ZonedDateTime sendingTime) {
@@ -181,7 +178,7 @@ public class V2MaintenanceTrackingUpdateService {
         }
     }
 
-    private BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {
+    private static BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {
         if (havainto.getSuunta() != null) {
             final BigDecimal value = BigDecimal.valueOf(havainto.getSuunta());
             if (value.intValue() > 360 || value.intValue() < 0) {
@@ -193,7 +190,7 @@ public class V2MaintenanceTrackingUpdateService {
         return null;
     }
 
-    private NextObservationStatus resolveNextObservationStatus(final MaintenanceTracking previousTracking, final Havainto havainto) {
+    private static NextObservationStatus resolveNextObservationStatus(final MaintenanceTracking previousTracking, final Havainto havainto) {
 
         final Set<MaintenanceTrackingTask> performedTasks = getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
         final ZonedDateTime harjaObservationTime = havainto.getHavaintoaika();
@@ -218,7 +215,7 @@ public class V2MaintenanceTrackingUpdateService {
         }
     }
 
-    private double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final Havainto nextHavainto) {
+    private static double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final Havainto nextHavainto) {
         final Geometry nextGeometry = resolveGeometry(nextHavainto.getSijainti());
         if (previousTracking != null && nextGeometry != null) {
             final long diffInSeconds = getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(previousTracking, nextHavainto.getHavaintoaika());
@@ -230,7 +227,7 @@ public class V2MaintenanceTrackingUpdateService {
         return 0;
     }
 
-    private long getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime nextCoordinateTime) {
+    private static long getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime nextCoordinateTime) {
         if (previousTracking != null) {
             final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
             return previousCoordinateTime.until(nextCoordinateTime, ChronoUnit.SECONDS);
@@ -238,7 +235,7 @@ public class V2MaintenanceTrackingUpdateService {
         return 0;
     }
 
-    private Set<MaintenanceTrackingTask> getMaintenanceTrackingTasksFromHarjaTasks(List<SuoritettavatTehtavat> harjaTasks) {
+    private static Set<MaintenanceTrackingTask> getMaintenanceTrackingTasksFromHarjaTasks(final List<SuoritettavatTehtavat> harjaTasks) {
         return harjaTasks == null ? null : harjaTasks.stream()
             .map(tehtava -> {
                 final MaintenanceTrackingTask task = MaintenanceTrackingTask.getByharjaEnumName(tehtava.name());
@@ -250,9 +247,9 @@ public class V2MaintenanceTrackingUpdateService {
             .collect(Collectors.toSet());
     }
 
-    private void updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Geometry latestGeometry,
-                                                               final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
-                                                               final boolean appendLatestGeometry) {
+    private static void updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Geometry latestGeometry,
+                                                                      final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
+                                                                      final boolean appendLatestGeometry) {
         if (trackingToFinish != null && !trackingToFinish.isFinished()) {
             if (appendLatestGeometry) {
                 trackingToFinish.appendGeometry(latestGeometry, latestGeometryOservationTime, direction);
@@ -266,7 +263,7 @@ public class V2MaintenanceTrackingUpdateService {
      * @param geometry Must be either Point or LineString
      * @return Point it self or LineString's last point
      */
-    private Point resolveLastPoint(final Geometry geometry) {
+    private static Point resolveLastPoint(final Geometry geometry) {
         if (geometry.getNumPoints() > 1) {
             final LineString lineString = (LineString) geometry;
             return lineString.getEndPoint();
@@ -281,7 +278,7 @@ public class V2MaintenanceTrackingUpdateService {
      * @param sijainti where to read geometry
      * @return either Point or LineString geometry, null if no geometry resolved
      */
-    private Geometry resolveGeometry(final GeometriaSijaintiSchema sijainti) {
+    private static Geometry resolveGeometry(final GeometriaSijaintiSchema sijainti) {
 
         final List<Coordinate> coordinates = resolveCoordinates(sijainti);
         if (coordinates.isEmpty()) {
@@ -294,7 +291,7 @@ public class V2MaintenanceTrackingUpdateService {
 
     }
 
-    private List<Coordinate> resolveCoordinates(final GeometriaSijaintiSchema sijainti) {
+    private static List<Coordinate> resolveCoordinates(final GeometriaSijaintiSchema sijainti) {
         if (sijainti.getViivageometria() != null) {
             final List<List<Object>> lineStringCoords = sijainti.getViivageometria().getCoordinates();
             return lineStringCoords.stream().map(point -> {
@@ -322,7 +319,7 @@ public class V2MaintenanceTrackingUpdateService {
         return Collections.emptyList();
     }
 
-    private boolean isNextCoordinateTimeInsideTheLimitNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
+    private static boolean isNextCoordinateTimeInsideTheLimitNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
         if (previousTracking != null) {
             final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
             // It's allowed for next to be same or after the previous time
@@ -337,7 +334,7 @@ public class V2MaintenanceTrackingUpdateService {
         return false;
     }
 
-    private boolean isNextCoordinateTimeSameOrAfterPreviousNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
+    private static boolean isNextCoordinateTimeSameOrAfterPreviousNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
         if (previousTracking != null) {
             final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
             // It's allowed for next to be same or after the previous time
@@ -366,7 +363,7 @@ public class V2MaintenanceTrackingUpdateService {
         }
     }
 
-    private boolean isTransition(Set<MaintenanceTrackingTask> tehtavat) {
+    private static boolean isTransition(Set<MaintenanceTrackingTask> tehtavat) {
         return tehtavat.isEmpty();
     }
 
