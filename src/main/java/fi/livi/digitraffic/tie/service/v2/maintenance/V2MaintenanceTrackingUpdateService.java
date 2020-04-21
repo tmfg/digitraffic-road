@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -33,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
+import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
@@ -78,7 +78,7 @@ public class V2MaintenanceTrackingUpdateService {
     }
 
     @Transactional
-    public void saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) throws JsonProcessingException {
+    public void saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) {
         try {
             final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
             final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
@@ -128,7 +128,7 @@ public class V2MaintenanceTrackingUpdateService {
 
 
     private void handleRoute(final Havainto havainto,
-                             final MaintenanceTrackingData trackingData, String sendingSystem, ZonedDateTime sendingTime) {
+                             final MaintenanceTrackingData trackingData, final String sendingSystem, final ZonedDateTime sendingTime) {
 
         final Geometry geometry = resolveGeometry(havainto.getSijainti());
         if (geometry != null && !geometry.isEmpty()) {
@@ -145,7 +145,7 @@ public class V2MaintenanceTrackingUpdateService {
             final ZonedDateTime harjaObservationTime = havainto.getHavaintoaika();
 
             if ( status.is(TRANSITION) ) {
-                log.info("WorkMachine tracking in transition");
+                log.debug("method=handleRoute WorkMachine tracking in transition");
                 // Mark found one to finished as the work machine is in transition after that
                 // Append latest point (without the task) to tracking if it's inside time limits.
                 updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, getDirection(havainto, trackingData.getId()), harjaObservationTime, status.isNextInsideLimits());
@@ -168,6 +168,14 @@ public class V2MaintenanceTrackingUpdateService {
                 v2MaintenanceTrackingRepository.save(created);
             } else {
                 previousTracking.appendGeometry(geometry, harjaObservationTime, getDirection(havainto, trackingData.getId()));
+                // Just debugging
+                final LineString resultLs = previousTracking.getLineString();
+                final Point end = resultLs.getEndPoint();
+                final Point endPrev = resultLs.getPointN(resultLs.getNumPoints() - 2);
+                final double dist = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(endPrev, end);
+                if (dist > 20) {
+                    log.error("method=handleRoute Last point over 20 km from previous. Previous: {}, end: {}, data id: {}, havainto.sijainti: {}", endPrev.toString(), end.toString(), trackingData.getId(), havainto.getSijainti().toString());
+                }
                 previousTracking.addWorkMachineTrackingData(trackingData);
             }
         }
@@ -194,7 +202,7 @@ public class V2MaintenanceTrackingUpdateService {
         final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, previousTracking);
 
         final double speedInKmH = resolveSpeedInKmHNullSafe(previousTracking, havainto);
-        final boolean overspeed = speedInKmH >= 120.0;
+        final boolean overspeed = speedInKmH >= 140.0;
 
         if (isTransition(performedTasks)) {
             return new NextObservationStatus(TRANSITION, isNextInsideTheTimeLimit, isNextTimeSameOrAfter, overspeed);
@@ -216,7 +224,7 @@ public class V2MaintenanceTrackingUpdateService {
             final long diffInSeconds = getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(previousTracking, nextHavainto.getHavaintoaika());
             final Point nextPoint = resolveLastPoint(nextGeometry);
             final double speedKmH = PostgisGeometryHelper.speedBetweenWGS84PointsInKmH(previousTracking.getLastPoint(), nextPoint, diffInSeconds);
-            log.debug("Speed {} km/h", speedKmH);
+            log.debug("method=resolveSpeedInKmHNullSafe Speed {} km/h", speedKmH);
             return speedKmH;
         }
         return 0;
@@ -379,10 +387,10 @@ public class V2MaintenanceTrackingUpdateService {
 
     /**
      * Gets reittitoteuma from reittitoteuma or reittitoteumat property
-     * @return
+     * @return havaintos of reittitoteuma
      */
     private static List<Havainto> getHavaintos(final TyokoneenseurannanKirjausRequestSchema kirjaus) {
-        return kirjaus.getHavainnot().stream().map(h -> h.getHavainto()).collect(Collectors.toList());
+        return kirjaus.getHavainnot().stream().map(Havainnot::getHavainto).collect(Collectors.toList());
     }
 
     static class NextObservationStatus {
