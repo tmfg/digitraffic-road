@@ -41,13 +41,21 @@ public class CoordinateConverterTest {
     private final double UTSJOKI_TM35FIN_X = 501504.0;
     private final double UTSJOKI_TM35FIN_Y = 7753845.0;
 
-    private final double ALLOWED_DELTA = 0.00002;
+    private final double ALLOWED_DELTA_WGS84 = 0.00002;
+    private final double ALLOWED_DELTA_TM35FIN = 1.2;
 
     @Test
     public void convertFromETRSToWGS84Values() {
         final Point wgs84 = CoordinateConverter.convertFromETRS89ToWGS84(new Point(TAMPERE_TM35FIN_X, TAMPERE_TM35FIN_Y));
-        assertEquals(TAMPERE_WGS84_X, wgs84.getLongitude(), ALLOWED_DELTA);
-        assertEquals(TAMPERE_WGS84_Y, wgs84.getLatitude(), ALLOWED_DELTA);
+        assertEquals(TAMPERE_WGS84_X, wgs84.getLongitude(), ALLOWED_DELTA_WGS84);
+        assertEquals(TAMPERE_WGS84_Y, wgs84.getLatitude(), ALLOWED_DELTA_WGS84);
+    }
+
+    @Test
+    public void convertFromWGS84ToETRS89Values() {
+        final Point tm35fin = CoordinateConverter.convertFromWGS84ToETRS89(new Point(TAMPERE_WGS84_X, TAMPERE_WGS84_Y));
+        assertEquals(TAMPERE_TM35FIN_X, tm35fin.getLongitude(), ALLOWED_DELTA_TM35FIN);
+        assertEquals(TAMPERE_TM35FIN_Y, tm35fin.getLatitude(), ALLOWED_DELTA_TM35FIN);
     }
 
     @Test
@@ -59,12 +67,16 @@ public class CoordinateConverterTest {
         threads.add(startThread(OULU_TM35FIN_X, OULU_TM35FIN_Y, OULU_WGS84_X, OULU_WGS84_Y, fail));
         threads.add(startThread(UTSJOKI_TM35FIN_X, UTSJOKI_TM35FIN_Y, UTSJOKI_WGS84_X, UTSJOKI_WGS84_Y, fail));
 
+        threads.add(startThread(TAMPERE_TM35FIN_X, TAMPERE_TM35FIN_Y, TAMPERE_WGS84_X, TAMPERE_WGS84_Y, fail));
+        threads.add(startThread(JKL_TM35FIN_X, JKL_TM35FIN_Y, JKL_WGS84_X, JKL_WGS84_Y, fail));
+        threads.add(startThread(OULU_TM35FIN_X, OULU_TM35FIN_Y, OULU_WGS84_X, OULU_WGS84_Y, fail));
+        threads.add(startThread(UTSJOKI_TM35FIN_X, UTSJOKI_TM35FIN_Y, UTSJOKI_WGS84_X, UTSJOKI_WGS84_Y, fail));
+
         while (threads.stream().mapToInt(t -> t.isAlive() ? 1 : 0).sum() > 0) {
             Thread.sleep(100);
         }
         assertFalse(fail.get());
     }
-
 
     private Thread startThread(final double tm35FIN_x, final double tm35FIN_y, final double wgs84_x, final double wgs84_y,
                                final AtomicBoolean fail) {
@@ -74,11 +86,18 @@ public class CoordinateConverterTest {
                 int i = 1;
 
                 while (i < 1001 && !fail.get()) {
-                    final Point tgt = CoordinateConverter.convertFromETRS89ToWGS84(new Point(tm35FIN_x, tm35FIN_y, 0.0));
-                    if ( doubleIsDifferent(wgs84_x, tgt.getX(), ALLOWED_DELTA) ) {
+                    final Point tgtWGS84 = CoordinateConverter.convertFromETRS89ToWGS84(new Point(tm35FIN_x, tm35FIN_y, 0.0));
+                    final Point tgtETRS89 = CoordinateConverter.convertFromWGS84ToETRS89(new Point(wgs84_x, wgs84_y, 0.0));
+                    if ( doubleIsDifferent(wgs84_x, tgtWGS84.getX(), ALLOWED_DELTA_WGS84) ) {
                         fail.set(true);
                     }
-                    if ( doubleIsDifferent(wgs84_y, tgt.getY(), ALLOWED_DELTA) ) {
+                    if ( doubleIsDifferent(wgs84_y, tgtWGS84.getY(), ALLOWED_DELTA_WGS84) ) {
+                        fail.set(true);
+                    }
+                    if ( doubleIsDifferent(tm35FIN_x, tgtETRS89.getX(), ALLOWED_DELTA_TM35FIN) ) {
+                        fail.set(true);
+                    }
+                    if ( doubleIsDifferent(tm35FIN_y, tgtETRS89.getY(), ALLOWED_DELTA_TM35FIN) ) {
                         fail.set(true);
                     }
                     i++;
