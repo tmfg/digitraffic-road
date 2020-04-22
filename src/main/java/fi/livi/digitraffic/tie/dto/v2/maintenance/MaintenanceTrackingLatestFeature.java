@@ -7,17 +7,17 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Object.", value = "MaintenanceTrackingFeature")
+@ApiModel(description = "GeoJSON Feature Object.", value = "MaintenanceTrackingLatestFeature")
 @JsonPropertyOrder({ "type", "properties", "geometry" })
-public class MaintenanceTrackingFeature implements Feature<Geometry> {
+public class MaintenanceTrackingLatestFeature implements Feature<Geometry> {
 
     @ApiModelProperty(value = "GeoJSON Point or LineString Geometry Object containing route point(s)", required = true, position = 3)
     private Geometry geometry;
 
-    @ApiModelProperty(value = "Tracking properties.", required = true, position = 4)
-    private final MaintenanceTrackingProperties properties;
+    @ApiModelProperty(value = "Latest tracking properties.", required = true, position = 4)
+    private final MaintenanceTrackingLatestProperties properties;
 
-    public MaintenanceTrackingFeature(final Geometry geometry, final MaintenanceTrackingProperties properties) {
+    public MaintenanceTrackingLatestFeature(final Geometry geometry, final MaintenanceTrackingLatestProperties properties) {
         this.geometry = geometry;
         this.properties = properties;
     }
@@ -39,7 +39,7 @@ public class MaintenanceTrackingFeature implements Feature<Geometry> {
         this.geometry = geometry;
     }
 
-    public MaintenanceTrackingProperties getProperties() {
+    public MaintenanceTrackingLatestProperties getProperties() {
         return properties;
     }
 }

@@ -14,13 +14,13 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "MaintenanceTrackingProperties", description = "Maintenance tracking properties")
 public class MaintenanceTrackingProperties {
 
-    @ApiModelProperty(value = "If for the realization", required = true)
-    public Long id;
+    @ApiModelProperty(value = "Id for the tracking", required = true)
+    public final long id;
 
     // "Value is not allowe to share to public"
     @JsonIgnore()
     // @ApiModelProperty(value = "Id for work machine for tracking", required = true)
-    public final Long workMachineId;
+    public final long workMachineId;
 
     @ApiModelProperty(value = "Time when tracking was reported", required = true)
     public final ZonedDateTime sendingTime;

@@ -71,7 +71,10 @@ public class CoordinateConverter {
         ProjCoordinate to = new ProjCoordinate();
         ProjCoordinate from = new ProjCoordinate(fromPoint.getLongitude(),
                                                  fromPoint.getLatitude());
-        transformer.transform(from, to);
+        // CoordinateTransform is not thread safe and this can be called from multiple threads
+        synchronized (transformer) {
+            transformer.transform(from, to);
+        }
         Point point = new Point(to.x, to.y, fromPoint.getAltitude());
 
         if (log.isDebugEnabled()) {

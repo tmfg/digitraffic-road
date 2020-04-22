@@ -251,7 +251,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         // The only tracking should be found when it's inside the bounding box
         getTrackingsJson(
             now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
-            pointWGS84.getLongitude()-0.1, pointWGS84.getLatitude()-0.1, RANGE_X.getRight(), RANGE_Y.getRight())
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(1)));

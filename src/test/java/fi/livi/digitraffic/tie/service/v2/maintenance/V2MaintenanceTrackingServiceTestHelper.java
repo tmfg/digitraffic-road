@@ -149,7 +149,26 @@ public class V2MaintenanceTrackingServiceTestHelper {
                                                                                                  final int jobId,
                                                                                                  final List<Tyokone> workMachines,
                                                                                                  final SuoritettavatTehtavat...tasks) {
-        return createMaintenanceTracking(observationTime, observationCount, jobId, workMachines, true, tasks);
+        return createMaintenanceTracking(observationTime, observationCount, jobId, 1, workMachines, true, tasks);
+    }
+
+    /**
+     * Creates WorkMachineTracking with a LineString observation
+     * @param observationTime Time of observation (start and end is same)
+     * @param observationCount How many observations (LineString lenght) to generate for every machine.
+     * @param ordinal n th generation of observation (Aftert 1st the 2nd will continue lineary after 1st coordinates)
+     * @param jobId Harja job id
+     * @param workMachines Machines
+     * @param tasks Performed tasks
+     * @return
+     */
+    public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithLineString(final ZonedDateTime observationTime,
+                                                                                                 final int observationCount,
+                                                                                                 final int ordinal,
+                                                                                                 final int jobId,
+                                                                                                 final List<Tyokone> workMachines,
+                                                                                                 final SuoritettavatTehtavat...tasks) {
+        return createMaintenanceTracking(observationTime, observationCount, jobId, ordinal, workMachines, true, tasks);
     }
 
     /**
@@ -166,7 +185,26 @@ public class V2MaintenanceTrackingServiceTestHelper {
                                                                                              final int jobId,
                                                                                              final List<Tyokone> workMachines,
                                                                                              final SuoritettavatTehtavat...tasks) {
-        return createMaintenanceTracking(observationTime, observationCount, jobId, workMachines, false, tasks);
+        return createMaintenanceTracking(observationTime, observationCount, 1, jobId, workMachines, false, tasks);
+    }
+
+    /**
+     * Creates WorkMachineTracking with multiple a Point observations
+     * @param observationTime Time of first observation. Every observation time after that is increased with one minute.
+     * @param observationCount how many observations (Point observations) to generate for every machine.
+     * @param ordinal n th generation of observation (Aftert 1st the 2nd will continue lineary after 1st coordinates)
+     * @param jobId Harja job id
+     * @param workMachines Machines
+     * @param tasks Performed tasks
+     * @return
+     */
+    public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithPoints(final ZonedDateTime observationTime,
+                                                                                             final int observationCount,
+                                                                                             final int ordinal,
+                                                                                             final int jobId,
+                                                                                             final List<Tyokone> workMachines,
+                                                                                             final SuoritettavatTehtavat...tasks) {
+        return createMaintenanceTracking(observationTime, observationCount, ordinal, jobId, workMachines, false, tasks);
     }
 
     /**
@@ -178,6 +216,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
      */
     private static TyokoneenseurannanKirjausRequestSchema createMaintenanceTracking(final ZonedDateTime observationTime,
                                                                                     final int observationCount,
+                                                                                    final int observationOrdinal,
                                                                                     final int jobId,
                                                                                     final List<Tyokone> workMachines,
                                                                                     final boolean lineString,
@@ -185,7 +224,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
         final OtsikkoSchema otsikko = createOtsikko(observationTime);
         final List<Havainnot> havainnot =
             workMachines.stream().map(workMachine ->
-                createHavainnot(observationTime, workMachine, jobId, observationCount, Arrays.stream(tasks).collect(toList()), lineString))
+                createHavainnot(observationTime, workMachine, jobId, observationCount, observationOrdinal, Arrays.stream(tasks).collect(toList()), lineString))
                 .flatMap(Collection::stream)
                 .collect(toList());
 
@@ -198,14 +237,16 @@ public class V2MaintenanceTrackingServiceTestHelper {
      * Else returns {observationCount} point observations
      */
     private static List<Havainnot> createHavainnot(final ZonedDateTime observationTime, final Tyokone workMachine, final int jobId,
-                                                   final int observationCount, final List<SuoritettavatTehtavat> tasks, final boolean lineString) {
+                                                   final int observationCount, final int ordinal, final List<SuoritettavatTehtavat> tasks, final boolean lineString) {
 
-        final double coordinateFactor = (RANGE_X_MAX_ETRS - RANGE_X_MIN_ETRS) / observationCount;
-
+        // This sets speed < 50 km/h between points
+        final double coordinateFactor = 500;//(RANGE_X_MAX_ETRS - RANGE_X_MIN_ETRS) / observationCount;
+        final int additionToCoordinates = (ordinal-1) * observationCount;
         if (lineString) {
             // LineString observation with {observationCount} points
             List<List<Object>> coordinates = IntStream.range(0, observationCount)
-                .mapToObj(i -> Arrays.<Object>asList(RANGE_X_MIN_ETRS + i*coordinateFactor, RANGE_Y_MIN_ETRS + i*coordinateFactor)).collect(toList());
+                .mapToObj(i -> Arrays.<Object>asList(RANGE_X_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor,
+                                                RANGE_Y_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor)).collect(toList());
 
             final GeometriaSijaintiSchema sijainti =
                 new GeometriaSijaintiSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinates));
@@ -228,7 +269,8 @@ public class V2MaintenanceTrackingServiceTestHelper {
                         .withUrakkaid(jobId)
                         .withSijainti(
                             new GeometriaSijaintiSchema()
-                                .withKoordinaatit(new KoordinaattisijaintiSchema(RANGE_X_MIN_ETRS + i * coordinateFactor, RANGE_Y_MIN_ETRS + i * coordinateFactor, 0.0)))
+                                .withKoordinaatit(new KoordinaattisijaintiSchema(RANGE_X_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor,
+                                                                                RANGE_Y_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor, 0.0)))
                         .withSuoritettavatTehtavat(tasks)
                         .withSuunta(90.0))).collect(toList());
         }
