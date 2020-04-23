@@ -40,6 +40,9 @@ public class CoordinateConverter {
 
         final CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
 
+        // Create 5 CoordinateTransform -objects as they are not thread safe. Put them in Queue so that different
+        // threads can use them and if all are used at the moment of the method call they will wait for next one
+        // to become available.
         IntStream.range(0,5).forEach(i -> {
             // ETRS89-TM35FIN <-> WGS84 transformers
             transformersFromETRS89ToWGS84.add(coordinateTransformFactory.createTransform(etrs89tm35fin, wgs84));
@@ -51,12 +54,14 @@ public class CoordinateConverter {
     public static Point convertFromETRS89ToWGS84(Point fromETRS89) {
         CoordinateTransform transformer = null;
         try {
+            // Take/wait transformer from the queue
             transformer = transformersFromETRS89ToWGS84.take();
             return convert(fromETRS89, transformer);
         } catch (final Exception e) {
             log.error("method=convertFromETRS89ToWGS84 ERROR", e);
             throw new RuntimeException(e);
         } finally {
+            // Put transformer back to queue
             if (transformer != null) {
                 transformersFromETRS89ToWGS84.add(transformer);
             }
@@ -66,12 +71,14 @@ public class CoordinateConverter {
     public static Point convertFromWGS84ToETRS89(Point fromWGS84) {
         CoordinateTransform transformer = null;
         try {
+            // Take/wait transformer from the queue
             transformer = transformersFromWGS84ToETRS89.take();
             return convert(fromWGS84, transformer);
         } catch (final Exception e) {
             log.error("method=convertFromWGS84ToETRS89 ERROR", e);
             throw new RuntimeException(e);
         } finally {
+            // Put transformer back to queue
             if (transformer != null) {
                 transformersFromWGS84ToETRS89.add(transformer);
             }
