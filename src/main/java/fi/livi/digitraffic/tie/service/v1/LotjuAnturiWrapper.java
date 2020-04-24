@@ -6,12 +6,18 @@ public class LotjuAnturiWrapper<T> {
     private final long anturiLotjuId;
     private final long aika;
     private final long asemaLotjuId;
+    private final long roadStationId;
 
     public LotjuAnturiWrapper(final long asemaLotjuId, final long anturiLotjuId, final T anturi, final long aika) {
+        this(asemaLotjuId, anturiLotjuId, anturi, aika, -1);
+    }
+
+    public LotjuAnturiWrapper(final long asemaLotjuId, final long anturiLotjuId, final T anturi, final long aika, final long roadStationId) {
         this.asemaLotjuId = asemaLotjuId;
         this.anturiLotjuId = anturiLotjuId;
         this.anturi = anturi;
         this.aika = aika;
+        this.roadStationId = roadStationId;
     }
 
     public long getAsemaLotjuId() {
@@ -29,4 +35,6 @@ public class LotjuAnturiWrapper<T> {
     public long getAika() {
         return aika;
     }
+
+    public long getRoadStationId() { return  roadStationId; }
 }

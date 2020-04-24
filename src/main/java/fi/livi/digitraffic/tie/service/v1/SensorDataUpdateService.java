@@ -21,11 +21,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueUpdateParameterDto;
+import fi.livi.digitraffic.tie.helper.SensorValueBuffer;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -47,6 +49,9 @@ public class SensorDataUpdateService {
     private final RoadStationDao roadStationDao;
     private final DataStatusService dataStatusService;
 
+    private final SensorValueBuffer<Lam.Anturi> lamValueBuffer = new SensorValueBuffer<>();
+    private final SensorValueBuffer<TiesaaMittatieto.Anturi> weatherValueBuffer = new SensorValueBuffer<>();
+
     @Autowired
     public SensorDataUpdateService(final SensorValueDao sensorValueDao, final RoadStationSensorService roadStationSensorService,
                                    final RoadStationDao roadStationDao, final DataStatusService dataStatusService) {
@@ -58,37 +63,89 @@ public class SensorDataUpdateService {
 
     private Set<Long> getAllowedRoadStationSensorsLotjuIds(final RoadStationType roadStationType) {
         if (allowedSensorsLotjuIds.get(roadStationType) == null || allowedSensorsLastUpdatedTimeMillis.get(roadStationType) < System.currentTimeMillis() - ALLOWED_SENSOR_EXPIRATION_MILLIS) {
-            final List<RoadStationSensor> allowedTmsSensors =
-                roadStationSensorService.findAllPublishableRoadStationSensors(roadStationType);
+            final List<RoadStationSensor> allowedTmsSensors = roadStationSensorService.findAllPublishableRoadStationSensors(roadStationType);
 
             allowedSensorsLotjuIds.put(roadStationType, allowedTmsSensors.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toSet()));
 
             allowedSensorsLastUpdatedTimeMillis.put(roadStationType, System.currentTimeMillis());
-            log.info("method=getAllowedRoadStationSensorsLotjuIds fetched sensorCount={} for roadStationType={}", allowedSensorsLotjuIds.get(roadStationType).size(), roadStationType);
+
+            log.info("method=getAllowedRoadStationSensorsLotjuIds fetched sensorCount={} for roadStationType={}",
+                allowedSensorsLotjuIds.get(roadStationType).size(),
+                roadStationType);
         }
+
         return allowedSensorsLotjuIds.get(roadStationType);
     }
 
-    /**
-     * Updates tms sensors data to db
-     * @param data
-     * @return count of updated db rows
-     */
+    @Scheduled(fixedRate = 10000)
     @Transactional
+    protected void persistSensorValues() {
+        final StopWatch stopWatch = StopWatch.createStarted();
+
+        final TimestampCache timestampCache = new TimestampCache();
+
+        List<SensorValueUpdateParameterDto> updates = lamValueBuffer.getValues().stream()
+            .map(wrapper -> new SensorValueUpdateParameterDto(wrapper, timestampCache))
+            .collect(Collectors.toList());
+
+        final Pair<Integer, Integer> updatedAndInsertedCount = updateSensorData(updates, RoadStationType.TMS_STATION);
+
+        log.info("updated tms values to db, count={}, updates={}, inserts={}", updates.size(), updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight());
+
+        stopWatch.stop();
+    }
+
+    /**
+     * Buffer tms sensors data
+     * @param data
+     * @return count of buffered elements
+     */
     public int updateLamData(final List<Lam> data) {
         final StopWatch stopWatch = StopWatch.createStarted();
 
+        // From road_station-table: <lotju_id, id> TODO! store cache or something
         final Map<Long, Long> allowedStationsLotjuIdtoIds = roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(RoadStationType.TMS_STATION);
+        //
+        final Set<Long> allowedSensorsLotjuIds = getAllowedRoadStationSensorsLotjuIds(RoadStationType.TMS_STATION);
 
+        // Get total incoming anturi count
         final long initialDataRowCount = data.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
 
-        final List<Lam> filteredByMissingStation =
-            data.stream().filter(lam -> allowedStationsLotjuIdtoIds.containsKey(lam.getAsemaId())).collect(Collectors.toList());
-        final long filteredByStationRowCount = filteredByMissingStation.stream().mapToLong(lam -> lam.getAnturiList().size()).sum();
+        // Process incoming data set and store filtered items
+        lamValueBuffer.putValues(data.stream()
+            // Filter only allowed stations
+            .filter(lamAsema -> allowedStationsLotjuIdtoIds.containsKey(lamAsema.getAsemaId()))
+            // Collect all sensors from the station
+            .flatMap(lamAsema -> lamAsema.getAnturiList().stream()
+                // Filter only allowed sensors
+                .filter(anturi -> allowedSensorsLotjuIds.contains(anturi.getLaskennallinenAnturiId()))
+                // Map Lam-anturi to wrapper
+                .map(anturi -> new LotjuAnturiWrapper<Lam.Anturi>(
+                    lamAsema.getAsemaId(),
+                    anturi.getLaskennallinenAnturiId(),
+                    anturi,
+                    lamAsema.getAika(),
+                    allowedStationsLotjuIdtoIds.get(lamAsema.getAsemaId()))
+                )
+            )
+            .collect(Collectors.toList())
+        );
+
+        return lamValueBuffer.getUpdateElementCounter();
+        /**
+        final List<Lam> filteredByMissingStation = data.stream()
+            .filter(lamAsema -> allowedStationsLotjuIdtoIds.containsKey(lamAsema.getAsemaId()))
+            .collect(Collectors.toList());
+
+        final long filteredByStationRowCount = filteredByMissingStation.stream()
+            .mapToLong(lam -> lam.getAnturiList().size())
+            .sum();
 
         if (filteredByMissingStation.size() < data.size()) {
             log.warn("method=updateLamData filter data from originalCount={} with missingTmsStationsCount={} to resultCount={}" ,
-                     data.size(), data.size()-filteredByMissingStation.size(), filteredByMissingStation.size());
+                data.size(),
+                data.size() - filteredByMissingStation.size(),
+                filteredByMissingStation.size());
         }
 
         final List<LotjuAnturiWrapper<Lam.Anturi>> wrappedAnturiValues = wrapLamData(filteredByMissingStation);
@@ -96,23 +153,29 @@ public class SensorDataUpdateService {
 
         if (filteredByOnlyNewest.size() < filteredByStationRowCount) {
             log.info("method=updateLamData filter data rows from originalCount={} with oldDataCount={} to resultCount={}",
-                     filteredByStationRowCount, filteredByStationRowCount-filteredByOnlyNewest.size(), filteredByOnlyNewest.size());
+                filteredByStationRowCount,
+                filteredByStationRowCount - filteredByOnlyNewest.size(),
+                filteredByOnlyNewest.size());
         }
 
-        final long stationsCount = filteredByOnlyNewest.stream().map(LotjuAnturiWrapper::getAsemaLotjuId).distinct().count();
+        final long stationsCount = filteredByOnlyNewest.stream()
+            .map(LotjuAnturiWrapper::getAsemaLotjuId)
+            .distinct()
+            .count();
 
         final TimestampCache timestampCache = new TimestampCache();
 
-        final List<SensorValueUpdateParameterDto> params =
-            filteredByOnlyNewest.stream()
+        final List<SensorValueUpdateParameterDto> params = filteredByOnlyNewest.stream()
             .filter(wrapper -> getAllowedRoadStationSensorsLotjuIds(RoadStationType.TMS_STATION).contains(wrapper.getAnturi().getLaskennallinenAnturiId()))
-                            .map(anturi -> new SensorValueUpdateParameterDto(anturi, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId()), timestampCache))
+            .map(anturi -> new SensorValueUpdateParameterDto(anturi, allowedStationsLotjuIdtoIds.get(anturi.getAsemaLotjuId()), timestampCache))
             .collect(Collectors.toList());
 
         final Pair<Integer, Integer> updatedAndInsertedCount = updateSensorData(params, RoadStationType.TMS_STATION);
         stopWatch.stop();
 
-        log.info("method=updateLamData initial data rowCount={} filtered to updateRowCount={}. Sensors updateCount={} insertCount={} of sations stationCount={} . hasRealtime={} . hasNonRealtime={} tookMs={}",
+        //counter += params.size();
+
+        log.info("method=updateLamData initial data rowCount={} filtered to updateRowCount={}. Sensors updateCount={} insertCount={} of stations stationCount={} . hasRealtime={} . hasNonRealtime={} tookMs={}",
             initialDataRowCount, filteredByOnlyNewest.size(),
             updatedAndInsertedCount.getLeft(), updatedAndInsertedCount.getRight(), stationsCount,
             filteredByMissingStation.stream().anyMatch(Lam::getIsRealtime),
@@ -120,6 +183,7 @@ public class SensorDataUpdateService {
             stopWatch.getTime());
 
         return updatedAndInsertedCount.getLeft() + updatedAndInsertedCount.getRight();
+         */
     }
 
     /**
@@ -176,7 +240,7 @@ public class SensorDataUpdateService {
      * @return Pair<updateCount, insertCount>
      */
     private Pair<Integer, Integer> updateSensorData(final List<SensorValueUpdateParameterDto> params, final RoadStationType roadStationType) {
-        if(CollectionUtils.isEmpty(params)) {
+        if (CollectionUtils.isEmpty(params)) {
             log.info("method=updateSensorData for 0 stations updateCount=0 insertCount=0 tookMs=0");
 
             return ImmutablePair.of(0 ,0);
@@ -211,19 +275,19 @@ public class SensorDataUpdateService {
                                             maxMeasuredTime.toInstant());
     }
 
-    private static List<LotjuAnturiWrapper<Lam.Anturi>> wrapLamData(final List<Lam> lams) {
-        return lams.stream()
-            .flatMap(lam -> lam.getAnturiList().stream()
-                .map(anturi -> new LotjuAnturiWrapper<>(lam.getAsemaId(), anturi.getLaskennallinenAnturiId(),
-                                                        anturi, lam.getAika()))
+    /**
+    private static List<LotjuAnturiWrapper<Lam.Anturi>> wrapLamData(final List<Lam> lamStations) {
+        return lamStations.stream()
+            .flatMap(lamStation -> lamStation.getAnturiList().stream()
+                .map(anturi -> new LotjuAnturiWrapper<>(lamStation.getAsemaId(), anturi.getLaskennallinenAnturiId(), anturi, lamStation.getAika()))
             ).collect(Collectors.toList());
     }
+     */
 
-    private static List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> wrapTiesaaData(final List<TiesaaMittatieto> tiesaaMittatietos) {
-        return tiesaaMittatietos.stream()
-            .flatMap(tiesaa -> tiesaa.getAnturiList().stream()
-                               .map(anturi -> new LotjuAnturiWrapper<>(tiesaa.getAsemaId(), anturi.getLaskennallinenAnturiId(),
-                                                                       anturi, tiesaa.getAika()))
+    private static List<LotjuAnturiWrapper<TiesaaMittatieto.Anturi>> wrapTiesaaData(final List<TiesaaMittatieto> tiesaaStations) {
+        return tiesaaStations.stream()
+            .flatMap(tiesaaStation -> tiesaaStation.getAnturiList().stream()
+                .map(anturi -> new LotjuAnturiWrapper<>(tiesaaStation.getAsemaId(), anturi.getLaskennallinenAnturiId(), anturi, tiesaaStation.getAika()))
             ).collect(Collectors.toList());
     }
 
@@ -254,8 +318,7 @@ public class SensorDataUpdateService {
      * @param updated list of return values for each update parameter
      * @return list of parameters that had zero update count, meaning that insert should be performed with those parameters.
      */
-    private static ArrayList<SensorValueUpdateParameterDto> getSensorValueInsertParameters(final List<SensorValueUpdateParameterDto> params,
-                                                                                           final int[] updated) {
+    private static ArrayList<SensorValueUpdateParameterDto> getSensorValueInsertParameters(final List<SensorValueUpdateParameterDto> params, final int[] updated) {
         final ArrayList<SensorValueUpdateParameterDto> toInsert = new ArrayList<>(updated.length);
         for(int i = 0; i < updated.length; i++) {
             if (updated[i] == 0) {
