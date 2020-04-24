@@ -4,9 +4,9 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTION_WEATHER_DATA_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_JSON_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.DataController.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
@@ -36,9 +36,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
@@ -76,8 +76,6 @@ public class V2DataController {
     private final V2Datex2DataService v2Datex2DataService;
     private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
 
-    public V2DataController(final ForecastSectionDataService forecastSectionDataService, final V2VariableSignService v2VariableSignService,
-                            final CameraPresetHistoryDataService cameraPresetHistoryDataService, final V2Datex2DataService v2Datex2DataService) {
     public static final String RANGE_X_TXT = "Values between 19.0 and 32.0.";
     public static final String RANGE_Y_TXT = "Values between 59.0 and 72.0.";
     public static final String RANGE_X = "range[19.0, 32.0]";
@@ -256,147 +254,147 @@ public class V2DataController {
         return v2Datex2DataService.findAllBySituationId(situationId, datex2MessageType);
     }
 
-        @ApiOperation(value = "Road maintenance tracking data latest points")
-        @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
-        @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
-        public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
+    @ApiOperation(value = "Road maintenance tracking data latest points")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
+    public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-        @ApiParam(value = "Return realizations which have completed after the given time. Default is -24h from now.")
-        @RequestParam(required = false)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime from,
+    @ApiParam(value = "Return realizations which have completed after the given time. Default is -24h from now.")
+    @RequestParam(required = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    final ZonedDateTime from,
 
-        @ApiParam(value = "Return realizations which have completed before the given time. Default is now.")
-        @RequestParam(required = false)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime to,
+    @ApiParam(value = "Return realizations which have completed before the given time. Default is now.")
+    @RequestParam(required = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    final ZonedDateTime to,
 
-        @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-        @RequestParam(defaultValue = "19.0")
-        @DecimalMin("19.0")
-        @DecimalMax("32.0")
-        final double xMin,
+    @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
+    @RequestParam(defaultValue = "19.0")
+    @DecimalMin("19.0")
+    @DecimalMax("32.0")
+    final double xMin,
 
-        @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-        @RequestParam(defaultValue = "59.0")
-        @DecimalMin("59.0")
-        @DecimalMax("72.0")
-        final double yMin,
+    @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
+    @RequestParam(defaultValue = "59.0")
+    @DecimalMin("59.0")
+    @DecimalMax("72.0")
+    final double yMin,
 
-        @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-        @RequestParam(defaultValue = "32")
-        @DecimalMin("19.0")
-        @DecimalMax("32.0")
-        final double xMax,
+    @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
+    @RequestParam(defaultValue = "32")
+    @DecimalMin("19.0")
+    @DecimalMax("32.0")
+    final double xMax,
 
-        @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-        @RequestParam(defaultValue = "72.0")
-        @DecimalMin("59.0")
-        @DecimalMax("72.0")
-        final double yMax,
+    @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
+    @RequestParam(defaultValue = "72.0")
+    @DecimalMin("59.0")
+    @DecimalMax("72.0")
+    final double yMax,
 
-        @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
-        @RequestParam(value = "taskId", required = false)
-        final List<MaintenanceTrackingTask> taskIds) {
+    @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
+    @RequestParam(value = "taskId", required = false)
+    final List<MaintenanceTrackingTask> taskIds) {
 
-            validateTimeBetweenFromAndToMaxHours(from, to, 24);
-            Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
+        validateTimeBetweenFromAndToMaxHours(from, to, 24);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
-            return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
-        }
+        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+    }
 
-        @ApiOperation(value = "Road maintenance tracking data with tracking id")
-        @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
-        @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
-        public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
-            return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
-        }
+    @ApiOperation(value = "Road maintenance tracking data with tracking id")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
+    public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
+        return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
+    }
 
-        @ApiOperation(value = "Road maintenance tracking data")
-        @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
-        @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
-        public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
+    @ApiOperation(value = "Road maintenance tracking data")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
+    public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return realizations which have completed after the given time. Default is -24h from now.")
-        @RequestParam(required = false)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime from,
+    @ApiParam(value = "Return realizations which have completed after the given time. Default is -24h from now.")
+    @RequestParam(required = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    final ZonedDateTime from,
 
-        @ApiParam(value = "Return realizations which have completed before the given time. Default is now.")
-        @RequestParam(required = false)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime to,
+    @ApiParam(value = "Return realizations which have completed before the given time. Default is now.")
+    @RequestParam(required = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    final ZonedDateTime to,
 
-        @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-        @RequestParam(defaultValue = "19.0")
-        @DecimalMin("19.0")
-        @DecimalMax("32.0")
-        final double xMin,
+    @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
+    @RequestParam(defaultValue = "19.0")
+    @DecimalMin("19.0")
+    @DecimalMax("32.0")
+    final double xMin,
 
-        @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-        @RequestParam(defaultValue = "59.0")
-        @DecimalMin("59.0")
-        @DecimalMax("72.0")
-        final double yMin,
+    @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
+    @RequestParam(defaultValue = "59.0")
+    @DecimalMin("59.0")
+    @DecimalMax("72.0")
+    final double yMin,
 
-        @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-        @RequestParam(defaultValue = "32")
-        @DecimalMin("19.0")
-        @DecimalMax("32.0")
-        final double xMax,
+    @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
+    @RequestParam(defaultValue = "32")
+    @DecimalMin("19.0")
+    @DecimalMax("32.0")
+    final double xMax,
 
-        @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-        @RequestParam(defaultValue = "72.0")
-        @DecimalMin("59.0")
-        @DecimalMax("72.0")
-        final double yMax,
+    @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
+    @RequestParam(defaultValue = "72.0")
+    @DecimalMin("59.0")
+    @DecimalMax("72.0")
+    final double yMax,
 
-        @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
-        @RequestParam(value = "taskId", required = false)
-        final List<MaintenanceTrackingTask> taskIds) {
+    @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
+    @RequestParam(value = "taskId", required = false)
+    final List<MaintenanceTrackingTask> taskIds) {
 
-            validateTimeBetweenFromAndToMaxHours(from, to, 24);
-            Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
+        validateTimeBetweenFromAndToMaxHours(from, to, 24);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
-            return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
-        }
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+    }
 
-        @ApiOperation(value = "Road maintenance tracking tasks")
-        @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
-        @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
-        public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
-            return Stream.of(MaintenanceTrackingTask.values())
-                .sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
-                .map(t -> new MaintenanceTrackingTaskDto(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn()))
-                .collect(Collectors.toList());
-        }
+    @ApiOperation(value = "Road maintenance tracking tasks")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
+    public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
+        return Stream.of(MaintenanceTrackingTask.values())
+            .sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
+            .map(t -> new MaintenanceTrackingTaskDto(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn()))
+            .collect(Collectors.toList());
+    }
 
-        @ApiIgnore("This is only for internal debugging and not for the public")
-        @ApiOperation(value = "Road maintenance tracking source data")
-        @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_JSON_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
-        @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance trackings data"))
-        public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
-            return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(id);
-        }
+    @ApiIgnore("This is only for internal debugging and not for the public")
+    @ApiOperation(value = "Road maintenance tracking source data")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_JSON_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance trackings data"))
+    public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
+        return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(id);
+    }
 
-        public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(ZonedDateTime from, ZonedDateTime to, final int hoursOfHistory) {
-            // Make sure newest is also fetched
-            final Instant now = Instant.now();
-            final Instant fromParam = from != null ? from.toInstant() : now.minus(hoursOfHistory, HOURS);
-            // Just to be sure all events near now in future will be fetched
-            final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
-            return Pair.of(fromParam, toParam);
-        }
+    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(ZonedDateTime from, ZonedDateTime to, final int hoursOfHistory) {
+        // Make sure newest is also fetched
+        final Instant now = Instant.now();
+        final Instant fromParam = from != null ? from.toInstant() : now.minus(hoursOfHistory, HOURS);
+        // Just to be sure all events near now in future will be fetched
+        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
+        return Pair.of(fromParam, toParam);
+    }
 
-        public static void validateTimeBetweenFromAndToMaxHours(final ZonedDateTime from, final ZonedDateTime to, final int maxDiffHours) {
-            if (from != null && to != null) {
-                if (from.isAfter(to)) {
-                    throw new IllegalArgumentException("Time from must be before to");
-                } else if (from.plus(maxDiffHours, HOURS).isBefore(to)) {
-                    throw new IllegalArgumentException("Time between from and to -parameters must be less or equal to " + maxDiffHours + " h");
-                }
-            } else if (from != null && from.plus(maxDiffHours, HOURS).isBefore(ZonedDateTime.now())) {
-                throw new IllegalArgumentException("From-parameter must in " + maxDiffHours + " hours when to is not given.");
+    public static void validateTimeBetweenFromAndToMaxHours(final ZonedDateTime from, final ZonedDateTime to, final int maxDiffHours) {
+        if (from != null && to != null) {
+            if (from.isAfter(to)) {
+                throw new IllegalArgumentException("Time from must be before to");
+            } else if (from.plus(maxDiffHours, HOURS).isBefore(to)) {
+                throw new IllegalArgumentException("Time between from and to -parameters must be less or equal to " + maxDiffHours + " h");
             }
+        } else if (from != null && from.plus(maxDiffHours, HOURS).isBefore(ZonedDateTime.now())) {
+            throw new IllegalArgumentException("From-parameter must in " + maxDiffHours + " hours when to is not given.");
         }
+    }
 }
