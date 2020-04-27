@@ -1,16 +1,15 @@
 package fi.livi.digitraffic.tie.data.controller.v2;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -21,10 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
 
 public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
@@ -66,7 +65,6 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
         updateDatex2(roadwork1, ROADWORK);
         updateDatex2(weightRestriction1, WEIGHT_RESTRICTION);
     }
-
 
     @Test
     public void datex2incident() throws Exception {
@@ -113,7 +111,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     }
 
     private static String getUrl(final Datex2MessageType messageType, final boolean json, final int inactiveHours) {
-        return API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + messageType.toParameter() + (json ? ".json" : ".xml") + "?inactiveHours=" + inactiveHours;
+        return API_V2_BASE_PATH + API_DATA_PART_PATH + TRAFFIC_DATEX2_PATH + "/" + messageType.toParameter() + (json ? ".json" : ".xml") + "?inactiveHours=" + inactiveHours;
     }
 
     private void assertSituationExistInXml(final String situationId,  final String xml) {
@@ -133,7 +131,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     }
 
     private String getResponse(final String url) throws Exception {
-        return mockMvc.perform(get(url)).andReturn().getResponse().getContentAsString();
+        return mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
     }
 
     private void updateDatex2(final String datex2Xml, final Datex2MessageType type) {

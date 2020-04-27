@@ -2,7 +2,10 @@ package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.sound.sampled.Line;
 
@@ -23,31 +26,63 @@ public class CoordinateConverter {
 
     private static final Logger log = LoggerFactory.getLogger(CoordinateConverter.class);
 
-    private static final CoordinateTransform transformerFromEtrs89Tm35FinToWgs84;
-
-    private static final CoordinateTransform transformerFromWgs84ToEtrs89Tm35Fin;
+    private static final BlockingQueue<CoordinateTransform> transformersFromWGS84ToETRS89 = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<CoordinateTransform> transformersFromETRS89ToWGS84 = new LinkedBlockingQueue<>();
 
     static {
-        CRSFactory crsFactory = new CRSFactory();
+        final CRSFactory crsFactory = new CRSFactory();
 
         // WGS84: http://spatialreference.org/ref/epsg/4326/ -> Proj4
-        CoordinateReferenceSystem wgs84 = crsFactory.createFromName("EPSG:4326");
+        final CoordinateReferenceSystem wgs84 = crsFactory.createFromName("EPSG:4326");
 
         // ETRS89-TM35FIN/EUREF-FIN http://spatialreference.org/ref/epsg/etrs89-etrs-tm35fin/ -> Proj4
-        CoordinateReferenceSystem etrs89tm35fin = crsFactory.createFromName("EPSG:3067");
+        final CoordinateReferenceSystem etrs89tm35fin = crsFactory.createFromName("EPSG:3067");
 
-        CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-        // ETRS89-TM35FIN to WGS84 transformer
-        transformerFromEtrs89Tm35FinToWgs84 = coordinateTransformFactory.createTransform(etrs89tm35fin, wgs84);
-        transformerFromWgs84ToEtrs89Tm35Fin = coordinateTransformFactory.createTransform(wgs84, etrs89tm35fin);
+        final CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
+
+        // Create 5 CoordinateTransform -objects as they are not thread safe. Put them in Queue so that different
+        // threads can use them and if all are used at the moment of the method call they will wait for next one
+        // to become available.
+        IntStream.range(0,5).forEach(i -> {
+            // ETRS89-TM35FIN <-> WGS84 transformers
+            transformersFromETRS89ToWGS84.add(coordinateTransformFactory.createTransform(etrs89tm35fin, wgs84));
+            transformersFromWGS84ToETRS89.add(coordinateTransformFactory.createTransform(wgs84, etrs89tm35fin));
+        });
+
     }
 
     public static Point convertFromETRS89ToWGS84(Point fromETRS89) {
-        return convert(fromETRS89, transformerFromEtrs89Tm35FinToWgs84);
+        CoordinateTransform transformer = null;
+        try {
+            // Take/wait transformer from the queue
+            transformer = transformersFromETRS89ToWGS84.take();
+            return convert(fromETRS89, transformer);
+        } catch (final Exception e) {
+            log.error("method=convertFromETRS89ToWGS84 ERROR", e);
+            throw new RuntimeException(e);
+        } finally {
+            // Put transformer back to queue
+            if (transformer != null) {
+                transformersFromETRS89ToWGS84.add(transformer);
+            }
+        }
     }
 
     public static Point convertFromWGS84ToETRS89(Point fromWGS84) {
-        return convert(fromWGS84, transformerFromWgs84ToEtrs89Tm35Fin);
+        CoordinateTransform transformer = null;
+        try {
+            // Take/wait transformer from the queue
+            transformer = transformersFromWGS84ToETRS89.take();
+            return convert(fromWGS84, transformer);
+        } catch (final Exception e) {
+            log.error("method=convertFromWGS84ToETRS89 ERROR", e);
+            throw new RuntimeException(e);
+        } finally {
+            // Put transformer back to queue
+            if (transformer != null) {
+                transformersFromWGS84ToETRS89.add(transformer);
+            }
+        }
     }
 
     // TODO: change List<List<Double>> to List<List<Integer>> and remove int->double conversion from HavaintoToObservationFeatureConverter and do it here.
