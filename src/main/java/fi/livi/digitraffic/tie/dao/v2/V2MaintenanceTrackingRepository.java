@@ -45,7 +45,6 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                 "WHERE tracking.id IN (\n" +
                 "    SELECT max(t.id)\n" + // select latest id per machine
                 "    FROM #{#entityName} t\n" +
-                "    JOIN tracking.tasks taskit\n" +
                 "    WHERE t.endTime BETWEEN :from AND :to\n" +
                 "      AND intersects(t.lastPoint, :area) = true\n" +
                 "    GROUP BY t.workMachine\n" +
