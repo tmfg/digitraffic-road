@@ -361,11 +361,4 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertEquals(first.getLineString().getEndPoint().getX(), transitionFirstPoint.getLongitude(), 0.01);
         assertEquals(first.getLineString().getEndPoint().getY(), transitionFirstPoint.getLatitude(), 0.01);
     }
-
-    @Ignore("Just for internal testing")
-    @Rollback(false)
-    @Test
-    public void handleUnhandledMaintenanceTrackingData() {
-        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(1000);
-    }
 }

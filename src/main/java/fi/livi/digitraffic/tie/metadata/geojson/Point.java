@@ -75,6 +75,16 @@ public class Point extends Geometry<Double> implements Serializable {
         return getCoordinate(LATITUDE_IDX);
     }
 
+    @JsonIgnore
+    public Double getX() {
+        return getLongitude();
+    }
+
+    @JsonIgnore
+    public Double getY() {
+        return getLatitude();
+    }
+
     private Double getCoordinate(int index) {
         if ( index < getCoordinates().size() ) {
             return getCoordinates().get(index);

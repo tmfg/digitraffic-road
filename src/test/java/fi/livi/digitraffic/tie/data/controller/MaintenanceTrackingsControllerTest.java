@@ -1,7 +1,8 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.beta.BetaController.MAINTENANCE_TRACKINGS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X;
@@ -39,6 +40,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.controller.ApiPaths;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
@@ -57,7 +59,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     private ResultActions getTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
-        final String url = API_BETA_BASE_PATH + MAINTENANCE_TRACKINGS_PATH +
+        final String url = API_V2_BASE_PATH + API_DATA_PART_PATH + MAINTENANCE_TRACKINGS_PATH +
             String.format(Locale.US, "?from=%s&to=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), to.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
@@ -67,10 +69,10 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         return result;
     }
 
-    private ResultActions getLatestTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
+    private ResultActions getLatestTrackingsJson(final Instant from, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
-        final String url = API_BETA_BASE_PATH + MAINTENANCE_TRACKINGS_PATH + "/latest";
-            String.format(Locale.US, "?from=%s&to=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), to.toString(), xMin, yMin, xMax, yMax, tasksParams);
+        final String url = API_V2_BASE_PATH + API_DATA_PART_PATH + MAINTENANCE_TRACKINGS_PATH + "/latest";
+            String.format(Locale.US, "?from=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
@@ -167,7 +169,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         // find with first task should only find the first tracking for machine 1.
         getTrackingsJson(
-            now.toInstant(), now.plusMinutes(9).toInstant(), getTaskSetWithTasks(MaintenanceTrackingTask.values()[0]),
+            now.toInstant(), now.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -175,11 +177,15 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         // Search with second task should return trackings for machine 1. and 2.
         getTrackingsJson(
-            now.toInstant(), now.plusMinutes(9).toInstant(), getTaskSetWithTasks(MaintenanceTrackingTask.values()[1]),
+            now.toInstant(), now.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(2)));
+    }
+
+    private static MaintenanceTrackingTask getTaskByharjaEnumName(final String harjaTaskEnumName) {
+        return MaintenanceTrackingTask.getByharjaEnumName(harjaTaskEnumName);
     }
 
     @Test
@@ -204,7 +210,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         log.info("Machine count {}", machineCount);
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
         final ResultActions latestResult = getLatestTrackingsJson(
-            now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), getTaskSetWithTasks(MaintenanceTrackingTask.values()[1]),
+            now.toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))

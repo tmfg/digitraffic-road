@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class MaintenanceTrackingLatestProperties {
 
     @ApiModelProperty(value = "Id for the tracking", required = true)
-    public Long id;
+    public final long id;
 
     @ApiModelProperty(value = "Time of latest tracking", required = true)
     public final ZonedDateTime time;

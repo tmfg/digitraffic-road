@@ -337,6 +337,6 @@ public class V2MaintenanceTrackingServiceTestHelper {
     }
 
     public static MaintenanceTrackingTask getTaskWithIndex(final int enumIndex) {
-        return MaintenanceTrackingTask.values()[enumIndex];
+        return MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[enumIndex].name());
     }
 }

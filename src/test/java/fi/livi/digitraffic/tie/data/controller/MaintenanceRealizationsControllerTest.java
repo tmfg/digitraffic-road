@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.beta.BetaController.MAINTENANCE_REALIZATIONS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_PATH;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_Y;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.TASKS;
