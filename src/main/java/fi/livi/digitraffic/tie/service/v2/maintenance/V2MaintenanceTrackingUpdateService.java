@@ -39,6 +39,7 @@ import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
@@ -327,7 +328,7 @@ public class V2MaintenanceTrackingUpdateService {
                 ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
             if (!timeGapInsideTheLimit) {
                 log.info("previousCoordinateTime: {}, nextCoordinateTime: {}, timeGapInsideTheLimit: {}",
-                         previousCoordinateTime, nextCoordinateTime, timeGapInsideTheLimit);
+                         DateHelper.toZonedDateTimeAtUtc(previousCoordinateTime), DateHelper.toZonedDateTimeAtUtc(nextCoordinateTime), timeGapInsideTheLimit);
             }
             return timeGapInsideTheLimit;
         }
@@ -341,7 +342,7 @@ public class V2MaintenanceTrackingUpdateService {
             final boolean nextIsSameOrAfter = !nextCoordinateTime.isBefore(previousCoordinateTime);
             if (!nextIsSameOrAfter) {
                 log.info("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {}",
-                         previousCoordinateTime, nextCoordinateTime, nextIsSameOrAfter);
+                         DateHelper.toZonedDateTimeAtUtc(previousCoordinateTime), DateHelper.toZonedDateTimeAtUtc(nextCoordinateTime), nextIsSameOrAfter);
             }
             return nextIsSameOrAfter;
         }
