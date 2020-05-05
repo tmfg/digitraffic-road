@@ -75,10 +75,10 @@ public class V2RoadMaintenanceController {
         @RequestBody ReittitoteumanKirjausRequestSchema reittitoteumanKirjaus)
         throws JsonProcessingException {
 
-        log.debug("method=postWorkMachineRealization harjaJobId={} JSON=\n{}", jobId,
-                 objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(reittitoteumanKirjaus));
-
-        v2MaintenanceDataService.saveMaintenanceRealizationData(jobId, reittitoteumanKirjaus);
+//        TODO DPO-631 HARJA työkoneen toteumatietojen tallennus ja jako digitrafficiin - poistettu käytöstä
+//        log.debug("method=postWorkMachineRealization harjaJobId={} JSON=\n{}", jobId,
+//                 objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(reittitoteumanKirjaus));
+//        v2MaintenanceDataService.saveMaintenanceRealizationData(jobId, reittitoteumanKirjaus);
 
         return ResponseEntity.ok().build();
     }
