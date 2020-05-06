@@ -38,7 +38,7 @@ public class PerformanceMonitorAspect {
         final MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
 
         final StopWatch stopWatch = StopWatch.createStarted();
-        final String jobName = methodSignature.getDeclaringTypeName();
+        final String jobName = methodSignature.getDeclaringType().getSimpleName().replace("Configuration", "");
         logScheduledJob.info("jobType=Scheduled jobName={} start", jobName);
 
         try {
