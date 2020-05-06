@@ -164,7 +164,7 @@
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-ri</artifactId>
-            <version>2.3.2-1</version>
+            <version>2.3.3</version>
             <type>pom</type>
         </dependency>
 
@@ -257,7 +257,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.2-jre</version>
+            <version>29.0-jre</version>
         </dependency>
 
         <!-- Sonic JMS Library -->
@@ -309,7 +309,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.758</version>
+            <version>1.11.775</version>
         </dependency>
 
         <dependency>
