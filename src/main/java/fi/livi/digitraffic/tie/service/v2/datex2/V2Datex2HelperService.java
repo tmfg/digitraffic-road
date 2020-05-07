@@ -54,7 +54,7 @@ public class V2Datex2HelperService {
 
     /**
      *
-     * @param imsJson
+     * @param imsJson Datex2 JSON message
      * @return Json object
      */
     public ImsGeoJsonFeature convertToJsonObject(final String imsJson) {
@@ -132,7 +132,7 @@ public class V2Datex2HelperService {
     }
 
     private List<ConstraintViolation<EstimatedDuration>> getDurationViolations(final TrafficAnnouncementFeature feature) {
-        return feature.getProperties().announcements.stream().map(a -> getDurationViolations(a)).flatMap(Collection::stream).collect(Collectors.toList());
+        return feature.getProperties().announcements.stream().map(this::getDurationViolations).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     private Set<ConstraintViolation<EstimatedDuration>> getDurationViolations(TrafficAnnouncement a) {
@@ -143,6 +143,6 @@ public class V2Datex2HelperService {
     }
 
     private static boolean isInvalidGeojson(final TrafficAnnouncementFeature feature) {
-        return feature.getProperties() == null || feature.getGeometry() == null;
+        return feature.getProperties() == null;
     }
 }

@@ -12,7 +12,7 @@ public abstract class SimpleUpdateJob extends AbstractUpdateJob {
     public final void execute(final JobExecutionContext context) {
         final String jobName = context.getJobDetail().getKey().getName();
 
-        log.info("Quartz jobName={} start", jobName);
+        log.info("jobType=Quartz jobName={} start", jobName);
 
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -22,17 +22,17 @@ public abstract class SimpleUpdateJob extends AbstractUpdateJob {
             doExecute(context);
         } catch(final Exception e) {
             lastError = e;
-            log.error("Exception executing jobName=" + jobName, e);
+            log.error("jobType=Quartz Exception executing jobName=" + jobName, e);
         }
 
         stopWatch.stop();
 
         if (lastError != null) {
-            log.info("Quartz jobName={} end jobEndStatus={} jobTimeMs={} lastError: {} {}",
+            log.info("jobType=Quartz jobName={} end jobEndStatus={} jobTimeMs={} lastError: {} {}",
                      jobName, lastError == null ? "SUCCESS" : "FAIL", stopWatch.getTime(),
                      lastError != null ? lastError.getClass() : null, lastError != null ? lastError.getMessage() : "");
         } else {
-            log.info("Quartz jobName={} end jobEndStatus={} jobTimeMs={}",
+            log.info("jobType=Quartz jobName={} end jobEndStatus={} jobTimeMs={}",
                      jobName, lastError == null ? "SUCCESS" : "FAIL", stopWatch.getTime());
         }
     }
