@@ -125,7 +125,7 @@ public class JMSMessageListener<K> implements MessageListener {
                 }
                 log.warn("JMS message queue size decreased by trashedCount={} messages by trashing to size messageQueueSizeAfter={}", trashed, messageQueue.size());
             } else if (queueToDrain > QUEUE_SIZE_WARNING_LIMIT) {
-                log.warn("JMS message queue size queueToDrain={} exceeds error limit queueWarningLimitSize={}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT);
+                log.warn("JMS message queue size queueToDrainSize={} exceeds error limit queueWarningLimitSize={}", queueToDrain, QUEUE_SIZE_WARNING_LIMIT);
             } else {
                 log.info("JMS message queue size queueToDrainSize={}", queueToDrain );
             }

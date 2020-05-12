@@ -44,7 +44,7 @@ public class MqttRelayService {
     }
 
     @Scheduled(fixedRate = 60000)
-    private void logMqttQueue() {
+    public void logMqttQueue() {
         logger.info("MqttQueueLength={}", maxQueueLength.getThenReset());
     }
 
@@ -73,7 +73,7 @@ public class MqttRelayService {
     }
 
     @Scheduled(fixedRate = 60000)
-    private void logMessageCount() {
+    public void logMessageCount() {
         for (final StatisticsType type : StatisticsType.values()) {
             final Integer sentMessages = sentStatisticsMap.get(type);
 
