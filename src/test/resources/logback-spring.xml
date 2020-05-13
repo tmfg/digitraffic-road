@@ -9,18 +9,6 @@
         </encoder>
     </appender>
 
-    <appender name="NULL" class="ch.qos.logback.core.helpers.NOPAppender" />
-
-    <!-- debugging log -->
-    <logger name="net.bull.javamelody" additivity="false">
-        <appender-ref ref="NULL" />
-    </logger>
-
-    <!-- PerformanceMonitorAspect log -->
-    <logger name="PerformanceMonitor" additivity="false">
-        <appender-ref ref="NULL" />
-    </logger>
-
     <root level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
     </root>
