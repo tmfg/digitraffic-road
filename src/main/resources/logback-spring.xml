@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <springProperty scope="context" name="appType" source="app.type" defaultValue="-"/>
+    <springProperty scope="context" name="app" source="app.type" defaultValue="-"/>
     <springProperty scope="context" name="activeProfiles" source="spring.profiles.active" defaultValue="-"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app":"road-${app}"}</customFields>
+        </encoder>
     </appender>
 
     <root level="INFO">
