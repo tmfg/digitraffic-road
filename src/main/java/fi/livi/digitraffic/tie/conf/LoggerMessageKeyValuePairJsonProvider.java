@@ -21,7 +21,7 @@ import net.logstash.logback.composite.AbstractJsonProvider;
 public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<ILoggingEvent> {
 
     @Override
-    public void writeTo(JsonGenerator generator, ILoggingEvent event) {
+    public void writeTo(final JsonGenerator generator, final ILoggingEvent event) {
 
         final String message = event.getFormattedMessage();
 
