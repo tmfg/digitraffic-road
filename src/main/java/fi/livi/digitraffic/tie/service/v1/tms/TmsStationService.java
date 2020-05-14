@@ -138,7 +138,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Transactional
     public UpdateStatus updateOrInsertTmsStation(LamAsemaVO lam) {
-        TmsStation existingTms = findTmsStationByLotjuId(lam.getId());
+        final TmsStation existingTms = findTmsStationByLotjuId(lam.getId());
 
         if (existingTms != null) {
             final int hash = HashCodeBuilder.reflectionHashCode(existingTms);
@@ -156,7 +156,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             updateTmsStationAttributes(lam, newTms);
             tmsStationRepository.save(newTms);
 
-            log.info("Created new newTmsCount={}", newTms);
+            log.info("Created new {}", newTms);
             return UpdateStatus.INSERTED;
         }
     }

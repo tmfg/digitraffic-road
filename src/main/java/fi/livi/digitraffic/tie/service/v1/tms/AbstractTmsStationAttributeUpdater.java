@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.tms;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
@@ -33,7 +35,7 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         to.setNameEn(from.getNimiEn());
         to.setLatitude(from.getLatitudi());
         to.setLongitude(from.getLongitudi());
-        to.setAltitude(from.getKorkeus());
+        setAltitude(to, from.getKorkeus());
         to.setCollectionInterval(from.getKeruuVali());
         to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
         to.setMunicipality(from.getKunta());
@@ -50,7 +52,16 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         to.setPurpose(from.getKayttotarkoitus());
 
         return updateRoadAddressAttributes(from.getTieosoite(), to.getRoadAddress()) ||
-                HashCodeBuilder.reflectionHashCode(to) != hash;
+               HashCodeBuilder.reflectionHashCode(to) != hash;
+    }
+
+    // Set altitude only if there id diff as from db it comes as 0.00 and from data as 0 -> hash changes
+    private static void setAltitude(RoadStation to, final BigDecimal korkeus) {
+        if (to.getAltitude() != null && korkeus != null) {
+            if (korkeus.compareTo(to.getAltitude()) != 0) {
+                to.setAltitude(korkeus);
+            }
+        }
     }
 
     public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
