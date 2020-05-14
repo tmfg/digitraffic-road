@@ -59,7 +59,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
         final int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
 
-        final Collection invalid = CollectionUtils.subtract(allLamLaskennallinenAnturis, toUpdate);
+        final Collection<LamLaskennallinenAnturiVO> invalid = CollectionUtils.subtract(allLamLaskennallinenAnturis, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
         for (LamLaskennallinenAnturiVO anturi : toUpdate) {
