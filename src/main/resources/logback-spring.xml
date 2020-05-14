@@ -19,7 +19,7 @@
         </encoder>
     </appender>
 
-     JSON log for AWS
+    <!-- JSON logger for AWS -->
     <springProfile name="aws">
         <root level="INFO">
             <appender-ref ref="CONSOLE_JSON" />
