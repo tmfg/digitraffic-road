@@ -77,7 +77,7 @@ public class WeatherStationUpdater  {
             tiesaaAsemas.stream().filter(this::validate).collect(Collectors.toList());
 
         final Collection invalid = CollectionUtils.subtract(tiesaaAsemas, toUpdate);
-        invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
+        invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
         List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaAsemaVO::getId).collect(Collectors.toList());
         int obsoleted = roadStationUpdateService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.WEATHER_STATION, notToObsoleteLotjuIds);
