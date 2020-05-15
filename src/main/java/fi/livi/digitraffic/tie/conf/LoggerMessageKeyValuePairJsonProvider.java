@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,22 +21,19 @@ import net.logstash.logback.composite.AbstractJsonProvider;
  */
 public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<ILoggingEvent> {
 
+    private final static Splitter spaceSplitter = Splitter.on(' ').omitEmptyStrings().trimResults();
+    private final static Pattern tagsPattern = Pattern.compile("[<][^>]*[>]");
+
     @Override
     public void writeTo(final JsonGenerator generator, final ILoggingEvent event) {
 
-        final String message = event.getFormattedMessage();
+        final String formattedMessage = event.getFormattedMessage();
 
-        final List<Pair<String, String>> kvPairs = Splitter
-            .on(' ') // split message by spaces
-            .omitEmptyStrings()
-            .trimResults()
-            .splitToList(message)
-            .stream()
-            .map(kv -> kv.split("=")) // split message chunks by =
-            // Filter empty key or value pairs
-            .filter(kv -> kv.length > 1 && StringUtils.isNotBlank(kv[0]) && StringUtils.isNotBlank(kv[1]))
-            .map(kv -> Pair.of(kv[0], kv[1]))
-            .collect(Collectors.toList());
+        if (StringUtils.isBlank(formattedMessage)) {
+            return;
+        }
+
+        final List<Pair<String, String>> kvPairs = parseKeyValuePairs(formattedMessage);
 
         if (kvPairs.isEmpty()) {
             return;
@@ -52,5 +50,20 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
                 }
             }
         });
+    }
+
+    private static List<Pair<String, String>> parseKeyValuePairs(final String formattedMessage) {
+        final String message = stripXmlTags(formattedMessage);
+        return spaceSplitter.splitToList(message)
+            .stream()
+            .map(kv -> kv.split("=")) // split message chunks by =
+            // Filter empty key or value pairs
+            .filter(kv -> kv.length > 1 && StringUtils.isNotBlank(kv[0]) && StringUtils.isNotBlank(kv[1]))
+            .map(kv -> Pair.of(kv[0], kv[1]))
+            .collect(Collectors.toList());
+    }
+
+    private static String stripXmlTags(final String message) {
+        return tagsPattern.matcher(message).replaceAll(" ");
     }
 }
