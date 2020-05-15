@@ -21,6 +21,7 @@ public class SensorValueUpdateParameterDto {
     private final OffsetDateTime timeWindowEnd;
 
     public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<LAMRealtimeProtos.Lam.Anturi> wrapper, final TimestampCache timestampCache) {
+
         final LAMRealtimeProtos.Lam.Anturi anturi = wrapper.getAnturi();
         this.value = BigDecimal.valueOf(anturi.getArvo());
         this.measured = timestampCache.get(wrapper.getAika());
@@ -31,6 +32,7 @@ public class SensorValueUpdateParameterDto {
         this.timeWindowEnd = anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null;
     }
 
+/**
     public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<LAMRealtimeProtos.Lam.Anturi> wrapper, final Long roadStationId, final TimestampCache timestampCache) {
         final LAMRealtimeProtos.Lam.Anturi anturi = wrapper.getAnturi();
         this.value = BigDecimal.valueOf(anturi.getArvo());
@@ -41,12 +43,12 @@ public class SensorValueUpdateParameterDto {
         this.timeWindowStart = anturi.hasAikaikkunaAlku() ? timestampCache.get(anturi.getAikaikkunaAlku()) : null;
         this.timeWindowEnd = anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null;
     }
-
-    public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<TiesaaProtos.TiesaaMittatieto.Anturi> wrapper, final TimestampCache timestampCache, final Long roadStationId) {
+*/
+    public SensorValueUpdateParameterDto(final TimestampCache timestampCache, final LotjuAnturiWrapper<TiesaaProtos.TiesaaMittatieto.Anturi> wrapper) {
         final TiesaaProtos.TiesaaMittatieto.Anturi anturi = wrapper.getAnturi();
         this.value = NumberConverter.convertAnturiValueToBigDecimal(anturi.getArvo());
         this.measured = timestampCache.get(wrapper.getAika());
-        this.roadStationId = roadStationId;
+        this.roadStationId = wrapper.getRoadStationId();
         this.sensorLotjuId = anturi.getLaskennallinenAnturiId();
         this.stationType = RoadStationType.WEATHER_STATION.name();
         this.timeWindowStart = null;

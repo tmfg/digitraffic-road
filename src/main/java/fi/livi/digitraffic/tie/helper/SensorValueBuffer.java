@@ -1,18 +1,20 @@
 package fi.livi.digitraffic.tie.helper;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import fi.livi.digitraffic.tie.service.v1.LotjuAnturiWrapper;
 
 public class SensorValueBuffer<T> {
     private static final Object LOCK = new Object();
+    // <roadStationId, Map<sensorId, object>
     private Map<Long, Map<Long, LotjuAnturiWrapper<T>>> map = new HashMap<>();
 
-    private List<String> changes = new ArrayList<>();
-
+    //private List<String> changes = new ArrayList<>();
+    private int incomingCount = 0;
     private int updateElementCounter = 0;
 
     public void putValues(final List<LotjuAnturiWrapper<T>> values) {
@@ -29,6 +31,8 @@ public class SensorValueBuffer<T> {
 
         // <sensor_id, wrapper>
         final Map<Long, LotjuAnturiWrapper<T>> roadStationMap = map.get(roadStationId);
+
+        incomingCount++;
 
         if (roadStationMap == null) {
             final Map<Long, LotjuAnturiWrapper<T>> tmp = new HashMap<>();
@@ -58,7 +62,7 @@ public class SensorValueBuffer<T> {
                 updateElementCounter++;
             }
 
-                /**
+                /** Debug
                 // Is value changed
                 if (!current.getValue().equals(candidateDto.getValue())) {
                     changes.add("rsid: " + current.getRoadStationId()
@@ -75,13 +79,13 @@ public class SensorValueBuffer<T> {
     }
 
     public List<LotjuAnturiWrapper<T>> getValues() {
-        List<LotjuAnturiWrapper<T>> result = new ArrayList<>();
+        List<LotjuAnturiWrapper<T>> result = null;
 
         synchronized (LOCK) {
-            map.values().stream()
-                .forEach(roadStation ->
-                    result.addAll(roadStation.values())
-                );
+            result = map.values().stream()
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
 
             map.clear();
         }
@@ -89,9 +93,7 @@ public class SensorValueBuffer<T> {
         return result;
     }
 
-    /**
-     public void status() {
-     System.out.println("***\nstations: " + map.size() + "\nanturit: " + map.values().stream().mapToInt(m -> m.size()).sum());
-     }
-     */
+    // Just for debug
+    public int getIncomingCount() { return incomingCount; }
+    public void resetIncomingCount() { incomingCount = 0; }
 }
