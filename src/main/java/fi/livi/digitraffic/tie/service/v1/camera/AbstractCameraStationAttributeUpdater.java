@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 
 import static fi.livi.digitraffic.tie.model.RoadStationType.CAMERA_STATION;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -60,7 +61,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         to.setNameEn(from.getNimiEn());
         to.setLatitude(from.getLatitudi());
         to.setLongitude(from.getLongitudi());
-        to.setAltitude(from.getKorkeus());
+        setAltitude(to, from.getKorkeus());
         to.setCollectionInterval(from.getKeruuVali());
         to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
         to.setMunicipality(from.getKunta());
@@ -78,6 +79,15 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
 
         return updateRoadAddressAttributes(from.getTieosoite(), to.getRoadAddress()) ||
                 HashCodeBuilder.reflectionHashCode(to) != hash;
+    }
+
+    // Set altitude only if there id diff as from db it comes as 0.00 and from data as 0 -> hash changes
+    private static void setAltitude(RoadStation to, final BigDecimal korkeus) {
+        if (to.getAltitude() != null && korkeus != null) {
+            if (korkeus.compareTo(to.getAltitude()) != 0) {
+                to.setAltitude(korkeus);
+            }
+        }
     }
 
     public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
