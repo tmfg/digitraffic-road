@@ -22,7 +22,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +39,10 @@ import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
-import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.VehicleClass;
@@ -225,9 +225,9 @@ public class RoadStationSensorService {
         final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION, anturi.getId());
 
         if (sensor != null) {
-            final String before = ReflectionToStringBuilder.toString(sensor);
+            final String before = ToStringHelper.toStringFull(sensor);
             if ( updateRoadStationSensorAttributes(anturi, sensor) ) {
-                log.info("Updated RoadStationSensor:\n{} -> \n{}",  before , ReflectionToStringBuilder.toString(sensor));
+                log.info("Updated RoadStationSensor:\n{} -> \n{}",  before , ToStringHelper.toStringFull(sensor));
                 return UpdateStatus.UPDATED;
             }
             return UpdateStatus.NOT_UPDATED;
@@ -246,9 +246,9 @@ public class RoadStationSensorService {
         final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.TMS_STATION, anturi.getId());
 
         if (sensor != null) {
-            final String before = ReflectionToStringBuilder.toString(sensor);
+            final String before = ToStringHelper.toStringFull(sensor);
             if ( updateRoadStationSensorAttributes(anturi, sensor) ) {
-                log.info("Updated RoadStationSensor:\n{} -> \n{}",  before , ReflectionToStringBuilder.toString(sensor));
+                log.info("Updated RoadStationSensor:\n{} -> \n{}",  before , ToStringHelper.toStringFull(sensor));
                 return UpdateStatus.UPDATED;
             }
             return UpdateStatus.NOT_UPDATED;

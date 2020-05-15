@@ -69,10 +69,10 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         return result;
     }
 
-    private ResultActions getLatestTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
+    private ResultActions getLatestTrackingsJson(final Instant from, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
         final String url = API_V2_BASE_PATH + API_DATA_PART_PATH + MAINTENANCE_TRACKINGS_PATH + "/latest";
-            String.format(Locale.US, "?from=%s&to=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), to.toString(), xMin, yMin, xMax, yMax, tasksParams);
+            String.format(Locale.US, "?from=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
@@ -210,7 +210,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         log.info("Machine count {}", machineCount);
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
         final ResultActions latestResult = getLatestTrackingsJson(
-            now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
+            now.toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))

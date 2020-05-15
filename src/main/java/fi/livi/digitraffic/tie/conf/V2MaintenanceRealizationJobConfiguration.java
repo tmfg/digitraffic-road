@@ -39,6 +39,7 @@ public class V2MaintenanceRealizationJobConfiguration {
         final StopWatch start = StopWatch.createStarted();
         long count = 0;
         long totalCount = 0;
+        String test = null;
         do {
             if ( lockingService.tryLock(LOCK_NAME, 300) ) {
                 count = maintenanceUpdateService.handleUnhandledRealizations(100);

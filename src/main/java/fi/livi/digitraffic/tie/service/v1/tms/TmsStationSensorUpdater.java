@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
@@ -59,8 +59,8 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
         final int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
 
-        final Collection invalid = CollectionUtils.subtract(allLamLaskennallinenAnturis, toUpdate);
-        invalid.forEach(i -> log.warn("Found invalid {}", ReflectionToStringBuilder.toString(i)));
+        final Collection<LamLaskennallinenAnturiVO> invalid = CollectionUtils.subtract(allLamLaskennallinenAnturis, toUpdate);
+        invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
         for (LamLaskennallinenAnturiVO anturi : toUpdate) {
             UpdateStatus result = roadStationSensorService.updateOrInsert(anturi);
