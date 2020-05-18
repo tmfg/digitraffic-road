@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.google.common.base.Splitter;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import net.logstash.logback.composite.AbstractJsonProvider;
 
 /**
@@ -64,7 +63,8 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
             return Boolean.valueOf(value);
         }
         try {
-            return DateHelper.parseToInstant(value);
+            // Iso date time value
+            return ZonedDateTime.parse(value).toInstant().toString();
         } catch (DateTimeParseException e) {
             // empty
         }
@@ -73,7 +73,6 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
         } catch (ParseException e) {
             return value;
         }
-
     }
 
     private static List<Pair<String, String>> parseKeyValuePairs(final String formattedMessage) {
