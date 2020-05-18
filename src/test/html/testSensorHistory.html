@@ -1,0 +1,175 @@
+<html>
+<head>
+    <style></style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="jsonpath-0.8.0.js"></script>
+    <script>
+        var url_all_stations = "http://tie-test.digitraffic.fi/api/v1/metadata/weather-stations?lastUpdated=false";
+        var url_all_sensors_meta = "http://tie-test.digitraffic.fi/api/v1/metadata/weather-sensors?lastUpdated=false";
+        var url_history = "http://tie-test.digitraffic.fi/api/beta/weather-history-data/";
+
+        var station;
+        var sensor;
+
+        // List info
+        var stations_list;
+        var sensors_meta;
+
+        function get_something(request_url, callback) {
+            xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    try {
+                        callback(JSON.parse(this.responseText));
+                    } catch(e) {
+                        console.log(e);
+                    }
+                }
+            }
+
+            xmlhttp.onerror = function() {
+                console.log(this);
+            }
+
+            xmlhttp.open("GET", request_url, true);
+            xmlhttp.send();
+        }
+
+        function load_history() {
+            station = document.getElementById("myStations").value;
+            sensor = document.getElementById("mySensors").value;
+
+            var time = get24Time();
+
+            get_something(url_history + station + "/" + sensor + "?from=" + time, draw_chart);
+            //get_history(station, sensor);
+        }
+
+        function update_sensor_list() {
+            var selectedStation = document.getElementById("myStations").value;
+            console.log("update sensors list: ", selectedStation);
+
+            // This is way too slow (totally crab)
+            //var sensorList = jsonPath(stations_list, "$.features.[?(@.id==" + selectedStation + ")]")[0].properties.stationSensors;
+            var sensorList;
+
+            for (var i = 0; i < stations_list.features.length; i++) {
+                if (stations_list.features[i].id == selectedStation) {
+                    sensorList = stations_list.features[i].properties.stationSensors;
+
+                    break;
+                }
+            }
+
+            //console.log(sensorList);
+
+            var sensors = document.getElementById("mySensors");
+            while (sensors.options.length > 0) {
+                sensors.remove(0);
+            }
+
+            for (var i of sensorList) {
+                var name = jsonPath(sensors_meta, "$.roadStationSensors[?(@.id==" + i + ")]")[0].description;
+                //console.log(name);
+
+                var option = document.createElement("option");
+                option.text = "(" + i + ") " + name;
+                option.value = i;
+
+                sensors.options.add(option);
+            }
+        }
+
+        function draw_chart(myObj) {
+            if (myObj) {
+                var measuredTimes = jsonPath(myObj, "$.[*].measuredTime");
+                var values = jsonPath(myObj, "$.[*].sensorValue");
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    // The type of chart we want to create
+                    type: 'line',
+
+                    data: {
+                        labels: measuredTimes,
+                        datasets: [{
+                            label: 'Weather station: ' + station + ', sensor: ' + sensor,
+                            //backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: values
+                        }]
+                    },
+
+                    // Configuration options go here
+                    options: {}
+                });
+            }
+        }
+
+        function get24Time() {
+            var time = new Date();
+            time.setHours(time.getHours() - 24);
+
+            return time.getFullYear() + '-' +
+                appendLeadingZeroes((time.getUTCMonth() + 1))  + '-' +
+                appendLeadingZeroes(time.getUTCDate()) + 'T' +
+                appendLeadingZeroes(time.getUTCHours()) + '%3A' +
+                appendLeadingZeroes(time.getUTCMinutes()) + "%3A00Z";
+        }
+
+        function appendLeadingZeroes(n){
+            if (n <= 9){
+                return "0" + n;
+            }
+            return n
+        }
+
+        function load() {
+            get_something(url_all_sensors_meta, function (resp) {
+                sensors_meta = resp;
+
+                console.log("sensor meta: ", sensors_meta);
+            });
+
+            get_something(url_all_stations, function(resp) {
+                stations_list = resp;
+                console.log("stations: ", resp);
+
+                var loopList = jsonPath(resp, "$.features")[0];
+
+                var select = document.getElementById("myStations");
+
+                for (var i = 0; i < loopList.length; i++) {
+                    var option = document.createElement("option");
+                    //console.log(stations_list[i]);
+                    option.text = "(" + loopList[i].properties.roadStationId + ") " + loopList[i].properties.name;
+                    option.value = loopList[i].properties.roadStationId;
+
+                    select.options.add(option);
+                }
+
+                update_sensor_list();
+            });
+        }
+    </script>
+</head>
+<body>
+<h1>sääasemien 24h-historia</h1>
+
+<div style="padding-bottom: 20px">
+    Select weather station:
+    <select id="myStations" onchange="update_sensor_list()"></select>
+    Select sensor:
+    <select id="mySensors">
+        <option name="-" />
+    </select>
+
+    <button onclick="load_history()">Lataa</button>
+</div>
+
+<canvas id="myChart" width="800px" height="500px"></canvas>
+
+    <script>load();</script>
+</body>
+</html>

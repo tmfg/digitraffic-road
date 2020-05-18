@@ -172,6 +172,14 @@ public final class DateHelper {
         return null;
     }
 
+    public static Date toDate(final ZonedDateTime from) {
+        if (from != null) {
+            return Date.from(from.toInstant());
+        }
+
+        return new Date();
+    }
+
     public static String toIsoDateTimeWithMillis(final Instant from) {
         return ISO_DATE_TIME_WITH_MILLIS_AT_UTC.format(from);
     }

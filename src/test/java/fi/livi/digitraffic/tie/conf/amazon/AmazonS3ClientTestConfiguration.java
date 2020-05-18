@@ -18,10 +18,6 @@ import xyz.fabiano.spring.localstack.support.AmazonDockerClientsHolder;
 @ConditionalOnNotWebApplication
 @Configuration
 public class AmazonS3ClientTestConfiguration {
-
-    @Value("${dt.amazon.s3.weathercam.bucketName}")
-    private String weathercamBucketName;
-
     @Bean
     public LocalstackDocker localstackDocker() {
         return LocalstackDocker.getLocalstackDocker();
@@ -44,4 +40,5 @@ public class AmazonS3ClientTestConfiguration {
                 .withRegion(region);
         return builder.build();
     }
+
 }

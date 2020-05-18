@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.dao.v1;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.QueryHint;
 
@@ -34,4 +35,9 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
     RoadStation findByTypeAndNaturalId(final RoadStationType type, final Long naturalId);
 
     RoadStation findByTypeAndLotjuId(final RoadStationType tmsStation, final Long id);
+
+    @Query("SELECT rs.id\n" +
+               "FROM RoadStation rs\n" +
+               "WHERE rs.naturalId = :naturalId")
+    Optional<Long> findByRoadStationId(@Param("naturalId") final long naturalId);
 }

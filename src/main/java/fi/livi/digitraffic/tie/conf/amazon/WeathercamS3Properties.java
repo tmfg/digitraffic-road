@@ -4,29 +4,26 @@ import java.net.URI;
 
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
 
-public class WeathercamS3Properties {
-
-    private final String s3WeathercamBucketName;
-    private final String s3WeathercamRegion;
+public class WeathercamS3Properties extends S3Properties {
     private final String s3WeathercamKeyRegexp = "^C([0-9]{7})\\.jpg$";
     private final int historyMaxAgeHours;
     private final String weathercamBaseUrl;
 
     public WeathercamS3Properties(final String s3WeathercamBucketName, final String s3WeathercamRegion,
                                   final int historyMaxAgeHours, final String weathercamBaseUrl) {
+        super(s3WeathercamBucketName);
 
-        this.s3WeathercamBucketName = s3WeathercamBucketName;
-        this.s3WeathercamRegion = s3WeathercamRegion;
+        setS3Region(s3WeathercamRegion);
         this.historyMaxAgeHours = historyMaxAgeHours;
         this.weathercamBaseUrl = weathercamBaseUrl;
     }
 
     public String getS3WeathercamBucketName() {
-        return s3WeathercamBucketName;
+        return s3BucketName;
     }
 
     public String getS3WeathercamRegion() {
-        return s3WeathercamRegion;
+        return getS3Region();
     }
 
     public String getS3WeathercamKeyRegexp() {

@@ -8,10 +8,14 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.DataController.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
+
 import static java.time.temporal.ChronoUnit.HOURS;
+
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -36,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -43,10 +49,14 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
+
+import fi.livi.digitraffic.tie.service.v1.WeatherService;
+
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingTaskDto;
+
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
@@ -73,6 +83,7 @@ public class V2DataController {
     private final ForecastSectionDataService forecastSectionDataService;
     private final V2VariableSignService v2VariableSignService;
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
+    private final WeatherService weatherService;
     private final V2Datex2DataService v2Datex2DataService;
     private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
 
@@ -85,12 +96,14 @@ public class V2DataController {
                             final V2VariableSignService v2VariableSignService,
                             final CameraPresetHistoryDataService cameraPresetHistoryDataService,
                             final V2Datex2DataService v2Datex2DataService,
-                            final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService) {
+                            final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService,
+                            final  WeatherService weatherService) {
         this.forecastSectionDataService = forecastSectionDataService;
         this.v2VariableSignService = v2VariableSignService;
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
         this.v2Datex2DataService = v2Datex2DataService;
         this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
+        this.weatherService = weatherService;
     }
 
     @ApiOperation("Current data of Weather Forecast Sections V2")
@@ -155,6 +168,47 @@ public class V2DataController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
     public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
         return v2VariableSignService.listVariableSignHistory(deviceId);
+    }
+
+    //@ApiOperation("List the history of sensor values from the weather road station")
+    //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
+    //@ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
+    //               @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter(s)")})
+    public List<WeatherSensorValueHistoryDto> weatherDataHistory(
+        @ApiParam(value = "Weather station id", required = true)
+        @PathVariable
+        final long stationId,
+
+        @ApiParam("Fetch history after given date time")
+        @RequestParam(value="from", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime from,
+
+        @ApiParam("Limit history to given date time")
+        @RequestParam(value="to", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime to) {
+
+        return weatherService.findWeatherHistoryData(stationId, from, to);
+    }
+
+    //@ApiOperation("List the history of sensor value from the weather road station")
+    //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
+    //@ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
+    //              @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
+    public List<WeatherSensorValueHistoryDto> weatherDataHistory(
+        @ApiParam(value = "Weather Station id", required = true)
+        @PathVariable final long stationId,
+
+        @ApiParam(value = "Sensor id", required = true)
+        @PathVariable final long sensorId,
+
+        @ApiParam("Fetch history after given time")
+        @RequestParam(value="from", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime from) {
+
+        return weatherService.findWeatherHistoryData(stationId, sensorId, from);
     }
 
     @ApiOperation("Weather camera history for given camera or preset")
