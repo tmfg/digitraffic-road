@@ -30,7 +30,7 @@ public class DateHelperTest extends AbstractSpringJUnitTest {
 
     @Test
     public void getNewest() {
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
         final ZonedDateTime older = now.minusNanos(1);
         final ZonedDateTime newest = DateHelper.getNewest(now, older);
         Assert.assertEquals(now, newest);
