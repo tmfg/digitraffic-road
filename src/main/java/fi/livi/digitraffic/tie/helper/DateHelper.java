@@ -48,12 +48,11 @@ public final class DateHelper {
 
     public static ZonedDateTime getNewest(final ZonedDateTime first, final ZonedDateTime second) {
         if (first == null) {
-            return second;
+            return toZonedDateTimeAtUtc(second);
         } else if(second == null || first.isAfter(second)) {
-            return first;
+            return toZonedDateTimeAtUtc(first);
         }
-
-        return second;
+        return toZonedDateTimeAtUtc(second);
     }
 
     public static ZonedDateTime toZonedDateTimeAtUtc(final XMLGregorianCalendar calendar) {

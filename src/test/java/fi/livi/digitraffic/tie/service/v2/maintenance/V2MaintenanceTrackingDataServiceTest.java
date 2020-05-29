@@ -223,7 +223,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // Only the latest one should be found
         final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+10)).features;
         assertCollectionSize(1, latestFeatures);
-        assertEquals(startTime.plusMinutes(10+10+9), latestFeatures.get(0).getProperties().time);
+        assertEquals(startTime.plusMinutes(10+10+9), latestFeatures.get(0).getProperties().getTime());
         assertAllHasOnlyPointGeometries(latestFeatures);
     }
 
@@ -246,7 +246,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // Only the latest one should be found
         final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(1+9)).features;
         assertCollectionSize(1, latestFeatures);
-        assertEquals(startTime.plusMinutes(1+9), latestFeatures.get(0).getProperties().time);
+        assertEquals(startTime.plusMinutes(1+9), latestFeatures.get(0).getProperties().getTime());
         assertAllHasOnlyPointGeometries(latestFeatures);
     }
 

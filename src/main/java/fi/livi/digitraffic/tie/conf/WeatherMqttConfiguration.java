@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
+import static fi.livi.digitraffic.tie.service.v1.MqttRelayService.StatisticsType.WEATHER;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,6 @@ import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 @ConditionalOnNotWebApplication
 @Component
 public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(WeatherMqttConfiguration.class);
-
     // weather/{roadStationId}/{sensorId}
     private static final String WEATHER_TOPIC = "weather/%d/%d";
     private static final String WEATHER_STATUS_TOPIC = "weather/status";
@@ -31,16 +31,16 @@ public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
                                     final ObjectMapper objectMapper,
                                     final LockingService lockingService) {
 
-        super(mqttRelay, roadStationSensorService, objectMapper, RoadStationType.WEATHER_STATION, WEATHER_STATUS_TOPIC, WEATHER_TOPIC, log,
-              lockingService, WeatherMqttConfiguration.class.getSimpleName());
+        super(LoggerFactory.getLogger(WeatherMqttConfiguration.class),
+              mqttRelay, roadStationSensorService, objectMapper, RoadStationType.WEATHER_STATION, WEATHER_TOPIC, WEATHER_STATUS_TOPIC, lockingService, WEATHER);
     }
 
     @Scheduled(fixedDelayString = "${mqtt.weather.pollingIntervalMs}")
-    public void pollData() {
+    public void pollAndSendMessages() {
         try {
-            handleData();
+            super.pollAndSendMessages();
         } catch(final Exception e) {
-            log.error("polling failed", e);
+            log.error("Polling failed", e);
         }
     }
 }

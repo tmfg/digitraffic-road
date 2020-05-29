@@ -25,7 +25,7 @@ public class MqttRelayService {
     private final BlockingQueue<Pair<String, String>> messageList = new LinkedBlockingQueue<>();
     private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
 
-    public enum StatisticsType {TMS, WEATHER}
+    public enum StatisticsType {TMS, WEATHER, MAINTENANCE_TRACKING}
 
     @Autowired
     public MqttRelayService(final MqttConfig.MqttGateway mqttGateway) {
@@ -54,9 +54,20 @@ public class MqttRelayService {
      * @param payLoad
      */
     public void sendMqttMessage(final String topic, final String payLoad) {
-        messageList.add(Pair.of(topic, payLoad));
+        sendMqttMessage(topic, payLoad, null);
+    }
 
+    /**
+     * Add mqtt message to messagelist.  Messagelist is synchronized and threadsafe.
+     * @param topic
+     * @param payLoad
+     */
+    public void sendMqttMessage(final String topic, final String payLoad, final StatisticsType statisticsType) {
+        messageList.add(Pair.of(topic, payLoad));
         maxQueueLength.accumulate(messageList.size());
+        if (statisticsType != null) {
+            updateSentMqttStatistics(statisticsType, 1);
+        }
     }
 
     /**
@@ -64,7 +75,7 @@ public class MqttRelayService {
      * @param type
      * @param messages
      */
-    public synchronized void sentMqttStatistics(final StatisticsType type, final int messages) {
+    public synchronized void updateSentMqttStatistics(final StatisticsType type, final int messages) {
         if (sentStatisticsMap.containsKey(type)) {
             sentStatisticsMap.put(type, sentStatisticsMap.get(type) + messages);
         } else {

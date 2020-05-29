@@ -106,6 +106,7 @@ public class V2MaintenanceTrackingDataService {
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
     }
 
+    @Transactional(readOnly = true)
     public MaintenanceTrackingFeature getMaintenanceTrackingById(final long id) {
         final MaintenanceTracking tracking = v2MaintenanceTrackingRepository.getOne(id);
         return convertToTrackingFeature(tracking);
@@ -122,15 +123,15 @@ public class V2MaintenanceTrackingDataService {
         }).collect(Collectors.toList());
     }
 
-    private List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTracking> trackings) {
-        return trackings.stream().map(this::convertToTrackingFeature).collect(Collectors.toList());
+    private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTracking> trackings) {
+        return trackings.stream().map(V2MaintenanceTrackingDataService::convertToTrackingFeature).collect(Collectors.toList());
     }
 
-    private List<MaintenanceTrackingLatestFeature> convertToTrackingLatestFeatures(final List<MaintenanceTracking> trackings) {
-        return trackings.stream().map(this::convertToTrackingLatestFeature).collect(Collectors.toList());
+    private static List<MaintenanceTrackingLatestFeature> convertToTrackingLatestFeatures(final List<MaintenanceTracking> trackings) {
+        return trackings.stream().map(V2MaintenanceTrackingDataService::convertToTrackingLatestFeature).collect(Collectors.toList());
     }
 
-    private MaintenanceTrackingFeature convertToTrackingFeature(final MaintenanceTracking tracking) {
+    private static MaintenanceTrackingFeature convertToTrackingFeature(final MaintenanceTracking tracking) {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, false);
         final MaintenanceTrackingProperties properties =
             new MaintenanceTrackingProperties(tracking.getId(),
@@ -142,7 +143,7 @@ public class V2MaintenanceTrackingDataService {
         return new MaintenanceTrackingFeature(geometry, properties);
     }
 
-    private MaintenanceTrackingLatestFeature convertToTrackingLatestFeature(final MaintenanceTracking tracking) {
+    public static MaintenanceTrackingLatestFeature convertToTrackingLatestFeature(final MaintenanceTracking tracking) {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, true);
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
@@ -156,13 +157,11 @@ public class V2MaintenanceTrackingDataService {
      * @param latestPointGeometry if true then only the latest point will be returned as the geometry.
      * @return either Point or LineString geometry
      */
-    private Geometry<?> convertToGeoJSONGeometry(final MaintenanceTracking tracking, boolean latestPointGeometry) {
+    private static Geometry<?> convertToGeoJSONGeometry(final MaintenanceTracking tracking, boolean latestPointGeometry) {
         if (!latestPointGeometry && tracking.getLineString() != null) {
-            return new LineString(PostgisGeometryHelper.convertToGeoJSONGeometryCoordinates(tracking.getLineString()));
+            return PostgisGeometryHelper.convertToGeoJSONGeometry(tracking.getLineString());
         } else {
-            final Coordinate coordinate = tracking.getLastPoint().getCoordinate();
-            return new Point(coordinate.getX(), coordinate.getY(), coordinate.getZ());
+            return PostgisGeometryHelper.convertToGeoJSONGeometry(tracking.getLastPoint());
         }
-
     }
 }

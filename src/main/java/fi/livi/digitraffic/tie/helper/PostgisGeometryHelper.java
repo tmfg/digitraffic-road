@@ -67,6 +67,21 @@ public class PostgisGeometryHelper {
             .collect(Collectors.toList());
     }
 
+    public static List<Double> convertToGeoJSONGeometryCoordinates(final Point point) {
+        final Coordinate c = point.getCoordinate();
+        return Arrays.asList(c.getX(), c.getY(), c.getZ());
+    }
+
+    public static fi.livi.digitraffic.tie.metadata.geojson.Geometry convertToGeoJSONGeometry(final Geometry geometry)
+        throws IllegalArgumentException {
+        if (geometry.getNumPoints() > 1) {
+            return new fi.livi.digitraffic.tie.metadata.geojson.LineString(convertToGeoJSONGeometryCoordinates((LineString)geometry));
+        } else if (geometry.getNumPoints() == 1) {
+            return new fi.livi.digitraffic.tie.metadata.geojson.Point(convertToGeoJSONGeometryCoordinates((Point) geometry));
+        }
+        throw new IllegalArgumentException("Geometry must be LineString or Point");
+    }
+
     /**
      * Returns the distance between this and given GeoJSON point in kilometers. Doesn't take in account altitude.
      * Based on the following Stack Overflow question:
