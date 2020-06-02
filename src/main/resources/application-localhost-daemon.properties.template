@@ -91,6 +91,8 @@ mqtt.enabled=true
 mqtt.tms.enabled=true
 # Is WEATHER messages available
 mqtt.weather.enabled=true
+# Is maintenane tracking messages available
+mqtt.maintenance.tracking.enabled=true
 
 # Developer life improvements
 logging.level.root=INFO

@@ -73,6 +73,7 @@ public abstract class AbstractMqttConfiguration {
 
     private void sendMqttMessage(final DataMessage value) {
         try {
+            log.info("method=sendMqttMessage {}", value);
             mqttRelay.sendMqttMessage(value.getTopic(),
                                       objectMapper.writeValueAsString(value.getData()),
                                       statisticsType);
@@ -166,6 +167,11 @@ public abstract class AbstractMqttConfiguration {
 
         public Object getData() {
             return data;
+        }
+
+        @Override
+        public String toString() {
+            return "DataMessage{lastUpdated: " + lastUpdated + ", topic: '" + topic + '\'' + ", data: " + data + '}';
         }
     }
 }

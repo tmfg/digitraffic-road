@@ -45,11 +45,12 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
     }
 
     public void addData(final MaintenanceTrackingLatestFeature feature) {
-        log.info("method=append feature {}", feature);
         messageQueue.add(feature);
+        log.info("method=addData messageQueue size {}", messageQueue.size());
     }
 
     protected List<DataMessage> pollMessages() {
+        log.info("method=pollMessages messageQueue size {}", messageQueue.size());
         final List<DataMessage> messages = new ArrayList<>();
 
         final int size = messageQueue.size();
@@ -59,6 +60,7 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
             count++;
             messages.add(new DataMessage(next.getProperties().getTime(), getTopic(next.getProperties().getId()), next));
         }
+        log.info("method=pollMessages polled count {} messages {} messageQueue size {}", count, messages.size(), messageQueue.size());
         return messages;
     }
 }
