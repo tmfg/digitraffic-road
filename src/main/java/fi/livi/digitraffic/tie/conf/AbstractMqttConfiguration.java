@@ -61,6 +61,7 @@ public abstract class AbstractMqttConfiguration {
         final boolean lockAcquired = lockingService.tryLock(mqttClassName, 60, instanceId);
         if (lockAcquired) {
             final List<DataMessage> messages = pollMessages();
+            log.debug("method=pollAndSendMessages polled {} messages to send", messages.size());
             messages.forEach(this::sendMqttMessage);
         }
     };
@@ -73,13 +74,13 @@ public abstract class AbstractMqttConfiguration {
 
     private void sendMqttMessage(final DataMessage value) {
         try {
-            log.info("method=sendMqttMessage {}", value);
+            log.debug("method=sendMqttMessage {}", value);
             mqttRelay.sendMqttMessage(value.getTopic(),
                                       objectMapper.writeValueAsString(value.getData()),
                                       statisticsType);
         } catch (final JsonProcessingException e) {
             setLastError(ZonedDateTime.now());
-            log.error("Error sending message", e);
+            log.error("method=sendMqttMessage Error sending message", e);
         }
     }
 
@@ -110,7 +111,7 @@ public abstract class AbstractMqttConfiguration {
 
                 mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(message));
             } catch (final Exception e) {
-                log.error("Error sending message", e);
+                log.error("method=sendStatus Error sending message", e);
             }
         }
     }
@@ -171,7 +172,7 @@ public abstract class AbstractMqttConfiguration {
 
         @Override
         public String toString() {
-            return "DataMessage{lastUpdated: " + lastUpdated + ", topic: '" + topic + '\'' + ", data: " + data + '}';
+            return "DataMessage{lastUpdated: " + lastUpdated + ", topic: '" + topic + ", data: " + data + '}';
         }
     }
 }
