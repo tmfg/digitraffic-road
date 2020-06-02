@@ -40,10 +40,8 @@ public class CameraImageS3Writer {
         LAST_MODIFIED_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    CameraImageS3Writer(
-        final AmazonS3 amazonS3Client,
-        final WeathercamS3Properties weathercamS3Properties) {
-        this.amazonS3Client = amazonS3Client;
+    CameraImageS3Writer(final AmazonS3 weathercamS3Client, final WeathercamS3Properties weathercamS3Properties) {
+        this.amazonS3Client = weathercamS3Client;
         this.weathercamS3Properties = weathercamS3Properties;
     }
 

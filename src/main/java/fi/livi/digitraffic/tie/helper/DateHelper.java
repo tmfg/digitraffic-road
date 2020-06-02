@@ -172,11 +172,31 @@ public final class DateHelper {
         return null;
     }
 
+    public static Date toDate(final ZonedDateTime from) {
+        if (from != null) {
+            return Date.from(from.toInstant());
+        }
+
+        return new Date();
+    }
+
     public static String toIsoDateTimeWithMillis(final Instant from) {
         return ISO_DATE_TIME_WITH_MILLIS_AT_UTC.format(from);
     }
 
     public static String toIsoDateTimeWithMillis(final ZonedDateTime from) {
         return ISO_DATE_TIME_WITH_MILLIS_AT_UTC.format(from);
+    }
+
+    public static ZonedDateTime parseToZonedDateAtUtc(final String isoString) {
+        if (isoString != null) {
+            return toZonedDateTimeAtUtc(ZonedDateTime.parse(isoString));
+        } return null;
+    }
+
+    public static Instant parseToInstant(final String isoString) {
+        if (isoString != null) {
+            return ZonedDateTime.parse(isoString).toInstant();
+        } return null;
     }
 }

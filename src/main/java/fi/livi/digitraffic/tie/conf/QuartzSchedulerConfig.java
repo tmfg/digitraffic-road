@@ -57,6 +57,7 @@ import fi.livi.digitraffic.tie.scheduler.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationSensorConstantsMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.WeatherHistoryUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.WeatherStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.WeatherStationsStatusMetadataUpdateJob;
 
@@ -229,6 +230,9 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean weatherHistoryUpdateJobDetail() { return createJobDetail(WeatherHistoryUpdateJob.class); }
+
+    @Bean
     public JobDetailFactoryBean cameraHistoryDeleteJob() {
         return createJobDetail(CameraHistoryDeleteJob.class);
     }
@@ -311,6 +315,11 @@ public class QuartzSchedulerConfig {
     @Bean
     public FactoryBean<? extends Trigger> cameraHistoryDeleteJobTrigger(final JobDetail cameraHistoryDeleteJob) {
         return createTrigger(cameraHistoryDeleteJob);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> weatherHistoryUpdateJobTrigger(final JobDetail weatherHistoryUpdateJobDetail) {
+        return  createTrigger(weatherHistoryUpdateJobDetail);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {

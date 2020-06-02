@@ -1,9 +1,15 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,22 +26,19 @@ import net.logstash.logback.composite.AbstractJsonProvider;
  */
 public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<ILoggingEvent> {
 
+    private final static Splitter spaceSplitter = Splitter.on(' ').omitEmptyStrings().trimResults();
+    private final static Pattern tagsPattern = Pattern.compile("[<][^>]*[>]");
+
     @Override
     public void writeTo(final JsonGenerator generator, final ILoggingEvent event) {
 
-        final String message = event.getFormattedMessage();
+        final String formattedMessage = event.getFormattedMessage();
 
-        final List<Pair<String, String>> kvPairs = Splitter
-            .on(' ') // split message by spaces
-            .omitEmptyStrings()
-            .trimResults()
-            .splitToList(message)
-            .stream()
-            .map(kv -> kv.split("=")) // split message chunks by =
-            // Filter empty key or value pairs
-            .filter(kv -> kv.length > 1 && StringUtils.isNotBlank(kv[0]) && StringUtils.isNotBlank(kv[1]))
-            .map(kv -> Pair.of(kv[0], kv[1]))
-            .collect(Collectors.toList());
+        if (StringUtils.isBlank(formattedMessage)) {
+            return;
+        }
+
+        final List<Pair<String, String>> kvPairs = parseKeyValuePairs(formattedMessage);
 
         if (kvPairs.isEmpty()) {
             return;
@@ -45,12 +48,45 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
         kvPairs.forEach(e -> {
             if (!hasWrittenFieldNames.contains(e.getKey())) {
                 try {
-                    generator.writeObjectField(e.getKey(), e.getValue());
+                    final Object objectValue = getObjectValue(e.getValue());
+                    generator.writeObjectField(e.getKey(), objectValue);
                     hasWrittenFieldNames.add(e.getKey());
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
         });
+    }
+
+    private Object getObjectValue(final String value) {
+        if( "true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value) ) {
+            return Boolean.valueOf(value);
+        }
+        try {
+            // Iso date time value
+            return ZonedDateTime.parse(value).toInstant().toString();
+        } catch (DateTimeParseException e) {
+            // empty
+        }
+        try {
+            return DecimalFormat.getInstance(Locale.ROOT).parse(value);
+        } catch (ParseException e) {
+            return value;
+        }
+    }
+
+    private static List<Pair<String, String>> parseKeyValuePairs(final String formattedMessage) {
+        final String message = stripXmlTags(formattedMessage);
+        return spaceSplitter.splitToList(message)
+            .stream()
+            .map(kv -> kv.split("=")) // split message chunks by =
+            // Filter empty key or value pairs
+            .filter(kv -> kv.length > 1 && StringUtils.isNotBlank(kv[0]) && StringUtils.isNotBlank(kv[1]))
+            .map(kv -> Pair.of(kv[0], kv[1]))
+            .collect(Collectors.toList());
+    }
+
+    private static String stripXmlTags(final String message) {
+        return tagsPattern.matcher(message).replaceAll(" ");
     }
 }

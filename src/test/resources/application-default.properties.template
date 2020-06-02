@@ -55,6 +55,11 @@ dt.amazon.s3.weathercam.bucketName = weathercam-road-test
 dt.amazon.s3.weathercam.userAccessKey = dummy
 dt.amazon.s3.weathercam.userSecretKey = dummy
 
+dt.amazon.s3.sensordata.bucketName = sensordata-road-test
+dt.amazon.s3.sensordata.region = eu-west-1
+dt.amazon.s3.sensordata.userAccessKey = dummy
+dt.amazon.s3.sensordata.userSecretKey = dummy
+
 # JMS settings
 
 # Sonja - disable by commenting url out
