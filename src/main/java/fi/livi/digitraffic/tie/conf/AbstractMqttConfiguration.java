@@ -81,6 +81,7 @@ public abstract class AbstractMqttConfiguration {
             mqttRelay.sendMqttMessage(value.getTopic(),
                                       objectMapper.writeValueAsString(value.getData()),
                                       statisticsType);
+            setLastUpdated(value.getLastUpdated());
         } catch (final JsonProcessingException e) {
             setLastError(ZonedDateTime.now());
             log.error("method=sendMqttMessage Error sending message", e);
