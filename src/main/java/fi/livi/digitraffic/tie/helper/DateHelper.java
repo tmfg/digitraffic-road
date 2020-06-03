@@ -46,7 +46,7 @@ public final class DateHelper {
 
     private DateHelper() {}
 
-    public static ZonedDateTime getNewest(final ZonedDateTime first, final ZonedDateTime second) {
+    public static ZonedDateTime getNewestAtUtc(final ZonedDateTime first, final ZonedDateTime second) {
         if (first == null) {
             return toZonedDateTimeAtUtc(second);
         } else if(second == null || first.isAfter(second)) {
@@ -70,7 +70,7 @@ public final class DateHelper {
     /**
      * Needed because some fields in db are Oracle Date type and Date won't have millis.
      */
-    public static ZonedDateTime toZonedDateTimeWithoutMillis(final XMLGregorianCalendar calendar)  {
+    public static ZonedDateTime toZonedDateTimeWithoutMillisAtUtc(final XMLGregorianCalendar calendar)  {
         if (calendar != null) {
             try {
                 final XMLGregorianCalendar calSeconds =
@@ -132,8 +132,8 @@ public final class DateHelper {
         return toZonedDateTimeAtUtc(Instant.now());
     }
 
-    public static ZonedDateTime getZonedDateTimeNowAtUtcWithoutMillis() {
-        return withoutMillis(toZonedDateTimeAtUtc(Instant.now()));
+    public static ZonedDateTime getZonedDateTimeNowWithoutMillisAtUtc() {
+        return withoutMillisAtUtc(toZonedDateTimeAtUtc(Instant.now()));
     }
 
     public static Instant withoutNanos(final Instant from) {
@@ -150,21 +150,21 @@ public final class DateHelper {
         return null;
     }
 
-    public static ZonedDateTime withoutMillis(final ZonedDateTime from) {
+    public static ZonedDateTime withoutMillisAtUtc(final ZonedDateTime from) {
         if (from != null) {
-            return from.with(MILLI_OF_SECOND, 0);
+            return toZonedDateTimeAtUtc(from.with(MILLI_OF_SECOND, 0));
         }
         return null;
     }
 
-    public static ZonedDateTime toZonedDateTimeWithoutMillis(final Instant from) {
+    public static ZonedDateTime toZonedDateTimeWithoutMillisAtUtc(final Instant from) {
         if (from != null) {
             return toZonedDateTimeAtUtc(withoutMillis(from));
         }
         return null;
     }
 
-    public static ZonedDateTime toZonedDateTimeWithoutNanos(final Instant from) {
+    public static ZonedDateTime toZonedDateTimeWithoutNanosAtUtc(final Instant from) {
         if (from != null) {
             return toZonedDateTimeAtUtc(withoutNanos(from));
         }
@@ -179,11 +179,11 @@ public final class DateHelper {
         return new Date();
     }
 
-    public static String toIsoDateTimeWithMillis(final Instant from) {
+    public static String toIsoDateTimeWithMillisAtUtc(final Instant from) {
         return ISO_DATE_TIME_WITH_MILLIS_AT_UTC.format(from);
     }
 
-    public static String toIsoDateTimeWithMillis(final ZonedDateTime from) {
+    public static String toIsoDateTimeWithMillisAtUtc(final ZonedDateTime from) {
         return ISO_DATE_TIME_WITH_MILLIS_AT_UTC.format(from);
     }
 

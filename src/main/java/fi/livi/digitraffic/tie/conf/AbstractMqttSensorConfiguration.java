@@ -41,7 +41,7 @@ public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfig
             roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(getLastUpdated(), roadStationType);
 
         return sensorValues.stream().map(sv ->
-            new DataMessage(DateHelper.getNewest(getLastUpdated(), sv.getUpdatedTime()),
+            new DataMessage(DateHelper.getNewestAtUtc(getLastUpdated(), sv.getUpdatedTime()),
                             getTopic(sv.getRoadStationNaturalId(), sv.getSensorNaturalId()),
                             sv))
             .collect(Collectors.toList());
