@@ -23,8 +23,6 @@ public abstract class AbstractMqttConfiguration {
     protected final ObjectMapper objectMapper;
     private final String topicStringFormat;
     protected final String statusTopic;
-    protected final LockingService lockingService;
-    private final boolean requireLockForSending;
     private final String mqttClassName;
     protected final long instanceId;
 
@@ -39,8 +37,6 @@ public abstract class AbstractMqttConfiguration {
                                      final ObjectMapper objectMapper,
                                      final String topicStringFormat,
                                      final String statusTopic,
-                                     final LockingService lockingService,
-                                     final boolean requireLockForSending,
                                      final MqttRelayService.StatisticsType statisticsType) {
 
         this.mqttRelay = mqttRelay;
@@ -48,8 +44,6 @@ public abstract class AbstractMqttConfiguration {
         this.topicStringFormat = topicStringFormat;
         this.statusTopic = statusTopic;
         this.log = log;
-        this.lockingService = lockingService;
-        this.requireLockForSending = requireLockForSending;
         this.mqttClassName = getClass().getSuperclass().getSimpleName();
         this.statisticsType = statisticsType;
 
@@ -58,20 +52,18 @@ public abstract class AbstractMqttConfiguration {
     }
 
     /**
-     * Call this from @Scheduled etc. scheduler to poll new messages and send them to MQTT
+     * Call this from @Scheduled etc. scheduler to poll new messages and send them to MQTT.
+     * Don't call concurrently from same instance.
      */
     public void pollAndSendMessages() {
-        final boolean lockAcquired = requireLockForSending ? lockingService.tryLock(mqttClassName, 60, instanceId) : true;
-        if (lockAcquired) {
-            final List<DataMessage> messages = pollMessages();
-            log.debug("method=pollAndSendMessages polled {} messages to send", messages.size());
-            messages.forEach(this::sendMqttMessage);
-        }
-    };
+        final List<DataMessage> messages = pollMessages();
+        log.debug("method=pollAndSendMessages polled {} messages to send", messages.size());
+        messages.forEach(this::sendMqttMessage);
+    }
 
     /**
      * Implementation should fetch all messages to send to MQTT
-     * @return
+     * @return messages to be send to MQTT
      */
     protected abstract List<DataMessage> pollMessages();
 
@@ -109,14 +101,12 @@ public abstract class AbstractMqttConfiguration {
     }
 
     private void sendStatus() {
-        if(lockingService.tryLock(mqttClassName, 60, instanceId)) {
-            try {
-                final StatusMessage message = new StatusMessage(getLastUpdated(), getLastError(), "OK", statisticsType.toString());
+        try {
+            final StatusMessage message = new StatusMessage(getLastUpdated(), getLastError(), "OK", statisticsType.toString());
 
-                mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(message));
-            } catch (final Exception e) {
-                log.error("method=sendStatus Error sending message", e);
-            }
+            mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(message));
+        } catch (final Exception e) {
+            log.error("method=sendStatus Error sending message", e);
         }
     }
 

@@ -28,17 +28,16 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
     @Autowired
     public TmsMqttConfiguration(final MqttRelayService mqttRelay,
                                 final RoadStationSensorService roadStationSensorService,
-                                final ObjectMapper objectMapper,
-                                final LockingService lockingService) {
+                                final ObjectMapper objectMapper) {
 
         super(LoggerFactory.getLogger(TmsMqttConfiguration.class),
-              mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION, TMS_TOPIC, TMS_STATUS_TOPIC, lockingService, TMS);
+              mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION, TMS_TOPIC, TMS_STATUS_TOPIC, TMS);
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
     public void pollAndSendMessages() {
         try {
-            super.pollAndSendMessages();;
+            super.pollAndSendMessages();
         } catch(final Exception e) {
             log.error("Polling failed", e);
         }
