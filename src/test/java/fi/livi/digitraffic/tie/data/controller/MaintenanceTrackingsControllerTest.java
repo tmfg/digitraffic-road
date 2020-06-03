@@ -40,7 +40,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.controller.ApiPaths;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
@@ -89,7 +88,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void assertNoWorkMachineIdInResult() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         final int machineCount = getRandomId(2, 10);
         final int observationCount = 10;
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
@@ -110,7 +109,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findMaintenanceTrackingsWithinTime() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final List<Tyokone> firstHalfMachines = workMachines.subList(0, machineCount / 2);
@@ -150,7 +149,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findMaintenanceTrackingsWithTasks() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
@@ -190,7 +189,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findLatestMaintenanceTrackings() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
@@ -240,7 +239,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findWithBoundingBox() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
 
         final List<Tyokone> workMachines = createWorkMachines(1);
         final TyokoneenseurannanKirjausRequestSchema k =

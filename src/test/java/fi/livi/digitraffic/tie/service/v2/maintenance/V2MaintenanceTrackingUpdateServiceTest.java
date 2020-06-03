@@ -23,7 +23,6 @@ import java.util.stream.LongStream;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -78,7 +76,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
     @Test
     public void saveWorkMachineTrackingDataWithMultipleWorkMachines() throws IOException {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final TyokoneenseurannanKirjausRequestSchema seuranta =
@@ -98,7 +96,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
     @Test
     public void handleTrackingWithMultipleWorkMachines() throws JsonProcessingException {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final TyokoneenseurannanKirjausRequestSchema seuranta =
@@ -137,7 +135,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void combineMultipleTrackings() {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         final ZonedDateTime endTime = startTime.plusMinutes(4);
         IntStream.range(0,5).forEach(i -> {
             final ZonedDateTime start = startTime.plusMinutes(i);
@@ -177,7 +175,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final int machineCount = getRandomId(2, 10);
         // Work machines with harja id 1,2,...(machineCount+1)
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
 
         IntStream.range(0, 5).forEach(idx -> {
             final ZonedDateTime start = startTime.plusMinutes(idx);
@@ -211,7 +209,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void splitTrackingWhenJobChanges() throws JsonProcessingException {
         // Work machines with harja id 1
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         testHelper.saveTrackingData(
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.saveTrackingData(
@@ -229,7 +227,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void insideTimeLimitCombinesTrackingsAsOne() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         final int observationCountPerTracking = 10;
         final int jobId = 1;
         // Last point will be startTime + 9 min
@@ -248,7 +246,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void timeLimitBreaksTrackingInParts() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         // Last point will be startTime + 9 min
         testHelper.saveTrackingData(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -270,7 +268,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void timeLimitAndTaskChangeBreaksTrackingInParts() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingData(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -292,7 +290,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void overSpeedBreaksTrackingInTwoParts() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         // Last point will be startTime + 9 min
         final TyokoneenseurannanKirjausRequestSchema kirjaus =
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, ASFALTOINTI);
@@ -318,7 +316,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void taskChangeBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfNextTracking() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingData(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -340,7 +338,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void taskChangeToTransitionBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfTransitionTracking() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingData(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));

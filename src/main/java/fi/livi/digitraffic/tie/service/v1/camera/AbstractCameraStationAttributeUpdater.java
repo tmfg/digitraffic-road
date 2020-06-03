@@ -17,7 +17,6 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TieosoiteVO;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationState;
-import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationAttributeUpdater;
@@ -41,7 +40,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         final boolean isPublicPreviousOld = to.isPublicPrevious();
         final ZonedDateTime publicityStartTimeOld = to.getPublicityStartTime();
 
-        final ZonedDateTime publicityStartTimeNew = from.getJulkisuus() != null ? DateHelper.toZonedDateTimeWithoutMillis(from.getJulkisuus().getAlkaen()) : null;
+        final ZonedDateTime publicityStartTimeNew = from.getJulkisuus() != null ? DateHelper.toZonedDateTimeWithoutMillisAtUtc(from.getJulkisuus().getAlkaen()) : null;
         final boolean isPublicNew = from.getJulkisuus() != null && JulkisuusTaso.JULKINEN == from.getJulkisuus().getJulkisuusTaso();
         final boolean changed = to.updatePublicity(isPublicNew, publicityStartTimeNew);
         if ( changed ) {
@@ -69,9 +68,9 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         to.setProvince(from.getMaakunta());
         to.setProvinceCode(from.getMaakuntaKoodi());
         to.setLiviId(from.getLiviId());
-        to.setStartDate(DateHelper.toZonedDateTimeWithoutMillis(from.getAlkamisPaiva()));
-        to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillis(from.getKorjaushuolto()));
-        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillis(from.getVuosihuolto()));
+        to.setStartDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(from.getAlkamisPaiva()));
+        to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(from.getKorjaushuolto()));
+        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(from.getVuosihuolto()));
         to.setState(RoadStationState.fromTilaTyyppi(from.getAsemanTila()));
         to.setLocation(from.getAsemanSijainti());
         to.setCountry(from.getMaa());
