@@ -24,6 +24,7 @@ public abstract class AbstractMqttConfiguration {
     private final String topicStringFormat;
     protected final String statusTopic;
     protected final LockingService lockingService;
+    private final boolean requireLockForSending;
     private final String mqttClassName;
     protected final long instanceId;
 
@@ -39,6 +40,7 @@ public abstract class AbstractMqttConfiguration {
                                      final String topicStringFormat,
                                      final String statusTopic,
                                      final LockingService lockingService,
+                                     final boolean requireLockForSending,
                                      final MqttRelayService.StatisticsType statisticsType) {
 
         this.mqttRelay = mqttRelay;
@@ -47,6 +49,7 @@ public abstract class AbstractMqttConfiguration {
         this.statusTopic = statusTopic;
         this.log = log;
         this.lockingService = lockingService;
+        this.requireLockForSending = requireLockForSending;
         this.mqttClassName = getClass().getSuperclass().getSimpleName();
         this.statisticsType = statisticsType;
 
@@ -58,7 +61,7 @@ public abstract class AbstractMqttConfiguration {
      * Call this from @Scheduled etc. scheduler to poll new messages and send them to MQTT
      */
     public void pollAndSendMessages() {
-        final boolean lockAcquired = lockingService.tryLock(mqttClassName, 60, instanceId);
+        final boolean lockAcquired = requireLockForSending ? lockingService.tryLock(mqttClassName, 60, instanceId) : true;
         if (lockAcquired) {
             final List<DataMessage> messages = pollMessages();
             log.debug("method=pollAndSendMessages polled {} messages to send", messages.size());

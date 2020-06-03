@@ -35,7 +35,7 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
                                                 final ObjectMapper objectMapper,
                                                 final LockingService lockingService) {
         super(LoggerFactory.getLogger(MaintenanceTrackingMqttConfiguration.class),
-              mqttRelay, objectMapper, TOPIC, STATUS_TOPIC, lockingService, MAINTENANCE_TRACKING);
+              mqttRelay, objectMapper, TOPIC, STATUS_TOPIC, lockingService, true, MAINTENANCE_TRACKING);
         setLastUpdated(ZonedDateTime.now());
     }
 
