@@ -28,10 +28,11 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
     @Autowired
     public TmsMqttConfiguration(final MqttRelayService mqttRelay,
                                 final RoadStationSensorService roadStationSensorService,
-                                final ObjectMapper objectMapper) {
+                                final ObjectMapper objectMapper,
+                                final LockingService lockingService) {
 
-        super(LoggerFactory.getLogger(TmsMqttConfiguration.class),
-              mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION, TMS_TOPIC, TMS_STATUS_TOPIC, TMS);
+        super(LoggerFactory.getLogger(TmsMqttConfiguration.class), mqttRelay, roadStationSensorService, objectMapper,
+              RoadStationType.TMS_STATION, TMS_TOPIC, TMS_STATUS_TOPIC, TMS, lockingService);
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")

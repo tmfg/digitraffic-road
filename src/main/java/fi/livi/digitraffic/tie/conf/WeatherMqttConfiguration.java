@@ -28,10 +28,11 @@ public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
     @Autowired
     public WeatherMqttConfiguration(final MqttRelayService mqttRelay,
                                     final RoadStationSensorService roadStationSensorService,
-                                    final ObjectMapper objectMapper) {
+                                    final ObjectMapper objectMapper,
+                                    final LockingService lockingService) {
 
-        super(LoggerFactory.getLogger(WeatherMqttConfiguration.class),
-              mqttRelay, roadStationSensorService, objectMapper, RoadStationType.WEATHER_STATION, WEATHER_TOPIC, WEATHER_STATUS_TOPIC, WEATHER);
+        super(LoggerFactory.getLogger(WeatherMqttConfiguration.class), mqttRelay, roadStationSensorService, objectMapper,
+              RoadStationType.WEATHER_STATION, WEATHER_TOPIC, WEATHER_STATUS_TOPIC, WEATHER, lockingService);
     }
 
     @Scheduled(fixedDelayString = "${mqtt.weather.pollingIntervalMs}")

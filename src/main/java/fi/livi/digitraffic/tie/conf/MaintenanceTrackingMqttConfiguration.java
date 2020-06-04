@@ -32,9 +32,10 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
 
     @Autowired
     public MaintenanceTrackingMqttConfiguration(final MqttRelayService mqttRelay,
-                                                final ObjectMapper objectMapper) {
+                                                final ObjectMapper objectMapper,
+                                                final LockingService lockingService) {
         super(LoggerFactory.getLogger(MaintenanceTrackingMqttConfiguration.class),
-              mqttRelay, objectMapper, TOPIC, STATUS_TOPIC, MAINTENANCE_TRACKING);
+              mqttRelay, objectMapper, TOPIC, STATUS_TOPIC, MAINTENANCE_TRACKING, lockingService, false);
         setLastUpdated(ZonedDateTime.now());
     }
 
@@ -48,7 +49,7 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
         log.debug("method=addData messageQueue size {}", messageQueue.size());
     }
 
-    protected List<DataMessage> pollMessages() {
+    protected List<DataMessage> fetchMessagesToSend() {
         final List<DataMessage> messages = new ArrayList<>();
 
         final int size = messageQueue.size();

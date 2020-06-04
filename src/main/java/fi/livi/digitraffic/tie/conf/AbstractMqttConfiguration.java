@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
+import static fi.livi.digitraffic.tie.service.v1.MqttRelayService.StatisticsType.STATUS;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -19,12 +21,15 @@ import fi.livi.digitraffic.tie.service.v1.MqttRelayService;
 public abstract class AbstractMqttConfiguration {
 
     protected final Logger log;
-    protected final MqttRelayService mqttRelay;
-    protected final ObjectMapper objectMapper;
     private final String topicStringFormat;
     protected final String statusTopic;
     private final String mqttClassName;
     protected final long instanceId;
+    private final boolean requireLockForSending;
+
+    protected final ObjectMapper objectMapper;
+    protected final MqttRelayService mqttRelay;
+    private final LockingService lockingService;
 
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
@@ -37,13 +42,17 @@ public abstract class AbstractMqttConfiguration {
                                      final ObjectMapper objectMapper,
                                      final String topicStringFormat,
                                      final String statusTopic,
-                                     final MqttRelayService.StatisticsType statisticsType) {
+                                     final MqttRelayService.StatisticsType statisticsType,
+                                     final LockingService lockingService,
+                                     final boolean requireLockForSending) {
 
         this.mqttRelay = mqttRelay;
         this.objectMapper = objectMapper;
         this.topicStringFormat = topicStringFormat;
         this.statusTopic = statusTopic;
         this.log = log;
+        this.lockingService = lockingService;
+        this.requireLockForSending = requireLockForSending;
         this.mqttClassName = getClass().getSuperclass().getSimpleName();
         this.statisticsType = statisticsType;
 
@@ -56,27 +65,29 @@ public abstract class AbstractMqttConfiguration {
      * Don't call concurrently from same instance.
      */
     public void pollAndSendMessages() {
-        final List<DataMessage> messages = pollMessages();
+        final List<DataMessage> messages = fetchMessagesToSend();
         log.debug("method=pollAndSendMessages polled {} messages to send", messages.size());
         messages.forEach(this::sendMqttMessage);
     }
 
     /**
-     * Implementation should fetch all messages to send to MQTT
+     * Implementation should fetch all messages to be send to MQTT
      * @return messages to be send to MQTT
      */
-    protected abstract List<DataMessage> pollMessages();
+    protected abstract List<DataMessage> fetchMessagesToSend();
 
     private void sendMqttMessage(final DataMessage value) {
-        try {
-            log.debug("method=sendMqttMessage {}", value);
-            mqttRelay.sendMqttMessage(value.getTopic(),
-                                      objectMapper.writeValueAsString(value.getData()),
-                                      statisticsType);
-            setLastUpdated(value.getLastUpdated());
-        } catch (final JsonProcessingException e) {
-            setLastError(ZonedDateTime.now());
-            log.error("method=sendMqttMessage Error sending message", e);
+        // Get lock and keep it to prevent sending on multiple nodes
+        final boolean lockAcquired = !requireLockForSending || lockingService.tryLock(mqttClassName, 60, instanceId);
+        if (lockAcquired) {
+            try {
+                log.debug("method=sendMqttMessage {}", value);
+                mqttRelay.sendMqttMessage(value.getTopic(), objectMapper.writeValueAsString(value.getData()), statisticsType);
+                setLastUpdated(value.getLastUpdated());
+            } catch (final JsonProcessingException e) {
+                setLastError(ZonedDateTime.now());
+                log.error("method=sendMqttMessage Error sending message", e);
+            }
         }
     }
 
@@ -101,12 +112,15 @@ public abstract class AbstractMqttConfiguration {
     }
 
     private void sendStatus() {
-        try {
-            final StatusMessage message = new StatusMessage(getLastUpdated(), getLastError(), "OK", statisticsType.toString());
+        final boolean lockAcquired = lockingService.tryLock(mqttClassName, 60, instanceId);
+        if (lockAcquired) {
+            try {
+                final StatusMessage message = new StatusMessage(getLastUpdated(), getLastError(), "OK", statisticsType.toString());
 
-            mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(message));
-        } catch (final Exception e) {
-            log.error("method=sendStatus Error sending message", e);
+                mqttRelay.sendMqttMessage(statusTopic, objectMapper.writeValueAsString(message), STATUS);
+            } catch (final Exception e) {
+                log.error("method=sendStatus Error sending message", e);
+            }
         }
     }
 

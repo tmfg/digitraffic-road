@@ -27,15 +27,16 @@ public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfig
                                            final RoadStationType roadStationType,
                                            final String messageTopic,
                                            final String statusTopic,
-                                           final StatisticsType statisticsType) {
-        super(log, mqttRelay, objectMapper, messageTopic, statusTopic, statisticsType);
+                                           final StatisticsType statisticsType,
+                                           final LockingService lockingService) {
+        super(log, mqttRelay, objectMapper, messageTopic, statusTopic, statisticsType, lockingService, true);
         this.roadStationSensorService = roadStationSensorService;
         this.roadStationType = roadStationType;
 
         setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(roadStationType));
     }
 
-    protected List<DataMessage> pollMessages() {
+    protected List<DataMessage> fetchMessagesToSend() {
         final List<SensorValueDto> sensorValues =
             roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(getLastUpdated(), roadStationType);
 
