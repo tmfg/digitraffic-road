@@ -28,8 +28,6 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
     private static final String TOPIC = "maintenance/tracking/%d";
     private static final String STATUS_TOPIC = "maintenance/tracking/status";
 
-    private final ConcurrentLinkedQueue<MaintenanceTrackingLatestFeature> messageQueue = new ConcurrentLinkedQueue<>();
-
     @Autowired
     public MaintenanceTrackingMqttConfiguration(final MqttRelayService mqttRelay,
                                                 final ObjectMapper objectMapper,
@@ -39,26 +37,7 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
         setLastUpdated(ZonedDateTime.now());
     }
 
-    @Scheduled(fixedDelayString = "${mqtt.maintenance.tracking.pollingIntervalMs}")
-    public void pollAndSendMessages() {
-        super.pollAndSendMessages();
-    }
-
-    public void addData(final MaintenanceTrackingLatestFeature feature) {
-        messageQueue.add(feature);
-        log.debug("method=addData messageQueue size {}", messageQueue.size());
-    }
-
-    protected List<DataMessage> fetchMessagesToSend() {
-        final List<DataMessage> messages = new ArrayList<>();
-
-        final int size = messageQueue.size();
-        int count = 0;
-        MaintenanceTrackingLatestFeature next;
-        while ((next = messageQueue.poll()) != null && count <= size) {
-            count++;
-            messages.add(new DataMessage(next.getProperties().getTime(), getTopic(next.getProperties().getId()), next));
-        }
-        return messages;
+    public void sendToMqtt(final MaintenanceTrackingLatestFeature feature) {
+        sendMqttMessage(new DataMessage(feature.getProperties().getTime(), getTopic(feature.getProperties().getId()), feature));
     }
 }

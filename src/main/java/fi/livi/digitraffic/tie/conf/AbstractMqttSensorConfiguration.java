@@ -36,6 +36,20 @@ public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfig
         setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(roadStationType));
     }
 
+    /**
+     * Call this from @Scheduled etc. scheduler to poll new messages and send them to MQTT.
+     * Don't call concurrently from same instance.
+     */
+    public void pollAndSendMessages() {
+        final List<DataMessage> messages = fetchMessagesToSend();
+        log.debug("method=pollAndSendMessages polled {} messages to send", messages.size());
+        messages.forEach(this::sendMqttMessage);
+    }
+
+    /**
+     * Fetch all messages to be send to MQTT
+     * @return messages to be send to MQTT
+     */
     protected List<DataMessage> fetchMessagesToSend() {
         final List<SensorValueDto> sensorValues =
             roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(getLastUpdated(), roadStationType);

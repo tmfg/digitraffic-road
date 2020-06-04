@@ -69,7 +69,8 @@ public class V2MaintenanceTrackingUpdateService {
                                               final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository,
                                               final ObjectMapper objectMapper,
                                               final DataStatusService dataStatusService,
-                                              @Autowired(required = false) final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration,
+                                              @Autowired(required = false)
+                                              final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration,
                                               @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
                                               final int distinctObservationGapMinutes) {
         this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
@@ -153,14 +154,14 @@ public class V2MaintenanceTrackingUpdateService {
                 // Mark found one to finished as the work machine is in transition after that
                 // Append latest point (without the task) to tracking if it's inside time limits.
                 updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, direction, harjaObservationTime, status.isNextInsideLimits());
-                appendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
+                sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
             // If previous is finished or tasks has changed or time gap is too long, we create new tracking for the machine
             } else if ( status.is(NEW) ) {
 
                 // Append latest point to tracking if it's inside time limits. This happens only when task changes and
                 // last point will be new tasks first point.
                 updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, direction, harjaObservationTime, status.isNextInsideLimits());
-                appendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
+                sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
 
                 final MaintenanceTrackingWorkMachine workMachine =
                     getOrCreateWorkMachine(harjaWorkMachineId, harjaContractId, harjaWorkMachine.getTyokonetyyppi());
@@ -172,10 +173,10 @@ public class V2MaintenanceTrackingUpdateService {
                         harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
                         performedTasks, direction);
                 v2MaintenanceTrackingRepository.save(created);
-                appendToMqtt(created, geometry, direction, harjaObservationTime);
+                sendToMqtt(created, geometry, direction, harjaObservationTime);
             } else {
                 previousTracking.appendGeometry(geometry, harjaObservationTime, direction);
-                appendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
+                sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
                 // Just debugging
                 final LineString resultLs = previousTracking.getLineString();
                 final Point end = resultLs.getEndPoint();
@@ -189,8 +190,7 @@ public class V2MaintenanceTrackingUpdateService {
         }
     }
 
-    private void appendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
-        log.info("method=appendToMqtt");
+    private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
         if (maintenanceTrackingMqttConfiguration == null) {
             return;
         }
@@ -203,7 +203,7 @@ public class V2MaintenanceTrackingUpdateService {
                 feature.setGeometry(geoJsonGeom);
                 feature.getProperties().setDirection(direction);
                 feature.getProperties().setTime(observationTime);
-                maintenanceTrackingMqttConfiguration.addData(feature);
+                maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
             } catch (Exception e) {
                 log.error("Error while appending tracking {} to mqtt", tracking);
             }

@@ -61,22 +61,10 @@ public abstract class AbstractMqttConfiguration {
     }
 
     /**
-     * Call this from @Scheduled etc. scheduler to poll new messages and send them to MQTT.
-     * Don't call concurrently from same instance.
+     * Sends message to mqttRelay service to send it to Mqtt
+     * @param value DataMessage containing message to send
      */
-    public void pollAndSendMessages() {
-        final List<DataMessage> messages = fetchMessagesToSend();
-        log.debug("method=pollAndSendMessages polled {} messages to send", messages.size());
-        messages.forEach(this::sendMqttMessage);
-    }
-
-    /**
-     * Implementation should fetch all messages to be send to MQTT
-     * @return messages to be send to MQTT
-     */
-    protected abstract List<DataMessage> fetchMessagesToSend();
-
-    private void sendMqttMessage(final DataMessage value) {
+    protected void sendMqttMessage(final DataMessage value) {
         // Get lock and keep it to prevent sending on multiple nodes
         final boolean lockAcquired = !requireLockForSending || lockingService.tryLock(mqttClassName, 60, instanceId);
         if (lockAcquired) {
