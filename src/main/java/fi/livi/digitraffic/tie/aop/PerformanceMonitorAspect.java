@@ -35,11 +35,12 @@ public class PerformanceMonitorAspect {
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public Object monitorScheduledJob(ProceedingJoinPoint pjp) throws Throwable {
 
-        final MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
+        final String method = pjp.getSignature().getName();
+        // Strip away Configuration suffix and Spring proxy classes
+        final String jobClass = StringUtils.substringBefore(StringUtils.substringBefore(pjp.getTarget().getClass().getSimpleName(),"Configuration"), "$");
 
         final StopWatch stopWatch = StopWatch.createStarted();
-        final String jobName = methodSignature.getDeclaringType().getSimpleName().replace("Configuration", "");
-        logScheduledJob.info("jobType=Scheduled jobName={} start", jobName);
+        final String jobName = jobClass + "." + method;
 
         try {
             return pjp.proceed();
