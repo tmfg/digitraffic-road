@@ -9,10 +9,14 @@ reindex table forecast_condition_reason;
 reindex table forecast_section_coordinate_list;
 reindex table forecast_section_weather;
 reindex table link_id;
+reindex table maintenance_tracking;
+reindex table maintenance_tracking_data;
+reindex table maintenance_tracking_data_tracking;
+reindex table maintenance_tracking_task;
+reindex table maintenance_tracking_work_machine;
 reindex table locking_table;
 reindex table road_segment;
 reindex table road_station;
-
 -- reindex qrtz_tables
 reindex table qrtz_fired_triggers;
 reindex table qrtz_simple_triggers;
