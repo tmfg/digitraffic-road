@@ -22,38 +22,10 @@ import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 public class PerformanceMonitorAspect {
 
     private static final Logger log = LoggerFactory.getLogger("PerformanceMonitor");
-    private static final Logger logScheduledJob = LoggerFactory.getLogger("ScheduledJobMonitor");
     public static final int DEFAULT_ERROR_LIMIT = 60000;
     public static final int DEFAULT_WARNING_LIMIT = 5000;
     public static final int DEFAULT_INFO_LIMIT = 1000;
     private static final DecimalFormat decimalFormat = new DecimalFormat("#0.0");
-
-    /**
-     * By default every method with @Scheduled annotation is monitored for
-     * logging execution start and end.
-     */
-    @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
-    public Object monitorScheduledJob(ProceedingJoinPoint pjp) throws Throwable {
-
-        final String method = pjp.getSignature().getName();
-        // Strip away Configuration suffix and Spring proxy classes
-        final String jobClass = StringUtils.substringBefore(StringUtils.substringBefore(pjp.getTarget().getClass().getSimpleName(),"Configuration"), "$");
-
-        final StopWatch stopWatch = StopWatch.createStarted();
-        final String jobName = jobClass + "." + method;
-
-        try {
-            return pjp.proceed();
-        } catch (Exception e) {
-            logScheduledJob.info("jobType=Scheduled jobName={} end jobEndStatus={} jobTimeMs={} lastError: {} {}",
-                     jobName, "FAIL", stopWatch.getTime(), e.getClass(), e.getMessage());
-            throw e;
-        } finally {
-            stopWatch.stop();
-            logScheduledJob.info("jobType=Scheduled jobName={} end jobEndStatus={} jobTimeMs={}",
-                     jobName, "SUCCESS", stopWatch.getTime());
-        }
-    }
 
     /**
      * By default every method in class with @Service annotation is monitored.
