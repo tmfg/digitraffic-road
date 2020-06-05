@@ -17,9 +17,9 @@ import fi.livi.digitraffic.tie.scheduler.JobLogger.JobType;
 
 @Aspect
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class ScheduleJobLogger {
+public class ScheduledJobLogger {
 
-    private static final Logger log = LoggerFactory.getLogger(ScheduleJobLogger.class);
+    private static final Logger log = LoggerFactory.getLogger(ScheduledJobLogger.class);
     private static final JobType jobType = Scheduled;
 
     /**

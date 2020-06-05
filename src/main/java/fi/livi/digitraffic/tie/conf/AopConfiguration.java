@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import fi.livi.digitraffic.tie.aop.PerformanceMonitorAspect;
-import fi.livi.digitraffic.tie.aop.ScheduleJobLogger;
+import fi.livi.digitraffic.tie.aop.ScheduledJobLogger;
 
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -19,7 +19,7 @@ public class AopConfiguration {
     }
 
     @Bean
-    public ScheduleJobLogger scheduleJobLogger() {
-        return new ScheduleJobLogger();
+    public ScheduledJobLogger scheduleJobLogger() {
+        return new ScheduledJobLogger();
     }
 }
