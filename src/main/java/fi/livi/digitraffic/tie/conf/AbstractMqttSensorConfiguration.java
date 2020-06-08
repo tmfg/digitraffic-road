@@ -29,7 +29,7 @@ public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfig
                                            final String statusTopic,
                                            final StatisticsType statisticsType,
                                            final LockingService lockingService) {
-        super(log, mqttRelay, objectMapper, messageTopic, statusTopic, statisticsType, lockingService, true);
+        super(log, mqttRelay, objectMapper, messageTopic, statusTopic, statisticsType, lockingService);
         this.roadStationSensorService = roadStationSensorService;
         this.roadStationType = roadStationType;
 

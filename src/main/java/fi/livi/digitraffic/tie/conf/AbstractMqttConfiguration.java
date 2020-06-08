@@ -37,6 +37,39 @@ public abstract class AbstractMqttConfiguration {
     private final AtomicReference<ZonedDateTime> lastError = new AtomicReference<>();
     private final MqttRelayService.StatisticsType statisticsType;
 
+    /**
+     * With this constructor sending data messages are send only by one node.
+     *
+     * @param log Logger to be used for logging
+     * @param mqttRelay MqttRelayService to be used
+     * @param objectMapper ObjectMapper for json serialization
+     * @param topicStringFormat String format for topic generation
+     * @param statusTopic Status topic
+     * @param statisticsType Status message type
+     * @param lockingService LockingService to be used for db locks
+     */
+    public AbstractMqttConfiguration(final Logger log,
+                                     final MqttRelayService mqttRelay,
+                                     final ObjectMapper objectMapper,
+                                     final String topicStringFormat,
+                                     final String statusTopic,
+                                     final MqttRelayService.StatisticsType statisticsType,
+                                     final LockingService lockingService) {
+        this(log, mqttRelay, objectMapper, topicStringFormat, statusTopic, statisticsType, lockingService, true);
+    }
+
+    /**
+     * With this constructor you can choose if only one node can be sending data messages (@param requireLockForSending) or if any node can send messages.
+     *
+     * @param log Logger to be used for logging
+     * @param mqttRelay MqttRelayService to be used
+     * @param objectMapper ObjectMapper for json serialization
+     * @param topicStringFormat String format for topic generation
+     * @param statusTopic Status topic
+     * @param statisticsType Status message type
+     * @param lockingService LockingService to be used for db locks
+     * @param requireLockForSending Is locking needed for sending data-messages between nodes. If required only one node will be sending messages.
+     */
     public AbstractMqttConfiguration(final Logger log,
                                      final MqttRelayService mqttRelay,
                                      final ObjectMapper objectMapper,
