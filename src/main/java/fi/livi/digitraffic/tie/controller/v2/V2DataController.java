@@ -318,26 +318,26 @@ public class V2DataController {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     final ZonedDateTime from,
 
-    @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-    @RequestParam(defaultValue = "19.0")
+    @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+    @RequestParam(defaultValue = "19.0", required = false)
     @DecimalMin("19.0")
     @DecimalMax("32.0")
     final double xMin,
 
-    @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-    @RequestParam(defaultValue = "59.0")
+    @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+    @RequestParam(defaultValue = "59.0", required = false)
     @DecimalMin("59.0")
     @DecimalMax("72.0")
     final double yMin,
 
-    @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-    @RequestParam(defaultValue = "32")
+    @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+    @RequestParam(defaultValue = "32", required = false)
     @DecimalMin("19.0")
     @DecimalMax("32.0")
     final double xMax,
 
-    @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-    @RequestParam(defaultValue = "72.0")
+    @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+    @RequestParam(defaultValue = "72.0", required = false)
     @DecimalMin("59.0")
     @DecimalMax("72.0")
     final double yMax,
@@ -350,13 +350,6 @@ public class V2DataController {
         Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
 
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
-    }
-
-    @ApiOperation(value = "Road maintenance tracking data with tracking id")
-    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
-    public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
-        return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
     @ApiOperation(value = "Road maintenance tracking data")
@@ -374,26 +367,26 @@ public class V2DataController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to,
 
-        @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-        @RequestParam(defaultValue = "19.0")
+        @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = "19.0", required = false)
         @DecimalMin("19.0")
         @DecimalMax("32.0")
         final double xMin,
 
-        @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-        @RequestParam(defaultValue = "59.0")
+        @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = "59.0", required = false)
         @DecimalMin("59.0")
         @DecimalMax("72.0")
         final double yMin,
 
-        @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT, required = true)
-        @RequestParam(defaultValue = "32")
+        @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = "32", required = false)
         @DecimalMin("19.0")
         @DecimalMax("32.0")
         final double xMax,
 
-        @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT, required = true)
-        @RequestParam(defaultValue = "72.0")
+        @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = "72.0", required = false)
         @DecimalMin("59.0")
         @DecimalMax("72.0")
         final double yMax,
@@ -406,6 +399,13 @@ public class V2DataController {
         Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+    }
+
+    @ApiOperation(value = "Road maintenance tracking data with tracking id")
+    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
+    public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
+        return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
     @ApiOperation(value = "Road maintenance tracking tasks")
