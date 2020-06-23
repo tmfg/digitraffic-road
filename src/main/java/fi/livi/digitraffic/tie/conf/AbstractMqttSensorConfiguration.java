@@ -43,7 +43,8 @@ public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfig
     public void pollAndSendMessages() {
         final List<DataMessage> messages = fetchMessagesToSend();
         log.debug("method=pollAndSendMessages polled {} messages to send", messages.size());
-        messages.forEach(this::sendMqttMessage);
+
+        sendMqttMessages(messages);
     }
 
     /**

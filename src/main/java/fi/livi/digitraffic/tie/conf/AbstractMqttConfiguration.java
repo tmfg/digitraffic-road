@@ -3,12 +3,14 @@ package fi.livi.digitraffic.tie.conf;
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayService.StatisticsType.STATUS;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -95,20 +97,32 @@ public abstract class AbstractMqttConfiguration {
 
     /**
      * Sends message to mqttRelay service to send it to Mqtt
-     * @param value DataMessage containing message to send
+     * @param message DataMessage containing message to send
      */
-    protected void sendMqttMessage(final DataMessage value) {
+    protected void sendMqttMessage(final DataMessage message) {
         // Get lock and keep it to prevent sending on multiple nodes
         final boolean lockAcquired = !requireLockForSending || lockingService.tryLock(mqttClassName, 60, instanceId);
         if (lockAcquired) {
-            try {
-                log.debug("method=sendMqttMessage {}", value);
-                mqttRelay.sendMqttMessage(value.getTopic(), objectMapper.writeValueAsString(value.getData()), statisticsType);
-                setLastUpdated(value.getLastUpdated());
-            } catch (final JsonProcessingException e) {
-                setLastError(ZonedDateTime.now());
-                log.error("method=sendMqttMessage Error sending message", e);
-            }
+            doSendMqttMessage(message);
+        }
+    }
+
+    protected void sendMqttMessages(final Collection<DataMessage> messages) {
+        // Get lock and keep it to prevent sending on multiple nodes
+        final boolean lockAcquired = !requireLockForSending || lockingService.tryLock(mqttClassName, 60, instanceId);
+        if (lockAcquired) {
+            messages.forEach(this::doSendMqttMessage);
+        }
+    }
+
+    private void doSendMqttMessage(final DataMessage message) {
+        try {
+            log.debug("method=sendMqttMessage {}", message);
+            mqttRelay.sendMqttMessage(message.getTopic(), objectMapper.writeValueAsString(message.getData()), statisticsType);
+            setLastUpdated(message.getLastUpdated());
+        } catch (final JsonProcessingException e) {
+            setLastError(ZonedDateTime.now());
+            log.error("method=sendMqttMessage Error sending message", e);
         }
     }
 
