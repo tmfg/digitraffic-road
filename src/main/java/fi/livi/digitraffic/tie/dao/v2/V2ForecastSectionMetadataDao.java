@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -92,12 +93,12 @@ public class V2ForecastSectionMetadataDao {
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :linkId)";
 
     @Autowired
-    public V2ForecastSectionMetadataDao(final NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public V2ForecastSectionMetadataDao(final JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.setFetchSize(1000);
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     public void upsertForecastSections(final List<ForecastSectionV2FeatureDto> features) {
-
         final MapSqlParameterSource sources[] = new MapSqlParameterSource[features.size()];
         int i = 0;
         for (final ForecastSectionV2FeatureDto feature : features) {
@@ -165,7 +166,6 @@ public class V2ForecastSectionMetadataDao {
             .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
             .addValue("naturalIds", naturalIds);
 
-        jdbcTemplate.setFetchSize(1000);
         jdbcTemplate.query(SELECT_ALL, paramSource, rs -> {
             final String naturalId = rs.getString("natural_id");
 
