@@ -38,11 +38,6 @@
     <repositories>
         <!-- PLACEHOLDER -->
         <repository>
-            <id>digitraffic</id>
-            <name>Digitraffic Solita Repository</name>
-            <url>http://dtmvn.solita.fi/repository/internal/</url>
-        </repository>
-        <repository>
             <id>jcenter-snapshots</id>
             <name>jcenter</name>
             <url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
