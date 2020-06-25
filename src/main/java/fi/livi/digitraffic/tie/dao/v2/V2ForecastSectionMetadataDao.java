@@ -56,7 +56,7 @@ public class V2ForecastSectionMetadataDao {
     private static final String SELECT_ALL =
         "SELECT rs.order_number as rs_order_number, " +
         "rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, rs.carriageway as rs_carriageway," +
-        "li.order_number as li_order_number\n" +
+        "li.order_number as li_order_number\n, f.natural_id as natural_id" +
         "FROM forecast_section f " +
         "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
         "          LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
