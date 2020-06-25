@@ -165,6 +165,7 @@ public class V2ForecastSectionMetadataDao {
             .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
             .addValue("naturalIds", naturalIds);
 
+        jdbcTemplate.setFetchSize(1000);
         jdbcTemplate.query(SELECT_ALL, paramSource, rs -> {
             final String naturalId = rs.getString("natural_id");
 
