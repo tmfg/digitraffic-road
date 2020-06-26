@@ -93,9 +93,8 @@ public class V2ForecastSectionMetadataDao {
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :linkId)";
 
     @Autowired
-    public V2ForecastSectionMetadataDao(final JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.setFetchSize(1000);
-        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+    public V2ForecastSectionMetadataDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public void upsertForecastSections(final List<ForecastSectionV2FeatureDto> features) {
