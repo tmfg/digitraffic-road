@@ -39,11 +39,11 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
-    @Test
-    public void testSwaggerHome() throws Exception {
-        this.mockMvc.perform(get("/swagger-ui.html")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("<title>Swagger UI</title>")));
-    }
+//    @Test
+//    public void testSwaggerHome() throws Exception {
+//        this.mockMvc.perform(get("/swagger-ui.html")).andExpect(status().isOk())
+//                .andExpect(content().string(containsString("<title>Swagger UI</title>")));
+//    }
 
     @Test
     public void testSwaggerRestApi() throws Exception {
