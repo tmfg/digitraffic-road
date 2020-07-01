@@ -154,7 +154,7 @@ public class SensorDataS3Writer {
             // Local copy-to-file hack
             //FileUtils.copyInputStreamToFile(inputStream, new File(fileName));
 
-            log.info("Collected addCount={} , window {} - {} , file {}", counter.get(), from, to, fileName);
+            log.info("method=writeSensorData Collected addCount={} , window {} - {} , file {}", counter.get(), from, to, fileName);
 
             return counter.get();
         } catch (Exception e) {
