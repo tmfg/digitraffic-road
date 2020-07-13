@@ -11,7 +11,6 @@ import fi.livi.digitraffic.tie.helper.TimestampCache;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 
 public class SensorValueUpdateParameterDto {
-
     private final BigDecimal value;
     private final OffsetDateTime measured;
     private final long roadStationId;
@@ -32,18 +31,6 @@ public class SensorValueUpdateParameterDto {
         this.timeWindowEnd = anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null;
     }
 
-/**
-    public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<LAMRealtimeProtos.Lam.Anturi> wrapper, final Long roadStationId, final TimestampCache timestampCache) {
-        final LAMRealtimeProtos.Lam.Anturi anturi = wrapper.getAnturi();
-        this.value = BigDecimal.valueOf(anturi.getArvo());
-        this.measured = timestampCache.get(wrapper.getAika());
-        this.roadStationId = roadStationId;
-        this.sensorLotjuId = anturi.getLaskennallinenAnturiId();
-        this.stationType = RoadStationType.TMS_STATION.name();
-        this.timeWindowStart = anturi.hasAikaikkunaAlku() ? timestampCache.get(anturi.getAikaikkunaAlku()) : null;
-        this.timeWindowEnd = anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null;
-    }
-*/
     public SensorValueUpdateParameterDto(final TimestampCache timestampCache, final LotjuAnturiWrapper<TiesaaProtos.TiesaaMittatieto.Anturi> wrapper) {
         final TiesaaProtos.TiesaaMittatieto.Anturi anturi = wrapper.getAnturi();
         this.value = NumberConverter.convertAnturiValueToBigDecimal(anturi.getArvo());

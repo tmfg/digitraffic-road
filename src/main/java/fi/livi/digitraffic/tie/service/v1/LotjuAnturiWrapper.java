@@ -8,10 +8,6 @@ public class LotjuAnturiWrapper<T> {
     private final long asemaLotjuId;
     private final long roadStationId;
 
-    public LotjuAnturiWrapper(final long asemaLotjuId, final long anturiLotjuId, final T anturi, final long aika) {
-        this(asemaLotjuId, anturiLotjuId, anturi, aika, -1);
-    }
-
     public LotjuAnturiWrapper(final long asemaLotjuId, final long anturiLotjuId, final T anturi, final long aika, final long roadStationId) {
         this.asemaLotjuId = asemaLotjuId;
         this.anturiLotjuId = anturiLotjuId;
