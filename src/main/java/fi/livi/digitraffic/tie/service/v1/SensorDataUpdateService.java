@@ -17,6 +17,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
+@ConditionalOnNotWebApplication
 @Service
 public class SensorDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(SensorDataUpdateService.class);
@@ -133,7 +135,7 @@ public class SensorDataUpdateService {
 
         updateSensorData(updates, timestampCache.getMaxTime(), RoadStationType.TMS_STATION);
 
-        log.info("lamBuffer db updates {} / {} incomings", updates.size(), lamValueBuffer.getIncomingElementCount());
+        log.info("tmsBuffer for db update {} / {} incomings", updates.size(), lamValueBuffer.getIncomingElementCount());
     }
 
     @Scheduled(fixedRate = 30000)
@@ -149,7 +151,7 @@ public class SensorDataUpdateService {
 
         updateSensorHistoryData(updates, RoadStationType.WEATHER_STATION);
 
-        log.info("weatherBuffer db updates {} / {} incomings", updates.size(), weatherValueBuffer.getIncomingElementCount());
+        log.info("weatherBuffer for db update {} / {} incomings", updates.size(), weatherValueBuffer.getIncomingElementCount());
     }
 
     /**
