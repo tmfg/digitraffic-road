@@ -36,12 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
@@ -70,9 +68,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Autowired
     private TmsStationService tmsStationService;
-
-    @Autowired
-    private SensorDataUpdateService sensorDataUpdateService;
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
@@ -144,6 +139,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 e.printStackTrace();
             }
         }
+
+        flushSensorBuffer(true);
 
         log.info("Handle tms data total tookMs={} and maxMs={} result={}",
                  handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
@@ -248,15 +245,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         return (data) -> {
                 final StopWatch sw = StopWatch.createStarted();
 
-                if (TestTransaction.isActive()) {
-                    TestTransaction.flagForCommit();
-                    TestTransaction.end();
-                }
-                TestTransaction.start();
                 final int updated = sensorDataUpdateService.updateLamData(data);
 
-                TestTransaction.flagForCommit();
-                TestTransaction.end();
                 log.info("handleData tookMs={}", sw.getTime());
                 return updated;
             };
