@@ -16,7 +16,7 @@ public class VariableSignProperties {
     // device properties
     public final String id;
     @ApiModelProperty(value = "Variable sign type",
-        allowableValues = "SPEEDLIMIT,WARNING")
+        allowableValues = "SPEEDLIMIT,WARNING,INFORMATION")
     public final SignType type;
     public final String roadAddress;
     @ApiModelProperty(value = "Direction of variable sign, increasing or decreasing road address",
@@ -58,7 +58,7 @@ public class VariableSignProperties {
 
     @ApiModel
     public enum SignType {
-        SPEEDLIMIT, WARNING;
+        SPEEDLIMIT, WARNING, INFORMATION;
 
         public static SignType byValue(final String value) {
             if(value == null)  {
@@ -67,6 +67,8 @@ public class VariableSignProperties {
                 return SPEEDLIMIT;
             } else if (StringUtils.equals("VAIHTUVAVAROITUSMERKKI", value)) {
                 return WARNING;
+            } else if (StringUtils.equals("TIEDOTUSOPASTE", value)) {
+                return INFORMATION;
             }
 
             throw new IllegalArgumentException("No SignType by value " + value);

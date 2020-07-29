@@ -8,9 +8,12 @@
         'use strict';
         const lines = [];
         let messagesLastMinuteCount = 0, client;
-        const host = "tie.digitraffic.fi";
-        const port = 61619;
-        const topic = "tms/#";
+        // const host = "tie.digitraffic.fi";
+        // const port = 61619;
+        const host = "tie-test.digitraffic.fi";
+        const port = 443;
+        // const topic = "tms/#";
+        const topic = "maintenance/tracking/#";
 
         function connect() {
             console.log("Trying to connect to road mqtt..." + host + ":" + port);

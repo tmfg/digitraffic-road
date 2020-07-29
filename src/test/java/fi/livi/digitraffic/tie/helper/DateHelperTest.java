@@ -30,9 +30,9 @@ public class DateHelperTest extends AbstractSpringJUnitTest {
 
     @Test
     public void getNewest() {
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
         final ZonedDateTime older = now.minusNanos(1);
-        final ZonedDateTime newest = DateHelper.getNewest(now, older);
+        final ZonedDateTime newest = DateHelper.getNewestAtUtc(now, older);
         Assert.assertEquals(now, newest);
     }
 
@@ -74,7 +74,7 @@ public class DateHelperTest extends AbstractSpringJUnitTest {
         final Instant instant = DateHelper.toInstant(xmlDate);
         Assert.assertEquals(DATE_STRING_MILLIS_Z, instant.toString());
 
-        final ZonedDateTime zdtWithOutMillis = DateHelper.toZonedDateTimeWithoutMillis(xmlDate);
+        final ZonedDateTime zdtWithOutMillis = DateHelper.toZonedDateTimeWithoutMillisAtUtc(xmlDate);
         Assert.assertEquals(DATE_STRING_Z, zdtWithOutMillis.toString());
     }
 

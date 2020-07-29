@@ -37,7 +37,7 @@ dt.job.Datex2RoadworksMessageUpdateJob.schedule =              0 0 0/1 * * ?
 dt.job.Datex2WeightRestrictionsMessageUpdateJob.schedule =     0 0 0/1 * * ?
 dt.job.CameraHistoryDeleteJob.schedule =                       0 0 0/1 * * ?
 # Every 12 h
-dt.job.CameraMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
+dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
 dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?
 dt.job.WeatherStationMetadataUpdateJob.schedule =              0 0 3/12 * * ?
 # Every 24 h
@@ -91,6 +91,8 @@ mqtt.enabled=true
 mqtt.tms.enabled=true
 # Is WEATHER messages available
 mqtt.weather.enabled=true
+# Is maintenane tracking messages available
+mqtt.maintenance.tracking.enabled=true
 
 # Developer life improvements
 logging.level.root=INFO

@@ -44,7 +44,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import fi.livi.digitraffic.tie.scheduler.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.scheduler.CameraHistoryDeleteJob;
-import fi.livi.digitraffic.tie.scheduler.CameraMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.CameraStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.CameraStationsStatusMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.Datex2RoadworksMessageUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.Datex2TrafficAlertMessageUpdateJob;
@@ -157,8 +157,8 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean cameraMetadataUpdateJob() {
-        return createJobDetail(CameraMetadataUpdateJob.class);
+    public JobDetailFactoryBean cameraStationMetadataUpdateJob() {
+        return createJobDetail(CameraStationMetadataUpdateJob.class);
     }
 
     @Bean
@@ -238,8 +238,8 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJob) {
-        return createTrigger(cameraMetadataUpdateJob);
+    public FactoryBean<? extends Trigger> cameraStationMetadataUpdateJobTrigger(final JobDetail cameraStationMetadataUpdateJob) {
+        return createTrigger(cameraStationMetadataUpdateJob);
     }
 
     @Bean

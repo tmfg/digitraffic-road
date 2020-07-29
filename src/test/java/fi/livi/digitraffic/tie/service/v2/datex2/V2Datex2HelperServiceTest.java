@@ -158,7 +158,7 @@ public class V2Datex2HelperServiceTest extends AbstractServiceTest {
         return new ImsGeoJsonFeature()
             .withType(ImsGeoJsonFeature.Type.FEATURE)
             .withProperties(properties)
-            .withGeometry(new Point(23.77474, 61.50221));
+            .withGeometry(new Point(23.774741, 61.502211));
     }
 
     private TimeAndDuration createTimeAndDuration() {

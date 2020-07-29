@@ -1,12 +1,22 @@
 # Digitraffic road database
 
+## ;TL;TR
+
+````bash
+docker-compose rm db && docker-compose build && docker-compose up
+````
+
+## Running db instance
+
+Execute commands
+
 ````bash
 docker-compose build && docker-compose up
 ````
 
 PostgreSql db is running at localhost:54322
 
-Adminer at [http://localhost:8082](http://localhost:8082)
+[PgHero](https://github.com/ankane/pghero) is running at [http://localhost:8082](http://localhost:8082)
 
 List containers
 ``````bash
