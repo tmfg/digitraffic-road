@@ -43,14 +43,16 @@ public class V2MaintenanceTrackingJobConfiguration {
         int totalCount = 0;
         do {
             if ( lockingService.tryLock(LOCK_NAME, 300) ) {
+                final StopWatch startInternal = StopWatch.createStarted();
                 count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
                 totalCount += count;
-                log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings", count);
+                log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}", count, startInternal.getTime(), (double)startInternal.getTime() / count);
                 lockingService.unlock(LOCK_NAME);
             } else {
-                log.error("method=handleUnhandledMaintenanceTrackings didn't get lock for updating tracking data.");
+                log.warn("method=handleUnhandledMaintenanceTrackings didn't get lock for updating tracking data.");
+                count = 0; // to end the loop
             }
         } while (count > 0);
-        log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={}", totalCount, start.getTime());
+        log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount, start.getTime(), (double)start.getTime() / totalCount);
     }
 }

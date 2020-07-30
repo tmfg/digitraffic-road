@@ -122,7 +122,7 @@ public class V2MaintenanceTrackingUpdateService {
             trackingData.updateStatusToHandled();
 
         } catch (Exception e) {
-            log.error(String.format("HandleUnhandledRealizations failed for id %d", trackingData.getId()), e);
+            log.error(String.format("method=handleMaintenanceTrackingData failed for id %d", trackingData.getId()), e);
             trackingData.updateStatusToError();
             trackingData.appendHandlingInfo(e.toString());
             return false;
@@ -185,7 +185,9 @@ public class V2MaintenanceTrackingUpdateService {
                 if (dist > 20) {
                     log.error("method=handleRoute Last point over 20 km from previous. Previous: {}, end: {}, data id: {}, havainto.sijainti: {}", endPrev.toString(), end.toString(), trackingData.getId(), havainto.getSijainti().toString());
                 }
-                previousTracking.addWorkMachineTrackingData(trackingData);
+                // previousTracking.addWorkMachineTrackingData(trackingData) does db query for all previous trackintData
+                // to populate the collection. So let's just insert the new one directly to db.
+                v2MaintenanceTrackingRepository.addTrackingData(trackingData.getId(), previousTracking.getId());
             }
         }
     }
