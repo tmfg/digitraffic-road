@@ -134,12 +134,6 @@ public class V2MaintenanceTrackingUpdateService {
     private void handleRoute(final Havainto havainto,
                              final MaintenanceTrackingData trackingData, final String sendingSystem, final ZonedDateTime sendingTime) {
 
-        final String tkTyyppi = havainto.getTyokone().getTyokonetyyppi();
-        if (tkTyyppi != null && "liikenteenohjausaita".equalsIgnoreCase(tkTyyppi)) {
-            log.info("method=handleRoute skipping message with workMachinetype liikenteenohjausaita");
-            return;
-        }
-
         final Geometry geometry = resolveGeometry(havainto.getSijainti());
         if (geometry != null && !geometry.isEmpty()) {
 
@@ -149,7 +143,7 @@ public class V2MaintenanceTrackingUpdateService {
 
             final MaintenanceTracking previousTracking =
                 v2MaintenanceTrackingRepository
-                    .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedDescIdDesc(harjaWorkMachineId, harjaContractId);
+                    .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(harjaWorkMachineId, harjaContractId);
 
             final NextObservationStatus status = resolveNextObservationStatus(previousTracking, havainto);
             final ZonedDateTime harjaObservationTime = DateHelper.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
@@ -259,7 +253,9 @@ public class V2MaintenanceTrackingUpdateService {
             final long diffInSeconds = getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(previousTracking, nextHavainto.getHavaintoaika());
             final Point nextPoint = resolveLastPoint(nextGeometry);
             final double speedKmH = PostgisGeometryHelper.speedBetweenWGS84PointsInKmH(previousTracking.getLastPoint(), nextPoint, diffInSeconds);
-            log.debug("method=resolveSpeedInKmHNullSafe Speed {} km/h", speedKmH);
+            if (log.isDebugEnabled()) {
+                log.debug("method=resolveSpeedInKmHNullSafe Speed {} km/h", speedKmH);
+            }
             return speedKmH;
         }
         return 0;
@@ -338,8 +334,10 @@ public class V2MaintenanceTrackingUpdateService {
                     final double y = (double) point.get(1);
                     final double z = point.size() > 2 ? Double.valueOf((Integer) point.get(2)) : 0.0;
                     final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
-                    log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
-                             x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
+                    if (log.isDebugEnabled()) {
+                        log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
+                                  x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
+                    }
                     return PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -349,9 +347,11 @@ public class V2MaintenanceTrackingUpdateService {
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
             final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
-            log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
-                     koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ(),
-                     coordinate.getX(), coordinate.getY(), coordinate.getZ());
+            if (log.isDebugEnabled()) {
+                log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
+                          koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ(),
+                          coordinate.getX(), coordinate.getY(), coordinate.getZ());
+            }
             return Collections.singletonList(coordinate);
         }
         return Collections.emptyList();
