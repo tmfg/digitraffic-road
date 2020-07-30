@@ -87,11 +87,8 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTracking> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
 
-
-
     @Modifying
     @Query(nativeQuery = true,
-           value = "DELETE FROM maintenance_tracking_task")
-    void deleteAllMaintenanceTrackingTasks();
-
+           value = "INSERT INTO maintenance_tracking_data_tracking(data_id, tracking_id) VALUES (:dataId, :trackingId) ON CONFLICT (data_id, tracking_id) DO NOTHING")
+    void addTrackingData(final long dataId, final long trackingId);
 }

@@ -147,10 +147,13 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
                 throw new RuntimeException(e);
             }
         });
-
-
-        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-        assertEquals(5, handled);
+        int handled = 0;
+        int total = 0;
+        do {
+            handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(3);
+            total += handled;
+        } while (handled > 0);
+        assertEquals(5, total);
 
         final List<MaintenanceTracking> trackings =
             v2MaintenanceTrackingRepository.findAll(Sort.by("workMachine.harjaId"));
