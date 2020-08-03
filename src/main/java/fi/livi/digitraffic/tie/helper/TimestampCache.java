@@ -12,12 +12,18 @@ public class TimestampCache {
     public OffsetDateTime get(final Long millis) {
         OffsetDateTime ts = cache.get(millis);
 
-        if(ts == null) {
+        if (ts == null) {
             final Instant instant = Instant.ofEpochMilli(millis);
             ts = instant.atOffset(ZoneOffset.UTC);
             cache.put(millis, ts);
         }
 
         return ts;
+    }
+
+    public OffsetDateTime getMaxTime() {
+        return cache.values().stream()
+            .max(OffsetDateTime::compareTo)
+            .orElse(null);
     }
 }
