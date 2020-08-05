@@ -22,7 +22,10 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTracking> findAllByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedAscIdAsc(final long workMachineHarjaId, final long contractHarjaId);
 
-    @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
+    /**
+     * EntityGraph causes HHH000104: firstResult/maxResults specified with collection fetch; applying in memory! warnings
+     * @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
+    */
     MaintenanceTracking findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(final long workMachineHarjaId, final long contractHarjaId);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
