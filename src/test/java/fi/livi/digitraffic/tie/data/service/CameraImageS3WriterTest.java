@@ -54,7 +54,7 @@ public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
         }
 
         // Test latest image data and last modified metadata
-        final S3Object latest = s3.getObject(weathercamBucketName, key);
+        final S3Object latest = amazonS3.getObject(weathercamBucketName, key);
         final byte[] dataFromS3 = latest.getObjectContent().readAllBytes();
         Assert.assertArrayEquals("Image data read from S3 differs from expected image data for the latest image",
                                  versionIdImgDataPairs.get(versionIdImgDataPairs.size()-1).getValue(), dataFromS3);
@@ -110,11 +110,11 @@ public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
 
     private void checkObjectExistenceInS3(final String key, final boolean shouldExist) {
         if (shouldExist) {
-            Assert.assertNotNull(s3.getObject(weathercamBucketName, key));
+            Assert.assertNotNull(amazonS3.getObject(weathercamBucketName, key));
         } else {
             boolean exeption = false;
             try {
-                Assert.assertNull(s3.getObject(weathercamBucketName, key));
+                Assert.assertNull(amazonS3.getObject(weathercamBucketName, key));
             } catch (AmazonS3Exception e) {
                 Assert.assertTrue(e.getMessage().contains("The specified key does not exist"));
                 exeption = true;

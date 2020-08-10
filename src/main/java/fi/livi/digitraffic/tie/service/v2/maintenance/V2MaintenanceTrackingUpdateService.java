@@ -25,20 +25,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import fi.livi.digitraffic.tie.conf.MaintenanceTrackingMqttConfiguration;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
@@ -57,8 +60,8 @@ public class V2MaintenanceTrackingUpdateService {
     private final ObjectReader jsonReader;
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     private final DataStatusService dataStatusService;
-
-    private final int distinctObservationGapMinutes;
+    private final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration;
+    private static int distinctObservationGapMinutes;
 
     @Autowired
     public V2MaintenanceTrackingUpdateService(final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository,
@@ -66,6 +69,8 @@ public class V2MaintenanceTrackingUpdateService {
                                               final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository,
                                               final ObjectMapper objectMapper,
                                               final DataStatusService dataStatusService,
+                                              @Autowired(required = false)
+                                              final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration,
                                               @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
                                               final int distinctObservationGapMinutes) {
         this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
@@ -74,11 +79,12 @@ public class V2MaintenanceTrackingUpdateService {
         this.jsonReader = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
         this.dataStatusService = dataStatusService;
-        this.distinctObservationGapMinutes = distinctObservationGapMinutes;
+        this.maintenanceTrackingMqttConfiguration = maintenanceTrackingMqttConfiguration;
+        V2MaintenanceTrackingUpdateService.distinctObservationGapMinutes = distinctObservationGapMinutes;
     }
 
     @Transactional
-    public void saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) throws JsonProcessingException {
+    public void saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) {
         try {
             final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
             final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
@@ -116,7 +122,7 @@ public class V2MaintenanceTrackingUpdateService {
             trackingData.updateStatusToHandled();
 
         } catch (Exception e) {
-            log.error(String.format("HandleUnhandledRealizations failed for id %d", trackingData.getId()), e);
+            log.error(String.format("method=handleMaintenanceTrackingData failed for id %d", trackingData.getId()), e);
             trackingData.updateStatusToError();
             trackingData.appendHandlingInfo(e.toString());
             return false;
@@ -125,10 +131,8 @@ public class V2MaintenanceTrackingUpdateService {
         return true;
     }
 
-
-
     private void handleRoute(final Havainto havainto,
-                             final MaintenanceTrackingData trackingData, String sendingSystem, ZonedDateTime sendingTime) {
+                             final MaintenanceTrackingData trackingData, final String sendingSystem, final ZonedDateTime sendingTime) {
 
         final Geometry geometry = resolveGeometry(havainto.getSijainti());
         if (geometry != null && !geometry.isEmpty()) {
@@ -139,22 +143,25 @@ public class V2MaintenanceTrackingUpdateService {
 
             final MaintenanceTracking previousTracking =
                 v2MaintenanceTrackingRepository
-                    .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedDescIdDesc(harjaWorkMachineId, harjaContractId);
+                    .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(harjaWorkMachineId, harjaContractId);
 
             final NextObservationStatus status = resolveNextObservationStatus(previousTracking, havainto);
-            final ZonedDateTime harjaObservationTime = havainto.getHavaintoaika();
+            final ZonedDateTime harjaObservationTime = DateHelper.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
 
+            final BigDecimal direction = getDirection(havainto, trackingData.getId());
             if ( status.is(TRANSITION) ) {
-                log.info("WorkMachine tracking in transition");
+                log.debug("method=handleRoute WorkMachine tracking in transition");
                 // Mark found one to finished as the work machine is in transition after that
                 // Append latest point (without the task) to tracking if it's inside time limits.
-                updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, getDirection(havainto, trackingData.getId()), harjaObservationTime, status.isNextInsideLimits());
+                updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, direction, harjaObservationTime, status.isNextInsideLimits());
+                sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
             // If previous is finished or tasks has changed or time gap is too long, we create new tracking for the machine
             } else if ( status.is(NEW) ) {
 
                 // Append latest point to tracking if it's inside time limits. This happens only when task changes and
                 // last point will be new tasks first point.
-                updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, getDirection(havainto, trackingData.getId()), harjaObservationTime, status.isNextInsideLimits());
+                updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, direction, harjaObservationTime, status.isNextInsideLimits());
+                sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
 
                 final MaintenanceTrackingWorkMachine workMachine =
                     getOrCreateWorkMachine(harjaWorkMachineId, harjaContractId, harjaWorkMachine.getTyokonetyyppi());
@@ -164,16 +171,48 @@ public class V2MaintenanceTrackingUpdateService {
                 final MaintenanceTracking created =
                     new MaintenanceTracking(trackingData, workMachine, harjaContractId, sendingSystem, sendingTime,
                         harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
-                        performedTasks, getDirection(havainto, trackingData.getId()));
+                        performedTasks, direction);
                 v2MaintenanceTrackingRepository.save(created);
+                sendToMqtt(created, geometry, direction, harjaObservationTime);
             } else {
-                previousTracking.appendGeometry(geometry, harjaObservationTime, getDirection(havainto, trackingData.getId()));
-                previousTracking.addWorkMachineTrackingData(trackingData);
+                previousTracking.appendGeometry(geometry, harjaObservationTime, direction);
+                sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
+                // Just debugging
+                final LineString resultLs = previousTracking.getLineString();
+                final Point end = resultLs.getEndPoint();
+                final Point endPrev = resultLs.getPointN(resultLs.getNumPoints() - 2);
+                final double dist = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(endPrev, end);
+                if (dist > 20) {
+                    log.error("method=handleRoute Last point over 20 km from previous. Previous: {}, end: {}, data id: {}, havainto.sijainti: {}", endPrev.toString(), end.toString(), trackingData.getId(), havainto.getSijainti().toString());
+                }
+                // previousTracking.addWorkMachineTrackingData(trackingData) does db query for all previous trackintData
+                // to populate the collection. So let's just insert the new one directly to db.
+                v2MaintenanceTrackingRepository.addTrackingData(trackingData.getId(), previousTracking.getId());
             }
         }
     }
 
-    private BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {
+    private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
+        if (maintenanceTrackingMqttConfiguration == null) {
+            return;
+        }
+        if (tracking != null) {
+            try {
+                final MaintenanceTrackingLatestFeature feature =
+                    V2MaintenanceTrackingDataService.convertToTrackingLatestFeature(tracking);
+
+                final fi.livi.digitraffic.tie.metadata.geojson.Geometry geoJsonGeom = PostgisGeometryHelper.convertToGeoJSONGeometry(geometry);
+                feature.setGeometry(geoJsonGeom);
+                feature.getProperties().setDirection(direction);
+                feature.getProperties().setTime(observationTime);
+                maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
+            } catch (Exception e) {
+                log.error("Error while appending tracking {} to mqtt", tracking);
+            }
+        }
+    }
+
+    private static BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {
         if (havainto.getSuunta() != null) {
             final BigDecimal value = BigDecimal.valueOf(havainto.getSuunta());
             if (value.intValue() > 360 || value.intValue() < 0) {
@@ -185,7 +224,7 @@ public class V2MaintenanceTrackingUpdateService {
         return null;
     }
 
-    private NextObservationStatus resolveNextObservationStatus(final MaintenanceTracking previousTracking, final Havainto havainto) {
+    private static NextObservationStatus resolveNextObservationStatus(final MaintenanceTracking previousTracking, final Havainto havainto) {
 
         final Set<MaintenanceTrackingTask> performedTasks = getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
         final ZonedDateTime harjaObservationTime = havainto.getHavaintoaika();
@@ -194,7 +233,7 @@ public class V2MaintenanceTrackingUpdateService {
         final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, previousTracking);
 
         final double speedInKmH = resolveSpeedInKmHNullSafe(previousTracking, havainto);
-        final boolean overspeed = speedInKmH >= 120.0;
+        final boolean overspeed = speedInKmH >= 140.0;
 
         if (isTransition(performedTasks)) {
             return new NextObservationStatus(TRANSITION, isNextInsideTheTimeLimit, isNextTimeSameOrAfter, overspeed);
@@ -210,19 +249,21 @@ public class V2MaintenanceTrackingUpdateService {
         }
     }
 
-    private double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final Havainto nextHavainto) {
+    private static double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final Havainto nextHavainto) {
         final Geometry nextGeometry = resolveGeometry(nextHavainto.getSijainti());
         if (previousTracking != null && nextGeometry != null) {
             final long diffInSeconds = getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(previousTracking, nextHavainto.getHavaintoaika());
             final Point nextPoint = resolveLastPoint(nextGeometry);
             final double speedKmH = PostgisGeometryHelper.speedBetweenWGS84PointsInKmH(previousTracking.getLastPoint(), nextPoint, diffInSeconds);
-            log.debug("Speed {} km/h", speedKmH);
+            if (log.isDebugEnabled()) {
+                log.debug("method=resolveSpeedInKmHNullSafe Speed {} km/h", speedKmH);
+            }
             return speedKmH;
         }
         return 0;
     }
 
-    private long getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime nextCoordinateTime) {
+    private static long getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime nextCoordinateTime) {
         if (previousTracking != null) {
             final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
             return previousCoordinateTime.until(nextCoordinateTime, ChronoUnit.SECONDS);
@@ -230,7 +271,7 @@ public class V2MaintenanceTrackingUpdateService {
         return 0;
     }
 
-    private Set<MaintenanceTrackingTask> getMaintenanceTrackingTasksFromHarjaTasks(List<SuoritettavatTehtavat> harjaTasks) {
+    private static Set<MaintenanceTrackingTask> getMaintenanceTrackingTasksFromHarjaTasks(final List<SuoritettavatTehtavat> harjaTasks) {
         return harjaTasks == null ? null : harjaTasks.stream()
             .map(tehtava -> {
                 final MaintenanceTrackingTask task = MaintenanceTrackingTask.getByharjaEnumName(tehtava.name());
@@ -242,9 +283,9 @@ public class V2MaintenanceTrackingUpdateService {
             .collect(Collectors.toSet());
     }
 
-    private void updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Geometry latestGeometry,
-                                                               final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
-                                                               final boolean appendLatestGeometry) {
+    private static void updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Geometry latestGeometry,
+                                                                      final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
+                                                                      final boolean appendLatestGeometry) {
         if (trackingToFinish != null && !trackingToFinish.isFinished()) {
             if (appendLatestGeometry) {
                 trackingToFinish.appendGeometry(latestGeometry, latestGeometryOservationTime, direction);
@@ -258,7 +299,7 @@ public class V2MaintenanceTrackingUpdateService {
      * @param geometry Must be either Point or LineString
      * @return Point it self or LineString's last point
      */
-    private Point resolveLastPoint(final Geometry geometry) {
+    private static Point resolveLastPoint(final Geometry geometry) {
         if (geometry.getNumPoints() > 1) {
             final LineString lineString = (LineString) geometry;
             return lineString.getEndPoint();
@@ -273,7 +314,7 @@ public class V2MaintenanceTrackingUpdateService {
      * @param sijainti where to read geometry
      * @return either Point or LineString geometry, null if no geometry resolved
      */
-    private Geometry resolveGeometry(final GeometriaSijaintiSchema sijainti) {
+    private static Geometry resolveGeometry(final GeometriaSijaintiSchema sijainti) {
 
         final List<Coordinate> coordinates = resolveCoordinates(sijainti);
         if (coordinates.isEmpty()) {
@@ -286,7 +327,7 @@ public class V2MaintenanceTrackingUpdateService {
 
     }
 
-    private List<Coordinate> resolveCoordinates(final GeometriaSijaintiSchema sijainti) {
+    private static List<Coordinate> resolveCoordinates(final GeometriaSijaintiSchema sijainti) {
         if (sijainti.getViivageometria() != null) {
             final List<List<Object>> lineStringCoords = sijainti.getViivageometria().getCoordinates();
             return lineStringCoords.stream().map(point -> {
@@ -295,8 +336,10 @@ public class V2MaintenanceTrackingUpdateService {
                     final double y = (double) point.get(1);
                     final double z = point.size() > 2 ? Double.valueOf((Integer) point.get(2)) : 0.0;
                     final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
-                    log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
-                             x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
+                    if (log.isDebugEnabled()) {
+                        log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
+                                  x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
+                    }
                     return PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -306,15 +349,17 @@ public class V2MaintenanceTrackingUpdateService {
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
             final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
-            log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
-                     koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ(),
-                     coordinate.getX(), coordinate.getY(), coordinate.getZ());
+            if (log.isDebugEnabled()) {
+                log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
+                          koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ(),
+                          coordinate.getX(), coordinate.getY(), coordinate.getZ());
+            }
             return Collections.singletonList(coordinate);
         }
         return Collections.emptyList();
     }
 
-    private boolean isNextCoordinateTimeInsideTheLimitNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
+    private static boolean isNextCoordinateTimeInsideTheLimitNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
         if (previousTracking != null) {
             final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
             // It's allowed for next to be same or after the previous time
@@ -322,21 +367,21 @@ public class V2MaintenanceTrackingUpdateService {
                 ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
             if (!timeGapInsideTheLimit) {
                 log.info("previousCoordinateTime: {}, nextCoordinateTime: {}, timeGapInsideTheLimit: {}",
-                         previousCoordinateTime, nextCoordinateTime, timeGapInsideTheLimit);
+                         DateHelper.toZonedDateTimeAtUtc(previousCoordinateTime), DateHelper.toZonedDateTimeAtUtc(nextCoordinateTime), timeGapInsideTheLimit);
             }
             return timeGapInsideTheLimit;
         }
         return false;
     }
 
-    private boolean isNextCoordinateTimeSameOrAfterPreviousNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
+    private static boolean isNextCoordinateTimeSameOrAfterPreviousNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
         if (previousTracking != null) {
             final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
             // It's allowed for next to be same or after the previous time
             final boolean nextIsSameOrAfter = !nextCoordinateTime.isBefore(previousCoordinateTime);
             if (!nextIsSameOrAfter) {
                 log.info("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {}",
-                         previousCoordinateTime, nextCoordinateTime, nextIsSameOrAfter);
+                         DateHelper.toZonedDateTimeAtUtc(previousCoordinateTime), DateHelper.toZonedDateTimeAtUtc(nextCoordinateTime), nextIsSameOrAfter);
             }
             return nextIsSameOrAfter;
         }
@@ -358,7 +403,7 @@ public class V2MaintenanceTrackingUpdateService {
         }
     }
 
-    private boolean isTransition(Set<MaintenanceTrackingTask> tehtavat) {
+    private static boolean isTransition(Set<MaintenanceTrackingTask> tehtavat) {
         return tehtavat.isEmpty();
     }
 
@@ -379,10 +424,10 @@ public class V2MaintenanceTrackingUpdateService {
 
     /**
      * Gets reittitoteuma from reittitoteuma or reittitoteumat property
-     * @return
+     * @return havaintos of reittitoteuma
      */
     private static List<Havainto> getHavaintos(final TyokoneenseurannanKirjausRequestSchema kirjaus) {
-        return kirjaus.getHavainnot().stream().map(h -> h.getHavainto()).collect(Collectors.toList());
+        return kirjaus.getHavainnot().stream().map(Havainnot::getHavainto).collect(Collectors.toList());
     }
 
     static class NextObservationStatus {

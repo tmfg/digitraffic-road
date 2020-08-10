@@ -1,39 +1,33 @@
 package fi.livi.digitraffic.tie.scheduler;
 
+import static fi.livi.digitraffic.tie.scheduler.JobLogger.JobType.Quartz;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.livi.digitraffic.tie.scheduler.JobLogger.JobType;
+
 public abstract class SimpleUpdateJob extends AbstractUpdateJob {
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
+    private static final JobType jobType = Quartz;
 
     @Override
     public final void execute(final JobExecutionContext context) {
         final String jobName = context.getJobDetail().getKey().getName();
 
-        log.info("Quartz jobName={} start", jobName);
+        JobLogger.logJobStart(log, jobType, jobName);
 
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        Exception lastError = null;
         try {
             doExecute(context);
+            JobLogger.logJobEndStatusSuccess(log, jobType, jobName, stopWatch.getTime());
         } catch(final Exception e) {
-            lastError = e;
-            log.error("Exception executing jobName=" + jobName, e);
-        }
-
-        stopWatch.stop();
-
-        if (lastError != null) {
-            log.info("Quartz jobName={} end jobEndStatus={} jobTimeMs={} lastError: {} {}",
-                     jobName, lastError == null ? "SUCCESS" : "FAIL", stopWatch.getTime(),
-                     lastError != null ? lastError.getClass() : null, lastError != null ? lastError.getMessage() : "");
-        } else {
-            log.info("Quartz jobName={} end jobEndStatus={} jobTimeMs={}",
-                     jobName, lastError == null ? "SUCCESS" : "FAIL", stopWatch.getTime());
+            JobLogger.logJobEndStatusFail(log, jobType, jobName, stopWatch.getTime(), e);
         }
     }
 

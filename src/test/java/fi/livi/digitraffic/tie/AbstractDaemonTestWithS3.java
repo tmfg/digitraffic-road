@@ -22,7 +22,7 @@ public abstract class AbstractDaemonTestWithS3 extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(AbstractDaemonTestWithS3.class);
 
     @Autowired
-    protected AmazonS3 s3;
+    protected AmazonS3 amazonS3;
 
     @Value("${dt.amazon.s3.weathercam.bucketName}")
     protected String weathercamBucketName;
@@ -30,12 +30,12 @@ public abstract class AbstractDaemonTestWithS3 extends AbstractDaemonTest {
     @Before
     public void initS3BucketForWeatherCam() {
 
-        log.info("Init versioned S3 Bucket {} with S3: {}", weathercamBucketName, s3);
+        log.info("Init versioned S3 Bucket {} with S3: {}", weathercamBucketName, amazonS3);
 
-        if( s3.doesBucketExistV2(weathercamBucketName)) {
+        if (amazonS3.doesBucketExistV2(weathercamBucketName)) {
             log.info("Bucket {} exists already", weathercamBucketName);
         } else {
-            s3.createBucket(weathercamBucketName);
+            amazonS3.createBucket(weathercamBucketName);
             log.info("Bucket {} created", weathercamBucketName);
 
             // Enable versioning on the bucket.
@@ -45,10 +45,10 @@ public abstract class AbstractDaemonTestWithS3 extends AbstractDaemonTest {
             SetBucketVersioningConfigurationRequest setBucketVersioningConfigurationRequest =
                 new SetBucketVersioningConfigurationRequest(weathercamBucketName, configuration);
 
-            s3.setBucketVersioningConfiguration(setBucketVersioningConfigurationRequest);
+            amazonS3.setBucketVersioningConfiguration(setBucketVersioningConfigurationRequest);
 
             // 2. Get bucket versioning configuration information.
-            BucketVersioningConfiguration conf = s3.getBucketVersioningConfiguration(weathercamBucketName);
+            BucketVersioningConfiguration conf = amazonS3.getBucketVersioningConfiguration(weathercamBucketName);
             log.info("Bucket {} versioning configuration status: {}", weathercamBucketName, conf.getStatus());
         }
     }

@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtcWithoutMillis;
+import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowWithoutMillisAtUtc;
 import static fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.MAX_IDS_SIZE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -106,7 +106,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         assertTrue(cp.isPresent());
 
         final CameraPreset preset = cp.get();
-        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = getZonedDateTimeNowWithoutMillisAtUtc();
         final CameraPresetHistory history = generateHistory(preset, now.minusMinutes(1));
         cameraPresetHistoryUpdateService.saveHistory(history);
 
@@ -210,7 +210,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final CameraPreset cp = cameraPresetService.findCameraPresetByPresetId(presetId);
         final RoadStation rs = cp.getRoadStation();
         rs.updatePublicity(true);
-        rs.updatePublicity(false, getZonedDateTimeNowAtUtcWithoutMillis().plusDays(1)); // -> previous/now public, future secret
+        rs.updatePublicity(false, getZonedDateTimeNowWithoutMillisAtUtc().plusDays(1)); // -> previous/now public, future secret
         cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
         entityManager.flush();
         final List<CameraPresetHistory> allUpdated = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetId);
@@ -224,7 +224,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     @Test
     public void cameraOrPresetPublicHistory() {
         final int historySize = RandomUtils.nextInt(21, 28);
-        final ZonedDateTime lastModified = getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc();
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         log.info("Generated history for camera {} from {} to {} (size {})", cameraId, lastModified, lastModified.minusHours(historySize-1), historySize);
         // Get history for last 24 h
@@ -326,7 +326,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final Optional<CameraPreset> cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst();
         assertTrue(cp.isPresent());
         final CameraPreset preset = cp.get();
-        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = getZonedDateTimeNowWithoutMillisAtUtc();
         final CameraPresetHistory history0 = generateHistory(preset, now);
         final CameraPresetHistory history1 = generateHistory(preset, now.minusMinutes(1), false);
         final CameraPresetHistory history2 = generateHistory(preset, now.minusMinutes(2), false);
@@ -364,7 +364,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final Optional<CameraPreset> cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst();
         assertTrue(cp.isPresent());
         final CameraPreset preset = cp.get();
-        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = getZonedDateTimeNowWithoutMillisAtUtc();
         generateHistory(preset, now.minusMinutes(1));
         generateHistory(preset, now.minusMinutes(2), false);
 
@@ -384,7 +384,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final Optional<CameraPreset> cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst();
         assertTrue(cp.isPresent());
         final CameraPreset preset = cp.get();
-        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = getZonedDateTimeNowWithoutMillisAtUtc();
         generateHistory(preset, now, false);
         generateHistory(preset, now.minusMinutes(1));
         generateHistory(preset, now.minusMinutes(2), false);
@@ -443,7 +443,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         assertTrue(cp.isPresent());
         final CameraPreset preset = cp.get();
         final String presetId = preset.getPresetId();
-        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
+        final ZonedDateTime now = getZonedDateTimeNowWithoutMillisAtUtc();
         final CameraPresetHistory publicHistory = generateHistory(preset, now.minusMinutes(1));
         final CameraPresetHistory publicHistoryTooOld = generateHistory(preset, now.minusDays(2));
         final CameraPresetHistory secretHistory = generateHistory(preset, now, false);
@@ -551,7 +551,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     @Test
     public void presetNotPublicInPast() {
         final CameraPreset preset = cameraPresetService.save(generateDummyPreset());
-        final ZonedDateTime T1 = getZonedDateTimeNowAtUtcWithoutMillis().minusHours(3);
+        final ZonedDateTime T1 = getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
         final ZonedDateTime T2 = T1.plusHours(1);
         final ZonedDateTime T3 = T1.plusHours(2);
         final ZonedDateTime T4 = T1.plusHours(3);
@@ -590,7 +590,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     public void deleteOlderThanHours() {
         final int historySize = RandomUtils.nextInt(40, 80);
         // handle possible gap between server and db times
-        final ZonedDateTime lastModified = getZonedDateTimeNowAtUtcWithoutMillis().plusSeconds(10);
+        final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusSeconds(10);
         // History for historySize-1 hours backwards
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         final List<CameraHistoryDto> history = cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
@@ -622,7 +622,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     public void generateHistoryForInternalTesting() {
         final int historySize = RandomUtils.nextInt(40, 80);
         // handle possible gap between server and db times
-        final ZonedDateTime lastModified = getZonedDateTimeNowAtUtcWithoutMillis().plusSeconds(10);
+        final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusSeconds(10);
         // History for 39 hours backwards
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
     }
@@ -652,7 +652,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final List<String> presetIds = new ArrayList<>();
         cameraPresetService.findAllPublishableCameraPresets().stream().limit(presetCount).forEach(cp -> {
             presetIds.add(cp.getPresetId());
-            final ZonedDateTime lastModified = getZonedDateTimeNowAtUtcWithoutMillis();
+            final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc();
             IntStream.range(0, historyCountPerPreset).map(i -> historyCountPerPreset - i - 1).forEach(i -> {
                 log.info("Create history nr. {} for preset {}", i, cp.getPresetId());
                 generateHistory(cp, lastModified.minusMinutes(i));

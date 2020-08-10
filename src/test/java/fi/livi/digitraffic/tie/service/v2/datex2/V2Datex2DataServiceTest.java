@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -18,6 +19,7 @@ import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
+import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
@@ -45,7 +47,12 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
     private V2Datex2UpdateService v2Datex2UpdateService;
 
     @Autowired
-    private Datex2UpdateService datex2UpdateService;
+    private Datex2Repository datex2Repository;
+
+    @Before
+    public void cleanDb() {
+        datex2Repository.deleteAll();
+    }
 
     @Test
     public void activeIncidentsDatex2AndJsonEquals() throws IOException {
@@ -122,6 +129,20 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         assertFoundBySituationId(GUID_WITH_JSON, true, true);
         // Only datex2 is found
         assertActiveMessageFound(GUID_NO_JSON, true, false);
+    }
+
+    @Test
+    public void findActiveJsonWithoutGeometry() throws IOException {
+        // One active with json
+        initDataFromFile("TrafficIncidentImsMessageWithNullGeometry.xml");
+        assertActiveMessageFound(GUID_WITH_JSON, true, true);
+    }
+
+    @Test
+    public void findActiveJsonWithoutPropertiesIsNotReturned() throws IOException {
+        // One active with json
+        initDataFromFile("TrafficIncidentImsMessageWithNullProperties.xml");
+        assertActiveMessageFound(GUID_WITH_JSON, true, false);
     }
 
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {

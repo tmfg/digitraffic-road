@@ -71,7 +71,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private EntityManager entityManager;
 
     @Autowired
-    private AmazonS3 amazonS3Client;
+    private AmazonS3 amazonS3;
 
     @Value("${dt.amazon.s3.weathercam.bucketName}")
     private String bucketName;
@@ -256,7 +256,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
 
     private byte[] readCameraImageFromS3(final String presetId) throws IOException {
         final String key = presetId + ".jpg";
-        final S3Object o = amazonS3Client.getObject(bucketName, key);
+        final S3Object o = amazonS3.getObject(bucketName, key);
         final byte[] imageData = o.getObjectContent().readAllBytes();
         o.getObjectContent().close();
         return imageData;

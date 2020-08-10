@@ -27,6 +27,6 @@ public class DateTimeConverter {
         if (from == null) {
             return null;
         }
-        return DateHelper.toIsoDateTimeWithMillis(from);
+        return DateHelper.toIsoDateTimeWithMillisAtUtc(from);
     }
 }

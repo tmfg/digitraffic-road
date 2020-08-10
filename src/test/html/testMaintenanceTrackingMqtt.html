@@ -1,0 +1,79 @@
+<html>
+<head>
+    <title>Test mqtt tms-messages</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js" ></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"></script>
+
+    <script>
+        'use strict';
+        const lines = [];
+        let messagesLastMinuteCount = 0, client;
+        // const host = "tie.digitraffic.fi";
+        // const port = 61619;
+        const host = "tie-test.digitraffic.fi";
+        const port = 443;
+        // const topic = "tms/#";
+        const topic = "maintenance/tracking/#";
+
+        function connect() {
+            console.log("Trying to connect to road mqtt..." + host + ":" + port);
+
+            client = new Paho.MQTT.Client(host, port, 'testclient_' + Date.now());
+
+            client.onConnectionLost = function (response) {
+                console.info(Date.now() + ' Connection lost:' + response.errorMessage);
+            };
+            client.onMessageArrived = function(message) {
+                messagesLastMinuteCount++;
+
+                addMessage(JSON.parse(message.payloadString));
+
+                updateList();
+            };
+
+            const connectionProperties = {
+                onSuccess:onConnect,
+                mqttVersion:4,
+                useSSL:true,
+                userName:"digitraffic",
+                password:"digitrafficPassword"
+            };
+
+            client.connect(connectionProperties);
+
+            window.setInterval(logMessageCount, 60*1000);
+        }
+
+        function logMessageCount() {
+            console.info(Date.now() + ' ' + messagesLastMinuteCount + ' messages per minute');
+            $("#messagesPerMinute").text(messagesLastMinuteCount);
+            messagesLastMinuteCount = 0;
+        }
+
+        function onConnect() {
+            console.info(Date.now() + ' Connection open. Subscribing to topic ' + topic);
+            client.subscribe(topic);
+        }
+
+        function addMessage(message) {
+            const text = JSON.stringify(message);
+
+            if (lines.length > 100) {
+                lines.shift();
+            }
+
+            lines.push(text);
+        }
+
+        function updateList() {
+            $(".messages").html(lines.join('<br/>'));
+        }
+
+        connect();
+    </script>
+</head>
+<body>
+Messages (<span id="messagesPerMinute">&lt;counting&gt;</span> messages per minute):
+<div class="messages" />
+</body>
+</html>

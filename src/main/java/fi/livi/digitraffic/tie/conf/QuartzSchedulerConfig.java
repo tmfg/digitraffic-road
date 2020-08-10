@@ -44,7 +44,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import fi.livi.digitraffic.tie.scheduler.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.scheduler.CameraHistoryDeleteJob;
-import fi.livi.digitraffic.tie.scheduler.CameraMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.CameraStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.CameraStationsStatusMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.Datex2RoadworksMessageUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.Datex2TrafficAlertMessageUpdateJob;
@@ -57,6 +57,7 @@ import fi.livi.digitraffic.tie.scheduler.LocationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationSensorConstantsMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.WeatherHistoryUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.WeatherStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.WeatherStationsStatusMetadataUpdateJob;
 
@@ -156,8 +157,8 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean cameraMetadataUpdateJob() {
-        return createJobDetail(CameraMetadataUpdateJob.class);
+    public JobDetailFactoryBean cameraStationMetadataUpdateJob() {
+        return createJobDetail(CameraStationMetadataUpdateJob.class);
     }
 
     @Bean
@@ -229,13 +230,16 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
+    public JobDetailFactoryBean weatherHistoryUpdateJobDetail() { return createJobDetail(WeatherHistoryUpdateJob.class); }
+
+    @Bean
     public JobDetailFactoryBean cameraHistoryDeleteJob() {
         return createJobDetail(CameraHistoryDeleteJob.class);
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> cameraMetadataUpdateJobTrigger(final JobDetail cameraMetadataUpdateJob) {
-        return createTrigger(cameraMetadataUpdateJob);
+    public FactoryBean<? extends Trigger> cameraStationMetadataUpdateJobTrigger(final JobDetail cameraStationMetadataUpdateJob) {
+        return createTrigger(cameraStationMetadataUpdateJob);
     }
 
     @Bean
@@ -311,6 +315,11 @@ public class QuartzSchedulerConfig {
     @Bean
     public FactoryBean<? extends Trigger> cameraHistoryDeleteJobTrigger(final JobDetail cameraHistoryDeleteJob) {
         return createTrigger(cameraHistoryDeleteJob);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> weatherHistoryUpdateJobTrigger(final JobDetail weatherHistoryUpdateJobDetail) {
+        return  createTrigger(weatherHistoryUpdateJobDetail);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class jobClass) {

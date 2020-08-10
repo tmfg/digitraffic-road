@@ -21,7 +21,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
 
     List<MaintenanceTracking> findAllByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedAscIdAsc(final long workMachineHarjaId, final long contractHarjaId);
 
-    MaintenanceTracking findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedDescIdDesc(final long workMachineHarjaId, final long contractHarjaId);
+    MaintenanceTracking findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(final long workMachineHarjaId, final long contractHarjaId);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
@@ -40,24 +40,23 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
-               "SELECT tracking \n" +
-                   "FROM #{#entityName} tracking\n" +
-                   "WHERE tracking.id IN (\n" +
-                   "    SELECT max(t.id)\n" + // select latest id per machine
-                   "    FROM #{#entityName} t\n" +
-                   "    JOIN tracking.tasks taskit\n" +
-                   "    WHERE t.endTime BETWEEN :from AND :to\n" +
-                   "      AND intersects(t.lastPoint, :area) = true\n" +
-                   "      AND exists (\n" +
-                   "        SELECT t " +
-                   "        FROM #{#entityName} t\n" +
-                   "        JOIN t.tasks task\n" +
-                   "        WHERE t = tracking\n" +
-                   "          AND task in (:tasks)" +
-                   "      )\n" +
-                   "    GROUP BY t.workMachine\n" +
-                   ")\n" +
-                   "ORDER by tracking.id")
+                "SELECT tracking \n" +
+                "FROM #{#entityName} tracking\n" +
+                "WHERE tracking.id IN (\n" +
+                "    SELECT max(t.id)\n" + // select latest id per machine
+                "    FROM #{#entityName} t\n" +
+                "    WHERE t.endTime BETWEEN :from AND :to\n" +
+                "      AND intersects(t.lastPoint, :area) = true\n" +
+                "    GROUP BY t.workMachine\n" +
+                ")\n" +
+                "  AND exists (\n" +
+                "    SELECT t " +
+                "    FROM #{#entityName} t\n" +
+                "    JOIN t.tasks task\n" +
+                "    WHERE t = tracking\n" +
+                "      AND task in (:tasks)" +
+                "  )\n" +
+                "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTracking> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
 
@@ -88,11 +87,8 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTracking> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
 
-
-
     @Modifying
     @Query(nativeQuery = true,
-           value = "DELETE FROM maintenance_tracking_task")
-    void deleteAllMaintenanceTrackingTasks();
-
+           value = "INSERT INTO maintenance_tracking_data_tracking(data_id, tracking_id) VALUES (:dataId, :trackingId) ON CONFLICT (data_id, tracking_id) DO NOTHING")
+    void addTrackingData(final long dataId, final long trackingId);
 }

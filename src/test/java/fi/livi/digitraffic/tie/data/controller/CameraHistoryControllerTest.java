@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
-import static fi.livi.digitraffic.tie.helper.DateHelper.withoutMillis;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -141,7 +140,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyAtGivenTimeWithSecret() throws Exception {
         final String presetId = "C0000003";
-        final ZonedDateTime now = withoutMillis(getZonedDateTimeNowAtUtcWithoutMillis());
+        final ZonedDateTime now = DateHelper.withoutMillisAtUtc(getZonedDateTimeNowAtUtcWithoutMillis());
         insertTestData(presetId, now);
         insertTestData(presetId, now.minusHours(1), false); // This is skipped as not public
         final String versionId = insertTestData(presetId, now.minusHours(2));
@@ -262,7 +261,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     }
 
     private ZonedDateTime getZonedDateTimeNowAtUtcWithoutMillis() {
-        return withoutMillis(DateHelper.getZonedDateTimeNowAtUtc());
+        return DateHelper.withoutMillisAtUtc(DateHelper.getZonedDateTimeNowAtUtc());
     }
 
     private String getCameraIdFromPresetId(String presetId) {

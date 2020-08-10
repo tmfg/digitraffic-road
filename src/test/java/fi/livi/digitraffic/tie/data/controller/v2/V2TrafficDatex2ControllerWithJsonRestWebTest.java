@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller.v2;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static org.junit.Assert.assertFalse;
@@ -123,7 +124,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     }
 
     private static String getUrl(final Datex2MessageType messageType, final boolean json, final int inactiveHours) {
-        return API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + messageType.toParameter() + (json ? ".json" : ".xml") + "?inactiveHours=" + inactiveHours;
+        return API_V2_BASE_PATH + API_DATA_PART_PATH + TRAFFIC_DATEX2_PATH + "/" + messageType.toParameter() + (json ? ".json" : ".xml") + "?inactiveHours=" + inactiveHours;
     }
 
     private void assertTextExistInMessage(final String text, final String xml) {

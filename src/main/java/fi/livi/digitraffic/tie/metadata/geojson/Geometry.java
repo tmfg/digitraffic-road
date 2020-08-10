@@ -10,7 +10,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinatesDecimalConverter;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -55,6 +57,7 @@ public abstract class Geometry<T> implements Serializable {
         return type;
     }
 
+    @JsonSerialize(using = CoordinatesDecimalConverter.class)
     @ApiModelProperty(value = "GeoJson Geometry Object coordinates", required = true, position = 2)
     public List<T> getCoordinates() {
         return coordinates;

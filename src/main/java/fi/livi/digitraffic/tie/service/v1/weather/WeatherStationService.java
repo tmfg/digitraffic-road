@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.weather;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getNewest;
+import static fi.livi.digitraffic.tie.helper.DateHelper.getNewestAtUtc;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -10,7 +10,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.converter.feature.WeatherStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.WeatherStationType;
@@ -84,11 +84,11 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
         try {
             if (rws != null) {
                 final int hash = HashCodeBuilder.reflectionHashCode(rws);
-                final String before = ReflectionToStringBuilder.toString(rws);
+                final String before = ToStringHelper.toStringFull(rws);
 
                 if (updateWeatherStationAttributes(tiesaaAsema, rws) ||
                     hash != HashCodeBuilder.reflectionHashCode(rws)) {
-                    log.info("Updated: \n{} -> \n{}", before, ReflectionToStringBuilder.toString(rws));
+                    log.info("Updated: \n{} -> \n{}", before, ToStringHelper.toStringFull(rws));
                     return UpdateStatus.UPDATED;
                 }
                 return UpdateStatus.NOT_UPDATED;
@@ -122,12 +122,12 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     private ZonedDateTime getMetadataLastUpdated() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_SENSOR_METADATA);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_METADATA);
-        return getNewest(sensorsUpdated, stationsUpdated);
+        return getNewestAtUtc(sensorsUpdated, stationsUpdated);
     }
 
     private ZonedDateTime getMetadataLastChecked() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_METADATA_CHECK);
-        return getNewest(sensorsUpdated, stationsUpdated);
+        return getNewestAtUtc(sensorsUpdated, stationsUpdated);
     }
 }

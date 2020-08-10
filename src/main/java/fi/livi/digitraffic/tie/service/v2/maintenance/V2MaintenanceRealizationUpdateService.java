@@ -116,7 +116,7 @@ public class V2MaintenanceRealizationUpdateService {
             wmrd.updateStatusToHandled();
 
         } catch (Exception e) {
-            log.error(String.format("HandleUnhandledRealizations failed for id %d", wmrd.getId()), e);
+            log.error(String.format("method=handleMaintenanceRealization failed for id %d", wmrd.getId()), e);
             wmrd.updateStatusToError();
             wmrd.appendHandlingInfo(e.toString());
             return false;

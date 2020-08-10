@@ -35,7 +35,7 @@ dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
 dt.job.Datex2RoadworksMessageUpdateJob.schedule =              0 0 0/1 * * ?
 dt.job.Datex2WeightRestrictionsMessageUpdateJob.schedule =     0 0 0/1 * * ?
 # Every 12 h
-dt.job.CameraMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
+dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
 dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?
 dt.job.WeatherStationMetadataUpdateJob.schedule =              0 0 3/12 * * ?
 # Every 24 h
@@ -54,6 +54,11 @@ dt.amazon.s3.weathercam.region = eu-west-1
 dt.amazon.s3.weathercam.bucketName = weathercam-road-test
 dt.amazon.s3.weathercam.userAccessKey = dummy
 dt.amazon.s3.weathercam.userSecretKey = dummy
+
+dt.amazon.s3.sensordata.bucketName = sensordata-road-test
+dt.amazon.s3.sensordata.region = eu-west-1
+dt.amazon.s3.sensordata.userAccessKey = dummy
+dt.amazon.s3.sensordata.userSecretKey = dummy
 
 # JMS settings
 

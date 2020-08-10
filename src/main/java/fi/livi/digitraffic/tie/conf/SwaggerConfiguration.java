@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.conf;
 
-import static com.google.common.base.Predicates.or;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
@@ -9,14 +8,15 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,14 +24,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
-import com.fasterxml.classmate.TypeResolver;
-import com.google.common.base.Predicate;
 import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.controller.v1.MetadataController;
-import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.metadata.geojson.LineString;
-import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.service.MetadataApiInfoService;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -39,22 +33,32 @@ import springfox.documentation.swagger.web.DocExpansion;
 import springfox.documentation.swagger.web.ModelRendering;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfigurationBuilder;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @ConditionalOnWebApplication
 @Configuration
-@EnableSwagger2
 @ComponentScan(basePackageClasses = {
     DataController.class, MetadataController.class
 })
 public class SwaggerConfiguration {
 
     private final MetadataApiInfoService metadataApiInfoService;
+    private final String host;
+    private final String scheme;
 
     @Autowired
-    public SwaggerConfiguration(final MetadataApiInfoService metadataApiInfoService) {
+    public SwaggerConfiguration(final MetadataApiInfoService metadataApiInfoService,
+                                final @Value("${dt.domain.url}") String domainUrl) throws URISyntaxException {
         Assert.notNull(metadataApiInfoService, "MetadataApiInfoService can't be null");
         this.metadataApiInfoService = metadataApiInfoService;
+        URI uri = new URI(domainUrl);
+
+        final int port = uri.getPort();
+        if (port > -1) {
+            host = uri.getHost() + ":" + port;
+        } else {
+            host = uri.getHost();
+        }
+        scheme = uri.getScheme();
     }
 
     @Bean
@@ -70,7 +74,7 @@ public class SwaggerConfiguration {
     @Bean
     UiConfiguration uiConfiguration() {
         return UiConfigurationBuilder.builder()
-            .docExpansion(DocExpansion.LIST)
+            .docExpansion(DocExpansion.NONE)
             .defaultModelRendering(ModelRendering.MODEL)
             // There is bugs in online validator, so not use it at the moment ie. https://github.com/swagger-api/validator-badge/issues/97
             //.validatorUrl("https://online.swagger.io/validator")
@@ -78,21 +82,10 @@ public class SwaggerConfiguration {
     }
 
     private Docket getDocket(final String groupName, Predicate<String> apiPaths) {
-        final TypeResolver typeResolver = new TypeResolver();
         return new Docket(DocumentationType.SWAGGER_2)
+            .host(host)
+            .protocols(Set.of(scheme))
             .groupName(groupName)
-            // Issue: https://github.com/springfox/springfox/issues/1021#issuecomment-178626396
-            .directModelSubstitute(ZonedDateTime.class, java.util.Date.class)
-            .directModelSubstitute(LocalDateTime.class, java.util.Date.class)
-            .directModelSubstitute(LocalDate.class, java.sql.Date.class)
-            .directModelSubstitute(Date.class, java.sql.Date.class)
-            // Inheritance not working as expected
-            // https://github.com/springfox/springfox/issues/2407#issuecomment-462319647
-            .additionalModels(typeResolver.resolve(Geometry.class),
-                typeResolver.resolve(LineString.class),
-                typeResolver.resolve(MultiLineString.class),
-                typeResolver.resolve(Point.class)
-            )
             .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_VALUE)))
             .apiInfo(metadataApiInfoService.getApiInfo())
             .select()
@@ -106,12 +99,10 @@ public class SwaggerConfiguration {
      * @return api paths
      */
     private static Predicate<String> getMetadataApiPaths() {
-        return or(
-            regex(API_V1_BASE_PATH + API_METADATA_PART_PATH + "/*.*"),
-            regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*"),
-            regex(API_V2_BASE_PATH + API_METADATA_PART_PATH + "/*.*"),
-            regex(API_V2_BASE_PATH + API_DATA_PART_PATH + "/*.*"),
-            regex(API_V3_BASE_PATH + API_METADATA_PART_PATH + "/*.*")
-        );
+        return regex(API_V1_BASE_PATH + API_METADATA_PART_PATH + "/*.*").or(
+               regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*")).or(
+               regex(API_V2_BASE_PATH + API_METADATA_PART_PATH + "/*.*")).or(
+               regex(API_V2_BASE_PATH + API_DATA_PART_PATH + "/*.*")).or(
+               regex(API_V3_BASE_PATH + API_METADATA_PART_PATH + "/*.*"));
     }
 }

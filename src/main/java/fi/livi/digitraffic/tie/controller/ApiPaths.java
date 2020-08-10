@@ -9,7 +9,6 @@ public final class ApiPaths {
 
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
-    public static final String API_MAINTENANCE_PART_PATH = "/maintenance";
     public static final String API_WORK_MACHINE_PART_PATH = "/work-machine";
     public static final String API_VARIABLE_SIGN_UPDATE_PART_PATH = "/variable-sign-update";
     public static final String VARIABLE_SIGNS_PATH = "/variable-signs";
@@ -35,6 +34,7 @@ public final class ApiPaths {
     public static final String CAMERA_DATA_PATH = "/camera-data";
     public static final String TMS_DATA_PATH = "/tms-data";
     public static final String WEATHER_DATA_PATH = "/weather-data";
+    public static final String WEATHER_HISTORY_DATA_PATH = "/weather-history-data";
     public static final String TMS_SENSOR_CONSTANTS = "/tms-sensor-constants";
     public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
     public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
@@ -46,6 +46,16 @@ public final class ApiPaths {
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
     public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
     public static final String WEIGHT_RESTRICTIONS_DATEX2_PATH = "/weight-restrictions-datex2";
+
+    // Maintenance trackings
+    public static final String MAINTENANCE_TRACKINGS_PATH = "/maintenance/trackings";
+    public static final String MAINTENANCE_TRACKINGS_JSON_DATA_PATH = MAINTENANCE_TRACKINGS_PATH + "/data";
+    public static final String MAINTENANCE_REALIZATIONS_PATH = "/maintenance/realizations";
+    public static final String MAINTENANCE_REALIZATIONS_JSON_DATA_PATH = MAINTENANCE_REALIZATIONS_PATH + "/data";
+    public static final String MAINTENANCE_REALIZATIONS_TASKS_PATH = MAINTENANCE_REALIZATIONS_PATH + "/tasks";
+    public static final String MAINTENANCE_REALIZATIONS_OPERATIONS_PATH = MAINTENANCE_REALIZATIONS_PATH + "/operations";
+    public static final String MAINTENANCE_REALIZATIONS_CATEGORIES_PATH = MAINTENANCE_REALIZATIONS_PATH + "/categories";
+
 
     private ApiPaths() {}
 }

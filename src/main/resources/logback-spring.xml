@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <springProperty name="appType" source="app.type"/>
+    <springProperty scope="context" name="app" source="app.type" defaultValue="-"/>
+    <springProperty scope="context" name="activeProfiles" source="spring.profiles.active" defaultValue="-"/>
+
+    <!-- JSON logger for Cloudwatch -->
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app":"road-${app}"}</customFields>
+            <provider class="fi.livi.digitraffic.tie.conf.LoggerMessageKeyValuePairJsonProvider"/>
+        </encoder>
+    </appender>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <!-- Log message format -->
@@ -10,130 +19,18 @@
         </encoder>
     </appender>
 
-    <appender name="NULL" class="ch.qos.logback.core.helpers.NOPAppender" />
+    <!-- JSON logger for AWS -->
+    <springProfile name="aws">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_JSON" />
+        </root>
+    </springProfile>
 
-    <appender name="FILE_LOGSTASH" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>info</level>
-        </filter>
-        <file>logs/road-${appType}-logstash.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>road-${appType}-logstash.%d{yyyy-MM-dd-HH}.log.gz</fileNamePattern>
-            <maxHistory>2</maxHistory>
-			<totalSizeCap>256MB</totalSizeCap>
-        </rollingPolicy>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
-    </appender>
-
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>logs/road-${appType}-daily.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>road-${appType}-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>2</maxHistory>
-			<totalSizeCap>256MB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
-                 Useful if logged only oneliners to one file and full straces to other -->
-            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
-        </encoder>
-    </appender>
-
-    <!-- JMS message logging in separate file -->
-    <appender name="FILE_JMS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>logs/road-jms-daily.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>road-jms-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>2</maxHistory>
-			<totalSizeCap>256MB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
-                 Useful if logged only oneliners to one file and full straces to other -->
-            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
-        </encoder>
-    </appender>
-
-    <!-- PerformanceMonitor messages logging in separate file -->
-    <appender name="FILE_PERFORMANCE_MONITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- File to write to before rotating. See: http://logback.qos.ch/manual/appenders.html#tbrpFileNamePattern -->
-        <file>logs/road-performance-daily.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>road-${appType}-performance-daily.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>2</maxHistory>
-			<totalSizeCap>256MB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <!-- If needed to exclude stacktrace put %xEx{0} at the end of the pattern
-                 Useful if logged only oneliners to one file and full straces to other -->
-            <pattern>%d{ISO8601} %p&#9;[%t] - %c: %m%n</pattern>
-        </encoder>
-    </appender>
-
-    <!-- TMS and weather sensors data -->
-    <logger name="fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService" additivity="true">
-        <appender-ref ref="FILE_JMS" />
-    </logger>
-    <logger name="fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService" additivity="false">
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-
-
-    <!-- JMS message listener -->
-    <logger name="fi.livi.digitraffic.tie.service.jms" additivity="true">
-        <appender-ref ref="FILE_JMS" />
-    </logger>
-    <logger name="fi.livi.digitraffic.tie.service.jms" additivity="false">
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-
-    <!-- JMS message configuration -->
-    <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="true">
-        <appender-ref ref="FILE_JMS" />
-    </logger>
-    <logger name="fi.livi.digitraffic.tie.conf.jms" additivity="false">
-        <appender-ref ref="NULL" />
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-
-    <logger name="fi.livi.digitraffic.tie.dao.v1.SensorValueDao" additivity="true">
-        <appender-ref ref="FILE_JMS" />
-    </logger>
-    <logger name="fi.livi.digitraffic.tie.dao.v1.SensorValueDao" additivity="false">
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-
-    <!-- Camera presets images -->
-    <logger name="fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService" additivity="true">
-        <appender-ref ref="FILE_JMS" />
-    </logger>
-    <logger name="fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService" additivity="false">
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-
-    <!-- Camera presets data -->
-    <logger name="fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService" additivity="true">
-        <appender-ref ref="FILE_JMS" />
-    </logger>
-    <logger name="fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService" additivity="false">
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-
-    <!-- PerformanceMonitorAspect log -->
-    <logger name="PerformanceMonitor" additivity="true">
-        <appender-ref ref="FILE_PERFORMANCE_MONITOR" />
-    </logger>
-    <logger name="PerformanceMonitor" additivity="false">
-        <appender-ref ref="NULL" />
-        <appender-ref ref="FILE_LOGSTASH" />
-    </logger>
-
-    <root level="INFO" additivity="false">
-        <appender-ref ref="FILE" />
-        <appender-ref ref="FILE_LOGSTASH" />
-        <appender-ref ref="CONSOLE" />
-    </root>
+    <!-- Standard log for others -->
+    <springProfile name="!aws">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
 
 </configuration>

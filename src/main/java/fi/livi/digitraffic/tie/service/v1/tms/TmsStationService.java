@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.tms;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getNewest;
+import static fi.livi.digitraffic.tie.helper.DateHelper.getNewestAtUtc;
 import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
 import java.time.ZonedDateTime;
@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,15 +138,15 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Transactional
     public UpdateStatus updateOrInsertTmsStation(LamAsemaVO lam) {
-        TmsStation existingTms = findTmsStationByLotjuId(lam.getId());
+        final TmsStation existingTms = findTmsStationByLotjuId(lam.getId());
 
         if (existingTms != null) {
             final int hash = HashCodeBuilder.reflectionHashCode(existingTms);
-            final String before = ReflectionToStringBuilder.toString(existingTms);
+            final String before = ToStringHelper.toStringFull(existingTms);
 
             if ( updateTmsStationAttributes(lam, existingTms) ||
                 hash != HashCodeBuilder.reflectionHashCode(existingTms) ) {
-                log.info("Updated:\n{} ->\n{}", before, ReflectionToStringBuilder.toString(existingTms));
+                log.info("Updated:\n{} ->\n{}", before, ToStringHelper.toStringFull(existingTms));
                 return UpdateStatus.UPDATED;
             }
             return UpdateStatus.NOT_UPDATED;
@@ -157,7 +156,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             updateTmsStationAttributes(lam, newTms);
             tmsStationRepository.save(newTms);
 
-            log.info("Created new newTmsCount={}", newTms);
+            log.info("Created new {}", newTms);
             return UpdateStatus.INSERTED;
         }
     }
@@ -246,12 +245,12 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     ZonedDateTime getMetadataLastUpdated() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_METADATA);
-        return getNewest(sensorsUpdated, stationsUpdated);
+        return getNewestAtUtc(sensorsUpdated, stationsUpdated);
     }
 
     private ZonedDateTime getMetadataLastChecked() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_METADATA_CHECK);
-        return getNewest(sensorsUpdated, stationsUpdated);
+        return getNewestAtUtc(sensorsUpdated, stationsUpdated);
     }
 }

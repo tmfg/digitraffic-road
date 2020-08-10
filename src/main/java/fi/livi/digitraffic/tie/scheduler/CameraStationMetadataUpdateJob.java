@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
  * Updates camera station's and preset's (RoadStation + CameraPreset) metadata
  */
 @DisallowConcurrentExecution
-public class CameraMetadataUpdateJob extends SimpleUpdateJob {
+public class CameraStationMetadataUpdateJob extends SimpleUpdateJob {
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
 

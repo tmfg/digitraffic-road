@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -55,8 +56,11 @@ public class V2ForecastSectionMetadataDao {
 
     private static final String SELECT_ALL =
         "SELECT rs.order_number as rs_order_number, " +
-        "rs.start_distance as rs_start_distance, rs.end_distance as rs_end_distance, rs.carriageway as rs_carriageway," +
-        "li.order_number as li_order_number, * " +
+        "rs.start_distance as rs_start_distance, " +
+        "rs.end_distance as rs_end_distance, " +
+        "rs.carriageway as rs_carriageway," +
+        "li.order_number as li_order_number, " +
+        "f.natural_id as natural_id, f.id as forecast_section_id, description, road_number, road_section_number, length, link_id\n" +
         "FROM forecast_section f " +
         "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
         "          LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
@@ -89,12 +93,11 @@ public class V2ForecastSectionMetadataDao {
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :linkId)";
 
     @Autowired
-    public V2ForecastSectionMetadataDao(final NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public V2ForecastSectionMetadataDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public void upsertForecastSections(final List<ForecastSectionV2FeatureDto> features) {
-
         final MapSqlParameterSource sources[] = new MapSqlParameterSource[features.size()];
         int i = 0;
         for (final ForecastSectionV2FeatureDto feature : features) {

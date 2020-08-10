@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.helper;
+package fi.livi.digitraffic.tie.conf;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +19,6 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        log.info("Started RoadApplication version: " + buildVersionService.getAppFullVersion());
+        log.info("startedApp=RoadApplication version: " + buildVersionService.getAppFullVersion());
     }
 }
