@@ -19,8 +19,13 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 @Repository
 public interface V2MaintenanceTrackingRepository extends JpaRepository<MaintenanceTracking, Long> {
 
+    @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTracking> findAllByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedAscIdAsc(final long workMachineHarjaId, final long contractHarjaId);
 
+    /**
+     * EntityGraph causes HHH000104: firstResult/maxResults specified with collection fetch; applying in memory! warnings
+     * @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
+    */
     MaintenanceTracking findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(final long workMachineHarjaId, final long contractHarjaId);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))

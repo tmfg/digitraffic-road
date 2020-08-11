@@ -53,9 +53,6 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Autowired
     private WeatherStationService weatherStationService;
 
-    @Autowired
-    private SensorDataUpdateService sensorDataUpdateService;
-
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      * @throws JMSException
@@ -146,6 +143,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                  handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
         log.info("Check data validy");
 
+        flushSensorBuffer(false);
 
         // Assert sensor values are updated to db
         final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).distinct().collect(Collectors.toList());
@@ -278,23 +276,13 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         final ZonedDateTime limit = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         assertTrue(String.format("LastUpdated not fresh %s, should be after %s", lastUpdated, limit), lastUpdated.isAfter(limit));
-
     }
 
     private JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> createTiesaaMittatietoJMSDataUpdater() {
         return (data) -> {
             final StopWatch sw = StopWatch.createStarted();
 
-            if (TestTransaction.isActive()) {
-                TestTransaction.flagForCommit();
-                TestTransaction.end();
-            }
-            TestTransaction.start();
-
             final int updated = sensorDataUpdateService.updateWeatherData(data);
-            TestTransaction.flagForCommit();
-            TestTransaction.end();
-            TestTransaction.start();
 
             log.info("handleData tookMs={}", sw.getTime());
             return updated;
