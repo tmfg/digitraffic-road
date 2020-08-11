@@ -1,0 +1,172 @@
+package fi.livi.digitraffic.tie.service.v1.lotju;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.nullable;
+import static org.mockito.Mockito.spy;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
+
+import javax.xml.bind.JAXBElement;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.oxm.MarshallingFailureException;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.client.core.WebServiceMessageCallback;
+
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiTiesaaAsemat;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ObjectFactory;
+import fi.livi.digitraffic.tie.service.v1.lotju.AbstractLotjuMetadataClient.WebServiceTemplateWithMultiDestinationProviderSupport;
+
+public class WebServiceTemplateWithMultiDestinationProviderTest extends AbstractMultiDestinationProviderTest {
+
+    private static final Logger log = LoggerFactory.getLogger(WebServiceTemplateWithMultiDestinationProviderTest.class);
+
+    final static String RESPONSE1 = "RESPONSE1";
+    final static String RESPONSE2 = "RESPONSE2";
+    final ObjectFactory objectFactory = new ObjectFactory();
+    private AbstractLotjuMetadataClient client;
+    private WebServiceTemplateWithMultiDestinationProviderSupport webServiceTemplate;
+
+    @Before
+    public void initSoapClientSpyAndServerResponses() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, healthPath, dataPath, TTL_S, log);
+        // Get get WebServiceTemplate, spy it and set spy to client
+        webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
+        client.setWebServiceTemplate(webServiceTemplate);
+
+        // SOAP servers 1 & 2 return always same values
+        server1WhenRequestDataThenReturn(RESPONSE1); // this should not be returned
+        server2WhenRequestDataThenReturn(RESPONSE2); // this should be returned
+    }
+
+    /*
+     * There is always 1. health request and then request to client
+     */
+    @Test
+    public void firstHealtOk() {
+        // Health response from server OK
+        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        // Data request goes to server 1
+        clientRequestDataAndVerifyResponse(RESPONSE1);
+        verifyServer1HealthCount(1);
+        verifyServer2HealthCount(0);
+    }
+
+    @Test
+    public void firstHealtNotOkSecondOk() {
+        server1WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        // Data request goes to server 2
+        clientRequestDataAndVerifyResponse(RESPONSE2);;
+        verifyServer1HealthCount(1);
+        verifyServer2HealthCount(1);
+    }
+
+    @Test
+    public void firstHealtErrorSecondOk() {
+        server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
+        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        // Data request goes to server 2
+        clientRequestDataAndVerifyResponse(RESPONSE2);
+        verifyServer1HealthCount(1);
+        verifyServer2HealthCount(1);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void firstAndSecondHealtNotOk() {
+        server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
+        server2WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
+
+        // Exception should be thrown
+        try {
+            clientRequestData();
+        } catch (IllegalStateException e) {
+            verifyServer1HealthCount(1);
+            verifyServer2HealthCount(1);
+            throw e;
+        }
+        Assert.fail("Should not execute as IllegalStateException should have been thrown");
+    }
+
+    @Test
+    public void healthRequestOnlyOnceAsTTLNotPassed() {
+        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+
+        // first request: health + data requests to server
+        // second request: health from cache and data request to server
+        // Data request goes to server 1 both times
+        clientRequestDataAndVerifyResponse(RESPONSE1); // also health request
+        clientRequestDataAndVerifyResponse(RESPONSE1); // no health request
+        verifyServer1HealthCount(1);
+        verifyServer2HealthCount(0);
+    }
+
+    @Test
+    public void healthRequestTwiceAsTTLPassed() {
+        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+
+        // Data request goes to server 1 both times
+        clientRequestDataAndVerifyResponse(RESPONSE1); // also health request
+        try {
+            Thread.sleep(1100L);
+        } catch (InterruptedException e) {
+            // empty
+        }
+        clientRequestDataAndVerifyResponse(RESPONSE1); // also health request
+        verifyServer1HealthCount(2);
+        verifyServer2HealthCount(0);
+    }
+
+    @Test
+    public void healthOkButDataOnServer1Fails() {
+        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+
+        // Reset server 1 to return error on data query
+        Mockito.reset(webServiceTemplate);
+        server1WhenRequestDataThenThrowException();
+        server2WhenRequestDataThenReturn(RESPONSE2);
+
+        // Healt 1 -> ok, data 1 -> fail, healt 2 -> ok, data 2 ok
+        clientRequestDataAndVerifyResponse(RESPONSE2); // also health request
+        verifyServer1HealthCount(1);
+        verifyServer2HealthCount(1);
+    }
+
+    private void clientRequestDataAndVerifyResponse(String response) {
+        Assert.assertEquals(response, clientRequestData());
+    }
+
+    private Object clientRequestData() {
+        return client.marshalSendAndReceive(objectFactory.createHaeKaikkiTiesaaAsemat(new HaeKaikkiTiesaaAsemat()));
+    }
+
+    private void server1WhenRequestDataThenReturn(final String response) {
+        serverWhenRequestUrlThenReturn(dataUrl1, response);
+    }
+
+    private void server2WhenRequestDataThenReturn(final String response) {
+        serverWhenRequestUrlThenReturn(dataUrl2, response);
+    }
+
+    private void serverWhenRequestUrlThenReturn(final String requestUrl, final String response) {
+        doReturn(response).when(webServiceTemplate).marshalSendAndReceive(eq(requestUrl), nullable(JAXBElement.class), nullable(WebServiceMessageCallback.class));
+    }
+
+    private void server1WhenRequestDataThenThrowException() {
+        serverWhenRequestDataThenThrowException(dataUrl1);
+    }
+
+    private void serverWhenRequestDataThenThrowException(final String requestUrl) {
+        doThrow(new MarshallingFailureException("JAXB marshalling exception")).when(webServiceTemplate).marshalSendAndReceive(eq(dataUrl1), nullable(JAXBElement.class), nullable(WebServiceMessageCallback.class));
+    }
+
+}
