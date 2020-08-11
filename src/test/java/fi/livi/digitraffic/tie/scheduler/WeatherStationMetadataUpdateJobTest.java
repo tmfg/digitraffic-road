@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,10 +19,12 @@ import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClient;
+import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
@@ -54,8 +57,16 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractDaemonTestWitho
     private Map<Long, RoadStationSensor> sensorsInitial;
     private Map<Long, RoadStationSensor> sensorsAfterChange;
 
+    @Autowired
+    private LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
+
     @Before
-    public void initData() {
+    public void setUpLotjuClientAndInitData() {
+        final LotjuWeatherStationMetadataClient lotjuClient = getTargetObject(lotjuWeatherStationMetadataClient);
+        final URI firstDest = ((MultiDestinationProvider) lotjuClient.getDestinationProvider()).getDestinations().get(0);
+        log.info("Set DestinationProvider url to first destination {} for {}", firstDest, lotjuClient.getClass());
+        lotjuClient.setDestinationProvider(() -> firstDest);
+
         lotjuTiesaaPerustiedotServiceMock.initStateAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)

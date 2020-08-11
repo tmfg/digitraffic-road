@@ -6,11 +6,15 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
@@ -22,13 +26,20 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.lotju.AbstractLotjuMetadataClient;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClient;
+import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
 
 public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+
+    private static final Logger log = LoggerFactory.getLogger(RoadStationStatusesUpdateJobTest.class);
 
     @Autowired
     private RoadStationService roadStationService;
@@ -53,6 +64,22 @@ public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS
 
     @SpyBean
     private CameraImageUpdateService cameraImageUpdateService;
+
+    @Autowired
+    private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
+
+    @Autowired
+    private LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
+
+    @Autowired
+    private LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
+
+    @Before
+    public void setUpLotjuClient() {
+        setFirstDestinationProvider(getTargetObject(lotjuCameraStationMetadataClient));
+        setFirstDestinationProvider(getTargetObject(lotjuTmsStationMetadataClient));
+        setFirstDestinationProvider(getTargetObject(lotjuWeatherStationMetadataClient));
+    }
 
     @Test
     public void testUpdateRoadStationStatuses() {
@@ -149,5 +176,11 @@ public class RoadStationStatusesUpdateJobTest extends AbstractDaemonTestWithoutS
                         .filter(x -> lotjuId.equals(x.getLotjuId()) && roadStationType.equals(x.getType()))
                         .findFirst();
         return found.orElse(null);
+    }
+
+    private void setFirstDestinationProvider(final AbstractLotjuMetadataClient lotjuClient) {
+        final URI firstDest = ((MultiDestinationProvider) lotjuClient.getDestinationProvider()).getDestinations().get(0);
+        log.info("Set DestinationProvider url to first destination {} for {}", firstDest, lotjuClient.getClass());
+        lotjuClient.setDestinationProvider(() -> firstDest);
     }
 }

@@ -10,10 +10,14 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
+import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
@@ -22,9 +26,13 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
 
 public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+
+    private static final Logger log = LoggerFactory.getLogger(CameraStationUpdateJobTest.class);
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
@@ -38,6 +46,17 @@ public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
     @SpyBean
     private CameraImageUpdateService cameraImageUpdateService;
 
+    @Autowired
+    private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
+
+    @Before
+    public void setUpLotjuClient() {
+        final LotjuCameraStationMetadataClient lotjuClient = getTargetObject(lotjuCameraStationMetadataClient);
+        final URI firstDest = ((MultiDestinationProvider) lotjuClient.getDestinationProvider()).getDestinations().get(0);
+        log.info("Set DestinationProvider url to first destination {} for {}", firstDest, lotjuClient.getClass());
+        lotjuClient.setDestinationProvider(() -> firstDest);
+    }
+
     @Test
     public void testUpdateKameras() {
 
@@ -47,7 +66,7 @@ public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
         cameraStationUpdater.updateCameras();
 
         final List<CameraPreset> presetsInitial = cameraPresetService.findAllPublishableCameraPresets();
-        final long cameraCountIntitial = presetsInitial.stream().map(cp -> cp.getCameraId()).distinct().count();
+        final long cameraCountIntitial = presetsInitial.stream().map(CameraPreset::getCameraId).distinct().count();
         // cameras with lotjuId 443 in collection, 56 (no public presets) and 121 removed temporary, 2 public with 5 presets
         assertEquals(3, cameraCountIntitial);
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 public and 56 has 1 non public preset -> 3 public, 2 has 5 public
@@ -66,7 +85,7 @@ public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
         verify(cameraImageUpdateService, times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
 
         final List<CameraPreset> presetsAfterUpdate = cameraPresetService.findAllPublishableCameraPresets();
-        final long cameraCountAfterUpdate = presetsAfterUpdate.stream().map(cp -> cp.getCameraId()).distinct().count();
+        final long cameraCountAfterUpdate = presetsAfterUpdate.stream().map(CameraPreset::getCameraId).distinct().count();
 
         // 443 has 3 presets, 121 has 2
         assertEquals(2, cameraCountAfterUpdate);

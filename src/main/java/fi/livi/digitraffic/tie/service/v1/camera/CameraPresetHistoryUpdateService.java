@@ -42,8 +42,8 @@ public class CameraPresetHistoryUpdateService {
     public void updatePresetHistoryPublicityForCamera(final RoadStation rs) {
         // If statTime is null it means now -> no history to update or
         // if startTime is in the future -> no history to update
+        final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
         if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(ZonedDateTime.now())) {
-            final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
             log.info("method=updatePresetHistoryPublicityForCamera cameraId={} toPublic={} fromPublicityStartTime={}",
                 cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
             cameraPresetHistoryRepository.updatePresetHistoryPublicityForCameraId(
@@ -51,7 +51,12 @@ public class CameraPresetHistoryUpdateService {
         }
         // If camera is not public, hide current image
         if (!rs.isPublicNow()) {
-            cameraImageUpdateService.hideCurrentImagesForCamera(rs);
+            try {
+                cameraImageUpdateService.hideCurrentImagesForCamera(rs);
+            } catch (Exception e) {
+                log.error(String.format("method=updatePresetHistoryPublicityForCamera Error while calling hideCurrentImagesForCamera " +
+                                        "for cameraId: %s. History is updated but current images are not hidden in S3", cameraId), e);
+            }
         }
     }
 

@@ -1,35 +1,84 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
+import java.net.URI;
+
+import javax.xml.bind.JAXBElement;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.client.core.WebServiceMessageCallback;
+import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
+import org.springframework.ws.client.support.destination.DestinationProvider;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
-    private final String serverUri;
-
-    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String serverAddress, final Logger log) {
-
-        serverUri = serverAddress;
-        if ( StringUtils.isNotBlank(serverAddress) &&
-             StringUtils.containsNone(serverAddress, '$', '{', '}') ) {
-            log.info("Init name={} with server address={}", getClass().getSimpleName(), serverAddress);
-            setDefaultUri(serverAddress);
-            setMarshaller(marshaller);
-            setUnmarshaller(marshaller);
-
-            HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-            sender.setConnectionTimeout(30000);
-            sender.setReadTimeout(30000);
-            setMessageSender(sender);
-        } else {
-            log.warn("Not setting up beanName={} because server addressProperty={} was not set.", getClass().getSimpleName(), serverAddress);
+    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String serverAddresses, final String healthPath, final String dataPath,
+                                       final int healtTtlSeconds, final Logger log) {
+        final String[] addresses = StringUtils.split(serverAddresses, ",");
+        if (addresses == null || addresses.length == 0) {
+            log.warn("Not setting up beanName={} because no server addresses was set: {}", getClass().getSimpleName(), serverAddresses);
+            return;
         }
+        setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
+        setDestinationProvider(new MultiDestinationProvider(serverAddresses, healthPath, dataPath, healtTtlSeconds));
+
+        setMarshaller(marshaller);
+        setUnmarshaller(marshaller);
+
+        final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
+        sender.setConnectionTimeout(30000);
+        sender.setReadTimeout(30000);
+        setMessageSender(sender);
+
     }
 
-    public String getServerAddress() {
-        return serverUri;
+    protected Object marshalSendAndReceive(final JAXBElement<?> requestPayload) {
+        return getWebServiceTemplate().marshalSendAndReceive(requestPayload);
+    }
+
+    public static class WebServiceTemplateWithMultiDestinationProviderSupport extends WebServiceTemplate {
+
+        private static final Logger log = LoggerFactory.getLogger(WebServiceTemplateWithMultiDestinationProviderSupport.class);
+
+        @Override
+        public Object marshalSendAndReceive(final Object requestPayload, final WebServiceMessageCallback requestCallback) {
+            final DestinationProvider dp = getDestinationProvider();
+
+            if ( dp instanceof MultiDestinationProvider ) {
+                final MultiDestinationProvider mdp = (MultiDestinationProvider) dp;
+                int tryCount = 0;
+
+                Exception lastException;
+                do {
+                    tryCount++;
+                    final URI dest = mdp.getDestination();
+                    String dataUri = null;
+                    try {
+                        dataUri = getDefaultUri();
+                        final Object value = marshalSendAndReceive(dataUri, requestPayload, requestCallback);
+                        // mark host as healty
+                        mdp.setHostHealthy(dest);
+                        return value;
+                    } catch (Exception e) {
+                        // mark host not healty
+                        mdp.setHostNotHealthy(dest);
+                        lastException = e;
+                        log.error(String.format("method=marshalSendAndReceive returned error for dataUrl=%s", dataUri), lastException);
+                    }
+                } while (tryCount < mdp.getDestinationsCount());
+                throw new IllegalStateException(String.format("No host found to return data without error dataUrls=%s", mdp.getDestinationsAsString()),
+                                                lastException);
+            }
+
+            return marshalSendAndReceive(getDefaultUri(), requestPayload, requestCallback);
+        }
+
+        private MultiDestinationProvider getMultiDestinationProvider() {
+            return (MultiDestinationProvider)getDestinationProvider();
+        }
     }
 }

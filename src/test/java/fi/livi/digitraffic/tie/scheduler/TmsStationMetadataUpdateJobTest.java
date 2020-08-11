@@ -5,10 +5,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +23,10 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.VehicleClass;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
+import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
@@ -49,6 +53,17 @@ public class TmsStationMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3
 
     @Autowired
     private LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceMock;
+
+    @Autowired
+    private LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
+
+    @Before
+    public void setUpLotjuClient() {
+        final LotjuTmsStationMetadataClient lotjuClient = getTargetObject(lotjuTmsStationMetadataClient);
+        final URI firstDest = ((MultiDestinationProvider) lotjuClient.getDestinationProvider()).getDestinations().get(0);
+        log.info("Set DestinationProvider url to first destination {} for {}", firstDest, lotjuClient.getClass());
+        lotjuClient.setDestinationProvider(() -> firstDest);
+    }
 
     @Test
     public void testUpdateTmsStations() {
