@@ -4,7 +4,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +33,7 @@ import reactor.netty.tcp.TcpClient;
 public class MultiDestinationProvider implements DestinationProvider {
 
     private static final Logger log = LoggerFactory.getLogger(MultiDestinationProvider.class);
-    private final List<HostWithHealtCheck> hosts;
+    private final List<HostWithHealthCheck> hosts;
 
     /**
      *
@@ -41,24 +41,20 @@ public class MultiDestinationProvider implements DestinationProvider {
      * @param healthPath ie. /health
      * @param dataPath ie. /data/service
      */
-    public MultiDestinationProvider(final String baseUrls, final String healthPath, final String dataPath, final int healtTtlSeconds) {
+    public MultiDestinationProvider(final String baseUrls, final String healthPath, final String dataPath, final int healthTtlSeconds) {
         final String[] addresses = StringUtils.split(baseUrls, ",");
         if ( addresses == null || addresses.length == 0 ) {
             log.warn("Creation failed because no addresses in baseUrls={}", baseUrls);
             throw new IllegalArgumentException("MultiDestinationProvider creation failed because no addresses given: " + baseUrls);
         }
 
-        hosts = new ArrayList<>();
-
-        for (String baseUrl : addresses) {
-            hosts.add(new HostWithHealtCheck(baseUrl, healthPath, dataPath, healtTtlSeconds));
-        }
+        hosts = Arrays.stream(addresses).map(baseUrl -> new HostWithHealthCheck(baseUrl, healthPath, dataPath, healthTtlSeconds)).collect(Collectors.toList());
     }
 
     @Override
     public URI getDestination() {
-        for (HostWithHealtCheck host : hosts) {
-            if ( host.doHealtCheck() ) {
+        for (HostWithHealthCheck host : hosts) {
+            if ( host.doHealthCheck() ) {
                 return host.getDataUrl();
             }
         }
@@ -71,7 +67,7 @@ public class MultiDestinationProvider implements DestinationProvider {
 
 
     public List<URI> getDestinations() {
-        return hosts.stream().map(HostWithHealtCheck::getDataUrl).collect(Collectors.toList());
+        return hosts.stream().map(HostWithHealthCheck::getDataUrl).collect(Collectors.toList());
     }
 
     public String getDestinationsAsString() {
@@ -91,7 +87,7 @@ public class MultiDestinationProvider implements DestinationProvider {
     }
 
     private void setHostHealthy(final URI dest, final boolean healthy) {
-        final Optional<HostWithHealtCheck> host = hosts.stream().filter(h -> h.getDataUrl().equals(dest)).findFirst();
+        final Optional<HostWithHealthCheck> host = hosts.stream().filter(h -> h.getDataUrl().equals(dest)).findFirst();
         if (host.isPresent()) {
             host.get().setHealthy(healthy);
         } else {
@@ -99,7 +95,7 @@ public class MultiDestinationProvider implements DestinationProvider {
         }
     }
 
-    private static RequestHeadersSpec<?> createHealtWebClient(final String baseUrl, String healthPath) {
+    private static RequestHeadersSpec<?> createHealthWebClient(final String baseUrl, String healthPath) {
         final TcpClient tcpClient = TcpClient
             .create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
@@ -118,62 +114,62 @@ public class MultiDestinationProvider implements DestinationProvider {
         return client.get().uri(healthPath);
     }
 
-    private class HostWithHealtCheck {
+    private class HostWithHealthCheck {
 
         private final RequestHeadersSpec<?> healthRequest;
         private final URI dataUrl;
         private final String baseUrl;
         private final String healthUrl;
-        private final int healtTtlSeconds;
+        private final int healthTtlSeconds;
 
         private Instant healthChecked = Instant.now().minusSeconds(1000);
-        private boolean healty = true;
+        private boolean healthy = true;
 
-        public HostWithHealtCheck(final String baseUrl, final String healthPath, final String dataPath, int healtTtlSeconds) {
+        public HostWithHealthCheck(final String baseUrl, final String healthPath, final String dataPath, int healthTtlSeconds) {
             this.baseUrl = baseUrl;
-            this.healtTtlSeconds = healtTtlSeconds;
+            this.healthTtlSeconds = healthTtlSeconds;
             this.healthUrl = baseUrl + healthPath;
             this.dataUrl = URI.create(baseUrl + dataPath);
-            healthRequest = createHealtWebClient(baseUrl, healthPath);
-            log.info("Created HostWithHealtCheck healthCheckUrl={} dataUrl={}", healthUrl, dataUrl.toString());
+            healthRequest = createHealthWebClient(baseUrl, healthPath);
+            log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={}", healthUrl, dataUrl.toString());
         }
 
         /**
          * Checks if health check is needed (ttl exceeded) and returns either health check status or cached value.
          * @return health status
          */
-        public boolean doHealtCheck() {
+        public boolean doHealthCheck() {
             try {
-                if (!isHealtCheckNeeded()) {
-                    return healty;
+                if (!isHealthCheckNeeded()) {
+                    return healthy;
                 }
 
                 final String responseContent = healthRequest.retrieve().bodyToMono(String.class).block();
                 if ( StringUtils.trimToEmpty(responseContent).equalsIgnoreCase("ok!") ) {
-                    log.info("method=doHealtCheck Health check for healthCheckUrl={} returned healthCheckValue={} returnStatus=true", healthUrl, responseContent);
+                    log.info("method=doHealthCheck Health check for healthCheckUrl={} returned healthCheckValue={} returnStatus=true", healthUrl, responseContent);
                     setHealthy(true);
                     return true;
                 }
-                log.info("method=doHealtCheck Health check for healthCheckUrl={} returned healthCheckValue={} returnStatus=false", healthUrl, responseContent);
+                log.info("method=doHealthCheck Health check for healthCheckUrl={} returned healthCheckValue={} returnStatus=false", healthUrl, responseContent);
                 setHealthy(false);
                 return false;
             } catch (final Exception e) {
-                log.warn(String.format("method=doHealtCheck Health check for healthCheckUrl=%s failed returnStatus=false", healthUrl), e);
+                log.warn(String.format("method=doHealthCheck Health check for healthCheckUrl=%s failed returnStatus=false", healthUrl), e);
                 setHealthy(false);
                 return false;
             }
         }
 
-        private boolean isHealtCheckNeeded() {
-            return Instant.now().minus(healtTtlSeconds, ChronoUnit.SECONDS).isAfter(healthChecked);
+        private boolean isHealthCheckNeeded() {
+            return Instant.now().minus(healthTtlSeconds, ChronoUnit.SECONDS).isAfter(healthChecked);
         }
 
-        public void setHealthy(final boolean healty) {
-            final boolean changed = this.healty != healty;
-            this.healty = healty;
+        public void setHealthy(final boolean healthy) {
+            final boolean changed = this.healthy != healthy;
+            this.healthy = healthy;
             healthChecked = Instant.now();
             if (changed) {
-                log.info("method=setHealthy Change server baseUrl={} dataUrl={} fromHealty={} toHealty={} healthChecked={}", baseUrl, dataUrl.toString(), !this.healty, this.healty, healthChecked);
+                log.info("method=setHealthy Change server baseUrl={} dataUrl={} fromHealthy={} toHealthy={} healthChecked={}", baseUrl, dataUrl.toString(), !this.healthy, this.healthy, healthChecked);
             }
         }
         public URI getDataUrl() {

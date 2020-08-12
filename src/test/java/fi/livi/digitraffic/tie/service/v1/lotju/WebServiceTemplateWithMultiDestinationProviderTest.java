@@ -51,7 +51,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
      * There is always 1. health request and then request to client
      */
     @Test
-    public void firstHealtOk() {
+    public void firstHealthOk() {
         // Health response from server OK
         server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
         // Data request goes to server 1
@@ -61,7 +61,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     }
 
     @Test
-    public void firstHealtNotOkSecondOk() {
+    public void firstHealthNotOkSecondOk() {
         server1WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
         server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
         // Data request goes to server 2
@@ -71,7 +71,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     }
 
     @Test
-    public void firstHealtErrorSecondOk() {
+    public void firstHealthErrorSecondOk() {
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
         server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
         // Data request goes to server 2
@@ -81,7 +81,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     }
 
     @Test(expected = IllegalStateException.class)
-    public void firstAndSecondHealtNotOk() {
+    public void firstAndSecondHealthNotOk() {
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
         server2WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
 
@@ -135,7 +135,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         server1WhenRequestDataThenThrowException();
         server2WhenRequestDataThenReturn(RESPONSE2);
 
-        // Healt 1 -> ok, data 1 -> fail, healt 2 -> ok, data 2 ok
+        // Health 1 -> ok, data 1 -> fail, health 2 -> ok, data 2 ok
         clientRequestDataAndVerifyResponse(RESPONSE2); // also health request
         verifyServer1HealthCount(1);
         verifyServer2HealthCount(1);

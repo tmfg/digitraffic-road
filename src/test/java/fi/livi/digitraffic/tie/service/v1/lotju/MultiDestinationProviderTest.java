@@ -16,7 +16,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     private static final Logger log = LoggerFactory.getLogger(MultiDestinationProviderTest.class);
 
     @Test
-    public void firstHealtOk() {
+    public void firstHealthOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
         server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
         final URI dest = mdp.getDestination();
@@ -27,7 +27,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     }
 
     @Test
-    public void firstHealtNotOkSecondOk() {
+    public void firstHealthNotOkSecondOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
         server1WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
         server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
@@ -39,7 +39,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     }
 
     @Test
-    public void firstHealtErrorSecondOk() {
+    public void firstHealthErrorSecondOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
         server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
@@ -51,7 +51,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     }
 
     @Test(expected = IllegalStateException.class)
-    public void firstAndSecondHealtNotOk() {
+    public void firstAndSecondHealthNotOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
         server2WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);

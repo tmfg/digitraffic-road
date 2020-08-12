@@ -17,14 +17,13 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
     public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String serverAddresses, final String healthPath, final String dataPath,
-                                       final int healtTtlSeconds, final Logger log) {
+                                       final int healthTtlSeconds, final Logger log) {
         final String[] addresses = StringUtils.split(serverAddresses, ",");
         if (addresses == null || addresses.length == 0) {
-            log.warn("Not setting up beanName={} because no server addresses was set: {}", getClass().getSimpleName(), serverAddresses);
-            return;
+            throw new IllegalArgumentException(String.format("Failed to set upt beanName=%s with empty serverAddresses=%s", getClass().getSimpleName(), serverAddresses));
         }
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
-        setDestinationProvider(new MultiDestinationProvider(serverAddresses, healthPath, dataPath, healtTtlSeconds));
+        setDestinationProvider(new MultiDestinationProvider(serverAddresses, healthPath, dataPath, healthTtlSeconds));
 
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);
@@ -60,11 +59,11 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
                     try {
                         dataUri = getDefaultUri();
                         final Object value = marshalSendAndReceive(dataUri, requestPayload, requestCallback);
-                        // mark host as healty
+                        // mark host as healthy
                         mdp.setHostHealthy(dest);
                         return value;
                     } catch (Exception e) {
-                        // mark host not healty
+                        // mark host not healthy
                         mdp.setHostNotHealthy(dest);
                         lastException = e;
                         log.error(String.format("method=marshalSendAndReceive returned error for dataUrl=%s", dataUri), lastException);
@@ -75,10 +74,6 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
             }
 
             return marshalSendAndReceive(getDefaultUri(), requestPayload, requestCallback);
-        }
-
-        private MultiDestinationProvider getMultiDestinationProvider() {
-            return (MultiDestinationProvider)getDestinationProvider();
         }
     }
 }
