@@ -14,8 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
@@ -25,8 +23,6 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ObjectFactory;
 import fi.livi.digitraffic.tie.service.v1.lotju.AbstractLotjuMetadataClient.WebServiceTemplateWithMultiDestinationProviderSupport;
 
 public class WebServiceTemplateWithMultiDestinationProviderTest extends AbstractMultiDestinationProviderTest {
-
-    private static final Logger log = LoggerFactory.getLogger(WebServiceTemplateWithMultiDestinationProviderTest.class);
 
     final static String RESPONSE1 = "RESPONSE1";
     final static String RESPONSE2 = "RESPONSE2";
