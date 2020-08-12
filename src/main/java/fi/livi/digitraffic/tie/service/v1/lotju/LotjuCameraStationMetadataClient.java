@@ -38,11 +38,11 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
     @Autowired
     public LotjuCameraStationMetadataClient(@Qualifier("kameraMetadataJaxb2Marshaller")
                                             Jaxb2Marshaller kameraMetadataJaxb2Marshaller,
-                                            @Value("${metadata.server.addresses}") final String serverAddresses,
+                                            @Value("${metadata.server.addresses}") final String[] serverAddresses,
                                             @Value("${metadata.server.path.health}") final String healthPath,
                                             @Value("${metadata.server.path.camera}") final String dataPath,
                                             @Value("${metadata.server.health.ttlInSeconds}") final int healthTTLSeconds) {
-        super(kameraMetadataJaxb2Marshaller, serverAddresses, healthPath, dataPath, healthTTLSeconds, log);
+        super(kameraMetadataJaxb2Marshaller, serverAddresses, healthPath, dataPath, healthTTLSeconds);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)

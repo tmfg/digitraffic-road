@@ -41,11 +41,11 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
     @Autowired
     public LotjuTmsStationMetadataClient(@Qualifier("lamMetadataJaxb2Marshaller")
                                          Jaxb2Marshaller lamMetadataJaxb2Marshaller,
-                                         @Value("${metadata.server.addresses}") final String serverAddresses,
+                                         @Value("${metadata.server.addresses}") final String[] serverAddresses,
                                          @Value("${metadata.server.path.health}") final String healthPath,
                                          @Value("${metadata.server.path.tms}") final String dataPath,
                                          @Value("${metadata.server.health.ttlInSeconds}") final int healthTTLSeconds) {
-        super(lamMetadataJaxb2Marshaller, serverAddresses, healthPath, dataPath, healthTTLSeconds, log);
+        super(lamMetadataJaxb2Marshaller, serverAddresses, healthPath, dataPath, healthTTLSeconds);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)

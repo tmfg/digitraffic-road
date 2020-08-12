@@ -121,11 +121,6 @@ public class CameraStationUpdater {
      * @return Pair of updated and inserted count of presets
      */
     private Pair<Integer, Integer> updateCameraStationAndPresets(final KameraVO kamera) {
-        if (kamera == null) {
-            log.error("method=updateCameraStationAndPresets No Camera given");
-            return Pair.of(0,0);
-        }
-
         lock.lock();
         try {
             log.debug("method=updateCameraStationAndPresets got the lock");

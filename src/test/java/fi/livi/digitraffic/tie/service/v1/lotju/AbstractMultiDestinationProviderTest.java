@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
-import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ObjectFactory;
 
 public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemonTestWithoutS3 {
 
@@ -27,7 +26,7 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     protected final static String baseUrl1 = "http://localhost:" + RANDOM_PORT1;
     protected final static String baseUrl2 = "http://localhost:" + RANDOM_PORT2;
-    protected final static String baseUrls = baseUrl1 + "," + baseUrl2;
+    protected final static String[] baseUrls = { baseUrl1, baseUrl2 };
     protected final static String healthPath = "/health";
     protected final static String dataPath = "/data";
 
@@ -41,13 +40,12 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     @Rule
     public WireMockRule wireMockRule1 = new WireMockRule(wireMockConfig().port(RANDOM_PORT1), true);
+
     @Rule
     public WireMockRule wireMockRule2 = new WireMockRule(wireMockConfig().port(RANDOM_PORT2), true);
 
-    final protected ObjectFactory objectFactory = new ObjectFactory();
-
     protected MultiDestinationProvider createMultiDestinationProvider() {
-        return new MultiDestinationProvider(baseUrls, healthPath, dataPath, TTL_S);
+        return new MultiDestinationProvider(AbstractLotjuMetadataClient.createHostsWithHealthCheck(baseUrls, healthPath, dataPath, TTL_S));
     }
 
     protected void server1WhenRequestHealthThenReturn(final HttpStatus returnStatus, final String returnContent) {

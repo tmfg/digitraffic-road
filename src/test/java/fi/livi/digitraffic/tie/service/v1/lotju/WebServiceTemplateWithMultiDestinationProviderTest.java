@@ -37,18 +37,18 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     @Before
     public void initSoapClientSpyAndServerResponses() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, healthPath, dataPath, TTL_S, log);
+        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, healthPath, dataPath, TTL_S);
         // Get get WebServiceTemplate, spy it and set spy to client
         webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
         client.setWebServiceTemplate(webServiceTemplate);
 
         // SOAP servers 1 & 2 return always same values
-        server1WhenRequestDataThenReturn(RESPONSE1); // this should not be returned
-        server2WhenRequestDataThenReturn(RESPONSE2); // this should be returned
+        server1WhenRequestDataThenReturn(RESPONSE1);
+        server2WhenRequestDataThenReturn(RESPONSE2);
     }
 
     /*
-     * There is always 1. health request and then request to client
+     * There is always 1. health request and if it's ok then request to client
      */
     @Test
     public void firstHealthOk() {
@@ -65,7 +65,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         server1WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
         server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
         // Data request goes to server 2
-        clientRequestDataAndVerifyResponse(RESPONSE2);;
+        clientRequestDataAndVerifyResponse(RESPONSE2);
         verifyServer1HealthCount(1);
         verifyServer2HealthCount(1);
     }

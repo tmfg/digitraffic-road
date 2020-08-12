@@ -1,10 +1,12 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -14,16 +16,22 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
+
 public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
-    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String serverAddresses, final String healthPath, final String dataPath,
-                                       final int healthTtlSeconds, final Logger log) {
-        final String[] addresses = StringUtils.split(serverAddresses, ",");
-        if (addresses == null || addresses.length == 0) {
-            throw new IllegalArgumentException(String.format("Failed to set upt beanName=%s with empty serverAddresses=%s", getClass().getSimpleName(), serverAddresses));
-        }
+    /**
+     *
+     * @param marshaller Marshaller for SOAP messages
+     * @param baseUrls ie. https://server1.com,https://server2.com
+     * @param healthPath ie. /health
+     * @param dataPath ie. /data/service
+     * @param healthTtlSeconds How long is health status valid
+     */
+    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String healthPath, final String dataPath,
+                                       final int healthTtlSeconds) {
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
-        setDestinationProvider(new MultiDestinationProvider(serverAddresses, healthPath, dataPath, healthTtlSeconds));
+        setDestinationProvider(new MultiDestinationProvider(createHostsWithHealthCheck(baseUrls, healthPath, dataPath, healthTtlSeconds)));
 
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);
@@ -33,6 +41,15 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
         sender.setReadTimeout(30000);
         setMessageSender(sender);
 
+    }
+
+    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String healthPath, final String dataPath, final int healthTtlSeconds) {
+        if ( baseUrls == null || baseUrls.length == 0 ) {
+            throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", baseUrls != null ? baseUrls.toString() : null));
+        }
+        return Arrays.stream(baseUrls)
+            .map(baseUrl -> new HostWithHealthCheck(baseUrl, healthPath, dataPath, healthTtlSeconds))
+            .collect(Collectors.toList());
     }
 
     protected Object marshalSendAndReceive(final JAXBElement<?> requestPayload) {
