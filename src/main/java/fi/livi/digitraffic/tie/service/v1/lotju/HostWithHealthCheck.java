@@ -1,29 +1,24 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.time.Instant;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
 
-import io.netty.channel.ChannelOption;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
+import fi.livi.digitraffic.tie.conf.RestTemplateConfiguration;
 
 class HostWithHealthCheck {
     private static final Logger log = LoggerFactory.getLogger(HostWithHealthCheck.class);
 
-    private final RequestHeadersSpec<?> healthRequest;
+    private final RestTemplate restTemplate;
     private final URI dataUrl;
     private final String baseUrl;
     private final String healthUrl;
@@ -37,7 +32,7 @@ class HostWithHealthCheck {
         this.healthTtlSeconds = healthTtlSeconds;
         this.healthUrl = baseUrl + healthPath;
         this.dataUrl = URI.create(baseUrl + dataPath);
-        healthRequest = createHealthWebClient(baseUrl, healthPath);
+        restTemplate = RestTemplateConfiguration.createRestTemplate(10, 10);
         log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={}", healthUrl, dataUrl.toString());
     }
 
@@ -68,7 +63,9 @@ class HostWithHealthCheck {
      */
     private String doRequestHealthString() {
         try {
-            return healthRequest.retrieve().bodyToMono(String.class).block();
+            final ResponseEntity<String> response
+                = restTemplate.getForEntity(healthUrl, String.class);
+            return response.getBody();
         } catch (final Exception e) {
             log.warn(String.format("method=doRequestHealthStatus Health check for healthCheckUrl=%s failed", healthUrl), e);
             return null;
@@ -90,24 +87,5 @@ class HostWithHealthCheck {
     }
     public URI getDataUrl() {
         return dataUrl;
-    }
-
-    private static RequestHeadersSpec<?> createHealthWebClient(final String baseUrl, String healthPath) {
-        final TcpClient tcpClient = TcpClient
-            .create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
-            .doOnConnected(connection -> {
-                connection.addHandlerLast(new ReadTimeoutHandler(1000, TimeUnit.MILLISECONDS));
-                connection.addHandlerLast(new WriteTimeoutHandler(1000, TimeUnit.MILLISECONDS));
-            });
-
-        final WebClient client = WebClient.builder()
-            .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
-            .baseUrl(baseUrl)
-            .defaultHeader(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE, MediaType.TEXT_HTML_VALUE)
-            .defaultHeader(HttpHeaders.ACCEPT_CHARSET, StandardCharsets.UTF_8.name())
-            .build();
-
-        return client.get().uri(healthPath);
     }
 }
