@@ -5,18 +5,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.client.support.destination.DestinationProvider;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationSensorDto;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
@@ -26,13 +26,12 @@ import fi.livi.digitraffic.tie.model.VehicleClass;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationsSensorsUpdater;
 
-public class TmsStationMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
     private static final Logger log = LoggerFactory.getLogger(TmsStationMetadataUpdateJobTest.class);
 
@@ -57,12 +56,23 @@ public class TmsStationMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3
     @Autowired
     private LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
 
+    private DestinationProvider originalDestinationProvider;
+
     @Before
-    public void setUpLotjuClient() {
+    public void setFirstDestinationProviderForLotjuClients() {
+        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuTmsStationMetadataClient);
+    }
+
+    @After
+    public void restoreOriginalDestinationProviderForLotjuClients() {
+        restoreLotjuClientDestinationProvider(lotjuTmsStationMetadataClient);
+    }
+
+
+    @After
+    public void restoreLotjuClient() {
         final LotjuTmsStationMetadataClient lotjuClient = getTargetObject(lotjuTmsStationMetadataClient);
-        final URI firstDest = ((MultiDestinationProvider) lotjuClient.getDestinationProvider()).getDestinations().get(0);
-        log.info("Set DestinationProvider url to first destination {} for {}", firstDest, lotjuClient.getClass());
-        lotjuClient.setDestinationProvider(() -> firstDest);
+        lotjuClient.setDestinationProvider(originalDestinationProvider);
     }
 
     @Test

@@ -10,10 +10,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-import java.net.URI;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -21,16 +21,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
 
-public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+public class CameraStationUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
     private static final Logger log = LoggerFactory.getLogger(CameraStationUpdateJobTest.class);
 
@@ -50,12 +48,15 @@ public class CameraStationUpdateJobTest extends AbstractDaemonTestWithoutS3 {
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
 
     @Before
-    public void setUpLotjuClient() {
-        final LotjuCameraStationMetadataClient lotjuClient = getTargetObject(lotjuCameraStationMetadataClient);
-        final URI firstDest = ((MultiDestinationProvider) lotjuClient.getDestinationProvider()).getDestinations().get(0);
-        log.info("Set DestinationProvider url to first destination {} for {}", firstDest, lotjuClient.getClass());
-        lotjuClient.setDestinationProvider(() -> firstDest);
+    public void setFirstDestinationProviderForLotjuClients() {
+        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuCameraStationMetadataClient);
     }
+
+    @After
+    public void restoreOriginalDestinationProviderForLotjuClients() {
+        restoreLotjuClientDestinationProvider(lotjuCameraStationMetadataClient);
+    }
+
 
     @Test
     public void testUpdateKameras() {
