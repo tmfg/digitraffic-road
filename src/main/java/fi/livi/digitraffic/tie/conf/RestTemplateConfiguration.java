@@ -17,11 +17,11 @@ public class RestTemplateConfiguration {
 
     @Bean
     public RestTemplate restTemplate() {
-        return createRestTemplate(30, 60);
+        return createRestTemplate(DEFAULT_CONNECT_TIMEOUT_S, DEFAULT_READ_TIMEOUT_S);
     }
 
     public static RestTemplate createRestTemplate(final int connectTimeoutSeconds, int readTimeoutSeconds) {
-        final RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory(DEFAULT_CONNECT_TIMEOUT_S, DEFAULT_READ_TIMEOUT_S));
+        final RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory(connectTimeoutSeconds, readTimeoutSeconds));
 
         // DPO-294 aineistot.vally.local palvelee UTF-8 merkistöllisiä xml-tiedostoja ilman encoding tietoa.
         // W3C:n ja RestTemplaten default on ISO-8859-1.
