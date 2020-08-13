@@ -1,27 +1,18 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.service.v1.lotju.AbstractLotjuMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
 
-public class AbstractMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+public abstract class AbstractMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMetadataUpdateJobTest.class);
 
