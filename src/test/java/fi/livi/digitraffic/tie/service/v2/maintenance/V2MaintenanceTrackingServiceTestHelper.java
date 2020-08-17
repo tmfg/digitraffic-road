@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.persistence.EntityManager;
@@ -132,7 +133,52 @@ public class V2MaintenanceTrackingServiceTestHelper {
      * @return
      */
     public static List<Tyokone> createWorkMachines(final int count) {
-        return IntStream.range(1, count+1).mapToObj(i -> createTyokone(i)).collect(toList());
+        return IntStream.range(1, count+1).mapToObj(i -> createWorkmachine(i)).collect(toList());
+    }
+
+    /**
+     *
+     * @param observationTime
+     * @param jobId
+     * @param workMachine
+     * @param coordinatesEtrs
+     * @param tasks
+     * @return
+     *
+     * Creates WorkMachineTracking with a LineString observation
+     * @param observationTime Time of observation (start and end is same)
+     * @param jobId Harja job id
+     * @param workMachine Machines
+     * @param coordinatesEtrs Coordinates in Etrs format x, y
+     * @param tasks Performed tasks
+     * @return
+     */
+    public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithLineString(final ZonedDateTime observationTime,
+                                                                                                 final int jobId,
+                                                                                                 final Tyokone workMachine,
+                                                                                                 final List<List<Double>> coordinatesEtrs,
+                                                                                                 final SuoritettavatTehtavat...tasks) {
+
+        final List<List<Object>> coordinatesEtrsAsObjects
+            = coordinatesEtrs.stream()
+                .map(outer -> outer.stream().map(innner -> (Object)innner).collect(Collectors.toList()))
+                .collect(Collectors.toList());
+
+        final GeometriaSijaintiSchema sijainti =
+            new GeometriaSijaintiSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinatesEtrsAsObjects));
+        final List<Havainnot> havainnot = Collections.singletonList(
+            new Havainnot().withHavainto(
+                new Havainto()
+                    .withHavaintoaika(observationTime)
+                    .withTyokone(workMachine)
+                    .withUrakkaid(jobId)
+                    .withSijainti(sijainti)
+                    .withSuoritettavatTehtavat(Arrays.stream(tasks).collect(toList()))
+                    .withSuunta(90.0)));
+
+        final OtsikkoSchema otsikko = createOtsikko(observationTime);
+
+        return new TyokoneenseurannanKirjausRequestSchema(otsikko, havainnot);
     }
 
     /**
@@ -276,7 +322,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
         }
     }
 
-    private static Tyokone createTyokone(final int id) {
+    public static Tyokone createWorkmachine(final int id) {
         return new Tyokone(id, "Tyokone_" + id, "Scania");
     }
 

@@ -16,6 +16,7 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithLineString;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkmachine;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskWithIndex;
@@ -25,16 +26,20 @@ import static org.junit.Assert.assertFalse;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,6 +54,7 @@ import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 
 @Import({ V2MaintenanceTrackingUpdateService.class, JacksonAutoConfiguration.class,
@@ -299,6 +305,37 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             }
         });
     }
+
+    // TODO DPO-1124
+    @Test
+    public void findMaintenanceTrackingOnePointWithinBoundingBox() throws JsonProcessingException {
+        final Tyokone workMachine = createWorkmachine(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+
+        final Pair<Double, Double> xRange = Pair.of(20.0, 30.0);
+        final Pair<Double, Double> yRange = Pair.of(64.0, 66.0);
+
+
+        List<List<Double>> fromWGS84 = Arrays.asList(
+            Arrays.asList(25.0, 60.0),
+            Arrays.asList(25.0, 70.0)
+        );
+
+        final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
+
+        testHelper.saveTrackingData(
+            createMaintenanceTrackingWithLineString(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
+
+        final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            startTime.minusSeconds(1).toInstant(), startTime.plusSeconds(1).toInstant(),
+            xRange.getLeft(), yRange.getLeft(), xRange.getRight(), yRange.getRight(),
+            Collections.emptyList());
+        Assert.assertEquals(1, result.features.size());
+//        final Set<Long> taskIds = result.features.get(0).getProperties().tasks.stream().collect(Collectors.toSet());
+//        Assert.assertEquals(TASK_IDS_INSIDE_BOX, taskIds);
+    }
+
+
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
                                                                               final MaintenanceTrackingTask...tasks) {

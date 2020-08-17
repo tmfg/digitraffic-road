@@ -7,8 +7,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.sound.sampled.Line;
-
 import org.osgeo.proj4j.CRSFactory;
 import org.osgeo.proj4j.CoordinateReferenceSystem;
 import org.osgeo.proj4j.CoordinateTransform;
@@ -94,12 +92,16 @@ public class CoordinateConverter {
         return new LineString(coords);
     }
 
-    public static LineString convertLineStringFromWGS84ToETRS89(List<List<Double>> fromWGS84Coordinates) {
+    public static LineString convertLineStringCoordinatesFromWGS84ToETRS89LineString(final List<List<Double>> fromWGS84Coordinates) {
+        return new LineString(convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84Coordinates));
+    }
+
+    public static List<List<Double>> convertLineStringCoordinatesFromWGS84ToETRS89(final List<List<Double>> fromWGS84Coordinates) {
         List<List<Double>> coords =
             fromWGS84Coordinates.stream()
                 .map(l -> (List<Double>) new ArrayList(convertFromWGS84ToETRS89(new Point(l)).getCoordinates()))
                 .collect(Collectors.toList());
-        return new LineString(coords);
+        return coords;
     }
 
     private static Point convert(final Point fromPoint, final CoordinateTransform transformer) {
