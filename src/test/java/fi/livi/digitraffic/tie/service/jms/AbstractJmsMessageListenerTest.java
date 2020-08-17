@@ -8,22 +8,44 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.SensorDataTestUpdateService;
 
 public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTestWithoutS3 {
 
     @Autowired
     protected RoadStationSensorService roadStationSensorService;
 
+    @Autowired
+    protected SensorDataTestUpdateService sensorDataUpdateService;
+
     protected List<RoadStationSensor> findPublishableRoadStationSensors(final RoadStationType roadStationType) {
         return roadStationSensorService
             .findAllPublishableRoadStationSensors(roadStationType);
     }
 
+    protected void flushSensorBuffer(boolean tms) {
+        if (TestTransaction.isActive()) {
+            TestTransaction.flagForCommit();
+            TestTransaction.end();
+        }
+
+        TestTransaction.start();
+
+        if (tms) {
+            sensorDataUpdateService.flushTmsBuffer();
+        } else {
+            sensorDataUpdateService.flushWeatherBuffer();
+        }
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+    }
 
     public static TextMessage createTextMessage(final String content, final String filename) {
         return new TextMessage() {
