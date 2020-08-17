@@ -13,7 +13,7 @@ mqtt.server.url=tcp://localhost:1883
 mqtt.server.username=updater
 mqtt.server.password=updater
 
-# Lotju SOAP APIs
+# Lotju SOAP APIs. If health is empty then health check is not performed.
 metadata.server.addresses=http://localhost:9011
 metadata.server.path.health=/healthcheck
 metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5

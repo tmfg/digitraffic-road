@@ -28,10 +28,10 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
      * @param dataPath ie. /data/service
      * @param healthTtlSeconds How long is health status valid
      */
-    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String healthPath, final String dataPath,
+    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String dataPath, final String healthPath,
                                        final int healthTtlSeconds) {
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
-        setDestinationProvider(new MultiDestinationProvider(createHostsWithHealthCheck(baseUrls, healthPath, dataPath, healthTtlSeconds)));
+        setDestinationProvider(new MultiDestinationProvider(createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds)));
 
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);
@@ -43,12 +43,12 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
     }
 
-    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String healthPath, final String dataPath, final int healthTtlSeconds) {
+    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String dataPath, final String healthPath, final int healthTtlSeconds) {
         if ( baseUrls == null || baseUrls.length == 0 ) {
             throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", baseUrls != null ? baseUrls.toString() : null));
         }
         return Arrays.stream(baseUrls)
-            .map(baseUrl -> new HostWithHealthCheck(baseUrl, healthPath, dataPath, healthTtlSeconds))
+            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, healthPath, healthTtlSeconds))
             .collect(Collectors.toList());
     }
 

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -7,6 +8,8 @@ import static org.mockito.Mockito.nullable;
 import static org.mockito.Mockito.spy;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
+
+import java.net.URI;
 
 import javax.xml.bind.JAXBElement;
 
@@ -33,7 +36,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     @Before
     public void initSoapClientSpyAndServerResponses() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, healthPath, dataPath, TTL_S);
+        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, healthPath, TTL_S);
         // Get get WebServiceTemplate, spy it and set spy to client
         webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
         client.setWebServiceTemplate(webServiceTemplate);
@@ -135,6 +138,42 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         clientRequestDataAndVerifyResponse(RESPONSE2); // also health request
         verifyServer1HealthCount(1);
         verifyServer2HealthCount(1);
+    }
+
+    @Test
+    public void hostWithoutHealthCheck() {
+        initClientWithoutHealthCheck();
+
+        clientRequestDataAndVerifyResponse(RESPONSE1); // No health requests
+        verifyServer1HealthCount(0);
+        verifyServer2HealthCount(0);
+    }
+
+    @Test
+    public void host1WithoutHealthCheckButUnhealthy() {
+        initClientWithoutHealthCheck();
+
+        // Reset server 1 to return error on data query
+        Mockito.reset(webServiceTemplate);
+        server1WhenRequestDataThenThrowException();
+        server2WhenRequestDataThenReturn(RESPONSE2);
+
+        // Ddata 1 -> fail, data 2 ok
+        clientRequestDataAndVerifyResponse(RESPONSE2); // No health requests
+        verifyServer1HealthCount(0);
+        verifyServer2HealthCount(0);
+    }
+
+    private void initClientWithoutHealthCheck() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, null, TTL_S);
+        // Get get WebServiceTemplate, spy it and set spy to client
+        webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
+        client.setWebServiceTemplate(webServiceTemplate);
+
+        // SOAP servers 1 & 2 return always same values
+        server1WhenRequestDataThenReturn(RESPONSE1);
+        server2WhenRequestDataThenReturn(RESPONSE2);
     }
 
     private void clientRequestDataAndVerifyResponse(String response) {

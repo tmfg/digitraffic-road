@@ -27,12 +27,27 @@ class HostWithHealthCheck {
     private boolean healthy = true;
     private Instant nextHealthCheckTime = Instant.now();
 
-    public HostWithHealthCheck(final String baseUrl, final String healthPath, final String dataPath, int healthTtlSeconds) {
+    /**
+     *
+     * @param baseUrl ie. https://example.com
+     * @param dataPath ie. /service/data1
+     * @param healthPath ie. /healthcheck. If empty no healt check is performed
+     * @param healthTtlSeconds Health check time to live
+     */
+    public HostWithHealthCheck(final String baseUrl, final String dataPath, final String healthPath, int healthTtlSeconds) {
         this.baseUrl = baseUrl;
         this.healthTtlSeconds = healthTtlSeconds;
-        this.healthUrl = baseUrl + healthPath;
+        this.healthUrl = StringUtils.isNotEmpty(healthPath) ? baseUrl + healthPath : null;
         this.dataUrl = URI.create(baseUrl + dataPath);
         restTemplate = RestTemplateConfiguration.createRestTemplate(10, 10);
+
+        if (StringUtils.isBlank(baseUrl)) {
+            throw new IllegalArgumentException(String.format("Param baseUrl:\"%s\" can't be empty value", baseUrl));
+        }
+        if (StringUtils.isBlank(dataPath)) {
+            throw new IllegalArgumentException(String.format("Param dataPath:\"%s\" can't be empty value", dataPath));
+        }
+
         log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={}", healthUrl, dataUrl.toString());
     }
 
@@ -41,6 +56,12 @@ class HostWithHealthCheck {
      * @return health status
      */
     public boolean doHealthCheck() {
+        // If healthUrl is not set, then recover host if timeout is passed
+        // Host will be marked as not healthy externally by calling setHealthy(false);
+        if (healthUrl == null && isHealthCheckNeeded()) {
+            healthy = true;
+            return healthy;
+        }
         if (!isHealthCheckNeeded()) {
             return healthy;
         }

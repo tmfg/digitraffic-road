@@ -93,4 +93,23 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
         verifyServer1HealthCount(2);
         verifyServer2HealthCount(0);
     }
+
+    @Test
+    public void hostWithoutHealthCheck() {
+        final MultiDestinationProvider mdp = createMultiDestinationProviderWithoutHealthCheck();
+        final URI dest = mdp.getDestination();
+        assertEquals(dataUrl1, dest.toString());
+        verifyServer1HealthCount(0);
+        verifyServer2HealthCount(0);
+    }
+
+    @Test
+    public void hostWithoutHealthCheckButUnhealthy() {
+        final MultiDestinationProvider mdp = createMultiDestinationProviderWithoutHealthCheck();
+        mdp.setHostNotHealthy(mdp.getDestinations().get(0)); // first destination not healthy
+        final URI dest = mdp.getDestination();
+        assertEquals(dataUrl2, dest.toString());
+        verifyServer1HealthCount(0);
+        verifyServer2HealthCount(0);
+    }
 }

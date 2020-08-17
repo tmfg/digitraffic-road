@@ -45,8 +45,13 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
     public WireMockRule wireMockRule2 = new WireMockRule(wireMockConfig().port(RANDOM_PORT2), true);
 
     protected MultiDestinationProvider createMultiDestinationProvider() {
-        return new MultiDestinationProvider(AbstractLotjuMetadataClient.createHostsWithHealthCheck(baseUrls, healthPath, dataPath, TTL_S));
+        return new MultiDestinationProvider(AbstractLotjuMetadataClient.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S));
     }
+
+    protected MultiDestinationProvider createMultiDestinationProviderWithoutHealthCheck() {
+        return new MultiDestinationProvider(AbstractLotjuMetadataClient.createHostsWithHealthCheck(baseUrls, dataPath, null, TTL_S));
+    }
+
 
     protected void server1WhenRequestHealthThenReturn(final HttpStatus returnStatus, final String returnContent) {
         serverWhenRequestUrlThenReturn(wireMockRule1, healthPath, returnStatus, returnContent);

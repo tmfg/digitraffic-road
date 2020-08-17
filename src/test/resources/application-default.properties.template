@@ -13,7 +13,7 @@ mqtt.server.url=tcp://address:port
 mqtt.server.username=
 mqtt.server.password=
 
-# Lotju SOAP APIs
+# Lotju SOAP APIs. If health is empty then health check is not performed.
 metadata.server.addresses=http://localhost:#{T(fi.livi.digitraffic.tie.service.v1.lotju.LotjuServiceEndpointMock).RANDOM_PORT}
 metadata.server.path.health=/healthcheck
 metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5
