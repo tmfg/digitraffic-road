@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -11,15 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.conf.RestTemplateConfiguration;
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
-class HostWithHealthCheck {
+public class HostWithHealthCheck {
     private static final Logger log = LoggerFactory.getLogger(HostWithHealthCheck.class);
 
     private final RestTemplate restTemplate;
@@ -64,7 +60,7 @@ class HostWithHealthCheck {
         // Host will be marked as not healthy externally by calling setHealthy(false);
         if (healthUrl == null && isHealthCheckNeeded()) {
             healthy = true;
-            return healthy;
+            return true;
         }
         if (!isHealthCheckNeeded()) {
             return healthy;

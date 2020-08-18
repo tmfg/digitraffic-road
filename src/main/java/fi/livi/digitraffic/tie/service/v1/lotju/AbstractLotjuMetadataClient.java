@@ -43,15 +43,6 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
     }
 
-    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String dataPath, final String healthPath, final int healthTtlSeconds) {
-        if ( baseUrls == null || baseUrls.length == 0 ) {
-            throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", baseUrls != null ? baseUrls.toString() : null));
-        }
-        return Arrays.stream(baseUrls)
-            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, healthPath, healthTtlSeconds))
-            .collect(Collectors.toList());
-    }
-
     protected Object marshalSendAndReceive(final JAXBElement<?> requestPayload) {
         return getWebServiceTemplate().marshalSendAndReceive(requestPayload);
     }
