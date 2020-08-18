@@ -7,6 +7,7 @@ import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +29,14 @@ public class CameraImageReader {
         final int connectTimeout,
         @Value("${camera-image-uploader.http.readTimeout}")
         final int readTimeout,
-        @Value("${camera-image-download.url}")
-        final String cameraUrl
+        @Value("${metadata.server.addresses}") final String[] baseUrls,
+        @Value("${metadata.server.path.image}") final String dataPath,
+        @Value("${metadata.server.path.health:#{null}}") final String healthPath,
+        @Value("${metadata.server.image.ttlInSeconds:#{10}}") final int healthTtlSeconds
     ) {
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
-        this.cameraUrl = cameraUrl;
+        destinationProvider = new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds));
     }
 
     public byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException {

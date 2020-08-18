@@ -145,9 +145,6 @@ public class CameraImageUpdateService {
             byte[] image;
             try {
                 image = imageReader.readImage(kuvaId, info);
-                info.setSizeBytes(image.length);
-                info.updateReadStatusSuccess();
-                info.setReadDurationMs(start.getTime());
             } catch (final Exception e) {
                 info.updateReadStatusFailed(e);
                 throw new CameraImageReadFailureException(e);
@@ -155,7 +152,7 @@ public class CameraImageUpdateService {
                 info.updateReadTotalDurationMs(start.getTime());
             }
             if (image.length <= 0) {
-                final CameraImageReadFailureException e = new CameraImageReadFailureException("Image was 0 bytes");
+                final CameraImageReadFailureException e = new CameraImageReadFailureException(String.format("Image was %d bytes", image.length));
                 info.updateReadStatusFailed(e);
                 throw e;
             }

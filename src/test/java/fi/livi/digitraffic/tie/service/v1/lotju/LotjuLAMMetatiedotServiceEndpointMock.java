@@ -23,7 +23,6 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
-import fi.livi.digitraffic.tie.external.lotju.metadata.lam.ObjectFactory;
 
 
 public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointMock implements LAMMetatiedotEndpoint {
@@ -48,15 +47,10 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
 
     @Override
     public void initStateAndService() {
-        if (!isInited()) {
+        if (isNotInited()) {
             initService();
         }
         setStateAfterChange(false);
-    }
-
-    @Override
-    protected Class<?> getObjectFactoryClass() {
-        return ObjectFactory.class;
     }
 
     /* LAMMetatiedot Service methods */

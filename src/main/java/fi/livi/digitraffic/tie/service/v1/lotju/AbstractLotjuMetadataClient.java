@@ -31,7 +31,7 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
     public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String dataPath, final String healthPath,
                                        final int healthTtlSeconds) {
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
-        setDestinationProvider(new MultiDestinationProvider(createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds)));
+        setDestinationProvider(new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds)));
 
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);

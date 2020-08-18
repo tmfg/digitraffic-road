@@ -5,13 +5,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -45,11 +47,11 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
     public WireMockRule wireMockRule2 = new WireMockRule(wireMockConfig().port(RANDOM_PORT2), true);
 
     protected MultiDestinationProvider createMultiDestinationProvider() {
-        return new MultiDestinationProvider(AbstractLotjuMetadataClient.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S));
+        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S));
     }
 
     protected MultiDestinationProvider createMultiDestinationProviderWithoutHealthCheck() {
-        return new MultiDestinationProvider(AbstractLotjuMetadataClient.createHostsWithHealthCheck(baseUrls, dataPath, null, TTL_S));
+        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, null, TTL_S));
     }
 
 
@@ -67,15 +69,39 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
             get(urlEqualTo(expectedUrl))
                 .willReturn(aResponse()
                 .withBody(returnContent)
-                .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
+                .withHeader(CONTENT_TYPE, TEXT_PLAIN_VALUE)
                 .withStatus(returnStatus.value())));
     }
 
+    protected void serverWhenRequestUrlThenReturn(final WireMockRule wireMockRule, final String expectedUrl, final HttpStatus returnStatus, final byte[] returnContent) {
+        log.info("Register url {} to return {} : {}", expectedUrl, returnStatus, returnContent);
+        wireMockRule.givenThat(
+            get(urlEqualTo(expectedUrl))
+                .willReturn(aResponse()
+                    .withBody(returnContent)
+                    .withHeader(CONTENT_TYPE, IMAGE_JPEG_VALUE)
+                    .withStatus(returnStatus.value())));
+    }
+
     protected void verifyServer1HealthCount(final int count) {
-        assertEquals(count, wireMockRule1.getServeEvents().getRequests().size());
+        verifyServerCalledCount(count, healthPath, wireMockRule1);
     }
 
     protected void verifyServer2HealthCount(final int count) {
-        assertEquals(count, wireMockRule2.getServeEvents().getRequests().size());
+        verifyServerCalledCount(count, healthPath, wireMockRule2);
     }
+
+    protected void verifyServer1DataCount(final int count) {
+        verifyServerCalledCount(count, dataPath, wireMockRule1);
+    }
+
+    protected void verifyServer2DataCount(final int count) {
+        verifyServerCalledCount(count, dataPath, wireMockRule2);
+    }
+
+    protected void verifyServerCalledCount(final int count, final String pathPrefix, final WireMockRule wireMockRule) {
+        final int loggedCount = (int) wireMockRule.getAllServeEvents().stream().filter(e -> e.getRequest().getUrl().startsWith(pathPrefix)).count();
+        assertEquals(count, loggedCount);
+    }
+
 }

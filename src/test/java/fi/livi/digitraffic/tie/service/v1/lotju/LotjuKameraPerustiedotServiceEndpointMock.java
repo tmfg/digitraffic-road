@@ -18,7 +18,6 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotE
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotEndpointImplService;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotException;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
-import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.ObjectFactory;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.VideopalvelinVO;
 
 public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpointMock implements KameraPerustiedotEndpoint {
@@ -41,13 +40,8 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     }
 
     @Override
-    protected Class<?> getObjectFactoryClass() {
-        return ObjectFactory.class;
-    }
-
-    @Override
     public void initStateAndService() {
-        if (!isInited()) {
+        if (isNotInited()) {
             initService();
         }
         setStateAfterChange(false);

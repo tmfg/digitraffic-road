@@ -3,6 +3,9 @@ package fi.livi.digitraffic.tie.service.v1.lotju;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +17,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.conf.RestTemplateConfiguration;
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 class HostWithHealthCheck {
     private static final Logger log = LoggerFactory.getLogger(HostWithHealthCheck.class);
@@ -84,8 +88,7 @@ class HostWithHealthCheck {
      */
     private String doRequestHealthString() {
         try {
-            final ResponseEntity<String> response
-                = restTemplate.getForEntity(healthUrl, String.class);
+            final ResponseEntity<String> response = restTemplate.getForEntity(healthUrl, String.class);
             return response.getBody();
         } catch (final Exception e) {
             log.warn(String.format("method=doRequestHealthStatus Health check for healthCheckUrl=%s failed", healthUrl), e);
@@ -108,5 +111,14 @@ class HostWithHealthCheck {
     }
     public URI getDataUrl() {
         return dataUrl;
+    }
+
+    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String dataPath, final String healthPath, final int healthTtlSeconds) {
+        if ( baseUrls == null || baseUrls.length == 0 ) {
+            throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", Arrays.toString(baseUrls)));
+        }
+        return Arrays.stream(baseUrls)
+            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, healthPath, healthTtlSeconds))
+            .collect(Collectors.toList());
     }
 }
