@@ -63,7 +63,7 @@ public abstract class LotjuServiceEndpointMock {
     }
 
     public boolean isNotInited() {
-        return inited;
+        return !inited;
     }
 
     public boolean isStateAfterChange() {
