@@ -59,10 +59,12 @@ public class HostWithHealthCheck {
         // If healthUrl is not set, then recover host if timeout is passed
         // Host will be marked as not healthy externally by calling setHealthy(false);
         if (healthUrl == null && isHealthCheckNeeded()) {
+            log.info("method=doHealthCheck Health check for healthCheckUrl={} not preformed and healthy changed from {} to true returnStatus=true", healthUrl, healthy);
             healthy = true;
             return true;
         }
         if (!isHealthCheckNeeded()) {
+            log.info("method=doHealthCheck Health check for healthCheckUrl={} not preformed as ttl not exceeded returnStatus={}", healthUrl, healthy);
             return healthy;
         }
 
