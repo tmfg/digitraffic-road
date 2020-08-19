@@ -91,11 +91,11 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
         Mockito.when(cameraPresetHistoryDataService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.NOT_FOUND);
 
-        MockHttpServletResponse response = requestImage(imageName, versionId);
+        final MockHttpServletResponse response = requestImage(imageName, versionId);
         assertResponse(response, HttpStatus.NOT_FOUND, null);
     }
 
-    private void assertResponse(MockHttpServletResponse response, final HttpStatus httpStatus, final String redirectUrl) {
+    private void assertResponse(final MockHttpServletResponse response, final HttpStatus httpStatus, final String redirectUrl) {
         log.info("HTTP response: {} and redirect: {}", response.getStatus(), response.getRedirectedUrl());
         Assert.assertEquals(httpStatus.value(), response.getStatus());
         Assert.assertEquals(redirectUrl, response.getRedirectedUrl());

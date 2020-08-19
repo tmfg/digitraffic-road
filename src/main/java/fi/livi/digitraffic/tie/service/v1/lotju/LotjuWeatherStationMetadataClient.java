@@ -35,18 +35,21 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     @Autowired
     public LotjuWeatherStationMetadataClient(@Qualifier("tiesaaMetadataJaxb2Marshaller")
                                              final Jaxb2Marshaller tiesaaMetadataJaxb2Marshaller,
-                                             final @Value("${metadata.server.address.weather}") String weatherMetadataServerAddress) {
-        super(tiesaaMetadataJaxb2Marshaller, weatherMetadataServerAddress, log);
+                                             @Value("${metadata.server.addresses}") final String[] serverAddresses,
+                                             @Value("${metadata.server.path.health:#{null}}") final String healthPath,
+                                             @Value("${metadata.server.path.weather}") final String dataPath,
+                                             @Value("${metadata.server.health.ttlInSeconds:#{30}}") final int healthTTLSeconds) {
+        super(tiesaaMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
     public List<TiesaaAsemaVO> getTiesaaAsemas() {
-        log.info("Fetching TiesaaAsemas from " + getWebServiceTemplate().getDefaultUri());
+        log.info("Fetching TiesaaAsemas from " + getDefaultUri());
 
         final HaeKaikkiTiesaaAsemat request = new HaeKaikkiTiesaaAsemat();
         final JAXBElement<HaeKaikkiTiesaaAsematResponse> response = (JAXBElement<HaeKaikkiTiesaaAsematResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiTiesaaAsemat(request));
+                marshalSendAndReceive(objectFactory.createHaeKaikkiTiesaaAsemat(request));
 
         log.info("roadStationFetchedCount={} TiesaaAsemas", response.getValue().getTiesaaAsema().size());
         return response.getValue().getTiesaaAsema();
@@ -55,11 +58,11 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
     public List<TiesaaLaskennallinenAnturiVO> getAllTiesaaLaskennallinenAnturis() {
-        log.info("Fetching all LaskennallisetAnturit from " + getWebServiceTemplate().getDefaultUri());
+        log.info("Fetching all LaskennallisetAnturit from " + getDefaultUri());
 
         final HaeKaikkiLaskennallisetAnturit request = new HaeKaikkiLaskennallisetAnturit();
         final JAXBElement<HaeKaikkiLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLaskennallisetAnturitResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
+                marshalSendAndReceive(objectFactory.createHaeKaikkiLaskennallisetAnturit(request));
 
         return response.getValue().getLaskennallinenAnturi();
     }
@@ -72,7 +75,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
 
         final JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse> response =
                 (JAXBElement<HaeTiesaaAsemanLaskennallisetAnturitResponse>)
-                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
+                        marshalSendAndReceive(objectFactory.createHaeTiesaaAsemanLaskennallisetAnturit(request));
 
         return response.getValue().getLaskennallinenAnturi();
     }

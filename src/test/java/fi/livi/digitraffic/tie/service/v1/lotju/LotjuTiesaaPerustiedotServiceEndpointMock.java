@@ -16,7 +16,6 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ArvoVastaavuusVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiTiesaaAsematResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
-import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ObjectFactory;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaHakuparametrit;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaLaskennallinenAnturiVO;
@@ -54,13 +53,8 @@ public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     }
 
     @Override
-    protected Class<?> getObjectFactoryClass() {
-        return ObjectFactory.class;
-    }
-
-    @Override
     public void initStateAndService() {
-        if (!isInited()) {
+        if (isNotInited()) {
             initService();
         }
         setStateAfterChange(false);

@@ -8,7 +8,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +18,6 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
 
 public abstract class LotjuServiceEndpointMock {
-
-    public static final long RANDOM_PORT = RandomUtils.nextLong(6000,7000);
 
     private static final Logger log = LoggerFactory.getLogger(LotjuServiceEndpointMock.class);
     private final String metadataServerAddress;
@@ -36,7 +33,7 @@ public abstract class LotjuServiceEndpointMock {
 
     public LotjuServiceEndpointMock(final ResourceLoader resourceLoader, final String metadataServerAddress, final Class<?> metatiedotClass,
                                     final QName serviceName, final Jaxb2Marshaller jaxb2Marshaller, String resourcePath) {
-        log.info("RANDOM_PORT={} metadataServerAddress={}", RANDOM_PORT, metadataServerAddress);
+        log.info("metadataServerAddress={}", metadataServerAddress);
         this.resourceLoader = resourceLoader;
         this.metadataServerAddress = metadataServerAddress;
         this.metatiedotClass = metatiedotClass;
@@ -65,8 +62,8 @@ public abstract class LotjuServiceEndpointMock {
         inited = true;
     }
 
-    public boolean isInited() {
-        return inited;
+    public boolean isNotInited() {
+        return !inited;
     }
 
     public boolean isStateAfterChange() {
@@ -86,11 +83,9 @@ public abstract class LotjuServiceEndpointMock {
         if (filePath == null) {
             return null;
         }
-        return (TYPE)readLotjuMetadataXml(filePath, getObjectFactoryClass());
+        return (TYPE)readLotjuMetadataXml(filePath);
 
     }
-
-    protected abstract Class<?> getObjectFactoryClass();
 
     private String resolveFilePath(final String file, final Long lotjuId) {
         String filePath = getFilePath(file, lotjuId, isStateAfterChange());
@@ -114,11 +109,10 @@ public abstract class LotjuServiceEndpointMock {
 
     /**
      * Read given lotju xml and returns response value
-     * @param filePath
-     * @param objectFactoryClass
+     * @param filePath Where to read xml
      * @return response value Object returned from JAXBElement<?>.getValue()
      */
-    protected Object readLotjuMetadataXml(final String filePath, final Class<?> objectFactoryClass) {
+    protected Object readLotjuMetadataXml(final String filePath) {
         log.info("Read Lotju SOAP response: {}", filePath);
         try {
             final Resource resource = resourceLoader.getResource("classpath:" + filePath);

@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotException;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
@@ -37,7 +36,7 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 
-public class CameraStationPublicityUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;

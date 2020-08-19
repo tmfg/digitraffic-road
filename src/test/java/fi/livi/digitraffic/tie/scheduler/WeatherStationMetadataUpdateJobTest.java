@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,20 +15,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationsSensorsUpdater;
 
-public class WeatherStationMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherStationMetadataUpdateJobTest.class);
 
@@ -54,8 +55,13 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractDaemonTestWitho
     private Map<Long, RoadStationSensor> sensorsInitial;
     private Map<Long, RoadStationSensor> sensorsAfterChange;
 
+    @Autowired
+    private LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
+
     @Before
-    public void initData() {
+    public void setUpLotjuClientAndInitData() {
+        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuWeatherStationMetadataClient);
+
         lotjuTiesaaPerustiedotServiceMock.initStateAndService();
 
         // Update road weather stations to initial state (2 non obsolete stations and 2 obsolete)
@@ -79,6 +85,11 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractDaemonTestWitho
         allAfterChange =
             weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
         assertEquals(3, allAfterChange.getFeatures().size());
+    }
+
+    @After
+    public void restoreOriginalDestinationProviderForLotjuClients() {
+        restoreLotjuClientDestinationProvider(lotjuWeatherStationMetadataClient);
     }
 
     @Test

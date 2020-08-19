@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.controller.v1.MetadataController;
@@ -48,7 +47,6 @@ public class SwaggerConfiguration {
     @Autowired
     public SwaggerConfiguration(final MetadataApiInfoService metadataApiInfoService,
                                 final @Value("${dt.domain.url}") String domainUrl) throws URISyntaxException {
-        Assert.notNull(metadataApiInfoService, "MetadataApiInfoService can't be null");
         this.metadataApiInfoService = metadataApiInfoService;
         URI uri = new URI(domainUrl);
 

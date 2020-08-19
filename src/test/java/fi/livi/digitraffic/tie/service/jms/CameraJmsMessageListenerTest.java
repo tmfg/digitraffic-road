@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -40,13 +42,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
@@ -57,6 +59,9 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
 
     private static final String IMAGE_SUFFIX = "image.jpg";
     private static final String IMAGE_DIR = "lotju/kuva/";
+
+    @Value("${metadata.server.path.health:#{null}}")
+    private String healthPath;
 
     @Autowired
     private CameraPresetService cameraPresetService;
@@ -79,6 +84,10 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
     @Before
     public void initData() throws IOException {
+        log.info("LOTJU_IMAGE_PATH={}", LOTJU_IMAGE_PATH);
+        log.info("TEST_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
+        log.info("healthPath={}", healthPath);
+        createHealthOKStubFor(healthPath);
 
         int i = 5;
         while (i > 0) {
@@ -122,7 +131,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JMSException {
-        log.info("HTTP mock server for images port={}", TEST_PORT);
+        log.info("HTTP lotju mock server port={}", LOTJU_SERVICE_RANDOM_PORT);
 
         createHttpResponseStubFor(1);// + IMAGE_SUFFIX);
         createHttpResponseStubFor(2);// + IMAGE_SUFFIX);
@@ -262,9 +271,18 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
         return imageData;
     }
 
-    private void createHttpResponseStubFor(int kuvaId) {
-        log.info("Create mock with url: " + REQUEST_PATH + kuvaId);
-        stubFor(get(urlEqualTo(REQUEST_PATH + kuvaId))
+    private void createHealthOKStubFor(final String healthPath) {
+        log.info("Create health mock with url: " + healthPath);
+        stubFor(get(urlEqualTo(healthPath))
+            .willReturn(aResponse().withBody("ok!")
+                .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
+                .withStatus(200)));
+    }
+
+    private void createHttpResponseStubFor(final int kuvaId) {
+        final String path = StringUtils.appendIfMissing(LOTJU_IMAGE_PATH, "/") + kuvaId;
+        log.info("Create image mock with url: {}", path);
+        stubFor(get(urlEqualTo(path))
                 .willReturn(aResponse().withBody(imageFilesMap.get(kuvaId + IMAGE_SUFFIX))
                         .withHeader("Content-Type", "image/jpeg")
                         .withStatus(200)));
