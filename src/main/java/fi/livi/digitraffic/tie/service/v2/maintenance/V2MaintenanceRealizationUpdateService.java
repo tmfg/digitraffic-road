@@ -77,7 +77,9 @@ public class V2MaintenanceRealizationUpdateService {
             final String json = jsonWriter.writeValueAsString(reittitoteumanKirjaus);
             final MaintenanceRealizationData realization = new MaintenanceRealizationData(jobId, json);
             v2RealizationDataRepository.save(realization);
-            log.debug("method=saveMaintenanceRealizationData jsonData={}", json);
+            if (log.isDebugEnabled()) {
+                log.debug("method=saveMaintenanceRealizationData jsonData: {}", json);
+            }
         } catch (Exception e) {
             log.error("method=saveRealizationData failed ", e);
             throw new RuntimeException(e);
