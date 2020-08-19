@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
@@ -9,7 +10,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -118,7 +118,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
 
     public void checkContainsOnlyTasksWithIds(final MaintenanceTracking tracking, final MaintenanceTrackingTask... tasks) {
         final Set<MaintenanceTrackingTask> actualTasks = tracking.getTasks();
-        final HashSet<MaintenanceTrackingTask> expectedTasks = new HashSet<MaintenanceTrackingTask>(Arrays.asList(tasks));
+        final HashSet<MaintenanceTrackingTask> expectedTasks = new HashSet<>(Arrays.asList(tasks));
         Assert.assertEquals(expectedTasks, actualTasks);
     }
 
@@ -130,43 +130,38 @@ public class V2MaintenanceTrackingServiceTestHelper {
     /**
      * Generates work machines with running harja ids [1, 2,...count]
      * @param count Count of generated work machines
-     * @return
+     * @return Created workmachines
      */
     public static List<Tyokone> createWorkMachines(final int count) {
-        return IntStream.range(1, count+1).mapToObj(i -> createWorkmachine(i)).collect(toList());
+        return IntStream.range(1, count+1).mapToObj(V2MaintenanceTrackingServiceTestHelper::createWorkmachine).collect(toList());
     }
 
     /**
-     *
-     * @param observationTime
-     * @param jobId
-     * @param workMachine
-     * @param coordinatesEtrs
-     * @param tasks
-     * @return
-     *
      * Creates WorkMachineTracking with a LineString observation
      * @param observationTime Time of observation (start and end is same)
      * @param jobId Harja job id
      * @param workMachine Machines
      * @param coordinatesEtrs Coordinates in Etrs format x, y
      * @param tasks Performed tasks
-     * @return
+     * @return Created tracking
      */
-    public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithLineString(final ZonedDateTime observationTime,
-                                                                                                 final int jobId,
-                                                                                                 final Tyokone workMachine,
-                                                                                                 final List<List<Double>> coordinatesEtrs,
-                                                                                                 final SuoritettavatTehtavat...tasks) {
+    public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTracking(final ZonedDateTime observationTime,
+                                                                                   final int jobId,
+                                                                                   final Tyokone workMachine,
+                                                                                   final List<List<Double>> coordinatesEtrs,
+                                                                                   final SuoritettavatTehtavat...tasks) {
 
         final List<List<Object>> coordinatesEtrsAsObjects
             = coordinatesEtrs.stream()
                 .map(outer -> outer.stream().map(innner -> (Object)innner).collect(Collectors.toList()))
                 .collect(Collectors.toList());
 
-        final GeometriaSijaintiSchema sijainti =
+        final GeometriaSijaintiSchema sijainti = coordinatesEtrsAsObjects.size() == 1 ?
+            new GeometriaSijaintiSchema().withKoordinaatit(new KoordinaattisijaintiSchema()
+                .withX((double)coordinatesEtrsAsObjects.get(0).get(0))
+                .withY((double)coordinatesEtrsAsObjects.get(0).get(1))) :
             new GeometriaSijaintiSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinatesEtrsAsObjects));
-        final List<Havainnot> havainnot = Collections.singletonList(
+        final List<Havainnot> havainnot = singletonList(
             new Havainnot().withHavainto(
                 new Havainto()
                     .withHavaintoaika(observationTime)
@@ -188,7 +183,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
      * @param jobId Harja job id
      * @param workMachines Machines
      * @param tasks Performed tasks
-     * @return
+     * @return Created tracking
      */
     public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithLineString(final ZonedDateTime observationTime,
                                                                                                  final int observationCount,
@@ -206,7 +201,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
      * @param jobId Harja job id
      * @param workMachines Machines
      * @param tasks Performed tasks
-     * @return
+     * @return Created tracking
      */
     public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithLineString(final ZonedDateTime observationTime,
                                                                                                  final int observationCount,
@@ -224,7 +219,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
      * @param jobId Harja job id
      * @param workMachines Machines
      * @param tasks Performed tasks
-     * @return
+     * @return Created tracking
      */
     public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithPoints(final ZonedDateTime observationTime,
                                                                                              final int observationCount,
@@ -242,7 +237,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
      * @param jobId Harja job id
      * @param workMachines Machines
      * @param tasks Performed tasks
-     * @return
+     * @return Created tracking
      */
     public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithPoints(final ZonedDateTime observationTime,
                                                                                              final int observationCount,
@@ -258,7 +253,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
      * @param observationTime Time of observation
      * @param observationCount how many observations to generate/workmachine. Every observation time is increased with one minute.
      * @param workMachines jobId and work machine pairs to generate data for
-     * @return
+     * @return Created tracking
      */
     private static TyokoneenseurannanKirjausRequestSchema createMaintenanceTracking(final ZonedDateTime observationTime,
                                                                                     final int observationCount,
@@ -296,7 +291,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
 
             final GeometriaSijaintiSchema sijainti =
                 new GeometriaSijaintiSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinates));
-            return Collections.singletonList(
+            return singletonList(
                 new Havainnot().withHavainto(
                     new Havainto()
                         .withHavaintoaika(observationTime)
@@ -375,7 +370,7 @@ public class V2MaintenanceTrackingServiceTestHelper {
     }
 
     public static Set<MaintenanceTrackingTask> getTaskSetWithIndex(final int enumIndex) {
-        return new HashSet<>(asList(getTaskWithIndex(enumIndex)));
+        return new HashSet<>(singletonList(getTaskWithIndex(enumIndex)));
     }
 
     public static Set<MaintenanceTrackingTask> getTaskSetWithTasks(final MaintenanceTrackingTask...tasks) {

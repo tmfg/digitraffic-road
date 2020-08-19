@@ -70,7 +70,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                "SELECT tracking \n" +
                "FROM #{#entityName} tracking\n" +
                "WHERE tracking.endTime BETWEEN :from AND :to\n" +
-               "  AND intersects(tracking.lastPoint, :area) = true\n" +
+               "  AND intersects( coalesce(tracking.lineString, tracking.lastPoint), :area ) = true\n" +
                "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTracking> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
@@ -80,7 +80,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                "SELECT tracking \n" +
                "FROM #{#entityName} tracking\n" +
                "WHERE tracking.endTime BETWEEN :from AND :to\n" +
-               "  AND intersects(tracking.lastPoint, :area) = true\n" +
+               "  AND intersects( coalesce(tracking.lineString, tracking.lastPoint), :area ) = true\n" +
                "  AND exists (\n" +
                "    SELECT t " +
                "    FROM #{#entityName} t\n" +
