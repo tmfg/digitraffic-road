@@ -36,11 +36,12 @@ public class CameraImageReader {
         @Value("${metadata.server.addresses}") final String[] baseUrls,
         @Value("${metadata.server.path.image}") final String dataPath,
         @Value("${metadata.server.path.health:#{null}}") final String healthPath,
-        @Value("${metadata.server.image.ttlInSeconds:#{10}}") final int healthTtlSeconds
+        @Value("${metadata.server.image.ttlInSeconds:#{10}}") final int healthTtlSeconds,
+        @Value("${metadata.server.health.value}") final String healtOkValue
     ) {
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
-        destinationProvider = new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds));
+        destinationProvider = new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds, healtOkValue));
     }
 
     public byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException {

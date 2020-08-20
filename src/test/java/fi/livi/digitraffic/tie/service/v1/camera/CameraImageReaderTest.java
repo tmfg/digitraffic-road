@@ -27,7 +27,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
     @Before
     public void initCameraImageReader() {
         cameraImageReader = new CameraImageReader(1000, 1000, new String[] { baseUrl1, baseUrl2 },
-                                                  dataPath, healthPath, 1);
+                                                  dataPath, healthPath, 1, healtOkValue);
     }
 
     @Test

@@ -1,9 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
 
@@ -16,9 +13,7 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
-import fi.livi.digitraffic.tie.service.IllegalArgumentException;
-
-public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
+public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
 
     /**
      *
@@ -29,9 +24,9 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
      * @param healthTtlSeconds How long is health status valid
      */
     public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String dataPath, final String healthPath,
-                                       final int healthTtlSeconds) {
+                                       final int healthTtlSeconds, final String healtOkValue) {
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
-        setDestinationProvider(new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds)));
+        setDestinationProvider(new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds, healtOkValue)));
 
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);
@@ -41,6 +36,10 @@ public class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
         sender.setReadTimeout(30000);
         setMessageSender(sender);
 
+    }
+
+    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String dataPath, final int healthTtlSeconds) {
+        this(marshaller, baseUrls, dataPath, null, healthTtlSeconds, null);
     }
 
     protected Object marshalSendAndReceive(final JAXBElement<?> requestPayload) {

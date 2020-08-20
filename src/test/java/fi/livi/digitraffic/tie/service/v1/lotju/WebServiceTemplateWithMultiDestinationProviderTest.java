@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -8,8 +7,6 @@ import static org.mockito.Mockito.nullable;
 import static org.mockito.Mockito.spy;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
-
-import java.net.URI;
 
 import javax.xml.bind.JAXBElement;
 
@@ -36,7 +33,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     @Before
     public void initSoapClientSpyAndServerResponses() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, healthPath, TTL_S);
+        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, healthPath, TTL_S, healtOkValue) {};
         // Get get WebServiceTemplate, spy it and set spy to client
         webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
         client.setWebServiceTemplate(webServiceTemplate);
@@ -166,7 +163,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
 
     private void initClientWithoutHealthCheck() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, null, TTL_S);
+        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, TTL_S) {};
         // Get get WebServiceTemplate, spy it and set spy to client
         webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
         client.setWebServiceTemplate(webServiceTemplate);

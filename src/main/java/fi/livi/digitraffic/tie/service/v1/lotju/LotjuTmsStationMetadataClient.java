@@ -44,8 +44,9 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
                                          @Value("${metadata.server.addresses}") final String[] serverAddresses,
                                          @Value("${metadata.server.path.health:#{null}}") final String healthPath,
                                          @Value("${metadata.server.path.tms}") final String dataPath,
-                                         @Value("${metadata.server.health.ttlInSeconds:#{30}}") final int healthTTLSeconds) {
-        super(lamMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds);
+                                         @Value("${metadata.server.health.ttlInSeconds:#{30}}") final int healthTTLSeconds,
+                                         @Value("${metadata.server.health.value}") final String healtOkValue) {
+        super(lamMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds, healtOkValue);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)

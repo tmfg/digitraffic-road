@@ -22,6 +22,7 @@ metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v4
 metadata.server.path.image = /LOTJU/KameraKuvavarasto
 metadata.server.health.ttlInSeconds = 30
 metadata.server.image.ttlInSeconds = 10
+metadata.server.health.value=ok!
 
 # Job schedules in ms or by cron in UTC
 # Cron: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html
