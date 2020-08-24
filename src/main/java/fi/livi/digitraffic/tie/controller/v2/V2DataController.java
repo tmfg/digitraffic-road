@@ -8,19 +8,16 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.DataController.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
-
 import static java.time.temporal.ChronoUnit.HOURS;
-
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,28 +37,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
-
-import fi.livi.digitraffic.tie.service.v1.WeatherService;
-
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingTaskDto;
-
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
+import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
@@ -250,6 +244,27 @@ public class V2DataController {
         final ZonedDateTime to) {
 
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
+    }
+
+    @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/changes", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera history changes"))
+    public CameraHistoryChangesDto getCameraOrPresetHistoryChanges(
+
+        @ApiParam(value = "Camera or preset id(s)")
+        @RequestParam(value = "id", required = false)
+        final List<String> cameraOrPresetIds,
+
+        @ApiParam(value = "Return changes int the history after given time. Given time must be within 24 hours.", required = true)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        @RequestParam
+        final ZonedDateTime after) {
+
+        if (after.plus(24, HOURS).isBefore(ZonedDateTime.now())) {
+            throw new IllegalArgumentException("Given time must be within 24 hours.");
+        }
+
+        return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
