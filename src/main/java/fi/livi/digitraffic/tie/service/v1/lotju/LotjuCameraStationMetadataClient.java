@@ -37,7 +37,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
     @Autowired
     public LotjuCameraStationMetadataClient(@Qualifier("kameraMetadataJaxb2Marshaller")
-                                            Jaxb2Marshaller kameraMetadataJaxb2Marshaller,
+                                            final Jaxb2Marshaller kameraMetadataJaxb2Marshaller,
                                             @Value("${metadata.server.addresses}") final String[] serverAddresses,
                                             @Value("${metadata.server.path.health:#{null}}") final String healthPath,
                                             @Value("${metadata.server.path.camera}") final String dataPath,

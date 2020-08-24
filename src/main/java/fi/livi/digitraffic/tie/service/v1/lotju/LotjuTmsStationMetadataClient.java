@@ -40,7 +40,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @Autowired
     public LotjuTmsStationMetadataClient(@Qualifier("lamMetadataJaxb2Marshaller")
-                                         Jaxb2Marshaller lamMetadataJaxb2Marshaller,
+                                         final Jaxb2Marshaller lamMetadataJaxb2Marshaller,
                                          @Value("${metadata.server.addresses}") final String[] serverAddresses,
                                          @Value("${metadata.server.path.health:#{null}}") final String healthPath,
                                          @Value("${metadata.server.path.tms}") final String dataPath,
