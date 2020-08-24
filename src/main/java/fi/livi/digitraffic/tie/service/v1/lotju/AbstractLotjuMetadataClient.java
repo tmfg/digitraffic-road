@@ -24,9 +24,9 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
      * @param healthTtlSeconds How long is health status valid
      */
     public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String dataPath, final String healthPath,
-                                       final int healthTtlSeconds, final String healtOkValue) {
+                                       final int healthTtlSeconds, final String healthOkValue) {
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
-        setDestinationProvider(new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds, healtOkValue)));
+        setDestinationProvider(new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds, healthOkValue)));
 
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);

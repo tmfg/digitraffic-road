@@ -31,7 +31,7 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
     protected final static String[] baseUrls = { baseUrl1, baseUrl2 };
     protected final static String healthPath = "/health";
     protected final static String dataPath = "/data";
-    protected final static String healtOkValue = "ok!";
+    protected final static String healthOkValue = "ok!";
 
     protected final static String dataUrl1 = baseUrl1 + dataPath;
     protected final static String dataUrl2 = baseUrl2 + dataPath;
@@ -48,7 +48,7 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
     public WireMockRule wireMockRule2 = new WireMockRule(wireMockConfig().port(RANDOM_PORT2), true);
 
     protected MultiDestinationProvider createMultiDestinationProvider() {
-        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S, healtOkValue));
+        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S, healthOkValue));
     }
 
     protected MultiDestinationProvider createMultiDestinationProviderWithoutHealthCheck() {

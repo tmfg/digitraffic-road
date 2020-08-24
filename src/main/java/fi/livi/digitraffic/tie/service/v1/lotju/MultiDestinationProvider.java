@@ -26,6 +26,9 @@ public class MultiDestinationProvider implements DestinationProvider {
 
     @Override
     public URI getDestination() {
+        if (hosts.size() == 1) {
+            return hosts.get(0).getDataUrl();
+        }
         for (HostWithHealthCheck host : hosts) {
             if ( host.doHealthCheck() ) {
                 return host.getDataUrl();

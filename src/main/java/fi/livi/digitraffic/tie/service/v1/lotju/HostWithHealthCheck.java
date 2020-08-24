@@ -23,7 +23,7 @@ public class HostWithHealthCheck {
     private final String baseUrl;
     private final String healthUrl;
     private final int healthTtlSeconds;
-    private final String healtOkValue;
+    private final String healthOkValue;
 
     private boolean healthy = true;
     private Instant nextHealthCheckTime = Instant.now();
@@ -35,10 +35,10 @@ public class HostWithHealthCheck {
      * @param healthPath ie. /healthcheck. If empty no healt check is performed
      * @param healthTtlSeconds Health check time to live
      */
-    public HostWithHealthCheck(final String baseUrl, final String dataPath, final String healthPath, int healthTtlSeconds, final String healtOkValue) {
+    public HostWithHealthCheck(final String baseUrl, final String dataPath, final String healthPath, int healthTtlSeconds, final String healthOkValue) {
         this.baseUrl = baseUrl;
         this.healthTtlSeconds = healthTtlSeconds;
-        this.healtOkValue = healtOkValue;
+        this.healthOkValue = healthOkValue;
         this.healthUrl = StringUtils.isNotEmpty(healthPath) ? (baseUrl + healthPath) : null;
         this.dataUrl = URI.create(baseUrl + dataPath);
         restTemplate = RestTemplateConfiguration.createRestTemplate(10, 10);
@@ -49,11 +49,12 @@ public class HostWithHealthCheck {
         if (StringUtils.isBlank(dataPath)) {
             throw new IllegalArgumentException(String.format("Param dataPath:\"%s\" can't be empty value", dataPath));
         }
-        if (StringUtils.isNotBlank(healthUrl) && StringUtils.isBlank(healtOkValue)) {
-            throw new IllegalArgumentException(String.format("Param healtOkValue:\"%s\" can't be empty value", healtOkValue));
+        if (StringUtils.isNotBlank(healthUrl) && StringUtils.isBlank(healthOkValue)) {
+            throw new IllegalArgumentException(String.format("Param healthOkValue:\"%s\" can't be empty value", healthOkValue));
         }
 
-        log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healtOkValue={}", healthUrl, dataUrl.toString(), healthTtlSeconds, healtOkValue);
+        log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healFtOkValue={}", healthUrl, dataUrl.toString(), healthTtlSeconds,
+            healthOkValue);
     }
 
     /**
@@ -74,12 +75,14 @@ public class HostWithHealthCheck {
 
         final String healthString = doRequestHealthString();
 
-        if ( StringUtils.trimToEmpty(healthString).equalsIgnoreCase(healtOkValue) ) {
-            log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true", healthUrl, dataUrl, healthString, healtOkValue);
+        if ( StringUtils.trimToEmpty(healthString).equalsIgnoreCase(healthOkValue) ) {
+            log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true", healthUrl, dataUrl, healthString,
+                healthOkValue);
             setHealthy(true);
             return true;
         }
-        log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=false", healthUrl, dataUrl, healthString, healtOkValue);
+        log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=false", healthUrl, dataUrl, healthString,
+            healthOkValue);
         setHealthy(false);
         return false;
     }
@@ -115,12 +118,12 @@ public class HostWithHealthCheck {
         return dataUrl;
     }
 
-    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String dataPath, final String healthPath, final int healthTtlSeconds, final String healtOkValue) {
+    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String dataPath, final String healthPath, final int healthTtlSeconds, final String healthOkValue) {
         if ( baseUrls == null || baseUrls.length == 0 ) {
             throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", Arrays.toString(baseUrls)));
         }
         return Arrays.stream(baseUrls)
-            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, healthPath, healthTtlSeconds, healtOkValue))
+            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, healthPath, healthTtlSeconds, healthOkValue))
             .collect(Collectors.toList());
     }
 }

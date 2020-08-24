@@ -42,8 +42,8 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
                                             @Value("${metadata.server.path.health:#{null}}") final String healthPath,
                                             @Value("${metadata.server.path.camera}") final String dataPath,
                                             @Value("${metadata.server.health.ttlInSeconds:#{30}}") final int healthTTLSeconds,
-                                            @Value("${metadata.server.health.value}") final String healtOkValue) {
-        super(kameraMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds, healtOkValue);
+                                            @Value("${metadata.server.health.value}") final String healthOkValue) {
+        super(kameraMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds, healthOkValue);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)

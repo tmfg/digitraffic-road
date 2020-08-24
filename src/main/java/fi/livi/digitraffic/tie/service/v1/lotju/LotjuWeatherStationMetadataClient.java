@@ -39,8 +39,8 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
                                              @Value("${metadata.server.path.health:#{null}}") final String healthPath,
                                              @Value("${metadata.server.path.weather}") final String dataPath,
                                              @Value("${metadata.server.health.ttlInSeconds:#{30}}") final int healthTTLSeconds,
-                                             @Value("${metadata.server.health.value}") final String healtOkValue) {
-        super(tiesaaMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds, healtOkValue);
+                                             @Value("${metadata.server.health.value}") final String healthOkValue) {
+        super(tiesaaMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds, healthOkValue);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
