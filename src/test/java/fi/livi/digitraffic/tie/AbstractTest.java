@@ -21,6 +21,9 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Assert;
+import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -48,6 +51,8 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 })
 public abstract class AbstractTest {
 
+    private static final Logger log = LoggerFactory.getLogger(AbstractTest.class);
+
     @Autowired
     protected ResourceLoader resourceLoader;
 
@@ -57,9 +62,16 @@ public abstract class AbstractTest {
     @PersistenceContext
     protected EntityManager entityManager;
 
+    public static final int LOTJU_SERVICE_RANDOM_PORT = (int) RandomUtils.nextLong(6000,7000);
+
     protected static final int MIN_LOTJU_ID = 10000;
     protected static final int MAX_LOTJU_ID = 99999;
     protected static final String PRESET_PRESENTATION_NAME = "PresentationName";
+
+    @Before
+    public void logSettings() {
+        log.info("LOTJU_SERVICE_RANDOM_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
+    }
 
     protected Path getPath(final String filename) {
         return new File(getClass().getResource(filename).getFile()).toPath();
@@ -69,7 +81,7 @@ public abstract class AbstractTest {
         return Arrays.asList(ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(pattern));
     }
 
-    protected Resource loadResource(final String pattern) throws IOException {
+    protected Resource loadResource(final String pattern) {
         return resourceLoader.getResource(pattern);
     }
 

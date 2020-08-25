@@ -37,9 +37,13 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
     @Autowired
     public LotjuCameraStationMetadataClient(@Qualifier("kameraMetadataJaxb2Marshaller")
-                                            Jaxb2Marshaller kameraMetadataJaxb2Marshaller,
-                                            @Value("${metadata.server.address.camera}") final String cameraMetadataServerAddress) {
-        super(kameraMetadataJaxb2Marshaller, cameraMetadataServerAddress, log);
+                                            final Jaxb2Marshaller kameraMetadataJaxb2Marshaller,
+                                            @Value("${metadata.server.addresses}") final String[] serverAddresses,
+                                            @Value("${metadata.server.path.health:#{null}}") final String healthPath,
+                                            @Value("${metadata.server.path.camera}") final String dataPath,
+                                            @Value("${metadata.server.health.ttlInSeconds:#{30}}") final int healthTTLSeconds,
+                                            @Value("${metadata.server.health.value}") final String healthOkValue) {
+        super(kameraMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds, healthOkValue);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
@@ -48,7 +52,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
+                marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
         log.info("cameraFetchedCount={} Cameras tookMs={}", response.getValue().getKamerat().size(), start.getTime());
         return response.getValue().getKamerat();
     }
@@ -62,30 +66,30 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
         final JAXBElement<HaeEsiasennotKameranTunnuksellaResponse> haeEsiasennotResponse =
                 (JAXBElement<HaeEsiasennotKameranTunnuksellaResponse>)
-                        getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
+                        marshalSendAndReceive(objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
         return haeEsiasennotResponse.getValue().getEsiasennot();
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 5000)
+    @PerformanceMonitor()
     @Retryable(maxAttempts = 5)
     public KameraVO getKamera(final long lotjuId) {
         final HaeKamera request = new HaeKamera();
         request.setId(lotjuId);
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKameraResponse> response = (JAXBElement<HaeKameraResponse>)
-            getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKamera(request));
+            marshalSendAndReceive(objectFactory.createHaeKamera(request));
         log.info("Fetched cameraLotjuId={} tookMs={}", lotjuId, start.getTime());
         return response.getValue().getKamera();
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 5000)
+    @PerformanceMonitor()
     @Retryable(maxAttempts = 5)
     public EsiasentoVO getEsiasento(final long lotjuId) {
         final HaeEsiasento request = new HaeEsiasento();
         request.setId(lotjuId);
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeEsiasentoResponse> response = (JAXBElement<HaeEsiasentoResponse>)
-            getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeEsiasento(request));
+            marshalSendAndReceive(objectFactory.createHaeEsiasento(request));
         log.info("Fetched cameraPresetLotjuId={} tookMs={}", lotjuId, start.getTime());
         return response.getValue().getEsiasento();
     }

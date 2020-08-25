@@ -89,7 +89,9 @@ public class V2MaintenanceTrackingUpdateService {
             final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
             final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
             v2MaintenanceTrackingDataRepository.save(tracking);
-            log.debug("method=saveMaintenanceTrackingData jsonData={}", json);
+            if (log.isDebugEnabled()) {
+                log.debug("method=saveMaintenanceTrackingData jsonData: {}", json);
+            }
         } catch (Exception e) {
             log.error("method=saveMaintenanceTrackingData failed ", e);
             throw new RuntimeException(e);

@@ -13,10 +13,16 @@ mqtt.server.url=tcp://localhost:1883
 mqtt.server.username=updater
 mqtt.server.password=updater
 
-# Lotju SOAP APIs
-metadata.server.address.tms=http://localhost:9011/LOTJU/LAMMetatiedot/v5
-metadata.server.address.camera=http://localhost:9011/LOTJU/KameraPerustiedot/v7
-metadata.server.address.weather=http://localhost:9011/LOTJU/TiesaaPerustiedot/v4
+# Lotju SOAP APIs. If health is empty then health check is not performed.
+metadata.server.addresses=http://localhost:9011
+metadata.server.path.health=/healthcheck
+metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5
+metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
+metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v4
+metadata.server.path.image = /LOTJU/KameraKuvavarasto
+metadata.server.health.ttlInSeconds = 30
+metadata.server.image.ttlInSeconds = 10
+metadata.server.health.value=ok!
 
 # Job schedules in ms or by cron in UTC
 # Cron: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html

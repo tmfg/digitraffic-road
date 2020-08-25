@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +29,6 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestPrope
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingProperties;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.metadata.geojson.LineString;
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
@@ -85,7 +82,7 @@ public class V2MaintenanceTrackingDataService {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endTimefrom, final Instant endTimeto,
+    public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeTo,
                                                                          final double xMin, final double yMin,
                                                                          final double xMax, final double yMax,
                                                                          final List<MaintenanceTrackingTask> taskIds) {
@@ -97,11 +94,11 @@ public class V2MaintenanceTrackingDataService {
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTracking> found = taskIds == null || taskIds.isEmpty() ?
                                                 v2MaintenanceTrackingRepository
-                                                    .findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area) :
+                                                    .findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area) :
                                                 v2MaintenanceTrackingRepository
-                                                    .findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, taskIds);
+                                                    .findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, taskIds);
         log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
-            xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
+            xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), start.getTime());
         final List<MaintenanceTrackingFeature> features = convertToTrackingFeatures(found);
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
     }

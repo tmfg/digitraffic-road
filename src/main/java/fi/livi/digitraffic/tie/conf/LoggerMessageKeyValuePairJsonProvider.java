@@ -87,6 +87,10 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
     }
 
     private static String stripXmlTags(final String message) {
+        if (StringUtils.contains(message, "healthCheckValue=")) {
+            // Can be ie. healthCheckValue=<status>ok</status>
+            return message;
+        }
         return tagsPattern.matcher(message).replaceAll(" ");
     }
 }

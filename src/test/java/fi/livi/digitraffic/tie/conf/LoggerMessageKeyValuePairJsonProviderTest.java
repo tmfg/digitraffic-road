@@ -55,6 +55,13 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
     }
 
     @Test
+    public void simpleKeyValuePair3() throws IOException {
+        final String result = sendEventWithFormatedMessageAndReturnResultJson("healthCheckValue=<status>ok</status>");
+        Assert.assertEquals("{\"healthCheckValue\":\"<status>ok</status>\"}", result);
+    }
+
+
+    @Test
     public void simpleKeyValuePair2() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("  \n  \t    foo=bar     \n   ");
         Assert.assertEquals("{\"foo\":\"bar\"}", result);

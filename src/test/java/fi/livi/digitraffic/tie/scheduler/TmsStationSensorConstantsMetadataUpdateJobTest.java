@@ -6,20 +6,25 @@ import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantDto;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantRootDto;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
 import fi.livi.digitraffic.tie.service.v1.TmsDataService;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 
-public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
+    private static final Logger log = LoggerFactory.getLogger(RoadStationStatusesUpdateJobTest.class);
     private static final String MS1 = "MS1";
     private static final String MS2 = "MS2";
     private static final String VVAPAAS1 = "VVAPAAS1";
@@ -37,6 +42,19 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractDaem
 
     @Autowired
     private LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceMock;
+
+    @Autowired
+    private LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
+
+    @Before
+    public void setFirstDestinationProviderForLotjuClients() {
+        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuTmsStationMetadataClient);
+    }
+
+    @After
+    public void restoreOriginalDestinationProviderForLotjuClients() {
+        restoreLotjuClientDestinationProvider(lotjuTmsStationMetadataClient);
+    }
 
     @Test
     public void testUpdateTmsStationsSensorConstants() {

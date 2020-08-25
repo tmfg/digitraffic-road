@@ -1,15 +1,11 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
@@ -22,19 +18,12 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotE
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotEndpointImplService;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotException;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
-import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.ObjectFactory;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.VideopalvelinVO;
 
 public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpointMock implements KameraPerustiedotEndpoint {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuKameraPerustiedotServiceEndpointMock.class);
     private static LotjuKameraPerustiedotServiceEndpointMock instance;
     private static final String LOTJU_KAMERA_RESOURCE_PATH = "lotju/kamera/";
-
-    private List<KameraVO> initialKameras;
-    private List<KameraVO> afterChangeKameras;
-    private Map<Long, List<EsiasentoVO>> initialEsiasentos = new HashMap<>();
-    private Map<Long, List<EsiasentoVO>> afterChangeEsiasentos = new HashMap<>();
 
     public static LotjuKameraPerustiedotServiceEndpointMock getInstance(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
                                                                         final Jaxb2Marshaller jaxb2Marshaller) {
@@ -51,13 +40,8 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     }
 
     @Override
-    protected Class<?> getObjectFactoryClass() {
-        return ObjectFactory.class;
-    }
-
-    @Override
     public void initStateAndService() {
-        if (!isInited()) {
+        if (isNotInited()) {
             initService();
         }
         setStateAfterChange(false);
@@ -71,17 +55,17 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     }
 
     @Override
-    public List<KameraVO> haeKameratVideopalvelimenTunnuksella(final Long id) throws KameraPerustiedotException {
+    public List<KameraVO> haeKameratVideopalvelimenTunnuksella(final Long id) {
         throw new NotImplementedException("haeKameratVideopalvelimenTunnuksella");
     }
 
     @Override
-    public VideopalvelinVO haeVideopalvelin(final Long id) throws KameraPerustiedotException {
+    public VideopalvelinVO haeVideopalvelin(final Long id) {
         throw new NotImplementedException("haeVideopalvelin");
     }
 
     @Override
-    public List<EsiasentoVO> haeEsiasennotKameranTunnuksella(final Long id) throws KameraPerustiedotException {
+    public List<EsiasentoVO> haeEsiasennotKameranTunnuksella(final Long id) {
         HaeEsiasennotKameranTunnuksellaResponse response = readLotjuSoapResponse(HaeEsiasennotKameranTunnuksellaResponse.class, id);
         if (response != null) {
             return response.getEsiasennot();
@@ -90,22 +74,22 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     }
 
     @Override
-    public EsiasentoVO haeEsiasento(final Long id) throws KameraPerustiedotException {
+    public EsiasentoVO haeEsiasento(final Long id) {
         throw new NotImplementedException("haeEsiasento");
     }
 
     @Override
-    public KameraKokoonpanoVO haeKokoonpanoKameranTunnuksella(final Long id) throws KameraPerustiedotException {
+    public KameraKokoonpanoVO haeKokoonpanoKameranTunnuksella(final Long id) {
         throw new NotImplementedException("haeKokoonpanoKameranTunnuksella");
     }
 
     @Override
-    public KameraVO muutaKameranJulkisuus(Long id, JulkisuusTaso julkisuusTaso, XMLGregorianCalendar alkaen) throws KameraPerustiedotException {
+    public KameraVO muutaKameranJulkisuus(Long id, JulkisuusTaso julkisuusTaso, XMLGregorianCalendar alkaen) {
         throw new NotImplementedException("haeKameratVideopalvelimenTunnuksella");
     }
 
     @Override
-    public List<KameraVO> haeKaikkiKamerat() throws KameraPerustiedotException {
+    public List<KameraVO> haeKaikkiKamerat() {
         HaeKaikkiKameratResponse response = readLotjuSoapResponse(HaeKaikkiKameratResponse.class);
         if (response != null) {
             return response.getKamerat();
@@ -114,12 +98,12 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     }
 
     @Override
-    public List<VideopalvelinVO> haeKaikkiVideopalvelimet() throws KameraPerustiedotException {
+    public List<VideopalvelinVO> haeKaikkiVideopalvelimet() {
         throw new NotImplementedException("haeKaikkiVideopalvelimet");
     }
 
     @Override
-    public EsiasentoVO muuttaaEsiasennonJulkisuus(Long id, boolean julkinen) throws KameraPerustiedotException {
+    public EsiasentoVO muuttaaEsiasennonJulkisuus(Long id, boolean julkinen) {
         throw new NotImplementedException("muuttaaEsiasennonJulkisuus");
     }
 }

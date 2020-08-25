@@ -25,8 +25,8 @@ public class LotjuCameraStationMetadataService {
         this.lotjuCameraStationClient = lotjuCameraStationClient;
     }
 
-    public Set<Long> getKamerasLotjuids() {
-        return lotjuCameraStationClient.getKameras().stream().map(AbstractVO::getId).collect(Collectors.toSet());
+    public List<KameraVO> getKameras() {
+        return lotjuCameraStationClient.getKameras();
     }
 
     public KameraVO getKamera(final long kameraLotjuId) {

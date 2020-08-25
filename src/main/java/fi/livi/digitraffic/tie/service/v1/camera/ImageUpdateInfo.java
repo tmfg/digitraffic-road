@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
+
 import java.time.ZonedDateTime;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -33,7 +35,7 @@ public class ImageUpdateInfo {
     ImageUpdateInfo(final String presetId, final ZonedDateTime lastUpdated) {
         this.presetId = presetId;
         this.lastUpdated = lastUpdated;
-        this.updateTime = DateHelper.getZonedDateTimeNowAtUtc();
+        this.updateTime = getZonedDateTimeNowAtUtc();
     }
 
     public String getPresetId() {

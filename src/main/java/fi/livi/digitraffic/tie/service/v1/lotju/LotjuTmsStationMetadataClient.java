@@ -40,9 +40,13 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @Autowired
     public LotjuTmsStationMetadataClient(@Qualifier("lamMetadataJaxb2Marshaller")
-                                         Jaxb2Marshaller lamMetadataJaxb2Marshaller,
-                                         @Value("${metadata.server.address.tms}") final String tmsMetadataServerAddress) {
-        super(lamMetadataJaxb2Marshaller, tmsMetadataServerAddress, log);
+                                         final Jaxb2Marshaller lamMetadataJaxb2Marshaller,
+                                         @Value("${metadata.server.addresses}") final String[] serverAddresses,
+                                         @Value("${metadata.server.path.health:#{null}}") final String healthPath,
+                                         @Value("${metadata.server.path.tms}") final String dataPath,
+                                         @Value("${metadata.server.health.ttlInSeconds:#{30}}") final int healthTTLSeconds,
+                                         @Value("${metadata.server.health.value}") final String healthOkValue) {
+        super(lamMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds, healthOkValue);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
@@ -53,7 +57,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
         log.info("Fetching LamAsemas");
         final JAXBElement<HaeKaikkiLAMAsematResponse> response = (JAXBElement<HaeKaikkiLAMAsematResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
+                marshalSendAndReceive(objectFactory.createHaeKaikkiLAMAsemat(request));
         log.info("lamFetchedCount={} LamAsemas", response.getValue().getAsemat().size());
         return response.getValue().getAsemat();
     }
@@ -65,7 +69,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         final HaeLAMAsemanLaskennallisetAnturit request = new HaeLAMAsemanLaskennallisetAnturit();
         request.setId(lamAsemaLotjuId);
         final JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse> response = (JAXBElement<HaeLAMAsemanLaskennallisetAnturitResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
+                marshalSendAndReceive(objectFactory.createHaeLAMAsemanLaskennallisetAnturit(request));
         return response.getValue().getLamlaskennallisetanturit();
     }
 
@@ -75,7 +79,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         final HaeKaikkiLAMLaskennallisetAnturit request = new HaeKaikkiLAMLaskennallisetAnturit();
         log.info("Fetching LAMLaskennallisetAnturis");
         final JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
+                marshalSendAndReceive(objectFactory.createHaeKaikkiLAMLaskennallisetAnturit(request));
         log.info("lamFetchedCount={} LAMLaskennallisetAnturis", response.getValue().getLaskennallinenAnturi().size());
         return response.getValue().getLaskennallinenAnturi();
     }
@@ -89,7 +93,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
         final JAXBElement<HaeAsemanAnturiVakioResponse> haeAsemanAnturiVakioResponse =
             (JAXBElement< HaeAsemanAnturiVakioResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeAsemanAnturiVakio(haeAsemanAnturiVakioRequest));
+                marshalSendAndReceive(objectFactory.createHaeAsemanAnturiVakio(haeAsemanAnturiVakioRequest));
         return haeAsemanAnturiVakioResponse.getValue().getLamanturivakiot();
     }
 
@@ -103,7 +107,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
         final JAXBElement<HaeKaikkiAnturiVakioArvotResponse> haeKaikkiAnturiVakioArvotResponse =
             (JAXBElement<HaeKaikkiAnturiVakioArvotResponse>)
-                getWebServiceTemplate().marshalSendAndReceive(objectFactory.createHaeKaikkiAnturiVakioArvot(haeKaikkiAnturiVakioArvotRequest));
+                marshalSendAndReceive(objectFactory.createHaeKaikkiAnturiVakioArvot(haeKaikkiAnturiVakioArvotRequest));
         return haeKaikkiAnturiVakioArvotResponse.getValue().getLamanturivakiot();
     }
 

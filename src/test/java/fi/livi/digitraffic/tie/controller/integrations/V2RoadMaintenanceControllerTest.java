@@ -188,11 +188,11 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         );
 
         System.out.println("1:");
-        System.out.println(CoordinateConverter.convertLineStringFromWGS84ToETRS89(list1));
+        System.out.println(CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89LineString(list1));
         System.out.println("2:");
-        System.out.println(CoordinateConverter.convertLineStringFromWGS84ToETRS89(list2));
+        System.out.println(CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89LineString(list2));
         System.out.println("3:");
-        System.out.println(CoordinateConverter.convertLineStringFromWGS84ToETRS89(list3));
+        System.out.println(CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89LineString(list3));
     }
 
 }

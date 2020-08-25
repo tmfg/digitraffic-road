@@ -16,20 +16,25 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithLineString;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkmachine;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskWithIndex;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +54,16 @@ import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 
 @Import({ V2MaintenanceTrackingUpdateService.class, JacksonAutoConfiguration.class,
           V2MaintenanceTrackingServiceTestHelper.class, V2MaintenanceTrackingDataService.class })
 public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
+
+    final static Pair<Double, Double> BOUNDING_BOX_X_RANGE = Pair.of(20.0, 30.0);
+    final static Pair<Double, Double> BOUNDING_BOX_Y_RANGE = Pair.of(64.0, 66.0);
+    final static Pair<Double, Double> BOUNDING_BOX_CENTER = Pair.of(25.0, 65.0);
 
     @Autowired
     private V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
@@ -87,7 +97,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertCollectionSize(machineCount, features);
 
         final Set<Long> workMachineUniqueIds = new HashSet<>();
-        features.stream().forEach(t -> {
+        features.forEach(t -> {
             final MaintenanceTrackingProperties properties = t.getProperties();
             // 10 observations points for each observation
             assertEquals(10*2, t.getGeometry().getCoordinates().size());
@@ -128,7 +138,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, endTime).features;
         assertCollectionSize(machineCount, features);
 
-        features.stream().forEach(t -> {
+        features.forEach(t -> {
             // 10 observations for each
             final MaintenanceTrackingProperties properties = t.getProperties();
             assertEquals(5*10, t.getGeometry().getCoordinates().size());
@@ -176,7 +186,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             final List<MaintenanceTrackingFeature> features =
                 findMaintenanceTrackings(startTime, endTime, getTaskWithIndex(idx)).features;
             assertCollectionSize(machineCount, features);
-            features.stream().forEach(f -> assertEquals(getTaskSetWithIndex(idx), f.getProperties().tasks));
+            features.forEach(f -> assertEquals(getTaskSetWithIndex(idx), f.getProperties().tasks));
         });
     }
 
@@ -293,11 +303,148 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         features.forEach(f -> {
             final Set<MaintenanceTrackingTask> tasks = f.getProperties().tasks;
             if (tasks.size() == 2) {
-                assertEquals(new HashSet<>(Arrays.asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING)), tasks);
+                assertEquals(new HashSet<>(asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING)), tasks);
             } else {
-                assertEquals(new HashSet<>(Arrays.asList(PAVING)), tasks);
+                assertEquals(new HashSet<>(singletonList(PAVING)), tasks);
             }
         });
+    }
+
+    /**
+     *      | - linestring
+     * –––––|––––-
+     * |    |    | - bounding box
+     * |    |    |
+     * –––––|-----
+     *      |
+     */
+    @Test
+    public void findMaintenanceTrackingWithLinestringCrossingWithBoundingBox() throws JsonProcessingException {
+        final Tyokone workMachine = createWorkmachine(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+
+        final Pair<Double, Double> xRange = Pair.of(20.0, 30.0);
+        final Pair<Double, Double> yRange = Pair.of(64.0, 66.0);
+
+        List<List<Double>> fromWGS84 = asList(
+            asList(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()-10),
+            asList(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()+10)
+        );
+
+        final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
+
+        testHelper.saveTrackingData(
+            V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
+
+        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        Assert.assertEquals(1, handled);
+
+        final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            startTime.toInstant(), startTime.toInstant(),
+            BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
+            Collections.emptyList());
+        Assert.assertEquals(1, result.features.size());
+        final MaintenanceTrackingProperties props = result.features.get(0).getProperties();
+
+        Assert.assertEquals(startTime, props.startTime);
+        Assert.assertEquals(startTime, props.endTime);
+    }
+
+    /**
+     *                          | - linestring
+     *                –––––––––-|
+     * bounding box - |        ||
+     *                |        ||
+     *                –––––––––-|
+     *                          |
+     */
+    @Test
+    public void findMaintenanceTrackingWithLinestringNotCrossingWithBoundingBox() throws JsonProcessingException {
+        final Tyokone workMachine = createWorkmachine(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+
+        List<List<Double>> fromWGS84 = asList(
+            asList(BOUNDING_BOX_X_RANGE.getRight() + 0.1, BOUNDING_BOX_Y_RANGE.getLeft() - 10),
+            asList(BOUNDING_BOX_X_RANGE.getRight() + 0.1, BOUNDING_BOX_Y_RANGE.getRight() + 10)
+        );
+
+        final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
+
+        testHelper.saveTrackingData(
+            V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
+
+        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        Assert.assertEquals(1, handled);
+
+        final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            startTime.toInstant(), startTime.toInstant(),
+            BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
+            Collections.emptyList());
+        Assert.assertEquals(0, result.features.size());
+    }
+
+    /**
+     * ––––––––––-
+     * |  point  | - bounding box
+     * |    `    |
+     * ––––––-----
+     */
+    @Test
+    public void findMaintenanceTrackingWithPointInsideBoundingBox() throws JsonProcessingException {
+        final Tyokone workMachine = createWorkmachine(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+
+        List<List<Double>> fromWGS84 = singletonList(
+            asList(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_CENTER.getRight())
+        );
+
+        final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
+
+        testHelper.saveTrackingData(
+            V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
+
+        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        Assert.assertEquals(1, handled);
+
+        final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            startTime.toInstant(), startTime.toInstant(),
+            BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
+            Collections.emptyList());
+        Assert.assertEquals(1, result.features.size());
+        final MaintenanceTrackingProperties props = result.features.get(0).getProperties();
+
+        Assert.assertEquals(startTime, props.startTime);
+        Assert.assertEquals(startTime, props.endTime);
+    }
+
+    /**
+     * ––––––––––-
+     * |         | - bounding box
+     * |         |` - point
+     * ––––––-----
+     */
+    @Test
+    public void findMaintenanceTrackingWithPointOutsideBoundingBox() throws JsonProcessingException {
+        final Tyokone workMachine = createWorkmachine(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+
+        List<List<Double>> fromWGS84 = singletonList(
+            asList(BOUNDING_BOX_X_RANGE.getRight() + 0.1, BOUNDING_BOX_CENTER.getRight())
+        );
+
+        final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
+
+        testHelper.saveTrackingData(
+            V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
+
+        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        Assert.assertEquals(1, handled);
+
+        final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            startTime.toInstant(), startTime.toInstant(),
+            BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
+            Collections.emptyList());
+        Assert.assertEquals(0, result.features.size());
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
@@ -305,7 +452,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
-            Arrays.asList(tasks));
+            asList(tasks));
     }
 
     private MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
@@ -313,11 +460,11 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
-            Arrays.asList(tasks));
+            asList(tasks));
     }
 
     private void assertAllHasOnlyPointGeometries(final List<MaintenanceTrackingLatestFeature> features) {
-        features.stream().forEach(f -> assertEquals(Point, f.getGeometry().getType()));
+        features.forEach(f -> assertEquals(Point, f.getGeometry().getType()));
     }
 
 }

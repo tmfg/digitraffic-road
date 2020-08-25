@@ -25,6 +25,8 @@ public class V2MaintenanceTrackingJobConfiguration {
 
     private final static String LOCK_NAME = "V2MaintenanceTrackingJobConfiguration";
 
+    private final static int MAX_HANDLE_COUNT_PER_CALL = 100;
+
     @Autowired
     public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
                                                  final LockingService lockingService) {
@@ -37,22 +39,22 @@ public class V2MaintenanceTrackingJobConfiguration {
      * from source JSON-format to db relations.
      */
     @Scheduled(fixedDelayString = "${maintenance.tracking.job.intervalMs}")
-    public void handleUnhandledMaintenanceTrackings() throws JsonProcessingException {
+    public void handleUnhandledMaintenanceTrackings() {
         final StopWatch start = StopWatch.createStarted();
-        int count = 0;
+        int count;
         int totalCount = 0;
         do {
             if ( lockingService.tryLock(LOCK_NAME, 300) ) {
                 final StopWatch startInternal = StopWatch.createStarted();
-                count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+                count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(MAX_HANDLE_COUNT_PER_CALL);
                 totalCount += count;
                 log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}", count, startInternal.getTime(), (double)startInternal.getTime() / count);
                 lockingService.unlock(LOCK_NAME);
             } else {
                 log.warn("method=handleUnhandledMaintenanceTrackings didn't get lock for updating tracking data.");
-                count = 0; // to end the loop
+                count = -1; // to end the loop
             }
-        } while (count > 0);
+        } while (count == MAX_HANDLE_COUNT_PER_CALL); // call handleUnhandledMaintenanceTrackingData until less than maximum
         log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount, start.getTime(), (double)start.getTime() / totalCount);
     }
 }
