@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -34,18 +35,89 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
 
     final LoggerMessageKeyValuePairJsonProvider provider = new LoggerMessageKeyValuePairJsonProvider();
 
-    private ByteArrayOutputStream out;
-    private JsonGenerator jsonGenerator;
-
     @Autowired
     private ObjectMapper objectMapper;
 
+    private JsonFactory factory;
+
     @Before
-    public void init() throws IOException {
-        out = new ByteArrayOutputStream();
-        final JsonFactory factory = new JsonFactory();
+    public void init() {
+        factory = new JsonFactory();
         factory.setCodec(objectMapper);
-        jsonGenerator = factory.createGenerator(out, JsonEncoding.UTF8);
+    }
+
+    private JsonGenerator createJsonGenerator(final OutputStream out) throws IOException {
+        return factory.createGenerator(out, JsonEncoding.UTF8);
+    }
+
+    final static String[] ALLOWED_KEYS = {
+        "a",
+        "a1",
+        "a-b",
+        "a_b",
+        "a.b",
+        "abc1",
+        "fi.livi",
+        "abc_def1",
+        "a.b.c123"
+    };
+
+    final static String[] NOT_ALLOWED_KEYS = {
+        "123",
+        "a..b",
+        "a__b",
+        "a--b",
+        "a_.b",
+        "a.-b",
+        "a_-b",
+        "\"",
+        "\"&",
+        "\"\\'",
+        "\"\\001",
+        "\"\\002",
+        "\"\\002y",
+        "\"xMin",
+        ",aliverkonPeite",
+        ",asemanTila",
+        ",id",
+        "19.0,violatingParameter\n",
+        "OPERATOR(pg_catalog\n",
+        "Oy,organisaatio",
+        "fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO@5fea7b58[jarjestys",
+        "Esiasento@abc",
+        "abc[jarjestys",
+        "(ka)],sijainti",
+        "(ka)",
+        "]sijainti",
+        "a]sijainti",
+        "a[sijainti",
+        "a}sijainti",
+        "a{sijainti",
+        "a)sijainti",
+        "a(sijainti",
+        "metadata-api?group",
+        "a\\/b",
+        "a/b",
+        };
+
+    @Test
+    public void allowedKeys() throws IOException {
+        for (String allowedKey : ALLOWED_KEYS) {
+            log.info("Test key {}", allowedKey);
+            final String result = sendEventWithFormatedMessageAndReturnResultJson(allowedKey + "=bar");
+            Assert.assertEquals(String.format("{\"%s\":\"bar\"}", allowedKey), result);
+        }
+
+    }
+
+    @Test
+    public void notAllowedKeys() throws IOException {
+        for (String notAllowedKey : NOT_ALLOWED_KEYS) {
+            log.info("Test key {}", notAllowedKey);
+            final String result = sendEventWithFormatedMessageAndReturnResultJson(notAllowedKey + "=bar");
+            Assert.assertEquals("{}", result);
+        }
+
     }
 
     @Test
@@ -152,6 +224,8 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
     }
 
     private String sendEventWithFormatedMessageAndReturnResultJson(final String formattedMessage) throws IOException {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final JsonGenerator jsonGenerator = createJsonGenerator(out);
         jsonGenerator.writeStartObject();
         provider.writeTo(jsonGenerator, createEvent(formattedMessage));
         jsonGenerator.writeEndObject();

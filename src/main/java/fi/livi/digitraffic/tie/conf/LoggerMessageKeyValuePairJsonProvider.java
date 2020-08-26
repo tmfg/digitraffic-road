@@ -28,6 +28,11 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
 
     private final static Splitter spaceSplitter = Splitter.on(' ').omitEmptyStrings().trimResults();
     private final static Pattern tagsPattern = Pattern.compile("[<][^>]*[>]");
+    // Must start with upper or lowwer case letter
+    // Must end with number or upper or lowwer case letter
+    // Between can be numbers, letters, one at the time of "_", "-" or "." surrounded by numbers or letters
+    private final static Pattern keyPattern = Pattern.compile("^[a-zA-Z]+([_\\.-]?[a-zA-Z0-9])*$");
+
 
     @Override
     public void writeTo(final JsonGenerator generator, final ILoggingEvent event) {
@@ -81,7 +86,7 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
             .stream()
             .map(kv -> kv.split("=")) // split message chunks by =
             // Filter empty key or value pairs
-            .filter(kv -> kv.length > 1 && StringUtils.isNotBlank(kv[0]) && StringUtils.isNotBlank(kv[1]))
+            .filter(kv -> kv.length > 1 && StringUtils.isNotBlank(kv[0]) && StringUtils.isNotBlank(kv[1]) && keyPattern.matcher(kv[0]).matches())
             .map(kv -> Pair.of(kv[0], kv[1]))
             .collect(Collectors.toList());
     }
