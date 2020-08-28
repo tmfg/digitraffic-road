@@ -30,7 +30,6 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
 import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
@@ -79,18 +78,12 @@ public class V2Datex2UpdateService {
     }
 
     private Datex2MessageDto convertToDatex2MessageDto(final ImsMessage imsMessage, final Datex2MessageType messageType) {
-        final ImsGeoJsonFeature json = convertToJsonObjectWithNullIfFailed(imsMessage.getMessageContent().getJMessage());
-        log.debug("IMS JSON: \n{}", imsMessage.getMessageContent().getJMessage());
-        final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
-        return createModelWithJson(d2, json, messageType, ZonedDateTime.now());
-    }
-
-    private ImsGeoJsonFeature convertToJsonObjectWithNullIfFailed(final String jsonMessage) {
-        try {
-            return v2Datex2HelperService.convertToJsonObject(jsonMessage);
-        } catch (Exception e) {
-            return null;
+        final String jsonValue = StringUtils.trimToNull(imsMessage.getMessageContent().getJMessage());
+        if (log.isDebugEnabled()) {
+            log.debug("IMS JSON: \n{}", jsonValue);
         }
+        final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
+        return createModelWithJson(d2, jsonValue, messageType, ZonedDateTime.now());
     }
 
     private boolean isNewOrUpdatedSituation(final D2LogicalModel d2, final Datex2MessageType messageType) {
@@ -107,28 +100,28 @@ public class V2Datex2UpdateService {
     /**
      * Expects
      * @param d2 with only one situation inside
-     * @param json simple json model object
-     * @param messageType
-     * @param importTime
+     * @param jsonValue simple json value
+     * @param messageType type of message
+     * @param importTime when was the import done
      * @return
      */
-    private Datex2MessageDto createModelWithJson(final D2LogicalModel d2, final ImsGeoJsonFeature json,
+    private Datex2MessageDto createModelWithJson(final D2LogicalModel d2, final String jsonValue,
                                                  final Datex2MessageType messageType, final ZonedDateTime importTime) {
         V2Datex2HelperService.checkD2HasOnlyOneSituation(d2);
         final SituationPublication sp = V2Datex2HelperService.getSituationPublication(d2);
         final Situation situation = sp.getSituations().get(0);
         final Instant versionTime = findSituationLatestVersionTime(situation.getId(), messageType);
-        final boolean update = versionTime != null && v2Datex2HelperService.isNewOrUpdatedSituation(versionTime, situation);
+        final boolean update = versionTime != null && V2Datex2HelperService.isNewOrUpdatedSituation(versionTime, situation);
         final boolean isNew = versionTime == null;
 
         log.info("method=createModelWithJson situationUpdated={} situationNew={}", update, isNew);
 
-        return convert(d2, sp, situation, importTime, json, messageType);
+        return convert(d2, sp, situation, importTime, jsonValue, messageType);
     }
 
     public Datex2MessageDto convert(final D2LogicalModel main, final SituationPublication sp,
                                     final Situation situation, final ZonedDateTime importTime,
-                                    final ImsGeoJsonFeature imsJson, final Datex2MessageType messageType) {
+                                    final String jsonValue, final Datex2MessageType messageType) {
         final D2LogicalModel d2 = new D2LogicalModel();
         final SituationPublication newSp = new SituationPublication();
 
@@ -142,7 +135,6 @@ public class V2Datex2UpdateService {
         d2.setPayloadPublication(newSp);
 
         final String messageValue = stringToObjectMarshaller.convertToString(d2);
-        final String jsonValue = imsJson == null ? null : v2Datex2HelperService.convertToJsonString(imsJson);
         return new Datex2MessageDto(d2, messageType, messageValue, jsonValue, importTime);
     }
 
@@ -150,7 +142,7 @@ public class V2Datex2UpdateService {
 
     /**
      *
-     * @param message
+     * @param message datex2 message
      * @return true if message was new or updated otherwise false
      */
     @Transactional
@@ -187,7 +179,7 @@ public class V2Datex2UpdateService {
     private ZonedDateTime getLatestSituationRecordVersionTime(final D2LogicalModel d2) {
         final Instant latest = V2Datex2HelperService.getSituationPublication(d2).getSituations().stream()
             .map(s -> s.getSituationRecords().stream()
-                .map(r -> r.getSituationRecordVersionTime()).max(Comparator.naturalOrder()).orElseThrow())
+                .map(SituationRecord::getSituationRecordVersionTime).max(Comparator.naturalOrder()).orElseThrow())
             .max(Comparator.naturalOrder()).orElseThrow();
         return DateHelper.toZonedDateTimeAtUtc(latest);
     }
@@ -246,8 +238,8 @@ public class V2Datex2UpdateService {
 
     /**
      * Joins comments of same language as one comment
-     * @param value
-     * @return
+     * @param value comments to join
+     * @return joined comments
      */
     private static List<SituationRecordCommentI18n> joinComments(final List<MultilingualStringValue> value) {
         if (value == null) {
@@ -264,9 +256,8 @@ public class V2Datex2UpdateService {
             i18n.setValue(StringUtils.join(i18n.getValue(), msv.getValue()));
         }
 
-        return langToCommentMap.entrySet().stream()
-            .filter(a -> !StringUtils.isBlank(a.getValue().getValue()) )
-            .map(Map.Entry::getValue)
+        return langToCommentMap.values().stream()
+            .filter(situationRecordCommentI18n -> !StringUtils.isBlank(situationRecordCommentI18n.getValue()))
             .collect(Collectors.toList());
     }
 }

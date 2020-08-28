@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,35 +12,27 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Sender's contact information", value = "ContactV2")
+@ApiModel(description = "Location to display in ETRS-TM35FIN coordinate format.", value = "LocationToDisplayV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "phone",
-    "fax",
-    "email"
+    "e",
+    "n"
 })
-public class Contact {
+public class LocationToDisplay {
 
-    @ApiModelProperty("Phone number")
-    public String phone;
+    @ApiModelProperty(value = "ETRS-TM35FIN east coordinate", required = true, position = 1)
+    public Double e;
 
-    @ApiModelProperty("Fax number")
-    public String fax;
-
-    @ApiModelProperty("Email")
-    public String email;
+    @ApiModelProperty(value = "ETRS-TM35FIN north coordinate", required = true, position = 1)
+    public Double n;
 
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<>();
 
-    public Contact() {
-    }
-
-    public Contact(String phone, String fax, String email) {
+    public LocationToDisplay(Double e, Double n) {
         super();
-        this.phone = phone;
-        this.fax = fax;
-        this.email = email;
+        this.e = e;
+        this.n = n;
     }
 
     @Override

@@ -1,8 +1,12 @@
 
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,35 +16,26 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Sender's contact information", value = "ContactV2")
+@ApiModel(description = "Location consisting of one or more areas", value = "AreaLocationV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "phone",
-    "fax",
-    "email"
+    "areas"
 })
-public class Contact {
+public class AreaLocation {
 
-    @ApiModelProperty("Phone number")
-    public String phone;
-
-    @ApiModelProperty("Fax number")
-    public String fax;
-
-    @ApiModelProperty("Email")
-    public String email;
+    @ApiModelProperty(value = "List of areas", required = true)
+    @NotNull
+    public List<Area> areas = new ArrayList<>();
 
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<>();
 
-    public Contact() {
+    public AreaLocation() {
     }
 
-    public Contact(String phone, String fax, String email) {
+    public AreaLocation(List<Area> areas) {
         super();
-        this.phone = phone;
-        this.fax = fax;
-        this.email = email;
+        this.areas = areas;
     }
 
     @Override

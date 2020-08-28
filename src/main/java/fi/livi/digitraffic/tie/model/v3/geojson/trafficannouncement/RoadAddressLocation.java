@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Location consisting of a single road point or a road segment between two road points", value="RoadAddressLocationV2")
+@ApiModel(description = "Location consisting of a single road point or a road segment between two road points", value="RoadAddressLocationV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "primaryPoint",
@@ -59,22 +59,9 @@ public class RoadAddressLocation {
         NEG,
         BOTH;
 
-        private final static Map<String, RoadAddressLocation.Direction> CONSTANTS = new HashMap<>();
-
-        static {
-            for (Direction c: values()) {
-                CONSTANTS.put(c.name(), c);
-            }
-        }
-
         @JsonCreator
-        public static Direction fromValue(String value) {
-            final Direction constant = CONSTANTS.get(value.toUpperCase());
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
+        public static Direction fromValue(final String value) {
+            return Direction.valueOf(value.toUpperCase());
         }
     }
 }

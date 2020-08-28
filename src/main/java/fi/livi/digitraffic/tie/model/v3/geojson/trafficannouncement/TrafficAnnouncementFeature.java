@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -7,7 +7,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Object", value = "TrafficAnnouncementFeatureV2")
+@ApiModel(description = "GeoJSON Feature Object", value = "TrafficAnnouncementFeatureV3")
 @JsonPropertyOrder({
     "type",
     "id",

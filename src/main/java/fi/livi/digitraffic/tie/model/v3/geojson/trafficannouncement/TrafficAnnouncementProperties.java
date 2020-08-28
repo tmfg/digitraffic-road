@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Traffic Announcement properties", value = "TrafficAnnouncementPropertiesV2")
+@ApiModel(description = "Traffic Announcement properties", value = "TrafficAnnouncementPropertiesV3")
 @JsonPropertyOrder({
     "situationId",
     "messageType",

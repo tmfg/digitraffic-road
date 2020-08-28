@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Announcement time and duration", value = "TimeAndDurationV2")
+@ApiModel(description = "Announcement time and duration", value = "TimeAndDurationV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "startTime",

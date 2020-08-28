@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.util.HashMap;
 import java.util.Map;

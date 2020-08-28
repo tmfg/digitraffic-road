@@ -7,14 +7,15 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIO
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_OPERATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_TASKS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_X;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_X_TXT;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_Y;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_Y_TXT;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
@@ -27,6 +28,7 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -42,7 +44,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.controller.v2.V2DataController;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
@@ -50,11 +51,14 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -77,18 +81,21 @@ public class BetaController {
     private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
     private final WeatherService weatherService;
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
+    private final V3Datex2DataService v3Datex2DataService;
 
     @Autowired
     public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service,
                           final V2MaintenanceRealizationDataService maintenanceRealizationDataService,
                           final WeatherService weatherService,
-                          final CameraPresetHistoryDataService cameraPresetHistoryDataService) {
+                          final CameraPresetHistoryDataService cameraPresetHistoryDataService,
+                          final V3Datex2DataService v3Datex2DataService) {
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.maintenanceRealizationDataService = maintenanceRealizationDataService;
         this.weatherService = weatherService;
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
+        this.v3Datex2DataService = v3Datex2DataService;
     }
 
 
@@ -257,5 +264,33 @@ public class BetaController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance realizations task categories"))
     public List<MaintenanceRealizationTaskCategory> findMaintenanceRealizationsTaskCategories() {
         return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
+    }
+
+    @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.json", produces = { APPLICATION_JSON_VALUE })
+    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
+    public TrafficAnnouncementFeatureCollection datex2Json(
+        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
+        @PathVariable
+        final Datex2MessageType datex2MessageType,
+        @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
+        @RequestParam(defaultValue = "0")
+        @Range(min = 0)
+        final int inactiveHours) {
+        return v3Datex2DataService.findActiveJson(inactiveHours, datex2MessageType);
+    }
+
+    @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
+    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
+                    @ApiResponse(code = 404, message = "Situation id not found") })
+    public TrafficAnnouncementFeatureCollection datex2JsonBySituationId(
+        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
+        @PathVariable
+        final Datex2MessageType datex2MessageType,
+        @ApiParam(value = "Datex2 situation id.", required = true)
+        @PathVariable
+        final String situationId) {
+        return v3Datex2DataService.findAllBySituationIdJson(situationId, datex2MessageType);
     }
 }

@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -15,12 +16,12 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "AlertC area", value = "AreaV2")
+@ApiModel(description = "AlertC area", value = "AreaV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "name",
-    "locationCode",
-    "type"
+   "name",
+   "locationCode",
+   "type"
 })
 public class Area {
 
@@ -34,7 +35,7 @@ public class Area {
 
     @ApiModelProperty(value = "The type of the area, example kaupunki, maakunta, sää-alue", required = true)
     @NotNull
-    public String type;
+    public Area.Type type;
 
     @JsonIgnore
     @Valid
@@ -43,7 +44,7 @@ public class Area {
     public Area() {
     }
 
-    public Area(final String name, final Integer locationCode, final String type) {
+    public Area(final String name, final Integer locationCode, final Type type) {
         super();
         this.name = name;
         this.locationCode = locationCode;
@@ -53,5 +54,18 @@ public class Area {
     @Override
     public String toString() {
         return ToStringHelper.toStringFull(this);
+    }
+
+    public enum Type {
+
+        MUNICIPALITY,
+        PROVINCE,
+        WEATHER_REGION,
+        COUNTRY;
+
+        @JsonCreator
+        public static Area.Type fromValue(final String value) {
+            return Type.valueOf(value.toUpperCase());
+        }
     }
 }

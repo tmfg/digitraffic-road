@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Location in road address (road number + number of the road section + distance from the beginning of the road section", value="RoadAddressV2")
+@ApiModel(description = "Location in road address (road number + number of the road section + distance from the beginning of the road section", value="RoadAddressV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "road",

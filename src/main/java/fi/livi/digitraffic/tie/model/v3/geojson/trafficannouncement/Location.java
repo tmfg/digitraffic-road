@@ -1,5 +1,5 @@
 
-package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
+package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "AlertC location of a traffic situation announcement", value="LocationV2")
+@ApiModel(description = "AlertC location of a traffic situation announcement", value="LocationV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "countryCode",
@@ -36,7 +36,7 @@ public class Location {
     @NotNull
     public String locationTableVersion;
 
-    @ApiModelProperty(value = "Textual representation of the location", required = true)
+    @ApiModelProperty(value = "Textual representation of the location", required = true)    @NotNull
     public String description;
 
     @JsonIgnore
@@ -45,7 +45,7 @@ public class Location {
     public Location() {
     }
 
-    public Location(Integer countryCode, Integer locationTableNumber, String locationTableVersion, String description) {
+    public Location(final Integer countryCode, final Integer locationTableNumber, final String locationTableVersion, final String description) {
         super();
         this.countryCode = countryCode;
         this.locationTableNumber = locationTableNumber;

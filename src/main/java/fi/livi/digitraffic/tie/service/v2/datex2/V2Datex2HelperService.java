@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.v2.datex2;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -16,12 +17,16 @@ import javax.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
@@ -29,51 +34,54 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.EstimatedDuration;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 
 @Service
+@Primary
 public class V2Datex2HelperService {
     private static final Logger log = LoggerFactory.getLogger(V2Datex2HelperService.class);
 
-    private final ObjectWriter jsonWriter;
-    private final ObjectReader jsonReader;
-    private final ObjectReader featureJsonReader;
-    private final Validator validator;
+    protected final ObjectReader featureJsonReaderV2;
+    protected final ObjectReader featureJsonReaderV3;
+
+    protected final Validator validator;
+
+    protected final List<ObjectWriter> jsonWriters = new ArrayList<>();
+
+    protected final List<ObjectReader> imsJsonReaders = new ArrayList<>();
+    protected final ObjectReader imsJsonReaderV0_2_4;
+    protected final ObjectReader imsJsonReaderV0_2_5;
+
+    protected final ObjectWriter imsJsonWriterV0_2_5;
+    protected final ObjectWriter imsJsonWriterV0_2_4;
+    protected final ObjectReader genericJsonReader;
+
+    protected ObjectMapper objectMapper;
 
     @Autowired
     public V2Datex2HelperService(final ObjectMapper objectMapper) {
-        jsonWriter = objectMapper.writerFor(ImsGeoJsonFeature.class);
-        jsonReader = objectMapper.readerFor(ImsGeoJsonFeature.class);
-        featureJsonReader = objectMapper.readerFor(TrafficAnnouncementFeature.class);
+        this.objectMapper = objectMapper;
+        imsJsonWriterV0_2_4 = objectMapper.writerFor(ImsGeoJsonFeature.class);
+        imsJsonWriterV0_2_5 = objectMapper.writerFor(fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_5.ImsGeoJsonFeature.class);
+
+        jsonWriters.add(imsJsonWriterV0_2_4);
+        jsonWriters.add(imsJsonWriterV0_2_5);
+
+        imsJsonReaderV0_2_4 = objectMapper.readerFor(ImsGeoJsonFeature.class);
+        imsJsonReaderV0_2_5 = objectMapper.readerFor(fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_5.ImsGeoJsonFeature.class);
+
+        imsJsonReaders.add(imsJsonReaderV0_2_4);
+        imsJsonReaders.add(imsJsonReaderV0_2_5);
+
+        featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
+        featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature.class);
+
+        genericJsonReader = objectMapper.reader();
+
         final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }
-
-    /**
-     *
-     * @param imsJson Datex2 JSON message
-     * @return Json object
-     */
-    public ImsGeoJsonFeature convertToJsonObject(final String imsJson) {
-        try {
-            return jsonReader.readValue(imsJson);
-        } catch (JsonProcessingException e) {
-            log.error("method=convertToJsonObject error while converting JSON to ImsGeoJsonFeature jsonValue=\n" + imsJson, e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String convertToJsonString(final ImsGeoJsonFeature imsJson) {
-        try {
-            return jsonWriter.writeValueAsString(imsJson);
-        } catch (JsonProcessingException e) {
-            log.error("method=convertToJsonString Error while converting ImsGeoJsonFeature-object to string with guid " +
-                      imsJson != null && imsJson.getProperties() != null ? imsJson.getProperties().getSituationId() : null);
-            throw new RuntimeException(e);
-        }
     }
 
     public static boolean isNewOrUpdatedSituation(final ZonedDateTime latestVersionTime, final Situation situation) {
@@ -110,9 +118,12 @@ public class V2Datex2HelperService {
         }
     }
 
-    public TrafficAnnouncementFeature convertToFeatureJsonObject(final String imsJson, final Datex2MessageType messageType) {
+    public TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson) {
+        // Ims JSON String can be in 0.2.4 or in 0.2.5 format. Convert 0.2.5 to in 0.2.4 format.
+        final String imsJsonV0_2_4 = convertImsJsonToV0_2_4(imsJson);
+
         try {
-            final TrafficAnnouncementFeature feature = featureJsonReader.readValue(imsJson);
+            final TrafficAnnouncementFeature feature = featureJsonReaderV2.readValue(imsJsonV0_2_4);
             if ( isInvalidGeojson(feature) ) {
                 log.error("Failed to convert valid GeoJSON Feature from json: {}", imsJson);
                 return null;
@@ -126,8 +137,65 @@ public class V2Datex2HelperService {
             }
             return feature;
         } catch (JsonProcessingException e) {
-            log.error("method=convertToJsonObject error while converting JSON to TrafficAnnouncementFeature jsonValue=\n" + imsJson, e);
+            log.error("method=convertToFeatureJsonObject error while converting JSON to TrafficAnnouncementFeature jsonValue=\n" + imsJson, e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private String convertImsJsonToV0_2_4(final String imsJson) {
+        try {
+            final JsonNode root = genericJsonReader.readTree(imsJson);
+            final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
+            // if announcements is found json might be V0_2_5 and features must be converted to C0_2_4 format
+            if (announcements == null) {
+                return imsJson;
+            }
+
+            for (JsonNode announcement : announcements) {
+                final ArrayNode features = (ArrayNode) announcement.get("features");
+
+                if (features != null && features.size() > 0) {
+                    final ArrayNode newFeaturesArrayNode = objectMapper.createArrayNode();
+                    for (JsonNode f : features) {
+                        if (f.isTextual()) {
+                            // -> is already V0_2_4 -> return original
+                            return imsJson;
+                        } else {
+                            final JsonNode name = f.get("name");
+                            newFeaturesArrayNode.add(name);
+                        }
+                    }
+                    // replace features with V0_2_4 json
+                    ((ObjectNode) announcement).set("features", newFeaturesArrayNode);
+                }
+            }
+            return objectMapper.writer().writeValueAsString(root);
+        } catch (Exception e) {
+            return imsJson;
+        }
+    }
+
+    protected JsonNode readAnnouncementsFromTheImsJson(final JsonNode root) {
+        final JsonNode properties = root.get("properties");
+        if (properties == null) {
+            return null;
+        }
+        return properties.get("announcements");
+    }
+
+    private TrafficAnnouncementFeature tryFeatureV2(String imsJson) {
+        try {
+            return featureJsonReaderV2.readValue(imsJson);
+        } catch (final JsonProcessingException e) {
+            return null;
+        }
+    }
+
+    private fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature tryFeatureV3(String imsJson) {
+        try {
+            return featureJsonReaderV3.readValue(imsJson);
+        } catch (final JsonProcessingException e) {
+            return null;
         }
     }
 
@@ -136,8 +204,8 @@ public class V2Datex2HelperService {
     }
 
     private Set<ConstraintViolation<EstimatedDuration>> getDurationViolations(TrafficAnnouncement a) {
-        if (a.getTimeAndDuration() != null && a.getTimeAndDuration().estimatedDuration != null) {
-            return validator.validate(a.getTimeAndDuration().estimatedDuration);
+        if (a.timeAndDuration != null && a.timeAndDuration.estimatedDuration != null) {
+            return validator.validate(a.timeAndDuration.estimatedDuration);
         }
         return Collections.emptySet();
     }

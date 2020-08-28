@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -44,13 +43,13 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     private V2Datex2UpdateService v2Datex2UpdateService;
 
     @Test
-    public void datex2ReceiveMessages() throws IOException {
+    public void datex2ReceiveMessagesV0_2_4() throws IOException {
         datex2Repository.deleteAll();
 
         final String SITUATION_ID_1 = "GUID50001238";
         final JMSMessageListener datexJmsMessageListener = createImsJmsMessageListener();
 
-        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessage.xml");
+        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV0_2_4.xml");
         readAndSendMessages(imsResources, datexJmsMessageListener);
 
         final D2LogicalModel active = v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT);
@@ -66,6 +65,31 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         assertCollectionSize(1, activeJson.getFeatures());
         assertEquals(SITUATION_ID_1, activeJson.getFeatures().get(0).getProperties().situationId);
     }
+
+    @Test
+    public void datex2ReceiveMessagesV0_2_5() throws IOException {
+        datex2Repository.deleteAll();
+
+        final String SITUATION_ID_1 = "GUID50001238";
+        final JMSMessageListener datexJmsMessageListener = createImsJmsMessageListener();
+
+        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV0_2_5.xml");
+        readAndSendMessages(imsResources, datexJmsMessageListener);
+
+        final D2LogicalModel active = v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT);
+
+        List<Situation> situations = ((SituationPublication) active.getPayloadPublication()).getSituations();
+
+        assertCollectionSize(1, situations);
+        assertEquals(SITUATION_ID_1, situations.get(0).getId());
+
+        TrafficAnnouncementFeatureCollection activeJson =
+            v2Datex2DataService.findActiveJson(0, TRAFFIC_INCIDENT);
+
+        assertCollectionSize(1, activeJson.getFeatures());
+        assertEquals(SITUATION_ID_1, activeJson.getFeatures().get(0).getProperties().situationId);
+    }
+
 
     private JMSMessageListener createImsJmsMessageListener() {
         final JMSMessageListener.JMSDataUpdater<ImsMessage> dataUpdater = (data) ->  v2Datex2UpdateService.updateTrafficIncidentImsMessages(data);
