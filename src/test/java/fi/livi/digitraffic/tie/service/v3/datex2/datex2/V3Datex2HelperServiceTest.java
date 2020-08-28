@@ -59,7 +59,7 @@ public class V3Datex2HelperServiceTest extends AbstractServiceTest {
 
     @Test
     public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
         final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
         TrafficAnnouncementFeature feature =
             v3Datex2HelperService.convertToFeatureJsonObjectV3(imsJsonV0_2_4);

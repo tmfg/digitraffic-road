@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "javaType" : "fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature",
+    "javaType" : "fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature",
     "$id": "https://geojson.org/schema/Feature.json",
     "title": "GeoJSON Feature",
     "type": "object",
