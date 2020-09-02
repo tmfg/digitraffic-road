@@ -45,13 +45,15 @@ public class Datex2SimpleMessageUpdater {
                                       final Datex2TrafficAlertHttpClient datex2TrafficAlertHttpClient,
                                       final Datex2UpdateService datex2UpdateService,
                                       final Datex2Repository datex2Repository,
-                                      final StringToObjectMarshaller stringToObjectMarshaller) {
+                                      final StringToObjectMarshaller stringToObjectMarshaller,
+                                      final V2Datex2UpdateService v2Datex2UpdateService) {
         this.datex2WeightRestrictionsHttpClient = datex2WeightRestrictionsHttpClient;
         this.datex2RoadworksHttpClient = datex2RoadworksHttpClient;
         this.datex2TrafficAlertHttpClient = datex2TrafficAlertHttpClient;
         this.datex2UpdateService = datex2UpdateService;
         this.datex2Repository = datex2Repository;
         Datex2SimpleMessageUpdater.stringToObjectMarshaller = stringToObjectMarshaller;
+        this.v2Datex2UpdateService = v2Datex2UpdateService;
     }
 
     // Log only on warn and error level as normal execution time is 3-4 s.

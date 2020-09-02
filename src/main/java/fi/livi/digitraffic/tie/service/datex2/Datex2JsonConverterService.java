@@ -14,7 +14,6 @@ import javax.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,7 +27,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 
 @Service
-@Primary
 public class Datex2JsonConverterService {
     private static final Logger log = LoggerFactory.getLogger(Datex2JsonConverterService.class);
 

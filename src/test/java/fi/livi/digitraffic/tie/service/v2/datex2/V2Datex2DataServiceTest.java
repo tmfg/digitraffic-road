@@ -32,8 +32,9 @@ import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnou
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
 
-@Import({ V2Datex2DataService.class, V2Datex2UpdateService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
+@Import({ V2Datex2DataService.class, V2Datex2UpdateService.class, Datex2JsonConverterService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
 public class V2Datex2DataServiceTest extends AbstractServiceTest {
 
     private final static String GUID_WITH_JSON = "GUID50001238";
