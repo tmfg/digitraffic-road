@@ -27,10 +27,10 @@ import fi.livi.digitraffic.tie.datex2.GenericPublication;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.service.datex2.V2Datex2Helper;
+import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 
 @Import({ JacksonAutoConfiguration.class })
-public class V2Datex2HelperTest extends AbstractServiceTest {
+public class Datex2HelperTest extends AbstractServiceTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -48,61 +48,61 @@ public class V2Datex2HelperTest extends AbstractServiceTest {
 
         // Millis don't matter
         final SituationRecord millisDiff = new Accident().withSituationRecordVersionTime(TIME_MILLIS_IN_FUTURE);
-        assertFalse(V2Datex2Helper.isUpdatedRecord(TIME_NOW, millisDiff));
+        assertFalse(Datex2Helper.isUpdatedRecord(TIME_NOW, millisDiff));
 
         // Second in future -> is updated
         final SituationRecord secondsDiff = new Accident().withSituationRecordVersionTime(TIME_SECONDS_IN_FUTURE);
-        assertTrue(V2Datex2Helper.isUpdatedRecord(TIME_NOW, secondsDiff));
+        assertTrue(Datex2Helper.isUpdatedRecord(TIME_NOW, secondsDiff));
 
         // Second in past -> not updated
         final SituationRecord secondsPast = new Accident().withSituationRecordVersionTime(TIME_SECONDS_IN_PAST);
-        assertFalse(V2Datex2Helper.isUpdatedRecord(TIME_NOW, secondsPast));
+        assertFalse(Datex2Helper.isUpdatedRecord(TIME_NOW, secondsPast));
     }
 
     @Test
     public void isNewOrUpdatedSituation() {
         final Situation sNow = creatSituationWithRecordsVersionTimes(TIME_MILLIS_IN_FUTURE);
-        assertFalse(V2Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sNow));
-        assertFalse(V2Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sNow));
+        assertFalse(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sNow));
+        assertFalse(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sNow));
 
         final Situation sFuture = creatSituationWithRecordsVersionTimes(TIME_SECONDS_IN_FUTURE);
-        assertTrue(V2Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sFuture));
-        assertTrue(V2Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sFuture));
+        assertTrue(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sFuture));
+        assertTrue(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sFuture));
 
         final Situation sPast = creatSituationWithRecordsVersionTimes(TIME_SECONDS_IN_PAST);
-        assertFalse(V2Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sPast));
-        assertFalse(V2Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sPast));
+        assertFalse(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sPast));
+        assertFalse(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sPast));
     }
 
     @Test
     public void getSituationPublication() {
         final SituationPublication sp = new SituationPublication();
         final D2LogicalModel d2 = new D2LogicalModel().withPayloadPublication(sp);
-        final SituationPublication spResult = V2Datex2Helper.getSituationPublication(d2);
+        final SituationPublication spResult = Datex2Helper.getSituationPublication(d2);
         assertSame(sp, spResult);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void getSituationPublicationUnsuportedExeption() {
         final D2LogicalModel d2 = new D2LogicalModel().withPayloadPublication(new GenericPublication());
-        V2Datex2Helper.getSituationPublication(d2);
+        Datex2Helper.getSituationPublication(d2);
         fail("Should not go here");
     }
 
     @Test
     public void checkD2HasOnlyOneSituation() {
         final D2LogicalModel d2 = createD2LogicalModelWithSituationPublications(new Situation());
-        V2Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
+        Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void checkD2HasOnlyOneSituationFails() {
         final D2LogicalModel d2 = createD2LogicalModelWithSituationPublications(new Situation(), new Situation());
-        V2Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
+        Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
     }
 
     private static Situation creatSituationWithRecordsVersionTimes(Instant...versionTimes) {
-        final List<SituationRecord> records = Arrays.stream(versionTimes).map(V2Datex2HelperTest::createSituationRecord).collect(Collectors.toList());
+        final List<SituationRecord> records = Arrays.stream(versionTimes).map(Datex2HelperTest::createSituationRecord).collect(Collectors.toList());
         return new Situation().withSituationRecords(records);
     }
 

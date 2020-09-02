@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import fi.livi.digitraffic.tie.service.datex2.V2Datex2Helper;
+import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 @Service
@@ -95,19 +95,19 @@ public class Datex2SimpleMessageUpdater {
     }
 
     private List<Datex2MessageDto> createModels(final D2LogicalModel main, final Datex2MessageType messageType, final ZonedDateTime importTime) {
-        final SituationPublication sp = V2Datex2Helper.getSituationPublication(main);
+        final SituationPublication sp = Datex2Helper.getSituationPublication(main);
 
         final Map<String, ZonedDateTime> versionTimes = datex2UpdateService.listSituationVersionTimes(messageType);
         final long updatedCount = sp.getSituations().stream()
             .filter(s -> versionTimes.get(s.getId()) != null &&
-                         V2Datex2Helper.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
+                         Datex2Helper.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
             .count();
         final long newCount = sp.getSituations().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
 
         log.info("situationsUpdated={} situationsNew={}", updatedCount, newCount);
 
         return sp.getSituations().stream()
-            .filter(s -> V2Datex2Helper.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
+            .filter(s -> Datex2Helper.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
             .map(s -> v2Datex2UpdateService.convert(main, sp, s, importTime, null, messageType))
             .collect(Collectors.toList());
     }

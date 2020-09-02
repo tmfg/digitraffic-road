@@ -12,8 +12,8 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 
-public class V2Datex2Helper {
-    private static final Logger log = LoggerFactory.getLogger(V2Datex2Helper.class);
+public class Datex2Helper {
+    private static final Logger log = LoggerFactory.getLogger(Datex2Helper.class);
 
     public static boolean isNewOrUpdatedSituation(final ZonedDateTime latestVersionTime, final Situation situation) {
         return isNewOrUpdatedSituation(DateHelper.toInstant(latestVersionTime), situation);

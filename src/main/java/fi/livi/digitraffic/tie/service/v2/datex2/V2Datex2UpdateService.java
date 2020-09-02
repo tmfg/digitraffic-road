@@ -41,7 +41,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationRecordCommentI18n;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.datex2.V2Datex2Helper;
+import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 
@@ -86,10 +86,10 @@ public class V2Datex2UpdateService {
     }
 
     private boolean isNewOrUpdatedSituation(final D2LogicalModel d2, final Datex2MessageType messageType) {
-        final SituationPublication sp = V2Datex2Helper.getSituationPublication(d2);
+        final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
         final Situation situation = sp.getSituations().get(0);
         final Instant versionTime = findSituationLatestVersionTime(situation.getId(), messageType);
-        return V2Datex2Helper.isNewOrUpdatedSituation(versionTime, situation);
+        return Datex2Helper.isNewOrUpdatedSituation(versionTime, situation);
     }
 
     private Instant findSituationLatestVersionTime(final String situationId, final Datex2MessageType messageType) {
@@ -106,11 +106,11 @@ public class V2Datex2UpdateService {
      */
     private Datex2MessageDto createModelWithJson(final D2LogicalModel d2, final String jsonValue,
                                                  final Datex2MessageType messageType, final ZonedDateTime importTime) {
-        V2Datex2Helper.checkD2HasOnlyOneSituation(d2);
-        final SituationPublication sp = V2Datex2Helper.getSituationPublication(d2);
+        Datex2Helper.checkD2HasOnlyOneSituation(d2);
+        final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
         final Situation situation = sp.getSituations().get(0);
         final Instant versionTime = findSituationLatestVersionTime(situation.getId(), messageType);
-        final boolean update = versionTime != null && V2Datex2Helper.isNewOrUpdatedSituation(versionTime, situation);
+        final boolean update = versionTime != null && Datex2Helper.isNewOrUpdatedSituation(versionTime, situation);
         final boolean isNew = versionTime == null;
 
         log.info("method=createModelWithJson situationUpdated={} situationNew={}", update, isNew);
@@ -147,7 +147,7 @@ public class V2Datex2UpdateService {
     @Transactional
     public boolean updateDatex2Data(final Datex2MessageDto message) {
 
-        V2Datex2Helper.checkD2HasOnlyOneSituation(message.model);
+        Datex2Helper.checkD2HasOnlyOneSituation(message.model);
 
         if (isNewOrUpdatedSituation(message.model, message.messageType)) {
             final Datex2 datex2 = new Datex2();
@@ -165,7 +165,7 @@ public class V2Datex2UpdateService {
             if (message.jsonMessage != null) {
                 dataStatusService.updateDataUpdated(DataType.typeFor(message.messageType));
             }
-            final String situationId = V2Datex2Helper.getSituationPublication(d2).getSituations().get(0).getId();
+            final String situationId = Datex2Helper.getSituationPublication(d2).getSituations().get(0).getId();
             log.info("Update Datex2 messageType={} for situationId={} with importTime={}", message.messageType, situationId, datex2.getImportTime());
             return true;
         }
@@ -173,7 +173,7 @@ public class V2Datex2UpdateService {
     }
 
     private ZonedDateTime getLatestSituationRecordVersionTime(final D2LogicalModel d2) {
-        final Instant latest = V2Datex2Helper.getSituationPublication(d2).getSituations().stream()
+        final Instant latest = Datex2Helper.getSituationPublication(d2).getSituations().stream()
             .map(s -> s.getSituationRecords().stream()
                 .map(SituationRecord::getSituationRecordVersionTime).max(Comparator.naturalOrder()).orElseThrow())
             .max(Comparator.naturalOrder()).orElseThrow();
