@@ -68,7 +68,14 @@ public class V3Datex2DataService {
         final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.typeFor(messageType));
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
-            .map(d2 -> datex2JsonConverterService.convertToFeatureJsonObjectV3(d2.getJsonMessage()))
+            .map(d2 -> {
+                try {
+                    return datex2JsonConverterService.convertToFeatureJsonObjectV3(d2.getJsonMessage());
+                } catch (final Exception e) {
+                    log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3", e);
+                    return null;
+                }
+            })
             // Filter invalid jsons
             .filter(Objects::nonNull)
             .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())

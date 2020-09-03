@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.v2.datex2;
+package fi.livi.digitraffic.tie.service.datex2;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -27,7 +27,6 @@ import fi.livi.digitraffic.tie.datex2.GenericPublication;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 
 @Import({ JacksonAutoConfiguration.class })
 public class Datex2HelperTest extends AbstractServiceTest {
@@ -40,8 +39,6 @@ public class Datex2HelperTest extends AbstractServiceTest {
     public static final Instant TIME_MILLIS_IN_FUTURE = TIME_NOW.with(ChronoField.MILLI_OF_SECOND, 321);
     public static final Instant TIME_SECONDS_IN_FUTURE = Instant.ofEpochMilli(TIME_NOW.toEpochMilli()+1000); // +1s
     public static final Instant TIME_SECONDS_IN_PAST = Instant.ofEpochMilli(TIME_NOW.toEpochMilli()-1000); // +1s
-
-    public static final String FEATURE = "Huono ajokeli";
 
     @Test
     public void isUpdatedRecord() {

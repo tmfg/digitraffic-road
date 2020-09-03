@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 
 @Service
@@ -62,60 +63,32 @@ public class Datex2JsonConverterService {
         validator = factory.getValidator();
     }
 
-    public fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson) {
+    public fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson)
+        throws JsonProcessingException {
         // Ims JSON String can be in 0.2.4 or in 0.2.5 format. Convert 0.2.5 to in 0.2.4 format.
         final String imsJsonV0_2_4 = convertImsJsonToV0_2_4(imsJson);
 
-        try {
-            final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-                featureJsonReaderV2.readValue(imsJsonV0_2_4);
+        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
+            featureJsonReaderV2.readValue(imsJsonV0_2_4);
 
-            if ( isInvalidGeojsonV2(feature) ) {
-                log.error("Failed to convert valid GeoJSON Feature from json: {}", imsJson);
-                return null;
-            }
+        checkIsInvalidAnnouncementGeojsonV2(feature);
+        checkDurationViolationsV2(feature);
 
-            final List<ConstraintViolation<fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.EstimatedDuration>> violations =
-                getDurationViolationsV2(feature);
-
-            if (!violations.isEmpty()) {
-                violations.forEach(v -> log.error("Invalid EstimatedDuration.{} value {} ", v.getPropertyPath(), v.getInvalidValue()));
-                log.error("Failed to convert valid Duration from json: {}", imsJson);
-                return null;
-            }
-            return feature;
-        } catch (JsonProcessingException e) {
-            log.error("method=convertToFeatureJsonObject error while converting JSON to TrafficAnnouncementFeature jsonValue=\n" + imsJson, e);
-            throw new RuntimeException(e);
-        }
+        return feature;
     }
 
-    public fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV3(final String imsJson) {
+    public fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV3(final String imsJson)
+        throws JsonProcessingException {
         // Ims JSON String can be in 0.2.4 or in 0.2.5 format. Convert 0.2.4 to in 0.2.5 format.
         final String imsJsonV3 = convertImsJsonToV0_2_5(imsJson);
 
-        try {
-            final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-                featureJsonReaderV3.readValue(imsJsonV3);
+        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
+            featureJsonReaderV3.readValue(imsJsonV3);
 
-            if ( isInvalidGeojsonV3(feature) ) {
-                log.error("Failed to convert valid GeoJSON Feature from json: {}", imsJson);
-                return null;
-            }
+        checkIsInvalidAnnouncementGeojsonV3(feature);
+        checkDurationViolationsV3(feature);
 
-            final List<ConstraintViolation<fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.EstimatedDuration>> violations =
-                getDurationViolationsV3(feature);
-
-            if (!violations.isEmpty()) {
-                violations.forEach(v -> log.error("Invalid EstimatedDuration.{} value {} ", v.getPropertyPath(), v.getInvalidValue()));
-                log.error("Failed to convert valid Duration from json: {}", imsJson);
-                return null;
-            }
-            return feature;
-        } catch (JsonProcessingException e) {
-            log.error("method=convertToFeatureJsonObject error while converting JSON to TrafficAnnouncementFeature jsonValue=\n" + imsJson, e);
-            throw new RuntimeException(e);
-        }
+        return feature;
     }
 
     private String convertImsJsonToV0_2_4(final String imsJson) {
@@ -154,6 +127,7 @@ public class Datex2JsonConverterService {
             }
             return objectMapper.writer().writeValueAsString(root);
         } catch (Exception e) {
+            log.error("method=convertImsJsonToV0_2_4 error", e);
             return imsJson;
         }
     }
@@ -186,6 +160,7 @@ public class Datex2JsonConverterService {
             }
             return objectMapper.writer().writeValueAsString(root);
         } catch (Exception e) {
+            log.error("method=convertImsJsonToV0_2_5 error", e);
             return imsJson;
         }
     }
@@ -211,6 +186,30 @@ public class Datex2JsonConverterService {
             return featureJsonReaderV3.readValue(imsJson);
         } catch (final JsonProcessingException e) {
             return null;
+        }
+    }
+
+    private void checkDurationViolationsV2(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+        final List<ConstraintViolation<fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.EstimatedDuration>> violations =
+            getDurationViolationsV2(feature);
+
+        if (!violations.isEmpty()) {
+            final String joinedViolations = violations.stream()
+                .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
+                .collect(Collectors.joining(","));
+            throw new IllegalStateException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
+        }
+    }
+
+    private void checkDurationViolationsV3(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+        final List<ConstraintViolation<fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.EstimatedDuration>> violations =
+            getDurationViolationsV3(feature);
+
+        if (!violations.isEmpty()) {
+            final String joinedViolations = violations.stream()
+                .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
+                .collect(Collectors.joining(","));
+            throw new IllegalStateException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
         }
     }
 
@@ -244,12 +243,15 @@ public class Datex2JsonConverterService {
         return Collections.emptySet();
     }
 
-    private static boolean isInvalidGeojsonV2(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
-        return feature.getProperties() == null;
+    private static void checkIsInvalidAnnouncementGeojsonV2(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+        if (feature.getProperties() == null) {
+            throw new IllegalStateException("TrafficAnnouncementFeature with null properties " + ToStringHelper.toStringFull(feature));
+        }
     }
 
-    private static boolean isInvalidGeojsonV3(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
-        return feature.getProperties() == null;
+    private static void checkIsInvalidAnnouncementGeojsonV3(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+        if (feature.getProperties() == null) {
+            throw new IllegalStateException("TrafficAnnouncementFeature with null properties " + ToStringHelper.toStringFull(feature));
+        }
     }
-
 }
