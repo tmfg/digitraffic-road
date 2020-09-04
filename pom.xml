@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.3.RELEASE</version>
+        <version>2.3.3.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -29,9 +29,9 @@
         <maven.compiler.release>11</maven.compiler.release>
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
         <net.logstash.logback.version>6.3</net.logstash.logback.version>
-        <jackson.dataformat.version>2.10.3</jackson.dataformat.version>
-        <com.google.protobuf.version>3.11.4</com.google.protobuf.version>
-        <org.apache.cxf.version>3.3.6</org.apache.cxf.version>
+        <jackson.dataformat.version>2.11.2</jackson.dataformat.version>
+        <com.google.protobuf.version>3.13.0</com.google.protobuf.version>
+        <org.apache.cxf.version>3.4.0</org.apache.cxf.version>
         <io.springfox.version>3.0.0</io.springfox.version>
     </properties>
 
@@ -100,6 +100,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <!-- Spring Boot Actuator for health page -->
@@ -177,7 +182,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.10</version>
+            <version>3.11</version>
         </dependency>
 
         <dependency>
@@ -220,7 +225,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.14</version>
+            <version>42.2.16</version>
         </dependency>
 
         <dependency>
@@ -323,7 +328,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.26.3</version>
+            <version>2.27.1</version>
             <scope>test</scope>
         </dependency>
 

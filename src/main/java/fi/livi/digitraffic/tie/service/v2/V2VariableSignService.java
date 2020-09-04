@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.SignTextRow;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceDataRow;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +56,8 @@ public class V2VariableSignService {
     }
 
     private VariableSignFeature convert(final Device device, final DeviceData data) {
+        final List<SignTextRow> textRows = convert(data.getRows());
+
         final VariableSignProperties properties = new VariableSignProperties(
             device.getId(),
             VariableSignProperties.SignType.byValue(device.getType()),
@@ -64,10 +68,16 @@ public class V2VariableSignService {
             data == null ? null : data.getAdditionalInformation(),
             data == null ? null : data.getEffectDate(),
             data == null ? null : data.getCause(),
-            data == null ? null : VariableSignProperties.Reliability.byValue(data.getReliability()));
+            data == null ? null : VariableSignProperties.Reliability.byValue(data.getReliability()), textRows);
         final Point point = CoordinateConverter.convertFromETRS89ToWGS84(new Point(device.getEtrsTm35FinX(), device.getEtrsTm35FinY()));
 
         return new VariableSignFeature(point, properties);
+    }
+
+    private List<SignTextRow> convert(final List<DeviceDataRow> textRows) {
+        return textRows.stream()
+            .map(r -> new SignTextRow(r.getScreen(), r.getRowNumber(), r.getText()))
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

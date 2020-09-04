@@ -3,9 +3,15 @@ package fi.livi.digitraffic.tie.model.v2.trafficsigns;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.time.ZonedDateTime;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Immutable;
 
@@ -27,6 +33,10 @@ public class DeviceData {
 
     private String cause;
     private String reliability;
+
+    @OneToMany(targetEntity = DeviceDataRow.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "device_data_id", nullable = false)
+    private List<DeviceDataRow> rows;
 
     public String getDisplayValue() {
         return displayValue;
@@ -90,5 +100,13 @@ public class DeviceData {
 
     public void setReliability(final String reliability) {
         this.reliability = reliability;
+    }
+
+    public List<DeviceDataRow> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<DeviceDataRow> rows) {
+        this.rows = rows;
     }
 }
