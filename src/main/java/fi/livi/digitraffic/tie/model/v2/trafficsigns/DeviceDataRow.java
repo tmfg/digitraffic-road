@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.model.v2.trafficsigns;
 
-import com.amazonaws.annotation.Immutable;
+import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
