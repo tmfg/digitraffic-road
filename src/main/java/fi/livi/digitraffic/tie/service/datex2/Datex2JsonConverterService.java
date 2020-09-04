@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 
 @Service
 public class Datex2JsonConverterService {
@@ -171,22 +170,6 @@ public class Datex2JsonConverterService {
             return null;
         }
         return properties.get("announcements");
-    }
-
-    private TrafficAnnouncementFeature tryFeatureV2(String imsJson) {
-        try {
-            return featureJsonReaderV2.readValue(imsJson);
-        } catch (final JsonProcessingException e) {
-            return null;
-        }
-    }
-
-    private fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature tryFeatureV3(String imsJson) {
-        try {
-            return featureJsonReaderV3.readValue(imsJson);
-        } catch (final JsonProcessingException e) {
-            return null;
-        }
     }
 
     private void checkDurationViolationsV2(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {

@@ -18,9 +18,9 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.service.LockingService;
+import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import progress.message.jclient.Connection;
 import progress.message.jclient.Queue;
 import progress.message.jclient.QueueConnectionFactory;
@@ -28,7 +28,7 @@ import progress.message.jclient.Topic;
 
 public abstract class AbstractJMSListenerConfiguration<K> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
-    private static String STATISTICS_PREFIX = "STATISTICS:";
+    private static String STATISTICS_PREFIX = "STATISTICS";
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger lockAcquiredCounter = new AtomicInteger();
     private final AtomicInteger lockNotAcquiredCounter = new AtomicInteger();
@@ -121,7 +121,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             if (lockAcquired && !shutdownCalled.get()) {
                 lockAcquiredCounter.incrementAndGet();
                 log.debug("MessageListener lock acquired for " + jmsParameters.getLockInstanceName() +
-                          " (instanceId: " + lockingService.getThreadId() + ")");
+                          " (instanceId: " + LockingService.getThreadId() + ")");
 
                 // Try to connect if not connected
                 if (connection == null) {
@@ -133,7 +133,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             } else {
                 lockNotAcquiredCounter.incrementAndGet();
                 log.debug("MessageListener lock not acquired for {} (instanceId: {}), another " +
-                    "instance is holding the lock", jmsParameters.getLockInstanceName(), lockingService.getThreadId());
+                    "instance is holding the lock", jmsParameters.getLockInstanceName(), LockingService.getThreadId());
                 // Calling stop multiple times is safe
                 closeConnectionQuietly();
             }
@@ -164,10 +164,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             final Connection sonicCon = (Connection) queueConnection;
             final ConnectionMetaData meta = queueConnection.getMetaData();
 
-            log.info("Connection created: " + connectionFactory.toString());
-            log.info("Jms connection url " + sonicCon.getBrokerURL() + ", connection fault tolerant: " + sonicCon.isFaultTolerant() +
-                    ", broker urls: " + connectionFactory.getConnectionURLs());
-            log.info("Sonic version : " + meta.getJMSProviderName() + " " + meta.getProviderVersion());
+            log.info("JMS Connection created with ConnectionFactory: {}, Sonic version: {} {}", connectionFactory.toString(), meta.getJMSProviderName(), meta.getProviderVersion());
             // Reguire at least Sonic 8.6
             if (meta.getProviderMajorVersion() < 8 || (meta.getProviderMajorVersion() == 8 && meta.getProviderMinorVersion() < 6)) {
                 throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
@@ -175,11 +172,11 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
             createSessionAndConsumer(jmsParameters.getJmsQueueKeys(), queueConnection);
 
-            log.info("Connection initialized");
+            log.info("Connection initialized: {}", connectionFactory.toString());
 
             return queueConnection;
         } catch (Exception e) {
-            log.error("Connection initialization failed", e);
+            log.error("Connection initialization failed for " + connectionFactory.toString(), e);
             closeConnectionQuietly();
             throw e;
         }
