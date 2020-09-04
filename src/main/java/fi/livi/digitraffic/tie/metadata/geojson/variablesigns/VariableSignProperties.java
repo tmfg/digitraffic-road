@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.metadata.geojson.variablesigns;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,10 +41,11 @@ public class VariableSignProperties {
     @ApiModelProperty(value = "Variable sign reliability",
         allowableValues = "NORMAL,DISCONNECTED,MALFUNCTION")
     public final Reliability reliability;
+    public final List<SignTextRow> textRows;
 
     public VariableSignProperties(final String id, final SignType type, final String roadAddress, final Direction direction,
-        final Carriageway carriageway, final String displayValue, final String additionalInformation, final ZonedDateTime effectDate,
-        final String cause, final Reliability reliability) {
+                                  final Carriageway carriageway, final String displayValue, final String additionalInformation, final ZonedDateTime effectDate,
+                                  final String cause, final Reliability reliability, final List<SignTextRow> textRows) {
         this.id = id;
         this.type = type;
         this.roadAddress = roadAddress;
@@ -54,6 +56,7 @@ public class VariableSignProperties {
         this.effectDate = effectDate;
         this.cause = cause;
         this.reliability = reliability;
+        this.textRows = textRows;
     }
 
     @ApiModel
