@@ -72,7 +72,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     public void logMessagesReceived() {
         try {
             final JMSMessageListener<K> listener = getJMSMessageListener();
-            final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
+            final JMSMessageListener<K>.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
             final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
             final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
 
