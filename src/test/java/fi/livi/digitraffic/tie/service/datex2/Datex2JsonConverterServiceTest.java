@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
 import static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.TrafficAnnouncement.Language.FI;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.Assert.assertEquals;
 
 import java.time.ZonedDateTime;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -95,10 +97,9 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
     public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithIllegalDuration() throws JsonProcessingException {
         final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
         final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonV0_2_5_illegalDuration = StringUtils.replace(imsJsonV0_2_4, MIN_DURATION, ILLEGAL_DURATION);
-        datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_5_illegalDuration);
+        final String imsJsonV0_2_4_illegalDuration = StringUtils.replace(imsJsonV0_2_4, MIN_DURATION, ILLEGAL_DURATION);
+        datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_4_illegalDuration);
     }
-
 
     @Test(expected = IllegalStateException.class)
     public void convertImsJsonV0_2_5ToGeoJsonFeatureObjectV3WithIllegalDuration() throws JsonProcessingException {
@@ -106,6 +107,34 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         final String imsJsonV0_2_5 = objectMapper.writer().writeValueAsString(ims);
         final String imsJsonV0_2_5_illegalDuration = StringUtils.replace(imsJsonV0_2_5, MIN_DURATION, ILLEGAL_DURATION);
         datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_5_illegalDuration);
+    }
+
+    @Test
+    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithoutDuration() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
+        ims.getProperties().getAnnouncements().forEach(a -> a.setTimeAndDuration(null));
+        final String imsJson = objectMapper.writer().writeValueAsString(ims);
+        fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
+            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJson);
+        assertAnnouncementFeaturesV2(feature, FEATURE_v2);
+    }
+
+    @Test
+    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV3WithoutDuration() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_5.ImsGeoJsonFeature ims = createJsonMessageV0_2_5();
+        ims.getProperties().getAnnouncements().forEach(a -> a.setTimeAndDuration(null));
+        final String imsJson = objectMapper.writer().writeValueAsString(ims);
+        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
+            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJson);
+        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V3);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithIllegalProperties() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
+        final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
+        final String imsJsonV0_2_4_illegalProperties = StringUtils.replace(imsJsonV0_2_4, "\"properties\"", "\"propertypos\"");
+        datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_4_illegalProperties);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -130,6 +159,44 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         final String imsJsonV0_2_5 = objectMapper.writer().writeValueAsString(ims);
         final String imsJsonV0_2_5_illegalGeometryType = StringUtils.replace(imsJsonV0_2_5, "\"Point\"", "\"Joint\"");
         datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_5_illegalGeometryType);
+    }
+
+    @Test
+    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithoutAnnouncements() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
+        ims.getProperties().setAnnouncements(Collections.emptyList());
+        final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
+        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature f =
+            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_4);
+        assertCollectionSize(0, f.getProperties().announcements);
+    }
+
+    @Test
+    public void convertImsJsonV0_2_5ToGeoJsonFeatureObjectV3WithoutAnnouncements() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_5.ImsGeoJsonFeature ims = createJsonMessageV0_2_5();
+        ims.getProperties().setAnnouncements(Collections.emptyList());
+        final String imsJsonV0_2_5 = objectMapper.writer().writeValueAsString(ims);
+        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature f =
+            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_5);
+        assertCollectionSize(0, f.getProperties().announcements);
+    }
+
+    @Test(expected = JsonParseException.class)
+    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithIllegalJson() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
+        final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
+        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature f =
+            datex2JsonConverterService.convertToFeatureJsonObjectV3("{\n" + imsJsonV0_2_4);
+        assertCollectionSize(0, f.getProperties().announcements);
+    }
+
+    @Test(expected = JsonParseException.class)
+    public void convertImsJsonV0_2_5ToGeoJsonFeatureObjectV3WithIllegalJson() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_5.ImsGeoJsonFeature ims = createJsonMessageV0_2_5();
+        final String imsJsonV0_2_5 = objectMapper.writer().writeValueAsString(ims);
+        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature f =
+            datex2JsonConverterService.convertToFeatureJsonObjectV3("{\n" + imsJsonV0_2_5);
+        assertCollectionSize(0, f.getProperties().announcements);
     }
 
     private void assertAnnouncementFeaturesV2(final TrafficAnnouncementFeature feature, final String featureName) {

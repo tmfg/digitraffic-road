@@ -90,78 +90,68 @@ public class Datex2JsonConverterService {
         return feature;
     }
 
-    private String convertImsJsonToV0_2_4(final String imsJson) {
-        try {
-            final JsonNode root = genericJsonReader.readTree(imsJson);
-            final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
-            // if announcements is found json might be V0_2_5 and features must be converted to C0_2_4 format
-            if (announcements == null) {
-                return imsJson;
-            }
-
-            for (final JsonNode announcement : announcements) {
-                final ArrayNode features = (ArrayNode) announcement.get("features");
-
-                if (features != null && features.size() > 0) {
-                    final ArrayNode newFeaturesArrayNode = objectMapper.createArrayNode();
-                    for (final JsonNode f : features) {
-                        if (f.isTextual()) {
-                            // -> is already V0_2_4 -> return original
-                            return imsJson;
-                        } else {
-                            final JsonNode name = f.get("name");
-                            newFeaturesArrayNode.add(name);
-                        }
-                    }
-                    // replace features with V0_2_4 json
-                    ((ObjectNode) announcement).set("features", newFeaturesArrayNode);
-                }
-
-                // V0_2_4 doesn't have roadWorkPhases
-                final ArrayNode roadWorkPhases = (ArrayNode) announcement.get("roadWorkPhases");
-                if (roadWorkPhases != null) {
-                    ((ObjectNode)announcement).remove("roadWorkPhases");
-                }
-
-            }
-            return objectMapper.writer().writeValueAsString(root);
-        } catch (Exception e) {
-            log.error("method=convertImsJsonToV0_2_4 error", e);
+    private String convertImsJsonToV0_2_4(final String imsJson) throws JsonProcessingException {
+        final JsonNode root = genericJsonReader.readTree(imsJson);
+        final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
+        // if announcements is found json might be V0_2_5 and features must be converted to C0_2_4 format
+        if ( announcements == null || announcements.isEmpty() ) {
             return imsJson;
         }
+
+        for (final JsonNode announcement : announcements) {
+            final ArrayNode features = (ArrayNode) announcement.get("features");
+
+            if (features != null && features.size() > 0) {
+                final ArrayNode newFeaturesArrayNode = objectMapper.createArrayNode();
+                for (final JsonNode f : features) {
+                    if (f.isTextual()) {
+                        // -> is already V0_2_4 -> return original
+                        return imsJson;
+                    } else {
+                        final JsonNode name = f.get("name");
+                        newFeaturesArrayNode.add(name);
+                    }
+                }
+                // replace features with V0_2_4 json
+                ((ObjectNode) announcement).set("features", newFeaturesArrayNode);
+            }
+
+            // V0_2_4 doesn't have roadWorkPhases
+            final ArrayNode roadWorkPhases = (ArrayNode) announcement.get("roadWorkPhases");
+            if (roadWorkPhases != null) {
+                ((ObjectNode)announcement).remove("roadWorkPhases");
+            }
+
+        }
+        return objectMapper.writer().writeValueAsString(root);
     }
 
-    private String convertImsJsonToV0_2_5(final String imsJson) {
-        try {
-            final JsonNode root = genericJsonReader.readTree(imsJson);
-            final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
-            // if announcements is found json might be V0_2_4 and features must be converted to C0_2_5 format
-            if (announcements == null) {
-                return imsJson;
-            }
-
-            for (final JsonNode announcement : announcements) {
-                final ArrayNode features = (ArrayNode) announcement.get("features");
-
-                if (features != null && features.size() > 0) {
-                    final ArrayNode newFeaturesArrayNode = objectMapper.createArrayNode();
-                    for (final JsonNode f : features) {
-                        if (!f.isTextual()) {
-                            // -> is already V0_2_5
-                            return imsJson;
-                        }
-                        final ObjectNode feature = objectMapper.createObjectNode();
-                        feature.put("name", f.textValue());
-                        newFeaturesArrayNode.add(feature);
-                    }
-                    ((ObjectNode) announcement).set("features", newFeaturesArrayNode);
-                }
-            }
-            return objectMapper.writer().writeValueAsString(root);
-        } catch (Exception e) {
-            log.error("method=convertImsJsonToV0_2_5 error", e);
+    private String convertImsJsonToV0_2_5(final String imsJson) throws JsonProcessingException {
+        final JsonNode root = genericJsonReader.readTree(imsJson);
+        final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
+        // if announcements is found json might be V0_2_4 and features must be converted to C0_2_5 format
+        if ( announcements == null || announcements.isEmpty() ) {
             return imsJson;
         }
+
+        for (final JsonNode announcement : announcements) {
+            final ArrayNode features = (ArrayNode) announcement.get("features");
+
+            if (features != null && features.size() > 0) {
+                final ArrayNode newFeaturesArrayNode = objectMapper.createArrayNode();
+                for (final JsonNode f : features) {
+                    if (!f.isTextual()) {
+                        // -> is already V0_2_5
+                        return imsJson;
+                    }
+                    final ObjectNode feature = objectMapper.createObjectNode();
+                    feature.put("name", f.textValue());
+                    newFeaturesArrayNode.add(feature);
+                }
+                ((ObjectNode) announcement).set("features", newFeaturesArrayNode);
+            }
+        }
+        return objectMapper.writer().writeValueAsString(root);
     }
 
     protected JsonNode readAnnouncementsFromTheImsJson(final JsonNode root) {
