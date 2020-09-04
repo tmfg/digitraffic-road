@@ -134,6 +134,7 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         final Device d1 = v2DeviceRepository.getOne("t1");
         assertNotNull(d1);
         final ZonedDateTime update1 = d1.getUpdatedDate();
+        final String direction1 = d1.getDirection();
 
         // update device
         postJson("update_device_2.json", METADATA_PATH);
@@ -143,7 +144,7 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
 
         // data has changed
         assert(d2.getUpdatedDate().isAfter(update1));
-        assertEquals("KASVAVA", d1.getDirection());
+        assertEquals("KASVAVA", direction1);
         assertEquals("LASKEVA", d2.getDirection());
     }
 }
