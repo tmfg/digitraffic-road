@@ -1,10 +1,13 @@
 package fi.livi.digitraffic.tie.service.v1;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import fi.livi.digitraffic.tie.external.tloik.variablesigns.Rivi;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceDataRow;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +121,20 @@ public class VariableSignUpdateService {
         d.setDisplayValue(lt.getNayttama());
         d.setEffectDate(lt.getVoimaan());
         d.setReliability(lt.getLuotettavuus());
+        d.setRows(convertRows(lt.getRivit()));
 
         return d;
+    }
+
+    private List<DeviceDataRow> convertRows(final List<Rivi> rivit) {
+        return rivit.stream().map(r -> {
+            final DeviceDataRow row = new DeviceDataRow();
+
+            row.setScreen(r.getNaytto());
+            row.setRowNumber(r.getRivi());
+            row.setText(r.getTeksti());
+
+            return row;
+        }).collect(Collectors.toList());
     }
 }

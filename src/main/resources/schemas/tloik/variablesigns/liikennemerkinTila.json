@@ -4,6 +4,13 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
+        "rivit": {
+            "type": "array",
+            "items": {
+                "$ref": "rivi.json"
+            },
+            "minItems": 0
+        },
         "tunnus": {
             "type": "string",
             "required": "true"
