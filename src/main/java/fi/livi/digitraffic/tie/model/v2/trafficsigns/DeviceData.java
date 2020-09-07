@@ -106,7 +106,7 @@ public class DeviceData {
         return rows;
     }
 
-    public void setRows(List<DeviceDataRow> rows) {
+    public void setRows(final List<DeviceDataRow> rows) {
         this.rows = rows;
     }
 }

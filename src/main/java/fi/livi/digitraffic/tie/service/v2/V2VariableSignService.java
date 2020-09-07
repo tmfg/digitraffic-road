@@ -28,8 +28,6 @@ import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatur
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignProperties;
 
-import static java.util.Collections.emptyList;
-
 @Service
 public class V2VariableSignService {
     private final V2DeviceRepository v2DeviceRepository;
@@ -47,8 +45,9 @@ public class V2VariableSignService {
     @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValues() {
         final Stream<Device> devices = v2DeviceRepository.streamAll();
-        final Stream<DeviceData> data = v2DeviceDataRepository.streamLatestData();
-        final Map<String, DeviceData> dataMap = data.collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
+        final List<Long> dataIds = v2DeviceDataRepository.findLatestData();
+        final List<DeviceData> data = v2DeviceDataRepository.findAllById(dataIds);
+        final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
         final List<VariableSignFeature> features = devices
             .map(d -> convert(d, dataMap))
             .filter(Objects::nonNull)
@@ -98,7 +97,10 @@ public class V2VariableSignService {
         final Optional<Device> device = v2DeviceRepository.findById(deviceId);
 
         if(device.isPresent()) {
-            return new VariableSignFeatureCollection(v2DeviceDataRepository.findLatestData(deviceId).stream()
+            final List<Long> latest = v2DeviceDataRepository.findLatestData(deviceId);
+            final List<DeviceData> data = v2DeviceDataRepository.findAllById(latest);
+
+            return new VariableSignFeatureCollection(data.stream()
                 .map(d -> convert(device.get(), d))
                 .collect(Collectors.toList()));
         }
