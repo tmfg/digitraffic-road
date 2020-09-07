@@ -13,12 +13,12 @@ import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
 @Repository
 public interface V2DeviceDataRepository extends JpaRepository<DeviceData, Long> {
     @Query(value =
-        "select first_value(id) over (partition by device_id order by effect_date desc) from device_data",
+        "select distinct first_value(id) over (partition by device_id order by effect_date desc) from device_data",
         nativeQuery = true)
     List<Long> findLatestData();
 
     @Query(value =
-        "select first_value(id) over (order by effect_date desc) from device_data where device_id = :deviceId",
+        "select distinct first_value(id) over (order by effect_date desc) from device_data where device_id = :deviceId",
         nativeQuery = true)
     List<Long> findLatestData(final String deviceId);
 
