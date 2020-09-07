@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.SignTextRow;
 import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceDataRow;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignProperties;
+
+import static java.util.Collections.emptyList;
 
 @Service
 public class V2VariableSignService {
@@ -56,7 +59,7 @@ public class V2VariableSignService {
     }
 
     private VariableSignFeature convert(final Device device, final DeviceData data) {
-        final List<SignTextRow> textRows = convert(data.getRows());
+        final List<SignTextRow> textRows = CollectionUtils.isEmpty(data.getRows()) ? emptyList() : convert(data.getRows());
 
         final VariableSignProperties properties = new VariableSignProperties(
             device.getId(),
