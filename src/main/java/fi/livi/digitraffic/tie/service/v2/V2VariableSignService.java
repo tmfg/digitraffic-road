@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.v2;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,8 +49,12 @@ public class V2VariableSignService {
         final Stream<Device> devices = v2DeviceRepository.streamAll();
         final Stream<DeviceData> data = v2DeviceDataRepository.streamLatestData();
         final Map<String, DeviceData> dataMap = data.collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
+        final List<VariableSignFeature> features = devices
+            .map(d -> convert(d, dataMap))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toUnmodifiableList());
 
-        return new VariableSignFeatureCollection(devices.map(d -> convert(d, dataMap)).collect(Collectors.toList()));
+        return new VariableSignFeatureCollection(features);
     }
 
     private VariableSignFeature convert(final Device device, final Map<String, DeviceData> dataMap) {
