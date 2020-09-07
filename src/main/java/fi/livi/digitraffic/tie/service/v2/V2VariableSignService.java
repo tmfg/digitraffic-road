@@ -60,7 +60,7 @@ public class V2VariableSignService {
     private VariableSignFeature convert(final Device device, final Map<String, DeviceData> dataMap) {
         final DeviceData data = dataMap.get(device.getId());
 
-        return convert(device, data);
+        return data == null ? null : convert(device, data);
     }
 
     private VariableSignFeature convert(final Device device, final DeviceData data) {
