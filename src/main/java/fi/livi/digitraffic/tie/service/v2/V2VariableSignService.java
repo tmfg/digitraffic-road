@@ -64,7 +64,7 @@ public class V2VariableSignService {
     }
 
     private VariableSignFeature convert(final Device device, final DeviceData data) {
-        final List<SignTextRow> textRows = CollectionUtils.isEmpty(data.getRows()) ? emptyList() : convert(data.getRows());
+        final List<SignTextRow> textRows = CollectionUtils.isEmpty(data.getRows()) ? null : convert(data.getRows());
 
         final VariableSignProperties properties = new VariableSignProperties(
             device.getId(),
