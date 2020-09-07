@@ -103,14 +103,16 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         postJson("update_data_1.json", DATA_PATH);
         assertDeviceDataCountInDb(1);
 
-        final List<DeviceData> data1 = v2DeviceDataRepository.findLatestData("t1");
+        final List<Long> id1 = v2DeviceDataRepository.findLatestData("t1");
+        final List<DeviceData> data1 = v2DeviceDataRepository.findAllById(id1);
         assertEquals(1, data1.size());
         assertEquals(2, data1.get(0).getRows().size());
         // update data
         postJson("update_data_2.json", DATA_PATH);
         assertDeviceDataCountInDb(2);
 
-        final List<DeviceData> data2 = v2DeviceDataRepository.findLatestData("t1");
+        final List<Long> id2 = v2DeviceDataRepository.findLatestData("t1");
+        final List<DeviceData> data2 = v2DeviceDataRepository.findAllById(id2);
         assertEquals(1, data2.size());
         assertEquals(0, data2.get(0).getRows().size());
 
