@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import org.hibernate.annotations.Immutable;
 
@@ -36,6 +37,7 @@ public class DeviceData {
 
     @OneToMany(targetEntity = DeviceDataRow.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "device_data_id", nullable = false)
+    @OrderBy("screen,rowNumber")
     private List<DeviceDataRow> rows;
 
     public String getDisplayValue() {
