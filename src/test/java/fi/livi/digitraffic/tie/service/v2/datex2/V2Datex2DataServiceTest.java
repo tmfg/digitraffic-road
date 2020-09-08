@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -7,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +32,9 @@ import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnou
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
 
-@Import({ V2Datex2DataService.class, V2Datex2UpdateService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
+@Import({ V2Datex2DataService.class, V2Datex2UpdateService.class, Datex2JsonConverterService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
 public class V2Datex2DataServiceTest extends AbstractServiceTest {
 
     private final static String GUID_WITH_JSON = "GUID50001238";
@@ -82,8 +86,8 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         final Situation situation = situations.get(0);
         final TrafficAnnouncementFeature situationJson = jsons.getFeatures().get(0);
 
-        Assert.assertEquals(GUID_WITH_JSON, situation.getId());
-        Assert.assertEquals(GUID_WITH_JSON, situationJson.getProperties().situationId);
+        assertEquals(GUID_WITH_JSON, situation.getId());
+        assertEquals(GUID_WITH_JSON, situationJson.getProperties().situationId);
     }
 
     @Test
@@ -135,15 +139,15 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         final TrafficAnnouncementFeature situationJson = activeJsons.getFeatures().get(0);
 
         final TrafficAnnouncementProperties jsonProperties = situationJson.getProperties();
-        Assert.assertEquals(GUID_WITH_JSON, situation.getId());
-        Assert.assertEquals(GUID_WITH_JSON, jsonProperties.situationId);
+        assertEquals(GUID_WITH_JSON, situation.getId());
+        assertEquals(GUID_WITH_JSON, jsonProperties.situationId);
 
         final Instant start = ZonedDateTime.parse("2019-12-13T14:43:18.388+02:00").toInstant();
 
         final Instant situationStart = situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime();
         final ZonedDateTime situationJsonStart = jsonProperties.releaseTime;
-        Assert.assertEquals(start, situationStart);
-        Assert.assertEquals(start, situationJsonStart.toInstant());
+        assertEquals(start, situationStart);
+        assertEquals(start, situationJsonStart.toInstant());
 
         final String commentXml = situation.getSituationRecords().get(0).getGeneralPublicComments().get(0).getComment().getValues().getValues().stream()
             .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
@@ -156,8 +160,8 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         final String feature = announcement.features.get(0);
         AssertHelper.collectionContains("Nopeusrajoitus", announcement.features);
         AssertHelper.collectionContains("Huono ajokeli", announcement.features);
-        Assert.assertTrue(commentXml.contains(titleJson.trim()));
-        Assert.assertTrue(commentXml.contains(descJson.trim()));
+        assertTrue(commentXml.contains(titleJson.trim()));
+        assertTrue(commentXml.contains(descJson.trim()));
     }
 
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
@@ -165,10 +169,10 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
         final TrafficAnnouncementFeatureCollection withJson = v2Datex2DataService.findActiveJson(0, Datex2MessageType.TRAFFIC_INCIDENT);
 
-        Assert.assertEquals(
+        assertEquals(
             foundInDatex2,
             situationPublication.getSituations().stream().anyMatch(s -> s.getId().equals(situationId)));
-        Assert.assertEquals(
+        assertEquals(
             foundInJson,
             withJson.getFeatures().stream().anyMatch(f -> f.getProperties().situationId.equals(situationId)));
     }
@@ -177,20 +181,20 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         try {
             final D2LogicalModel withOrWithoutJson = v2Datex2DataService.findAllBySituationId(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
             final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
-            Assert.assertEquals(
+            assertEquals(
                 foundInDatex2,
                 situationPublication.getSituations().stream().anyMatch(s -> s.getId().equals(situationId)));
         } catch (Exception e) { // not found
-            Assert.assertFalse(foundInDatex2);
+            assertFalse(foundInDatex2);
         }
         try {
             final TrafficAnnouncementFeatureCollection withJson =
                 v2Datex2DataService.findAllBySituationIdJson(situationId, Datex2MessageType.TRAFFIC_INCIDENT);
-            Assert.assertEquals(
+            assertEquals(
                 foundInJson,
                 withJson.getFeatures().stream().anyMatch(f -> f.getProperties().situationId.equals(situationId)));
         } catch (Exception e) { // not found
-            Assert.assertFalse(foundInJson);
+            assertFalse(foundInJson);
         }
 
     }

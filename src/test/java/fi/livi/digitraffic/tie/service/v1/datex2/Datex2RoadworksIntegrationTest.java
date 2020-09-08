@@ -29,7 +29,6 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.helper.FileGetService;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2HelperService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -47,9 +46,6 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
     private StringToObjectMarshaller stringToObjectMarshaller;
 
     @Autowired
-    private V2Datex2HelperService v2Datex2HelperService;
-
-    @Autowired
     private V2Datex2UpdateService v2Datex2UpdateService;
 
     @MockBean
@@ -65,7 +61,7 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
     @Before
     public void before() {
         messageUpdater = new Datex2SimpleMessageUpdater(null, datex2RoadworksHttpClient, null,
-                                                        datex2UpdateService, null, stringToObjectMarshaller, v2Datex2UpdateService, v2Datex2HelperService);
+                                                        datex2UpdateService, null, stringToObjectMarshaller, v2Datex2UpdateService);
         datex2Repository.deleteAll();
     }
 

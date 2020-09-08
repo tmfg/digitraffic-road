@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.v3.datex2.datex2;
+package fi.livi.digitraffic.tie.service.v3.datex2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -35,11 +35,11 @@ import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnou
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 
-@Import({ V3Datex2DataService.class, V2Datex2DataService.class, V2Datex2UpdateService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
+@Import({ V3Datex2DataService.class, V2Datex2DataService.class, V2Datex2UpdateService.class, Datex2JsonConverterService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
 public class V3Datex2DataServiceTest extends AbstractServiceTest {
 
     private final static String GUID_WITH_JSON = "GUID50001238";

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
@@ -22,25 +21,22 @@ import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnou
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
 
 @Service
 public class V3Datex2DataService {
     private static final Logger log = LoggerFactory.getLogger(V3Datex2DataService.class);
 
     private final Datex2Repository datex2Repository;
-    private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
-    private final V3Datex2HelperService v3Datex2HelperService;
+    private final Datex2JsonConverterService datex2JsonConverterService;
     private DataStatusService dataStatusService;
 
     @Autowired
     public V3Datex2DataService(final Datex2Repository datex2Repository,
-                               final StringToObjectMarshaller stringToObjectMarshaller,
-                               final V3Datex2HelperService v3Datex2HelperService,
+                               final Datex2JsonConverterService datex2JsonConverterService,
                                final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
-        this.stringToObjectMarshaller = stringToObjectMarshaller;
-        this.v3Datex2HelperService = v3Datex2HelperService;
+        this.datex2JsonConverterService = datex2JsonConverterService;
         this.dataStatusService = dataStatusService;
     }
 
@@ -72,7 +68,14 @@ public class V3Datex2DataService {
         final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.typeFor(messageType));
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
-            .map(d2 -> v3Datex2HelperService.convertToFeatureJsonObjectV3(d2.getJsonMessage()))
+            .map(d2 -> {
+                try {
+                    return datex2JsonConverterService.convertToFeatureJsonObjectV3(d2.getJsonMessage());
+                } catch (final Exception e) {
+                    log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3", e);
+                    return null;
+                }
+            })
             // Filter invalid jsons
             .filter(Objects::nonNull)
             .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())

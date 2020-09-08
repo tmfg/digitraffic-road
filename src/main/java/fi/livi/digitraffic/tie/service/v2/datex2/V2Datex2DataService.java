@@ -23,6 +23,7 @@ import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnou
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
 import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 
 @Service
@@ -31,17 +32,17 @@ public class V2Datex2DataService {
 
     private final Datex2Repository datex2Repository;
     private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
-    private final V2Datex2HelperService v2Datex2HelperService;
+    private final Datex2JsonConverterService datex2JsonConverterService;
     private DataStatusService dataStatusService;
 
     @Autowired
     public V2Datex2DataService(final Datex2Repository datex2Repository,
                                final StringToObjectMarshaller stringToObjectMarshaller,
-                               final V2Datex2HelperService v2Datex2HelperService,
+                               final Datex2JsonConverterService datex2JsonConverterService,
                                final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
-        this.v2Datex2HelperService = v2Datex2HelperService;
+        this.datex2JsonConverterService = datex2JsonConverterService;
         this.dataStatusService = dataStatusService;
     }
 
@@ -120,7 +121,14 @@ public class V2Datex2DataService {
         final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.typeFor(messageType));
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
-            .map(d2 -> v2Datex2HelperService.convertToFeatureJsonObjectV2(d2.getJsonMessage()))
+            .map(d2 -> {
+                try {
+                    return datex2JsonConverterService.convertToFeatureJsonObjectV2(d2.getJsonMessage());
+                } catch (final Exception e) {
+                    log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV2", e);
+                    return null;
+                }
+            })
             // Filter invalid jsons
             .filter(Objects::nonNull)
             .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())
