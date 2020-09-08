@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.controller.beta;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_CATEGORIES_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_JSON_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_OPERATIONS_PATH;
@@ -13,7 +12,6 @@ import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_X_TXT
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_Y;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_Y_TXT;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
-import static java.time.temporal.ChronoUnit.HOURS;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -21,7 +19,6 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.DecimalMax;
@@ -45,7 +42,6 @@ import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.controller.v2.V2DataController;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
-import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
@@ -55,7 +51,6 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
@@ -80,7 +75,6 @@ public class BetaController {
     private final TmsDataDatex2Service tmsDataDatex2Service;
     private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
     private final WeatherService weatherService;
-    private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
     private final V3Datex2DataService v3Datex2DataService;
 
     @Autowired
@@ -88,13 +82,11 @@ public class BetaController {
                           final TmsDataDatex2Service tmsDataDatex2Service,
                           final V2MaintenanceRealizationDataService maintenanceRealizationDataService,
                           final WeatherService weatherService,
-                          final CameraPresetHistoryDataService cameraPresetHistoryDataService,
                           final V3Datex2DataService v3Datex2DataService) {
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.maintenanceRealizationDataService = maintenanceRealizationDataService;
         this.weatherService = weatherService;
-        this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
         this.v3Datex2DataService = v3Datex2DataService;
     }
 
@@ -158,27 +150,6 @@ public class BetaController {
         final ZonedDateTime from) {
 
         return weatherService.findWeatherHistoryData(stationId, sensorId, from);
-    }
-
-    @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/changes", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera history changes"))
-    public CameraHistoryChangesDto getCameraOrPresetHistoryChanges(
-
-        @ApiParam(value = "Camera or preset id(s)")
-        @RequestParam(value = "id", required = false)
-        final List<String> cameraOrPresetIds,
-
-        @ApiParam(value = "Return changes int the history after given time. Given time must be within 24 hours.", required = true)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam
-        final ZonedDateTime after) {
-
-        if (after.plus(24, HOURS).isBefore(ZonedDateTime.now())) {
-            throw new IllegalArgumentException("Given time must be within 24 hours.");
-        }
-
-        return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 
     /*
