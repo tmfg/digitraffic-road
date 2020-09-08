@@ -148,14 +148,22 @@ public class V2DataController {
     @ApiOperation("List the latest value of a variable sign")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign data"))
-    public VariableSignFeatureCollection trafficSign(@PathVariable("deviceId") final String deviceId) {
+    public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
         return v2VariableSignService.listLatestValue(deviceId);
+    }
+
+    @ApiOperation("List the history of variable sign data")
+    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
+    @ApiParam("List history data of given sign")
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
+    public List<TrafficSignHistory> variableSignHistory(@RequestParam(value = "deviceId") final String deviceId) {
+        return v2VariableSignService.listVariableSignHistory(deviceId);
     }
 
     @ApiOperation("List the history of variable sign data")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
-    public List<TrafficSignHistory> trafficSigns(@PathVariable("deviceId") final String deviceId) {
+    public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
         return v2VariableSignService.listVariableSignHistory(deviceId);
     }
 
