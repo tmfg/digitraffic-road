@@ -4,6 +4,8 @@ import static java.time.ZoneOffset.UTC;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.Assert;
 
@@ -13,8 +15,7 @@ public final class AssertHelper {
     public static void assertCollectionSize(final int expectedSize, final Collection<?> collection) {
         final int collectionSize = collection.size();
 
-        Assert.assertTrue(String.format("Collection size was expected to be %d, was %s", expectedSize, collectionSize),
-            collectionSize == expectedSize);
+        Assert.assertEquals(String.format("Collection size was expected to be %d, was %s", expectedSize, collectionSize), collectionSize, expectedSize);
     }
 
     public static void assertEmpty(final Collection<?> col) {
@@ -24,11 +25,11 @@ public final class AssertHelper {
     public static void assertTimesEqual(final ZonedDateTime t1, final ZonedDateTime t2) {
         if(t1 == null && t2 == null) return;
 
-        if(t1 == null && t2 != null) {
+        if(t1 == null) {
             Assert.fail("was asserted to be null, was not");
         }
 
-        if(t1 != null && t2 == null) {
+        if(t2 == null) {
             Assert.fail("given value was null");
         }
 
@@ -38,4 +39,8 @@ public final class AssertHelper {
         Assert.assertEquals(tz1, tz2);
     }
 
+    public static void collectionContains(final Object objectToFind, List<?> collection) {
+        final Optional<?> first = collection.stream().filter(e -> e.equals(objectToFind)).findFirst();
+        Assert.assertTrue("Element " + objectToFind + " not found in collection", first.isPresent());
+    }
 }

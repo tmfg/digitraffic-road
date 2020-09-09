@@ -109,7 +109,7 @@ http://extranet.liikennevirasto.fi/webloik/kartta/liikennetilanne/50001238</valu
                     }
                 },
                 "features": [
-                    "Huono ajokeli"
+                    {"name": "Nopeusrajoitus", "quantity": 80.0, "unit": "km/h"}
                 ],
                 "comment": "TESTI TESTI TESTI\nML",
                 "timeAndDuration": {

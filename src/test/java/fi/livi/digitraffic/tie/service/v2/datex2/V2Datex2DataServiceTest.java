@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
@@ -26,10 +25,10 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
 
 @Import({ V2Datex2DataService.class, V2Datex2UpdateService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
 public class V2Datex2DataServiceTest extends AbstractServiceTest {
@@ -55,10 +54,77 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void activeIncidentsDatex2AndJsonEquals() throws IOException {
+    public void activeIncidentsDatex2AndJsonEqualsV0_2_4() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessage.xml");
+        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        activeIncidentsDatex2AndJsonEquals();
+    }
 
+    @Test
+    public void activeIncidentsDatex2AndJsonEqualsV0_2_5() throws IOException {
+        // One active
+        initDataFromFile("TrafficIncidentImsMessageV0_2_5.xml");
+        activeIncidentsDatex2AndJsonEquals();
+    }
+
+    @Test
+    public void findBySituationId() throws IOException {
+        // One active
+        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+
+        final D2LogicalModel d2 = v2Datex2DataService.findAllBySituationId(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
+        final TrafficAnnouncementFeatureCollection jsons = v2Datex2DataService.findAllBySituationIdJson(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
+
+        final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
+
+        AssertHelper.assertCollectionSize(1, situations);
+        AssertHelper.assertCollectionSize(1, jsons.getFeatures());
+        final Situation situation = situations.get(0);
+        final TrafficAnnouncementFeature situationJson = jsons.getFeatures().get(0);
+
+        Assert.assertEquals(GUID_WITH_JSON, situation.getId());
+        Assert.assertEquals(GUID_WITH_JSON, situationJson.getProperties().situationId);
+    }
+
+    @Test
+    public void findActive() throws IOException {
+        // One active with json
+        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        // One active without json
+        initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
+
+        assertActiveMessageFound(GUID_WITH_JSON, true, true);
+        assertActiveMessageFound(GUID_NO_JSON, true, false);
+    }
+
+    @Test
+    public void findAllBySituationId() throws IOException {
+        // One active with json
+        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        // One active without json
+        initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
+
+        // Both guid should be found
+        assertFoundBySituationId(GUID_WITH_JSON, true, true);
+        // Only datex2 is found
+        assertActiveMessageFound(GUID_NO_JSON, true, false);
+    }
+
+    @Test
+    public void findActiveJsonWithoutGeometry() throws IOException {
+        // One active with json
+        initDataFromFile("TrafficIncidentImsMessageWithNullGeometryV0_2_5.xml");
+        assertActiveMessageFound(GUID_WITH_JSON, true, true);
+    }
+
+    @Test
+    public void findActiveJsonWithoutPropertiesIsNotReturned() throws IOException {
+        // One active with json
+        initDataFromFile("TrafficIncidentImsMessageWithNullProperties.xml");
+        assertActiveMessageFound(GUID_WITH_JSON, true, false);
+    }
+
+    private void activeIncidentsDatex2AndJsonEquals() {
         final D2LogicalModel d2 = v2Datex2DataService.findActive(0, Datex2MessageType.TRAFFIC_INCIDENT);
         final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
         final TrafficAnnouncementFeatureCollection activeJsons = v2Datex2DataService.findActiveJson(0, Datex2MessageType.TRAFFIC_INCIDENT);
@@ -81,68 +147,17 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
 
         final String commentXml = situation.getSituationRecords().get(0).getGeneralPublicComments().get(0).getComment().getValues().getValues().stream()
             .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
-        final String descJson = jsonProperties.announcements.get(0).getLocation().description;
-        final String titleJson = jsonProperties.announcements.get(0).getTitle();
-
+        final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
+        final String descJson = announcement.location.description;
+        final String titleJson = announcement.title;
+        //{"name": "Nopeusrajoitus", "quantity": 80.0, "unit": "km/h"},
+        //{"name": "Huono ajokeli"}
+        AssertHelper.assertCollectionSize(2, announcement.features);
+        final String feature = announcement.features.get(0);
+        AssertHelper.collectionContains("Nopeusrajoitus", announcement.features);
+        AssertHelper.collectionContains("Huono ajokeli", announcement.features);
         Assert.assertTrue(commentXml.contains(titleJson.trim()));
         Assert.assertTrue(commentXml.contains(descJson.trim()));
-    }
-
-    @Test
-    public void findBySituationId() throws IOException {
-        // One active
-        initDataFromFile("TrafficIncidentImsMessage.xml");
-
-        final D2LogicalModel d2 = v2Datex2DataService.findAllBySituationId(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
-        final TrafficAnnouncementFeatureCollection jsons = v2Datex2DataService.findAllBySituationIdJson(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
-
-        final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
-
-        AssertHelper.assertCollectionSize(1, situations);
-        AssertHelper.assertCollectionSize(1, jsons.getFeatures());
-        final Situation situation = situations.get(0);
-        final TrafficAnnouncementFeature situationJson = jsons.getFeatures().get(0);
-
-        Assert.assertEquals(GUID_WITH_JSON, situation.getId());
-        Assert.assertEquals(GUID_WITH_JSON, situationJson.getProperties().situationId);
-    }
-
-    @Test
-    public void findActive() throws IOException {
-        // One active with json
-        initDataFromFile("TrafficIncidentImsMessage.xml");
-        // One active without json
-        initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
-
-        assertActiveMessageFound(GUID_WITH_JSON, true, true);
-        assertActiveMessageFound(GUID_NO_JSON, true, false);
-    }
-
-    @Test
-    public void findAllBySituationId() throws IOException {
-        // One active with json
-        initDataFromFile("TrafficIncidentImsMessage.xml");
-        // One active without json
-        initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
-
-        // Both guid should be found
-        assertFoundBySituationId(GUID_WITH_JSON, true, true);
-        // Only datex2 is found
-        assertActiveMessageFound(GUID_NO_JSON, true, false);
-    }
-
-    @Test
-    public void findActiveJsonWithoutGeometry() throws IOException {
-        // One active with json
-        initDataFromFile("TrafficIncidentImsMessageWithNullGeometry.xml");
-        assertActiveMessageFound(GUID_WITH_JSON, true, true);
-    }
-
-    @Test
-    public void findActiveJsonWithoutPropertiesIsNotReturned() throws IOException {
-        // One active with json
-        initDataFromFile("TrafficIncidentImsMessageWithNullProperties.xml");
-        assertActiveMessageFound(GUID_WITH_JSON, true, false);
     }
 
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
@@ -152,10 +167,10 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
 
         Assert.assertEquals(
             foundInDatex2,
-            situationPublication.getSituations().stream().filter(s -> s.getId().equals(situationId)).findFirst().isPresent());
+            situationPublication.getSituations().stream().anyMatch(s -> s.getId().equals(situationId)));
         Assert.assertEquals(
             foundInJson,
-            withJson.getFeatures().stream().filter(f -> f.getProperties().situationId.equals(situationId)).findFirst().isPresent());
+            withJson.getFeatures().stream().anyMatch(f -> f.getProperties().situationId.equals(situationId)));
     }
 
     private void assertFoundBySituationId(final String situationId, boolean foundInDatex2, boolean foundInJson) {
@@ -164,7 +179,7 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
             final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
             Assert.assertEquals(
                 foundInDatex2,
-                situationPublication.getSituations().stream().filter(s -> s.getId().equals(situationId)).findFirst().isPresent());
+                situationPublication.getSituations().stream().anyMatch(s -> s.getId().equals(situationId)));
         } catch (Exception e) { // not found
             Assert.assertFalse(foundInDatex2);
         }
@@ -173,7 +188,7 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
                 v2Datex2DataService.findAllBySituationIdJson(situationId, Datex2MessageType.TRAFFIC_INCIDENT);
             Assert.assertEquals(
                 foundInJson,
-                withJson.getFeatures().stream().filter(f -> f.getProperties().situationId.equals(situationId)).findFirst().isPresent());
+                withJson.getFeatures().stream().anyMatch(f -> f.getProperties().situationId.equals(situationId)));
         } catch (Exception e) { // not found
             Assert.assertFalse(foundInJson);
         }

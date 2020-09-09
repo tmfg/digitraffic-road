@@ -1,10 +1,10 @@
 package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Traffic Announcement properties", value = "TrafficAnnouncementProperties")
+@ApiModel(description = "Traffic Announcement properties", value = "TrafficAnnouncementPropertiesV2")
 @JsonPropertyOrder({
     "situationId",
     "messageType",
@@ -25,19 +25,22 @@ import io.swagger.annotations.ApiModelProperty;
 public class TrafficAnnouncementProperties {
 
     @ApiModelProperty(value = "Situation id", required = true)
+    @NotNull
     public final String situationId;
 
     @ApiModelProperty(value = "Announcement version", required = true)
+    @NotNull
     public final Integer version;
 
     @ApiModelProperty(value = "Annoucement release time", required = true)
+    @NotNull
     public final ZonedDateTime releaseTime;
 
     @ApiModelProperty(value = "Location to display in ETRS-TM35FIN coordinate format.")
     public final LocationToDisplay locationToDisplay;
 
-    @JsonProperty("announcements")
     @ApiModelProperty(value = "Contains announcement's different language versions available.", required = true)
+    @NotNull
     public final List<TrafficAnnouncement> announcements;
 
     @ApiModelProperty(value = "Sender's contact information")

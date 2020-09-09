@@ -1,6 +1,10 @@
 
 package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -8,9 +12,12 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "LocationDetails")
+@ApiModel(description = "LocationDetails", value = "LocationDetailsV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "areaLocation", "roadAddressLocation" })
+@JsonPropertyOrder({
+    "areaLocation",
+    "roadAddressLocation"
+})
 public class LocationDetails {
 
     @ApiModelProperty(value = "Location consisting of one or more areas.")
@@ -18,6 +25,9 @@ public class LocationDetails {
 
     @ApiModelProperty(value = "Location consisting of a single road point or a road segment between two road points")
     public RoadAddressLocation roadAddressLocation;
+
+    @JsonIgnore
+    public Map<String, Object> additionalProperties = new HashMap<>();
 
     public LocationDetails() {
     }

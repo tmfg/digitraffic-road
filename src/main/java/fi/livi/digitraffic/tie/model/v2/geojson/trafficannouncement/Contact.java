@@ -1,6 +1,10 @@
 
 package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -8,7 +12,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Sender's contact information")
+@ApiModel(description = "Sender's contact information", value = "ContactV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "phone",
@@ -25,6 +29,9 @@ public class Contact {
 
     @ApiModelProperty("Email")
     public String email;
+
+    @JsonIgnore
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public Contact() {
     }

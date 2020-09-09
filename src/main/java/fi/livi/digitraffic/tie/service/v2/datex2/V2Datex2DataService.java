@@ -97,7 +97,7 @@ public class V2Datex2DataService {
 
         // conver Datex2s to D2LogicalModels
         final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()
-            .map(datex2 -> (D2LogicalModel) stringToObjectMarshaller.convertToObject(datex2.getMessage()))
+            .map(datex2 -> stringToObjectMarshaller.convertToObject(datex2.getMessage()))
             .filter(d2 -> d2.getPayloadPublication() != null)
             .sorted(Comparator.comparing((D2LogicalModel d2) -> d2.getPayloadPublication().getPublicationTime()).reversed())
             .collect(Collectors.toList());
@@ -120,7 +120,7 @@ public class V2Datex2DataService {
         final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.typeFor(messageType));
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
-            .map(d2 -> v2Datex2HelperService.convertToFeatureJsonObject(d2.getJsonMessage(), messageType))
+            .map(d2 -> v2Datex2HelperService.convertToFeatureJsonObjectV2(d2.getJsonMessage()))
             // Filter invalid jsons
             .filter(Objects::nonNull)
             .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())

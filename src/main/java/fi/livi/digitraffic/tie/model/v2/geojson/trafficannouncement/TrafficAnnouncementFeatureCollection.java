@@ -5,13 +5,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.v1.RootMetadataObjectDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Collection of Traffic Announcements", value = "TrafficAnnouncementFeatureCollection")
+@ApiModel(description = "GeoJSON Feature Collection of Traffic Announcements", value = "TrafficAnnouncementFeatureCollectionV2")
 @JsonPropertyOrder({
     "type",
     "dataUpdatedTime",
@@ -53,6 +55,7 @@ public class TrafficAnnouncementFeatureCollection extends RootMetadataObjectDto 
     }
 
     @Override
+    @NotNull
     public Iterator<TrafficAnnouncementFeature> iterator() {
         return features.iterator();
     }
