@@ -28,9 +28,9 @@ public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListe
     private final V2Datex2UpdateService v2Datex2UpdateService;
 
     @Autowired
-    public ImsTrafficIncidentJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
-                                                      @Value("${jms.userId}") final String jmsUserId,
-                                                      @Value("${jms.password}") final String jmsPassword,
+    public ImsTrafficIncidentJMSListenerConfiguration(@Qualifier("sonjaTestJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+                                                      @Value("${jms.test.userId}") final String jmsUserId,
+                                                      @Value("${jms.test.password}") final String jmsPassword,
                                                       @Value("#{'${jms.datex2.inQueue}'.split(',')}")
                                                       final List<String> jmsQueueKeys,
                                                       final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller,
