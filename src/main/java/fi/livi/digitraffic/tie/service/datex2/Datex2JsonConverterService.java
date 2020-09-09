@@ -170,7 +170,7 @@ public class Datex2JsonConverterService {
             final String joinedViolations = violations.stream()
                 .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
                 .collect(Collectors.joining(","));
-            throw new IllegalStateException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
+            throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
         }
     }
 
@@ -182,7 +182,7 @@ public class Datex2JsonConverterService {
             final String joinedViolations = violations.stream()
                 .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
                 .collect(Collectors.joining(","));
-            throw new IllegalStateException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
+            throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
         }
     }
 

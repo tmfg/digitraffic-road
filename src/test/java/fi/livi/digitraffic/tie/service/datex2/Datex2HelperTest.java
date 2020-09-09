@@ -58,15 +58,15 @@ public class Datex2HelperTest extends AbstractServiceTest {
 
     @Test
     public void isNewOrUpdatedSituation() {
-        final Situation sNow = creatSituationWithRecordsVersionTimes(TIME_MILLIS_IN_FUTURE);
+        final Situation sNow = createSituationWithRecordsVersionTimes(TIME_MILLIS_IN_FUTURE);
         assertFalse(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sNow));
         assertFalse(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sNow));
 
-        final Situation sFuture = creatSituationWithRecordsVersionTimes(TIME_SECONDS_IN_FUTURE);
+        final Situation sFuture = createSituationWithRecordsVersionTimes(TIME_SECONDS_IN_FUTURE);
         assertTrue(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sFuture));
         assertTrue(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sFuture));
 
-        final Situation sPast = creatSituationWithRecordsVersionTimes(TIME_SECONDS_IN_PAST);
+        final Situation sPast = createSituationWithRecordsVersionTimes(TIME_SECONDS_IN_PAST);
         assertFalse(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW, sPast));
         assertFalse(Datex2Helper.isNewOrUpdatedSituation(TIME_NOW_ZONED, sPast));
     }
@@ -98,7 +98,7 @@ public class Datex2HelperTest extends AbstractServiceTest {
         Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
     }
 
-    private static Situation creatSituationWithRecordsVersionTimes(Instant...versionTimes) {
+    private static Situation createSituationWithRecordsVersionTimes(Instant...versionTimes) {
         final List<SituationRecord> records = Arrays.stream(versionTimes).map(Datex2HelperTest::createSituationRecord).collect(Collectors.toList());
         return new Situation().withSituationRecords(records);
     }

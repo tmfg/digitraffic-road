@@ -83,17 +83,17 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     public void findBySituationIdV0_2_4() throws IOException {
         // One active
         initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
-        findBySituationId();
+        checkFindBySituationId();
     }
 
     @Test
     public void findBySituationIdV0_2_5() throws IOException {
         // One active
         initDataFromFile("TrafficIncidentImsMessageV0_2_5.xml");
-        findBySituationId();
+        checkFindBySituationId();
     }
 
-    private void findBySituationId() {
+    private void checkFindBySituationId() {
         final D2LogicalModel d2 = v2Datex2DataService.findAllBySituationId(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
         final TrafficAnnouncementFeatureCollection jsons = v3Datex2DataService.findAllBySituationIdJson(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
 

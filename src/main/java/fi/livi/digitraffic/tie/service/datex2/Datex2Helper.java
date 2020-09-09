@@ -11,6 +11,7 @@ import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 public class Datex2Helper {
     private static final Logger log = LoggerFactory.getLogger(Datex2Helper.class);
@@ -34,7 +35,7 @@ public class Datex2Helper {
         if (model.getPayloadPublication() instanceof SituationPublication) {
             return (SituationPublication) model.getPayloadPublication();
         } else {
-            final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
+            final String err = "method=getSituationPublication Not SituationPublication available for " + ToStringHelper.toStringFull(model.getPayloadPublication());
             log.error(err);
             throw new IllegalArgumentException(err);
         }
@@ -44,8 +45,8 @@ public class Datex2Helper {
         final int situations = getSituationPublication(d2).getSituations().size();
         if ( situations > 1 ) {
             log.error("method=checkOnyOneSituation D2LogicalModel had {) situations. Only 1 is allowed in this service.");
-            throw new java.lang.IllegalArgumentException("D2LogicalModel passed to Datex2UpdateService can only have one situation per message, " +
-                "there was " + situations);
+            throw new IllegalArgumentException("D2LogicalModel passed to Datex2UpdateService can only have one situation per message, " +
+                                               "there was " + situations);
         }
     }
 }
