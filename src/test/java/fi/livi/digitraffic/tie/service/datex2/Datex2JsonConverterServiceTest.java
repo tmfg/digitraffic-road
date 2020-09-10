@@ -93,7 +93,7 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V3);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithIllegalDuration() throws JsonProcessingException {
         final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
         final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
@@ -101,7 +101,7 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_4_illegalDuration);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void convertImsJsonV0_2_5ToGeoJsonFeatureObjectV3WithIllegalDuration() throws JsonProcessingException {
         final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_5.ImsGeoJsonFeature ims = createJsonMessageV0_2_5();
         final String imsJsonV0_2_5 = objectMapper.writer().writeValueAsString(ims);
