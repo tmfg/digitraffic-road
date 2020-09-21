@@ -334,9 +334,9 @@ public class V2MaintenanceTrackingUpdateService {
             final List<List<Object>> lineStringCoords = sijainti.getViivageometria().getCoordinates();
             return lineStringCoords.stream().map(point -> {
                 try {
-                    final double x = (double) point.get(0);
-                    final double y = (double) point.get(1);
-                    final double z = point.size() > 2 ? Double.valueOf((Integer) point.get(2)) : 0.0;
+                    final double x = ((Number) point.get(0)).doubleValue();
+                    final double y = ((Number) point.get(1)).doubleValue();
+                    final double z = point.size() > 2 ? ((Number) point.get(2)).doubleValue() : 0.0;
                     final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                     if (log.isDebugEnabled()) {
                         log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
@@ -365,6 +365,7 @@ public class V2MaintenanceTrackingUpdateService {
         if (previousTracking != null) {
             final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
             // It's allowed for next to be same or after the previous time
+            log.info("GAP in mins {}", ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime));
             final boolean timeGapInsideTheLimit =
                 ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
             if (!timeGapInsideTheLimit) {
