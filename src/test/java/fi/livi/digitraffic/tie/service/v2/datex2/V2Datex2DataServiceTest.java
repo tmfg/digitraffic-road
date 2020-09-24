@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
@@ -64,10 +65,11 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         activeIncidentsDatex2AndJsonEquals();
     }
 
+    @Rollback(false)
     @Test
-    public void activeIncidentsDatex2AndJsonEqualsV0_2_5() throws IOException {
+    public void activeIncidentsDatex2AndJsonEqualsV0_2_6() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_5.xml");
+        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
         activeIncidentsDatex2AndJsonEquals();
     }
 
@@ -114,10 +116,11 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         assertActiveMessageFound(GUID_NO_JSON, true, false);
     }
 
+    @Rollback(false)
     @Test
     public void findActiveJsonWithoutGeometry() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageWithNullGeometryV0_2_5.xml");
+        initDataFromFile("TrafficIncidentImsMessageWithNullGeometryV0_2_6.xml");
         assertActiveMessageFound(GUID_WITH_JSON, true, true);
     }
 

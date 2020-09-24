@@ -14,12 +14,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * Feature schema.
- * <p>
- * Feature describes characteristics and qualities of the situation.
- * 
- */
 @ApiModel(description = "Characteristics and qualities of the situation", value = "FeatureV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({

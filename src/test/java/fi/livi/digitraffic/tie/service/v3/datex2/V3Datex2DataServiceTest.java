@@ -73,10 +73,10 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void activeIncidentsDatex2AndJsonEqualsV0_2_5() throws IOException {
+    public void activeIncidentsDatex2AndJsonEqualsV0_2_6() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_5.xml");
-        activeIncidentsDatex2AndJsonEquals(Version.V0_2_5);
+        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        activeIncidentsDatex2AndJsonEquals(Version.V0_2_6);
     }
 
     @Test
@@ -87,9 +87,9 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void findBySituationIdV0_2_5() throws IOException {
+    public void findBySituationIdV0_2_6() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_5.xml");
+        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
         checkFindBySituationId();
     }
 
@@ -120,9 +120,9 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void findActiveV0_2_5() throws IOException {
+    public void findActiveV0_2_6() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_5.xml");
+        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -144,9 +144,9 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void findAllBySituationIdV0_2_5() throws IOException {
+    public void findAllBySituationIdV0_2_6() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_5.xml");
+        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -159,7 +159,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findActiveJsonWithoutGeometry() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageWithNullGeometryV0_2_5.xml");
+        initDataFromFile("TrafficIncidentImsMessageWithNullGeometryV0_2_6.xml");
         assertActiveMessageFound(GUID_WITH_JSON, true, true);
     }
 
@@ -172,7 +172,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
 
     enum Version {
         V0_2_4,
-        V0_2_5
+        V0_2_6
     }
 
     private static final String FEATURE_1 = "Nopeusrajoitus";
@@ -211,7 +211,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
 
         final Optional<Feature> feature1;
         final Optional<Feature> feature2;
-        if (version == Version.V0_2_5) {
+        if (version == Version.V0_2_6) {
             feature1 = features.stream().filter(f -> f.name.equals(FEATURE_1)).findFirst();
             feature2 = features.stream().filter(f -> f.name.equals(FEATURE_2)).findFirst();
             assertTrue(FEATURE_1 + " not found", feature1.isPresent());

@@ -67,13 +67,13 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     }
 
     @Test
-    public void datex2ReceiveMessagesV0_2_5() throws IOException {
+    public void datex2ReceiveMessagesV0_2_6() throws IOException {
         datex2Repository.deleteAll();
 
         final String SITUATION_ID_1 = "GUID50001238";
         final JMSMessageListener datexJmsMessageListener = createImsJmsMessageListener();
 
-        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV0_2_5.xml");
+        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV0_2_6.xml");
         readAndSendMessages(imsResources, datexJmsMessageListener);
 
         final D2LogicalModel active = v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT);
