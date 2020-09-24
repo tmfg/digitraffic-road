@@ -49,7 +49,7 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
     private static final String MAX_DURATION = "PT8H";
     private static final String MIN_DURATION = "PT6H";
     private static final String ILLEGAL_DURATION = "Pt6H";
-    private static final String FEATURE_v2 = "Huono ajokeli";
+    private static final String FEATURE_V2 = "Huono ajokeli";
     private final static String FEATURE_NAME_V3 = "Nopeusrajoitus";
     private final static double FEATURE_QUANTITY_V3 = 80.0;
     private final static String FEATURE_UNIT_V3 = "km/h";
@@ -69,7 +69,7 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(imsV0_2_4);
         final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_4);
-        assertAnnouncementFeaturesV2(feature, FEATURE_v2);
+        assertAnnouncementFeaturesV2(feature, FEATURE_V2);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(imsV0_2_4);
         final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_4);
-        assertAnnouncementFeaturesV3(feature, FEATURE_v2);
+        assertAnnouncementFeaturesV3(feature, FEATURE_V2);
         assertLastActiveItinerarySegmentV3(feature, false);
     }
 
@@ -124,17 +124,17 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         final String imsJson = objectMapper.writer().writeValueAsString(ims);
         fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJson);
-        assertAnnouncementFeaturesV2(feature, FEATURE_v2);
+        assertAnnouncementFeaturesV2(feature, FEATURE_V2);
     }
 
     @Test
     public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV3WithoutDuration() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims = createJsonMessageV0_2_6();
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims = createJsonMessageV0_2_4();
         ims.getProperties().getAnnouncements().forEach(a -> a.setTimeAndDuration(null));
         final String imsJson = objectMapper.writer().writeValueAsString(ims);
         fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJson);
-        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V3);
+        assertAnnouncementFeaturesV3(feature, FEATURE_V2);
         assertLastActiveItinerarySegmentV3(feature, false);
     }
 
@@ -188,7 +188,6 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature f =
             datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_6);
         assertCollectionSize(0, f.getProperties().announcements);
-        assertLastActiveItinerarySegmentV3(f, true);
     }
 
     @Test(expected = JsonParseException.class)
@@ -245,10 +244,10 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
 
     private void assertLastActiveItinerarySegmentV3(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature,
                                                     final boolean shouldExist) {
-        AssertHelper.assertCollectionSize(1, feature.getProperties().announcements);
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.LastActiveItinerarySegment lais =
-            feature.getProperties().announcements.get(0).lastActiveItinerarySegment;
         if (shouldExist) {
+            AssertHelper.assertCollectionSize(1, feature.getProperties().announcements);
+            final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.LastActiveItinerarySegment lais =
+                feature.getProperties().announcements.get(0).lastActiveItinerarySegment;
             assertNotNull(lais);
             assertNotNull(lais.startTime);
             assertNotNull(lais.endTime);
@@ -262,7 +261,9 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
             assertNotNull(leg.roadLeg.startArea);
             assertNotNull(leg.roadLeg.roadNumber);
         } else {
-            assertNull(lais);
+            if (feature.getProperties().announcements != null && feature.getProperties().announcements.size() > 0) {
+                assertNull(feature.getProperties().announcements.get(0).lastActiveItinerarySegment);
+            }
         }
     }
 
@@ -277,7 +278,7 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
                     .withTitle("Title")
                     .withLocation(createLocationV0_2_4())
                     .withLocationDetails(createLocationDetailsV0_2_4())
-                    .withFeatures(Collections.singletonList(FEATURE_v2))
+                    .withFeatures(Collections.singletonList(FEATURE_V2))
                     .withComment("TEST")
                     .withTimeAndDuration(createTimeAndDurationV0_2_4())
                     .withAdditionalInformation("Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/")
