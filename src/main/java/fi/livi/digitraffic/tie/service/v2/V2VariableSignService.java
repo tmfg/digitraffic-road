@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -63,7 +64,7 @@ public class V2VariableSignService {
     }
 
     private VariableSignFeature convert(final Device device, final DeviceData data) {
-        final List<SignTextRow> textRows = CollectionUtils.isEmpty(data.getRows()) ? null : convert(data.getRows());
+        final List<SignTextRow> textRows = CollectionUtils.isEmpty(data.getRows()) ? Collections.emptyList() : convert(data.getRows());
 
         final VariableSignProperties properties = new VariableSignProperties(
             device.getId(),
