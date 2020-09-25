@@ -12,17 +12,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "ItineraryLeg", value = "ItineraryLegV3")
+@ApiModel(description = "ItineraryLeg is one leg of the route", value = "ItineraryLegV3")
 @JsonPropertyOrder({
     "roadLeg",
     "streetName"
 })
 public class ItineraryLeg {
 
-    @ApiModelProperty(value = "Road leg")
+    @ApiModelProperty(value = "Road leg if ghe leg is on the road network")
     public ItineraryRoadLeg roadLeg;
 
-    @ApiModelProperty(value = "Name of the street")
+    @ApiModelProperty(value = "Name of the street if leg is on the street network")
     public String streetName;
 
     @JsonIgnore

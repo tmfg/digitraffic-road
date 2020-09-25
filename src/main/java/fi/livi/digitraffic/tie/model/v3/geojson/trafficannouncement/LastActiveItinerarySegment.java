@@ -23,18 +23,15 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "startTime", "endTime", "legs" })
 public class LastActiveItinerarySegment {
 
-    @ApiModelProperty(value = "The time when the transport may start this segment.",
-                      required = true)
+    @ApiModelProperty(value = "The time when the transport may start this segment.", required = true)
     @NotNull
     public ZonedDateTime startTime;
 
-    @ApiModelProperty(value = "Time by which the transport has finished this segment.",
-                      required = true)
+    @ApiModelProperty(value = "Time by which the transport has finished this segment.", required = true)
     @NotNull
     public ZonedDateTime endTime;
 
-    @ApiModelProperty(value = "Legs.",
-                      required = true)
+    @ApiModelProperty(value = "Route legs.", required = true)
     @NotNull
     public List<ItineraryLeg> legs = new ArrayList<ItineraryLeg>();
 

@@ -12,8 +12,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "ItineraryRoadLeg.",
-          value = "ItineraryRoadLegV3")
+@ApiModel(description = "ItineraryRoadLeg is route leg that is on the road network.", value = "ItineraryRoadLegV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
                        "roadNumber",
