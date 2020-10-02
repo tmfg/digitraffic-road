@@ -30,7 +30,7 @@ import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
-import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
@@ -55,7 +55,7 @@ public class V2Datex2UpdateService {
 
     @Autowired
     public V2Datex2UpdateService(final Datex2Repository datex2Repository,
-                                 final StringToObjectMarshaller stringToObjectMarshaller,
+                                 final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller,
                                  final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;

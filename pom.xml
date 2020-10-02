@@ -555,7 +555,7 @@
                                 <xsdOption>
                                     <extension>true</extension>
                                     <xsd>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessage_1_2_0.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.external.tloik.ims</packagename>
+                                    <packagename>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0</packagename>
                                     <extensionArgs>
                                         <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
                                              is already in use. Use a class customization to resolve this conflict -->

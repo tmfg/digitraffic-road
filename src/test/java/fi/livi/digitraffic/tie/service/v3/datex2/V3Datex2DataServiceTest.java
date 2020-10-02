@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Feature;
@@ -68,28 +68,28 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void activeIncidentsDatex2AndJsonEqualsV0_2_4() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         activeIncidentsDatex2AndJsonEquals(Version.V0_2_4);
     }
 
     @Test
     public void activeIncidentsDatex2AndJsonEqualsV0_2_6() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         activeIncidentsDatex2AndJsonEquals(Version.V0_2_6);
     }
 
     @Test
     public void findBySituationIdV0_2_4() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         checkFindBySituationId();
     }
 
     @Test
     public void findBySituationIdV0_2_6() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         checkFindBySituationId();
     }
 
@@ -111,7 +111,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findActiveV0_2_4() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -122,7 +122,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findActiveV0_2_6() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -133,7 +133,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findAllBySituationIdV0_2_4() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -146,7 +146,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findAllBySituationIdV0_2_6() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 

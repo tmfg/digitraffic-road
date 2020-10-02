@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
@@ -47,9 +47,9 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         datex2Repository.deleteAll();
 
         final String SITUATION_ID_1 = "GUID50001238";
-        final JMSMessageListener datexJmsMessageListener = createImsJmsMessageListener();
+        final JMSMessageListener<ImsMessage> datexJmsMessageListener = createImsJmsMessageListener();
 
-        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV0_2_4.xml");
+        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         readAndSendMessages(imsResources, datexJmsMessageListener);
 
         final D2LogicalModel active = v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT);
@@ -71,9 +71,9 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         datex2Repository.deleteAll();
 
         final String SITUATION_ID_1 = "GUID50001238";
-        final JMSMessageListener datexJmsMessageListener = createImsJmsMessageListener();
+        final JMSMessageListener<ImsMessage> datexJmsMessageListener = createImsJmsMessageListener();
 
-        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV0_2_6.xml");
+        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         readAndSendMessages(imsResources, datexJmsMessageListener);
 
         final D2LogicalModel active = v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT);
@@ -91,16 +91,16 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     }
 
 
-    private JMSMessageListener createImsJmsMessageListener() {
+    private JMSMessageListener<ImsMessage> createImsJmsMessageListener() {
         final JMSMessageListener.JMSDataUpdater<ImsMessage> dataUpdater = (data) ->  v2Datex2UpdateService.updateTrafficIncidentImsMessages(data);
-        return new JMSMessageListener(new ImsMessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
+        return new JMSMessageListener<>(new ImsMessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
     }
 
-    private void readAndSendMessages(final List<Resource> imsResources, final JMSMessageListener messageListener) throws IOException {
+    private void readAndSendMessages(final List<Resource> imsResources, final JMSMessageListener<ImsMessage> messageListener) throws IOException {
         readAndSendMessages(imsResources, messageListener, null, null);
     }
 
-    private void readAndSendMessages(final List<Resource> imsResources, final JMSMessageListener messageListener,
+    private void readAndSendMessages(final List<Resource> imsResources, final JMSMessageListener<ImsMessage> messageListener,
                                      final String  placeholderName, final String replacement) throws IOException {
         log.info("Read and send " + imsResources.size() + " IMS Datex2 messages...");
         for (final Resource datex2Resource : imsResources) {
