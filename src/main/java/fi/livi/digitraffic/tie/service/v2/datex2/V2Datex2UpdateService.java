@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.Comment;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -30,7 +31,6 @@ import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
-import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
@@ -63,12 +63,12 @@ public class V2Datex2UpdateService {
     }
 
     @Transactional
-    public int updateTrafficIncidentImsMessages(final List<ImsMessage> imsMessages) {
+    public int updateTrafficIncidentImsMessages(final List<ExternalIMSMessage> imsMessages) {
         return updateTrafficImsMessages(imsMessages, TRAFFIC_INCIDENT);
     }
 
     @Transactional
-    public int updateTrafficImsMessages(final List<ImsMessage> imsMessages, final Datex2MessageType messageType) {
+    public int updateTrafficImsMessages(final List<ExternalIMSMessage> imsMessages, final Datex2MessageType messageType) {
         return (int)imsMessages.stream()
             .filter(imsMessage -> isNewOrUpdatedSituation(stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message()), messageType))
             .map(imsMessage -> convertToDatex2MessageDto(imsMessage, messageType))
@@ -76,7 +76,7 @@ public class V2Datex2UpdateService {
             .count();
     }
 
-    private Datex2MessageDto convertToDatex2MessageDto(final ImsMessage imsMessage, final Datex2MessageType messageType) {
+    private Datex2MessageDto convertToDatex2MessageDto(final ExternalIMSMessage imsMessage, final Datex2MessageType messageType) {
         final String jsonValue = StringUtils.trimToNull(imsMessage.getMessageContent().getJMessage());
         if (log.isDebugEnabled()) {
             log.debug("IMS JSON: \n{}", jsonValue);

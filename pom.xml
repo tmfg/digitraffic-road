@@ -487,8 +487,9 @@
                 <version>3.3.0</version>
                 <configuration>
                     <extensions>
-                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.3.0</extension>
+                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.3.1</extension>
                         <extension>net.java.dev.jaxb2-commons:jaxb-fluent-api:2.1.8</extension>
+                        <extension>org.jvnet.jaxb2_commons:jaxb2-basics:1.11.1</extension>
                     </extensions>
                 </configuration>
                 <executions>
@@ -554,6 +555,10 @@
                                 </xsdOption>
                                 <xsdOption>
                                     <extension>true</extension>
+                                    <bindingFiles>
+                                        <bindingFile>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessageBinding_1_2_0.xjb</bindingFile>
+                                        <bindingFile>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessageContentBinding_1_2_0.xjb</bindingFile>
+                                    </bindingFiles>
                                     <xsd>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessage_1_2_0.xsd</xsd>
                                     <packagename>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0</packagename>
                                     <extensionArgs>
@@ -564,6 +569,28 @@
                                         <extensionArg>-Xfluent-api</extensionArg>
                                         <extensionArg>-npa</extensionArg>
                                         <extensionArg>-mark-generated</extensionArg>
+                                        <!-- Inherit given interfaces in binding files -->
+                                        <extensionArg>-Xinheritance</extensionArg>
+                                    </extensionArgs>
+                                </xsdOption>
+                                <xsdOption>
+                                    <extension>true</extension>
+                                    <xsd>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessage_1_2_1.xsd</xsd>
+                                    <bindingFiles>
+                                        <bindingFile>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessageBinding_1_2_1.xjb</bindingFile>
+                                        <bindingFile>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessageContentBinding_1_2_1.xjb</bindingFile>
+                                    </bindingFiles>
+                                    <packagename>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1</packagename>
+                                    <extensionArgs>
+                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
+                                             is already in use. Use a class customization to resolve this conflict -->
+                                        <extensionArg>-XautoNameResolution</extensionArg>
+                                        <!--Generate withProperty methods-->
+                                        <extensionArg>-Xfluent-api</extensionArg>
+                                        <extensionArg>-npa</extensionArg>
+                                        <extensionArg>-mark-generated</extensionArg>
+                                        <!-- Inherit given interfaces in binding files -->
+                                        <extensionArg>-Xinheritance</extensionArg>
                                     </extensionArgs>
                                 </xsdOption>
                             </xsdOptions>

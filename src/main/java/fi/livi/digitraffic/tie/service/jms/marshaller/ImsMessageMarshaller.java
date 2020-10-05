@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
+import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 
-public class ImsMessageMarshaller extends TextMessageMarshaller<ImsMessage> {
+public class ImsMessageMarshaller extends TextMessageMarshaller<ExternalIMSMessage> {
     private static final Logger log = LoggerFactory.getLogger(ImsMessageMarshaller.class);
 
     public ImsMessageMarshaller(final Jaxb2Marshaller jaxb2Marshaller) {
@@ -16,7 +16,7 @@ public class ImsMessageMarshaller extends TextMessageMarshaller<ImsMessage> {
     }
 
     @Override
-    protected List<ImsMessage> transform(final Object object, final String text) {
+    protected List<ExternalIMSMessage> transform(final Object object, final String text) {
         log.debug("method=transform messageText={}", text);
         return super.transform(object, text);
     }
