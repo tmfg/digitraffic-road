@@ -46,12 +46,28 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
     public void testDelete() {
         final List<Datex2> all = datex2Repository.findAll();
         assertCollectionSize(1, all);
-        System.out.println(all.get(0).getDetailedMessageType());
 
         datex2Repository.delete(all.get(0));
 
         final List<Datex2> after = datex2Repository.findAll();
         assertCollectionSize(0, after);
+    }
+
+    @Test
+    public void testTypeIsSaved() {
+        for (Datex2DetailedMessageType type : Datex2DetailedMessageType.values()) {
+            datex2Repository.deleteAll();
+            final Datex2 datex2 = new Datex2(type);
+            datex2.setImportTime(ZonedDateTime.now());
+            datex2.setMessage("Message of high importance");
+            datex2Repository.save(datex2);
+            entityManager.flush();
+            entityManager.clear();
+            final List<Datex2> found = datex2Repository.findAll();
+            assertCollectionSize(1, found);
+            Assert.assertEquals(type, found.get(0).getDetailedMessageType());
+            Assert.assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
+        }
     }
 
     @Test

@@ -183,10 +183,11 @@ public class V2Datex2UpdateService {
                 dataStatusService.updateDataUpdated(DataType.typeFor(message.messageType.getDatex2MessageType()));
             }
             final String situationId = Datex2Helper.getSituationPublication(d2).getSituations().get(0).getId();
-            log.info("Update Datex2 situationId={} messageType={} with importTime={}", situationId, message.messageType, datex2.getImportTime());
+            log.info("Update Datex2 situationId={} messageType={} detailedMessageType: {} with importTime={}",
+                situationId, message.messageType.getDatex2MessageType(), message.messageType, datex2.getImportTime());
             return true;
         } else {
-            log.info("method=updateDatex2Data Not updating situationId={} messageType={} as it is already uptodate", message.situationId, message.messageType);
+            log.info("method=updateDatex2Data Not updating situationId={} messageType={} detailedMessageType: {} as it is already uptodate", message.situationId, message.messageType.getDatex2MessageType(), message.messageType);
         }
         return false;
     }

@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.model.v1.datex2;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-
 public enum Datex2DetailedMessageType {
     TRAFFIC_ANNOUNCEMENT(Datex2MessageType.TRAFFIC_INCIDENT, "Liikennetiedote"),
     PRELIMINARY_ANNOUNCEMENT(Datex2MessageType.TRAFFIC_INCIDENT, "Ensitiedote"),
@@ -37,10 +35,5 @@ public enum Datex2DetailedMessageType {
         }
         // Not found
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringHelper.toStringFull(this);
     }
 }
