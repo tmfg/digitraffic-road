@@ -111,7 +111,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
 
     private JMSMessageListener<ExternalIMSMessage> createImsJmsMessageListener() {
-        final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> dataUpdater = (data) ->  v2Datex2UpdateService.updateTrafficIncidentImsMessages(data);
+        final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> dataUpdater = (data) ->  v2Datex2UpdateService.updateTrafficDatex2ImsMessages(data);
         return new JMSMessageListener<>(new ImsMessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
     }
 

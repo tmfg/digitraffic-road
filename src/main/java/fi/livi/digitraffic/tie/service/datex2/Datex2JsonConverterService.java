@@ -2,7 +2,9 @@ package fi.livi.digitraffic.tie.service.datex2;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,6 +13,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,7 +127,7 @@ public class Datex2JsonConverterService {
             // V0_2_4 doesn't have roadWorkPhases
             final ObjectNode lastActiveItinerarySegment = (ObjectNode) announcement.get("lastActiveItinerarySegment");
             if (lastActiveItinerarySegment != null) {
-//                ((ObjectNode)announcement).remove("lastActiveItinerarySegment");
+                ((ObjectNode)announcement).remove("lastActiveItinerarySegment");
             }
 
         }
@@ -232,4 +235,67 @@ public class Datex2JsonConverterService {
             throw new IllegalStateException("TrafficAnnouncementFeature with null properties " + ToStringHelper.toStringFull(feature));
         }
     }
+
+    /**
+     * If given json is GeoJSON FeatureCollection returns it's features otherwise returns the feature json.
+     * @param imsJson GeoJSON string
+     * @return Map of situationId to GeoJSON feature strings. Empty if no features is found.
+     */
+    public Map<String, String> parseFeatureJsonsFromImsJson(final String imsJson) {
+        final Map<String, String> featureJsons = new HashMap<>();
+
+        if (imsJson == null) {
+            return featureJsons;
+        }
+
+        final JsonNode root;
+        try {
+            root = genericJsonReader.readTree(imsJson);
+        } catch (final JsonProcessingException e) {
+            log.error(String.format("method=parseFeatureJsonsFromImsJson Failed to read Json tree of imsJson: %s", imsJson), e);
+            return new HashMap<>();
+        }
+
+        if ( isFeatureCollection(root) ) {
+            final JsonNode features = root.get("features");
+            for (int i = 0; i < features.size(); i++) {
+                final String situationId = getSituationId(features.get(i));
+                if (situationId != null) {
+                    featureJsons.put(situationId, features.get(i).toPrettyString());
+                }
+            }
+        } else if ( isFeature(root) ){
+            final String situationId = getSituationId(root);
+            if (situationId != null) {
+                featureJsons.put(situationId, root.toPrettyString());
+            }
+        } else {
+            log.error("method=parseFeatureJsonsFromImsJson IMS Json doesn't contain valid GeoJson object type. Json: {}", imsJson);
+        }
+        return featureJsons;
+    }
+
+    private String getSituationId(final JsonNode feature) {
+        final JsonNode properties = feature.get("properties");
+        if (properties == null) {
+            log.error("method=getSituationId No properties property for feature json: {}", feature.toPrettyString());
+            return null;
+        }
+        final JsonNode situationId = properties.get("situationId");
+        if (situationId == null) {
+            log.error("method=getSituationId No situationId property for feature json: {}", feature.toPrettyString());
+            return null;
+        }
+        return situationId.asText();
+    }
+
+    private boolean isFeatureCollection(final JsonNode root) {
+        final JsonNode type = root.get("type");
+        return type != null && StringUtils.equals(type.asText(), "FeatureCollection");
+    }
+    private boolean isFeature(final JsonNode root) {
+        final JsonNode type = root.get("type");
+        return type != null && StringUtils.equals(type.asText(), "Feature");
+    }
+
 }

@@ -149,6 +149,6 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
 
     private void updateFromImsMessage(final String imsXml, final Datex2MessageType type) {
         final ImsMessage ims = (ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(imsXml));
-        v2Datex2UpdateService.updateTrafficImsMessages(Collections.singletonList(ims), type);
+        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

@@ -53,7 +53,7 @@ public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListe
 
     @Override
     public JMSMessageListener<ExternalIMSMessage> createJMSMessageListener() {
-        final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> handleData = v2Datex2UpdateService::updateTrafficIncidentImsMessages;
+        final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> handleData = v2Datex2UpdateService::updateTrafficDatex2ImsMessages;
         final ImsMessageMarshaller messageMarshaller = new ImsMessageMarshaller(jaxb2Marshaller);
 
         return new JMSMessageListener<>(messageMarshaller, handleData,

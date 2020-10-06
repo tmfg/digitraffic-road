@@ -269,6 +269,6 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     private void initDataFromFile(final String file) throws IOException {
         final ArrayList<String> xmlImsMessages = readResourceContents("classpath:tloik/ims/" + file);
         final ImsMessage ims = (ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(xmlImsMessages.get(0)));
-        v2Datex2UpdateService.updateTrafficIncidentImsMessages(Collections.singletonList(ims));
+        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

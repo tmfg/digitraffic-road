@@ -23,6 +23,7 @@ import fi.livi.digitraffic.tie.service.FlywayService;
 import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
 import fi.livi.digitraffic.tie.service.v1.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.service.v1.TmsDataService;
@@ -46,7 +47,7 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
           TmsDataService.class, CameraImageUpdateService.class, CameraImageReader.class, CameraImageS3Writer.class,
           Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
-          V2Datex2UpdateService.class,
+          V2Datex2UpdateService.class, Datex2JsonConverterService.class,
           CameraPresetHistoryUpdateService.class, FlywayService.class,
           WeatherService.class, SensorDataUpdateService.class,
 

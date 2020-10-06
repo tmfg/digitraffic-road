@@ -41,12 +41,25 @@ public class Datex2 {
     @Enumerated(EnumType.STRING)
     private Datex2MessageType messageType;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Datex2DetailedMessageType detailedMessageType;
+
     private ZonedDateTime publicationTime;
 
     @OneToMany(mappedBy = "datex2", cascade = CascadeType.ALL)
     private List<Datex2Situation> situations;
 
     private String jsonMessage;
+
+    public Datex2() {
+        // For JPA
+    }
+
+    public Datex2(final Datex2DetailedMessageType messageType) {
+        this.detailedMessageType = messageType;
+        this.messageType = messageType.getDatex2MessageType();
+    }
 
     public Long getId() {
         return id;
@@ -101,8 +114,8 @@ public class Datex2 {
         return messageType;
     }
 
-    public void setMessageType(final Datex2MessageType messageType) {
-        this.messageType = messageType;
+    public Datex2DetailedMessageType getDetailedMessageType() {
+        return detailedMessageType;
     }
 
     public void setJsonMessage(final String jsonMessage) {
