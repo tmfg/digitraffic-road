@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +11,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,11 +24,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.datex2.Accident;
+import fi.livi.digitraffic.tie.datex2.Comment;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.GenericPublication;
+import fi.livi.digitraffic.tie.datex2.MultilingualString;
+import fi.livi.digitraffic.tie.datex2.MultilingualStringValue;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 
 @Import({ JacksonAutoConfiguration.class })
 public class Datex2HelperTest extends AbstractServiceTest {
@@ -96,6 +102,32 @@ public class Datex2HelperTest extends AbstractServiceTest {
     public void checkD2HasOnlyOneSituationFails() {
         final D2LogicalModel d2 = createD2LogicalModelWithSituationPublications(new Situation(), new Situation());
         Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
+    }
+
+    @Test
+    public void resolveMessageType() {
+        for( final Datex2DetailedMessageType type : Datex2DetailedMessageType.values()) {
+            Situation s = createSituationWithComment(type.getToken());
+            assertEquals(type, Datex2Helper.resolveMessageType(s));
+        }
+    }
+
+    private Situation createSituationWithComment(String token) {
+        final Instant now = Instant.now();
+        final Situation s = createSituationWithRecordsVersionTimes(now.minusSeconds(60 * 2), now.minusSeconds(60), now);
+        s.getSituationRecords().get(0).withGeneralPublicComments(createGeneralPublicComments("Diipadaapaa", token, "Hello World!"));
+        return s;
+    }
+
+    private Collection<Comment> createGeneralPublicComments(final String...comments) {
+        return Arrays.stream(comments)
+            .map(c -> new Comment()
+                .withComment(new MultilingualString()
+                    .withValues(new MultilingualString.Values()
+                        .withValues(new MultilingualStringValue()
+                            .withLang("fi")
+                            .withValue("Testing\nmultiline " +  c + " comment."))))
+        ).collect(Collectors.toList());
     }
 
     private static Situation createSituationWithRecordsVersionTimes(Instant...versionTimes) {

@@ -237,15 +237,14 @@ public class Datex2JsonConverterService {
     }
 
     /**
-     * If given json is GeoJSON FeatureCollection returns it's features otherwise returns the feature json.
+     * If given json is GeoJSON FeatureCollection returns it's features otherwise returns the single feature json.
      * @param imsJson GeoJSON string
      * @return Map of situationId to GeoJSON feature strings. Empty if no features is found.
      */
     public Map<String, String> parseFeatureJsonsFromImsJson(final String imsJson) {
-        final Map<String, String> featureJsons = new HashMap<>();
 
         if (imsJson == null) {
-            return featureJsons;
+            return Collections.emptyMap();
         }
 
         final JsonNode root;
@@ -253,24 +252,35 @@ public class Datex2JsonConverterService {
             root = genericJsonReader.readTree(imsJson);
         } catch (final JsonProcessingException e) {
             log.error(String.format("method=parseFeatureJsonsFromImsJson Failed to read Json tree of imsJson: %s", imsJson), e);
-            return new HashMap<>();
+            return Collections.emptyMap();
         }
 
         if ( isFeatureCollection(root) ) {
-            final JsonNode features = root.get("features");
-            for (int i = 0; i < features.size(); i++) {
-                final String situationId = getSituationId(features.get(i));
-                if (situationId != null) {
-                    featureJsons.put(situationId, features.get(i).toPrettyString());
-                }
-            }
+            return parseFeatureCollection(root);
         } else if ( isFeature(root) ){
-            final String situationId = getSituationId(root);
-            if (situationId != null) {
-                featureJsons.put(situationId, root.toPrettyString());
-            }
+            return parseFeature(root);
         } else {
-            log.error("method=parseFeatureJsonsFromImsJson IMS Json doesn't contain valid GeoJson object type. Json: {}", imsJson);
+            log.error("method=parseFeatureJsonsFromImsJson IMS Json doesn't contain valid GeoJson object type [Feature|FeatureCollection]. Json: {}", imsJson);
+            return Collections.emptyMap();
+        }
+    }
+
+    private Map<String, String> parseFeature(final JsonNode root) {
+        final String situationId = getSituationId(root);
+        if (StringUtils.isNotBlank(situationId)) {
+            return Collections.singletonMap(situationId, root.toPrettyString());
+        }
+        return Collections.emptyMap();
+    }
+
+    private Map<String, String> parseFeatureCollection(final JsonNode root) {
+        final JsonNode features = root.get("features");
+        final Map<String, String> featureJsons = new HashMap<>();
+        for (int i = 0; i < features.size(); i++) {
+            final String situationId = getSituationId(features.get(i));
+            if (StringUtils.isNotBlank(situationId)) {
+                featureJsons.put(situationId, features.get(i).toPrettyString());
+            }
         }
         return featureJsons;
     }

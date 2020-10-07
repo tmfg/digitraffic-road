@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.datex2;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 
 public class Datex2Helper {
     private static final Logger log = LoggerFactory.getLogger(Datex2Helper.class);
@@ -48,5 +50,19 @@ public class Datex2Helper {
             throw new IllegalArgumentException("D2LogicalModel passed to Datex2UpdateService can only have one situation per message, " +
                                                "there was " + situations);
         }
+    }
+
+    public static Datex2DetailedMessageType resolveMessageType(final Situation situation) {
+        // Find first getGeneralPublicComment value that contains keyword for Datex2DetailedMessageType
+        return situation.getSituationRecords().stream()
+            .map(sr -> sr.getGeneralPublicComments().stream()
+                .map(pc -> pc.getComment().getValues().getValues().stream()
+                    .map(commentValue -> Datex2DetailedMessageType.findTypeForText(commentValue.getValue()))
+                    .filter(Objects::nonNull)
+                    .findFirst().orElse(null))
+                .filter(Objects::nonNull)
+                .findFirst().orElse(null))
+            .filter(Objects::nonNull)
+            .findFirst().orElse(Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
     }
 }

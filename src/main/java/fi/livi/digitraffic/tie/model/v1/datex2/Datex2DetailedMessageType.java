@@ -10,8 +10,8 @@ public enum Datex2DetailedMessageType {
     ROADWORK(Datex2MessageType.ROADWORK, "Tietyö"),
     WEIGHT_RESTRICTION(Datex2MessageType.WEIGHT_RESTRICTION, "Painorajoitus");
 
-    private String token;
-    private Datex2MessageType datex2MessageType;
+    private final String token;
+    private final Datex2MessageType datex2MessageType;
 
     Datex2DetailedMessageType(final Datex2MessageType datex2MessageType, final String textToFind) {
         this.token = textToFind;
@@ -35,5 +35,9 @@ public enum Datex2DetailedMessageType {
         }
         // Not found
         return null;
+    }
+
+    public String getToken() {
+        return token;
     }
 }

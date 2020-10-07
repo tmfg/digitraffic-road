@@ -93,7 +93,7 @@ public class V2Datex2UpdateService {
 
         return sp.getSituations().stream()
             .map(s -> {
-                final Datex2DetailedMessageType messageType = resolveMessageType(s);
+                final Datex2DetailedMessageType messageType = Datex2Helper.resolveMessageType(s);
                 final String json = situationIdJsonMap.get(s.getId());
                 // TODO DPO-252 Tietöiden ja painorajoitusten hakeminen JMS-jonosta + JSON
                 // When json is added there too, remove type check for error
@@ -119,21 +119,6 @@ public class V2Datex2UpdateService {
 
     private Instant findSituationLatestVersionTime(final String situationId, final Datex2MessageType messageType) {
         return datex2Repository.findDatex2SituationLatestVersionTime(situationId, messageType.name());
-    }
-
-    public static Datex2DetailedMessageType resolveMessageType(final Situation situation) {
-        for (SituationRecord sr : situation.getSituationRecords()) {
-            for (Comment pc : sr.getGeneralPublicComments()) {
-                for (MultilingualStringValue value : pc.getComment().getValues().getValues()) {
-                    Datex2DetailedMessageType foundType = Datex2DetailedMessageType.findTypeForText(value.getValue());
-                    if (foundType != null) {
-                        return foundType;
-                    }
-                }
-            }
-        }
-        // Defaults to TRAFFIC_ANNOUNCEMENT
-        return Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT;
     }
 
     public Datex2MessageDto convertToDatex2MessageDto(final D2LogicalModel main, final SituationPublication sp,
