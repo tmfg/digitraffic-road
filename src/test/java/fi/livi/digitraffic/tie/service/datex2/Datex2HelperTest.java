@@ -112,7 +112,7 @@ public class Datex2HelperTest extends AbstractServiceTest {
         }
     }
 
-    private Situation createSituationWithComment(String token) {
+    private Situation createSituationWithComment(final String token) {
         final Instant now = Instant.now();
         final Situation s = createSituationWithRecordsVersionTimes(now.minusSeconds(60 * 2), now.minusSeconds(60), now);
         s.getSituationRecords().get(0).withGeneralPublicComments(createGeneralPublicComments("Diipadaapaa", token, "Hello World!"));

@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
@@ -113,12 +115,9 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     }
 
     private void checkActiveSituations(final String...situationIdsToFind) {
-        final List<Situation> situationIncidents = ((SituationPublication)v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT)
-            .getPayloadPublication()).getSituations();
-        final List<Situation> situationRoadworks = ((SituationPublication)v2Datex2DataService.findActive(0, ROADWORK)
-            .getPayloadPublication()).getSituations();
-        final List<Situation> situationWeightRestrictions = ((SituationPublication)v2Datex2DataService.findActive(0, WEIGHT_RESTRICTION)
-            .getPayloadPublication()).getSituations();
+        final List<Situation> situationIncidents = getSituations(v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT));
+        final List<Situation> situationRoadworks = getSituations(v2Datex2DataService.findActive(0, ROADWORK));
+        final List<Situation> situationWeightRestrictions = getSituations(v2Datex2DataService.findActive(0, WEIGHT_RESTRICTION));
         final Collection<Situation> situations = union(union(situationIncidents, situationRoadworks), situationWeightRestrictions);
 
         final List<TrafficAnnouncementFeature> featureIncidents =
@@ -149,6 +148,14 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         for (Situation s : situationRoadworks) {
             assertTrue(String.format("Roadwork situation %s not found in features.", s.getId()),featureRoadworks.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())));
         }
+    }
+
+    private List<Situation> getSituations(final D2LogicalModel d2) {
+        if (d2.getPayloadPublication() == null) {
+            return Collections.emptyList();
+        }
+        final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
+        return situations != null ? situations : Collections.emptyList();
     }
 
     private void checkDatex2MatchJson(final List<Situation> situations, final List<TrafficAnnouncementFeature> features) {

@@ -58,11 +58,12 @@ public class Datex2Helper {
             .map(sr -> sr.getGeneralPublicComments().stream()
                 .map(pc -> pc.getComment().getValues().getValues().stream()
                     .map(commentValue -> Datex2DetailedMessageType.findTypeForText(commentValue.getValue()))
-                    .filter(Objects::nonNull)
+                    // Type will be UNKNOWN if there is no match so continue to next comment and try to find type from there.
+                    .filter(type -> type != null && type != Datex2DetailedMessageType.UNKNOWN)
                     .findFirst().orElse(null))
                 .filter(Objects::nonNull)
                 .findFirst().orElse(null))
             .filter(Objects::nonNull)
-            .findFirst().orElse(Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
+            .findFirst().orElse(Datex2DetailedMessageType.UNKNOWN);
     }
 }
