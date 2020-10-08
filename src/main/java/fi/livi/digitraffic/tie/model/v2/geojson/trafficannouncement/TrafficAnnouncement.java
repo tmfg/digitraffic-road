@@ -40,7 +40,7 @@ public class TrafficAnnouncement {
     @ApiModelProperty(value = "Location of an traffic situation announcement")
     public Location location;
 
-    @ApiModelProperty(value = "TODO")
+    @ApiModelProperty(value = "More detailed location")
     public LocationDetails locationDetails;
 
     @ApiModelProperty(value = "Features of the announcement")

@@ -32,6 +32,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
@@ -100,6 +101,9 @@ public class V2Datex2UpdateService {
                 if (json == null && messageType.getDatex2MessageType() == TRAFFIC_INCIDENT) {
                     final String jsons = combineJsonsForErroLogging(situationIdJsonMap);
                     log.error("method=createModels No JSON message for messageType={} situationId={}  jsons: {}", messageType, s.getId(), jsons);
+                } else if (messageType == Datex2DetailedMessageType.UNKNOWN) {
+                    log.error("method=createModels No Datex2DetailedMessageType found for datex2 messageType={} situationId={} datex2: {}", messageType, s.getId(),
+                              ToStringHelper.toStringFull(s));
                 }
                 return convertToDatex2MessageDto(d2, sp, s, importTime, json, messageType);
             })

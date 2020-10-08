@@ -24,6 +24,11 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
            "WHERE d.dataType = :dataType")
     Instant findUpdatedTime(@Param("dataType") final DataType dataType);
 
+    @Query("SELECT max(d.updatedTime)\n" +
+           "FROM DataUpdated d\n" +
+           "WHERE d.dataType in (:dataTypes)")
+    Instant findUpdatedTime(@Param("dataTypes") final DataType...dataTypes);
+
     @Query(value = "select transaction_timestamp()", nativeQuery = true)
     Instant getTransactionStartTime();
 

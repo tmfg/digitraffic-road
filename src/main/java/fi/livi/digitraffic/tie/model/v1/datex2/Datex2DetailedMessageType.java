@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.model.v1.datex2;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
 
 public enum Datex2DetailedMessageType {
@@ -19,6 +21,10 @@ public enum Datex2DetailedMessageType {
     Datex2DetailedMessageType(final Datex2MessageType datex2MessageType, final String textToFind) {
         this.token = textToFind;
         this.datex2MessageType = datex2MessageType;
+    }
+
+    public static Datex2DetailedMessageType[] allValues() {
+        return Arrays.stream(Datex2DetailedMessageType.values()).toArray(Datex2DetailedMessageType[]::new);
     }
 
     public Datex2MessageType getDatex2MessageType() {

@@ -31,7 +31,7 @@
             <country>fi</country>
             <nationalIdentifier>FTA</nationalIdentifier>
         </publicationCreator>
-        <situation id="GUID00000001" version="1">
+        <situation id="GUID10000001" version="1">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
@@ -46,6 +46,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2019-12-13T14:43:18.388+02:00</overallStartTime>
+                        <overallEndTime>2019-12-14T14:43:18.388+02:00</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
@@ -62,7 +63,7 @@
             </situationRecord>
         </situation>
 
-        <situation id="GUID00000002" version="1">
+        <situation id="GUID10000002" version="1">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
@@ -77,6 +78,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2019-12-14T14:43:18.388+02:00</overallStartTime>
+                        <overallEndTime>2019-12-15T14:43:18.388+02:00</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
@@ -93,7 +95,7 @@
             </situationRecord>
         </situation>
 
-        <situation id="GUID00000003" version="1">
+        <situation id="GUID10000003" version="1">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
@@ -108,6 +110,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2019-12-15T14:43:18.388+02:00</overallStartTime>
+                        <overallEndTime>2019-12-16T14:43:18.388+02:00</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
@@ -124,7 +127,7 @@
             </situationRecord>
         </situation>
 
-        <situation id="GUID00000004" version="1">
+        <situation id="GUID10000004" version="1">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
@@ -139,6 +142,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2019-12-16T14:43:18.388+02:00</overallStartTime>
+                        <overallEndTime>2019-12-17T14:43:18.388+02:00</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
@@ -155,7 +159,7 @@
             </situationRecord>
         </situation>
 
-        <situation id="GUID00000005" version="1">
+        <situation id="GUID10000005" version="1">
             <overallSeverity>high</overallSeverity>
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
@@ -171,6 +175,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2020-01-07T00:00:00.000Z</overallStartTime>
+                        <overallEndTime>2020-01-08T00:00:00.000Z</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
@@ -185,7 +190,7 @@
             </situationRecord>
         </situation>
 
-        <situation id="GUID00000006" version="7">
+        <situation id="GUID10000006" version="7">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
@@ -199,6 +204,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2020-04-22T21:00:00.000Z</overallStartTime>
+                        <overallEndTime>2020-04-23T21:00:00.000Z</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
@@ -213,7 +219,7 @@
             </situationRecord>
         </situation>
 
-        <situation id="GUID00000007" version="1">
+        <situation id="GUID10000007" version="1">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
@@ -228,6 +234,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2019-12-19T14:43:18.388+02:00</overallStartTime>
+                        <overallEndTime>2019-12-20T14:43:18.388+02:00</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
@@ -261,7 +268,7 @@
         ]
       },
       "properties": {
-        "situationId": "GUID00000001",
+        "situationId": "GUID10000001",
         "version": 1,
         "releaseTime": "2019-12-13T14:43:18.388+02:00",
         "locationToDisplay": {
@@ -288,6 +295,7 @@
             "comment": "Liikennetiedote",
             "timeAndDuration": {
               "startTime": "2019-12-13T14:43:18.388+02:00",
+              "endTime": "2019-12-14T14:43:18.388+02:00",
               "estimatedDuration": {
                 "minimum": "PT6H",
                 "informal": "Yli 6 tuntia"
@@ -310,7 +318,7 @@
         ]
       },
       "properties": {
-        "situationId": "GUID00000002",
+        "situationId": "GUID10000002",
         "version": 1,
         "releaseTime": "2019-12-14T14:43:18.388+02:00",
         "locationToDisplay": {
@@ -337,6 +345,7 @@
             "comment": "TESTI Liikennetiedote",
             "timeAndDuration": {
               "startTime": "2019-12-14T14:43:18.388+02:00",
+              "endTime": "2019-12-15T14:43:18.388+02:00",
               "estimatedDuration": {
                 "minimum": "PT6H",
                 "informal": "Yli 6 tuntia"
@@ -359,7 +368,7 @@
         ]
       },
       "properties": {
-        "situationId": "GUID00000003",
+        "situationId": "GUID10000003",
         "version": 1,
         "releaseTime": "2019-12-15T14:43:18.388+02:00",
         "locationToDisplay": {
@@ -386,6 +395,7 @@
             "comment": "TESTI Erikoiskuljetus",
             "timeAndDuration": {
               "startTime": "2019-12-15T14:43:18.388+02:00",
+              "endTime": "2019-12-16T14:43:18.388+02:00",
               "estimatedDuration": {
                 "minimum": "PT6H",
                 "informal": "Yli 6 tuntia"
@@ -408,7 +418,7 @@
         ]
       },
       "properties": {
-        "situationId": "GUID00000004",
+        "situationId": "GUID10000004",
         "version": 1,
         "releaseTime": "2019-12-16T14:43:18.388+02:00",
         "locationToDisplay": {
@@ -435,6 +445,7 @@
             "comment": "TESTI Vahvistamaton havainto",
             "timeAndDuration": {
               "startTime": "2019-12-16T14:43:18.388+02:00",
+              "endTime": "2019-12-17T14:43:18.388+02:00",
               "estimatedDuration": {
                 "minimum": "PT6H",
                 "informal": "Yli 6 tuntia"
@@ -457,7 +468,7 @@
         ]
       },
       "properties": {
-        "situationId": "GUID00000007",
+        "situationId": "GUID10000007",
         "version": 1,
         "releaseTime": "2019-12-19T14:43:18.388+02:00",
         "locationToDisplay": {
@@ -484,6 +495,7 @@
             "comment": "TESTI Mikä lie tilanne päällä",
             "timeAndDuration": {
               "startTime": "2019-12-19T14:43:18.388+02:00",
+              "endTime": "2019-12-20T14:43:18.388+02:00",
               "estimatedDuration": {
                 "minimum": "PT6H",
                 "informal": "Yli 6 tuntia"
@@ -506,7 +518,7 @@
         ]
       },
       "properties": {
-        "situationId": "GUID00000005",
+        "situationId": "GUID10000005",
         "version": 1,
         "releaseTime": "2020-01-07T00:00:00.000Z",
         "locationToDisplay": {
@@ -533,6 +545,7 @@
             "comment": "TESTI Tietyö",
             "timeAndDuration": {
               "startTime": "2020-01-07T00:00:00.000Z",
+              "endTime": "2020-01-08T00:00:00.000Z",
               "estimatedDuration": {
                 "minimum": "PT6H",
                 "informal": "Yli 6 tuntia"
@@ -555,7 +568,7 @@
         ]
       },
       "properties": {
-        "situationId": "GUID00000006",
+        "situationId": "GUID10000006",
         "version": 1,
         "releaseTime": "2020-04-22T21:00:00.000Z",
         "locationToDisplay": {
@@ -582,6 +595,7 @@
             "comment": "TESTI Painorajoitus",
             "timeAndDuration": {
               "startTime": "2020-04-22T21:00:00.000Z",
+              "endTime": "2020-04-23T21:00:00.000Z",
               "estimatedDuration": {
                 "minimum": "PT6H",
                 "informal": "Yli 6 tuntia"

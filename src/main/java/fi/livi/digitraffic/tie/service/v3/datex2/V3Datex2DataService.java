@@ -1,6 +1,11 @@
 package fi.livi.digitraffic.tie.service.v3.datex2;
 
+import static fi.livi.digitraffic.tie.model.DataType.ROADWORK;
+import static fi.livi.digitraffic.tie.model.DataType.TRAFFIC_INCIDENT;
+import static fi.livi.digitraffic.tie.model.DataType.WEIGHT_RESTRICTION;
+
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -13,15 +18,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 
 @Service
 public class V3Datex2DataService {
@@ -29,43 +35,66 @@ public class V3Datex2DataService {
 
     private final Datex2Repository datex2Repository;
     private final Datex2JsonConverterService datex2JsonConverterService;
-    private DataStatusService dataStatusService;
+    private final DataStatusService dataStatusService;
+    private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     public V3Datex2DataService(final Datex2Repository datex2Repository,
                                final Datex2JsonConverterService datex2JsonConverterService,
-                               final DataStatusService dataStatusService) {
+                               final DataStatusService dataStatusService,
+                               final V2Datex2DataService v2Datex2DataService) {
         this.datex2Repository = datex2Repository;
         this.datex2JsonConverterService = datex2JsonConverterService;
         this.dataStatusService = dataStatusService;
+        this.v2Datex2DataService = v2Datex2DataService;
     }
 
     @Transactional(readOnly = true)
-    public TrafficAnnouncementFeatureCollection findAllBySituationIdJson(final String situationId, final Datex2MessageType datex2MessageType) {
-        final List<Datex2> datex2s = findBySituationIdAndMessageTypeWithJson(situationId, datex2MessageType.name());
+    public TrafficAnnouncementFeatureCollection findActiveJson(final int activeInPastHours,
+                                                               final Datex2DetailedMessageType...datex2MessageTypes) {
+        final List<Datex2> allActive = datex2Repository.findAllActiveByDetailedMessageTypeWithJson(activeInPastHours, typesAsStrings(datex2MessageTypes));
+        return convertToFeatureCollection(allActive);
+    }
+
+    @Transactional(readOnly = true)
+    public TrafficAnnouncementFeatureCollection findAllBySituationIdJson(final String situationId, final Datex2DetailedMessageType...datex2MessageTypes) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndDetailedMessageTypeWithJson(situationId, typesAsStrings(datex2MessageTypes));
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        return convertToFeatureCollection(datex2s, datex2MessageType);
+        return convertToFeatureCollection(datex2s);
     }
 
     @Transactional(readOnly = true)
-    public TrafficAnnouncementFeatureCollection findActiveJson(final int inactiveHours,
-                                                               final Datex2MessageType datex2MessageType) {
-        final List<Datex2> allActive = findAllActiveWithJson(datex2MessageType.name(), inactiveHours);
-        return convertToFeatureCollection(allActive, datex2MessageType);
+    public D2LogicalModel findActive(final int activeInPastHours,
+                                     final Datex2DetailedMessageType...datex2MessageTypes) {
+        final List<Datex2> allActive = datex2Repository.findAllActiveByDetailedMessageType(activeInPastHours, typesAsStrings(datex2MessageTypes));
+        return v2Datex2DataService.convertToD2LogicalModel(allActive);
     }
 
-    private List<Datex2> findAllActiveWithJson(final String messageType, final int activeInPastHours) {
-        return datex2Repository.findAllActiveWithJson(messageType, activeInPastHours);
+    @Transactional(readOnly = true)
+    public D2LogicalModel findAllBySituationId(final String situationId, final Datex2DetailedMessageType...datex2MessageTypes) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndDetailedMessageType(situationId, typesAsStrings(datex2MessageTypes));
+        if (datex2s.isEmpty()) {
+            throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        return v2Datex2DataService.convertToD2LogicalModel(datex2s);
     }
 
-    private List<Datex2> findBySituationIdAndMessageTypeWithJson(final String situationId, final String messageType) {
-        return datex2Repository.findBySituationIdAndMessageTypeWithJson(situationId, messageType);
+    /**
+     * Converts enums to String-array. If empty or null, returns all values of the Datex2DetailedMessageType.
+     * @param datex2MessageTypes types to convert to string
+     * @return types as string-array
+     */
+    public static String[] typesAsStrings(final Datex2DetailedMessageType[] datex2MessageTypes) {
+        if (datex2MessageTypes == null || datex2MessageTypes.length == 0) {
+            return Arrays.stream(Datex2DetailedMessageType.values()).map(Enum::name).toArray(String[]::new);
+        }
+        return Arrays.stream(datex2MessageTypes).map(Enum::name).toArray(String[]::new);
     }
 
-    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s, final Datex2MessageType messageType) {
-        final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.typeFor(messageType));
+    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s) {
+        final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(TRAFFIC_INCIDENT, ROADWORK, WEIGHT_RESTRICTION);
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .map(d2 -> {

@@ -65,10 +65,10 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         // GUID60013339 active
         final String incident4 = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessage-invalid-duration.xml");
 
-        updateFromImsMessage(incident1, TRAFFIC_INCIDENT);
-        updateFromImsMessage(incident2, TRAFFIC_INCIDENT);
-        updateFromImsMessage(incident3, TRAFFIC_INCIDENT);
-        updateFromImsMessage(incident4, TRAFFIC_INCIDENT);
+        updateFromImsMessage(incident1);
+        updateFromImsMessage(incident2);
+        updateFromImsMessage(incident3);
+        updateFromImsMessage(incident4);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         return mockMvc.perform(get(url)).andReturn().getResponse().getContentAsString();
     }
 
-    private void updateFromImsMessage(final String imsXml, final Datex2MessageType type) {
+    private void updateFromImsMessage(final String imsXml) {
         final ImsMessage ims = (ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(imsXml));
         v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
