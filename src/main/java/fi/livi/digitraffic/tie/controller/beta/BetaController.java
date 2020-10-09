@@ -13,6 +13,7 @@ import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_Y;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_Y_TXT;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -239,7 +240,7 @@ public class BetaController {
 
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + ".json", produces = { APPLICATION_JSON_VALUE })
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of JSON traffic Datex2-messages"))
     public TrafficAnnouncementFeatureCollection datex2Json(
         @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
@@ -253,8 +254,8 @@ public class BetaController {
 
     @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
-                    @ApiResponse(code = 404, message = "Situation id not found") })
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of datex2 messages"),
+                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public TrafficAnnouncementFeatureCollection datex2JsonBySituationId(
         @ApiParam(value = "Datex2 situation id.", required = true)
         @PathVariable
@@ -267,7 +268,7 @@ public class BetaController {
 
     @ApiOperation(value = "Active Datex2 messages for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + ".xml", produces = { APPLICATION_XML_VALUE })
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic disorders"))
     public D2LogicalModel datex2(
         @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
@@ -281,8 +282,8 @@ public class BetaController {
 
     @ApiOperation(value = "Datex2 messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{situationId}.xml", produces = { APPLICATION_XML_VALUE })
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
-                    @ApiResponse(code = 404, message = "Situation id not found") })
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of datex2 messages"),
+                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public D2LogicalModel datex2BySituationId(
         @ApiParam(value = "Datex2 situation id.", required = true)
         @PathVariable
