@@ -48,6 +48,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    // Map active situations id:s with the type of the message
     private final List<Pair<Datex2DetailedMessageType, String>> activeMessageTypeSituationIds =
         List.of(
             Pair.of(Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT, "GUID00000001"),
@@ -59,6 +60,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
             Pair.of(Datex2DetailedMessageType.UNKNOWN, "GUID00000007")
         );
 
+    // Map past situations id:s with the type of the message
     private final List<Pair<Datex2DetailedMessageType, String>> pastMessageTypeSituationIds =
         List.of(
             Pair.of(Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT, "GUID10000001"),
@@ -71,23 +73,49 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
         );
 
     @Before
-    public void updateData() throws IOException {
+    public void initActiveAndPassiveDataFromImsMessages() throws IOException {
         datex2Repository.deleteAll();
-        // "GUID00000001", "GUID00000002", "GUID00000003", "GUID00000004", "GUID00000005", "GUID00000006", "GUID00000007"
+
+        // One active situation of every type as mapped in activeMessageTypeSituationIds
         final String active = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessageV1_2_1JsonV0_2_6MultipleMessages.xml");
-        // "GUID10000001", "GUID10000002", "GUID10000003", "GUID10000004", "GUID10000005", "GUID10000006", "GUID10000007"
+
+        // One past situation of every type as mapped in pastMessageTypeSituationIds
         final String ended = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessageV1_2_1JsonV0_2_6MultipleMessagesInactive.xml");
 
         updateFromImsMessage(active);
         updateFromImsMessage(ended);
     }
 
+    /**
+     * Tests that data return data is right type json vs xml.
+     */
+    @Test
+    public void getJsonAndXmlCurrentlyActive() throws Exception {
+        final String xml = getResponse(getUrlWithType(false, 0));
+        final String json = getResponse(getUrlWithType(true, 0));
+        assertTextIsValidXml(xml);
+        assertTextIsValidJson(json);
+    }
+
+    /**
+     * Tests that data return data is right type json vs xml.
+     */
+    @Test
+    public void getJsonAndXmlBySituationId() throws Exception {
+        final Pair<Datex2DetailedMessageType, String> situation = getRandomActiveSituation();
+        final String xml = getResponse(getUrlWithSituationId(false, situation.getRight()));
+        final String json = getResponse(getUrlWithSituationId(true, situation.getRight()));
+        assertTextIsValidXml(xml);
+        assertTextIsValidJson(json);
+    }
+
+    /**
+     * Tests that all active situations of all types are returned.
+     */
     @Test
     public void getCurrentlyActive() throws Exception {
         final String xml = getResponse(getUrlWithType(false, 0));
         final String json = getResponse(getUrlWithType(true, 0));
-        assertXml(xml);
-        assertJson(json);
 
         // Only now active incidents should exist
         final String[] activeIds = activeMessageTypeSituationIds.stream().map(Pair::getRight).toArray(String[]::new);
@@ -102,10 +130,8 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     public void getCurrentlyActiveAndActiveInPast() throws Exception {
         final String xml = getResponse(getUrlWithType(false, 200000));
         final String json = getResponse(getUrlWithType(true, 200000));
-        assertXml(xml);
-        assertJson(json);
 
-        // All incidents should exist
+        // All active and past incidents should exist
         final String[] activeIds = activeMessageTypeSituationIds.stream().map(Pair::getRight).toArray(String[]::new);
         final String[] pastIds = pastMessageTypeSituationIds.stream().map(Pair::getRight).toArray(String[]::new);
         assertTextExistInMessage(xml, activeIds);
@@ -143,7 +169,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     }
 
     @Test
-    public void getBySituationID() throws Exception {
+    public void getBySituationId() throws Exception {
         final Pair<Datex2DetailedMessageType, String> situation = getRandomActiveSituation();
         final String xml = getResponse(getUrlWithSituationId(false, situation.getRight()));
         final String json = getResponse(getUrlWithSituationId(true, situation.getRight()));
@@ -173,7 +199,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
             .findFirst().getAsInt();
     }
 
-    private void assertXml(final String xml) {
+    private void assertTextIsValidXml(final String xml) {
         try {
             jaxb2Marshaller.unmarshal(new StringSource(xml));
         } catch (XmlMappingException e) {
@@ -181,7 +207,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
         }
     }
 
-    private void assertJson(String json) {
+    private void assertTextIsValidJson(String json) {
         try {
             objectMapper.readTree(json);
         } catch (IOException e) {
