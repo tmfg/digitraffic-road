@@ -48,27 +48,27 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private final List<Pair<Datex2DetailedMessageType, String>> activeMessageTypeSituationIds = new ArrayList<>();
-    private final List<Pair<Datex2DetailedMessageType, String>> pastMessageTypeSituationIds = new ArrayList<>();
+    private final List<Pair<Datex2DetailedMessageType, String>> activeMessageTypeSituationIds =
+        List.of(
+            Pair.of(Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT, "GUID00000001"),
+            Pair.of(Datex2DetailedMessageType.PRELIMINARY_ANNOUNCEMENT, "GUID00000002"),
+            Pair.of(Datex2DetailedMessageType.EXEMPTED_TRANSPORT, "GUID00000003"),
+            Pair.of(Datex2DetailedMessageType.UNCONFIRMED_OBSERVATION, "GUID00000004"),
+            Pair.of(Datex2DetailedMessageType.ROADWORK, "GUID00000005"),
+            Pair.of(Datex2DetailedMessageType.WEIGHT_RESTRICTION, "GUID00000006"),
+            Pair.of(Datex2DetailedMessageType.UNKNOWN, "GUID00000007")
+        );
 
-    // IMS messages contains one active and one passive for each message type
-    {
-        activeMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT, "GUID00000001"));
-        activeMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.PRELIMINARY_ANNOUNCEMENT, "GUID00000002"));
-        activeMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.EXEMPTED_TRANSPORT, "GUID00000003"));
-        activeMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.UNCONFIRMED_OBSERVATION, "GUID00000004"));
-        activeMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.ROADWORK, "GUID00000005"));
-        activeMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.WEIGHT_RESTRICTION, "GUID00000006"));
-        activeMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.UNKNOWN, "GUID00000007"));
-
-        pastMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT, "GUID10000001"));
-        pastMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.PRELIMINARY_ANNOUNCEMENT, "GUID10000002"));
-        pastMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.EXEMPTED_TRANSPORT, "GUID10000003"));
-        pastMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.UNCONFIRMED_OBSERVATION, "GUID10000004"));
-        pastMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.ROADWORK, "GUID10000005"));
-        pastMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.WEIGHT_RESTRICTION, "GUID10000006"));
-        pastMessageTypeSituationIds.add(Pair.of(Datex2DetailedMessageType.UNKNOWN, "GUID10000007"));
-    }
+    private final List<Pair<Datex2DetailedMessageType, String>> pastMessageTypeSituationIds =
+        List.of(
+            Pair.of(Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT, "GUID10000001"),
+            Pair.of(Datex2DetailedMessageType.PRELIMINARY_ANNOUNCEMENT, "GUID10000002"),
+            Pair.of(Datex2DetailedMessageType.EXEMPTED_TRANSPORT, "GUID10000003"),
+            Pair.of(Datex2DetailedMessageType.UNCONFIRMED_OBSERVATION, "GUID10000004"),
+            Pair.of(Datex2DetailedMessageType.ROADWORK, "GUID10000005"),
+            Pair.of(Datex2DetailedMessageType.WEIGHT_RESTRICTION, "GUID10000006"),
+            Pair.of(Datex2DetailedMessageType.UNKNOWN, "GUID10000007")
+        );
 
     @Before
     public void updateData() throws IOException {
@@ -88,6 +88,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
         final String json = getResponse(getUrlWithType(true, 0));
         assertXml(xml);
         assertJson(json);
+
         // Only now active incidents should exist
         final String[] activeIds = activeMessageTypeSituationIds.stream().map(Pair::getRight).toArray(String[]::new);
         final String[] pastIds = pastMessageTypeSituationIds.stream().map(Pair::getRight).toArray(String[]::new);
