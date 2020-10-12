@@ -279,9 +279,9 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
 
     @Test
     public void parseFeatureJsonsFromImsJson_FeatureCollection() throws JsonProcessingException {
-        // Create feature collection with two features
-        final String feature2 = FEATURE.replace(SITUATION_ID1, SITUATION_ID2);
-        final String featureCollection = FEATURE_COLLECTION.replace("FEATURES", FEATURE + ", " + feature2);
+        // Create feature collection with two features (just situationId differs)
+        final String feature2 = changeSituationIdInFeature(FEATURE, SITUATION_ID1, SITUATION_ID2);
+        final String featureCollection = createFeatureCollectionWithSituations(FEATURE, feature2);
 
         // parse features from collection and test src == result
         final Map<String, String> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(featureCollection);
@@ -335,6 +335,15 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         AssertHelper.assertCollectionSize(1, feature.getProperties().announcements);
         assertEquals(1, feature.getProperties().announcements.get(0).features.size());
         assertEquals(featureName, feature.getProperties().announcements.get(0).features.get(0));
+    }
+
+    private String changeSituationIdInFeature(final String featureToEdit, final String situationIdToReplace, final String replacementSituationId) {
+        return StringUtils.replace(featureToEdit, situationIdToReplace, replacementSituationId);
+    }
+
+    private String createFeatureCollectionWithSituations(final String...feature) {
+        final String features = StringUtils.joinWith(", ", feature);
+        return StringUtils.replace(FEATURE_COLLECTION,"FEATURES", features);
     }
 
     private void assertAnnouncementFeaturesV3(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature,
