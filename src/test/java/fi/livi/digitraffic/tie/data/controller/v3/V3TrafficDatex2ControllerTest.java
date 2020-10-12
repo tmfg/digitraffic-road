@@ -152,19 +152,22 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
 
     @Test
     public void getCurrentlyActiveWithMultipleTypes() throws Exception {
-        final Pair<Datex2DetailedMessageType, String> first = activeMessageTypeSituationIds.get(0);
-        final Pair<Datex2DetailedMessageType, String> second = activeMessageTypeSituationIds.get(1);
-        final String xml = getResponse(getUrlWithType(false, 0, first.getLeft(), second.getLeft()));
-        final String json = getResponse(getUrlWithType(true, 0, first.getLeft(), second.getLeft()));
+        // Get all types in pairs of two types
+        for(int i = 0; i < activeMessageTypeSituationIds.size()-1; i++) {
+            final Pair<Datex2DetailedMessageType, String> first = activeMessageTypeSituationIds.get(i);
+            final Pair<Datex2DetailedMessageType, String> second = activeMessageTypeSituationIds.get(i+1);
+            final String xml = getResponse(getUrlWithType(false, 0, first.getLeft(), second.getLeft()));
+            final String json = getResponse(getUrlWithType(true, 0, first.getLeft(), second.getLeft()));
 
-        // Both active should exist
-        assertTextExistInMessage(xml, first.getRight());
-        assertTextExistInMessage(json, first.getRight());
-        assertTextExistInMessage(xml, second.getRight());
-        assertTextExistInMessage(json, second.getRight());
+            // Both active should exist
+            assertTextExistInMessage(xml, first.getRight());
+            assertTextExistInMessage(json, first.getRight());
+            assertTextExistInMessage(xml, second.getRight());
+            assertTextExistInMessage(json, second.getRight());
 
-        //  Other active or past situation should not exist
-        assertTextNotExistInMessage(xml, json, getSituationsWithout(first, second));
+            //  Other active or past situation should not exist
+            assertTextNotExistInMessage(xml, json, getSituationsWithout(first, second));
+        }
     }
 
     @Test
