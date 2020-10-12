@@ -74,15 +74,17 @@ public class Datex2SimpleMessageUpdater {
     @Transactional
     public void updateDatex2RoadworksMessages() {
         final String message = datex2RoadworksHttpClient.getRoadWorksMessage();
-
-        datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.ROADWORK, null));
+        final int updatedOrInserted =
+            datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.ROADWORK, null));
+        log.info("method=updateDatex2RoadworksMessages updated={}", updatedOrInserted);
     }
 
     @Transactional
     public void updateDatex2WeightRestrictionMessages() {
         final String message = datex2WeightRestrictionsHttpClient.getWeightRestrictionsMessage();
-
-        datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.WEIGHT_RESTRICTION, null));
+        final int updatedOrInserted =
+            datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.WEIGHT_RESTRICTION, null));
+        log.info("method=updateDatex2WeightRestrictionMessages updated={}", updatedOrInserted);
     }
 
     @Transactional(readOnly = true)
