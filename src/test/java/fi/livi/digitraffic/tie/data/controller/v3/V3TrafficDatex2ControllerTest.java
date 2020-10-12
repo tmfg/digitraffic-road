@@ -195,7 +195,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
 
     public int getRandSituationIndex() {
         Random random = new Random();
-        return random.ints(0, 8) // min inclusive, max exclusive
+        return random.ints(0, 7) // min inclusive, max exclusive
             .findFirst().getAsInt();
     }
 
