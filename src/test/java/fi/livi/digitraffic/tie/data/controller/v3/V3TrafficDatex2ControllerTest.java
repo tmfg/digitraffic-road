@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -194,9 +193,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     }
 
     public int getRandSituationIndex() {
-        Random random = new Random();
-        return random.ints(0, 7) // min inclusive, max exclusive
-            .findFirst().getAsInt();
+        return getRandom(0, 7);
     }
 
     private void assertTextIsValidXml(final String xml) {

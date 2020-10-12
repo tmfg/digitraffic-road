@@ -171,6 +171,11 @@ public abstract class AbstractTest {
         return r.nextInt((max - min) + 1) + min;
     }
 
+    protected static int getRandom(final int minInclusive, final int maxExclusive) {
+        final Random random = new Random();
+        return random.ints(minInclusive, maxExclusive).findFirst().getAsInt();
+    }
+
     protected static List<EsiasentoVO> createEsiasentos(final long kameraId, final int count) {
         final List<EsiasentoVO> eas = new ArrayList<>();
         IntStream.range(0, count).forEach(i -> {
