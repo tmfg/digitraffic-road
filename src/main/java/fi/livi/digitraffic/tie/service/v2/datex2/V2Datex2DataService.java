@@ -37,7 +37,7 @@ public class V2Datex2DataService {
 
     @Autowired
     public V2Datex2DataService(final Datex2Repository datex2Repository,
-                               final StringToObjectMarshaller stringToObjectMarshaller,
+                               final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller,
                                final Datex2JsonConverterService datex2JsonConverterService,
                                final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
@@ -94,7 +94,7 @@ public class V2Datex2DataService {
         return datex2Repository.findBySituationIdAndMessageTypeWithJson(situationId, messageType);
     }
 
-    private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
+    public D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
 
         // conver Datex2s to D2LogicalModels
         final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()

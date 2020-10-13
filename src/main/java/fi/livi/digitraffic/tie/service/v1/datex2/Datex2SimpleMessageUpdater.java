@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -17,10 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 @Service
@@ -45,7 +42,7 @@ public class Datex2SimpleMessageUpdater {
                                       final Datex2TrafficAlertHttpClient datex2TrafficAlertHttpClient,
                                       final Datex2UpdateService datex2UpdateService,
                                       final Datex2Repository datex2Repository,
-                                      final StringToObjectMarshaller stringToObjectMarshaller,
+                                      final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller,
                                       final V2Datex2UpdateService v2Datex2UpdateService) {
         this.datex2WeightRestrictionsHttpClient = datex2WeightRestrictionsHttpClient;
         this.datex2RoadworksHttpClient = datex2RoadworksHttpClient;
@@ -77,38 +74,29 @@ public class Datex2SimpleMessageUpdater {
     @Transactional
     public void updateDatex2RoadworksMessages() {
         final String message = datex2RoadworksHttpClient.getRoadWorksMessage();
-
-        datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.ROADWORK, null));
+        final int updatedOrInserted =
+            datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.ROADWORK, null));
+        log.info("method=updateDatex2RoadworksMessages updated={}", updatedOrInserted);
     }
 
     @Transactional
     public void updateDatex2WeightRestrictionMessages() {
         final String message = datex2WeightRestrictionsHttpClient.getWeightRestrictionsMessage();
-
-        datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.WEIGHT_RESTRICTION, null));
+        final int updatedOrInserted =
+            datex2UpdateService.updateDatex2Data(convert(message, Datex2MessageType.WEIGHT_RESTRICTION, null));
+        log.info("method=updateDatex2WeightRestrictionMessages updated={}", updatedOrInserted);
     }
 
     @Transactional(readOnly = true)
     public List<Datex2MessageDto> convert(final String message, final Datex2MessageType messageType, final ZonedDateTime importTime) {
         final D2LogicalModel model = stringToObjectMarshaller.convertToObject(message);
-        return createModels(model, messageType, importTime);
-    }
-
-    private List<Datex2MessageDto> createModels(final D2LogicalModel main, final Datex2MessageType messageType, final ZonedDateTime importTime) {
-        final SituationPublication sp = Datex2Helper.getSituationPublication(main);
-
-        final Map<String, ZonedDateTime> versionTimes = datex2UpdateService.listSituationVersionTimes(messageType);
-        final long updatedCount = sp.getSituations().stream()
-            .filter(s -> versionTimes.get(s.getId()) != null &&
-                         Datex2Helper.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
-            .count();
-        final long newCount = sp.getSituations().stream().filter(s -> versionTimes.get(s.getId()) == null).count();
-
-        log.info("situationsUpdated={} situationsNew={}", updatedCount, newCount);
-
-        return sp.getSituations().stream()
-            .filter(s -> Datex2Helper.isNewOrUpdatedSituation(versionTimes.get(s.getId()), s))
-            .map(s -> v2Datex2UpdateService.convert(main, sp, s, importTime, null, messageType))
-            .collect(Collectors.toList());
+        final List<Datex2MessageDto> models = v2Datex2UpdateService.createModels(model, null, importTime);
+        models.forEach(m -> {
+            // This is for debug for now, to see that automatic message type identification works correctly
+            if (messageType != m.messageType.getDatex2MessageType()) {
+                log.error("method=convert Wrong Datex2 message type for situationId={} should be {} but was {}", m.situationId, message, m.messageType.getDatex2MessageType());
+            }
+        });
+        return models;
     }
 }

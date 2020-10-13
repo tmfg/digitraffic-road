@@ -46,7 +46,7 @@ public class JMSMessageListener<K> implements MessageListener {
     private final MessageMarshaller<K> messageMarshaller;
 
     public JMSMessageListener(final MessageMarshaller<K> messageMarshaller, final JMSDataUpdater<K> dataUpdater, final boolean drainScheduled,
-        final Logger log) {
+                              final Logger log) {
         this.messageMarshaller = messageMarshaller;
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;

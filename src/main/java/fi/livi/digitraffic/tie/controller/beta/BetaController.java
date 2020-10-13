@@ -13,6 +13,7 @@ import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_Y;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_Y_TXT;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -47,7 +48,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
@@ -238,30 +239,58 @@ public class BetaController {
     }
 
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.json", produces = { APPLICATION_JSON_VALUE })
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + ".json", produces = { APPLICATION_JSON_VALUE })
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of JSON traffic Datex2-messages"))
     public TrafficAnnouncementFeatureCollection datex2Json(
-        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
-        @PathVariable
-        final Datex2MessageType datex2MessageType,
         @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
-        final int inactiveHours) {
-        return v3Datex2DataService.findActiveJson(inactiveHours, datex2MessageType);
+        final int inactiveHours,
+        @ApiParam(value = "Datex2 Message type.")
+        @RequestParam(value = "messageType", required = false)
+        final Datex2DetailedMessageType...messageType) {
+        return v3Datex2DataService.findActiveJson(inactiveHours, messageType);
     }
 
     @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
-                    @ApiResponse(code = 404, message = "Situation id not found") })
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of datex2 messages"),
+                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public TrafficAnnouncementFeatureCollection datex2JsonBySituationId(
-        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
-        @PathVariable
-        final Datex2MessageType datex2MessageType,
         @ApiParam(value = "Datex2 situation id.", required = true)
         @PathVariable
-        final String situationId) {
-        return v3Datex2DataService.findAllBySituationIdJson(situationId, datex2MessageType);
+        final String situationId,
+        @ApiParam(value = "Datex2 Message type.")
+        @RequestParam(value = "messageType", required = false)
+        final Datex2DetailedMessageType...messageType) {
+        return v3Datex2DataService.findAllBySituationIdJson(situationId, messageType);
+    }
+
+    @ApiOperation(value = "Active Datex2 messages for traffic-incident, roadwork, weight-restriction -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + ".xml", produces = { APPLICATION_XML_VALUE })
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic disorders"))
+    public D2LogicalModel datex2(
+        @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
+        @RequestParam(defaultValue = "0")
+        @Range(min = 0)
+        final int inactiveHours,
+        @ApiParam(value = "Datex2 Message type.")
+        @RequestParam(value = "messageType", required = false)
+        final Datex2DetailedMessageType...messageType) {
+        return v3Datex2DataService.findActive(inactiveHours, messageType);
+    }
+
+    @ApiOperation(value = "Datex2 messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{situationId}.xml", produces = { APPLICATION_XML_VALUE })
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of datex2 messages"),
+                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
+    public D2LogicalModel datex2BySituationId(
+        @ApiParam(value = "Datex2 situation id.", required = true)
+        @PathVariable
+        final String situationId,
+        @ApiParam(value = "Datex2 Message type.")
+        @RequestParam(value = "messageType", required = false)
+        final Datex2DetailedMessageType...messageType) {
+        return v3Datex2DataService.findAllBySituationId(situationId, messageType);
     }
 }

@@ -56,18 +56,53 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "       OR (disorder.validy_status = 'SUSPENDED' AND disorder.overall_end_time IS NOT null)\n" +
             "    )\n" +
             ")\n";
-    String FIND_ALL_ACTIVE_AS_D_ORDER_BY = "order by d.publication_time, d.id";
-    String FIND_ALL_ACTIVE_AS_D_WITH_JSON = FIND_ALL_ACTIVE_AS_D + "  AND d.json_message IS NOT NULL\n";
 
-    @Query(value = FIND_ALL_ACTIVE_AS_D + FIND_ALL_ACTIVE_AS_D_ORDER_BY, nativeQuery = true)
+    String FIND_ALL_ACTIVE_DETAILED_TYPES_AS_D =
+            "SELECT d.*\n" +
+            "FROM datex2 d\n" +
+            "WHERE d.id IN (\n" +
+            "  SELECT datex2_id\n" +
+            "  FROM (\n" +
+            "         SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID \n" +
+            "                                   ORDER BY record.version_time DESC NULLS LAST, \n" +
+            "                                            record.overall_end_time DESC NULLS FIRST, \n" +
+            "                                            record.id DESC) AS rnum\n" +
+            "           , d.publication_time\n" +
+            "           , d.id AS datex2_id\n" +
+            "           , record.validy_status\n" +
+            "           , record.overall_end_time\n" +
+            "         FROM DATEX2 d\n" +
+            "         INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
+            "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
+            "         WHERE d.detailed_message_type in (:detailedMessageType)\n" +
+            "       ) disorder\n" +
+            "  WHERE rnum = 1\n" +
+            "    AND (disorder.overall_end_time IS NULL OR disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour')\n" +
+            "    AND (" +
+            "           disorder.validy_status <> 'SUSPENDED'\n" +
+            "       OR (disorder.validy_status = 'SUSPENDED' AND disorder.overall_end_time IS NOT null)\n" +
+            "    )\n" +
+            ")\n";
+
+    String FIND_ALL_ACTIVE_AS_D_WITH_JSON = FIND_ALL_ACTIVE_AS_D + "  AND d.json_message IS NOT NULL\n";
+    String FIND_ALL_ACTIVE_DETAILED_TYPES_AS_D_WITH_JSON = FIND_ALL_ACTIVE_DETAILED_TYPES_AS_D + "  AND d.json_message IS NOT NULL\n";
+    String FIND_ALL_ACTIVE_ORDER_BY = "order by d.publication_time, d.id";
+
+    @Query(value = FIND_ALL_ACTIVE_AS_D + FIND_ALL_ACTIVE_ORDER_BY, nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findAllActive(final String messageType, final int activeInPastHours);
 
-    @Query(value = FIND_ALL_ACTIVE_AS_D_WITH_JSON + FIND_ALL_ACTIVE_AS_D_ORDER_BY, nativeQuery = true)
+    @Query(value = FIND_ALL_ACTIVE_DETAILED_TYPES_AS_D + FIND_ALL_ACTIVE_ORDER_BY, nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<Datex2> findAllActiveByDetailedMessageType(final int activeInPastHours, final String...detailedMessageType);
+
+    @Query(value = FIND_ALL_ACTIVE_AS_D_WITH_JSON + FIND_ALL_ACTIVE_ORDER_BY, nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findAllActiveWithJson(final String messageType, final int activeInPastHours);
 
-
+    @Query(value = FIND_ALL_ACTIVE_DETAILED_TYPES_AS_D_WITH_JSON + FIND_ALL_ACTIVE_ORDER_BY, nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<Datex2> findAllActiveByDetailedMessageTypeWithJson(int activeInPastHours, final String...detailedMessageType);
 
     @Query(value =
         "SELECT d.*\n" +
@@ -109,7 +144,18 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "    WHERE situation.situation_id = :situationId)\n" +
         "  AND message_type = :messageType", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findBySituationIdAndMessageType(@Param("situationId") final String situationId, @Param("messageType") final String messageType);
+    List<Datex2> findBySituationIdAndMessageType(final String situationId, final String messageType);
+
+    @Query(value =
+        "SELECT d.*\n" +
+        "FROM datex2 d\n" +
+        "WHERE d.id in (\n" +
+        "    SELECT situation.datex2_id\n" +
+        "    FROM datex2_situation situation\n" +
+        "    WHERE situation.situation_id = :situationId)\n" +
+        "  AND detailed_message_type in (:detailedMessageType)", nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<Datex2> findBySituationIdAndDetailedMessageType(final String situationId, final String...detailedMessageType);
 
     @Query(value =
         "SELECT d.*\n" +
@@ -121,21 +167,19 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "  AND message_type = :messageType\n" +
         "  AND d.json_message IS NOT NULL", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findBySituationIdAndMessageTypeWithJson(@Param("situationId") final String situationId, @Param("messageType") final String messageType);
-
+    List<Datex2> findBySituationIdAndMessageTypeWithJson(final String situationId, final String messageType);
 
     @Query(value =
-           "SELECT d.*\n" +
-               "FROM datex2 d\n" +
-               "WHERE d.id in (\n" +
-               "    SELECT situation.datex2_id\n" +
-               "    FROM datex2_situation situation\n" +
-               "    WHERE situation.situation_id = :situationId)\n" +
-               "  AND d.json_message is not null\n" +
-               "  AND message_type = :messageType", nativeQuery = true)
+        "SELECT d.*\n" +
+        "FROM datex2 d\n" +
+        "WHERE d.id in (\n" +
+        "    SELECT situation.datex2_id\n" +
+        "    FROM datex2_situation situation\n" +
+        "    WHERE situation.situation_id = :situationId)\n" +
+        "  AND detailed_message_type in (:detailedMessageType)\n" +
+"  AND d.json_message IS NOT NULL", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findBySituationIdAndMessageAndJson(final String situationId, final String messageType);
-
+    List<Datex2> findBySituationIdAndDetailedMessageTypeWithJson(final String situationId, final String...detailedMessageType);
 
     @Query("SELECT CASE WHEN count(situation) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM Datex2Situation situation\n" +

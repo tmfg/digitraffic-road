@@ -3,6 +3,12 @@
     <messageId>50003469</messageId>
     <date>2019-12-13T14:43:18.388+02:00</date>
     <messageSubject>LIIKENNETIEDOTE 13.12.2019 14:43:18</messageSubject>
+    <sender>
+        <name>Name</name>
+        <email>test@testing.com</email>
+        <tel>1234</tel>
+        <fax>1234</fax>
+    </sender>
     <messageText><![CDATA[
                 Tie 130, Lempäälä. Liikennetiedote.
 
@@ -72,7 +78,7 @@ http://extranet.liikennevirasto.fi/webloik/kartta/liikennetilanne/50001238</valu
     "announcements": [
       {
         "language": "fi",
-        "title": "Tie 130, Lempäälä. Liikennetiedote. ",
+        "title": "Tie 130, Lempäälä. Liikennetiedote.",
         "location": {
           "countryCode": 6,
           "locationTableNumber": 17,

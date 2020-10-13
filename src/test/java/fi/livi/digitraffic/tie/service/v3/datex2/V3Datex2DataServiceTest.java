@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v3.datex2;
 
+import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -27,9 +28,9 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Feature;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature;
@@ -49,9 +50,6 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     private V3Datex2DataService v3Datex2DataService;
 
     @Autowired
-    private V2Datex2DataService v2Datex2DataService;
-
-    @Autowired
     private Jaxb2Marshaller jaxb2Marshaller;
 
     @Autowired
@@ -68,34 +66,35 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void activeIncidentsDatex2AndJsonEqualsV0_2_4() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         activeIncidentsDatex2AndJsonEquals(Version.V0_2_4);
     }
 
     @Test
     public void activeIncidentsDatex2AndJsonEqualsV0_2_6() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         activeIncidentsDatex2AndJsonEquals(Version.V0_2_6);
     }
 
     @Test
     public void findBySituationIdV0_2_4() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         checkFindBySituationId();
     }
 
     @Test
     public void findBySituationIdV0_2_6() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         checkFindBySituationId();
     }
 
     private void checkFindBySituationId() {
-        final D2LogicalModel d2 = v2Datex2DataService.findAllBySituationId(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
-        final TrafficAnnouncementFeatureCollection jsons = v3Datex2DataService.findAllBySituationIdJson(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
+        final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(GUID_WITH_JSON, TRAFFIC_ANNOUNCEMENT);
+        final TrafficAnnouncementFeatureCollection jsons =
+            v3Datex2DataService.findAllBySituationIdJson(GUID_WITH_JSON, TRAFFIC_ANNOUNCEMENT);
 
         final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
 
@@ -111,7 +110,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findActiveV0_2_4() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -122,7 +121,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findActiveV0_2_6() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -133,7 +132,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findAllBySituationIdV0_2_4() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_4.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -146,7 +145,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findAllBySituationIdV0_2_6() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV0_2_6.xml");
+        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -179,9 +178,9 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     private static final String FEATURE_2 = "Huono ajokeli";
 
     private void activeIncidentsDatex2AndJsonEquals(final Version version) {
-        final D2LogicalModel d2 = v2Datex2DataService.findActive(0, Datex2MessageType.TRAFFIC_INCIDENT);
+        final D2LogicalModel d2 = v3Datex2DataService.findActive(0, Datex2DetailedMessageType.allValues());
         final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
-        final TrafficAnnouncementFeatureCollection activeJsons = v3Datex2DataService.findActiveJson(0, Datex2MessageType.TRAFFIC_INCIDENT);
+        final TrafficAnnouncementFeatureCollection activeJsons = v3Datex2DataService.findActiveJson(0, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
 
         AssertHelper.assertCollectionSize(1, activeSituations);
         AssertHelper.assertCollectionSize(1, activeJsons.getFeatures());
@@ -231,11 +230,11 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
         assertTrue(commentXml.contains(titleJson.trim()));
         assertTrue(commentXml.contains(descJson.trim()));
     }
-    
+
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
-        final D2LogicalModel withOrWithoutJson = v2Datex2DataService.findActive(0, Datex2MessageType.TRAFFIC_INCIDENT);
+        final D2LogicalModel withOrWithoutJson = v3Datex2DataService.findActive(0, Datex2DetailedMessageType.allValues());
         final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
-        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0, Datex2MessageType.TRAFFIC_INCIDENT);
+        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0, Datex2DetailedMessageType.allValues());
 
         assertEquals(
             foundInDatex2,
@@ -247,7 +246,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
 
     private void assertFoundBySituationId(final String situationId, boolean foundInDatex2, boolean foundInJson) {
         try {
-            final D2LogicalModel withOrWithoutJson = v2Datex2DataService.findAllBySituationId(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
+            final D2LogicalModel withOrWithoutJson = v3Datex2DataService.findAllBySituationId(GUID_WITH_JSON, Datex2DetailedMessageType.allValues());
             final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
             assertEquals(
                 foundInDatex2,
@@ -257,7 +256,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
         }
         try {
             final TrafficAnnouncementFeatureCollection withJson =
-                v3Datex2DataService.findAllBySituationIdJson(situationId, Datex2MessageType.TRAFFIC_INCIDENT);
+                v3Datex2DataService.findAllBySituationIdJson(situationId, Datex2DetailedMessageType.allValues());
             assertEquals(
                 foundInJson,
                 withJson.getFeatures().stream().anyMatch(f -> f.getProperties().situationId.equals(situationId)));
@@ -269,6 +268,6 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     private void initDataFromFile(final String file) throws IOException {
         final ArrayList<String> xmlImsMessages = readResourceContents("classpath:tloik/ims/" + file);
         final ImsMessage ims = (ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(xmlImsMessages.get(0)));
-        v2Datex2UpdateService.updateTrafficIncidentImsMessages(Collections.singletonList(ims));
+        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

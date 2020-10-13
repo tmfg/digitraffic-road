@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.model;
 
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 
 public enum DataType {
@@ -104,6 +105,23 @@ public enum DataType {
                 return ROADWORK;
             default:
                 throw new IllegalArgumentException("No mapping for " + messageType);
+        }
+    }
+
+    public static DataType typeFor(final Datex2DetailedMessageType messageType) {
+        switch (messageType) {
+        case TRAFFIC_ANNOUNCEMENT:
+        case PRELIMINARY_ANNOUNCEMENT:
+        case EXEMPTED_TRANSPORT:
+        case UNCONFIRMED_OBSERVATION:
+        case UNKNOWN:
+            return TRAFFIC_INCIDENT;
+        case WEIGHT_RESTRICTION:
+            return WEIGHT_RESTRICTION;
+        case ROADWORK:
+            return ROADWORK;
+        default:
+            throw new IllegalArgumentException("No mapping for " + messageType);
         }
     }
 }

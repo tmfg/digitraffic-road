@@ -13,9 +13,13 @@ public final class AssertHelper {
     private AssertHelper() {}
 
     public static void assertCollectionSize(final int expectedSize, final Collection<?> collection) {
-        final int collectionSize = collection.size();
+        assertCollectionSize(null, expectedSize, collection);
+    }
 
-        Assert.assertEquals(String.format("Collection size was expected to be %d, was %s", expectedSize, collectionSize), collectionSize, expectedSize);
+    public static void assertCollectionSize(final String message, final int expectedSize, final Collection<?> collection) {
+        final int collectionSize = collection.size();
+        Assert.assertEquals(String.format("%sCollection size was expected to be %d but was %s.",
+            message != null ? message + " " : "", expectedSize, collectionSize), expectedSize, collectionSize);
     }
 
     public static void assertEmpty(final Collection<?> col) {

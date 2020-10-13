@@ -3,6 +3,12 @@
     <messageId>50003469</messageId>
     <date>2019-12-13T14:43:18.388+02:00</date>
     <messageSubject>LIIKENNETIEDOTE 13.12.2019 14:43:18</messageSubject>
+    <sender>
+        <name>Name</name>
+        <email>test@testing.com</email>
+        <tel>1234</tel>
+        <fax>1234</fax>
+    </sender>
     <messageText><![CDATA[
                 Tie 130, Lempäälä. Liikennetiedote.
 
@@ -54,7 +60,13 @@ http://extranet.liikennevirasto.fi/webloik/kartta/liikennetilanne/50001238</valu
         <jMessage>
             <![CDATA[{
     "type": "Feature",
-    "geometry": null,
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            23.77474,
+            61.50221
+        ]
+    },
     "properties": {
         "situationId": "GUID50001238",
         "version": 1,
@@ -109,7 +121,8 @@ http://extranet.liikennevirasto.fi/webloik/kartta/liikennetilanne/50001238</valu
                     }
                 },
                 "features": [
-                    {"name": "Nopeusrajoitus", "quantity": 80.0, "unit": "km/h"}
+                    "Nopeusrajoitus",
+                    "Huono ajokeli"
                 ],
                 "comment": "TESTI TESTI TESTI\nML",
                 "timeAndDuration": {

@@ -47,7 +47,8 @@ public class XmlMarshallerConfiguration {
             "fi.livi.digitraffic.tie.datex2",
             "fi.livi.digitraffic.tie.datex2.response", // t-loik ???
             "fi.livi.digitraffic.tie.lotju.xsd.metatietomuutos.kameratietovirta",
-            "fi.livi.digitraffic.tie.external.tloik.ims");
+            "fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0",
+            "fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1");
         return marshaller;
     }
 }

@@ -16,7 +16,7 @@ server.port = 9010
 dt.domain.url=http://localhost:9010
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
+weathercam.baseUrl=https://weathercam-test.digitraffic.fi/
 
 # AWS settings
 dt.amazon.s3.weathercam.bucketName = weathercam-road-test

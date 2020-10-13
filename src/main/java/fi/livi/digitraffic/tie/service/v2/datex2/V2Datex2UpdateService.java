@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.Comment;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -30,10 +31,11 @@ import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
-import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
@@ -42,6 +44,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationRecordCommentI18n;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
+import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
 
@@ -52,37 +55,63 @@ public class V2Datex2UpdateService {
     private final Datex2Repository datex2Repository;
     private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
     private final DataStatusService dataStatusService;
+    private final Datex2JsonConverterService datex2JsonConverterService;
 
     @Autowired
     public V2Datex2UpdateService(final Datex2Repository datex2Repository,
-                                 final StringToObjectMarshaller stringToObjectMarshaller,
-                                 final DataStatusService dataStatusService) {
+                                 final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller,
+                                 final DataStatusService dataStatusService,
+                                 final Datex2JsonConverterService datex2JsonConverterService) {
         this.datex2Repository = datex2Repository;
         this.stringToObjectMarshaller = stringToObjectMarshaller;
         this.dataStatusService = dataStatusService;
+        this.datex2JsonConverterService = datex2JsonConverterService;
     }
 
     @Transactional
-    public int updateTrafficIncidentImsMessages(final List<ImsMessage> imsMessages) {
-        return updateTrafficImsMessages(imsMessages, TRAFFIC_INCIDENT);
+    public int updateTrafficDatex2ImsMessages(final List<ExternalIMSMessage> imsMessages) {
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
+        final int newAndUpdated = imsMessages.stream().mapToInt(imsMessage -> {
+            final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
+            final List<Datex2MessageDto> models = createModels(d2, imsMessage.getMessageContent().getJMessage(), now);
+            return updateTrafficDatex2Messages(models);
+        }).sum();
+        log.info("method=updateTrafficDatex2ImsMessages updated={} Datex2ImsMessages", newAndUpdated);
+        return newAndUpdated;
     }
 
     @Transactional
-    public int updateTrafficImsMessages(final List<ImsMessage> imsMessages, final Datex2MessageType messageType) {
+    public int updateTrafficDatex2Messages(final List<Datex2MessageDto> imsMessages) {
         return (int)imsMessages.stream()
-            .filter(imsMessage -> isNewOrUpdatedSituation(stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message()), messageType))
-            .map(imsMessage -> convertToDatex2MessageDto(imsMessage, messageType))
+            .filter(imsMessage -> isNewOrUpdatedSituation(imsMessage.model, imsMessage.messageType.getDatex2MessageType()))
             .filter(this::updateDatex2Data)
             .count();
     }
 
-    private Datex2MessageDto convertToDatex2MessageDto(final ImsMessage imsMessage, final Datex2MessageType messageType) {
-        final String jsonValue = StringUtils.trimToNull(imsMessage.getMessageContent().getJMessage());
-        if (log.isDebugEnabled()) {
-            log.debug("IMS JSON: \n{}", jsonValue);
-        }
-        final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
-        return createModelWithJson(d2, jsonValue, messageType, ZonedDateTime.now());
+    public List<Datex2MessageDto> createModels(final D2LogicalModel d2, final String jMessage, final ZonedDateTime importTime) {
+        final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
+        final Map<String, String> situationIdJsonMap = datex2JsonConverterService.parseFeatureJsonsFromImsJson(jMessage);
+
+        return sp.getSituations().stream()
+            .map(s -> {
+                final Datex2DetailedMessageType messageType = Datex2Helper.resolveMessageType(s);
+                final String json = situationIdJsonMap.get(s.getId());
+                // TODO DPO-252 Tietöiden ja painorajoitusten hakeminen JMS-jonosta + JSON
+                // When json is added there too, remove type check for error
+                if (json == null && messageType.getDatex2MessageType() == TRAFFIC_INCIDENT) {
+                    final String jsons = combineJsonsForErroLogging(situationIdJsonMap);
+                    log.error("method=createModels No JSON message for messageType={} situationId={}  jsons: {}", messageType, s.getId(), jsons);
+                } else if (messageType == Datex2DetailedMessageType.UNKNOWN) {
+                    log.error("method=createModels No Datex2DetailedMessageType found for datex2 messageType={} situationId={} datex2: {}", messageType, s.getId(),
+                              ToStringHelper.toStringFull(s));
+                }
+                return convertToDatex2MessageDto(d2, sp, s, importTime, json, messageType);
+            })
+            .collect(Collectors.toList());
+    }
+
+    private String combineJsonsForErroLogging(final Map<String, String> situationIdJsonMap) {
+        return String.join("\n\n", situationIdJsonMap.values());
     }
 
     private boolean isNewOrUpdatedSituation(final D2LogicalModel d2, final Datex2MessageType messageType) {
@@ -96,31 +125,9 @@ public class V2Datex2UpdateService {
         return datex2Repository.findDatex2SituationLatestVersionTime(situationId, messageType.name());
     }
 
-    /**
-     * Expects
-     * @param d2 with only one situation inside
-     * @param jsonValue simple json value
-     * @param messageType type of message
-     * @param importTime when was the import done
-     * @return dto containing JSON
-     */
-    private Datex2MessageDto createModelWithJson(final D2LogicalModel d2, final String jsonValue,
-                                                 final Datex2MessageType messageType, final ZonedDateTime importTime) {
-        Datex2Helper.checkD2HasOnlyOneSituation(d2);
-        final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
-        final Situation situation = sp.getSituations().get(0);
-        final Instant versionTime = findSituationLatestVersionTime(situation.getId(), messageType);
-        final boolean update = versionTime != null && Datex2Helper.isNewOrUpdatedSituation(versionTime, situation);
-        final boolean isNew = versionTime == null;
-
-        log.info("method=createModelWithJson situationUpdated={} situationNew={}", update, isNew);
-
-        return convert(d2, sp, situation, importTime, jsonValue, messageType);
-    }
-
-    public Datex2MessageDto convert(final D2LogicalModel main, final SituationPublication sp,
-                                    final Situation situation, final ZonedDateTime importTime,
-                                    final String jsonValue, final Datex2MessageType messageType) {
+    public Datex2MessageDto convertToDatex2MessageDto(final D2LogicalModel main, final SituationPublication sp,
+                                                      final Situation situation, final ZonedDateTime importTime,
+                                                      final String jsonValue, final Datex2DetailedMessageType messageType) {
         final D2LogicalModel d2 = new D2LogicalModel();
         final SituationPublication newSp = new SituationPublication();
 
@@ -134,7 +141,7 @@ public class V2Datex2UpdateService {
         d2.setPayloadPublication(newSp);
 
         final String messageValue = stringToObjectMarshaller.convertToString(d2);
-        return new Datex2MessageDto(d2, messageType, messageValue, jsonValue, importTime);
+        return new Datex2MessageDto(d2, messageType, messageValue, jsonValue, importTime, situation.getId());
     }
 
     /* COPIED */
@@ -149,8 +156,8 @@ public class V2Datex2UpdateService {
 
         Datex2Helper.checkD2HasOnlyOneSituation(message.model);
 
-        if (isNewOrUpdatedSituation(message.model, message.messageType)) {
-            final Datex2 datex2 = new Datex2();
+        if (isNewOrUpdatedSituation(message.model, message.messageType.getDatex2MessageType())) {
+            final Datex2 datex2 = new Datex2(message.messageType);
             final D2LogicalModel d2 = message.model;
 
             final ZonedDateTime latestVersionTime = getLatestSituationRecordVersionTime(d2);
@@ -159,15 +166,17 @@ public class V2Datex2UpdateService {
                 Objects.requireNonNullElseGet(message.importTime, () -> latestVersionTime != null ? latestVersionTime : ZonedDateTime.now()));
             datex2.setMessage(message.message);
             datex2.setJsonMessage(message.jsonMessage);
-            datex2.setMessageType(message.messageType);
             parseAndAppendPayloadPublicationData(d2.getPayloadPublication(), datex2);
             datex2Repository.save(datex2);
             if (message.jsonMessage != null) {
-                dataStatusService.updateDataUpdated(DataType.typeFor(message.messageType));
+                dataStatusService.updateDataUpdated(DataType.typeFor(message.messageType.getDatex2MessageType()));
             }
             final String situationId = Datex2Helper.getSituationPublication(d2).getSituations().get(0).getId();
-            log.info("Update Datex2 messageType={} for situationId={} with importTime={}", message.messageType, situationId, datex2.getImportTime());
+            log.info("Update Datex2 situationId={} messageType={} detailedMessageType: {} with importTime={}",
+                situationId, message.messageType.getDatex2MessageType(), message.messageType, datex2.getImportTime());
             return true;
+        } else {
+            log.info("method=updateDatex2Data Not updating situationId={} messageType={} detailedMessageType: {} as it is already uptodate", message.situationId, message.messageType.getDatex2MessageType(), message.messageType);
         }
         return false;
     }
