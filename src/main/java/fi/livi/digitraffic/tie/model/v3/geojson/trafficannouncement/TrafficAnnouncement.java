@@ -44,7 +44,7 @@ public class TrafficAnnouncement {
     @ApiModelProperty(value = "Location of an traffic situation announcement")
     public Location location;
 
-    @ApiModelProperty(value = "TODO")
+    @ApiModelProperty(value = "More detailed location")
     public LocationDetails locationDetails;
 
     @ApiModelProperty(value = "Features of the announcement")
@@ -52,6 +52,9 @@ public class TrafficAnnouncement {
 
     @ApiModelProperty(value = "Contains the phases of this road maintenance work")
     public List<RoadWorkPhase> roadWorkPhases = new ArrayList<>();
+
+    @ApiModelProperty(value = "The itinerary segment of this special transport that is or was last active.")
+    public LastActiveItinerarySegment lastActiveItinerarySegment;
 
     @ApiModelProperty(value = "Free comment")
     public String comment;

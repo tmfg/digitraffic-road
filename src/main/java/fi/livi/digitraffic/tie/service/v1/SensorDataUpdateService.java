@@ -23,16 +23,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryDao;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueUpdateParameterDto;
 import fi.livi.digitraffic.tie.helper.SensorValueBuffer;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 @ConditionalOnNotWebApplication
 @Service
@@ -135,7 +135,7 @@ public class SensorDataUpdateService {
 
         updateSensorData(updates, timestampCache.getMaxTime(), RoadStationType.TMS_STATION);
 
-        log.info("tmsBuffer for db update {} / {} incomings", updates.size(), lamValueBuffer.getIncomingElementCount());
+        log.info("method=persistLamSensorValues tmsBuffer for db update {} / {} incomings", updates.size(), lamValueBuffer.getIncomingElementCount());
     }
 
     @Scheduled(fixedRate = 30000)
@@ -151,7 +151,7 @@ public class SensorDataUpdateService {
 
         updateSensorHistoryData(updates, RoadStationType.WEATHER_STATION);
 
-        log.info("weatherBuffer for db update {} / {} incomings", updates.size(), weatherValueBuffer.getIncomingElementCount());
+        log.info("method=persistWeatherSensorValues weatherBuffer for db update {} / {} incomings", updates.size(), weatherValueBuffer.getIncomingElementCount());
     }
 
     /**

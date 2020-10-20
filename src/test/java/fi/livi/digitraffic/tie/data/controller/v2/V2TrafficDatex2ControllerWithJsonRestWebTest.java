@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.external.tloik.ims.ImsMessage;
+import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
@@ -65,10 +65,10 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         // GUID60013339 active
         final String incident4 = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessage-invalid-duration.xml");
 
-        updateFromImsMessage(incident1, TRAFFIC_INCIDENT);
-        updateFromImsMessage(incident2, TRAFFIC_INCIDENT);
-        updateFromImsMessage(incident3, TRAFFIC_INCIDENT);
-        updateFromImsMessage(incident4, TRAFFIC_INCIDENT);
+        updateFromImsMessage(incident1);
+        updateFromImsMessage(incident2);
+        updateFromImsMessage(incident3);
+        updateFromImsMessage(incident4);
     }
 
     @Test
@@ -147,8 +147,8 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         return mockMvc.perform(get(url)).andReturn().getResponse().getContentAsString();
     }
 
-    private void updateFromImsMessage(final String imsXml, final Datex2MessageType type) {
+    private void updateFromImsMessage(final String imsXml) {
         final ImsMessage ims = (ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(imsXml));
-        v2Datex2UpdateService.updateTrafficImsMessages(Collections.singletonList(ims), type);
+        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

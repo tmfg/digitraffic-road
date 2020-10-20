@@ -35,6 +35,7 @@
                 "havaintoaika": "2019-01-30T12:45:00+02:00",
                 "urakkaid": 999999,
                 "suoritettavatTehtavat": [
+                    "auraus ja sohjonpoisto",
                     "suolaus"
                 ]
             }

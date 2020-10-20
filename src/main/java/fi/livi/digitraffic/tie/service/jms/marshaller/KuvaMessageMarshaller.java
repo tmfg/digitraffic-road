@@ -19,7 +19,7 @@ public class KuvaMessageMarshaller implements JMSMessageListener.MessageMarshall
     private static final Logger log = LoggerFactory.getLogger(KuvaMessageMarshaller.class);
 
     @Override
-    public List<KuvaProtos.Kuva> unmarshalMessage(Message message) throws JMSException {
+    public List<KuvaProtos.Kuva> unmarshalMessage(final Message message) throws JMSException {
         return unmarshallBytes((BytesMessage) message);
     }
 

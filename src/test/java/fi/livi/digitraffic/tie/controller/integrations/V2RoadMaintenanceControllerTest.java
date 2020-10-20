@@ -4,7 +4,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_INTEGRATIONS_BASE_
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_WORK_MACHINE_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.REALIZATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.TRACKINGS_PATH;
-import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.*;
+import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PLOUGHING_AND_SLUSH_REMOVAL;
+import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.SALTING;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -13,7 +14,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +88,6 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         Assert.assertEquals(recordsBefore, recordsAfter);
     }
 
-    @Ignore("DPO-631 Temporally disabled the check of time gap between points to see what is real data quality")
     @Test
     public void postWorkMachineTrackingDataAndHandleAsDistinctObservations() throws Exception {
         final long harjaUrakkaId = 999999;
@@ -97,7 +96,6 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         postTrackingJson("linestring_tracking_1.json");
         postTrackingJson("linestring_tracking_2.json");
         postTrackingJson("linestring_tracking_3.json");
-
 
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
         entityManager.flush();
@@ -122,7 +120,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         Assert.assertTrue(first.getTasks().contains(PLOUGHING_AND_SLUSH_REMOVAL));
         Assert.assertTrue(first.getTasks().contains(SALTING));
 
-        Assert.assertEquals(1, second.getTasks().size());
+        Assert.assertEquals(2, second.getTasks().size());
         Assert.assertTrue(second.getTasks().contains(SALTING));
 
 

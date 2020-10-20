@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.dao.v1.DataUpdatedRepository;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.DataUpdated;
 
@@ -59,6 +59,11 @@ public class DataStatusService {
     @Transactional(readOnly = true)
     public ZonedDateTime findDataUpdatedTime(final DataType dataType) {
         return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataType));
+    }
+
+    @Transactional(readOnly = true)
+    public ZonedDateTime findDataUpdatedTime(final DataType...dataTypes) {
+        return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataTypes));
     }
 
     @Transactional(readOnly = true)

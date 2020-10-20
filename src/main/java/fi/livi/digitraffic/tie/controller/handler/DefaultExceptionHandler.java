@@ -43,6 +43,7 @@ public class DefaultExceptionHandler {
 
     // log these exceptions with error
     private static final Set<Class> errorLoggableExceptions = Set.of(
+        NullPointerException.class,
         ConstraintViolationException.class,
         ResourceAccessException.class);
 

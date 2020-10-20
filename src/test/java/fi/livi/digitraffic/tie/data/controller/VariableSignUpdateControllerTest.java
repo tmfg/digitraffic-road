@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_VARIABLE_SIGN_UPDATE_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.VariableSignUpdateController.DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.VariableSignUpdateController.METADATA_PATH;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,11 +56,11 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
     }
 
     private void assertDeviceCountInDb(final int count) {
-        Assert.assertEquals(count, v2DeviceRepository.count());
+        assertEquals(count, v2DeviceRepository.count());
     }
 
     private void assertDeviceDataCountInDb(final int count) {
-        Assert.assertEquals(count, v2DeviceDataRepository.count());
+        assertEquals(count, v2DeviceDataRepository.count());
     }
 
     @Test
@@ -102,15 +103,18 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         postJson("update_data_1.json", DATA_PATH);
         assertDeviceDataCountInDb(1);
 
-        final List<DeviceData> data1 = v2DeviceDataRepository.findLatestData("t1");
-        assert(data1.size() == 1);
-
+        final List<Long> id1 = v2DeviceDataRepository.findLatestData("t1");
+        final List<DeviceData> data1 = v2DeviceDataRepository.findAllById(id1);
+        assertEquals(1, data1.size());
+        assertEquals(2, data1.get(0).getRows().size());
         // update data
         postJson("update_data_2.json", DATA_PATH);
         assertDeviceDataCountInDb(2);
 
-        final List<DeviceData> data2 = v2DeviceDataRepository.findLatestData("t1");
-        assert(data2.size() == 1);
+        final List<Long> id2 = v2DeviceDataRepository.findLatestData("t1");
+        final List<DeviceData> data2 = v2DeviceDataRepository.findAllById(id2);
+        assertEquals(1, data2.size());
+        assertEquals(0, data2.get(0).getRows().size());
 
         final DeviceData d1 = data1.get(0);
         final DeviceData d2 = data2.get(0);
@@ -118,8 +122,8 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         // latest data has changed
         assert(d2.getEffectDate().isAfter(d1.getEffectDate()));
         assert(d2.getCreatedDate().isAfter(d1.getCreatedDate()));
-        assert(d1.getDisplayValue().equals("100"));
-        assert(d2.getDisplayValue().equals("120"));
+        assertEquals("100", d1.getDisplayValue());
+        assertEquals("120", d2.getDisplayValue());
     }
 
     @Test
@@ -131,19 +135,18 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         assertDeviceCountInDb(1);
         final Device d1 = v2DeviceRepository.getOne("t1");
         assertNotNull(d1);
-        final String direction1 = d1.getDirection();
         final ZonedDateTime update1 = d1.getUpdatedDate();
+        final String direction1 = d1.getDirection();
 
         // update device
         postJson("update_device_2.json", METADATA_PATH);
-//        deviceRepository.flush();
         assertDeviceCountInDb(1);
         final Device d2 = v2DeviceRepository.getOne("t1");
         assertNotNull(d2);
 
         // data has changed
         assert(d2.getUpdatedDate().isAfter(update1));
-        assert(direction1.equals("KASVAVA"));
-        assert(d2.getDirection().equals("LASKEVA"));
+        assertEquals("KASVAVA", direction1);
+        assertEquals("LASKEVA", d2.getDirection());
     }
 }

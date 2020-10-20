@@ -53,7 +53,7 @@ dt.job.ForecastSectionV1MetadataUpdateJob.schedule =           0 0 3 * * ?
 dt.job.ForecastSectionV2MetadataUpdateJob.schedule =           0 0 3 * * ?
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
-weathercam.baseUrl=http://weathercam-test.digitraffic.fi/
+weathercam.baseUrl=https://weathercam-test.digitraffic.fi/
 
 # AWS settings
 dt.amazon.s3.weathercam.bucketName = weathercam-road-test

@@ -1,11 +1,16 @@
 package fi.livi.digitraffic.tie.service.v2;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.SignTextRow;
+import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceDataRow;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,19 +46,26 @@ public class V2VariableSignService {
     @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValues() {
         final Stream<Device> devices = v2DeviceRepository.streamAll();
-        final Stream<DeviceData> data = v2DeviceDataRepository.streamLatestData();
-        final Map<String, DeviceData> dataMap = data.collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
+        final List<Long> dataIds = v2DeviceDataRepository.findLatestData();
+        final List<DeviceData> data = v2DeviceDataRepository.findAllById(dataIds);
+        final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
+        final List<VariableSignFeature> features = devices
+            .map(d -> convert(d, dataMap))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toUnmodifiableList());
 
-        return new VariableSignFeatureCollection(devices.map(d -> convert(d, dataMap)).collect(Collectors.toList()));
+        return new VariableSignFeatureCollection(features);
     }
 
     private VariableSignFeature convert(final Device device, final Map<String, DeviceData> dataMap) {
         final DeviceData data = dataMap.get(device.getId());
 
-        return convert(device, data);
+        return data == null ? null : convert(device, data);
     }
 
     private VariableSignFeature convert(final Device device, final DeviceData data) {
+        final List<SignTextRow> textRows = CollectionUtils.isEmpty(data.getRows()) ? Collections.emptyList() : convert(data.getRows());
+
         final VariableSignProperties properties = new VariableSignProperties(
             device.getId(),
             VariableSignProperties.SignType.byValue(device.getType()),
@@ -64,10 +76,16 @@ public class V2VariableSignService {
             data == null ? null : data.getAdditionalInformation(),
             data == null ? null : data.getEffectDate(),
             data == null ? null : data.getCause(),
-            data == null ? null : VariableSignProperties.Reliability.byValue(data.getReliability()));
+            data == null ? null : VariableSignProperties.Reliability.byValue(data.getReliability()), textRows);
         final Point point = CoordinateConverter.convertFromETRS89ToWGS84(new Point(device.getEtrsTm35FinX(), device.getEtrsTm35FinY()));
 
         return new VariableSignFeature(point, properties);
+    }
+
+    private List<SignTextRow> convert(final List<DeviceDataRow> textRows) {
+        return textRows.stream()
+            .map(r -> new SignTextRow(r.getScreen(), r.getRowNumber(), r.getText()))
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -80,7 +98,10 @@ public class V2VariableSignService {
         final Optional<Device> device = v2DeviceRepository.findById(deviceId);
 
         if(device.isPresent()) {
-            return new VariableSignFeatureCollection(v2DeviceDataRepository.findLatestData(deviceId).stream()
+            final List<Long> latest = v2DeviceDataRepository.findLatestData(deviceId);
+            final List<DeviceData> data = v2DeviceDataRepository.findAllById(latest);
+
+            return new VariableSignFeatureCollection(data.stream()
                 .map(d -> convert(device.get(), d))
                 .collect(Collectors.toList()));
         }

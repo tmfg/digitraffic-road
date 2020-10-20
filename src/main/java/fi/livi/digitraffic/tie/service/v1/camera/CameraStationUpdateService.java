@@ -182,8 +182,8 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             if (to.getNearestWeatherStation() == null || !tsaLotjuId.equals(to.getNearestWeatherStation().getLotjuId())) {
                 final WeatherStation nearestWs = weatherStationService.findWeatherStationByLotjuId(tsaLotjuId);
                 if(nearestWs == null && !isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila())) {
-                    log.error("Could not set set nearest Weather Station for cameraPresetId={}. Weather station with lotjuId={} not found.",
-                              to.getPresetId(), tsaLotjuId);
+                    log.warn("Could not set set nearest Weather Station for cameraPresetId={}. Weather station with lotjuId={} not found.",
+                             to.getPresetId(), tsaLotjuId);
                 }
                 to.setNearestWeatherStation(nearestWs);
             }
