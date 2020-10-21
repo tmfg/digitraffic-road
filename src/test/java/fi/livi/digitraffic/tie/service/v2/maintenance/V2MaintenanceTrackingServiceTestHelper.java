@@ -385,4 +385,9 @@ public class V2MaintenanceTrackingServiceTestHelper {
         final String ls1 = getFormatedTrackingJson(path);
         saveTrackingAsJson(ls1);
     }
+
+    public static ZonedDateTime getEndTime(final TyokoneenseurannanKirjausRequestSchema seuranta) {
+        final List<Havainnot> havainnot = seuranta.getHavainnot();
+        return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
+    }
 }

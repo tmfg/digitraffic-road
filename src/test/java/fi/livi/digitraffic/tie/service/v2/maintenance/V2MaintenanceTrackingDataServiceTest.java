@@ -17,6 +17,7 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkmachine;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getEndTime;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskWithIndex;
@@ -52,7 +53,6 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureColl
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingProperties;
-import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
@@ -473,10 +473,5 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
     private void assertAllHasOnlyPointGeometries(final List<MaintenanceTrackingLatestFeature> features) {
         features.forEach(f -> assertEquals(Point, f.getGeometry().getType()));
-    }
-
-    private ZonedDateTime getEndTime(final TyokoneenseurannanKirjausRequestSchema seuranta) {
-        final List<Havainnot> havainnot = seuranta.getHavainnot();
-        return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
     }
 }

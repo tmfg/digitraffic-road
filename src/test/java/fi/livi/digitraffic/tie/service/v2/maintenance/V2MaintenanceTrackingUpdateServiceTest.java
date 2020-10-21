@@ -2,9 +2,9 @@ package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithLineString;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getEndTime;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -137,17 +138,22 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
-        final ZonedDateTime endTime = startTime.plusMinutes(4);
-        IntStream.range(0,5).forEach(i -> {
-            final ZonedDateTime start = startTime.plusMinutes(i);
-            final TyokoneenseurannanKirjausRequestSchema seuranta =
-                createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, ASFALTOINTI);
-            try {
-                testHelper.saveTrackingData(seuranta);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        final int observationCount = getRandomId(5, 10);
+
+        final ZonedDateTime endTime =
+            // 5 trackings / machine
+            IntStream.range(0,5).mapToObj(i -> {
+                final ZonedDateTime start = startTime.plusMinutes(i*observationCount);
+                final TyokoneenseurannanKirjausRequestSchema seuranta =
+                    createMaintenanceTrackingWithPoints(start, observationCount, i+1, 1, workMachines, ASFALTOINTI);
+                try {
+                    testHelper.saveTrackingData(seuranta);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                return getEndTime(seuranta);
+            }).max(ChronoZonedDateTime::compareTo).orElseThrow();
+
         int handled;
         int total = 0;
         do {
@@ -161,7 +167,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertCollectionSize(machineCount, trackings);
         trackings.forEach(t -> {
             // 10 observations for each
-            assertEquals(10*5, t.getLineString().getNumPoints());
+            assertEquals(observationCount * 5, t.getLineString().getNumPoints());
             assertEquals(1, t.getTasks().size());
             assertTrue(t.getTasks().contains(MaintenanceTrackingTask.PAVING));
             assertEquals(startTime, t.getStartTime());
