@@ -27,10 +27,12 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -50,6 +52,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureColl
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingProperties;
+import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
@@ -82,13 +85,14 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Test
     public void findCombinedTrackingsWithMultipleWorkMachines() throws JsonProcessingException {
         final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
-        final ZonedDateTime end = start.plusMinutes(10);
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final TyokoneenseurannanKirjausRequestSchema seuranta1 =
-            createMaintenanceTrackingWithPoints(start, 10, 1, workMachines, ASFALTOINTI);
+            createMaintenanceTrackingWithPoints(start, 10, 1, 1, workMachines, ASFALTOINTI);
         final TyokoneenseurannanKirjausRequestSchema seuranta2 =
-            createMaintenanceTrackingWithLineString(end, 10, 1, workMachines, ASFALTOINTI);
+            createMaintenanceTrackingWithPoints(start.plusMinutes(10), 10, 2,1, workMachines, ASFALTOINTI);
+        final ZonedDateTime end = getEndTime(seuranta2);
+
         testHelper.saveTrackingData(seuranta1);
         testHelper.saveTrackingData(seuranta2);
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
@@ -112,21 +116,23 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void findCombinedMultipleTrackings() {
-        final int machineCount = getRandomId(2, 10);
+        final int machineCount = 1;//getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
-        final ZonedDateTime endTime = startTime.plusMinutes(4);
+
+
         // Generate 5 trackings for each machine
-        IntStream.range(0,5).forEach(i -> {
-            final ZonedDateTime start = startTime.plusMinutes(i);
+        final ZonedDateTime endTime = IntStream.range(0, 5).mapToObj(i -> {
+            final ZonedDateTime start = startTime.plusMinutes(i*10);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
-                createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
+                createMaintenanceTrackingWithPoints(start, 10, i + 1, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
             try {
                 testHelper.saveTrackingData(seuranta);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        });
+            return getEndTime(seuranta);
+        }).max(ChronoZonedDateTime::compareTo).orElseThrow();
 
         final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
         assertEquals(5, handled);
@@ -323,13 +329,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final Tyokone workMachine = createWorkmachine(1);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
 
-        final Pair<Double, Double> xRange = Pair.of(20.0, 30.0);
-        final Pair<Double, Double> yRange = Pair.of(64.0, 66.0);
-
-        List<List<Double>> fromWGS84 = asList(
-            asList(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()-10),
-            asList(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()+10)
-        );
+        List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()-0.5, BOUNDING_BOX_Y_RANGE.getRight() + 0.5);
 
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
@@ -350,6 +350,16 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         Assert.assertEquals(startTime, props.endTime);
     }
 
+    private List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
+        final double increment = 0.03; // keeps distance between points < 20 km
+        final double range = maxY - minY;
+        final int points = (int) (range / increment);
+
+        return IntStream.range(1, points+1)
+            .mapToObj(i -> asList(x, minY + (i*increment)))
+            .collect(Collectors.toList());
+    }
+
     /**
      *                          | - linestring
      *                –––––––––-|
@@ -363,11 +373,9 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final Tyokone workMachine = createWorkmachine(1);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
 
-        List<List<Double>> fromWGS84 = asList(
-            asList(BOUNDING_BOX_X_RANGE.getRight() + 0.1, BOUNDING_BOX_Y_RANGE.getLeft() - 10),
-            asList(BOUNDING_BOX_X_RANGE.getRight() + 0.1, BOUNDING_BOX_Y_RANGE.getRight() + 10)
-        );
-
+        List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getRight() + 0.1,
+                                                                     BOUNDING_BOX_Y_RANGE.getLeft() - 10,
+                                                                     BOUNDING_BOX_Y_RANGE.getRight() + 10);
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
         testHelper.saveTrackingData(
@@ -467,4 +475,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         features.forEach(f -> assertEquals(Point, f.getGeometry().getType()));
     }
 
+    private ZonedDateTime getEndTime(final TyokoneenseurannanKirjausRequestSchema seuranta) {
+        final List<Havainnot> havainnot = seuranta.getHavainnot();
+        return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
+    }
 }

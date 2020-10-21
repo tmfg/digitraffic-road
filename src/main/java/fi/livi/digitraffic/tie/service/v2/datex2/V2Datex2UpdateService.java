@@ -72,6 +72,7 @@ public class V2Datex2UpdateService {
     public int updateTrafficDatex2ImsMessages(final List<ExternalIMSMessage> imsMessages) {
         final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
         final int newAndUpdated = imsMessages.stream().mapToInt(imsMessage -> {
+            log.info("method=updateTrafficDatex2ImsMessages imsMessage d2Message datex2: {}", imsMessage.getMessageContent().getD2Message());
             final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
             final List<Datex2MessageDto> models = createModels(d2, imsMessage.getMessageContent().getJMessage(), now);
             return updateTrafficDatex2Messages(models);
