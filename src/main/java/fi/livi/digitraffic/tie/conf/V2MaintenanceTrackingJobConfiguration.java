@@ -9,8 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 
@@ -50,11 +48,14 @@ public class V2MaintenanceTrackingJobConfiguration {
                 totalCount += count;
                 log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}", count, startInternal.getTime(), (double)startInternal.getTime() / count);
                 lockingService.unlock(LOCK_NAME);
+                if (count == 0) {
+                    break; // If zero to handle exit
+                }
             } else {
                 log.warn("method=handleUnhandledMaintenanceTrackings didn't get lock for updating tracking data.");
                 count = -1; // to end the loop
             }
-        } while (count == MAX_HANDLE_COUNT_PER_CALL); // call handleUnhandledMaintenanceTrackingData until less than maximum
+        } while (count < MAX_HANDLE_COUNT_PER_CALL); // call handleUnhandledMaintenanceTrackingData until less than maximum
         log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount, start.getTime(), (double)start.getTime() / totalCount);
     }
 }
