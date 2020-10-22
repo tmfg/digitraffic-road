@@ -4,6 +4,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ public class V2MaintenanceTrackingJobConfiguration {
 
     private final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
     private final LockingService lockingService;
+    private final long runRateMs;
 
     private final static String LOCK_NAME = "V2MaintenanceTrackingJobConfiguration";
 
@@ -28,9 +30,12 @@ public class V2MaintenanceTrackingJobConfiguration {
 
     @Autowired
     public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
-                                                 final LockingService lockingService) {
+                                                 final LockingService lockingService,
+                                                 @Value("${maintenance.tracking.job.intervalMs}")
+                                                 final long runRateMs) {
         this.v2MaintenanceTrackingUpdateService = v2MaintenanceTrackingUpdateService;
         this.lockingService = lockingService;
+        this.runRateMs = runRateMs;
     }
 
     /**
@@ -49,14 +54,13 @@ public class V2MaintenanceTrackingJobConfiguration {
                 totalCount += count;
                 log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}", count, startInternal.getTime(), (double)startInternal.getTime() / count);
                 lockingService.unlock(LOCK_NAME);
-                if (count == 0) {
-                    count = -1; // If zero to handle exit
-                }
             } else {
                 log.warn("method=handleUnhandledMaintenanceTrackings didn't get lock for updating tracking data.");
-                count = -1; // to end the loop
+                count = 0; // to end the loop
             }
-        } while (count > 0 && count < MAX_HANDLE_COUNT_PER_JOB); // call handleUnhandledMaintenanceTrackingData until less than maximum
+        // Stop if all was handled => count == MAX_HANDLE_COUNT_PER_CALL
+        // Make sure job stops now and then even when it cant handle all data => start.getTime() < runRateMs * 10
+        } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getTime() < runRateMs * 10);
         log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount, start.getTime(), (double)start.getTime() / totalCount);
     }
 }
