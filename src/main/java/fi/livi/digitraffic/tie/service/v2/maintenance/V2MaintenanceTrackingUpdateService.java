@@ -192,15 +192,7 @@ public class V2MaintenanceTrackingUpdateService {
                 } else {
                     previousTracking.appendGeometry(geometry, harjaObservationTime, direction);
                     sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
-                    // Just debugging
-                    final LineString resultLs = previousTracking.getLineString();
-                    final Point end = resultLs.getEndPoint();
-                    final Point endPrev = resultLs.getPointN(resultLs.getNumPoints() - 2);
-                    final double dist = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(endPrev, end);
-                    if (dist > distinctLineStringObservationGapKm) {
-                        log.error("method=handleRoute Last point over {} km from previous. Previous: {}, end: {}, data id: {}, havainto.sijainti: {}",
-                                   distinctLineStringObservationGapKm, endPrev.toString(), end.toString(), trackingData.getId(), havainto.getSijainti().toString());
-                    }
+
                     // previousTracking.addWorkMachineTrackingData(trackingData) does db query for all previous trackintData
                     // to populate the collection. So let's just insert the new one directly to db.
                     v2MaintenanceTrackingRepository.addTrackingData(trackingData.getId(), previousTracking.getId());
