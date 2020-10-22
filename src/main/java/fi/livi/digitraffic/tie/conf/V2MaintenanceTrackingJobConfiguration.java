@@ -23,7 +23,7 @@ public class V2MaintenanceTrackingJobConfiguration {
 
     private final static String LOCK_NAME = "V2MaintenanceTrackingJobConfiguration";
 
-    private final static int MAX_HANDLE_COUNT_PER_CALL = 100;
+    private final static int MAX_HANDLE_COUNT_PER_CALL = 10000;
 
     @Autowired
     public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
