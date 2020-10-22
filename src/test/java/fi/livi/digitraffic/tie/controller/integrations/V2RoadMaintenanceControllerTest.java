@@ -98,7 +98,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
 
         postTrackingJson("linestring_tracking_1.json");
         postTrackingJson("linestring_tracking_2.json");
-        postTrackingJson("linestring_tracking_3.json");
+        postTrackingJson("linestring_tracking_too_long_after.json");
 
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
         entityManager.flush();
@@ -107,20 +107,17 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         final List<MaintenanceTracking> observations = v2MaintenanceTrackingRepository
             .findAllByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedAscIdAsc(harjaTyokoneId, harjaUrakkaId);
 
-        Assert.assertEquals("Observations should be divided in three as line strings are handled as distinct trackings",
-                   3, observations.size());
+        Assert.assertEquals("Two first observations should be joined and 3rd divided as separate as record time is far from previous.",
+                   2, observations.size());
 
         final MaintenanceTracking first = observations.get(0);
         final MaintenanceTracking second = observations.get(1);
-        final MaintenanceTracking third = observations.get(2);
 
-        assertLinestringSize(first, 3);
-        assertLinestringSize(second, 4);
-        assertLinestringSize(third, 5);
+        assertLinestringSize(first, 3+4);
+        assertLinestringSize(second, 5);
 
         assertContainsTasks(first, PLOUGHING_AND_SLUSH_REMOVAL, SALTING);
         assertContainsTasks(second, PLOUGHING_AND_SLUSH_REMOVAL, SALTING);
-        assertContainsTasks(third, PLOUGHING_AND_SLUSH_REMOVAL, SALTING);
     }
 
     private void assertContainsTasks(final MaintenanceTracking tracking, MaintenanceTrackingTask...tasks) {

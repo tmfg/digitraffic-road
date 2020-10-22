@@ -383,16 +383,17 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     }
 
     @Test
-    public void lineStringsShouldBeHandledAsDistinctTrackings() throws IOException {
+    public void lineStringsShouldBeHandledAsOneIfNoDistanceGap() throws IOException {
 
         testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/linestring-first.json");
         testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/linestring-second.json");
 
         log.info("Handled count={}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100));
 
-        // Two linestring trackings -> should be kept distinct trackings
+        // Two linestring trackings without long jump between last and first point should be joined
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(2, trackings);
+        assertCollectionSize(1, trackings);
+        assertEquals(7, trackings.get(0).getLineString().getNumPoints());
     }
 
     @Test
