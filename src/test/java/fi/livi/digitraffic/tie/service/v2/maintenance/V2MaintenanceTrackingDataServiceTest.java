@@ -351,7 +351,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     }
 
     private List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
-        final double increment = 0.03; // keeps distance between points < 20 km
+        final double increment = 0.01; // keeps distance between points < 2 km
         final double range = maxY - minY;
         final int points = (int) (range / increment);
 
