@@ -23,7 +23,8 @@ public class V2MaintenanceTrackingJobConfiguration {
 
     private final static String LOCK_NAME = "V2MaintenanceTrackingJobConfiguration";
 
-    private final static int MAX_HANDLE_COUNT_PER_CALL = 10000;
+    private final static int MAX_HANDLE_COUNT_PER_CALL = 100;
+    private final static int MAX_HANDLE_COUNT_PER_JOB = 5000;
 
     @Autowired
     public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
@@ -49,13 +50,13 @@ public class V2MaintenanceTrackingJobConfiguration {
                 log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}", count, startInternal.getTime(), (double)startInternal.getTime() / count);
                 lockingService.unlock(LOCK_NAME);
                 if (count == 0) {
-                    break; // If zero to handle exit
+                    count = -1; // If zero to handle exit
                 }
             } else {
                 log.warn("method=handleUnhandledMaintenanceTrackings didn't get lock for updating tracking data.");
                 count = -1; // to end the loop
             }
-        } while (count < MAX_HANDLE_COUNT_PER_CALL); // call handleUnhandledMaintenanceTrackingData until less than maximum
+        } while (count > 0 && count < MAX_HANDLE_COUNT_PER_JOB); // call handleUnhandledMaintenanceTrackingData until less than maximum
         log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount, start.getTime(), (double)start.getTime() / totalCount);
     }
 }
