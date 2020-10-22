@@ -358,8 +358,10 @@ public class V2MaintenanceTrackingUpdateService {
         for (int i = 1; i < coordinates.size(); i++) {
             final Coordinate next = coordinates.get(i);
             double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(tmpCoordinates.get(tmpCoordinates.size()-1), next);
+            log.info("method=resolveGeometries Distance between points is {} km and limit is {} km.",
+                     km, distinctObservationGapKm);
             if (km > distinctObservationGapKm) {
-                log.error("Distance between points [{}] and [{}] is {} km and limit is {} km. Data will be fixed but this should be reported. JSON: {}. ",
+                log.error("method=resolveGeometries Distance between points [{}] and [{}] is {} km and limit is {} km. Data will be fixed but this should be reported. JSON: {}. ",
                           i-1, i, km, distinctObservationGapKm, json);
                 geometries.add(createGeometry(tmpCoordinates));
                 tmpCoordinates.clear();
