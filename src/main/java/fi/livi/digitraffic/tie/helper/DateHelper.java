@@ -6,6 +6,7 @@ import static java.time.temporal.ChronoField.MILLI_OF_SECOND;
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -103,7 +104,6 @@ public final class DateHelper {
         return toZonedDateTimeAtUtc(Instant.ofEpochMilli(epochMillis));
     }
 
-
     public static ZonedDateTime toZonedDateTimeAtUtc(final Date from) {
         return from == null ? null : toZonedDateTimeAtUtc(from.toInstant());
     }
@@ -197,5 +197,9 @@ public final class DateHelper {
         if (isoString != null) {
             return ZonedDateTime.parse(isoString).toInstant();
         } return null;
+    }
+
+    public static Timestamp toSqlTimestamp(final ZonedDateTime zonedDateTime) {
+        return zonedDateTime == null ? null : Timestamp.from(zonedDateTime.toInstant());
     }
 }

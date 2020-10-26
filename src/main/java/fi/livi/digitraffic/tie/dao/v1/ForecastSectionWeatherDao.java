@@ -3,9 +3,9 @@ package fi.livi.digitraffic.tie.dao.v1;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,11 +83,10 @@ public class ForecastSectionWeatherDao {
     }
 
     private RoadConditionDto mapRoadConditionDto(final ResultSet rs) throws SQLException {
-        final Calendar c = Calendar.getInstance();
 
         return new RoadConditionDto(
                         rs.getString("forecast_name"),
-                        ZonedDateTime.ofInstant(rs.getTimestamp("time", c).toInstant(), c.getTimeZone().toZoneId()),
+                        ZonedDateTime.ofInstant(rs.getTimestamp("time").toInstant(), ZoneOffset.UTC),
                         DaoUtils.findBoolean(rs, "daylight"),
                         DaoUtils.findEnum(rs, "overall_road_condition", OverallRoadCondition.class),
                         DaoUtils.findEnum(rs, "reliability", Reliability.class),

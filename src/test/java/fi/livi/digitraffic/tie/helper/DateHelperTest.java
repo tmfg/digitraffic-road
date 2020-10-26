@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.helper;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -138,5 +139,21 @@ public class DateHelperTest extends AbstractSpringJUnitTest {
 
         Assert.assertEquals(0, utc.getOffset().getTotalSeconds());
         Assert.assertEquals(now , utc.toEpochSecond(), 1.0);
+    }
+
+    @Test
+    public void zonedDateTimeToSqlTimestamp() {
+        final ZonedDateTime now = Instant.now().atZone(ZoneOffset.UTC);
+        final Timestamp sqlTimestamp = DateHelper.toSqlTimestamp(now);
+
+        Assert.assertEquals(now.toInstant().toEpochMilli(), sqlTimestamp.getTime());
+    }
+
+    @Test
+    public void sqlTimestampToZonedDateTime() {
+        final Timestamp sqlTimestamp = new Timestamp(Instant.now().toEpochMilli());
+        final ZonedDateTime zonedDateTime = DateHelper.toZonedDateTimeAtUtc(sqlTimestamp);
+
+        Assert.assertEquals(sqlTimestamp.getTime(), zonedDateTime.toInstant().toEpochMilli());
     }
 }
