@@ -144,9 +144,9 @@ public class V2MaintenanceTrackingUpdateService {
 
         final List<Geometry> geometries = resolveGeometriesAndSplitLineStringsWithGaps(havainto.getSijainti(), trackingData.getJson());
 
-        for (Geometry geometry : geometries) {
+        geometries.forEach(geometry -> {
 
-            if (geometry != null && !geometry.isEmpty()) {
+            if (!geometry.isEmpty()) {
 
                 final Tyokone harjaWorkMachine = havainto.getTyokone();
                 final int harjaWorkMachineId = harjaWorkMachine.getId();
@@ -189,16 +189,19 @@ public class V2MaintenanceTrackingUpdateService {
                             performedTasks, direction);
                     v2MaintenanceTrackingRepository.save(created);
                     sendToMqtt(created, geometry, direction, harjaObservationTime);
-                } else {
+                } else if (status.is(SAME)) {
                     previousTracking.appendGeometry(geometry, harjaObservationTime, direction);
                     sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
 
                     // previousTracking.addWorkMachineTrackingData(trackingData) does db query for all previous trackintData
                     // to populate the collection. So let's just insert the new one directly to db.
                     v2MaintenanceTrackingRepository.addTrackingData(trackingData.getId(), previousTracking.getId());
+                } else {
+                    throw new IllegalArgumentException("Unknown status: " + status.toString());
                 }
             }
-        }
+
+        }); // end geometries.forEach
     }
 
     private boolean isHavaintoLineString(final Havainto havainto) {
@@ -389,11 +392,9 @@ public class V2MaintenanceTrackingUpdateService {
         for (int i = 1; i < coordinates.size(); i++) {
             final Coordinate next = coordinates.get(i);
             final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(tmpCoordinates.get(tmpCoordinates.size()-1), next);
-            log.info("method=resolveGeometries Distance between points is {} km and limit is {} km.",
-                km, distinctLineStringObservationGapKm);
             if (km > distinctLineStringObservationGapKm) {
-                log.error("method=resolveGeometries Distance between points [{}] and [{}] is {} km and limit is {} km. Data will be fixed but this should be reported. JSON: {}. ",
-                    i-1, i, km, distinctLineStringObservationGapKm, json);
+                log.error("method=resolveGeometries Distance between points [{}]: {} and [{}]: {} is {} km and limit is {} km. Data will be fixed but this should be reported. JSON: {}. ",
+                          i-1, coordinates.get(i-1), i, coordinates.get(i), km, distinctLineStringObservationGapKm, json);
                 geometries.add(createGeometry(tmpCoordinates));
                 tmpCoordinates.clear();
             }
@@ -564,9 +565,7 @@ public class V2MaintenanceTrackingUpdateService {
 
         @Override
         public String toString() {
-            return "NextObservationStatus{" +
-                "status=" + status +
-                '}';
+            return "NextObservationStatus{ status: " + status + '}';
         }
     }
 }
