@@ -88,10 +88,11 @@ public class Datex2JsonConverterService {
 
         final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             featureJsonReaderV3.readValue(imsJsonV3);
-        feature.getProperties().setDetailedMessageType(detailedMessageType);
 
         checkIsInvalidAnnouncementGeojsonV3(feature);
         checkDurationViolationsV3(feature);
+
+        feature.getProperties().setDetailedMessageType(detailedMessageType);
 
         return feature;
     }
