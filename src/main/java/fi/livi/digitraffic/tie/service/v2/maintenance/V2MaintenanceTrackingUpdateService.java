@@ -393,7 +393,8 @@ public class V2MaintenanceTrackingUpdateService {
             final Coordinate next = coordinates.get(i);
             final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(tmpCoordinates.get(tmpCoordinates.size()-1), next);
             if (km > distinctLineStringObservationGapKm) {
-                log.warn("method=resolveGeometries Distance between points [{}]: {} and [{}]: {} is {} km and limit is {} km. Data will be fixed but this should be reported to source. JSON: {}. ",
+                log.warn("method=resolveGeometries Distance between points [{}]: {} and [{}]: {} is {} km and limit is {} km. " +
+                         "Data will be fixed but this should be reported to source. JSON: {}. ",
                          i-1, coordinates.get(i-1), i, coordinates.get(i), km, distinctLineStringObservationGapKm, json);
                 geometries.add(createGeometry(tmpCoordinates));
                 tmpCoordinates.clear();
