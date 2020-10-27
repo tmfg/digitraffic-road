@@ -4,6 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,9 +46,12 @@ import com.amazonaws.services.s3.model.S3Object;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
@@ -68,6 +73,9 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
 
     @Autowired
     private CameraDataUpdateService cameraDataUpdateService;
+
+    @Autowired
+    private DataStatusService dataStatusService;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -256,8 +264,13 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
             Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
             Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
 
-            Assert.assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);
+            assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);
         }
+
+        final long latestImageTimestampToExpect = data.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow();
+        final ZonedDateTime imageUpdatedInDb = dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_IMAGE_UPDATED);
+        assertEquals("Latest image update time not correct", Instant.ofEpochMilli(DateHelper.roundToZeroMillis(latestImageTimestampToExpect)), imageUpdatedInDb.toInstant());
+
         log.info("Data is valid");
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms",
                 handleDataTotalTime <= maxHandleTime);

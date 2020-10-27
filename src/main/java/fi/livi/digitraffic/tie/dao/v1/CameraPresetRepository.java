@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.dao.v1;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 @Repository
 public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long> {
 
+    @Override
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation", "nearestWeatherStation.roadStation", "nearestWeatherStation.roadStation.roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findAll();
@@ -58,7 +59,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
      * @param cameraId camera id which presets to fetch.
      * @return Publishable presets for given camera id
      *
-     * @see {@link #findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId()}
+     * @see {@link CameraPresetRepository#findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId()}
      */
     @Query(value =
                "SELECT cp, rs, ra, ws " +
@@ -78,12 +79,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="20"))
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(final String cameraId);
-
-    @Query(value =
-            "SELECT MAX(CP.PIC_LAST_MODIFIED) UPDATED\n" +
-            "FROM CAMERA_PRESET CP",
-            nativeQuery = true)
-    Instant getLatestMeasurementTime();
 
     @Query(value =
            "SELECT CP.PRESET_ID\n" +

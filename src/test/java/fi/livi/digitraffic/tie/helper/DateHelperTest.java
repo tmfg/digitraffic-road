@@ -61,10 +61,18 @@ public class DateHelperTest extends AbstractSpringJUnitTest {
     }
 
     @Test
-    public void zonedDateTimeToInstant() throws DatatypeConfigurationException {
+    public void zonedDateTimeToInstant() {
         final ZonedDateTime zdt = ZonedDateTime.of(2019, 12, 1, 10, 15, 20, 500, ZoneOffset.UTC);
         final String DATE_STRING_NANOS = "2019-12-01T10:15:20.000000500Z";
         final Instant instant = DateHelper.toInstant(zdt);
+        Assert.assertEquals(DATE_STRING_NANOS, instant.toString());
+    }
+
+    @Test
+    public void epocMillisToInstant() {
+        final ZonedDateTime zdt = ZonedDateTime.of(2019, 12, 1, 10, 15, 20, 500000000, ZoneOffset.UTC);
+        final String DATE_STRING_NANOS = "2019-12-01T10:15:20.500Z";
+        final Instant instant = DateHelper.toInstant(zdt.toInstant().toEpochMilli());
         Assert.assertEquals(DATE_STRING_NANOS, instant.toString());
     }
 
@@ -155,5 +163,33 @@ public class DateHelperTest extends AbstractSpringJUnitTest {
         final ZonedDateTime zonedDateTime = DateHelper.toZonedDateTimeAtUtc(sqlTimestamp);
 
         Assert.assertEquals(sqlTimestamp.getTime(), zonedDateTime.toInstant().toEpochMilli());
+    }
+
+    @Test
+    public void roundToZeroMillisUp1() {
+        final Instant instantUp = Instant.parse("2016-01-22T08:00:01.500Z");
+        final long roundedMillis = DateHelper.roundToZeroMillis(instantUp.toEpochMilli());
+        Assert.assertEquals("2016-01-22T08:00:02Z", Instant.ofEpochMilli(roundedMillis).toString());
+    }
+
+    @Test
+    public void roundToZeroMillisUp2() {
+        final Instant instantUp = Instant.parse("2016-01-22T08:00:01.999Z");
+        final long roundedMillis = DateHelper.roundToZeroMillis(instantUp.toEpochMilli());
+        Assert.assertEquals("2016-01-22T08:00:02Z", Instant.ofEpochMilli(roundedMillis).toString());
+    }
+
+    @Test
+    public void roundToZeroMillisDown1() {
+        final Instant instantDown = Instant.parse("2016-01-22T08:00:01.499Z");
+        final long roundedMillis = DateHelper.roundToZeroMillis(instantDown.toEpochMilli());
+        Assert.assertEquals("2016-01-22T08:00:01Z", Instant.ofEpochMilli(roundedMillis).toString());
+    }
+
+    @Test
+    public void roundToZeroMillisDown2() {
+        final Instant instantDown = Instant.parse("2016-01-22T08:00:01.000Z");
+        final long roundedMillis = DateHelper.roundToZeroMillis(instantDown.toEpochMilli());
+        Assert.assertEquals("2016-01-22T08:00:01Z", Instant.ofEpochMilli(roundedMillis).toString());
     }
 }

@@ -68,6 +68,14 @@ public final class DateHelper {
         return from != null ? from.toInstant() : null;
     }
 
+    public static Instant toInstant(final long epochMillis) {
+        return Instant.ofEpochMilli(epochMillis);
+    }
+
+    public static Instant toInstantWithOutMillis(final long epochMillis) {
+        return withoutMillis(Instant.ofEpochMilli(epochMillis));
+    }
+
     /**
      * Needed because some fields in db are Oracle Date type and Date won't have millis.
      */
@@ -201,5 +209,14 @@ public final class DateHelper {
 
     public static Timestamp toSqlTimestamp(final ZonedDateTime zonedDateTime) {
         return zonedDateTime == null ? null : Timestamp.from(zonedDateTime.toInstant());
+    }
+
+    public static long roundToZeroMillis(final long epochMilli) {
+        long secs = Math.floorDiv(epochMilli, 1000);
+        int mos = Math.floorMod(epochMilli, 1000);
+        if (mos >= 500) {
+            return (secs+1)*1000;
+        }
+        return secs*1000;
     }
 }
