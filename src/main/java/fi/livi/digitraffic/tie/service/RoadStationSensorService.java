@@ -176,7 +176,7 @@ public class RoadStationSensorService {
         for (final SensorValue sensorValue : sensorValues) {
             final Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
 
-            List<SensorValue> list = sensorValuesListByTmsLotjuIdMap.computeIfAbsent(rsLotjuId, k -> new ArrayList<>());
+            final List<SensorValue> list = sensorValuesListByTmsLotjuIdMap.computeIfAbsent(rsLotjuId, k -> new ArrayList<>());
             list.add(sensorValue);
         }
 
