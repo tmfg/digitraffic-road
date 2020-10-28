@@ -164,32 +164,4 @@ public class DateHelperTest extends AbstractSpringJUnitTest {
 
         Assert.assertEquals(sqlTimestamp.getTime(), zonedDateTime.toInstant().toEpochMilli());
     }
-
-    @Test
-    public void roundToZeroMillisUp1() {
-        final Instant instantUp = Instant.parse("2016-01-22T08:00:01.500Z");
-        final long roundedMillis = DateHelper.roundToZeroMillis(instantUp.toEpochMilli());
-        Assert.assertEquals("2016-01-22T08:00:02Z", Instant.ofEpochMilli(roundedMillis).toString());
-    }
-
-    @Test
-    public void roundToZeroMillisUp2() {
-        final Instant instantUp = Instant.parse("2016-01-22T08:00:01.999Z");
-        final long roundedMillis = DateHelper.roundToZeroMillis(instantUp.toEpochMilli());
-        Assert.assertEquals("2016-01-22T08:00:02Z", Instant.ofEpochMilli(roundedMillis).toString());
-    }
-
-    @Test
-    public void roundToZeroMillisDown1() {
-        final Instant instantDown = Instant.parse("2016-01-22T08:00:01.499Z");
-        final long roundedMillis = DateHelper.roundToZeroMillis(instantDown.toEpochMilli());
-        Assert.assertEquals("2016-01-22T08:00:01Z", Instant.ofEpochMilli(roundedMillis).toString());
-    }
-
-    @Test
-    public void roundToZeroMillisDown2() {
-        final Instant instantDown = Instant.parse("2016-01-22T08:00:01.000Z");
-        final long roundedMillis = DateHelper.roundToZeroMillis(instantDown.toEpochMilli());
-        Assert.assertEquals("2016-01-22T08:00:01Z", Instant.ofEpochMilli(roundedMillis).toString());
-    }
 }

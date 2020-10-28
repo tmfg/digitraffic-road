@@ -46,7 +46,6 @@ import com.amazonaws.services.s3.model.S3Object;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
@@ -269,7 +268,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
 
         final long latestImageTimestampToExpect = data.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow();
         final ZonedDateTime imageUpdatedInDb = dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_IMAGE_UPDATED);
-        assertEquals("Latest image update time not correct", Instant.ofEpochMilli(DateHelper.roundToZeroMillis(latestImageTimestampToExpect)), imageUpdatedInDb.toInstant());
+        assertEquals("Latest image update time not correct", Instant.ofEpochMilli(roundToZeroMillis(latestImageTimestampToExpect)), imageUpdatedInDb.toInstant());
 
         log.info("Data is valid");
         Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms",
@@ -317,5 +316,14 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
         });
 
         return bytesMessage;
+    }
+
+    public static long roundToZeroMillis(final long epochMilli) {
+        long secs = Math.floorDiv(epochMilli, 1000);
+        int mos = Math.floorMod(epochMilli, 1000);
+        if (mos >= 500) {
+            return (secs+1)*1000;
+        }
+        return secs*1000;
     }
 }

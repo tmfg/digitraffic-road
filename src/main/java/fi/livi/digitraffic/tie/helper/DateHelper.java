@@ -210,13 +210,4 @@ public final class DateHelper {
     public static Timestamp toSqlTimestamp(final ZonedDateTime zonedDateTime) {
         return zonedDateTime == null ? null : Timestamp.from(zonedDateTime.toInstant());
     }
-
-    public static long roundToZeroMillis(final long epochMilli) {
-        long secs = Math.floorDiv(epochMilli, 1000);
-        int mos = Math.floorMod(epochMilli, 1000);
-        if (mos >= 500) {
-            return (secs+1)*1000;
-        }
-        return secs*1000;
-    }
 }
