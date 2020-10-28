@@ -15,9 +15,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
@@ -56,6 +57,9 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     @Autowired
     private V2MaintenanceTrackingServiceTestHelper testHelper;
 
+    @Autowired
+    private V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
+
     private ResultActions getTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
         final String url = API_V2_BASE_PATH + API_DATA_PART_PATH + MAINTENANCE_TRACKINGS_PATH +
@@ -70,8 +74,9 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     private ResultActions getLatestTrackingsJson(final Instant from, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
-        final String url = API_V2_BASE_PATH + API_DATA_PART_PATH + MAINTENANCE_TRACKINGS_PATH + "/latest";
-            String.format(Locale.US, "?from=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), xMin, yMin, xMax, yMax, tasksParams);
+        final String url = API_V2_BASE_PATH + API_DATA_PART_PATH + MAINTENANCE_TRACKINGS_PATH + "/latest" +
+                           String.format(Locale.US, "?from=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s",
+                                         from.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
@@ -81,7 +86,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     }
 
     @Before
-    public void initData() throws IOException {
+    public void initData() {
         testHelper.clearDb();
         testHelper.flushAndClearSession();
     }
@@ -104,7 +109,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(machineCount)))
-            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist());
+            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist())
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
     }
 
     @Test
@@ -190,7 +196,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     @Test
     public void findLatestMaintenanceTrackings() throws Exception {
         final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
-        final int machineCount = getRandomId(2, 10);
+        final int machineCount = 10;//getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
         // Generate trackings for 50 minutes changing tasks every 10 minutes
@@ -205,11 +211,15 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             }
         });
         testHelper.handleUnhandledWorkMachineTrackings();
+        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(x -> x.getEndTime()).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(x -> x.getEndTime()).min(ChronoZonedDateTime::compareTo).orElseThrow();
+
+        log.info("min {} max {} from: {}", min, max, now.toInstant());
 
         log.info("Machine count {}", machineCount);
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
         final ResultActions latestResult = getLatestTrackingsJson(
-            now.toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
+            now.toInstant(), new HashSet<>(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -247,8 +257,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         testHelper.saveTrackingData(k);
         testHelper.handleUnhandledWorkMachineTrackings();
 
-        final Double maxX = k.getHavainnot().stream().map(h -> h.getHavainto().getSijainti().getKoordinaatit().getX()).max(Double::compareTo).get();
-        final Double maxY = k.getHavainnot().stream().map(h -> h.getHavainto().getSijainti().getKoordinaatit().getY()).max(Double::compareTo).get();
+        final Double maxX = k.getHavainnot().stream().map(h -> h.getHavainto().getSijainti().getKoordinaatit().getX()).max(Double::compareTo).orElseThrow();
+        final Double maxY = k.getHavainnot().stream().map(h -> h.getHavainto().getSijainti().getKoordinaatit().getY()).max(Double::compareTo).orElseThrow();
 
         Point pointWGS84 = CoordinateConverter.convertFromETRS89ToWGS84(new Point(maxX, maxY));
 

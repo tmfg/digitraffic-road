@@ -75,6 +75,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
         assertSituationExistInXml(incident3_active_id, xml);
         assertSituationNotExistInXml(roadwork1_active_id, xml);
         assertSituationNotExistInXml(weightRestriction1_active_id, xml);
+        assertTimesFormatMatches(xml);
     }
 
     @Test
@@ -97,6 +98,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
         assertSituationNotExistInXml(incident3_active_id, xml);
         assertSituationExistInXml(roadwork1_active_id, xml);
         assertSituationNotExistInXml(weightRestriction1_active_id, xml);
+        assertTimesFormatMatches(xml);
     }
 
     @Test
@@ -108,6 +110,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
         assertSituationNotExistInXml(incident3_active_id, xml);
         assertSituationNotExistInXml(roadwork1_active_id, xml);
         assertSituationExistInXml(weightRestriction1_active_id, xml);
+        assertTimesFormatMatches(xml);
     }
 
     private static String getUrl(final Datex2MessageType messageType, final boolean json, final int inactiveHours) {

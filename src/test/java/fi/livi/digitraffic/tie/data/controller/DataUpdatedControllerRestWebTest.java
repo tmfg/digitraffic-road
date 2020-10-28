@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.AssertionErrors;
+import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.controller.v1.DataController;
@@ -69,9 +69,9 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
             mockMvc.perform(get(url))
                     .andExpect(status().isOk())
                     .andExpect(mvcResult -> {
-                        String contentType = mvcResult.getResponse().getContentType();
+                        final String contentType = mvcResult.getResponse().getContentType();
 
-                        AssertionErrors.assertTrue("Content type not set", contentType != null);
+                        Assert.notNull(contentType, "Content type not set");
 
                         MatcherAssert.assertThat(MediaType.valueOf(contentType), Matchers.anyOf(
                             Matchers.is(MediaType.APPLICATION_JSON),
@@ -80,7 +80,8 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
                         if (Matchers.is(MediaType.APPLICATION_JSON).matches(MediaType.valueOf(contentType))) {
                             jsonPath("$.dataUpdatedTime", Matchers.notNullValue()).match(mvcResult);
                         }
-                    });
+                    })
+                    .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
         }
 
     }

@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Test;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 
 public class RoadStationSensorMetadataControllerRestWebTest extends AbstractRestWebTest {
 
@@ -23,9 +22,10 @@ public class RoadStationSensorMetadataControllerRestWebTest extends AbstractRest
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType(CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
-                .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class))) //
-                .andExpect(jsonPath("$.roadStationSensors[0].nameOld", isA(String.class))) //
-                .andExpect(jsonPath("$.roadStationSensors[0].unit", isA(String.class))) //
+                .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
+                .andExpect(jsonPath("$.roadStationSensors[0].nameOld", isA(String.class)))
+                .andExpect(jsonPath("$.roadStationSensors[0].unit", isA(String.class)))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 }

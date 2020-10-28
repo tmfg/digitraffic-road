@@ -27,7 +27,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
     public  void initData() {
         cameraId =
                 cameraDataService.findPublishableCameraStationsData(false).getCameraStations().stream()
-                        .filter(s -> s.getCameraPresets().size() > 0).findFirst().get().getId();
+                        .filter(s -> s.getCameraPresets().size() > 0).findFirst().orElseThrow().getId();
     }
 
     @Test
@@ -44,6 +44,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].presentationName", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].imageUrl", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].measuredTime", Matchers.isA(String.class)))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 
@@ -61,6 +62,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].presentationName", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].imageUrl", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].measuredTime", Matchers.isA(String.class)))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 

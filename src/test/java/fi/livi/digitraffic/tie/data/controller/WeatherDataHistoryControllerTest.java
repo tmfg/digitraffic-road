@@ -1,15 +1,13 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.hasSize;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -17,7 +15,6 @@ import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,14 +54,12 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
 
     @Before
     public void roadStationMock() {
-        when(roadStationRepository.findByRoadStationId(anyLong())).thenAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+        when(roadStationRepository.findByRoadStationId(anyLong())).thenAnswer(
+            (Answer) invocationOnMock -> {
                 Object[] args = invocationOnMock.getArguments();
 
                 return Optional.of((Long)args[0]);
-            }
-        });
+            });
     }
 
     @Test
@@ -77,7 +72,8 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
         getJson("/20000?from=" + getTime(120))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", not(hasSize(0))))
-            .andExpect(jsonPath("$.[?(@.roadStationId != 20000)]", hasSize(0)));
+            .andExpect(jsonPath("$.[?(@.roadStationId != 20000)]", hasSize(0)))
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
     }
 
     @Test

@@ -176,11 +176,7 @@ public class RoadStationSensorService {
         for (final SensorValue sensorValue : sensorValues) {
             final Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
 
-            List<SensorValue> list = sensorValuesListByTmsLotjuIdMap.get(rsLotjuId);
-            if (list == null) {
-                list = new ArrayList<>();
-                sensorValuesListByTmsLotjuIdMap.put(rsLotjuId, list);
-            }
+            List<SensorValue> list = sensorValuesListByTmsLotjuIdMap.computeIfAbsent(rsLotjuId, k -> new ArrayList<>());
             list.add(sensorValue);
         }
 
@@ -241,7 +237,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional
-    public UpdateStatus updateOrInsert(LamLaskennallinenAnturiVO anturi) {
+    public UpdateStatus updateOrInsert(final LamLaskennallinenAnturiVO anturi) {
 
         final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.TMS_STATION, anturi.getId());
 

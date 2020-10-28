@@ -47,6 +47,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 
@@ -62,6 +63,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].name", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 }
