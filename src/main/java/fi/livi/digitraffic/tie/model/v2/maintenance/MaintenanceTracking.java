@@ -31,7 +31,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @Table(name = "MAINTENANCE_TRACKING")
-public class MaintenanceTracking implements MaintenanceTrackingIf {
+public class MaintenanceTracking implements MaintenanceTrackingDto {
 
     @Id
     @GenericGenerator(name = "SEQ_MAINTENANCE_TRACKING", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",

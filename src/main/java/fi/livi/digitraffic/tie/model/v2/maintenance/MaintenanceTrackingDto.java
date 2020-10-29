@@ -7,7 +7,7 @@ import java.util.Set;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
-public interface MaintenanceTrackingIf {
+public interface MaintenanceTrackingDto {
 
     Long getId();
 

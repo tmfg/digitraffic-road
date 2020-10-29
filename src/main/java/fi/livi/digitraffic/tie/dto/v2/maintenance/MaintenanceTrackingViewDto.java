@@ -20,14 +20,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingIf;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 
@@ -35,7 +33,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachi
 @Entity
 @Immutable
 @Table(name = "MAINTENANCE_TRACKING_VIEW")
-public class MaintenanceTrackingViewDto implements MaintenanceTrackingIf {
+public class MaintenanceTrackingViewDto implements MaintenanceTrackingDto {
 
     @Id
     private Long id;
@@ -90,21 +88,6 @@ public class MaintenanceTrackingViewDto implements MaintenanceTrackingIf {
         // For Hibernate
     }
 
-    public MaintenanceTrackingViewDto(final MaintenanceTrackingData maintenanceTrackingData, final MaintenanceTrackingWorkMachine workMachine, final Integer jobId,
-                                      final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                                      final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
-        this.maintenanceTrackingDatas.add(maintenanceTrackingData);
-        this.workMachine = workMachine;
-        this.sendingSystem = sendingSystem;
-        this.sendingTime = sendingTime;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.lastPoint = lastPoint;
-        this.lineString = lineString;
-        this.tasks.addAll(tasks);
-        this.direction = direction;
-    }
-
     public Long getId() {
         return id;
     }
@@ -125,24 +108,12 @@ public class MaintenanceTrackingViewDto implements MaintenanceTrackingIf {
         return endTime;
     }
 
-    public void setEndTime(final ZonedDateTime endTime) {
-        this.endTime = endTime;
-    }
-
     public LineString getLineString() {
         return lineString;
     }
 
-    public void setLineString(final LineString lineString) {
-        this.lineString = lineString;
-    }
-
     public ZonedDateTime getCreated() {
         return created;
-    }
-
-    public void setLastPoint(final Point lastPoint) {
-        this.lastPoint = lastPoint;
     }
 
     public Point getLastPoint() {
@@ -153,16 +124,8 @@ public class MaintenanceTrackingViewDto implements MaintenanceTrackingIf {
         return direction;
     }
 
-    public void setDirection(BigDecimal direction) {
-        this.direction = direction;
-    }
-
     public Set<MaintenanceTrackingData> getMaintenanceTrackingDatas() {
         return maintenanceTrackingDatas;
-    }
-
-    public void addWorkMachineTrackingData(final MaintenanceTrackingData data) {
-        maintenanceTrackingDatas.add(data);
     }
 
     public Set<MaintenanceTrackingTask> getTasks() {
@@ -171,10 +134,6 @@ public class MaintenanceTrackingViewDto implements MaintenanceTrackingIf {
 
     public MaintenanceTrackingWorkMachine getWorkMachine() {
         return workMachine;
-    }
-
-    public void setFinished() {
-        this.finished = true;
     }
 
     public boolean isFinished() {
@@ -186,22 +145,4 @@ public class MaintenanceTrackingViewDto implements MaintenanceTrackingIf {
         return ToStringHelper.toStringFull(this);
     }
 
-    public void appendGeometry(final Geometry geometryToAppend, final ZonedDateTime geometryObservationTime, final BigDecimal direction) {
-        final LineString result = PostgisGeometryHelper.combineToLinestringWithZ(getCurrentGeometry(), geometryToAppend);
-        setLineString(result);
-        setLastPoint(result.getEndPoint());
-        setEndTime(geometryObservationTime);
-        setDirection(direction);
-    }
-
-    /**
-     * Returns the LineString if it exists or last Point if not.
-     * @return Point or LineString
-     */
-    private Geometry getCurrentGeometry() {
-        if (getLineString() != null) {
-            return getLineString();
-        }
-        return lastPoint;
-    }
 }

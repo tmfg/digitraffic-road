@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingViewDto;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingIf;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 
 @Repository
@@ -32,7 +32,7 @@ public interface V2MaintenanceTrackingViewRepository extends JpaRepository<Maint
                ")\n" +
                "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks", "workMachine" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<MaintenanceTrackingIf> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
+    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
@@ -54,7 +54,7 @@ public interface V2MaintenanceTrackingViewRepository extends JpaRepository<Maint
                 "  )\n" +
                 "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks", "workMachine" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<MaintenanceTrackingIf> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
+    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
@@ -64,7 +64,7 @@ public interface V2MaintenanceTrackingViewRepository extends JpaRepository<Maint
                "  AND intersects( coalesce(tracking.lineString, tracking.lastPoint), :area ) = true\n" +
                "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks", "workMachine" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<MaintenanceTrackingIf> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
+    List<MaintenanceTrackingDto> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value =
@@ -81,6 +81,6 @@ public interface V2MaintenanceTrackingViewRepository extends JpaRepository<Maint
                " )\n" +
                "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks", "workMachine" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<MaintenanceTrackingIf> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
+    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
 
 }

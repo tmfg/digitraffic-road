@@ -32,7 +32,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingViewDto;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingIf;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
@@ -75,9 +75,9 @@ public class V2MaintenanceTrackingDataService {
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceTrackingIf> found = taskIds == null || taskIds.isEmpty() ?
-                v2MaintenanceTrackingViewRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area) :
-                v2MaintenanceTrackingViewRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, taskIds);
+        final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
+                                                   v2MaintenanceTrackingViewRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area) :
+                                                   v2MaintenanceTrackingViewRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, taskIds);
         log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
 
@@ -96,9 +96,9 @@ public class V2MaintenanceTrackingDataService {
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceTrackingIf> found = taskIds == null || taskIds.isEmpty() ?
-                v2MaintenanceTrackingViewRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area) :
-                v2MaintenanceTrackingViewRepository.findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, taskIds);
+        final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
+                                                   v2MaintenanceTrackingViewRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area) :
+                                                   v2MaintenanceTrackingViewRepository.findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, taskIds);
         log.info("method=findMaintenanceRealizations with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), start.getTime());
 
@@ -123,15 +123,15 @@ public class V2MaintenanceTrackingDataService {
         }).collect(Collectors.toList());
     }
 
-    private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingIf> trackings) {
+    private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {
         return trackings.stream().map(V2MaintenanceTrackingDataService::convertToTrackingFeature).collect(Collectors.toList());
     }
 
-    private static List<MaintenanceTrackingLatestFeature> convertToTrackingLatestFeatures(final List<MaintenanceTrackingIf> trackings) {
+    private static List<MaintenanceTrackingLatestFeature> convertToTrackingLatestFeatures(final List<MaintenanceTrackingDto> trackings) {
         return trackings.stream().map(V2MaintenanceTrackingDataService::convertToTrackingLatestFeature).collect(Collectors.toList());
     }
 
-    private static MaintenanceTrackingFeature convertToTrackingFeature(final MaintenanceTrackingIf tracking) {
+    private static MaintenanceTrackingFeature convertToTrackingFeature(final MaintenanceTrackingDto tracking) {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, false);
         final MaintenanceTrackingProperties properties =
             new MaintenanceTrackingProperties(tracking.getId(),
@@ -143,7 +143,7 @@ public class V2MaintenanceTrackingDataService {
         return new MaintenanceTrackingFeature(geometry, properties);
     }
 
-    public static MaintenanceTrackingLatestFeature convertToTrackingLatestFeature(final MaintenanceTrackingIf tracking) {
+    public static MaintenanceTrackingLatestFeature convertToTrackingLatestFeature(final MaintenanceTrackingDto tracking) {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, true);
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
@@ -157,7 +157,7 @@ public class V2MaintenanceTrackingDataService {
      * @param latestPointGeometry if true then only the latest point will be returned as the geometry.
      * @return either Point or LineString geometry
      */
-    private static Geometry<?> convertToGeoJSONGeometry(final MaintenanceTrackingIf tracking, boolean latestPointGeometry) {
+    private static Geometry<?> convertToGeoJSONGeometry(final MaintenanceTrackingDto tracking, boolean latestPointGeometry) {
         if (!latestPointGeometry && tracking.getLineString() != null) {
             return PostgisGeometryHelper.convertToGeoJSONGeometry(tracking.getLineString());
         } else {
