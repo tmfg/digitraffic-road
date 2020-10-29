@@ -136,10 +136,6 @@ public class MaintenanceTrackingViewDto implements MaintenanceTrackingDto {
         return workMachine;
     }
 
-    public boolean isFinished() {
-        return finished;
-    }
-
     @Override
     public String toString() {
         return ToStringHelper.toStringFull(this);

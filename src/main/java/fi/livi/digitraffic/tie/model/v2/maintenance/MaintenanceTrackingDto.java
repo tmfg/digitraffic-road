@@ -26,6 +26,4 @@ public interface MaintenanceTrackingDto {
     Set<MaintenanceTrackingTask> getTasks();
 
     MaintenanceTrackingWorkMachine getWorkMachine();
-
-    boolean isFinished();
 }
