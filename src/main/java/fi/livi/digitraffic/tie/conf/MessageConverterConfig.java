@@ -7,6 +7,7 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
 @Configuration
 public class MessageConverterConfig {
@@ -16,5 +17,14 @@ public class MessageConverterConfig {
         xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
 
         return new MappingJackson2XmlHttpMessageConverter(xmlMapper);
+    }
+
+    /**
+     * Try to speed up JSON serialization
+     * @see <a href="https://github.com/FasterXML/jackson-modules-base/tree/master/afterburner">afterburner</a>
+     */
+    @Bean
+    public AfterburnerModule afterburnerModule() {
+        return new AfterburnerModule();
     }
 }

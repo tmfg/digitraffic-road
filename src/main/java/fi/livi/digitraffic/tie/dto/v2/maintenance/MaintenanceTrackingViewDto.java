@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.model.v2.maintenance;
+package fi.livi.digitraffic.tie.dto.v2.maintenance;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -20,23 +19,25 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Immutable;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingIf;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
+
 
 @Entity
-@Table(name = "MAINTENANCE_TRACKING")
-public class MaintenanceTracking implements MaintenanceTrackingIf {
+@Immutable
+@Table(name = "MAINTENANCE_TRACKING_VIEW")
+public class MaintenanceTrackingViewDto implements MaintenanceTrackingIf {
 
     @Id
-    @GenericGenerator(name = "SEQ_MAINTENANCE_TRACKING", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_MAINTENANCE_TRACKING"))
-    @GeneratedValue(generator = "SEQ_MAINTENANCE_TRACKING")
     private Long id;
 
     @Column
@@ -85,13 +86,13 @@ public class MaintenanceTracking implements MaintenanceTrackingIf {
     private Set<MaintenanceTrackingData> maintenanceTrackingDatas = new HashSet<>();
 
 
-    public MaintenanceTracking() {
+    public MaintenanceTrackingViewDto() {
         // For Hibernate
     }
 
-    public MaintenanceTracking(final MaintenanceTrackingData maintenanceTrackingData, final MaintenanceTrackingWorkMachine workMachine, final Integer jobId,
-                               final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                               final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
+    public MaintenanceTrackingViewDto(final MaintenanceTrackingData maintenanceTrackingData, final MaintenanceTrackingWorkMachine workMachine, final Integer jobId,
+                                      final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                      final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
         this.maintenanceTrackingDatas.add(maintenanceTrackingData);
         this.workMachine = workMachine;
         this.sendingSystem = sendingSystem;

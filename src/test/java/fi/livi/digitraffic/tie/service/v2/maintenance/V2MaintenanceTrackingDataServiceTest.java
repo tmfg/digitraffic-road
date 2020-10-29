@@ -25,6 +25,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -103,8 +104,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final Set<Long> workMachineUniqueIds = new HashSet<>();
         features.forEach(t -> {
             final MaintenanceTrackingProperties properties = t.getProperties();
-            // 10 observations points for each observation
-            assertEquals(10*2, t.getGeometry().getCoordinates().size());
+            // As observations are simplified, we can't know how many points is left in geometry
+            assertTrue(t.getGeometry().getCoordinates().size() > 1);
             assertEquals(getTaskSetWithTasks(PAVING), t.getProperties().tasks);
             assertEquals(start, properties.startTime);
             assertEquals(end, properties.endTime);
@@ -147,7 +148,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         features.forEach(t -> {
             // 10 observations for each
             final MaintenanceTrackingProperties properties = t.getProperties();
-            assertEquals(5*10, t.getGeometry().getCoordinates().size());
+            // As observations are simplified, we can't know how many points is left in geometry
+            assertTrue(t.getGeometry().getCoordinates().size() > 1);
             assertEquals(getTaskSetWithTasks(PAVING, CRACK_FILLING), properties.tasks);
             assertEquals(startTime, properties.startTime);
             assertEquals(endTime, properties.endTime);

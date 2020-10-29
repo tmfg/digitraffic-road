@@ -208,6 +208,13 @@
             <version>${jackson.dataformat.version}</version>
        </dependency>
 
+        <!-- Speed up json serialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-afterburner</artifactId>
+            <version>${jackson.dataformat.version}</version>
+        </dependency>
+
         <!-- Swagger2 JSON API specification generation-->
         <dependency>
             <groupId>io.springfox</groupId>
