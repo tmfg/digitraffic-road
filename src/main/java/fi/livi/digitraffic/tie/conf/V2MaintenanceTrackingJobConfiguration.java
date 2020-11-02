@@ -42,7 +42,7 @@ public class V2MaintenanceTrackingJobConfiguration {
      * This job extracts all unhandled maintenance trackings
      * from source JSON-format to db relations.
      */
-    @Scheduled(fixedRateString = "${maintenance.tracking.job.intervalMs}")
+    @Scheduled(fixedDelayString = "${maintenance.tracking.job.intervalMs}")
     public void handleUnhandledMaintenanceTrackings() {
         final StopWatch start = StopWatch.createStarted();
         int count;
