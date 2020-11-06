@@ -28,7 +28,7 @@ public class MqttRelayService {
 
     public enum StatisticsType {TMS, WEATHER, MAINTENANCE_TRACKING, STATUS}
 
-    private static final String QOS = "0";
+    private static final Integer QOS = 0;
 
     @Autowired
     public MqttRelayService(final MqttConfig.MqttGateway mqttGateway) {
