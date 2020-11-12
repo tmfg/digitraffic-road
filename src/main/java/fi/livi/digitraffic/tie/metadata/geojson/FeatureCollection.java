@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "type", "features" })
 public class FeatureCollection<FeatureType> extends GeoJsonObject implements Iterable<FeatureType> {
 
-    @ApiModelProperty(value = "Type of GeoJSON Object", allowableValues = "FeatureCollection", required = true, position = 1)
+    @ApiModelProperty(value = "Type of GeoJSON Object", allowableValues = "FeatureCollection", example = "FeatureCollection", required = true, position = 1)
     private final String type = "FeatureCollection";
 
     @ApiModelProperty(value = "GeoJSON Feature Objects", required = true, position = 2)

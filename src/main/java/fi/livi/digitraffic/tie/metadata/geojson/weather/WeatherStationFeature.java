@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class WeatherStationFeature extends Feature<Point, WeatherStationProperties> {
 
+    // TODO: Remove this from next version as it is duplicated in properties
     @ApiModelProperty(value = "Road station id, same as WeatherStationProperties.roadStationId", required = true, position = 2)
     private long id;
 
