@@ -109,3 +109,6 @@ logging.level.root=INFO
 # application.properties
 maintenance.tracking.job.enabled = false
 maintenance.realization.job.enabled = false
+
+# Low logging level for tests
+logging.level.root=WARN
