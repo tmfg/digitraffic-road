@@ -47,7 +47,7 @@ public class PostgisGeometryHelper {
 
     public static Polygon createSquarePolygonFromMinMax(final double xMin, final double xMax,
                                                  final double yMin, final double yMax) {
-        final Coordinate coordinates[] = new Coordinate[] {
+        final Coordinate[] coordinates = new Coordinate[] {
             new Coordinate(xMin, yMin, 0), new Coordinate(xMin, yMax, 0),
             new Coordinate(xMax, yMax, 0), new Coordinate(xMax, yMin, 0),
             new Coordinate(xMin, yMin, 0)
@@ -72,7 +72,7 @@ public class PostgisGeometryHelper {
         return Arrays.asList(c.getX(), c.getY(), c.getZ());
     }
 
-    public static fi.livi.digitraffic.tie.metadata.geojson.Geometry convertToGeoJSONGeometry(final Geometry geometry)
+    public static fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> convertToGeoJSONGeometry(final Geometry geometry)
         throws IllegalArgumentException {
         if (geometry.getNumPoints() > 1) {
             return new fi.livi.digitraffic.tie.metadata.geojson.LineString(convertToGeoJSONGeometryCoordinates((LineString)geometry));
@@ -89,17 +89,21 @@ public class PostgisGeometryHelper {
      * which is based on https://en.wikipedia.org/wiki/Haversine_formula (error rate: ~0.55%).
      */
     public static double distanceBetweenWGS84PointsInKm(final Point from, final Point to) {
-        final double fromLon = from.getX();
-        final double toLon = to.getX();
-        final double fromLat = from.getY();
-        final double toLat = to.getY();
+        return distanceBetweenWGS84PointsInKm(from.getX(), from.getY(), to.getX(), to.getY());
+    }
 
-        final double diffLat = Math.toRadians(toLat - fromLat);
-        final double diffLon = Math.toRadians(toLon - fromLon);
+    public static double distanceBetweenWGS84PointsInKm(final Coordinate from, final Coordinate to) {
+        return distanceBetweenWGS84PointsInKm(from.getX(), from.getY(), to.getX(), to.getY());
+    }
+
+    public static double distanceBetweenWGS84PointsInKm(final double fromXLon, final double fromYLat, final double toXLon, final double toYLat) {
+
+        final double diffLat = Math.toRadians(toYLat - fromYLat);
+        final double diffLon = Math.toRadians(toXLon - fromXLon);
 
         final double a =
             Math.sin(diffLat / 2) * Math.sin(diffLat / 2) +
-                Math.cos(Math.toRadians(fromLat)) * Math.cos(Math.toRadians(toLat)) *
+                Math.cos(Math.toRadians(fromYLat)) * Math.cos(Math.toRadians(toYLat)) *
                     Math.sin(diffLon / 2) * Math.sin(diffLon / 2);
         final double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return EARTH_RADIUS_KM * c;
@@ -110,4 +114,6 @@ public class PostgisGeometryHelper {
         final double hours = diffInSeconds / 60.0 / 60.0;
         return distanceKm / hours;
     }
+
+
 }

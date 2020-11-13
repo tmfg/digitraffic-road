@@ -1,9 +1,13 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
+import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_IMAGE_UPDATED;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +25,9 @@ import org.springframework.stereotype.Service;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @ConditionalOnNotWebApplication
 @Service
@@ -30,6 +36,7 @@ public class CameraDataUpdateService {
 
     private final int imageUpdateTimeout;
     private final CameraImageUpdateService cameraImageUpdateService;
+    private final DataStatusService dataStatusService;
 
     private static final ExecutorService jobThreadPool = Executors.newFixedThreadPool(5);
     private static final ExecutorService updateTaskThreadPool = Executors.newFixedThreadPool(5);
@@ -37,9 +44,11 @@ public class CameraDataUpdateService {
     @Autowired
     CameraDataUpdateService(@Value("${camera-image-uploader.imageUpdateTimeout}")
                                    final int imageUpdateTimeout,
-                                   final CameraImageUpdateService cameraImageUpdateService) {
+                                   final CameraImageUpdateService cameraImageUpdateService,
+                                   final DataStatusService dataStatusService) {
         this.imageUpdateTimeout = imageUpdateTimeout;
         this.cameraImageUpdateService = cameraImageUpdateService;
+        this.dataStatusService = dataStatusService;
     }
 
     // Log only on warn and error level. Warn when over 10 s execution time as normally its around 6 s.
@@ -54,6 +63,9 @@ public class CameraDataUpdateService {
             futures.add(jobThreadPool.submit(task));
         });
 
+        final Instant latestUpdate = getLatestUpdateTime(latestKuvas);
+        dataStatusService.updateDataUpdated(CAMERA_STATION_IMAGE_UPDATED, latestUpdate);
+
         while ( futures.stream().anyMatch(f -> !f.isDone()) ) {
             try {
                 Thread.sleep(100L);
@@ -62,16 +74,25 @@ public class CameraDataUpdateService {
             }
         }
         final long updateCount = futures.parallelStream().filter(p -> {
-                try {
+            try {
                     return p.get();
                 } catch (Exception e) {
                     log.error("method=updateCameraData UpdateJobManager task failed with error" , e);
                     return false;
                 }
-            }).count();
+        }).count();
 
-        log.info("Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={}", updateCount, futures.size(), futures.size()-updateCount, start.getTime());
+
+        log.info("method=updateCameraData Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={}", updateCount, futures.size(), futures.size()-updateCount, start.getTime());
         return (int) updateCount;
+    }
+
+    private Instant getLatestUpdateTime(final Collection<KuvaProtos.Kuva> latestKuvas) {
+        try {
+            return DateHelper.toInstant(latestKuvas.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow());
+        } catch (final NoSuchElementException e) {
+            return null;
+        }
     }
 
     private Collection<KuvaProtos.Kuva> filterLatest(final List<KuvaProtos.Kuva> data) {

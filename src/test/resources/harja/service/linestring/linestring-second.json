@@ -1,0 +1,32 @@
+{
+    "otsikko" : {
+        "lahettaja" : {
+            "jarjestelma" : "Auton moottori Oy",
+            "organisaatio" : {
+                "nimi" : "Maanrakennus Oy",
+                "ytunnus" : "123456-7"
+            }
+        },
+        "viestintunniste" : {
+            "id" : 253481914
+        },
+        "lahetysaika" : "2020-10-20T12:10:51+03:00"
+    },
+    "havainnot" : [ {
+        "havainto" : {
+            "tyokone" : {
+                "id" : 18120,
+                "tyokonetyyppi" : "Huoltoauto"
+            },
+            "sijainti" : {
+                "viivageometria" : {
+                    "type" : "LineString",
+                    "coordinates" : [ [ 350734.87917434063, 7620902.535979082 ], [ 350738.80361125164, 7620895.481593005 ], [ 350741.9546395539, 7620888.473510524 ], [ 350745.5189059827, 7620880.588265259 ] ]
+                }
+            },
+            "urakkaid" : 322,
+            "havaintoaika" : "2020-10-20T12:10:48+03:00",
+            "suoritettavatTehtavat" : [ "aurausviitoitus ja kinostimet" ]
+        }
+    } ]
+}

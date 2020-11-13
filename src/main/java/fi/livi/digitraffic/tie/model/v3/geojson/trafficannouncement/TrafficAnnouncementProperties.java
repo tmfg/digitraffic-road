@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,6 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({
     "situationId",
     "messageType",
+    "detailedMessageType",
     "version",
     "releaseTime",
     "locationToDisplay",
@@ -46,8 +48,8 @@ public class TrafficAnnouncementProperties {
     @ApiModelProperty(value = "Sender's contact information")
     public final Contact contact;
 
-    @ApiModelProperty(value = "Message type")
-    private Datex2MessageType messageType;
+    @ApiModelProperty(value = "More detailed message type")
+    private Datex2DetailedMessageType detailedMessageType;
 
     public TrafficAnnouncementProperties(final String situationId, final Integer version, final ZonedDateTime releaseTime,
                                          final LocationToDisplay locationToDisplay, final List<TrafficAnnouncement> announcements,
@@ -61,12 +63,17 @@ public class TrafficAnnouncementProperties {
         this.contact = contact;
     }
 
+    @ApiModelProperty(value = "General level message type")
     public Datex2MessageType getMessageType() {
-        return messageType;
+        return detailedMessageType != null ? detailedMessageType.getDatex2MessageType() : null;
     }
 
-    public void setMessageType(final Datex2MessageType messageType) {
-        this.messageType = messageType;
+    public Datex2DetailedMessageType getDetailedMessageType() {
+        return detailedMessageType;
+    }
+
+    public void setDetailedMessageType(final Datex2DetailedMessageType messageType) {
+        this.detailedMessageType = messageType;
     }
 
     @Override

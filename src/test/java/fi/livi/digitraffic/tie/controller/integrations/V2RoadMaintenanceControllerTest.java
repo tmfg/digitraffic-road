@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,9 +28,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
+import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
@@ -95,7 +98,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
 
         postTrackingJson("linestring_tracking_1.json");
         postTrackingJson("linestring_tracking_2.json");
-        postTrackingJson("linestring_tracking_3.json");
+        postTrackingJson("linestring_tracking_too_long_after.json");
 
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
         entityManager.flush();
@@ -104,26 +107,28 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         final List<MaintenanceTracking> observations = v2MaintenanceTrackingRepository
             .findAllByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedAscIdAsc(harjaTyokoneId, harjaUrakkaId);
 
-        Assert.assertEquals("Observations should be divided in two as there is over 30 min gap in observations",
+        Assert.assertEquals("Two first observations should be joined and 3rd divided as separate as record time is far from previous.",
                    2, observations.size());
 
         final MaintenanceTracking first = observations.get(0);
         final MaintenanceTracking second = observations.get(1);
 
-        Assert.assertEquals("First observation should have coordinates from 2 first messages = 10",
-            10, first.getLineString().getNumPoints());
+        assertLinestringSize(first, 3+4);
+        assertLinestringSize(second, 5);
 
-        Assert.assertEquals("Second observation should have coordinates from 3 message = 5",
-            5, second.getLineString().getNumPoints());
+        assertContainsTasks(first, PLOUGHING_AND_SLUSH_REMOVAL, SALTING);
+        assertContainsTasks(second, PLOUGHING_AND_SLUSH_REMOVAL, SALTING);
+    }
 
-        Assert.assertEquals(2, first.getTasks().size());
-        Assert.assertTrue(first.getTasks().contains(PLOUGHING_AND_SLUSH_REMOVAL));
-        Assert.assertTrue(first.getTasks().contains(SALTING));
+    private void assertContainsTasks(final MaintenanceTracking tracking, MaintenanceTrackingTask...tasks) {
+        final Set<MaintenanceTrackingTask> trackingTasks = tracking.getTasks();
+        AssertHelper.assertCollectionSize(tasks.length, trackingTasks);
+        Arrays.stream(tasks).forEach(t -> Assert.assertTrue(trackingTasks.contains(t)));
+    }
 
-        Assert.assertEquals(2, second.getTasks().size());
-        Assert.assertTrue(second.getTasks().contains(SALTING));
-
-
+    private void assertLinestringSize(final MaintenanceTracking tracking, final int size) {
+        Assert.assertEquals("Tracking should have " + size + " coordinates.",
+                    size, tracking.getLineString().getNumPoints());
     }
 
     @Test

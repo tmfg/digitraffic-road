@@ -8,6 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
+import java.time.temporal.ChronoField;
+
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraDataService;
 
 public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest {
@@ -22,12 +27,19 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
     @Autowired
     private CameraDataService cameraDataService;
 
+    @Autowired
+    private DataStatusService dataStatusService;
+
     private String cameraId = null;
+
+    private final Instant updateTime = Instant.now().with(ChronoField.MILLI_OF_SECOND, 0);
+
     @Before
     public  void initData() {
         cameraId =
                 cameraDataService.findPublishableCameraStationsData(false).getCameraStations().stream()
-                        .filter(s -> s.getCameraPresets().size() > 0).findFirst().get().getId();
+                        .filter(s -> s.getCameraPresets().size() > 0).findFirst().orElseThrow().getId();
+        dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_IMAGE_UPDATED, updateTime);
     }
 
     @Test
@@ -35,7 +47,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + CAMERA_DATA_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.equalTo(updateTime.toString())))
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.cameraStations[0].roadStationId", Matchers.notNullValue()))
@@ -44,6 +56,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].presentationName", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].imageUrl", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].measuredTime", Matchers.isA(String.class)))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 
@@ -52,7 +65,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + CAMERA_DATA_PATH + "/" + cameraId)) // C08520
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
+                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.equalTo(updateTime.toString())))
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))
                 .andExpect(jsonPath("$.cameraStations[0].roadStationId", Matchers.notNullValue()))
@@ -61,6 +74,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].presentationName", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].imageUrl", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.cameraStations[0].cameraPresets[0].measuredTime", Matchers.isA(String.class)))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 

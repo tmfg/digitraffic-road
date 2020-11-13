@@ -94,6 +94,8 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
         final String json = getResponse(getUrlWithType(true, 0));
         assertTextIsValidXml(xml);
         assertTextIsValidJson(json);
+        assertTimesFormatMatches(xml);
+        assertTimesFormatMatches(json);
     }
 
     /**

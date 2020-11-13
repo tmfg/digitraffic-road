@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
+import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_IMAGE_UPDATED;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -11,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.converter.CameraPreset2CameraDataConverter;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraRootDataObjectDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @ConditionalOnWebApplication
@@ -20,17 +22,20 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 public class CameraDataService {
     private final CameraPresetRepository cameraPresetRepository;
     private final CameraPreset2CameraDataConverter cameraPreset2CameraDataConverter;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     CameraDataService(final CameraPresetRepository cameraPresetRepository,
-                      final CameraPreset2CameraDataConverter cameraPreset2CameraDataConverter) {
+                      final CameraPreset2CameraDataConverter cameraPreset2CameraDataConverter,
+                      final DataStatusService dataStatusService) {
         this.cameraPresetRepository = cameraPresetRepository;
         this.cameraPreset2CameraDataConverter = cameraPreset2CameraDataConverter;
+        this.dataStatusService = dataStatusService;
     }
 
     @Transactional(readOnly = true)
     public CameraRootDataObjectDto findPublishableCameraStationsData(final boolean onlyUpdateInfo) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTimeAtUtc(cameraPresetRepository.getLatestMeasurementTime());
+        final ZonedDateTime updated = dataStatusService.findDataUpdatedTime(CAMERA_STATION_IMAGE_UPDATED);
 
         if (onlyUpdateInfo) {
             return new CameraRootDataObjectDto(updated);
@@ -43,7 +48,7 @@ public class CameraDataService {
 
     @Transactional(readOnly = true)
     public CameraRootDataObjectDto findPublishableCameraStationsData(final String cameraId) {
-        final ZonedDateTime updated = DateHelper.toZonedDateTimeAtUtc(cameraPresetRepository.getLatestMeasurementTime());
+        final ZonedDateTime updated = dataStatusService.findDataUpdatedTime(CAMERA_STATION_IMAGE_UPDATED);
         final List<CameraPreset> data = cameraPresetRepository
                 .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(cameraId);
 

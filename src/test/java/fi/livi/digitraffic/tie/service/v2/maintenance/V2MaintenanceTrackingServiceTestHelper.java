@@ -329,8 +329,8 @@ public class V2MaintenanceTrackingServiceTestHelper {
             startTime);
     }
 
-    public String getFormatedTrackingJson(final String TrackingJsonPath) throws IOException {
-        return jsonWriter.writeValueAsString(jsonReader.readValue(readResourceContent(TrackingJsonPath)));
+    public String getFormatedTrackingJson(final String trackingJsonPath) throws IOException {
+        return jsonWriter.writeValueAsString(jsonReader.readValue(readResourceContent(trackingJsonPath)));
     }
 
     public void checkValidJson(final String json) {
@@ -379,5 +379,15 @@ public class V2MaintenanceTrackingServiceTestHelper {
 
     public static MaintenanceTrackingTask getTaskWithIndex(final int enumIndex) {
         return MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[enumIndex].name());
+    }
+
+    public void saveTrackingFromResourceToDb(String path) throws IOException {
+        final String ls1 = getFormatedTrackingJson(path);
+        saveTrackingAsJson(ls1);
+    }
+
+    public static ZonedDateTime getEndTime(final TyokoneenseurannanKirjausRequestSchema seuranta) {
+        final List<Havainnot> havainnot = seuranta.getHavainnot();
+        return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
     }
 }

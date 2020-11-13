@@ -2,19 +2,19 @@ package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithLineString;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getEndTime;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
-import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,6 +47,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 
 @Import({ V2MaintenanceTrackingUpdateService.class, JacksonAutoConfiguration.class, V2MaintenanceTrackingServiceTestHelper.class })
@@ -116,16 +117,17 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll(Sort.by("workMachine.harjaId"));
         assertCollectionSize(machineCount, trackings);
-        trackings.stream().forEach(t -> {
+        trackings.forEach(t -> {
             // 10 observations for each
             assertEquals(10, t.getLineString().getNumPoints());
-            t.getTasks().equals(new HashSet<>(asList(ASFALTOINTI)));
+            assertEquals(1, t.getTasks().size());
+            assertTrue(t.getTasks().contains(MaintenanceTrackingTask.PAVING));
             assertEquals(now, t.getStartTime());
             assertEquals(now.plusMinutes(9), t.getEndTime());
         });
 
         final List<MaintenanceTrackingWorkMachine> wms =
-            trackings.stream().map(t -> t.getWorkMachine()).sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
+            trackings.stream().map(MaintenanceTracking::getWorkMachine).sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
                 .collect(Collectors.toList());
         // Check all work machines exists
         IntStream.range(0, machineCount).forEach(i -> assertEquals(i+1, wms.get(i).getHarjaId().intValue()));
@@ -136,18 +138,23 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
-        final ZonedDateTime endTime = startTime.plusMinutes(4);
-        IntStream.range(0,5).forEach(i -> {
-            final ZonedDateTime start = startTime.plusMinutes(i);
-            final TyokoneenseurannanKirjausRequestSchema seuranta =
-                createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, ASFALTOINTI);
-            try {
-                testHelper.saveTrackingData(seuranta);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        int handled = 0;
+        final int observationCount = getRandomId(5, 10);
+
+        final ZonedDateTime endTime =
+            // 5 trackings / machine
+            IntStream.range(0,5).mapToObj(i -> {
+                final ZonedDateTime start = startTime.plusMinutes(i*observationCount);
+                final TyokoneenseurannanKirjausRequestSchema seuranta =
+                    createMaintenanceTrackingWithPoints(start, observationCount, i+1, 1, workMachines, ASFALTOINTI);
+                try {
+                    testHelper.saveTrackingData(seuranta);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                return getEndTime(seuranta);
+            }).max(ChronoZonedDateTime::compareTo).orElseThrow();
+
+        int handled;
         int total = 0;
         do {
             handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(3);
@@ -158,16 +165,17 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final List<MaintenanceTracking> trackings =
             v2MaintenanceTrackingRepository.findAll(Sort.by("workMachine.harjaId"));
         assertCollectionSize(machineCount, trackings);
-        trackings.stream().forEach(t -> {
+        trackings.forEach(t -> {
             // 10 observations for each
-            assertEquals(10*5, t.getLineString().getNumPoints());
-            t.getTasks().equals(new HashSet<>(asList(ASFALTOINTI)));
+            assertEquals(observationCount * 5, t.getLineString().getNumPoints());
+            assertEquals(1, t.getTasks().size());
+            assertTrue(t.getTasks().contains(MaintenanceTrackingTask.PAVING));
             assertEquals(startTime, t.getStartTime());
             assertEquals(endTime, t.getEndTime());
         });
 
         final List<MaintenanceTrackingWorkMachine> wms =
-            trackings.stream().map(t -> t.getWorkMachine()).sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
+            trackings.stream().map(MaintenanceTracking::getWorkMachine).sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
                 .collect(Collectors.toList());
         // Check all work machines exists
         IntStream.range(0, machineCount).forEach(i -> assertEquals(i+1, wms.get(i).getHarjaId().intValue()));
@@ -361,5 +369,45 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertEquals(first.getEndTime(), transitionHavainto.getHavaintoaika());
         assertEquals(first.getLineString().getEndPoint().getX(), transitionFirstPoint.getLongitude(), 0.01);
         assertEquals(first.getLineString().getEndPoint().getY(), transitionFirstPoint.getLatitude(), 0.01);
+    }
+
+    @Test
+    public void longJumpInLineStringData() throws IOException {
+        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/distancegap/long-jump-twice-1.json");
+
+        log.info("Handled count={}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100));
+
+        // Jump twice -> should split to three
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(3, trackings);
+    }
+
+    @Test
+    public void lineStringsShouldBeHandledAsOneIfNoDistanceGap() throws IOException {
+
+        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/linestring-first.json");
+        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/linestring-second.json");
+
+        log.info("Handled count={}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100));
+
+        // Two linestring trackings without long jump between last and first point should be joined
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(1, trackings);
+        assertEquals(7, trackings.get(0).getLineString().getNumPoints());
+    }
+
+    @Test
+    public void singlePointLineStringsShouldBeHandledAsPointTrackings() throws IOException {
+
+        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-1.json");
+        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-2.json");
+        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-3.json");
+
+        log.info("Handled count={}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100));
+
+        // 3 LineStrings with single point in each should be combined as one tracking
+        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(1, trackings);
+        assertEquals(3, trackings.get(0).getLineString().getNumPoints());
     }
 }

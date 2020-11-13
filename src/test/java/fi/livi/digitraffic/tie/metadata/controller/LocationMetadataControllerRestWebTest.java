@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Test;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.RoadWebApplicationConfiguration;
 
 public class LocationMetadataControllerRestWebTest extends AbstractRestWebTest {
     @Test
@@ -27,8 +26,9 @@ public class LocationMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", isA(Integer.class))) //
                 .andExpect(jsonPath("$.features[0].id", isA(Integer.class))) //
-                .andExpect(jsonPath("$.features[0].properties.subtypeCode", isA(String.class))) //
-                .andExpect(jsonPath("$.features[0].properties.firstName", isA(String.class))) //
+                .andExpect(jsonPath("$.features[0].properties.subtypeCode", isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.firstName", isA(String.class)))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 
@@ -41,6 +41,7 @@ public class LocationMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$", notNullValue())) //
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features").doesNotExist())
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
         ;
     }
 
