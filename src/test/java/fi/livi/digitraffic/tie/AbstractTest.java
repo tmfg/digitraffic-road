@@ -62,6 +62,9 @@ public abstract class AbstractTest {
     @PersistenceContext
     protected EntityManager entityManager;
 
+    // used by application properties
+    public static final int LOTJU_SERVICE_RANDOM_PORT = (int) RandomUtils.nextLong(6000,7000);
+
     protected static final int MIN_LOTJU_ID = 10000;
     protected static final int MAX_LOTJU_ID = 99999;
     protected static final String PRESET_PRESENTATION_NAME = "PresentationName";
