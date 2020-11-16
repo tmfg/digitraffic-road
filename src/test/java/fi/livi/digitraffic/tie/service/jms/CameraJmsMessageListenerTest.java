@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -59,7 +58,6 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
                                    "road.datasource.hikari.maximum-pool-size=6",
                                    "logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService=WARN"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
