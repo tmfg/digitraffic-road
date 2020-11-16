@@ -92,7 +92,6 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     @Before
     public void initData() throws IOException {
         log.info("LOTJU_IMAGE_PATH={}", LOTJU_IMAGE_PATH);
-        log.info("TEST_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
         log.info("healthPath={}", healthPath);
         createHealthOKStubFor(healthPath);
 
@@ -138,8 +137,6 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JMSException {
-        log.info("HTTP lotju mock server port={}", LOTJU_SERVICE_RANDOM_PORT);
-
         createHttpResponseStubFor(1);// + IMAGE_SUFFIX);
         createHttpResponseStubFor(2);// + IMAGE_SUFFIX);
         createHttpResponseStubFor(3);// + IMAGE_SUFFIX);

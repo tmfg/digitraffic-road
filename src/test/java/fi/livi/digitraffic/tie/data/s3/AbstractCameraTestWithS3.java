@@ -22,7 +22,7 @@ public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 
 
     // NOTE! Rules uses fixed port. see DPO-489
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(LOTJU_SERVICE_RANDOM_PORT));
+    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
     protected S3Object readWeathercamS3Object(final String key) {
         return readWeathercamS3ObjectVersion(key, null);
