@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -58,6 +59,7 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
                                    "road.datasource.hikari.maximum-pool-size=6",
                                    "logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService=WARN"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
@@ -92,6 +94,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     @Before
     public void initData() throws IOException {
         log.info("LOTJU_IMAGE_PATH={}", LOTJU_IMAGE_PATH);
+        log.info("TEST_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
         log.info("healthPath={}", healthPath);
         createHealthOKStubFor(healthPath);
 
@@ -137,6 +140,8 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JMSException {
+        log.info("HTTP lotju mock server port={}", LOTJU_SERVICE_RANDOM_PORT);
+
         createHttpResponseStubFor(1);// + IMAGE_SUFFIX);
         createHttpResponseStubFor(2);// + IMAGE_SUFFIX);
         createHttpResponseStubFor(3);// + IMAGE_SUFFIX);
