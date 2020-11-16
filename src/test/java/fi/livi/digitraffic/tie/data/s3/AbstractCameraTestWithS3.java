@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -14,6 +15,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
 
+@DirtiesContext
 @TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
 public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 {
 
