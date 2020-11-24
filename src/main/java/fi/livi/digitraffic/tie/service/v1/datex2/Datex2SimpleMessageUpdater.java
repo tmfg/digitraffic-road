@@ -32,7 +32,7 @@ public class Datex2SimpleMessageUpdater {
 
     private final Datex2Repository datex2Repository;
 
-    private static StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
+    private static Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
     private V2Datex2UpdateService v2Datex2UpdateService;
 
@@ -42,14 +42,14 @@ public class Datex2SimpleMessageUpdater {
                                       final Datex2TrafficAlertHttpClient datex2TrafficAlertHttpClient,
                                       final Datex2UpdateService datex2UpdateService,
                                       final Datex2Repository datex2Repository,
-                                      final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller,
+                                      final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
                                       final V2Datex2UpdateService v2Datex2UpdateService) {
         this.datex2WeightRestrictionsHttpClient = datex2WeightRestrictionsHttpClient;
         this.datex2RoadworksHttpClient = datex2RoadworksHttpClient;
         this.datex2TrafficAlertHttpClient = datex2TrafficAlertHttpClient;
         this.datex2UpdateService = datex2UpdateService;
         this.datex2Repository = datex2Repository;
-        Datex2SimpleMessageUpdater.stringToObjectMarshaller = stringToObjectMarshaller;
+        Datex2SimpleMessageUpdater.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
         this.v2Datex2UpdateService = v2Datex2UpdateService;
     }
 
@@ -89,7 +89,7 @@ public class Datex2SimpleMessageUpdater {
 
     @Transactional(readOnly = true)
     public List<Datex2MessageDto> convert(final String message, final Datex2MessageType messageType, final ZonedDateTime importTime) {
-        final D2LogicalModel model = stringToObjectMarshaller.convertToObject(message);
+        final D2LogicalModel model = datex2XmlStringToObjectMarshaller.convertToObject(message);
         final List<Datex2MessageDto> models = v2Datex2UpdateService.createModels(model, null, importTime);
         models.forEach(m -> {
             // This is for debug for now, to see that automatic message type identification works correctly

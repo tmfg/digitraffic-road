@@ -36,13 +36,13 @@ public class Datex2DataService {
     private static final Logger log = LoggerFactory.getLogger(Datex2DataService.class);
 
     private final Datex2Repository datex2Repository;
-    private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
+    private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
     @Autowired
     public Datex2DataService(final Datex2Repository datex2Repository,
-                             final StringToObjectMarshaller stringToObjectMarshaller) {
+                             final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller) {
         this.datex2Repository = datex2Repository;
-        this.stringToObjectMarshaller = stringToObjectMarshaller;
+        this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
     }
 
     @Transactional(readOnly = true)
@@ -155,7 +155,7 @@ public class Datex2DataService {
 
     private TimestampedTrafficDisorderDatex2 unmarshallTrafficDisorder(final String datex2Xml, final ZonedDateTime importTime) {
         try {
-            final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
+            final D2LogicalModel d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                     new ObservationTimeType()
                             .withLocaltime(DateHelper.toInstant(importTime))
@@ -172,7 +172,7 @@ public class Datex2DataService {
 
     private TimestampedRoadworkDatex2 unmarshallRoadwork(final String datex2Xml, final ZonedDateTime importTime) {
         try {
-            final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
+            final D2LogicalModel d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                 new ObservationTimeType()
                     .withLocaltime(DateHelper.toInstant(importTime))
@@ -189,7 +189,7 @@ public class Datex2DataService {
 
     private TimestampedWeightRestrictionDatex2 unmarshallWeightRestriction(final String datex2Xml, final ZonedDateTime importTime) {
         try {
-            final D2LogicalModel d2LogicalModel = stringToObjectMarshaller.convertToObject(datex2Xml);
+            final D2LogicalModel d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2Xml);
             final ObservationTimeType published =
                 new ObservationTimeType()
                     .withLocaltime(DateHelper.toInstant(importTime))

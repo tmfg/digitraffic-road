@@ -1,14 +1,11 @@
 
 package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -18,16 +15,13 @@ import io.swagger.annotations.ApiModelProperty;
     "e",
     "n"
 })
-public class LocationToDisplay {
+public class LocationToDisplay extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "ETRS-TM35FIN east coordinate", required = true, position = 1)
     public Double e;
 
     @ApiModelProperty(value = "ETRS-TM35FIN north coordinate", required = true, position = 1)
     public Double n;
-
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public LocationToDisplay(Double e, Double n) {
         super();

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -19,7 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
     "fax",
     "email"
 })
-public class Contact {
+public class Contact extends JsonAdditionalProperties {
 
     @ApiModelProperty("Phone number")
     public String phone;

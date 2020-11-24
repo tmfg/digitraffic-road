@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -38,12 +37,6 @@ public class Datex2JsonConverterService {
     protected final ObjectReader featureJsonReaderV3;
 
     protected final Validator validator;
-
-    protected final ObjectReader imsJsonReaderV0_2_4;
-    protected final ObjectReader imsJsonReaderV0_2_6;
-
-    protected final ObjectWriter imsJsonWriterV0_2_6;
-    protected final ObjectWriter imsJsonWriterV0_2_4;
     protected final ObjectReader genericJsonReader;
 
     protected ObjectMapper objectMapper;
@@ -51,11 +44,6 @@ public class Datex2JsonConverterService {
     @Autowired
     public Datex2JsonConverterService(final ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        imsJsonWriterV0_2_4 = objectMapper.writerFor(fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature.class);
-        imsJsonWriterV0_2_6 = objectMapper.writerFor(fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature.class);
-
-        imsJsonReaderV0_2_4 = objectMapper.readerFor(fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature.class);
-        imsJsonReaderV0_2_6 = objectMapper.readerFor(fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature.class);
 
         featureJsonReaderV2 = objectMapper.readerFor(fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature.class);
         featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature.class);
@@ -69,7 +57,7 @@ public class Datex2JsonConverterService {
     public fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson)
         throws JsonProcessingException {
         // Ims JSON String can be in 0.2.4 or in 0.2.6 format. Convert 0.2.6 to in 0.2.4 format.
-        final String imsJsonV0_2_4 = convertImsJsonToV0_2_4(imsJson);
+        final String imsJsonV0_2_4 = convertImsJsonToV0_2_4Compatible(imsJson);
 
         final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             featureJsonReaderV2.readValue(imsJsonV0_2_4);
@@ -84,7 +72,7 @@ public class Datex2JsonConverterService {
                                                                                                                                 final Datex2DetailedMessageType detailedMessageType)
         throws JsonProcessingException {
         // Ims JSON String can be in 0.2.4 or in 0.2.6 format. Convert 0.2.4 to in 0.2.6 format.
-        final String imsJsonV3 = convertImsJsonToV0_2_6(imsJson);
+        final String imsJsonV3 = convertImsJsonToV0_2_8Compatible(imsJson);
 
         final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             featureJsonReaderV3.readValue(imsJsonV3);
@@ -97,10 +85,10 @@ public class Datex2JsonConverterService {
         return feature;
     }
 
-    private String convertImsJsonToV0_2_4(final String imsJson) throws JsonProcessingException {
+    private String convertImsJsonToV0_2_4Compatible(final String imsJson) throws JsonProcessingException {
         final JsonNode root = genericJsonReader.readTree(imsJson);
-        final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
-        // if announcements is found json might be V0_2_6 and features must be converted to V0_2_4 format
+        final ArrayNode announcements = readAnnouncementsFromTheImsJson(root);
+        // if announcements is found json might be V0_2_6 or V0_2_8 and features must be converted to V0_2_4 format
         if ( announcements == null || announcements.isEmpty() ) {
             return imsJson;
         }
@@ -122,26 +110,15 @@ public class Datex2JsonConverterService {
                 // replace features with V0_2_4 json
                 ((ObjectNode) announcement).set("features", newFeaturesArrayNode);
             }
-
-            // V0_2_4 doesn't have roadWorkPhases
-            final ArrayNode roadWorkPhases = (ArrayNode) announcement.get("roadWorkPhases");
-            if (roadWorkPhases != null) {
-                ((ObjectNode)announcement).remove("roadWorkPhases");
-            }
-            // V0_2_4 doesn't have roadWorkPhases
-            final ObjectNode lastActiveItinerarySegment = (ObjectNode) announcement.get("lastActiveItinerarySegment");
-            if (lastActiveItinerarySegment != null) {
-                ((ObjectNode)announcement).remove("lastActiveItinerarySegment");
-            }
-
+            // No need to remove extra nodes in V0_2_6 or V0_2_8 schema as they will be skipped
         }
         return objectMapper.writer().writeValueAsString(root);
     }
 
-    private String convertImsJsonToV0_2_6(final String imsJson) throws JsonProcessingException {
+    private String convertImsJsonToV0_2_8Compatible(final String imsJson) throws JsonProcessingException {
         final JsonNode root = genericJsonReader.readTree(imsJson);
         final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
-        // if announcements is found json might be V0_2_4 and features must be converted to V0_2_6 format
+        // if announcements is found json might be V0_2_4 and features must be converted to V0_2_6 and V0_2_8 format
         if ( announcements == null || announcements.isEmpty() ) {
             return imsJson;
         }
@@ -153,7 +130,7 @@ public class Datex2JsonConverterService {
                 final ArrayNode newFeaturesArrayNode = objectMapper.createArrayNode();
                 for (final JsonNode f : features) {
                     if (!f.isTextual()) {
-                        // -> is already V0_2_6
+                        // -> is already V0_2_6 or V0_2_6
                         return imsJson;
                     }
                     final ObjectNode feature = objectMapper.createObjectNode();
@@ -166,12 +143,12 @@ public class Datex2JsonConverterService {
         return objectMapper.writer().writeValueAsString(root);
     }
 
-    protected JsonNode readAnnouncementsFromTheImsJson(final JsonNode root) {
+    protected ArrayNode readAnnouncementsFromTheImsJson(final JsonNode root) {
         final JsonNode properties = root.get("properties");
         if (properties == null) {
             return null;
         }
-        return properties.get("announcements");
+        return (ArrayNode)properties.get("announcements");
     }
 
     private void checkDurationViolationsV2(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {

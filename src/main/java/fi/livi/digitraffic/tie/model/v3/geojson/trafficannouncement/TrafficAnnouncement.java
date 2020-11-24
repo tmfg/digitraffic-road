@@ -2,18 +2,16 @@
 package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -26,12 +24,13 @@ import io.swagger.annotations.ApiModelProperty;
     "locationDetails",
     "features",
     "roadWorkPhases",
+    "earlyClosing",
     "comment",
     "timeAndDuration",
     "additionalInformation",
     "sender"
 })
-public class TrafficAnnouncement {
+public class TrafficAnnouncement extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "Language of the announcement, always fi. A subset of ISO 639-1.", required = true, allowableValues = "fi")
     @NotNull
@@ -53,6 +52,9 @@ public class TrafficAnnouncement {
     @ApiModelProperty(value = "Contains the phases of this road maintenance work")
     public List<RoadWorkPhase> roadWorkPhases = new ArrayList<>();
 
+    @ApiModelProperty(value = "Road work was closed before the planned time. 'CLOSED' means the road work closed after its start time, possibly skipping some phases. 'CANCELED' means the road work was canceled before its start time. Note: This field is omitted if the road work closes normally.")
+    public EarlyClosing earlyClosing;
+
     @ApiModelProperty(value = "The itinerary segment of this special transport that is or was last active.")
     public LastActiveItinerarySegment lastActiveItinerarySegment;
 
@@ -69,14 +71,12 @@ public class TrafficAnnouncement {
     @NotNull
     public String sender;
 
-    @JsonIgnore
-    public Map<String, Object> additionalProperties = new HashMap<>();
-
     public TrafficAnnouncement() {
     }
 
     public TrafficAnnouncement(final Language language, final String title, final Location location, final LocationDetails locationDetails,
-                               final List<Feature> features, final List<RoadWorkPhase> roadWorkPhases, final String comment,
+                               final List<Feature> features, final List<RoadWorkPhase> roadWorkPhases, final EarlyClosing earlyClosing,
+                               final LastActiveItinerarySegment lastActiveItinerarySegment, final String comment,
                                final TimeAndDuration timeAndDuration, final String additionalInformation, final String sender) {
         this.language = language;
         this.title = title;
@@ -84,6 +84,8 @@ public class TrafficAnnouncement {
         this.locationDetails = locationDetails;
         this.features = features;
         this.roadWorkPhases = roadWorkPhases;
+        this.earlyClosing = earlyClosing;
+        this.lastActiveItinerarySegment = lastActiveItinerarySegment;
         this.comment = comment;
         this.timeAndDuration = timeAndDuration;
         this.additionalInformation = additionalInformation;
@@ -93,6 +95,17 @@ public class TrafficAnnouncement {
     @Override
     public String toString() {
         return ToStringHelper.toStringFull(this);
+    }
+
+    public enum EarlyClosing {
+
+        CLOSED,
+        CANCELED;
+
+        @JsonCreator
+        public static EarlyClosing fromValue(final String value) {
+            return EarlyClosing.valueOf(value.toUpperCase());
+        }
     }
 
     public enum Language {

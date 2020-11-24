@@ -97,7 +97,6 @@ public abstract class AbstractTest {
 
     protected String readResourceContent(final String resourcePattern) throws IOException {
         final Resource datex2Resource = loadResource(resourcePattern);
-
         return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
     }
 
@@ -173,7 +172,7 @@ public abstract class AbstractTest {
 
     protected static int getRandom(final int minInclusive, final int maxExclusive) {
         final Random random = new Random();
-        return random.ints(minInclusive, maxExclusive).findFirst().getAsInt();
+        return random.ints(minInclusive, maxExclusive).findFirst().orElseThrow();
     }
 
     protected static List<EsiasentoVO> createEsiasentos(final long kameraId, final int count) {

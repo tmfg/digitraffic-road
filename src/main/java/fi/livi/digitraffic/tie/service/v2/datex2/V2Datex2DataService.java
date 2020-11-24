@@ -24,24 +24,24 @@ import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnou
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
-import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 @Service
 public class V2Datex2DataService {
     private static final Logger log = LoggerFactory.getLogger(V2Datex2DataService.class);
 
     private final Datex2Repository datex2Repository;
-    private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
+    private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
     private final Datex2JsonConverterService datex2JsonConverterService;
     private DataStatusService dataStatusService;
 
     @Autowired
     public V2Datex2DataService(final Datex2Repository datex2Repository,
-                               final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller,
+                               final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
                                final Datex2JsonConverterService datex2JsonConverterService,
                                final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
-        this.stringToObjectMarshaller = stringToObjectMarshaller;
+        this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
         this.datex2JsonConverterService = datex2JsonConverterService;
         this.dataStatusService = dataStatusService;
     }
@@ -98,7 +98,7 @@ public class V2Datex2DataService {
 
         // conver Datex2s to D2LogicalModels
         final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()
-            .map(datex2 -> stringToObjectMarshaller.convertToObject(datex2.getMessage()))
+            .map(datex2 -> datex2XmlStringToObjectMarshaller.convertToObject(datex2.getMessage()))
             .filter(d2 -> d2.getPayloadPublication() != null)
             .sorted(Comparator.comparing((D2LogicalModel d2) -> d2.getPayloadPublication().getPublicationTime()).reversed())
             .collect(Collectors.toList());

@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
@@ -47,7 +48,8 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     private Datex2Repository datex2Repository;
 
     @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
+    @Qualifier("imsJaxb2Marshaller")
+    private Jaxb2Marshaller jaxb2MarshallerimsJaxb2Marshaller;
 
     @Autowired
     private V2Datex2UpdateService v2Datex2UpdateService;
@@ -187,7 +189,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
     private JMSMessageListener<ExternalIMSMessage> createImsJmsMessageListener() {
         final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> dataUpdater = (data) ->  v2Datex2UpdateService.updateTrafficDatex2ImsMessages(data);
-        return new JMSMessageListener<>(new ImsMessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
+        return new JMSMessageListener<>(new ImsMessageMarshaller(jaxb2MarshallerimsJaxb2Marshaller), dataUpdater, false, log);
     }
 
     private void readAndSendMessages(final List<Resource> imsResources, final JMSMessageListener<ExternalIMSMessage> messageListener) throws IOException {

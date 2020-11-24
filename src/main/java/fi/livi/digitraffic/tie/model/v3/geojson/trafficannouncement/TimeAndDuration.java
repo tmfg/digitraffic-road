@@ -2,16 +2,14 @@
 package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -22,7 +20,7 @@ import io.swagger.annotations.ApiModelProperty;
     "endTime",
     "estimatedDuration"
 })
-public class TimeAndDuration {
+public class TimeAndDuration extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "Start time of the situation", required = true)
     @NotNull
@@ -33,9 +31,6 @@ public class TimeAndDuration {
 
     @ApiModelProperty(value = "If exact endtime is not known, duration may be estimated.")
     public EstimatedDuration estimatedDuration;
-
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public TimeAndDuration() {
     }

@@ -11,8 +11,8 @@ import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 public class ImsMessageMarshaller extends TextMessageMarshaller<ExternalIMSMessage> {
     private static final Logger log = LoggerFactory.getLogger(ImsMessageMarshaller.class);
 
-    public ImsMessageMarshaller(final Jaxb2Marshaller jaxb2Marshaller) {
-        super(jaxb2Marshaller);
+    public ImsMessageMarshaller(final Jaxb2Marshaller imsJaxb2Marshaller) {
+        super(imsJaxb2Marshaller);
     }
 
     @Override

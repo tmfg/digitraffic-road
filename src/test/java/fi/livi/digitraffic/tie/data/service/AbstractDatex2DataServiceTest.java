@@ -12,6 +12,7 @@ import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Import;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
@@ -42,7 +43,8 @@ public abstract class AbstractDatex2DataServiceTest extends AbstractServiceTest 
     protected V2Datex2UpdateService v2Datex2UpdateService;
 
     @Autowired
-    protected Jaxb2Marshaller jaxb2Marshaller;
+    @Qualifier("datex2Jaxb2Marshaller")
+    protected Jaxb2Marshaller datex2Jaxb2Marshaller;
 
     @Autowired
     protected Datex2Repository datex2Repository;
@@ -64,7 +66,7 @@ public abstract class AbstractDatex2DataServiceTest extends AbstractServiceTest 
     }
 
     protected D2LogicalModel createModel(final String datex2Content) {
-        final Object object = jaxb2Marshaller.unmarshal(new StringSource(datex2Content));
+        final Object object = datex2Jaxb2Marshaller.unmarshal(new StringSource(datex2Content));
 
         if (object instanceof JAXBElement) {
             return ((JAXBElement<D2LogicalModel>) object).getValue();

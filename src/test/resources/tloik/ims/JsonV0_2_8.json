@@ -1,0 +1,194 @@
+{
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            23.77474,
+            61.50221
+        ]
+    },
+    "properties": {
+        "situationId": "GUID50001238",
+        "version": 1,
+        "releaseTime": "2019-12-13T14:43:18.388+02:00",
+        "announcements": [
+            {
+                "language": "fi",
+                "title": "Tie 130, Lempäälä. Liikennetiedote.",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Tie 130 välillä Hämeenlinna - Tampere, Lempäälä.\nTarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta."
+                },
+                "locationDetails": {
+                    "roadAddressLocation": {
+                        "primaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 24,
+                                "distance": 3927
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37128,
+                                "name": "Marjamäki",
+                                "distance": 2184
+                            }
+                        },
+                        "secondaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 23,
+                                "distance": 5921
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37126,
+                                "name": "Pispantallin risteyssilta",
+                                "distance": 5264
+                            }
+                        },
+                        "direction": "unknown"
+                    }
+                },
+                "features": [
+                    {
+                        "name": "Nopeusrajoitus",
+                        "quantity": 80.0,
+                        "unit": "km/h"
+                    },
+                    {
+                        "name": "Huono ajokeli"
+                    }
+                ],
+                "roadWorkPhases": [
+                    {
+                        "id": "GUID50000027",
+                        "location": {
+                            "countryCode": 6,
+                            "locationTableNumber": 17,
+                            "locationTableVersion": "1.11.31",
+                            "description": "Tampere"
+                        },
+                        "locationDetails": {
+                            "areaLocation": {
+                                "areas": [
+                                    {
+                                        "name": "Maan pohjoisosa",
+                                        "locationCode": 36988,
+                                        "type": "weather region"
+                                    },
+                                    {
+                                        "name": "Länsi- ja Sisä-Suomen aluehallintovirasto",
+                                        "locationCode": 1234,
+                                        "type": "regional state administrative agency"
+                                    }
+                                ]
+                            }
+                        },
+                        "features": [
+                            {
+                                "name": "Tienvarsilaitteiden huolto"
+                            },
+                            {
+                                "name": "Vesakonraivaus"
+                            },
+                            {
+                                "name": "Räjäytystyö"
+                            },
+                            {
+                                "name": "Niittotyö"
+                            },
+                            {
+                                "name": "Liittymä- ja kaistajärjestely"
+                            },
+                            {
+                                "name": "Ajoneuvon max. korkeus",
+                                "quantity": 33.0,
+                                "unit": "m"
+                            },
+                            {
+                                "name": "Kiertotie käytössä"
+                            },
+                            {
+                                "name": "Liikenne ohjataan kaksisuuntaisena toiselle ajoradalle"
+                            },
+                            {
+                                "name": "Nopeusrajoitus",
+                                "quantity": 80.0,
+                                "unit": "km/h"
+                            },
+                            {
+                                "name": "Arvioitu viivytys (minuutteina)",
+                                "quantity": 11.0,
+                                "unit": "min"
+                            }
+                        ],
+                        "workingHours": [
+                            {
+                                "weekday": "pe",
+                                "startTime": "13:00:00.000",
+                                "endTime": "00:00:00.000"
+                            },
+                            {
+                                "weekday": "ti",
+                                "startTime": "13:00:00.000",
+                                "endTime": "00:00:00.000"
+                            }
+                        ],
+                        "comment": "lllllllll",
+                        "timeAndDuration": {
+                            "startTime": "2020-08-24T21:00:00.000Z",
+                            "endTime": "2020-08-30T20:59:59.999Z"
+                        }
+                    }
+                ],
+                "earlyClosing": "closed",
+                "lastActiveItinerarySegment": {
+                    "startTime": "2020-09-04T08:30:00.000Z",
+                    "endTime": "2020-09-04T09:30:00.000Z",
+                    "legs": [
+                        {
+                            "roadLeg": {
+                                "roadNumber": 1,
+                                "roadName": "Ekatie",
+                                "startArea": "punainen postilaatikko",
+                                "endArea": "ruskea lehmä"
+                            }
+                        },
+                        {
+                            "streetName": "Jokukatu"
+                        },
+                        {
+                            "roadLeg": {
+                                "roadNumber": 2,
+                                "roadName": "Tokatie",
+                                "startArea": "iso kuoppa"
+                            }
+                        }
+                    ]
+                },
+                "comment": "TESTI TESTI TESTI\nML",
+                "timeAndDuration": {
+                    "startTime": "2019-12-13T14:43:18.388+02:00",
+                    "estimatedDuration": {
+                        "minimum": "PT6H",
+                        "informal": "Yli 6 tuntia"
+                    }
+                },
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            }
+        ],
+        "contact": {
+            "phone": "0206373328",
+            "fax": "0206373713",
+            "email": "helsinki.liikennekeskus@liikennevirasto.fi"
+        }
+    }
+}

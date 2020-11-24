@@ -46,24 +46,24 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
-import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 @Service
 public class V2Datex2UpdateService {
     private static final Logger log = LoggerFactory.getLogger(V2Datex2UpdateService.class);
 
     private final Datex2Repository datex2Repository;
-    private final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller;
+    private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
     private final DataStatusService dataStatusService;
     private final Datex2JsonConverterService datex2JsonConverterService;
 
     @Autowired
     public V2Datex2UpdateService(final Datex2Repository datex2Repository,
-                                 final StringToObjectMarshaller<D2LogicalModel> stringToObjectMarshaller,
+                                 final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
                                  final DataStatusService dataStatusService,
                                  final Datex2JsonConverterService datex2JsonConverterService) {
         this.datex2Repository = datex2Repository;
-        this.stringToObjectMarshaller = stringToObjectMarshaller;
+        this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
         this.dataStatusService = dataStatusService;
         this.datex2JsonConverterService = datex2JsonConverterService;
     }
@@ -74,7 +74,7 @@ public class V2Datex2UpdateService {
         final int newAndUpdated = imsMessages.stream().mapToInt(imsMessage -> {
             log.debug("method=updateTrafficDatex2ImsMessages imsMessage d2Message datex2: {}",
                       ToStringHelper.padKeyValuePairsEqualitySignWithSpaces(imsMessage.getMessageContent().getD2Message()));
-            final D2LogicalModel d2 = stringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
+            final D2LogicalModel d2 = datex2XmlStringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
             final List<Datex2MessageDto> models = createModels(d2, imsMessage.getMessageContent().getJMessage(), now);
             return updateTrafficDatex2Messages(models);
         }).sum();
@@ -142,7 +142,7 @@ public class V2Datex2UpdateService {
         d2.setExchange(main.getExchange());
         d2.setPayloadPublication(newSp);
 
-        final String messageValue = stringToObjectMarshaller.convertToString(d2);
+        final String messageValue = datex2XmlStringToObjectMarshaller.convertToString(d2);
         return new Datex2MessageDto(d2, messageType, messageValue, jsonValue, importTime, situation.getId());
     }
 

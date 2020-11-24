@@ -35,13 +35,13 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateServic
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2TrafficAlertHttpClient;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.v1.datex2.StringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v1.location.LocationService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
-@Import({ StringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
+@Import({ Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
           // services
           LocationService.class, RoadDistrictService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,

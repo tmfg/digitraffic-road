@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
@@ -42,7 +43,12 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     protected Datex2Repository datex2Repository;
 
     @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
+    @Qualifier("imsJaxb2Marshaller")
+    private Jaxb2Marshaller imsJaxb2Marshaller;
+
+    @Autowired
+    @Qualifier("datex2Jaxb2Marshaller")
+    private Jaxb2Marshaller datex2Jaxb2Marshaller;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -92,7 +98,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     public void getJsonAndXmlCurrentlyActive() throws Exception {
         final String xml = getResponse(getUrlWithType(false, 0));
         final String json = getResponse(getUrlWithType(true, 0));
-        assertTextIsValidXml(xml);
+        assertIsValidDatex2Xml(xml);
         assertTextIsValidJson(json);
         assertTimesFormatMatches(xml);
         assertTimesFormatMatches(json);
@@ -106,7 +112,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
         final Pair<Datex2DetailedMessageType, String> situation = getRandomActiveSituation();
         final String xml = getResponse(getUrlWithSituationId(false, situation.getRight()));
         final String json = getResponse(getUrlWithSituationId(true, situation.getRight()));
-        assertTextIsValidXml(xml);
+        assertIsValidDatex2Xml(xml);
         assertTextIsValidJson(json);
     }
 
@@ -201,9 +207,9 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
         return getRandom(0, 7);
     }
 
-    private void assertTextIsValidXml(final String xml) {
+    private void assertIsValidDatex2Xml(final String xml) {
         try {
-            jaxb2Marshaller.unmarshal(new StringSource(xml));
+            datex2Jaxb2Marshaller.unmarshal(new StringSource(xml));
         } catch (XmlMappingException e) {
             throw new IllegalArgumentException("Not XML: " + xml, e);
         }
@@ -260,7 +266,7 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     }
 
     private void updateFromImsMessage(final String imsXml) {
-        final ImsMessage ims = (fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1.ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(imsXml));
+        final ImsMessage ims = (fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1.ImsMessage) imsJaxb2Marshaller.unmarshal(new StringSource(imsXml));
         v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

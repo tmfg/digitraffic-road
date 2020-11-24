@@ -3,80 +3,51 @@ package fi.livi.digitraffic.tie.service.v2.datex2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Import;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
+import fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest;
 
-@Import({ V2Datex2DataService.class, V2Datex2UpdateService.class, Datex2JsonConverterService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
-public class V2Datex2DataServiceTest extends AbstractServiceTest {
-
-    private final static String GUID_WITH_JSON = "GUID50001238";
-    private final static String GUID_NO_JSON = "GUID50001234";
+public class V2Datex2DataServiceTest extends AbstractDatex2DateServiceTest {
+    private static final Logger log = getLogger(V2Datex2DataServiceTest.class);
 
     @Autowired
     private V2Datex2DataService v2Datex2DataService;
 
-    @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
-
-    @Autowired
-    private V2Datex2UpdateService v2Datex2UpdateService;
-
-    @Autowired
-    private Datex2Repository datex2Repository;
-
-    @Before
-    public void cleanDb() {
-        datex2Repository.deleteAll();
-    }
-
     @Test
-    public void activeIncidentsDatex2AndJsonEqualsV0_2_4() throws IOException {
-        // One active
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
-        activeIncidentsDatex2AndJsonEquals();
-    }
-
-    @Rollback(false)
-    @Test
-    public void activeIncidentsDatex2AndJsonEqualsV0_2_6() throws IOException {
-        // One active
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
-        activeIncidentsDatex2AndJsonEquals();
+    public void activeIncidentsDatex2AndJsonEqualsForEveryVersionOfImsAndJson()throws IOException {
+        // One active incident
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
+                cleanDb();
+                initDataFromFile(imsXmlVersion, imsJsonVersion);
+                log.info("Run activeIncidentsDatex2AndJsonEquals with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
+                activeIncidentsDatex2AndJsonEquals();
+            }
+        }
     }
 
     @Test
     public void findBySituationId() throws IOException {
         // One active
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
+        initDataFromFile(ImsXmlVersion.V1_2_0, ImsJsonVersion.V0_2_4);
 
         final D2LogicalModel d2 = v2Datex2DataService.findAllBySituationId(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
         final TrafficAnnouncementFeatureCollection jsons = v2Datex2DataService.findAllBySituationIdJson(GUID_WITH_JSON, Datex2MessageType.TRAFFIC_INCIDENT);
@@ -95,7 +66,7 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findActive() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
+        initDataFromFile(ImsXmlVersion.V1_2_0, ImsJsonVersion.V0_2_4);
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -106,7 +77,7 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findAllBySituationId() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
+        initDataFromFile(ImsXmlVersion.V1_2_0, ImsJsonVersion.V0_2_4);
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -116,7 +87,6 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         assertActiveMessageFound(GUID_NO_JSON, true, false);
     }
 
-    @Rollback(false)
     @Test
     public void findActiveJsonWithoutGeometry() throws IOException {
         // One active with json
@@ -157,12 +127,13 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
         final String descJson = announcement.location.description;
         final String titleJson = announcement.title;
+
         //{"name": "Nopeusrajoitus", "quantity": 80.0, "unit": "km/h"},
         //{"name": "Huono ajokeli"}
         AssertHelper.assertCollectionSize(2, announcement.features);
-        final String feature = announcement.features.get(0);
-        AssertHelper.collectionContains("Nopeusrajoitus", announcement.features);
-        AssertHelper.collectionContains("Huono ajokeli", announcement.features);
+        AssertHelper.collectionContains(FEATURE_1, announcement.features);
+        AssertHelper.collectionContains(FEATURE_2, announcement.features);
+
         assertTrue(commentXml.contains(titleJson.trim()));
         assertTrue(commentXml.contains(descJson.trim()));
     }
@@ -199,12 +170,5 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         } catch (Exception e) { // not found
             assertFalse(foundInJson);
         }
-
-    }
-
-    private void initDataFromFile(final String file) throws IOException {
-        final ArrayList<String> xmlImsMessages = readResourceContents("classpath:tloik/ims/" + file);
-        final ImsMessage ims = (ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(xmlImsMessages.get(0)));
-        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

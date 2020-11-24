@@ -39,9 +39,6 @@ public class TrafficAnnouncementProperties extends Properties {
     @NotNull
     public final ZonedDateTime releaseTime;
 
-    @ApiModelProperty(value = "Location to display in ETRS-TM35FIN coordinate format.")
-    public final LocationToDisplay locationToDisplay;
-
     @ApiModelProperty(value = "Contains announcement's different language versions available.", required = true)
     @NotNull
     public final List<TrafficAnnouncement> announcements;
@@ -50,16 +47,14 @@ public class TrafficAnnouncementProperties extends Properties {
     public final Contact contact;
 
     @ApiModelProperty(value = "More detailed message type")
-    private Datex2DetailedMessageType detailedMessageType;
+    public Datex2DetailedMessageType detailedMessageType;
 
     public TrafficAnnouncementProperties(final String situationId, final Integer version, final ZonedDateTime releaseTime,
-                                         final LocationToDisplay locationToDisplay, final List<TrafficAnnouncement> announcements,
-                                         final Contact contact) {
+                                         final List<TrafficAnnouncement> announcements, final Contact contact) {
         super();
         this.situationId = situationId;
         this.version = version;
         this.releaseTime = releaseTime;
-        this.locationToDisplay = locationToDisplay;
         this.announcements = announcements;
         this.contact = contact;
     }
@@ -67,10 +62,6 @@ public class TrafficAnnouncementProperties extends Properties {
     @ApiModelProperty(value = "General level message type")
     public Datex2MessageType getMessageType() {
         return detailedMessageType != null ? detailedMessageType.getDatex2MessageType() : null;
-    }
-
-    public Datex2DetailedMessageType getDetailedMessageType() {
-        return detailedMessageType;
     }
 
     public void setDetailedMessageType(final Datex2DetailedMessageType messageType) {

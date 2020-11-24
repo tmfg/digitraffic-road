@@ -1,17 +1,14 @@
 
 package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -22,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
    "name",
    "distance"
 })
-public class AlertCLocation {
+public class AlertCLocation extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "AlertC location code. Number of the location point in AlertC location table", required = true)
     @NotNull
@@ -36,13 +33,10 @@ public class AlertCLocation {
     @NotNull
     public Integer distance;
 
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<>();
-
     public AlertCLocation() {
     }
 
-    public AlertCLocation(Integer locationCode, String name, Integer distance) {
+    public AlertCLocation(final Integer locationCode, final String name, final Integer distance) {
         super();
         this.locationCode = locationCode;
         this.name = name;

@@ -4,113 +4,72 @@ import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType.
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
+import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Area;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Feature;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest;
 
-@Import({ V3Datex2DataService.class, V2Datex2DataService.class, V2Datex2UpdateService.class, Datex2JsonConverterService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class })
-public class V3Datex2DataServiceTest extends AbstractServiceTest {
-
-    private final static String GUID_WITH_JSON = "GUID50001238";
-    private final static String GUID_NO_JSON = "GUID50001234";
+@Import({ V3Datex2DataService.class})
+public class V3Datex2DataServiceTest extends AbstractDatex2DateServiceTest {
+    private static final Logger log = getLogger(V3Datex2DataServiceTest.class);
 
     @Autowired
     private V3Datex2DataService v3Datex2DataService;
 
-    @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
-
-    @Autowired
-    private V2Datex2UpdateService v2Datex2UpdateService;
-
-    @Autowired
-    private Datex2Repository datex2Repository;
-
-    @Before
-    public void cleanDb() {
-        datex2Repository.deleteAll();
+    @Test
+    public void activeIncidentsDatex2AndJsonEqualsForEveryVersionOfImsAndJson() throws IOException {
+        // One active incident
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
+                cleanDb();
+                initDataFromFile(imsXmlVersion, imsJsonVersion);
+                log.warn("Run activeIncidentsDatex2AndJsonEquals with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
+                activeIncidentsDatex2AndJsonEquals(imsJsonVersion);
+            }
+        }
     }
 
     @Test
-    public void activeIncidentsDatex2AndJsonEqualsV0_2_4() throws IOException {
-        // One active
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
-        activeIncidentsDatex2AndJsonEquals(Version.V0_2_4);
-    }
-
-    @Test
-    public void activeIncidentsDatex2AndJsonEqualsV0_2_6() throws IOException {
-        // One active
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
-        activeIncidentsDatex2AndJsonEquals(Version.V0_2_6);
-    }
-
-    @Test
-    public void findBySituationIdV0_2_4() throws IOException {
-        // One active
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
-        checkFindBySituationId();
-    }
-
-    @Test
-    public void findBySituationIdV0_2_6() throws IOException {
-        // One active
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
-        checkFindBySituationId();
-    }
-
-    private void checkFindBySituationId() {
-        final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(GUID_WITH_JSON, TRAFFIC_ANNOUNCEMENT);
-        final TrafficAnnouncementFeatureCollection jsons =
-            v3Datex2DataService.findAllBySituationIdJson(GUID_WITH_JSON, TRAFFIC_ANNOUNCEMENT);
-
-        final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
-
-        AssertHelper.assertCollectionSize(1, situations);
-        AssertHelper.assertCollectionSize(1, jsons.getFeatures());
-        final Situation situation = situations.get(0);
-        final TrafficAnnouncementFeature situationJson = jsons.getFeatures().get(0);
-
-        assertEquals(GUID_WITH_JSON, situation.getId());
-        assertEquals(GUID_WITH_JSON, situationJson.getProperties().situationId);
+    public void findBySituationIdWorksForEveryVersionOfImsAndJson() throws IOException {
+        // One active incident
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
+                cleanDb();
+                initDataFromFile(imsXmlVersion, imsJsonVersion);
+                log.info("Run checkFindBySituationId with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
+                checkFindBySituationId();
+            }
+        }
     }
 
     @Test
     public void findActiveV0_2_4() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
+        initDataFromFile(ImsXmlVersion.V1_2_1, ImsJsonVersion.V0_2_4);
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -121,7 +80,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findActiveV0_2_6() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
+        initDataFromFile(ImsXmlVersion.V1_2_1, ImsJsonVersion.V0_2_6);
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -132,7 +91,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findAllBySituationIdV0_2_4() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
+        initDataFromFile(ImsXmlVersion.V1_2_1, ImsJsonVersion.V0_2_4);
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -145,7 +104,7 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
     @Test
     public void findAllBySituationIdV0_2_6() throws IOException {
         // One active with json
-        initDataFromFile("TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
+        initDataFromFile(ImsXmlVersion.V1_2_1, ImsJsonVersion.V0_2_6);
         // One active without json
         initDataFromFile("TrafficIncidentImsMessageWithoutJson.xml");
 
@@ -169,15 +128,23 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
         assertActiveMessageFound(GUID_WITH_JSON, true, false);
     }
 
-    enum Version {
-        V0_2_4,
-        V0_2_6
+    private void checkFindBySituationId() {
+        final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(GUID_WITH_JSON, TRAFFIC_ANNOUNCEMENT);
+        final TrafficAnnouncementFeatureCollection jsons =
+            v3Datex2DataService.findAllBySituationIdJson(GUID_WITH_JSON, TRAFFIC_ANNOUNCEMENT);
+
+        final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
+
+        AssertHelper.assertCollectionSize(1, situations);
+        AssertHelper.assertCollectionSize(1, jsons.getFeatures());
+        final Situation situation = situations.get(0);
+        final TrafficAnnouncementFeature situationJson = jsons.getFeatures().get(0);
+
+        assertEquals(GUID_WITH_JSON, situation.getId());
+        assertEquals(GUID_WITH_JSON, situationJson.getProperties().situationId);
     }
 
-    private static final String FEATURE_1 = "Nopeusrajoitus";
-    private static final String FEATURE_2 = "Huono ajokeli";
-
-    private void activeIncidentsDatex2AndJsonEquals(final Version version) {
+    private void activeIncidentsDatex2AndJsonEquals(final ImsJsonVersion imsJsonVersion) {
         final D2LogicalModel d2 = v3Datex2DataService.findActive(0, Datex2DetailedMessageType.allValues());
         final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
         final TrafficAnnouncementFeatureCollection activeJsons = v3Datex2DataService.findActiveJson(0, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
@@ -203,30 +170,34 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
         final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
         final String descJson = announcement.location.description;
         final String titleJson = announcement.title;
+
         //{"name": "Nopeusrajoitus", "quantity": 80.0, "unit": "km/h"},
         //{"name": "Huono ajokeli"}
         final List<Feature> features = announcement.features;
         AssertHelper.assertCollectionSize(2, features);
 
-        final Optional<Feature> feature1;
-        final Optional<Feature> feature2;
-        if (version == Version.V0_2_6) {
-            feature1 = features.stream().filter(f -> f.name.equals(FEATURE_1)).findFirst();
-            feature2 = features.stream().filter(f -> f.name.equals(FEATURE_2)).findFirst();
-            assertTrue(FEATURE_1 + " not found", feature1.isPresent());
-            assertTrue(FEATURE_2 + " not found", feature2.isPresent());
-            assertEquals(80.0, feature1.get().quantity, 0.01);
-            assertEquals("km/h",feature1.get().unit);
-        } else { // V0_2_0_4 has only name
-            feature1 = features.stream().filter(f -> f.name.equals(FEATURE_1)).findFirst();
-            feature2 = features.stream().filter(f -> f.name.equals(FEATURE_2)).findFirst();
+        final Optional<Feature> feature1 = features.stream().filter(f -> f.name.equals(FEATURE_1)).findFirst();
+        final Optional<Feature> feature2 = features.stream().filter(f -> f.name.equals(FEATURE_2)).findFirst();
+        if (imsJsonVersion == ImsJsonVersion.V0_2_4){ // V0_2_0_4 has only name
             assertTrue(FEATURE_1 + " not found", feature1.isPresent());
             assertTrue(FEATURE_2 + " not found", feature2.isPresent());
             assertNull(feature1.get().quantity);
             assertNull(feature1.get().unit);
+        // V0_2_6 and V0_2_8 has also quantity and unit
+        } else if (imsJsonVersion == ImsJsonVersion.V0_2_6 || imsJsonVersion == ImsJsonVersion.V0_2_8) {
+            assertTrue(FEATURE_1 + " not found", feature1.isPresent());
+            assertTrue(FEATURE_2 + " not found", feature2.isPresent());
+            assertEquals(80.0, feature1.get().quantity, 0.01);
+            assertEquals("km/h",feature1.get().unit);
+
+            assertTrue(announcement.roadWorkPhases.get(0).locationDetails.areaLocation.areas.stream().map(a -> a.type).collect(Collectors.toList())
+                       .containsAll(Arrays.asList(Area.Type.WEATHER_REGION, Area.Type.REGIONAL_STATE_ADMINISTRATIVE_AGENCY)));
+        } else {
+            throw new IllegalArgumentException("imsJsonVersion " + imsJsonVersion + " not tested");
         }
         assertNull(feature2.get().quantity);
         assertNull(feature2.get().unit);
+
         assertTrue(commentXml.contains(titleJson.trim()));
         assertTrue(commentXml.contains(descJson.trim()));
     }
@@ -263,11 +234,5 @@ public class V3Datex2DataServiceTest extends AbstractServiceTest {
         } catch (Exception e) { // not found
             Assert.assertFalse(foundInJson);
         }
-    }
-
-    private void initDataFromFile(final String file) throws IOException {
-        final ArrayList<String> xmlImsMessages = readResourceContents("classpath:tloik/ims/" + file);
-        final ImsMessage ims = (ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(xmlImsMessages.get(0)));
-        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

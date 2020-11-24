@@ -23,7 +23,7 @@ public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListe
     private static final Logger log = LoggerFactory.getLogger(ImsTrafficIncidentJMSListenerConfiguration.class);
 
     private final JMSParameters jmsParameters;
-    private final Jaxb2Marshaller jaxb2Marshaller;
+    private final Jaxb2Marshaller imsJaxb2Marshaller;
     private final V2Datex2UpdateService v2Datex2UpdateService;
 
     @Autowired
@@ -32,13 +32,14 @@ public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListe
                                                       @Value("${jms.password}") final String jmsPassword,
                                                       @Value("#{'${jms.datex2.inQueue}'.split(',')}")
                                                       final List<String> jmsQueueKeys,
-                                                      final LockingService lockingService, final Jaxb2Marshaller jaxb2Marshaller,
+                                                      final LockingService lockingService,
+                                                      @Qualifier("imsJaxb2Marshaller") final Jaxb2Marshaller imsJaxb2Marshaller,
                                                       final V2Datex2UpdateService v2Datex2UpdateService) {
 
         super(connectionFactory,
               lockingService,
               log);
-        this.jaxb2Marshaller = jaxb2Marshaller;
+        this.imsJaxb2Marshaller = imsJaxb2Marshaller;
         this.v2Datex2UpdateService = v2Datex2UpdateService;
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
@@ -54,7 +55,7 @@ public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListe
     @Override
     public JMSMessageListener<ExternalIMSMessage> createJMSMessageListener() {
         final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> handleData = v2Datex2UpdateService::updateTrafficDatex2ImsMessages;
-        final ImsMessageMarshaller messageMarshaller = new ImsMessageMarshaller(jaxb2Marshaller);
+        final ImsMessageMarshaller messageMarshaller = new ImsMessageMarshaller(imsJaxb2Marshaller);
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(jmsParameters.getJmsQueueKeys()),
