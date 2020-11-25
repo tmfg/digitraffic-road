@@ -23,17 +23,17 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 @Import({ V2Datex2DataService.class, V2Datex2UpdateService.class, Datex2JsonConverterService.class, XmlMarshallerConfiguration.class, JacksonAutoConfiguration.class})
 public abstract class AbstractDatex2DateServiceTest extends AbstractServiceTest {
 
-    protected final static String GUID_WITH_JSON = "GUID50001238";
+    public final static String GUID_WITH_JSON = "GUID50001238";
     protected final static String GUID_NO_JSON = "GUID50001234";
     protected static final String FEATURE_1 = "Nopeusrajoitus";
     protected static final String FEATURE_2 = "Huono ajokeli";
 
-    protected enum ImsXmlVersion {
+    public enum ImsXmlVersion {
         V1_2_0,
         V1_2_1
     }
 
-    protected enum ImsJsonVersion {
+    public enum ImsJsonVersion {
         V0_2_4,
         V0_2_6,
         V0_2_8,
@@ -57,12 +57,8 @@ public abstract class AbstractDatex2DateServiceTest extends AbstractServiceTest 
         datex2Repository.deleteAll();
     }
 
-    protected void initDataFromFile(final ImsXmlVersion xmlVersion, final ImsJsonVersion jsonVersion) throws IOException {
-        final String xmlImsMessage = readResourceContent("classpath:tloik/ims/ImsMessage" + xmlVersion + ".xml");
-        final String jsonImsMessage = readResourceContent("classpath:tloik/ims/Json" + jsonVersion + ".json");
-        final String datex2ImsMessage = readResourceContent("classpath:tloik/ims/d2Message.xml");
-        // Insert datex2 and message contents
-        final String imsMessage = xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
+    public void initDataFromFile(final ImsXmlVersion xmlVersion, final ImsJsonVersion jsonVersion) throws IOException {
+        final String imsMessage = readImsMessageResourceContent(xmlVersion, jsonVersion);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(imsMessage));
         v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
@@ -71,5 +67,13 @@ public abstract class AbstractDatex2DateServiceTest extends AbstractServiceTest 
         final ArrayList<String> xmlImsMessages = readResourceContents("classpath:tloik/ims/" + file);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessages.get(0)));
         v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+    }
+
+    public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion, final ImsJsonVersion jsonVersion) throws IOException {
+        final String xmlImsMessage = readResourceContent("classpath:tloik/ims/ImsMessage" + xmlVersion + ".xml");
+        final String jsonImsMessage = readResourceContent("classpath:tloik/ims/Json" + jsonVersion + ".json");
+        final String datex2ImsMessage = readResourceContent("classpath:tloik/ims/d2Message.xml");
+        // Insert datex2 and message contents
+        return xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
     }
 }

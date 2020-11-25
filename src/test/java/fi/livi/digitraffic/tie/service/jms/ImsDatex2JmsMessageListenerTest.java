@@ -4,6 +4,9 @@ import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
+import static fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest.GUID_WITH_JSON;
+import static fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest.ImsJsonVersion;
+import static fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest.readImsMessageResourceContent;
 import static org.apache.commons.collections.CollectionUtils.union;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +37,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest.ImsXmlVersion;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
@@ -59,50 +63,23 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         datex2Repository.deleteAll();
     }
 
-    @Test
-    public void datex2ReceiveImsMessagesV1_2_0JsonV0_2_4() throws IOException {
-        final String SITUATION_ID_1 = "GUID50001238";
-        final JMSMessageListener<ExternalIMSMessage> datexJmsMessageListener = createImsJmsMessageListener();
-
-        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV1_2_0JsonV0_2_4.xml");
-        readAndSendMessages(imsResources, datexJmsMessageListener);
-        checkActiveSituations(SITUATION_ID_1);
+    @Before
+    public void cleanDb() {
+        datex2Repository.deleteAll();
     }
 
     @Test
-    public void datex2ReceiveImsMessagesV1_2_1JsonV0_2_4() throws IOException {
-        datex2Repository.deleteAll();
+    public void datex2ReceiveImsMessagesAllVersions() throws IOException {
+        final JMSMessageListener<ExternalIMSMessage> jmsMessageListener = createImsJmsMessageListener();
 
-        final String SITUATION_ID_1 = "GUID50001238";
-        final JMSMessageListener<ExternalIMSMessage> datexJmsMessageListener = createImsJmsMessageListener();
-
-        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV1_2_1JsonV0_2_4.xml");
-        readAndSendMessages(imsResources, datexJmsMessageListener);
-        checkActiveSituations(SITUATION_ID_1);
-    }
-
-    @Test
-    public void datex2ReceiveImsMessagesV1_2_0JsonV0_2_6() throws IOException {
-        datex2Repository.deleteAll();
-
-        final String SITUATION_ID_1 = "GUID50001238";
-        final JMSMessageListener<ExternalIMSMessage> datexJmsMessageListener = createImsJmsMessageListener();
-
-        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV1_2_0JsonV0_2_6.xml");
-        readAndSendMessages(imsResources, datexJmsMessageListener);
-        checkActiveSituations(SITUATION_ID_1);
-    }
-
-    @Test
-    public void datex2ReceiveImsMessagesV1_2_1JsonV0_2_6() throws IOException {
-        datex2Repository.deleteAll();
-
-        final String SITUATION_ID_1 = "GUID50001238";
-        final JMSMessageListener<ExternalIMSMessage> datexJmsMessageListener = createImsJmsMessageListener();
-
-        final List<Resource> imsResources = loadResources("classpath:tloik/ims/TrafficIncidentImsMessageV1_2_1JsonV0_2_6.xml");
-        readAndSendMessages(imsResources, datexJmsMessageListener);
-        checkActiveSituations(SITUATION_ID_1);
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
+                cleanDb();
+                sendJmsMessage(imsXmlVersion, imsJsonVersion, jmsMessageListener);
+                log.info("Run activeIncidentsDatex2AndJsonEquals with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
+                checkActiveSituations(GUID_WITH_JSON);
+            }
+        }
     }
 
     @Test
@@ -215,5 +192,11 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
                 throw e;
             }
         }
+    }
+
+    private void sendJmsMessage(final ImsXmlVersion xmlVersion, final ImsJsonVersion jsonVersion,
+                                final JMSMessageListener<ExternalIMSMessage> messageListener) throws IOException {
+        final String imsMessage = readImsMessageResourceContent(xmlVersion, jsonVersion);
+        messageListener.onMessage(createTextMessage(imsMessage, getRandomId(1000, 9999).toString()));
     }
 }
