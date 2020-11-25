@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.controller.handler;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,22 +34,22 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.google.common.collect.Iterables;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.helper.LoggerHelper;
 import fi.livi.digitraffic.tie.service.BadRequestException;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
     private final Logger logger;
 
     // log these exceptions with error
-    private static final Set<Class> errorLoggableExceptions = Set.of(
+    private static final Set<Class<?>> errorLoggableExceptions = Set.of(
         NullPointerException.class,
         ConstraintViolationException.class,
         ResourceAccessException.class);
 
     // no need to log these exceptions at all
-    private static final Set<Class> nonLoggableExceptions = Set.of(
+    private static final Set<Class<?>> nonLoggableExceptions = Set.of(
         ObjectNotFoundException.class
     );
 
@@ -60,8 +61,8 @@ public class DefaultExceptionHandler {
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleTypeMismatchException(final TypeMismatchException exception, final ServletWebRequest request) {
         final String parameterName = getExceptionPropertyName(exception);
-        final String parameterValue = exception.getValue().toString();
-        final String requiredType = exception.getRequiredType().getSimpleName();
+        final String parameterValue = Objects.requireNonNullElse(exception.getValue(), "undefined").toString();
+        final String requiredType = exception.getRequiredType() != null ? exception.getRequiredType().getSimpleName() : "undefined";
 
         return getErrorResponseEntityAndLogException(
             request,
@@ -182,15 +183,15 @@ public class DefaultExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> getErrorResponseEntityAndLogException(final ServletWebRequest request,
-                                                                            final String errorMsg,
-                                                                            final HttpStatus httpStatus,
-                                                                            final Exception exception) {
+                                                                 final String errorMsg,
+                                                                 final HttpStatus httpStatus,
+                                                                 final Exception exception) {
         // Remove a=b from errorMessage as it can contain values like "1971"-H"accept:application/json;charset=UTF-8"
         // and that will be indexed with key "1971"-H"accept:application/json;charset and value UTF-8"
         final String logMessage =
             String.format("httpStatus=%s reasonPhrase=%s requestURI=%s errorMessage: %s",
                 httpStatus.value(), httpStatus.getReasonPhrase(), request.getRequest().getRequestURI(),
-                ToStringHelper.padKeyValuePairsEqualitySignWithSpaces(errorMsg));
+                LoggerHelper.objectToStringLoggerSafe(errorMsg));
 
         if(isErrorLoggableException(exception)) {
             logger.error(logMessage, exception);
@@ -201,7 +202,7 @@ public class DefaultExceptionHandler {
         return getErrorResponseEntity(httpStatus, errorMsg, request);
     }
 
-    private ResponseEntity getErrorResponseEntity(final HttpStatus httpStatus, final String errorMsg, final ServletWebRequest request) {
+    private ResponseEntity<ErrorResponse> getErrorResponseEntity(final HttpStatus httpStatus, final String errorMsg, final ServletWebRequest request) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -224,11 +225,11 @@ public class DefaultExceptionHandler {
         return exception instanceof ClientAbortException;
     }
 
-    private static boolean isErrorLoggableException(final Throwable throwable) {
+    private static <TH extends Throwable> boolean isErrorLoggableException(final TH throwable) {
         return errorLoggableExceptions.stream().anyMatch(e -> e.isAssignableFrom(throwable.getClass()));
     }
 
-    private static boolean isInfoLoggableException(final Throwable throwable) {
+    private static <TH extends Throwable> boolean isInfoLoggableException(final TH throwable) {
         return nonLoggableExceptions.stream().noneMatch(e -> e.isAssignableFrom(throwable.getClass()));
     }
 }

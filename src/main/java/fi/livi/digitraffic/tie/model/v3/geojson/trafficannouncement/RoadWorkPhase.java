@@ -42,7 +42,7 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     @ApiModelProperty(value = "locationDetails")
     public LocationDetails locationDetails;
 
-    @ApiModelProperty(value = "Features of an traffic situation announcement", required = true)
+    @ApiModelProperty(value = "Features of a traffic situation announcement", required = true)
     @NotNull
     public List<Feature> features = new ArrayList<>();
 

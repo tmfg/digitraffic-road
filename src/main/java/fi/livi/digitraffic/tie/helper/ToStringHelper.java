@@ -247,11 +247,4 @@ public class ToStringHelper {
     public static String nullSafeToString(final Object o) {
         return o != null ? o.toString() : null;
     }
-
-    public static String padKeyValuePairsEqualitySignWithSpaces(final Object value) {
-        if (value != null) {
-            return value.toString().replace("=", " = ");
-        }
-        return null;
-    }
 }

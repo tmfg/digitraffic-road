@@ -8,10 +8,14 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.helper.LoggerHelper;
 
 /**
  * Implements mapping and logging for Json additional properties.
+ *
+ * The additionalProperties keyword is used to control the handling of extra stuff,
+ * that is, properties whose names are not listed in the properties keyword.
+ *
  */
 public abstract class JsonAdditionalProperties {
 
@@ -21,7 +25,8 @@ public abstract class JsonAdditionalProperties {
     @JsonAnySetter
     public void setAdditionalProperty(final String property, final Object value) {
         this.additionalProperties.put(property, value);
-        getLogger(getClass()).warn("method=setAdditionalProperty not found property: {} with value: {}",
-                                   property, ToStringHelper.padKeyValuePairsEqualitySignWithSpaces(value));
+        // Log missing properties to notify
+        getLogger(getClass()).warn("method=setAdditionalProperty No property found with the name: {} and value: {}",
+                                   property, LoggerHelper.objectToStringLoggerSafe(value));
     }
 }

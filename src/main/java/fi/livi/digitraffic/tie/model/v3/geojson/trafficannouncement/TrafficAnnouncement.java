@@ -52,7 +52,9 @@ public class TrafficAnnouncement extends JsonAdditionalProperties {
     @ApiModelProperty(value = "Contains the phases of this road maintenance work")
     public List<RoadWorkPhase> roadWorkPhases = new ArrayList<>();
 
-    @ApiModelProperty(value = "Road work was closed before the planned time. 'CLOSED' means the road work closed after its start time, possibly skipping some phases. 'CANCELED' means the road work was canceled before its start time. Note: This field is omitted if the road work closes normally.")
+    @ApiModelProperty(value = "Road work was closed before the planned time. 'CLOSED' means the road work closed after its start time, " +
+                              "possibly skipping some phases. 'CANCELED' means the road work was canceled before its start time. " +
+                              "Note: This field is null if the road work closes normally.")
     public EarlyClosing earlyClosing;
 
     @ApiModelProperty(value = "The itinerary segment of this special transport that is or was last active.")
