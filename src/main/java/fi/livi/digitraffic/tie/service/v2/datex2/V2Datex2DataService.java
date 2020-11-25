@@ -123,7 +123,7 @@ public class V2Datex2DataService {
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .map(d2 -> {
                 try {
-                    return datex2JsonConverterService.convertToFeatureJsonObjectV2(d2.getJsonMessage());
+                    return datex2JsonConverterService.convertToFeatureJsonObjectV2(d2.getJsonMessage(), d2.getMessageType());
                 } catch (final Exception e) {
                     log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV2", e);
                     return null;

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 
 @Service
 public class Datex2JsonConverterService {
@@ -54,7 +55,8 @@ public class Datex2JsonConverterService {
         validator = factory.getValidator();
     }
 
-    public fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson)
+    public fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson,
+                                                                                                                                final Datex2MessageType messageType)
         throws JsonProcessingException {
         // Ims JSON String can be in 0.2.4 or in 0.2.6 format. Convert 0.2.6 to in 0.2.4 format.
         final String imsJsonV0_2_4 = convertImsJsonToV0_2_4Compatible(imsJson);
@@ -64,6 +66,8 @@ public class Datex2JsonConverterService {
 
         checkIsInvalidAnnouncementGeojsonV2(feature);
         checkDurationViolationsV2(feature);
+
+        feature.getProperties().setMessageType(messageType);
 
         return feature;
     }
