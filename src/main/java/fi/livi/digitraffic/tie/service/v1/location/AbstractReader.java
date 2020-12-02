@@ -10,9 +10,12 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -73,10 +76,25 @@ public abstract class AbstractReader<T> {
             new CSVReaderBuilder(new InputStreamReader(inputStream, charset))
                 .withCSVParser(parser)
                 .build();
-        return StreamSupport.stream(reader.spliterator(), false).skip(1)
-                .map(this::convert)
+
+        final AtomicInteger counter = new AtomicInteger(0);
+        final AtomicReference<String[]> ref = new AtomicReference<>();
+
+        try {
+            return StreamSupport.stream(reader.spliterator(), false).skip(1)
+                .map(item -> {
+                    counter.getAndIncrement();
+                    ref.set(item);
+                    return convert(item);
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Line: " + Arrays.toString(ref.get()));
+            log.error("Read or parse error occured at line: " + counter.get(), e);
+
+            throw e;
+        }
     }
 
     protected abstract T convert(final String[] line);
