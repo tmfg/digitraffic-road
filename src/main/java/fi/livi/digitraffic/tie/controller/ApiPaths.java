@@ -41,10 +41,17 @@ public final class ApiPaths {
 
     public static final String CAMERA_HISTORY_PATH = "/camera-history";
 
-    // datex2
+    // traffic-messages / datex2
+    public static final String TRAFFIC_MESSAGES_PATH = "/traffic-messages";
+    public static final String TRAFFIC_MESSAGES_SIMPLE_PATH = TRAFFIC_MESSAGES_PATH + "/simple";
+    public static final String TRAFFIC_MESSAGES_DATEX2_PATH = TRAFFIC_MESSAGES_PATH + "/datex2";
+    @Deprecated
     public static final String TRAFFIC_DATEX2_PATH = "/traffic-datex2";
+    @Deprecated
     public static final String TRAFFIC_DISORDERS_DATEX2_PATH = "/traffic-disorders-datex2";
+    @Deprecated
     public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
+    @Deprecated
     public static final String WEIGHT_RESTRICTIONS_DATEX2_PATH = "/weight-restrictions-datex2";
 
     // Maintenance trackings

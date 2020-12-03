@@ -1,10 +1,15 @@
 package fi.livi.digitraffic.tie.conf;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RegExUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -12,9 +17,16 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.accept.ContentNegotiationStrategy;
+import org.springframework.web.accept.HeaderContentNegotiationStrategy;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -24,11 +36,14 @@ import org.springframework.web.servlet.resource.TransformedResource;
 
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2D2LogicalModelHttpMessageConverter;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
+import fi.livi.digitraffic.tie.controller.ApiPaths;
 import fi.livi.digitraffic.tie.converter.Datex2MessagetypeParameterStringToEnumConverter;
 
 @ConditionalOnWebApplication
 @Configuration
 public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
+    private static final Logger log = getLogger(RoadWebApplicationConfiguration.class);
+
     private final ConfigurableApplicationContext applicationContext;
 
     // Match when there is no http in location start
@@ -96,5 +111,48 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("redirect:/swagger-ui/index.html");
+    }
+
+    @Override
+    public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
+        configurer.strategies(Arrays.asList(new CustomHeaderContentNegotiationStrategy()));
+        configurer.defaultContentType(MediaType.APPLICATION_JSON);
+    }
+
+    private class CustomHeaderContentNegotiationStrategy implements ContentNegotiationStrategy {
+
+        // Spring default implementation uses only HeaderContentNegotiationStrategy
+        private final HeaderContentNegotiationStrategy headerStragegy = new HeaderContentNegotiationStrategy();
+
+        @Override
+        public List<MediaType> resolveMediaTypes(final NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
+            final List<MediaType> fromHeaders = headerStragegy.resolveMediaTypes(webRequest);
+            try {
+                // By default many client's sends long list of accepted types or */*
+                // If specific type is asked, then return it, else check path
+                if (fromHeaders.size() == 1 && !MediaType.ALL.equals(fromHeaders.get(0))) {
+                    return fromHeaders;
+                } else {
+                    final String path = ((ServletWebRequest) webRequest).getRequest().getServletPath();
+                    // ApiPaths.TRAFFIC_DATEX2_PATHs
+                    if (path.endsWith(".xml")) {
+                        return Collections.singletonList(MediaType.APPLICATION_XML);
+                    } else if (path.endsWith(".json")) {
+                        return Collections.singletonList(MediaType.APPLICATION_JSON);
+                    } else if (path.contains(ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH) ||
+                               path.contains(ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH) ||
+                               path.contains(ApiPaths.ROADWORKS_DATEX2_PATH) ||
+                               path.contains(ApiPaths.WEIGHT_RESTRICTIONS_DATEX2_PATH)) {
+                        return Collections.singletonList(MediaType.APPLICATION_XML);
+                    } else if (path.contains(ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH)) {
+                        return Collections.singletonList(MediaType.APPLICATION_JSON);
+                    }
+                }
+            } catch (final Error e) {
+                log.error("method=resolveMediaTypes", e);
+            }
+            // Returns default implementation value
+            return fromHeaders;
+        }
     }
 }
