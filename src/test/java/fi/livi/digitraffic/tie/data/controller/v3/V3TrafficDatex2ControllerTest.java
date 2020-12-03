@@ -1,7 +1,8 @@
 package fi.livi.digitraffic.tie.data.controller.v3;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -226,11 +227,11 @@ public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
     private static String getUrlWithType(final boolean json, final int inactiveHours, final Datex2DetailedMessageType...messageType) {
         final String[] types = V3Datex2DataService.typesAsStrings(messageType);
         final String params = String.join(",", types);
-        return API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + (json ? ".json" : ".xml") + "?inactiveHours=" + inactiveHours + "&messageType=" + params;
+        return API_BETA_BASE_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?inactiveHours=" + inactiveHours + "&messageType=" + params;
     }
 
     private static String getUrlWithSituationId(final boolean json, final String situationId) {
-        return API_BETA_BASE_PATH + TRAFFIC_DATEX2_PATH + "/" + situationId + (json ? ".json" : ".xml");
+        return API_BETA_BASE_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "/" + situationId;
     }
 
     private void assertTextNotExistInMessage(final String xml, final String json, final List<Pair<Datex2DetailedMessageType, String>> messageTypeSituationIds) {
