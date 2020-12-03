@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.service.datex2;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement.EarlyClosing.CANCELED;
+import static fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -118,18 +120,31 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         assertV0_2_8Properties(feature);
     }
 
-    private void assertV0_2_6Properties(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
-        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement ta = feature.getProperties().announcements.get(0);
-        assertNull(ta.earlyClosing);
-        assertEquals(WORK_PHASE_ID, ta.roadWorkPhases.get(0).id);
-        assertNull(ta.roadWorkPhases.get(0).severity);
+    @Test
+    public void convertImsJsonV0_2_9ToGeoJsonFeatureObjectV2() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.ImsGeoJsonFeature ims =
+            ImsJsonMessageFactoryV0_2_9.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3,
+            fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT,
+                fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL);
+        final String imsJsonV0_2_9 = objectMapper.writer().writeValueAsString(ims);
+        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
+            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_9, TRAFFIC_INCIDENT);
+        assertAnnouncementFeaturesV2(feature, FEATURE_NAME_V3, TRAFFIC_INCIDENT);
     }
 
-    private void assertV0_2_8Properties(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
-        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement ta = feature.getProperties().announcements.get(0);
-        assertEquals(CANCELED, ta.earlyClosing);
-        assertEquals(WORK_PHASE_ID, ta.roadWorkPhases.get(0).id);
-        assertEquals(RoadWorkPhase.Severity.HIGH, ta.roadWorkPhases.get(0).severity);
+    @Test
+    public void convertImsJsonV0_2_9ToGeoJsonFeatureObjectV3() throws JsonProcessingException {
+        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.ImsGeoJsonFeature ims =
+            ImsJsonMessageFactoryV0_2_9.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3,
+                fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT,
+                fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL);
+        final String imsJsonV0_2_9 = objectMapper.writer().writeValueAsString(ims);
+        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
+            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_9, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
+        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V3, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
+        assertLastActiveItinerarySegmentV3(feature, true);
+        assertV0_2_8Properties(feature);
+        assertV0_2_9Properties(feature);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -463,4 +478,23 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         }
     }
 
+    private void assertV0_2_6Properties(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement ta = feature.getProperties().announcements.get(0);
+        assertNull(ta.earlyClosing);
+        assertEquals(WORK_PHASE_ID, ta.roadWorkPhases.get(0).id);
+        assertNull(ta.roadWorkPhases.get(0).severity);
+    }
+
+    private void assertV0_2_8Properties(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement ta = feature.getProperties().announcements.get(0);
+        assertEquals(CANCELED, ta.earlyClosing);
+        assertEquals(WORK_PHASE_ID, ta.roadWorkPhases.get(0).id);
+        assertEquals(RoadWorkPhase.Severity.HIGH, ta.roadWorkPhases.get(0).severity);
+    }
+
+    private void assertV0_2_9Properties(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+        final TrafficAnnouncementProperties f = feature.getProperties();
+        assertEquals(TRAFFIC_ANNOUNCEMENT, f.situationType);
+        assertEquals(GENERAL, f.trafficAnnouncementType);
+    }
 }

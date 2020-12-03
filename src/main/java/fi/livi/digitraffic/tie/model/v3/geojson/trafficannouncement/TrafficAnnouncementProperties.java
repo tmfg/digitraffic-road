@@ -1,11 +1,15 @@
 package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
@@ -35,6 +39,12 @@ public class TrafficAnnouncementProperties extends Properties {
     @NotNull
     public final Integer version;
 
+    @ApiModelProperty(value = "The type of the situation", required = true)
+    public final SituationType situationType;
+
+    @ApiModelProperty(value = "The type of the traffic announcement. Omitted for other situation types. Note that ended and retracted are not actual types.")
+    public final TrafficAnnouncementType trafficAnnouncementType;
+
     @ApiModelProperty(value = "Annoucement release time", required = true)
     @NotNull
     public final ZonedDateTime releaseTime;
@@ -49,11 +59,13 @@ public class TrafficAnnouncementProperties extends Properties {
     @ApiModelProperty(value = "More detailed message type")
     public Datex2DetailedMessageType detailedMessageType;
 
-    public TrafficAnnouncementProperties(final String situationId, final Integer version, final ZonedDateTime releaseTime,
+    public TrafficAnnouncementProperties(final String situationId, final Integer version, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType, final ZonedDateTime releaseTime,
                                          final List<TrafficAnnouncement> announcements, final Contact contact) {
         super();
         this.situationId = situationId;
         this.version = version;
+        this.situationType = situationType;
+        this.trafficAnnouncementType = trafficAnnouncementType;
         this.releaseTime = releaseTime;
         this.announcements = announcements;
         this.contact = contact;
@@ -71,5 +83,87 @@ public class TrafficAnnouncementProperties extends Properties {
     @Override
     public String toString() {
         return ToStringHelper.toStringFull(this);
+    }
+
+    public enum SituationType {
+
+        TRAFFIC_ANNOUNCEMENT("traffic announcement"),
+        SPECIAL_TRANSPORT("special transport"),
+        WEIGHT_RESTRICTION("weight restriction"),
+        ROAD_WORK("road work");
+        private final String value;
+        private final static Map<String, SituationType> CONSTANTS = new HashMap<>();
+
+        static {
+            for (SituationType c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        SituationType(final String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        @JsonValue
+        public String value() {
+            return this.value;
+        }
+
+        @JsonCreator
+        public static SituationType fromValue(final String value) {
+            SituationType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+    }
+
+    public enum TrafficAnnouncementType {
+
+        GENERAL("general"),
+        PRELIMINARY_ACCIDENT_REPORT("preliminary accident report"),
+        ACCIDENT_REPORT("accident report"),
+        UNCONFIRMED_OBSERVATION("unconfirmed observation"),
+        ENDED("ended"),
+        RETRACTED("retracted");
+        private final String value;
+        private final static Map<String, TrafficAnnouncementType> CONSTANTS = new HashMap<>();
+
+        static {
+            for (TrafficAnnouncementType c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        TrafficAnnouncementType(final String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        @JsonValue
+        public String value() {
+            return this.value;
+        }
+
+        @JsonCreator
+        public static TrafficAnnouncementType fromValue(final String value) {
+            TrafficAnnouncementType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
     }
 }

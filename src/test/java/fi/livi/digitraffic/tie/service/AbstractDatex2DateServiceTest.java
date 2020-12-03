@@ -37,6 +37,7 @@ public abstract class AbstractDatex2DateServiceTest extends AbstractServiceTest 
         V0_2_4,
         V0_2_6,
         V0_2_8,
+        V0_2_9,
     }
 
     protected static final String JSON_MESSAGE_PLACEHOLDER = "JSON_MESSAGE";

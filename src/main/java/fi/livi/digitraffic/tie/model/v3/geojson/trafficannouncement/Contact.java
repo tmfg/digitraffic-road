@@ -21,19 +21,15 @@ public class Contact extends JsonAdditionalProperties {
     @ApiModelProperty("Phone number")
     public String phone;
 
-    @ApiModelProperty("Fax number")
-    public String fax;
-
     @ApiModelProperty("Email")
     public String email;
 
     public Contact() {
     }
 
-    public Contact(String phone, String fax, String email) {
+    public Contact(final String phone, final String email) {
         super();
         this.phone = phone;
-        this.fax = fax;
         this.email = email;
     }
 
