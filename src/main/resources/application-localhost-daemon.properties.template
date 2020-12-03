@@ -20,8 +20,9 @@ metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5
 metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
 metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v4
 metadata.server.path.image = /LOTJU/KameraKuvavarasto
-metadata.server.health.ttlInSeconds = 30
+metadata.server.health.ttlInSeconds = 10
 metadata.server.image.ttlInSeconds = 10
+# TVT
 metadata.server.health.value=ok!
 
 # TMC locations url
