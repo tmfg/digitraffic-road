@@ -32,7 +32,7 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 
 
-public class V3TrafficDatex2ControllerTest extends AbstractRestWebTest {
+public class V2TrafficMessagesControllerTest extends AbstractRestWebTest {
 
     @Autowired
     protected Datex2DataService datex2DataService;
