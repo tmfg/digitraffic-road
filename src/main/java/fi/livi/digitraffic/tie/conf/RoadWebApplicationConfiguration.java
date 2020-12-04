@@ -130,29 +130,25 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
             try {
                 // By default many client's sends long list of accepted types or */*
                 // If specific type is asked, then return it, else check path
-                if (fromHeaders.size() == 1 && !MediaType.ALL.equals(fromHeaders.get(0))) {
-                    return fromHeaders;
-                } else {
-                    final String path = ((ServletWebRequest) webRequest).getRequest().getServletPath();
-                    // ApiPaths.TRAFFIC_DATEX2_PATHs
-                    if (path.endsWith(".xml")) {
-                        return Collections.singletonList(MediaType.APPLICATION_XML);
-                    } else if (path.endsWith(".json")) {
-                        return Collections.singletonList(MediaType.APPLICATION_JSON);
-                    } else if (path.contains(ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH) ||
-                               path.contains(ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH) ||
-                               path.contains(ApiPaths.ROADWORKS_DATEX2_PATH) ||
-                               path.contains(ApiPaths.WEIGHT_RESTRICTIONS_DATEX2_PATH)) {
-                        return Collections.singletonList(MediaType.APPLICATION_XML);
-                    } else if (path.contains(ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH)) {
-                        return Collections.singletonList(MediaType.APPLICATION_JSON);
-                    }
+                final String path = ((ServletWebRequest) webRequest).getRequest().getServletPath();
+                if (path.contains(ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH) ||
+                    path.contains(ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH) ||
+                    path.contains(ApiPaths.ROADWORKS_DATEX2_PATH)) {
+                    return containsJson(fromHeaders) ?
+                                Collections.singletonList(MediaType.APPLICATION_JSON) :
+                                Collections.singletonList(MediaType.APPLICATION_XML);
                 }
             } catch (final Error e) {
                 log.error("method=resolveMediaTypes", e);
             }
             // Returns default implementation value
             return fromHeaders;
+        }
+
+        boolean containsJson(final List<MediaType> mediaTypes ) {
+            final boolean value = mediaTypes.stream().filter(mediaType -> mediaType.getType().equals(MediaType.APPLICATION_JSON.getType()) &&
+                mediaType.getSubtype().equals(MediaType.APPLICATION_JSON.getSubtype())).findAny().isPresent();
+            return value;
         }
     }
 }
