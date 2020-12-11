@@ -7,6 +7,8 @@ import java.util.Set;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+
 public interface MaintenanceTrackingDto {
 
     Long getId();
@@ -26,4 +28,8 @@ public interface MaintenanceTrackingDto {
     Set<MaintenanceTrackingTask> getTasks();
 
     MaintenanceTrackingWorkMachine getWorkMachine();
+
+    default String toStringTiny() {
+        return ToStringHelper.toStringExcluded(this, "lineString");
+    }
 }
