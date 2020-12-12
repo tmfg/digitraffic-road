@@ -39,7 +39,7 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
         log.info("Handled {} trackings", count);
     }
 
-//    @Ignore("Just for internal testing")
+    @Ignore("Just for internal testing")
     @Rollback(false)
     @Test
     public void longJumpInLineStringData() throws IOException {
