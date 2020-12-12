@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.geojson;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -16,7 +16,6 @@ public abstract class Feature<G extends Geometry<?>, P extends Properties>  exte
     @ApiModelProperty(value = "GeoJSON Geometry Object",
                       required = true,
                       position = 3)
-    @JsonProperty("geometry")
     private G geometry;
 
     @ApiModelProperty(value = "GeoJSON Properties Object",
