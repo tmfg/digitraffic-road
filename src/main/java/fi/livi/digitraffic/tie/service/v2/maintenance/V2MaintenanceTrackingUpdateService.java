@@ -132,7 +132,8 @@ public class V2MaintenanceTrackingUpdateService {
 
         log.info("method=handleUnhandledMaintenanceTrackingData Read data from db {} times and from cache {} times. Db queries tookTotal {} ms and average {} ms/query",
                  fromDbCountAndMs.getLeft(), fromCacheCount,
-                 fromDbCountAndMs.getRight(), fromDbCountAndMs.getRight()/fromDbCountAndMs.getLeft());
+                 fromDbCountAndMs.getRight(),
+                 fromDbCountAndMs.getLeft() > 0 ? fromDbCountAndMs.getRight()/fromDbCountAndMs.getLeft() : 0);
         return count;
     }
 
