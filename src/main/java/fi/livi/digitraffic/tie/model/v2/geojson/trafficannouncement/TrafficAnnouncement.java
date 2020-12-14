@@ -2,17 +2,15 @@
 package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -29,7 +27,7 @@ import io.swagger.annotations.ApiModelProperty;
     "additionalInformation",
     "sender"
 })
-public class TrafficAnnouncement {
+public class TrafficAnnouncement extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "Language of the announcement eq. fi, sv, en or ru. A subset of ISO 639-1.", required = true)
     public String language;
@@ -58,9 +56,6 @@ public class TrafficAnnouncement {
     @ApiModelProperty(value = "Name of the sender", required = true)
     @NotNull
     public String sender;
-
-    @JsonIgnore
-    public Map<String, Object> additionalProperties = new HashMap<>();
 
     public TrafficAnnouncement() {
     }

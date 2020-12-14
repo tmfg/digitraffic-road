@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
@@ -53,8 +54,8 @@ public abstract class AbstractTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractTest.class);
 
-    @Autowired
-    protected ResourceLoader resourceLoader;
+//    @Autowired
+    protected static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
@@ -81,7 +82,7 @@ public abstract class AbstractTest {
         return Arrays.asList(ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(pattern));
     }
 
-    protected Resource loadResource(final String pattern) {
+    protected static Resource loadResource(final String pattern) {
         return resourceLoader.getResource(pattern);
     }
 
@@ -95,9 +96,8 @@ public abstract class AbstractTest {
         return contents;
     }
 
-    protected String readResourceContent(final String resourcePattern) throws IOException {
+    protected static String readResourceContent(final String resourcePattern) throws IOException {
         final Resource datex2Resource = loadResource(resourcePattern);
-
         return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
     }
 
@@ -173,7 +173,7 @@ public abstract class AbstractTest {
 
     protected static int getRandom(final int minInclusive, final int maxExclusive) {
         final Random random = new Random();
-        return random.ints(minInclusive, maxExclusive).findFirst().getAsInt();
+        return random.ints(minInclusive, maxExclusive).findFirst().orElseThrow();
     }
 
     protected static List<EsiasentoVO> createEsiasentos(final long kameraId, final int count) {

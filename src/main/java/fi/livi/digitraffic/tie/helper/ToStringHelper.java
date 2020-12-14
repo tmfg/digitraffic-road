@@ -10,10 +10,10 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
-import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
-import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.model.v1.TmsSensorConstant;
 import fi.livi.digitraffic.tie.model.v1.TmsSensorConstantValue;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
@@ -246,12 +246,5 @@ public class ToStringHelper {
 
     public static String nullSafeToString(final Object o) {
         return o != null ? o.toString() : null;
-    }
-
-    public static String padKeyValuePairsEqualitySignWithSpaces(final String value) {
-        if (value != null) {
-            return value.replace("=", " = ");
-        }
-        return value;
     }
 }

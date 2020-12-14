@@ -24,6 +24,7 @@ import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -48,7 +49,8 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     private CameraMetadataMessageHandler cameraMetadataMessageHandler;
 
     @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
+    @Qualifier("kameraMetadataChangeJaxb2Marshaller")
+    private Jaxb2Marshaller kameraMetadataChangeJaxb2Marshaller;
 
     @Autowired
     private CameraPresetService cameraPresetService;
@@ -60,13 +62,13 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     private CameraImageUpdateService cameraImageUpdateService;
 
     private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
-    private JMSMessageListener cameraMetadataJmsMessageListener;
+    private JMSMessageListener<CameraMetadataUpdatedMessageDto> cameraMetadataJmsMessageListener;
 
     @Before
     public void initListener() {
         // Create listener
         this.dataUpdater = (data) -> cameraMetadataMessageHandler.updateCameraMetadata(data);
-        cameraMetadataJmsMessageListener = new JMSMessageListener(new CameraMetadataUpdatedMessageMarshaller(jaxb2Marshaller), dataUpdater, false, log);
+        cameraMetadataJmsMessageListener = new JMSMessageListener(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller), dataUpdater, false, log);
     }
 
     @Test
@@ -214,7 +216,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     private static String getTieosoiteUpdateMessageXml(final Tyyppi tyyppi, final long...lotjuIds) {
         StringBuilder ids = new StringBuilder();
         for(long lotjuId : lotjuIds) {
-            ids.append("        <id>" + lotjuId + "</id>\n");
+            ids.append("        <id>").append(lotjuId).append("</id>\n");
         }
         return String.format(
             "<metatietomuutos tyyppi=\"%s\" aika=\"2019-10-21T11:00:00\" entiteetti=\"TIEOSOITE\" id=\"-1\">\n" +

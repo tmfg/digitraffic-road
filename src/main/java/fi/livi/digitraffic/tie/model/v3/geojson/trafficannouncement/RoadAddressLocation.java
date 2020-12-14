@@ -1,16 +1,13 @@
 
 package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -22,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
     "direction",
     "directionDescription"
 })
-public class RoadAddressLocation {
+public class RoadAddressLocation extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "Primary road point", required = true)
     @NotNull
@@ -37,9 +34,6 @@ public class RoadAddressLocation {
 
     @ApiModelProperty(value = "Human readable description of the affected direction")
     public String directionDescription;
-
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public RoadAddressLocation() {
     }

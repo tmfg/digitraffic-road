@@ -43,7 +43,7 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
     private Datex2UpdateService datex2UpdateService;
 
     @Autowired
-    private StringToObjectMarshaller stringToObjectMarshaller;
+    private Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
     @Autowired
     private V2Datex2UpdateService v2Datex2UpdateService;
@@ -61,7 +61,7 @@ public class Datex2RoadworksIntegrationTest extends AbstractServiceTest {
     @Before
     public void before() {
         messageUpdater = new Datex2SimpleMessageUpdater(null, datex2RoadworksHttpClient, null,
-                                                        datex2UpdateService, null, stringToObjectMarshaller, v2Datex2UpdateService);
+                                                        datex2UpdateService, null, datex2XmlStringToObjectMarshaller, v2Datex2UpdateService);
         datex2Repository.deleteAll();
     }
 

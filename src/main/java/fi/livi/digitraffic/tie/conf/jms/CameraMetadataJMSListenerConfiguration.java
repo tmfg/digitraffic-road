@@ -24,7 +24,7 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataJMSListenerConfiguration.class);
     private final JMSParameters jmsParameters;
     private final CameraMetadataMessageHandler cameraMetadataMessageHandler;
-    private final Jaxb2Marshaller jaxb2Marshaller;
+    private final Jaxb2Marshaller kameraMetadataChangeJaxb2Marshaller;
 
     @Autowired
     public CameraMetadataJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
@@ -33,10 +33,11 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
                                                   @Value("#{'${jms.camera.meta.inQueue}'.split(',')}")final List<String> jmsQueueKeys,
                                                   final CameraMetadataMessageHandler cameraMetadataMessageHandler,
                                                   final LockingService lockingService,
-                                                  final Jaxb2Marshaller kameraMetadataJaxb2Marshaller) {
+                                                  @Qualifier("kameraMetadataChangeJaxb2Marshaller")
+                                                  final Jaxb2Marshaller kameraMetadataChangeJaxb2Marshaller) {
         super(connectionFactory, lockingService, log);
         this.cameraMetadataMessageHandler = cameraMetadataMessageHandler;
-        this.jaxb2Marshaller = kameraMetadataJaxb2Marshaller;
+        this.kameraMetadataChangeJaxb2Marshaller = kameraMetadataChangeJaxb2Marshaller;
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
             CameraMetadataJMSListenerConfiguration.class.getSimpleName(),
@@ -51,10 +52,11 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
         @Override
         public JMSMessageListener<CameraMetadataUpdatedMessageDto> createJMSMessageListener() {
             final JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> handleData = cameraMetadataMessageHandler::updateCameraMetadata;
-            final CameraMetadataUpdatedMessageMarshaller messageMarshaller = new CameraMetadataUpdatedMessageMarshaller(jaxb2Marshaller);
+            final CameraMetadataUpdatedMessageMarshaller messageMarshaller = new CameraMetadataUpdatedMessageMarshaller(
+                kameraMetadataChangeJaxb2Marshaller);
 
-            return new JMSMessageListener(messageMarshaller, handleData,
-                                          isQueueTopic(jmsParameters.getJmsQueueKeys()),
-                                          log);
+            return new JMSMessageListener<>(messageMarshaller, handleData,
+                                            isQueueTopic(jmsParameters.getJmsQueueKeys()),
+                                            log);
         }
 }

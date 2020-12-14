@@ -14,6 +14,7 @@ import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
@@ -39,7 +40,12 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     protected Datex2Repository datex2Repository;
 
     @Autowired
-    private Jaxb2Marshaller jaxb2Marshaller;
+    @Qualifier("imsJaxb2Marshaller")
+    private Jaxb2Marshaller imsJaxb2Marshaller;
+
+    @Autowired
+    @Qualifier("datex2Jaxb2Marshaller")
+    private Jaxb2Marshaller datex2Jaxb2Marshaller;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -75,7 +81,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     public void datex2incident() throws Exception {
         final String xml = getResponse(getUrl(TRAFFIC_INCIDENT, false, 0));
         final String json = getResponse(getUrl(TRAFFIC_INCIDENT, true, 0));
-        assertXml(xml);
+        assertDatex2Xml(xml);
         assertJson(json);
         assertTextNotExistInMessage(incident1_past_id, xml);
         assertTextNotExistInMessage(incident1_past_id, json);
@@ -99,7 +105,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     public void datex2incidentInPast() throws Exception {
         final String xml = getResponse(getUrl(TRAFFIC_INCIDENT, false, 200000));
         final String json = getResponse(getUrl(TRAFFIC_INCIDENT, true, 200000));
-        assertXml(xml);
+        assertDatex2Xml(xml);
         assertJson(json);
         assertTextExistInMessage(incident1_past_id, xml);
         assertTextExistInMessage(incident1_past_id, json);
@@ -109,9 +115,9 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         assertTextExistInMessage(incident3_active_id, json);
     }
 
-    private void assertXml(final String xml) {
+    private void assertDatex2Xml(final String xml) {
         try {
-            jaxb2Marshaller.unmarshal(new StringSource(xml));
+            datex2Jaxb2Marshaller.unmarshal(new StringSource(xml));
         } catch (XmlMappingException e) {
             throw new IllegalArgumentException("Not XML: " + xml, e);
         }
@@ -150,7 +156,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     }
 
     private void updateFromImsMessage(final String imsXml) {
-        final ImsMessage ims = (ImsMessage) jaxb2Marshaller.unmarshal(new StringSource(imsXml));
+        final ImsMessage ims = (ImsMessage) imsJaxb2Marshaller.unmarshal(new StringSource(imsXml));
         v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

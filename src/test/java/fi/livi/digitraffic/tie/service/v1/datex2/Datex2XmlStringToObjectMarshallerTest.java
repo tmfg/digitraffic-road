@@ -12,25 +12,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.data.service.AbstractDatex2DataServiceTest;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 
-@Import({StringToObjectMarshaller.class})
-public class StringToObjectMarshallerTest extends AbstractDatex2DataServiceTest {
+@Import({ Datex2XmlStringToObjectMarshaller.class})
+public class Datex2XmlStringToObjectMarshallerTest extends AbstractDatex2DataServiceTest {
 
-    private static final Logger log = LoggerFactory.getLogger(StringToObjectMarshallerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(Datex2XmlStringToObjectMarshallerTest.class);
 
     @Autowired
-    private StringToObjectMarshaller stringToObjectMarshaller;
+    private Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
     // match values tags ending with name Time
-    private final static Pattern timesPattern = Pattern.compile("<[^>]*Time>(.+?)<\\/");
+    private final static Pattern timesPattern = Pattern.compile("<[^>]*Time>(.+?)</");
     // Match Zulu datetime
     private final static Pattern isoDateTimeZPattern = Pattern.compile("\\d{4}-([0]\\d|1[0-2])-([0-2]\\d|3[01])T([0-2]\\d):([0-6]\\d):([0-6]\\d)(.\\d{3})?Z");
 
     @Test
     public void allDatesInUtc() throws IOException {
         final String fromXml = readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-15-59-34-896.xml");
-        Object object = stringToObjectMarshaller.convertToObject(fromXml);
-        final String toXml = stringToObjectMarshaller.convertToString(object);
+        final D2LogicalModel object = datex2XmlStringToObjectMarshaller.convertToObject(fromXml);
+        final String toXml = datex2XmlStringToObjectMarshaller.convertToString(object);
         log.info("Check source xml not having Zulu times");
         checkIsoDateFormats(fromXml, false, 13);
         log.info("Check created xml having Zulu times");

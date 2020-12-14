@@ -3,17 +3,15 @@ package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -21,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
           value = "LastActiveItinerarySegmentV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "startTime", "endTime", "legs" })
-public class LastActiveItinerarySegment {
+public class LastActiveItinerarySegment extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "The time when the transport may start this segment.", required = true)
     @NotNull
@@ -33,10 +31,7 @@ public class LastActiveItinerarySegment {
 
     @ApiModelProperty(value = "Route legs.", required = true)
     @NotNull
-    public List<ItineraryLeg> legs = new ArrayList<ItineraryLeg>();
-
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    public List<ItineraryLeg> legs = new ArrayList<>();
 
     public LastActiveItinerarySegment() {
     }

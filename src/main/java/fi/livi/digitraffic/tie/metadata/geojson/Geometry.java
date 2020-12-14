@@ -12,8 +12,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinatesDecimalConverter;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinatesDecimalConverter;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -31,7 +32,7 @@ import io.swagger.annotations.ApiModelProperty;
 })
 @ApiModel(description = "GeoJson Geometry Object", value = "Geometry")
 @JsonPropertyOrder({ "type", "coordinates"})
-public abstract class Geometry<T> implements Serializable {
+public abstract class Geometry<T> extends JsonAdditionalProperties implements Serializable {
 
     public static final String COORD_FORMAT_WGS84 = "Coordinates are in WGS84 format in decimal degrees.";
     public static final String COORD_FORMAT_WGS84_LONG = "Coordinates are in WGS84 format in decimal degrees: [LONGITUDE, LATITUDE, {ALTITUDE}].";

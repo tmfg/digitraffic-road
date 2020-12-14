@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -22,7 +23,7 @@ import io.swagger.annotations.ApiModelProperty;
    "maximum",
    "informal"
 })
-public class EstimatedDuration {
+public class EstimatedDuration extends JsonAdditionalProperties {
 
     // Regexp taken from Duration class
     @Pattern(regexp="([-+]?)P(?:([-+]?[0-9]+)D)?(T(?:([-+]?[0-9]+)H)?(?:([-+]?[0-9]+)M)?(?:([-+]?[0-9]+)(?:[.,]([0-9]{0,9}))?S)?)?", message="Invalid minimum duration!")

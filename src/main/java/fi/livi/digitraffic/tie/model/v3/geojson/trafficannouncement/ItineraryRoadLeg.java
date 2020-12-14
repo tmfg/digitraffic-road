@@ -1,14 +1,11 @@
 
 package fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -20,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
                        "startArea",
                        "endArea"
                    })
-public class ItineraryRoadLeg {
+public class ItineraryRoadLeg extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "Number of the road.")
     public Integer roadNumber;
@@ -33,9 +30,6 @@ public class ItineraryRoadLeg {
 
     @ApiModelProperty(value = "Description of the place on the road, where this leg ends.")
     public String endArea;
-
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public ItineraryRoadLeg() {
     }

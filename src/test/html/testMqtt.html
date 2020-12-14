@@ -48,8 +48,12 @@
         }
 
         function disconnect() {
-            if (client && client.isConnected) {
-                client.disconnect();
+            try {
+                if (client && client.isConnected) {
+                    client.disconnect();
+                }
+            } catch(err) {
+                console.error(err.message);
             }
         }
 
@@ -103,10 +107,12 @@
     </select>
     Topic:
     <input type="text" id="topic" name="topic" value="tms/#">
-    <button onclick="updateTopic()">Connect/Update</button>
+    <button onclick="updateTopic()"> Connect/Update </button>
+    <button onclick="disconnect()"> Disconnect </button>
 </div>
 
-<pre>Messages (<span id="messagesPerMinute">&lt;counting&gt;</span> messages per minute):</pre>
-<pre id="messages" style="font-size: small"/>
+Messages (<span id="messagesPerMinute">0</span> messages per minute):
+
+<pre id="messages" style="font-size: small;white-space: pre-wrap;"/>
 </body>
 </html>
