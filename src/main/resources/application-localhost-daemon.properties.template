@@ -20,9 +20,13 @@ metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5
 metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
 metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v4
 metadata.server.path.image = /LOTJU/KameraKuvavarasto
-metadata.server.health.ttlInSeconds = 30
+metadata.server.health.ttlInSeconds = 10
 metadata.server.image.ttlInSeconds = 10
+# TVT
 metadata.server.health.value=ok!
+
+# TMC locations url
+metadata.tmc.url = https://tie-test.digitraffic.fi/tmc/noncertified/
 
 # Job schedules in ms or by cron in UTC
 # Cron: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html
@@ -42,6 +46,7 @@ dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
 dt.job.Datex2RoadworksMessageUpdateJob.schedule =              0 0 0/1 * * ?
 dt.job.Datex2WeightRestrictionsMessageUpdateJob.schedule =     0 0 0/1 * * ?
 dt.job.CameraHistoryDeleteJob.schedule =                       0 0 0/1 * * ?
+dt.job.WeatherHistoryUpdateJob.schedule =                      0 0 0/1 * * ?
 # Every 12 h
 dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
 dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?

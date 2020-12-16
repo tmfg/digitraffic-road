@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import fi.livi.digitraffic.tie.dao.v1.location.LocationVersionRepository;
 import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
 import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
+@ConditionalOnNotWebApplication
 @Service
 public class LocationMetadataUpdater {
     private final LocationUpdater locationUpdater;
@@ -98,8 +100,7 @@ public class LocationMetadataUpdater {
         return false;
     }
 
-    private void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath,
-                          final MetadataVersions latestVersions) {
+    private void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath, final MetadataVersions latestVersions) {
         final String version = latestVersions.getLocationsVersion().version;
 
         locationTypeUpdater.updateLocationTypes(locationTypePath, version);

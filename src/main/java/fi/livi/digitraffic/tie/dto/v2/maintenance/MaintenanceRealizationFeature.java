@@ -15,7 +15,7 @@ public class MaintenanceRealizationFeature extends Feature<LineString, Maintenan
         super(geometry, properties);
     }
 
-    @ApiModelProperty(value = "Maintenance realization properties preset properties.", required = true, position = 4)
+    @ApiModelProperty(value = "Maintenance realization properties.", required = true, position = 4)
     @Override
     public MaintenanceRealizationProperties getProperties() {
         return super.getProperties();

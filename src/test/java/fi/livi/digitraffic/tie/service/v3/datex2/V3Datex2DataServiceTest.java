@@ -184,7 +184,7 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DateServiceTest {
             assertNull(feature1.get().quantity);
             assertNull(feature1.get().unit);
         // V0_2_6 and V0_2_8 has also quantity and unit
-        } else if (imsJsonVersion == ImsJsonVersion.V0_2_6 || imsJsonVersion == ImsJsonVersion.V0_2_8) {
+        } else if (imsJsonVersion == ImsJsonVersion.V0_2_6 || imsJsonVersion == ImsJsonVersion.V0_2_8 || imsJsonVersion == ImsJsonVersion.V0_2_9) {
             assertTrue(FEATURE_1 + " not found", feature1.isPresent());
             assertTrue(FEATURE_2 + " not found", feature2.isPresent());
             assertEquals(80.0, feature1.get().quantity, 0.01);
@@ -194,6 +194,10 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DateServiceTest {
                        .containsAll(Arrays.asList(Area.Type.WEATHER_REGION, Area.Type.REGIONAL_STATE_ADMINISTRATIVE_AGENCY)));
         } else {
             throw new IllegalArgumentException("imsJsonVersion " + imsJsonVersion + " not tested");
+        }
+        if (imsJsonVersion == ImsJsonVersion.V0_2_9) {
+            assertEquals(TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT, jsonProperties.situationType);
+            assertEquals(TrafficAnnouncementProperties.TrafficAnnouncementType.ACCIDENT_REPORT, jsonProperties.trafficAnnouncementType);
         }
         assertNull(feature2.get().quantity);
         assertNull(feature2.get().unit);

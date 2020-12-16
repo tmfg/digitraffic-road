@@ -25,8 +25,7 @@ public class V2MaintenanceTrackingJobConfiguration {
 
     private final static String LOCK_NAME = "V2MaintenanceTrackingJobConfiguration";
 
-    private final static int MAX_HANDLE_COUNT_PER_CALL = 100;
-    private final static int MAX_HANDLE_COUNT_PER_JOB = 5000;
+    private final static int MAX_HANDLE_COUNT_PER_CALL = 1;
 
     @Autowired
     public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
@@ -50,16 +49,23 @@ public class V2MaintenanceTrackingJobConfiguration {
         do {
             if ( lockingService.tryLock(LOCK_NAME, 300) ) {
                 final StopWatch startInternal = StopWatch.createStarted();
-                count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(MAX_HANDLE_COUNT_PER_CALL);
-                totalCount += count;
-                log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}", count, startInternal.getTime(), (double)startInternal.getTime() / count);
-                lockingService.unlock(LOCK_NAME);
+                try {
+                    count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(MAX_HANDLE_COUNT_PER_CALL);
+                    totalCount += count;
+                    log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}", count,
+                        startInternal.getTime(), (double) startInternal.getTime() / count);
+                } catch (final Exception e) {
+                    log.error(String.format("method=handleUnhandledMaintenanceTrackings failed tookMs=%d", startInternal.getTime()), e);
+                    throw e;
+                } finally {
+                    lockingService.unlock(LOCK_NAME);
+                }
             } else {
                 log.warn("method=handleUnhandledMaintenanceTrackings didn't get lock for updating tracking data.");
                 count = 0; // to end the loop
             }
-        // Stop if all was handled => count == MAX_HANDLE_COUNT_PER_CALL
-        // Make sure job stops now and then even when it cant handle all data => start.getTime() < runRateMs * 10
+        // Stop if all was handled: count == MAX_HANDLE_COUNT_PER_CALL
+        // Make sure job stops now and then even when it cant handle all data: start.getTime() < runRateMs * 10
         } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getTime() < runRateMs * 10);
         log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount, start.getTime(), (double)start.getTime() / totalCount);
     }

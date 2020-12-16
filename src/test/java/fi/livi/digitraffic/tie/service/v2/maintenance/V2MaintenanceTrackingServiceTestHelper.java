@@ -272,7 +272,6 @@ public class V2MaintenanceTrackingServiceTestHelper {
         return new TyokoneenseurannanKirjausRequestSchema(otsikko, havainnot);
     }
 
-    private final static double ETRS_SCALE = 50000.0;
     /**
      * If lineString is true this returns one observation with lineString of size {observationCount}.
      * Else returns {observationCount} point observations

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
@@ -20,8 +21,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Component;
 
+@ConditionalOnNotWebApplication
 @Component
 public class MetadataFileFetcher {
     private final String tmcUrl;
@@ -51,7 +54,7 @@ public class MetadataFileFetcher {
         log.info("reading latest from url={}", url);
 
         try {
-            reader.read(url);
+            reader.read(createStreamFromUrl(url));
         } catch (IOException e) {
             log.error("error reading latest versions", e);
         }
@@ -63,8 +66,10 @@ public class MetadataFileFetcher {
         final URL url = getUrl(latestVersion.filename);
         final File destination = getLocationsZipDestination();
 
+        log.info("reading locations from url={}", url);
+
         try {
-            FileUtils.copyURLToFile(url, destination);
+            FileUtils.copyToFile(createStreamFromUrl(url), destination);
 
             return getLocationsFileFromZip(destination);
         } finally {
@@ -76,8 +81,10 @@ public class MetadataFileFetcher {
         final URL url = getUrl(latestVersion.filename);
         final File destination = getCcLtnZipDestination();
 
+        log.info("reading types from url={}", url);
+
         try {
-            FileUtils.copyURLToFile(url, destination);
+            FileUtils.copyToFile(createStreamFromUrl(url), destination);
 
             final Path typesPath = getTypesPathFromZip(destination);
             final Path subtypesPath = getSubtypesPathFromZip(destination);
@@ -129,7 +136,7 @@ public class MetadataFileFetcher {
         while(entries.hasMoreElements()) {
             final ZipEntry entry = entries.nextElement();
 
-            if(StringUtils.equals(entry.getName(), name)) {
+            if (StringUtils.equals(entry.getName(), name)) {
                 return entry;
             }
         }
@@ -151,5 +158,13 @@ public class MetadataFileFetcher {
 
     public URL getUrl(final String filename) throws MalformedURLException {
         return new URL(tmcUrl + filename);
+    }
+
+    private InputStream createStreamFromUrl(URL url) throws IOException {
+        URLConnection connection = url.openConnection();
+        connection.setRequestProperty("Accept-Encoding", "gzip");
+        connection.setRequestProperty("Connection", "close");
+
+        return connection.getInputStream();
     }
 }
