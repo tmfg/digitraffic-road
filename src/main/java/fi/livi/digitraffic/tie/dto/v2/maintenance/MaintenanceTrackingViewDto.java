@@ -32,7 +32,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachi
 
 @Entity
 @Immutable
-@Table(name = "MAINTENANCE_TRACKING_VIEW")
+@Table(name = "MAINTENANCE_TRACKING")
 public class MaintenanceTrackingViewDto implements MaintenanceTrackingDto {
 
     @Id
