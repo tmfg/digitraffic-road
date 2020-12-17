@@ -20,6 +20,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.locationtech.jts.geom.Geometry;
@@ -31,6 +32,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @Table(name = "MAINTENANCE_TRACKING")
+@DynamicUpdate
 public class MaintenanceTracking implements MaintenanceTrackingDto {
 
     @Id
