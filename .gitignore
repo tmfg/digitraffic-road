@@ -30,4 +30,3 @@
 # Flyway
 /dbroad/flyway-dev/flyway-test.conf
 /pom.xml.versionsBackup
-/src/test/resources/harja/internal-testing/maintenance_tracking_data_prod_11807302.json
