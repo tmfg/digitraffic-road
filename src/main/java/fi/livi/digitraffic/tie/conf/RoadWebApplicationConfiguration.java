@@ -26,6 +26,7 @@ import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -38,6 +39,8 @@ import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2D2LogicalModelHttpMessageConverte
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 import fi.livi.digitraffic.tie.controller.ApiPaths;
 import fi.livi.digitraffic.tie.converter.Datex2MessagetypeParameterStringToEnumConverter;
+
+import javax.servlet.Filter;
 
 @ConditionalOnWebApplication
 @Configuration
@@ -56,6 +59,11 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                                            final @Value("${dt.domain.url}") String schemaDomainUrl) {
         this.applicationContext = applicationContext;
         this.schemaDomainUrlAndPath = schemaDomainUrl + SCHEMA_PATH;
+    }
+
+    @Bean
+    public Filter ShallowEtagHeaderFilter() {
+        return new ShallowEtagHeaderFilter();
     }
 
     @Override
