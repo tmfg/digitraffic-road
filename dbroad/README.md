@@ -38,6 +38,9 @@ Running update.sh on OSX:
 - remove the `-f` from `readlink -f`
 - run the script with bash, zsh etc. don't work
 
+If that is not working, then see https://github.com/postgis/docker-postgis
+and pick right Postgres version and DockerFile and pick POSTGIS_MAJOR and POSTGIS_VERSION.
+
 If postgis extension is not initialized run following commands manually:
 ``````bash
 CREATE EXTENSION IF NOT EXISTS postgis;
