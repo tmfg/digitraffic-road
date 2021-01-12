@@ -1,0 +1,82 @@
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>START_DATE_TIME</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID10000002" version="7">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5037880001" version="7">
+                <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
+                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>START_DATE_TIME</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Erikoiskuljetus. Pirkanmaa, Tie 130 välillä Hämeenlinna - Tampere, Lempäälä. Tarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta. Liikenne pysäytetään ajoittain. Kuljetuksen leveys 4,5 m. Kuljetus liikkuu 13.12.2020 klo 14:43 - 15.12.2020 klo 00:00 Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/ Tieliikennekeskus Turku - ITM Finland Puh: 02002100 Sähköposti: turku.liikennekeskus@tmfg.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="ItineraryByIndexedLocations">
+                    <locationContainedInItinerary index="0">
+                        <location xsi:type="Area">
+                            <alertCArea>
+                                <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                                <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                                <alertCLocationTableVersion>1.11.37</alertCLocationTableVersion>
+                                <areaLocation>
+                                    <specificLocation>123</specificLocation>
+                                </areaLocation>
+                            </alertCArea>
+                        </location>
+                    </locationContainedInItinerary>
+                    <locationContainedInItinerary index="1">
+                        <location xsi:type="Area">
+                            <alertCArea>
+                                <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                                <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                                <alertCLocationTableVersion>1.11.37</alertCLocationTableVersion>
+                                <areaLocation>
+                                    <specificLocation>417</specificLocation>
+                                </areaLocation>
+                            </alertCArea>
+                        </location>
+                    </locationContainedInItinerary>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>intermittentShortTermClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="VehicleObstruction" id="GUID5037880002" version="7">
+                <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
+                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>START_DATE_TIME</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <vehicleObstructionType>abnormalLoad</vehicleObstructionType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

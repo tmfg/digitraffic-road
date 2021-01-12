@@ -1,0 +1,64 @@
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>START_DATE_TIME</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID10000001" version="13">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000101" version="13">
+                <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
+                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>START_DATE_TIME</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 130, Lempäälä. Liikennetiedote. Tie 130 välillä Hämeenlinna - Tampere, Lempäälä.
+Tarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta. Nopeusrajoitus 50,0 km/h. Huono ajokeli. Ajankohta: 13.12.2019 klo 14:43. Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/ Tieliikennekeskus Tampere - ITM Finland Puh: 02002100 Sähköposti: tampere.liikennekeskus@tmfg.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.37</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37128</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37126</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

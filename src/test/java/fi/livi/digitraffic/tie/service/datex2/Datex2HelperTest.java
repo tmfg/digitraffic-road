@@ -32,7 +32,8 @@ import fi.livi.digitraffic.tie.datex2.MultilingualStringValue;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
 @Import({ JacksonAutoConfiguration.class })
 public class Datex2HelperTest extends AbstractServiceTest {
@@ -104,12 +105,27 @@ public class Datex2HelperTest extends AbstractServiceTest {
         Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
     }
 
+    // TODO: Datex2Helper.resolveTrafficAnnouncementTypeFromText()
     @Test
     public void resolveMessageType() {
-        for( final Datex2DetailedMessageType type : Datex2DetailedMessageType.values()) {
-            Situation s = createSituationWithComment(type.getToken());
-            assertEquals(type, Datex2Helper.resolveMessageType(s));
-        }
+        assertEquals(SituationType.TRAFFIC_ANNOUNCEMENT, Datex2Helper.resolveSituationTypeFromText("Foo", "Tie 14866, eli Kyläniementie, Ruokolahti. Liikennetiedote.", "Bar"));
+        assertEquals(SituationType.TRAFFIC_ANNOUNCEMENT, Datex2Helper.resolveSituationTypeFromText("Foo", "Tie 4, eli Sodankyläntie, Rovaniemi. Liikennetiedote onnettomuudesta. Tilanne ohi.", "Bar"));
+        assertEquals(SituationType.TRAFFIC_ANNOUNCEMENT, Datex2Helper.resolveSituationTypeFromText("Foo", "Tie 4, Inari. Ensitiedote liikenneonnettomuudesta.", "Bar"));
+        assertEquals(SituationType.TRAFFIC_ANNOUNCEMENT, Datex2Helper.resolveSituationTypeFromText("Foo", "Tie 20, Oulu, Pudasjärvi. Vahvistamaton havainto.", "Bar"));
+        assertEquals(SituationType.EXEMPTED_TRANSPORT, Datex2Helper.resolveSituationTypeFromText("Foo", "Erikoiskuljetus. Pirkanmaa", "Bar"));
+        assertEquals(SituationType.WEIGHT_RESTRICTION, Datex2Helper.resolveSituationTypeFromText("Foo", "Tie 130, Lempäälä. Painorajoitus. ", "Bar"));
+        assertEquals(SituationType.ROAD_WORK, Datex2Helper.resolveSituationTypeFromText("Foo", "Tie 3, eli Tampereen Läntinen Kehätie, Pirkkala. Tietyö. Tie 3, eli Tampereen Läntinen Kehätie, Pirkkala.", "Bar"));
+        assertEquals(SituationType.ROAD_WORK, Datex2Helper.resolveSituationTypeFromText("Foo", "Tie 3172, Hollola. Tietyövaihe.", "Bar"));
+    }
+
+    @Test
+    public void resolveTrafficAnnouncementType() {
+        assertEquals(TrafficAnnouncementType.GENERAL, Datex2Helper.resolveTrafficAnnouncementTypeFromText("Tie 14866, eli Kyläniementie, Ruokolahti. Liikennetiedote."));
+        assertEquals(TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT, Datex2Helper.resolveTrafficAnnouncementTypeFromText("Tie 4, eli Sodankyläntie, Rovaniemi. Ensitiedote liikenneonnettomuudesta."));
+        assertEquals(TrafficAnnouncementType.ACCIDENT_REPORT, Datex2Helper.resolveTrafficAnnouncementTypeFromText("Tie 4, eli Sodankyläntie, Rovaniemi. Liikennetiedote onnettomuudesta."));
+        assertEquals(TrafficAnnouncementType.ENDED, Datex2Helper.resolveTrafficAnnouncementTypeFromText("Tie 4, eli Sodankyläntie, Rovaniemi. Liikennetiedote onnettomuudesta. Tilanne ohi."));
+        assertEquals(TrafficAnnouncementType.UNCONFIRMED_OBSERVATION, Datex2Helper.resolveTrafficAnnouncementTypeFromText("Tie 20, Oulu, Pudasjärvi. Vahvistamaton havainto."));
+        assertEquals(TrafficAnnouncementType.RETRACTED, Datex2Helper.resolveTrafficAnnouncementTypeFromText("Tie 14866, eli Kyläniementie, Ruokolahti. Liikennetiedote peruttu."));
     }
 
     private Situation createSituationWithComment(final String[] token) {

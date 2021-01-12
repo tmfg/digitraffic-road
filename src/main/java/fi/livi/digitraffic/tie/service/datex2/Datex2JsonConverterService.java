@@ -14,6 +14,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.EstimatedDuration;
 
 @Service
 public class Datex2JsonConverterService {
@@ -58,7 +61,6 @@ public class Datex2JsonConverterService {
     public fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson,
                                                                                                                                 final Datex2MessageType messageType)
         throws JsonProcessingException {
-        // Ims JSON String can be in 0.2.4 or in 0.2.6 format. Convert 0.2.6 to in 0.2.4 format.
         final String imsJsonV0_2_4 = convertImsJsonToV0_2_4Compatible(imsJson);
 
         final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
@@ -73,18 +75,24 @@ public class Datex2JsonConverterService {
     }
 
     public fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV3(final String imsJson,
-                                                                                                                                final Datex2DetailedMessageType detailedMessageType)
+                                                                                                                                final SituationType situationType,
+                                                                                                                                final TrafficAnnouncementType trafficAnnouncementType)
         throws JsonProcessingException {
-        // Ims JSON String can be in 0.2.4 or in 0.2.6 format. Convert 0.2.4 to in 0.2.6 format.
+        // Ims JSON String can be in 0.2.4, 0.2.6 or 0.2.8 format. Convert all to 0.2.10 format.
         final String imsJsonV3 = convertImsJsonToV0_2_8Compatible(imsJson);
 
         final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             featureJsonReaderV3.readValue(imsJsonV3);
 
+        // Older
+        if (feature.getProperties().getSituationType() == null) {
+            feature.getProperties().setSituationType(situationType);
+            feature.getProperties().setTrafficAnnouncementType(trafficAnnouncementType);
+        } else if (!feature.getProperties().getSituationType().equals(situationType)) {
+            log.error("Datex2 import-time SituationType: {} not equal to type in JSON: {}, sourceJson: {}", situationType, feature.getProperties().getSituationType(), imsJson);
+        }
         checkIsInvalidAnnouncementGeojsonV3(feature);
         checkDurationViolationsV3(feature);
-
-        feature.getProperties().setDetailedMessageType(detailedMessageType);
 
         return feature;
     }
@@ -128,20 +136,51 @@ public class Datex2JsonConverterService {
         }
 
         for (final JsonNode announcement : announcements) {
-            final ArrayNode features = (ArrayNode) announcement.get("features");
 
-            if (features != null && features.size() > 0) {
-                final ArrayNode newFeaturesArrayNode = objectMapper.createArrayNode();
-                for (final JsonNode f : features) {
-                    if (!f.isTextual()) {
-                        // -> is already V0_2_6 or V0_2_6
-                        return imsJson;
+            final ArrayNode roadWorkPhases = (ArrayNode) announcement.get("roadWorkPhases");
+            if (roadWorkPhases != null && roadWorkPhases.size() > 0) {
+                for (final JsonNode roadWorkPhase : roadWorkPhases) {
+                    final ArrayNode features = (ArrayNode) roadWorkPhase.get("features");
+                /*
+                "features" : [ {
+                    "name" : "Valaistustyö"
+                } ],
+                ->
+                "worktypes": [
+                    {
+                        "type": "lighting",
+                        "description": "Valaistustyö"
                     }
-                    final ObjectNode feature = objectMapper.createObjectNode();
-                    feature.put("name", f.textValue());
-                    newFeaturesArrayNode.add(feature);
+                ],
+                 */
+                    if (features != null && features.size() > 0) {
+                        final ArrayNode worktypes = objectMapper.createArrayNode();
+
+                        for (final JsonNode f : features) {
+                            final ObjectNode worktype = objectMapper.createObjectNode();
+                            worktype.put("type", "other");
+                            worktype.set("description", f.get("name"));
+                            worktypes.add(worktype);
+                        }
+                        ((ObjectNode) roadWorkPhase).set("worktypes", worktypes);
+                    }
                 }
-                ((ObjectNode) announcement).set("features", newFeaturesArrayNode);
+            }
+            final ArrayNode features = (ArrayNode) announcement.get("features");
+            if (features != null && features.size() > 0) {
+                // Replace features with new version
+                final ArrayNode featuresWithProperties = objectMapper.createArrayNode();
+                for (final JsonNode f : features) {
+                    // If it's not textual, then it is already right format from V0.2.5 on
+                    if (f.isTextual()) {
+                        final ObjectNode feature = objectMapper.createObjectNode();
+                        feature.put("name", f.textValue());
+                        featuresWithProperties.add(feature);
+                    }
+                }
+                if (featuresWithProperties.size() > 0) {
+                    ((ObjectNode) announcement).set("features", featuresWithProperties);
+                }
             }
         }
         return objectMapper.writer().writeValueAsString(root);
@@ -195,6 +234,8 @@ public class Datex2JsonConverterService {
         final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement a) {
 
         if (a.timeAndDuration != null && a.timeAndDuration.estimatedDuration != null) {
+            Set<ConstraintViolation<EstimatedDuration>> fail =
+                validator.validate(a.timeAndDuration.estimatedDuration);
             return validator.validate(a.timeAndDuration.estimatedDuration);
         }
         return Collections.emptySet();
@@ -224,11 +265,11 @@ public class Datex2JsonConverterService {
     /**
      * If given json is GeoJSON FeatureCollection returns it's features otherwise returns the single feature json.
      * @param imsJson GeoJSON string
-     * @return Map of situationId to GeoJSON feature strings. Empty if no features is found.
+     * @return Map of situationId to GeoJSON feature JSON-string, SituationType and TrafficAnnouncementType. Empty if no features is found.
      */
-    public Map<String, String> parseFeatureJsonsFromImsJson(final String imsJson) {
+    public Map<String, Triple<String, SituationType, TrafficAnnouncementType>> parseFeatureJsonsFromImsJson(final String imsJson) {
 
-        if (imsJson == null) {
+        if (StringUtils.isBlank(imsJson)) {
             return Collections.emptyMap();
         }
 
@@ -250,21 +291,27 @@ public class Datex2JsonConverterService {
         }
     }
 
-    private Map<String, String> parseFeature(final JsonNode root) {
+    private Map<String, Triple<String, SituationType, TrafficAnnouncementType>> parseFeature(final JsonNode root) {
         final String situationId = getSituationId(root);
+        final SituationType situationType = getSituationType(root);
+        final TrafficAnnouncementType trafficAnnouncementType = getTrafficAnnouncementType(root, situationType);
+
         if (StringUtils.isNotBlank(situationId)) {
-            return Collections.singletonMap(situationId, root.toPrettyString());
+            return Collections.singletonMap(situationId, Triple.of(root.toPrettyString(), situationType, trafficAnnouncementType));
         }
         return Collections.emptyMap();
     }
 
-    private Map<String, String> parseFeatureCollection(final JsonNode root) {
+    private Map<String, Triple<String, SituationType, TrafficAnnouncementType>> parseFeatureCollection(final JsonNode root) {
         final JsonNode features = root.get("features");
-        final Map<String, String> featureJsons = new HashMap<>();
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> featureJsons = new HashMap<>();
         for (int i = 0; i < features.size(); i++) {
+            final String json = features.get(i).toPrettyString();
             final String situationId = getSituationId(features.get(i));
+            final SituationType situationType = getSituationType(features.get(i));
+            final TrafficAnnouncementType trafficAnnouncementType = getTrafficAnnouncementType(features.get(i), situationType);
             if (StringUtils.isNotBlank(situationId)) {
-                featureJsons.put(situationId, features.get(i).toPrettyString());
+                featureJsons.put(situationId, Triple.of(json, situationType, trafficAnnouncementType));
             }
         }
         return featureJsons;
@@ -284,6 +331,56 @@ public class Datex2JsonConverterService {
         return situationId.asText();
     }
 
+    private SituationType getSituationType(final JsonNode feature) {
+        final JsonNode properties = feature.get("properties");
+        if (properties == null) {
+            return resolveSituationTypeFromTextWithError(feature);
+        }
+        final JsonNode situationType = properties.get("situationType");
+        if (situationType == null) {
+            return resolveSituationTypeFromTextWithError(feature);
+        }
+        try {
+            return SituationType.fromValue(situationType.asText());
+        } catch (final Exception e) {
+            log.error("method=getSituationType Error while trying to resolve json SituationType", e);
+            return resolveSituationTypeFromTextWithError(feature);
+        }
+    }
+
+    private static SituationType resolveSituationTypeFromTextWithError(final JsonNode featureNode) {
+        final SituationType resolvedType = Datex2Helper.resolveSituationTypeFromText(featureNode.toString());
+        log.error("method=getSituationType No situationType property for feature json. Resolved type from text {}. Json: {}", resolvedType, featureNode.toPrettyString());
+        return resolvedType;
+    }
+
+    private TrafficAnnouncementType getTrafficAnnouncementType(final JsonNode feature,
+                                                               final SituationType situationType) {
+        if (situationType == null || situationType != SituationType.TRAFFIC_ANNOUNCEMENT) {
+            return null;
+        }
+        final JsonNode properties = feature.get("properties");
+        if (properties == null) {
+            return resolveTrafficAnnouncementTypeTypeFromTextWithError(feature);
+        }
+        final JsonNode trafficAnnouncementType = properties.get("trafficAnnouncementType");
+        if (trafficAnnouncementType == null) {
+            return resolveTrafficAnnouncementTypeTypeFromTextWithError(feature);
+        }
+        try {
+            return TrafficAnnouncementType.fromValue(trafficAnnouncementType.asText());
+        } catch (Exception e) {
+            log.error("method=getTrafficAnnouncementType Error while trying to resolve json TrafficAnnouncementType", e);
+            return resolveTrafficAnnouncementTypeTypeFromTextWithError(feature);
+        }
+    }
+
+    private static TrafficAnnouncementType resolveTrafficAnnouncementTypeTypeFromTextWithError(final JsonNode featureNode) {
+        final TrafficAnnouncementType resolvedType = Datex2Helper.resolveTrafficAnnouncementTypeFromText(featureNode.toString());
+        log.error("method=getTrafficAnnouncementType No trafficAnnouncementType property for feature json. Resolved type from text {}. Json: {}", resolvedType, featureNode.toPrettyString());
+        return resolvedType;
+    }
+
     private boolean isFeatureCollection(final JsonNode root) {
         final JsonNode type = root.get("type");
         return type != null && StringUtils.equals(type.asText(), "FeatureCollection");
@@ -292,5 +389,4 @@ public class Datex2JsonConverterService {
         final JsonNode type = root.get("type");
         return type != null && StringUtils.equals(type.asText(), "Feature");
     }
-
 }

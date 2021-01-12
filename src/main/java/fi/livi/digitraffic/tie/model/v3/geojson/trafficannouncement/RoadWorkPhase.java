@@ -12,14 +12,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-/**
- * Road work phase
- * <p>
- * A single phase in a larger road work
- *
- */
+@ApiModel(description = "A single phase in a larger road work", value = "RoadWorkPhaseV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "id",
@@ -42,9 +38,11 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     @ApiModelProperty(value = "locationDetails")
     public LocationDetails locationDetails;
 
-    @ApiModelProperty(value = "Features of a traffic situation announcement", required = true)
-    @NotNull
-    public List<Feature> features = new ArrayList<>();
+    @ApiModelProperty(value = "The types of work that are carried out")
+    public List<Worktype> worktypes = new ArrayList<>();
+
+    @ApiModelProperty(value = "Restrictions on traffic")
+    public List<Restriction> restrictions = new ArrayList<>();
 
     @ApiModelProperty(value = "Severity of the disruption to traffic. How severely this road work phase disrupts traffic. LOW - no disruption, " +
                                "HIGH - disruption, HIGHEST - significant disruption", required = true)
@@ -65,12 +63,13 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     public RoadWorkPhase() {
     }
 
-    public RoadWorkPhase(final String id, final Location location, final LocationDetails locationDetails, final List<Feature> features,
+    public RoadWorkPhase(final String id, final Location location, final LocationDetails locationDetails, final List<Worktype> worktypes, final List<Restriction> restrictions,
                          final Severity severity, final List<WorkingHour> workingHours, final String comment, final TimeAndDuration timeAndDuration) {
         this.id = id;
         this.location = location;
         this.locationDetails = locationDetails;
-        this.features = features;
+        this.worktypes = worktypes;
+        this.restrictions = restrictions;
         this.severity = severity;
         this.workingHours = workingHours;
         this.comment = comment;

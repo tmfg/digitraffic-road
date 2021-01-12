@@ -37,13 +37,18 @@ public class Datex2 {
     @NotNull
     private String message;
 
+    @Deprecated
     @NotNull
     @Enumerated(EnumType.STRING)
     private Datex2MessageType messageType;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Datex2DetailedMessageType detailedMessageType;
+    private SituationType situationType;
+
+    // Only for SituationType.TRAFFIC_ANNOUNCEMENT
+    @Enumerated(EnumType.STRING)
+    private TrafficAnnouncementType trafficAnnouncementType;
 
     private ZonedDateTime publicationTime;
 
@@ -56,9 +61,10 @@ public class Datex2 {
         // For JPA
     }
 
-    public Datex2(final Datex2DetailedMessageType messageType) {
-        this.detailedMessageType = messageType;
-        this.messageType = messageType.getDatex2MessageType();
+    public Datex2(final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType) {
+        this.situationType = situationType;
+        this.trafficAnnouncementType = trafficAnnouncementType;
+        this.messageType = situationType.getDatex2MessageType();
     }
 
     public Long getId() {
@@ -110,12 +116,9 @@ public class Datex2 {
         situation.setDatex2(this);
     }
 
+    @Deprecated
     public Datex2MessageType getMessageType() {
         return messageType;
-    }
-
-    public Datex2DetailedMessageType getDetailedMessageType() {
-        return detailedMessageType;
     }
 
     public void setJsonMessage(final String jsonMessage) {
@@ -124,5 +127,17 @@ public class Datex2 {
 
     public String getJsonMessage() {
         return jsonMessage;
+    }
+
+    public SituationType getSituationType() {
+        return situationType;
+    }
+
+    public TrafficAnnouncementType getTrafficAnnouncementType() {
+        return trafficAnnouncementType;
+    }
+
+    public void setTrafficAnnouncementType(TrafficAnnouncementType trafficAnnouncementType) {
+        this.trafficAnnouncementType = trafficAnnouncementType;
     }
 }

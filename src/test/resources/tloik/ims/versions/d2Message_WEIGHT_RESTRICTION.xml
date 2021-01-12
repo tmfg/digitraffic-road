@@ -1,0 +1,88 @@
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>START_DATE_TIME</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID10000003" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000301" version="1">
+                <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
+                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>START_DATE_TIME</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 130, Lempäälä. Painorajoitus. Tie 130 välillä Hämeenlinna - Tampere, Lempäälä. Tarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta. Ajankohta: 13.12.2019 - 04.06.2023. Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/ </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.37</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37128</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>2184</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37126</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>5264</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <forVehiclesWithCharacteristicsOf>
+                    <grossWeightCharacteristic>
+                        <comparisonOperator>greaterThan</comparisonOperator>
+                        <grossVehicleWeight>2.0</grossVehicleWeight>
+                    </grossWeightCharacteristic>
+                </forVehiclesWithCharacteristicsOf>
+                <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="GeneralObstruction" id="GUID1000000302" version="1">
+                <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
+                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>START_DATE_TIME</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <obstructionType>severeFrostDamagedRoadway</obstructionType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

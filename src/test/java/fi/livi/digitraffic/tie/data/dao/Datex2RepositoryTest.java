@@ -17,11 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
 public class Datex2RepositoryTest extends AbstractJpaTest {
 
@@ -34,7 +35,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
     @Before
     public void insertDatex() {
         datex2Repository.deleteAll();
-        final Datex2 datex2 = new Datex2(Datex2DetailedMessageType.ROADWORK);
+        final Datex2 datex2 = new Datex2(SituationType.ROAD_WORK, null);
 
         datex2.setImportTime(ZonedDateTime.now());
         datex2.setMessage("Message of high importance");
@@ -55,19 +56,37 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
 
     @Test
     public void testTypeIsSaved() {
-        for (Datex2DetailedMessageType type : Datex2DetailedMessageType.values()) {
+        for (SituationType type : SituationType.values()) {
             datex2Repository.deleteAll();
-            final Datex2 datex2 = new Datex2(type);
-            datex2.setImportTime(ZonedDateTime.now());
-            datex2.setMessage("Message of high importance");
-            datex2Repository.save(datex2);
-            entityManager.flush();
-            entityManager.clear();
-            final List<Datex2> found = datex2Repository.findAll();
-            assertCollectionSize(1, found);
-            Assert.assertEquals(type, found.get(0).getDetailedMessageType());
-            Assert.assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
+            if (SituationType.TRAFFIC_ANNOUNCEMENT == type) {
+                for (TrafficAnnouncementType trafficAnnouncementType : TrafficAnnouncementType.values()) {
+                    datex2Repository.deleteAll();
+                    createAndSaveDatex2Message(type, trafficAnnouncementType);
+                    final List<Datex2> found = datex2Repository.findAll();
+                    assertCollectionSize(1, found);
+                    Assert.assertEquals(type, found.get(0).getSituationType());
+                    Assert.assertEquals(trafficAnnouncementType, found.get(0).getTrafficAnnouncementType());
+                    Assert.assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
+                }
+            } else {
+                createAndSaveDatex2Message(type, null);
+                final List<Datex2> found = datex2Repository.findAll();
+                assertCollectionSize(1, found);
+                Assert.assertEquals(type, found.get(0).getSituationType());
+                Assert.assertNull(found.get(0).getTrafficAnnouncementType());
+                Assert.assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
+            }
+
         }
+    }
+
+    private void createAndSaveDatex2Message(final SituationType type, final TrafficAnnouncementType trafficAnnouncementType) {
+        final Datex2 datex2 = new Datex2(type, trafficAnnouncementType);
+        datex2.setImportTime(ZonedDateTime.now());
+        datex2.setMessage("Message of high importance");
+        datex2Repository.save(datex2);
+        entityManager.flush();
+        entityManager.clear();
     }
 
     @Test
@@ -80,7 +99,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                          .anyMatch(s -> s.getSituationId().equals(pastSituationId))));
 
         // Create traffic disorder in past for 2 hours
-        createDatex2InPast2h(pastSituationId, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
+        createDatex2InPast2h(pastSituationId, SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.GENERAL);
 
         // Situation should be found >= 3 h
         final List<Datex2> active3Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 3);
@@ -95,8 +114,8 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                 .anyMatch(s -> s.getSituationId().equals(pastSituationId))));
     }
 
-    private Datex2 createDatex2InPast2h(final String situationId, final Datex2DetailedMessageType type) {
-        final Datex2 datex2 = new Datex2(type);
+    private Datex2 createDatex2InPast2h(final String situationId, final SituationType type, TrafficAnnouncementType trafficAnnouncementType) {
+        final Datex2 datex2 = new Datex2(type, trafficAnnouncementType);
         datex2.setImportTime(ZonedDateTime.now());
         datex2.setMessage("xml message");
         datex2.setPublicationTime(ZonedDateTime.now());

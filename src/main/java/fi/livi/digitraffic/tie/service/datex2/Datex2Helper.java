@@ -2,8 +2,9 @@ package fi.livi.digitraffic.tie.service.datex2;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Objects;
+import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,8 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
 public class Datex2Helper {
     private static final Logger log = LoggerFactory.getLogger(Datex2Helper.class);
@@ -52,18 +54,44 @@ public class Datex2Helper {
         }
     }
 
-    public static Datex2DetailedMessageType resolveMessageType(final Situation situation) {
-        // Find first getGeneralPublicComment value that contains keyword for Datex2DetailedMessageType
-        return situation.getSituationRecords().stream()
-            .map(sr -> sr.getGeneralPublicComments().stream()
-                .map(pc -> pc.getComment().getValues().getValues().stream()
-                    .map(commentValue -> Datex2DetailedMessageType.findTypeForText(commentValue.getValue()))
-                    // Type will be UNKNOWN if there is no match so continue to next comment and try to find type from there.
-                    .filter(type -> type != null && type != Datex2DetailedMessageType.UNKNOWN)
-                    .findFirst().orElse(null))
-                .filter(Objects::nonNull)
-                .findFirst().orElse(null))
-            .filter(Objects::nonNull)
-            .findFirst().orElse(Datex2DetailedMessageType.UNKNOWN);
+    public static SituationType resolveSituationTypeFromText(final String...texts) {
+        if (contains(texts, "Liikennetiedote.", "Liikennetiedote ", "Tilanne ohi.", "Ensitiedote ", "Vahvistamaton havainto.")) {
+            return SituationType.TRAFFIC_ANNOUNCEMENT;
+        } else if (contains(texts,"Erikoiskuljetus.")) {
+            return SituationType.EXEMPTED_TRANSPORT;
+        } else if (contains(texts,"Painorajoitus.")) {
+            return SituationType.WEIGHT_RESTRICTION;
+        } else if (contains(texts,"Tietyö.", "Tietyövaihe.")) {
+            return SituationType.ROAD_WORK;
+        }
+        return SituationType.TRAFFIC_ANNOUNCEMENT;
     }
+
+    private static boolean contains(String[] values, String...matchTo) {
+        return Arrays.stream(values)
+            .filter(text -> Arrays.stream(matchTo)
+                                .filter(match -> StringUtils.contains(text, match))
+                                .findFirst().isPresent())
+            .findFirst().isPresent();
+    }
+
+    public static TrafficAnnouncementType resolveTrafficAnnouncementTypeFromText(final String text) {
+        final SituationType st = resolveSituationTypeFromText(text);
+        if (st != SituationType.TRAFFIC_ANNOUNCEMENT) {
+            return null;
+        }
+        if (StringUtils.contains(text, "Tilanne ohi.")) {
+            return TrafficAnnouncementType.ENDED;
+        } else if (StringUtils.contains(text, "Ensitiedote ")) {
+            return TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT;
+        } else if (StringUtils.contains(text,"peruttu.")) {
+            return TrafficAnnouncementType.RETRACTED;
+        } else if (StringUtils.contains(text, "Liikennetiedote onnettomuudesta")) {
+            return TrafficAnnouncementType.ACCIDENT_REPORT;
+        } else if (StringUtils.contains(text, "Vahvistamaton havainto.")) {
+            return TrafficAnnouncementType.UNCONFIRMED_OBSERVATION;
+        } else // else if (StringUtils.contains(text, "Liikennetiedote.", "Liikennetiedote ")) {
+        return TrafficAnnouncementType.GENERAL;
+    }
+
 }

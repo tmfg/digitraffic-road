@@ -83,6 +83,9 @@ public class ToStringHelper {
     }
 
     public static String toStringFull(final Object object, final String...secretFields) {
+        if (object == null) {
+            return null;
+        }
         final ReflectionToStringBuilder refBuiler = new ReflectionToStringBuilder(object, JSON_STYLE) {
             @Override
             protected Object getValue(Field field) throws IllegalAccessException {

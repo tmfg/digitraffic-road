@@ -57,7 +57,7 @@ public class TrafficAnnouncement extends JsonAdditionalProperties {
                               "Note: This field is null if the road work closes normally.")
     public EarlyClosing earlyClosing;
 
-    @ApiModelProperty(value = "The itinerary segment of this special transport that is or was last active.")
+    @ApiModelProperty(value = "The itinerary segment of this exempted transport that is or was last active.")
     public LastActiveItinerarySegment lastActiveItinerarySegment;
 
     @ApiModelProperty(value = "Free comment")

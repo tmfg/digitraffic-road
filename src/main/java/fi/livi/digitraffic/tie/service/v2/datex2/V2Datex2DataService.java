@@ -61,7 +61,7 @@ public class V2Datex2DataService {
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        return convertToFeatureCollection(datex2s, datex2MessageType);
+        return convertToFeatureCollection(datex2s);
     }
 
     @Transactional(readOnly = true)
@@ -75,7 +75,7 @@ public class V2Datex2DataService {
     public TrafficAnnouncementFeatureCollection findActiveJson(final int inactiveHours,
                                                                final Datex2MessageType datex2MessageType) {
         final List<Datex2> allActive = findAllActiveWithJson(datex2MessageType.name(), inactiveHours);
-        return convertToFeatureCollection(allActive, datex2MessageType);
+        return convertToFeatureCollection(allActive);
     }
 
     private List<Datex2> findAllActive(final String messageType, final int activeInPastHours) {
@@ -109,7 +109,7 @@ public class V2Datex2DataService {
 
         // Append all older situations to newest and return newest that combines all situations
         final D2LogicalModel newesModel = modelsNewestFirst.remove(0);
-        SituationPublication situationPublication = getSituationPublication(newesModel);
+        final SituationPublication situationPublication = getSituationPublication(newesModel);
         modelsNewestFirst.forEach(d2 -> {
             final SituationPublication toAdd = getSituationPublication(d2);
             situationPublication.getSituations().addAll(toAdd.getSituations());
@@ -117,8 +117,8 @@ public class V2Datex2DataService {
         return newesModel;
     }
 
-    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s, final Datex2MessageType messageType) {
-        final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.typeFor(messageType));
+    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s) {
+        final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(DataType.TRAFFIC_MESSAGES_DATA);
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .map(d2 -> {

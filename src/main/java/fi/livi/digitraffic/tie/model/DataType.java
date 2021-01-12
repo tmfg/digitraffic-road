@@ -1,8 +1,5 @@
 package fi.livi.digitraffic.tie.model;
 
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-
 public enum DataType {
 
     CAMERA_STATION_METADATA,
@@ -52,10 +49,8 @@ public enum DataType {
     WEATHER_SENSOR_VALUE_MEASURED_DATA,
     WEATHER_SENSOR_VALUE_UPDATED_DATA,
 
-    // Datex2 types
-    TRAFFIC_INCIDENT,
-    WEIGHT_RESTRICTION,
-    ROADWORK
+    // Datex2/JSON TRAFFIC-MESSAGES
+    TRAFFIC_MESSAGES_DATA
     ;
 
 
@@ -95,35 +90,5 @@ public enum DataType {
         }
         throw new IllegalArgumentException(String.format("Allowed RoadStationTypes are %s and %s",
             RoadStationType.TMS_STATION, RoadStationType.WEATHER_STATION));
-    }
-
-    public static DataType typeFor(final Datex2MessageType messageType) {
-        switch (messageType) {
-            case TRAFFIC_INCIDENT:
-                return TRAFFIC_INCIDENT;
-            case WEIGHT_RESTRICTION:
-                return WEIGHT_RESTRICTION;
-            case ROADWORK:
-                return ROADWORK;
-            default:
-                throw new IllegalArgumentException("No mapping for " + messageType);
-        }
-    }
-
-    public static DataType typeFor(final Datex2DetailedMessageType messageType) {
-        switch (messageType) {
-        case TRAFFIC_ANNOUNCEMENT:
-        case PRELIMINARY_ANNOUNCEMENT:
-        case EXEMPTED_TRANSPORT:
-        case UNCONFIRMED_OBSERVATION:
-        case UNKNOWN:
-            return TRAFFIC_INCIDENT;
-        case WEIGHT_RESTRICTION:
-            return WEIGHT_RESTRICTION;
-        case ROADWORK:
-            return ROADWORK;
-        default:
-            throw new IllegalArgumentException("No mapping for " + messageType);
-        }
     }
 }
