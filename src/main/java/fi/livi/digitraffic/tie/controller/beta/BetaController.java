@@ -267,7 +267,7 @@ public class BetaController {
         return v3Datex2DataService.findBySituationIdJson(situationId, situationTypes);
     }
 
-    @ApiOperation(value = "Active Traffic messages messages as Datex2")
+    @ApiOperation(value = "Active traffic messages as Datex2")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
