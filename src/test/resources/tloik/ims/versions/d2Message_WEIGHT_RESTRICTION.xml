@@ -11,14 +11,14 @@
             <country>fi</country>
             <nationalIdentifier>FTA</nationalIdentifier>
         </publicationCreator>
-        <situation id="GUID10000003" version="1">
+        <situation id="GUID10000003" version="SITUATION_VERSION">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
             </headerInformation>
-            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000301" version="1">
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000301" version="SITUATION_VERSION">
                 <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
-                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordVersionTime>SITUATION_VERSION_DATE_TIME</situationRecordVersionTime>
                 <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
                 <probabilityOfOccurrence>certain</probabilityOfOccurrence>
                 <validity>
@@ -30,7 +30,7 @@
                 <generalPublicComment>
                     <comment>
                         <values>
-                            <value lang="fi">Tie 130, Lempäälä. Painorajoitus. Tie 130 välillä Hämeenlinna - Tampere, Lempäälä. Tarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta. Ajankohta: 13.12.2019 - 04.06.2023. Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/ </value>
+                            <value lang="fi">Tie 17747, Vaasa, Mustasaari. Painorajoitus. Tie 17747 välillä Mullola - Saarenpää. Tarkempi paikka: Paikasta Östnäs 8,0 km, suuntaan Vähäkyrö. Ajoneuvon suurin sallittu massa: 12 t. Ajankohta: 23.12.2020 - 05.01.2021. Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/</value>
                         </values>
                     </comment>
                 </generalPublicComment>

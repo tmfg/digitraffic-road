@@ -1,15 +1,15 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
-import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.FEATURE_1;
-import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.FEATURE_2;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_JSON;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
 
     @Test
     public void activeIncidentsDatex2AndJsonEqualsForEveryVersionOfImsAndJson()throws IOException {
-        // One active incident
+        // One active incident per version
         final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
         final ZonedDateTime end = start.plusHours(2);
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
@@ -55,7 +55,24 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
                 trafficMessageTestHelper.cleanDb();
                 trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, SituationType.TRAFFIC_ANNOUNCEMENT, imsJsonVersion, start, end);
                 log.info("Run activeIncidentsDatex2AndJsonEquals with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
-                activeIncidentsDatex2AndJsonEquals(SituationType.TRAFFIC_ANNOUNCEMENT, start.toInstant());
+                activeIncidentsDatex2AndJsonEquals(SituationType.TRAFFIC_ANNOUNCEMENT, start.toInstant(), imsJsonVersion);
+            }
+        }
+    }
+
+    @Test
+    public void findActiveTrafficMessagesDatex2AndJsonEqualsForEveryVersionOfImsAndJsonWhenMultipleVersionsIn() throws IOException {
+        trafficMessageTestHelper.cleanDb();
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final SituationType situationType : SituationType.values()) {
+                final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
+                final ZonedDateTime end = start.plusHours(2);
+                for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
+                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
+                        imsXmlVersion, imsJsonVersion, situationType);
+                }
+                activeIncidentsDatex2AndJsonEquals(situationType, start.toInstant(), ImsJsonVersion.getLatestVersion());
             }
         }
     }
@@ -108,26 +125,35 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         assertEquals(situationId, situationJson.getProperties().situationId);
     }
 
-    private void activeIncidentsDatex2AndJsonEquals(final SituationType situationType, final Instant start) {
+    private void activeIncidentsDatex2AndJsonEquals(final SituationType situationType, final Instant start,
+                                                    final ImsJsonVersion jsonVersion) {
 
         final D2LogicalModel d2 = v2Datex2DataService.findActive(0, situationType.getDatex2MessageType());
         final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
         final TrafficAnnouncementFeatureCollection activeJsons = v2Datex2DataService.findActiveJson(0, situationType.getDatex2MessageType());
 
-        AssertHelper.assertCollectionSize(1, activeSituations);
-        AssertHelper.assertCollectionSize(1, activeJsons.getFeatures());
-        final Situation situation = activeSituations.get(0);
-        final TrafficAnnouncementFeature situationJson = activeJsons.getFeatures().get(0);
+        if (situationType == SituationType.EXEMPTED_TRANSPORT) {
+            AssertHelper.assertCollectionSize(2, activeSituations);
+            AssertHelper.assertCollectionSize(2, activeJsons.getFeatures());
+        } else {
+            AssertHelper.assertCollectionSize(1, activeSituations);
+            AssertHelper.assertCollectionSize(1, activeJsons.getFeatures());
+        }
+        final Situation situation = activeSituations.stream().filter(s -> s.getId().equals(getSituationIdForSituationType(situationType))).findFirst().orElseThrow();
+        final TrafficAnnouncementFeature situationJson = activeJsons.getFeatures().stream().filter(s -> s.getProperties().situationId.equals(getSituationIdForSituationType(situationType))).findFirst().orElseThrow();
 
         final String situationId = getSituationIdForSituationType(situationType);
         final TrafficAnnouncementProperties jsonProperties = situationJson.getProperties();
         assertEquals(situationId, situation.getId());
         assertEquals(situationId, jsonProperties.situationId);
 
-        final Instant situationStart = situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime();
-        final ZonedDateTime situationJsonStart = jsonProperties.releaseTime;
-        assertEquals(start, situationStart);
-        assertEquals(start, situationJsonStart.toInstant());
+        final Instant versionTime = getVersionTime(start.atZone(ZoneId.systemDefault()), jsonVersion.intVersion).toInstant();
+
+        assertEquals(versionTime, situation.getSituationRecords().get(0).getSituationRecordVersionTime());
+        assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
+
+        assertEquals(start, situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime());
+        assertEquals(start, jsonProperties.announcements.get(0).timeAndDuration.startTime.toInstant());
 
         final String commentXml = situation.getSituationRecords().get(0).getGeneralPublicComments().get(0).getComment().getValues().getValues().stream()
             .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
@@ -135,9 +161,13 @@ public class V2Datex2DataServiceTest extends AbstractServiceTest {
         final String descJson = announcement.location.description;
         final String titleJson = announcement.title;
 
-        AssertHelper.assertCollectionSize(2, announcement.features);
-        AssertHelper.collectionContains(FEATURE_1, announcement.features);
-        AssertHelper.collectionContains(FEATURE_2, announcement.features);
+        if (situationType == SituationType.WEIGHT_RESTRICTION) {
+            AssertHelper.assertCollectionSize(1, announcement.features);
+        } else {
+            AssertHelper.assertCollectionSize(2, announcement.features);
+        }
+//        AssertHelper.collectionContains(FEATURE_1, announcement.features);
+//        AssertHelper.collectionContains(FEATURE_2, announcement.features);
 
         assertTrue(commentXml.contains(titleJson.trim()));
         assertTrue(commentXml.contains(descJson.trim()));

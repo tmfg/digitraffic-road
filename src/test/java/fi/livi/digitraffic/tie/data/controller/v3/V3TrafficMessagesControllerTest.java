@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -90,7 +91,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
                     assertTimesFormatMatches(json);
-                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType), start, end);
+                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType), start, end, imsJsonVersion);
                 }
             }
         }
@@ -116,7 +117,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
                     assertTimesFormatMatches(json);
-                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType), start, end);
+                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType), start, end, imsJsonVersion);
                 }
             }
         }
@@ -168,8 +169,10 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
         return (D2LogicalModel) datex2Jaxb2Marshaller.unmarshal(new StringSource(d2xml));
     }
 
-    private void assertContentsMatch(final String d2xml, final String simpleJsonFeatureCollection, final SituationType situationType, final String situationId,
-                                     final ZonedDateTime start, final ZonedDateTime end)
+    private void assertContentsMatch(final String d2xml, final String simpleJsonFeatureCollection, final SituationType situationType,
+                                     final String situationId,
+                                     final ZonedDateTime start, final ZonedDateTime end,
+                                     final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion)
         throws JsonProcessingException {
         final D2LogicalModel d2 = parseD2LogicalModel(d2xml);
 
@@ -183,15 +186,16 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
         Assert.assertEquals(situationId, situation.getId());
         Assert.assertEquals(situationId, jsonProperties.situationId);
 
-        final Instant situationStart = situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime();
-        final Instant situationEnd = situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallEndTime();
         final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.get(0).timeAndDuration;
 
-        assertEquals(start.toInstant(), situationStart);
-        assertEquals(start.toInstant(), jsonProperties.releaseTime.toInstant());
+        assertEquals(start.toInstant(), situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime());
         assertEquals(start.toInstant(), jsonTimeAndDuration.startTime.toInstant());
 
-        assertEquals(end.toInstant(), situationEnd);
+        final Instant versionTime = getVersionTime(start, imsJsonVersion).toInstant();
+        assertEquals(versionTime, situation.getSituationRecords().get(0).getSituationRecordVersionTime());
+        assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
+
+        assertEquals(end.toInstant(), situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallEndTime());
         assertEquals(end.toInstant(), jsonTimeAndDuration.endTime.toInstant());
 
         final String commentXml = situation.getSituationRecords().get(0).getGeneralPublicComments().get(0).getComment().getValues().getValues().stream()

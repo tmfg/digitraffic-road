@@ -9,18 +9,18 @@
     },
     "properties": {
         "situationId": "GUID10000004",
-        "version": 1,
+        "version": SITUATION_VERSION,
         "situationType": "road work",
-        "releaseTime": "START_DATE_TIME",
+        "releaseTime": "SITUATION_VERSION_DATE_TIME",
         "announcements": [
             {
                 "language": "fi",
-                "title": "Tie 130, Lempäälä. Tietyö. ",
+                "title": "Tie 13567, Jokioinen. Tietyö.",
                 "location": {
                     "countryCode": 6,
                     "locationTableNumber": 17,
                     "locationTableVersion": "1.11.37",
-                    "description": "Tie 130 välillä Hämeenlinna - Tampere, Lempäälä.\nTarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta."
+                    "description": "Tie 13567 välillä Jänhijoki - Latovainio, Jokioinen. Tarkempi paikka: Paikasta Latovainio 400 m, suuntaan Humppilantie. Mattilan silta. Merkittävää haittaa liikenteelle. Siltatyö Kiertotie käytössä Tie on suljettu liikenteeltä Ajankohta: 25.01.2021 08:00 - 27.01.2021 08:00."
                 },
                 "locationDetails": {
                     "roadAddressLocation": {

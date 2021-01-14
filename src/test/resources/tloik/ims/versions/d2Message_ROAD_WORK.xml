@@ -11,15 +11,15 @@
             <country>fi</country>
             <nationalIdentifier>FTA</nationalIdentifier>
         </publicationCreator>
-        <situation id="GUID10000004" version="1">
+        <situation id="GUID10000004" version="SITUATION_VERSION">
             <overallSeverity>high</overallSeverity>
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
             </headerInformation>
-            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000401" version="1">
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000401" version="SITUATION_VERSION">
                 <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
-                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordVersionTime>SITUATION_VERSION_DATE_TIME</situationRecordVersionTime>
                 <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
                 <probabilityOfOccurrence>certain</probabilityOfOccurrence>
                 <severity>high</severity>
@@ -32,7 +32,7 @@
                 <generalPublicComment>
                     <comment>
                         <values>
-                            <value lang="fi">Tie 130, Lempäälä. Tietyö. Tie 130 välillä Hämeenlinna - Tampere, Lempäälä. Tie 12 välillä Tampere - Lahti, Hollola. Tarkempi paikka: Huljala. Silta pois käytöstä. Nopeusrajoitus 40.0 km/h. Valaistustyö, Ajankohta: 14.12.2020. Työaika: ma 09:30-15:00</value>
+                            <value lang="fi">Tie 13567, Jokioinen. Tietyö. Tie 13567 välillä Jänhijoki - Latovainio, Jokioinen. Tarkempi paikka: Paikasta Latovainio 400 m, suuntaan Humppilantie. Mattilan silta. Merkittävää haittaa liikenteelle. Siltatyö Kiertotie käytössä Tie on suljettu liikenteeltä Ajankohta: 25.01.2021 08:00 - 27.01.2021 08:00. </value>
                         </values>
                     </comment>
                 </generalPublicComment>

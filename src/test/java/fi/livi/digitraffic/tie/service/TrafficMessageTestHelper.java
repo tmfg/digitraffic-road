@@ -39,17 +39,23 @@ public class TrafficMessageTestHelper extends AbstractTest {
     }
 
     public enum ImsJsonVersion {
-        V0_2_4(2.04),
-        V0_2_6(2.06),
-        V0_2_8(2.08),
-        V0_2_9(2.09),
-        V0_2_10(2.10),
-        V0_2_12(2.12);
+        V0_2_4(2.04, 204),
+        V0_2_6(2.06, 206),
+        V0_2_8(2.08, 208),
+        V0_2_9(2.09, 209),
+        V0_2_10(2.10, 210),
+        V0_2_12(2.12, 212);
 
         public double version;
+        public int intVersion;
 
-        ImsJsonVersion(double version) {
+        ImsJsonVersion(final double version, final int intVersion) {
             this.version = version;
+            this.intVersion = intVersion;
+        }
+
+        public static ImsJsonVersion getLatestVersion() {
+            return ImsJsonVersion.values()[ImsJsonVersion.values().length-1];
         }
     }
 
@@ -57,6 +63,9 @@ public class TrafficMessageTestHelper extends AbstractTest {
     private static final String END_DATE_TIME_PLACEHOLDER = "END_DATE_TIME";
     public static final String JSON_MESSAGE_PLACEHOLDER = "JSON_MESSAGE";
     public static final String D2_MESSAGE_PLACEHOLDER = "D2_MESSAGE";
+    public static final String SITUATION_VERSION_DATE_TIME_PLACEHOLDER = "SITUATION_VERSION_DATE_TIME";
+    public static final String SITUATION_VERSION_PLACEHOLDER = "SITUATION_VERSION";
+
 
     @Autowired
     private V2Datex2UpdateService v2Datex2UpdateService;
@@ -129,9 +138,8 @@ public class TrafficMessageTestHelper extends AbstractTest {
                                                        final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
         final String xmlImsMessageTemplate = readImsMessageResourceContent(xmlVersion);
         final String json = readStaticImsJmessageResourceContent(jsonVersion, situationType, startTime, endTime);
-        final String d2 = readStaticD2MessageResourceContent(situationType, startTime, endTime);
-        final String xmlImsMessage = xmlImsMessageTemplate.replace(D2_MESSAGE_PLACEHOLDER, d2).replace(JSON_MESSAGE_PLACEHOLDER, json);
-        return xmlImsMessage;
+        final String d2 = readStaticD2MessageResourceContent(situationType, startTime, endTime, jsonVersion.intVersion);
+        return xmlImsMessageTemplate.replace(D2_MESSAGE_PLACEHOLDER, d2).replace(JSON_MESSAGE_PLACEHOLDER, json);
     }
 
     public static String readStaticImsJmessageResourceContent(final ImsJsonVersion jsonVersion, final SituationType situationType,
@@ -141,26 +149,30 @@ public class TrafficMessageTestHelper extends AbstractTest {
             jsonVersion.toString().replace("V", "").replace("_", ".") + "/"+
             situationType + ".json";
         log.info("Reading Jmessage resource: {}", path);
-        String json = readResourceContent(path).replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString());
-
-        if (endTime != null) {
-            json = json.replace(END_DATE_TIME_PLACEHOLDER, endTime.toOffsetDateTime().toString());
-        } else {
-            json = json.replace("\"" + END_DATE_TIME_PLACEHOLDER + "\"", "null");
-        }
-
-        return json;
+        return readResourceContent(path)
+            .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
+            .replace(SITUATION_VERSION_DATE_TIME_PLACEHOLDER, getVersionTime(startTime, jsonVersion.intVersion).toOffsetDateTime().toString())
+            .replace(SITUATION_VERSION_PLACEHOLDER, jsonVersion.intVersion + "")
+            .replace(END_DATE_TIME_PLACEHOLDER, endTime != null ? endTime.toOffsetDateTime().toString() : "" );
     }
 
-    public static String readStaticD2MessageResourceContent(final SituationType situationType, final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+    public static String readStaticD2MessageResourceContent(final SituationType situationType, final ZonedDateTime startTime,
+                                                            final ZonedDateTime endTime, int situationVersion) throws IOException {
         final String path = "classpath:tloik/ims/versions/d2Message_" + situationType + ".xml";
         log.info("Reading D2Message resource: {}", path);
-        String xml = readResourceContent(path);
-        xml = xml.replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString());
-        if (endTime != null) {
-            xml = xml.replace("</overallStartTime>", "</overallStartTime><overallEndTime>" + endTime.toOffsetDateTime().toString() + "</overallEndTime>");
-        }
-        return xml;
+        return readResourceContent(path)
+            .replace(SITUATION_VERSION_DATE_TIME_PLACEHOLDER, getVersionTime(startTime, situationVersion).toOffsetDateTime().toString())
+            .replace(SITUATION_VERSION_PLACEHOLDER, situationVersion + "")
+            .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
+            .replace(endTime != null ? "</overallStartTime>" : "RANDOMNOMATCHXYZ",
+                     "</overallStartTime><overallEndTime>" + (endTime != null ? endTime.toOffsetDateTime().toString() : "") + "</overallEndTime>");
+    }
+
+    public static ZonedDateTime getVersionTime(final ZonedDateTime situationStartTime, final ImsJsonVersion imsJsonVersion) {
+        return getVersionTime(situationStartTime, imsJsonVersion.intVersion);
+    }
+    public static ZonedDateTime getVersionTime(final ZonedDateTime situationStartTime, final int jsonIntVersion) {
+        return situationStartTime.plusMinutes(jsonIntVersion);
     }
 
 }

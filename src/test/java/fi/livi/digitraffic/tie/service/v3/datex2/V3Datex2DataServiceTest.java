@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.v3.datex2;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_JSON;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -43,7 +44,6 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
 
     @Test
     public void findActiveTrafficMessagesDatex2AndJsonEqualsForEveryVersionOfImsAndJson() throws IOException {
-        // One active incident
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for (final SituationType situationType : SituationType.values()) {
@@ -61,16 +61,33 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
 
     @Test
     public void findTrafficMessagesBySituationIdWorksForEveryVersionOfImsAndJson() throws IOException {
-        // One active incident
+        // One active incident per version
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for (final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion);
-                    log.info("checkFindBySituationId with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion,
-                        situationType);
+                    log.info("checkFindBySituationId with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
+                        imsXmlVersion, imsJsonVersion, situationType);
                     checkFindBySituationId(situationType, getSituationIdForSituationType(situationType));
                 }
+            }
+        }
+    }
+
+    @Test
+    public void findActiveTrafficMessagesDatex2AndJsonEqualsForEveryVersionOfImsAndJsonWhenMultipleVersionsIn() throws IOException {
+        trafficMessageTestHelper.cleanDb();
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final SituationType situationType : SituationType.values()) {
+                final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
+                final ZonedDateTime end = start.plusHours(2);
+                for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
+                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
+                             imsXmlVersion, imsJsonVersion, situationType);
+                }
+                activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(), getSituationIdForSituationType(situationType), start, end);
             }
         }
     }
@@ -121,11 +138,16 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
         assertEquals(situationId, situation.getId());
         assertEquals(situationId, jsonProperties.situationId);
 
+        final Instant situationVersionTime = situation.getSituationRecords().get(0).getSituationRecordVersionTime();
         final Instant situationStart = situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime();
         final Instant situationEnd = situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallEndTime();
         final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.get(0).timeAndDuration;
+
+
+        assertEquals(getVersionTime(start, imsJsonVersion.intVersion).toInstant(), situationVersionTime);
+        assertEquals(getVersionTime(start, imsJsonVersion.intVersion).toInstant(), jsonProperties.releaseTime.toInstant());
+
         assertEquals(start.toInstant(), situationStart);
-        assertEquals(start.toInstant(), jsonProperties.releaseTime.toInstant());
         assertEquals(start.toInstant(), jsonTimeAndDuration.startTime.toInstant());
 
         assertEquals(end.toInstant(), situationEnd);
@@ -145,9 +167,9 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     }
 
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
-        final D2LogicalModel withOrWithoutJson = v3Datex2DataService.findActive(0, null);
+        final D2LogicalModel withOrWithoutJson = v3Datex2DataService.findActive(0);
         final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
-        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0, null);
+        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0);
 
         if (foundInDatex2 || situationPublication != null) {
             assertEquals(

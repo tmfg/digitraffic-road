@@ -9,18 +9,18 @@
     },
     "properties": {
         "situationId": "GUID10000003",
-        "version": 1,
+        "version": SITUATION_VERSION,
         "situationType": "weight restriction",
-        "releaseTime": "START_DATE_TIME",
+        "releaseTime": "SITUATION_VERSION_DATE_TIME",
         "announcements": [
             {
                 "language": "fi",
-                "title": "Tie 130, Lempäälä. Painorajoitus. ",
+                "title": "Tie 17747, Vaasa, Mustasaari. Painorajoitus.",
                 "location": {
                     "countryCode": 6,
                     "locationTableNumber": 17,
                     "locationTableVersion": "1.11.37",
-                    "description": "Tie 130 välillä Hämeenlinna - Tampere, Lempäälä.\nTarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta."
+                    "description": "Tie 17747 välillä Mullola - Saarenpää. Tarkempi paikka: Paikasta Östnäs 8,0 km, suuntaan Vähäkyrö. Ajoneuvon suurin sallittu massa: 12 t. Ajankohta: 23.12.2020 - 05.01.2021."
                 },
                 "locationDetails": {
                     "roadAddressLocation": {

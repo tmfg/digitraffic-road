@@ -9,19 +9,19 @@
     },
     "properties": {
         "situationId": "GUID10000001",
-        "version": 1,
+        "version": SITUATION_VERSION,
         "situationType": "traffic announcement",
         "trafficAnnouncementType": "general",
-        "releaseTime": "START_DATE_TIME",
+        "releaseTime": "SITUATION_VERSION_DATE_TIME",
         "announcements": [
             {
                 "language": "fi",
-                "title": "Tie 130, Lempäälä. Liikennetiedote. ",
+                "title": "Liikennetiedote. Maan eteläosa",
                 "location": {
                     "countryCode": 6,
                     "locationTableNumber": 17,
                     "locationTableVersion": "1.11.37",
-                    "description": "Tie 130 välillä Hämeenlinna - Tampere, Lempäälä.\nTarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta."
+                    "description": "Maan länsiosa Kova tuuli vaikeuttaa liikennettä. Sakea lumisade heikentää näkyvyyttä. Erittäin huono ajokeli. Lisätieto: Tuuli kinostaa lunta kaduille ja maanteille moninpaikoin. Ajankohta: 12.01.2021 klo 12:00."
                 },
                 "locationDetails": {
                     "roadAddressLocation": {

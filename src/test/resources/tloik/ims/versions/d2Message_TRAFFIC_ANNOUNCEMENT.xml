@@ -11,14 +11,14 @@
             <country>fi</country>
             <nationalIdentifier>FTA</nationalIdentifier>
         </publicationCreator>
-        <situation id="GUID10000001" version="13">
+        <situation id="GUID10000001" version="SITUATION_VERSION">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
             </headerInformation>
-            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000101" version="13">
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000101" version="SITUATION_VERSION">
                 <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
-                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordVersionTime>SITUATION_VERSION_DATE_TIME</situationRecordVersionTime>
                 <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
                 <probabilityOfOccurrence>certain</probabilityOfOccurrence>
                 <severity>low</severity>
@@ -31,8 +31,7 @@
                 <generalPublicComment>
                     <comment>
                         <values>
-                            <value lang="fi">Tie 130, Lempäälä. Liikennetiedote. Tie 130 välillä Hämeenlinna - Tampere, Lempäälä.
-Tarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta. Nopeusrajoitus 50,0 km/h. Huono ajokeli. Ajankohta: 13.12.2019 klo 14:43. Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/ Tieliikennekeskus Tampere - ITM Finland Puh: 02002100 Sähköposti: tampere.liikennekeskus@tmfg.fi</value>
+                            <value lang="fi">Liikennetiedote. Maan eteläosa, Maan länsiosa Kova tuuli vaikeuttaa liikennettä. Sakea lumisade heikentää näkyvyyttä. Erittäin huono ajokeli. Lisätieto: Tuuli kinostaa lunta kaduille ja maanteille moninpaikoin. Ajankohta: 12.01.2021 klo 12:00. Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/ Fintraffic Tieliikennekeskus Turku Puh: 02002100 Sähköposti: turku.liikennekeskus@fintraffic.fi</value>
                         </values>
                     </comment>
                 </generalPublicComment>

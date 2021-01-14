@@ -11,14 +11,14 @@
             <country>fi</country>
             <nationalIdentifier>FTA</nationalIdentifier>
         </publicationCreator>
-        <situation id="GUID10000002" version="7">
+        <situation id="GUID10000002" version="SITUATION_VERSION">
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
             </headerInformation>
-            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5037880001" version="7">
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5037880001" version="SITUATION_VERSION">
                 <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
-                <situationRecordVersionTime>START_DATE_TIME</situationRecordVersionTime>
+                <situationRecordVersionTime>SITUATION_VERSION_DATE_TIME</situationRecordVersionTime>
                 <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
                 <probabilityOfOccurrence>certain</probabilityOfOccurrence>
                 <validity>
@@ -30,7 +30,7 @@
                 <generalPublicComment>
                     <comment>
                         <values>
-                            <value lang="fi">Erikoiskuljetus. Pirkanmaa, Tie 130 välillä Hämeenlinna - Tampere, Lempäälä. Tarkempi paikka: Paikasta Marjamäki 2,2 km, vaikutusalue 5,8 km, suuntaan Pispantallin risteyssilta. Liikenne pysäytetään ajoittain. Kuljetuksen leveys 4,5 m. Kuljetus liikkuu 13.12.2020 klo 14:43 - 15.12.2020 klo 00:00 Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/ Tieliikennekeskus Turku - ITM Finland Puh: 02002100 Sähköposti: turku.liikennekeskus@tmfg.fi</value>
+                            <value lang="fi">Erikoiskuljetus. Satakunta Erikoiskuljetus alueella Kankaanpää Kuljetus liikkuu 12.01.2021 klo 19:00 - 21:00 reitillä: Kankaanpään katuverkko Liikenne pysäytetään ajoittain. Kuljetuksen leveys: 9,5 m Kuljetuksen korkeus: 10,8 m Kuljetuksen pituus: 40 m Kuljetuksen kokonaismassa: 167 t Kuljetus on perillä 13.01.2021 klo 06:00 mennessä Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/ Fintraffic Tieliikennekeskus Turku Puh: 02002100 Sähköposti: turku.liikennekeskus@fintraffic.fi</value>
                         </values>
                     </comment>
                 </generalPublicComment>
