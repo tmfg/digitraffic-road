@@ -301,13 +301,16 @@ public class V2MaintenanceTrackingUpdateService {
         final boolean isLineString = isLineString(nextGeometry);
 
         // With linestrings we can't count speed so check distance
-        if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString) {
-            final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
-            if (km > distinctLineStringObservationGapKm) {
-                return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
+        if (!isTransition) {
+            if (previousTracking != null && !previousTracking.isFinished() && isLineString) {
+                final double km =
+                    PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
+                if (km > distinctLineStringObservationGapKm) {
+                    return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
+                }
+            } else if (isLineString) { // DPO-1268 HARJA Kokeillaan poistaa viivageometrioiden yhdistäminen
+                return new NextObservationStatus(NEW, true, isNextTimeSameOrAfter, false);
             }
-        } else if (!isTransition && isLineString) { // DPO-1268 HARJA Kokeillaan poistaa viivageometrioiden yhdistäminen
-            return new NextObservationStatus(NEW, true, isNextTimeSameOrAfter, false);
         }
 
         final double speedInKmH = resolveSpeedInKmHNullSafe(previousTracking, havainto.getHavaintoaika(), nextGeometry);
