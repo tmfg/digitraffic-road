@@ -66,7 +66,7 @@ public class MaintenanceTrackingViewDto implements MaintenanceTrackingDto {
     @Column(insertable = false, updatable = false) // auto updated
     private ZonedDateTime modified;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="WORK_MACHINE_ID", referencedColumnName = "ID", nullable = false, updatable = false)
     private MaintenanceTrackingWorkMachine workMachine;
 
