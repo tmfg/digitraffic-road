@@ -309,7 +309,7 @@ public class V2MaintenanceTrackingUpdateService {
                     return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
                 }
             } else if (isLineString) { // DPO-1268 HARJA Kokeillaan poistaa viivageometrioiden yhdistäminen
-                return new NextObservationStatus(NEW, true, isNextTimeSameOrAfter, false);
+                return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, false);
             }
         }
 
