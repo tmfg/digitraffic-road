@@ -23,6 +23,7 @@ import java.util.stream.LongStream;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -382,6 +383,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertCollectionSize(3, trackings);
     }
 
+    @Ignore("Removed for testing of DPO-1268 HARJA Kokeillaan poistaa viivageometrioiden yhdistäminen")
     @Test
     public void lineStringsShouldBeHandledAsOneIfNoDistanceGap() throws IOException {
 

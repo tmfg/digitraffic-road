@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +92,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         Assert.assertEquals(recordsBefore, recordsAfter);
     }
 
+    @Ignore("Removed for testing of DPO-1268 HARJA Kokeillaan poistaa viivageometrioiden yhdistäminen")
     @Test
     public void postWorkMachineTrackingDataAndHandleAsDistinctObservations() throws Exception {
         final long harjaUrakkaId = 999999;
