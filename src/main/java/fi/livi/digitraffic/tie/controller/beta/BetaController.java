@@ -248,7 +248,7 @@ public class BetaController {
         @Range(min = 0)
         final int inactiveHours,
         @ApiParam(value = "Message type.")
-        @RequestParam(value = "messageType", required = false)
+        @RequestParam(required = false)
         final SituationType...situationType) {
         return v3Datex2DataService.findActiveJson(inactiveHours, situationType);
     }
@@ -262,7 +262,7 @@ public class BetaController {
         @PathVariable
         final String situationId,
         @ApiParam(value = "Situation type.")
-        @RequestParam(value = "situationType", required = false)
+        @RequestParam(required = false)
         final SituationType... situationType) {
         return v3Datex2DataService.findBySituationIdJson(situationId, situationType);
     }
@@ -276,7 +276,7 @@ public class BetaController {
         @Range(min = 0)
         final int inactiveHours,
         @ApiParam(value = "Situation type.")
-        @RequestParam(value = "situationType", required = false)
+        @RequestParam(required = false)
         final SituationType... situationType) {
         return v3Datex2DataService.findActive(inactiveHours, situationType);
     }
@@ -290,7 +290,7 @@ public class BetaController {
         @PathVariable
         final String situationId,
         @ApiParam(value = "Situation type.")
-        @RequestParam(value = "situationType", required = false)
+        @RequestParam(required = false)
         final SituationType... situationType) {
         return v3Datex2DataService.findAllBySituationId(situationId, situationType);
     }
