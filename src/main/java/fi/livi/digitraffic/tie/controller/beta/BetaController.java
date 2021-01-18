@@ -248,7 +248,7 @@ public class BetaController {
         @Range(min = 0)
         final int inactiveHours,
         @ApiParam(value = "Message type.")
-        @RequestParam(value = "messageType", required = false)
+        @RequestParam(required = false)
         final SituationType...situationType) {
         return v3Datex2DataService.findActiveJson(inactiveHours, situationType);
     }
@@ -262,9 +262,9 @@ public class BetaController {
         @PathVariable
         final String situationId,
         @ApiParam(value = "Situation type.")
-        @RequestParam(value = "situationTypes", required = false)
-        final SituationType...situationTypes) {
-        return v3Datex2DataService.findBySituationIdJson(situationId, situationTypes);
+        @RequestParam(required = false)
+        final SituationType... situationType) {
+        return v3Datex2DataService.findBySituationIdJson(situationId, situationType);
     }
 
     @ApiOperation(value = "Active traffic messages as Datex2")
@@ -276,9 +276,9 @@ public class BetaController {
         @Range(min = 0)
         final int inactiveHours,
         @ApiParam(value = "Situation type.")
-        @RequestParam(value = "situationTypes", required = false)
-        final SituationType...situationTypes) {
-        return v3Datex2DataService.findActive(inactiveHours, situationTypes);
+        @RequestParam(required = false)
+        final SituationType... situationType) {
+        return v3Datex2DataService.findActive(inactiveHours, situationType);
     }
 
     @ApiOperation(value = "Traffic messages history by situation as Datex2")
@@ -290,8 +290,8 @@ public class BetaController {
         @PathVariable
         final String situationId,
         @ApiParam(value = "Situation type.")
-        @RequestParam(value = "situationTypes", required = false)
-        final SituationType...situationTypes) {
-        return v3Datex2DataService.findAllBySituationId(situationId, situationTypes);
+        @RequestParam(required = false)
+        final SituationType... situationType) {
+        return v3Datex2DataService.findAllBySituationId(situationId, situationType);
     }
 }

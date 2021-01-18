@@ -10,6 +10,7 @@
 /src/main/resources/application-localhost-daemon.properties
 /src/main/resources/application-localhost-web.properties
 /src/main/resources/application-virtualbox.properties
+/src/main/resources/application-test-web.properties
 
 # Käännösartifaktit
 /target
@@ -30,3 +31,4 @@
 # Flyway
 /dbroad/flyway-dev/flyway-test.conf
 /pom.xml.versionsBackup
+
