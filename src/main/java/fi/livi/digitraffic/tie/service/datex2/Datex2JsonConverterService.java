@@ -31,7 +31,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.EstimatedDuration;
 
 @Service
 public class Datex2JsonConverterService {
@@ -61,7 +60,7 @@ public class Datex2JsonConverterService {
     public fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson,
                                                                                                                                 final Datex2MessageType messageType)
         throws JsonProcessingException {
-        final String imsJsonV0_2_4 = convertImsJsonToV0_2_4Compatible(imsJson);
+        final String imsJsonV0_2_4 = convertImsJsonToV2Compatible(imsJson);
 
         final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             featureJsonReaderV2.readValue(imsJsonV0_2_4);
@@ -79,7 +78,7 @@ public class Datex2JsonConverterService {
                                                                                                                                 final TrafficAnnouncementType trafficAnnouncementType)
         throws JsonProcessingException {
         // Ims JSON String can be in 0.2.4, 0.2.6 or 0.2.8 format. Convert all to 0.2.10 format.
-        final String imsJsonV3 = convertImsJsonToV0_2_8Compatible(imsJson);
+        final String imsJsonV3 = convertImsJsonToV3Compatible(imsJson);
 
         final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
             featureJsonReaderV3.readValue(imsJsonV3);
@@ -97,7 +96,7 @@ public class Datex2JsonConverterService {
         return feature;
     }
 
-    private String convertImsJsonToV0_2_4Compatible(final String imsJson) throws JsonProcessingException {
+    private String convertImsJsonToV2Compatible(final String imsJson) throws JsonProcessingException {
         final JsonNode root = genericJsonReader.readTree(imsJson);
         final ArrayNode announcements = readAnnouncementsFromTheImsJson(root);
         // if announcements is found json might be V0_2_6 or V0_2_8 and features must be converted to V0_2_4 format
@@ -127,7 +126,7 @@ public class Datex2JsonConverterService {
         return objectMapper.writer().writeValueAsString(root);
     }
 
-    private String convertImsJsonToV0_2_8Compatible(final String imsJson) throws JsonProcessingException {
+    private String convertImsJsonToV3Compatible(final String imsJson) throws JsonProcessingException {
         final JsonNode root = genericJsonReader.readTree(imsJson);
         final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
         // if announcements is found json might be V0_2_4 and features must be converted to V0_2_6 and V0_2_8 format
@@ -234,8 +233,6 @@ public class Datex2JsonConverterService {
         final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement a) {
 
         if (a.timeAndDuration != null && a.timeAndDuration.estimatedDuration != null) {
-            Set<ConstraintViolation<EstimatedDuration>> fail =
-                validator.validate(a.timeAndDuration.estimatedDuration);
             return validator.validate(a.timeAndDuration.estimatedDuration);
         }
         return Collections.emptySet();

@@ -15,20 +15,6 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 
 @Repository
 public interface Datex2Repository extends JpaRepository<Datex2, Long> {
-    @Query(value =
-            "select max(datex2.import_date) as updated\n" +
-            "from datex2\n" +
-            "where message_type = :messageType",
-            nativeQuery = true)
-    Instant findLatestImportTime(@Param("messageType") final String messageType);
-
-    @Query(value =
-           "select max(d2.import_date) as updated\n" +
-           "from datex2 d2\n" +
-           "where d2.message_type = :messageType\n" +
-           "  AND d2.json_message is not null",
-           nativeQuery = true)
-    Instant findLatestImportTimeWithJson(@Param("messageType") final String messageType);
 
     String FIND_ALL_ACTIVE_AS_D =
             "SELECT d.*\n" +

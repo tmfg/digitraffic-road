@@ -67,7 +67,7 @@ public class Datex2Helper {
         return SituationType.TRAFFIC_ANNOUNCEMENT;
     }
 
-    private static boolean contains(String[] values, String...matchTo) {
+    private static boolean contains(final String[] values, final String...matchTo) {
         return Arrays.stream(values)
             .filter(text -> Arrays.stream(matchTo)
                                 .filter(match -> StringUtils.contains(text, match))

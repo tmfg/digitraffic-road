@@ -55,10 +55,11 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
     }
 
     @Test
-    public void testTypeIsSaved() {
+    public void testThatNewAndOldTypesForAllSituationTypesAreStillSavedToDb() {
         for (SituationType type : SituationType.values()) {
             datex2Repository.deleteAll();
             if (SituationType.TRAFFIC_ANNOUNCEMENT == type) {
+                // Test also that new TrafficAnnouncementTypes are saved
                 for (TrafficAnnouncementType trafficAnnouncementType : TrafficAnnouncementType.values()) {
                     datex2Repository.deleteAll();
                     createAndSaveDatex2Message(type, trafficAnnouncementType);

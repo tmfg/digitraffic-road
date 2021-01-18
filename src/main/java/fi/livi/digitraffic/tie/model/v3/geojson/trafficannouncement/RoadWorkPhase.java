@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "A single phase in a larger road work", value = "RoadWorkPhaseV2")
+@ApiModel(description = "A single phase in a larger road work", value = "RoadWorkPhaseV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "id",
