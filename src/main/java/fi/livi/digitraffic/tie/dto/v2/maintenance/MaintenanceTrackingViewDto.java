@@ -32,7 +32,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachi
 
 @Entity
 @Immutable
-@Table(name = "MAINTENANCE_TRACKING_VIEW")
+@Table(name = "MAINTENANCE_TRACKING")
 public class MaintenanceTrackingViewDto implements MaintenanceTrackingDto {
 
     @Id
@@ -66,7 +66,7 @@ public class MaintenanceTrackingViewDto implements MaintenanceTrackingDto {
     @Column(insertable = false, updatable = false) // auto updated
     private ZonedDateTime modified;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="WORK_MACHINE_ID", referencedColumnName = "ID", nullable = false, updatable = false)
     private MaintenanceTrackingWorkMachine workMachine;
 

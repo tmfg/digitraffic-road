@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,10 +159,11 @@ public class V2MaintenanceTrackingDataService {
      * @return either Point or LineString geometry
      */
     private static Geometry<?> convertToGeoJSONGeometry(final MaintenanceTrackingDto tracking, boolean latestPointGeometry) {
-        if (!latestPointGeometry && tracking.getLineString() != null) {
-            return PostgisGeometryHelper.convertToGeoJSONGeometry(tracking.getLineString());
-        } else {
+        if (latestPointGeometry || tracking.getLineString() == null || tracking.getLineString().getNumPoints() <= 1) {
             return PostgisGeometryHelper.convertToGeoJSONGeometry(tracking.getLastPoint());
+        } else {
+            return PostgisGeometryHelper.convertToGeoJSONGeometry(
+                TopologyPreservingSimplifier.simplify(tracking.getLineString(), 0.00005));
         }
     }
 }

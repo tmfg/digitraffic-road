@@ -187,20 +187,21 @@ public class V2MaintenanceTrackingUpdateService {
                 final ZonedDateTime harjaObservationTime = DateHelper.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
 
                 final BigDecimal direction = getDirection(havainto, trackingData.getId());
+                final Point firstPoint = resolveFirstPoint(geometry);
                 if (status.is(TRANSITION)) {
                     log.debug("method=handleRoute WorkMachine tracking in transition");
                     // Mark found one to finished as the work machine is in transition after that
-                    // Append latest point (without the task) to tracking if it's inside time limits.
-                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, direction, harjaObservationTime,  status.isNextInsideLimits())) {
-                        sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
+                    // Append first point of next tracking as the last point of the previous tracking (without the task) if it's inside time limits.
+                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime,  status.isNextInsideLimits())) {
+                        sendToMqtt(previousTracking, firstPoint, direction, harjaObservationTime);
                     }
                 // If previous is finished or tasks has changed or time gap is too long, we create new tracking for the machine
                 } else if (status.is(NEW)) {
 
-                    // Append latest point to tracking if it's inside time limits. This happens only when task changes and
-                    // last point will be new tasks first point.
-                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, direction, harjaObservationTime, status.isNextInsideLimits())) {
-                        sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
+                    // Append first point of next tracking as the last point of the previous tracking (without the task) if it's inside time limits.
+                    // This happens only when task changes for same work machine.
+                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isNextInsideLimits())) {
+                        sendToMqtt(previousTracking, firstPoint, direction, harjaObservationTime);
                     }
 
                     final MaintenanceTrackingWorkMachine workMachine =
@@ -279,7 +280,7 @@ public class V2MaintenanceTrackingUpdateService {
         if (havainto.getSuunta() != null) {
             final BigDecimal value = BigDecimal.valueOf(havainto.getSuunta());
             if (value.intValue() > 360 || value.intValue() < 0) {
-                log.error("Illegal direction value {} for trackingData id {}. Value should be between 0-360 degrees. Havainto:",
+                log.error("Illegal direction value {} for trackingData id {}. Value should be between 0-360 degrees. Havainto: {}",
                           value, trackingDataId, ToStringHelper.toStringExcluded(havainto, "sijainti"));
                 return null;
             }
@@ -297,10 +298,10 @@ public class V2MaintenanceTrackingUpdateService {
         final boolean isNextTimeSameOrAfter = isNextCoordinateTimeSameOrAfterPreviousNullSafe(harjaObservationTime, previousTracking);
         final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, previousTracking);
         final boolean isTransition = isTransition(performedTasks);
-
+        final boolean isLineString = isLineString(nextGeometry);
 
         // With linestrings we can't count speed so check distance
-        if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString(nextGeometry)) {
+        if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString) {
             final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
             if (km > distinctLineStringObservationGapKm) {
                 return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
@@ -364,20 +365,20 @@ public class V2MaintenanceTrackingUpdateService {
 
     /**
      *
-     * @param trackingToFinish
-     * @param latestGeometry
-     * @param direction
-     * @param latestGeometryOservationTime
-     * @param appendLatestGeometry
-     * @return true if geometry was appended to tracking
+     * @param trackingToFinish Tracking to set finished and to append last point
+     * @param latestPoint Point witch should be appended to previous tracking
+     * @param direction Direction of the machine
+     * @param latestGeometryOservationTime Time of the observation
+     * @param appendLatestPoint Should the latest point be appended to the geometry
+     * @return true if the latest point was appended to tracking
      */
-    private static boolean updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Geometry latestGeometry,
+    private static boolean updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Point latestPoint,
                                                                          final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
-                                                                         final boolean appendLatestGeometry) {
+                                                                         final boolean appendLatestPoint) {
         boolean geometryAppended = false;
         if (trackingToFinish != null && !trackingToFinish.isFinished()) {
-            if (appendLatestGeometry) {
-                trackingToFinish.appendGeometry(latestGeometry, latestGeometryOservationTime, direction);
+            if (appendLatestPoint) {
+                trackingToFinish.appendGeometry(latestPoint, latestGeometryOservationTime, direction);
                 geometryAppended = true;
             }
             trackingToFinish.setFinished();
@@ -446,7 +447,7 @@ public class V2MaintenanceTrackingUpdateService {
         final List<Coordinate> tmpCoordinates = new ArrayList<>();
         tmpCoordinates.add(coordinates.get(0));
 
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 1; i < coordinates.size(); i++) {
             final Coordinate next = coordinates.get(i);
             final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(tmpCoordinates.get(tmpCoordinates.size()-1), next);

@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 @Repository
 public interface V2MaintenanceTrackingViewRepository extends JpaRepository<MaintenanceTrackingViewDto, Long> {
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value =
                "SELECT tracking \n" +
                "FROM #{#entityName} tracking\n" +
@@ -34,7 +34,7 @@ public interface V2MaintenanceTrackingViewRepository extends JpaRepository<Maint
     @EntityGraph(attributePaths = { "tasks", "workMachine" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value =
                 "SELECT tracking \n" +
                 "FROM #{#entityName} tracking\n" +
@@ -56,17 +56,17 @@ public interface V2MaintenanceTrackingViewRepository extends JpaRepository<Maint
     @EntityGraph(attributePaths = { "tasks", "workMachine" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value =
                "SELECT tracking \n" +
                "FROM #{#entityName} tracking\n" +
                "WHERE tracking.endTime BETWEEN :from AND :to\n" +
-               "  AND intersects( coalesce(tracking.lineString, tracking.lastPoint), :area ) = true\n" +
+               "AND (intersects(:area, tracking.lastPoint) = true OR intersects(:area, tracking.lineString) = true)\n" +
                "ORDER by tracking.id")
     @EntityGraph(attributePaths = { "tasks", "workMachine" }, type = EntityGraph.EntityGraphType.LOAD)
     List<MaintenanceTrackingDto> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value =
                "SELECT tracking \n" +
                "FROM #{#entityName} tracking\n" +

@@ -18,7 +18,8 @@ public class ForeignKeyIndexTest extends AbstractServiceTest {
     private static final String IGNORED_CONSTRAINT_NAMES_REGEX =
 //            ".*ABC.*" +
 //            "|CDE" +
-            "";
+            // No fk-index to save space and have better performance for insert and updates
+            "maintenance_tracking_data_tracking_tracking_id_fkey";
 
     @Test
     public void testForeignKeysHaveIndex() {
