@@ -7,7 +7,7 @@ DROP INDEX IF EXISTS datex2_detailed_type_import_i;
 ---- Situation type ----
 ALTER TABLE datex2 ADD COLUMN IF NOT EXISTS situation_type TEXT;
 CREATE INDEX IF NOT EXISTS datex2_situation_type_i ON datex2(situation_type);
-CREATE INDEX IF NOT EXISTS datex2_is_json_message_not_null_i ON datex2 (id) WHERE json_message IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS datex2_id_json_message_not_null_key ON datex2 (id) WHERE json_message IS NOT NULL;
 
 ALTER TABLE datex2 ADD CONSTRAINT datex2_situation_type_check
     CHECK (situation_type IN ('TRAFFIC_ANNOUNCEMENT', 'EXEMPTED_TRANSPORT', 'WEIGHT_RESTRICTION', 'ROAD_WORK'));
