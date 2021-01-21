@@ -516,6 +516,7 @@ public class V2MaintenanceTrackingUpdateService {
                 // to be handled like LineString and not as a single Point.
                 resultLineString.add(resultLineString.get(0));
             }
+            return resultLineString;
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
             final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
