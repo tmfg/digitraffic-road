@@ -26,7 +26,7 @@ public class LocationDetails extends JsonAdditionalProperties {
     public LocationDetails() {
     }
 
-    public LocationDetails(AreaLocation areaLocation, RoadAddressLocation roadAddressLocation) {
+    public LocationDetails(final AreaLocation areaLocation, final RoadAddressLocation roadAddressLocation) {
         super();
         this.areaLocation = areaLocation;
         this.roadAddressLocation = roadAddressLocation;

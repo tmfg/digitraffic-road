@@ -31,6 +31,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement;
 
 @Service
 public class Datex2JsonConverterService {
@@ -75,7 +76,8 @@ public class Datex2JsonConverterService {
 
     public fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV3(final String imsJson,
                                                                                                                                 final SituationType situationType,
-                                                                                                                                final TrafficAnnouncementType trafficAnnouncementType)
+                                                                                                                                final TrafficAnnouncementType trafficAnnouncementType,
+                                                                                                                                boolean includeAreaGeometry)
         throws JsonProcessingException {
         // Ims JSON String can be in 0.2.4, 0.2.6 or 0.2.8 format. Convert all to 0.2.10 format.
         final String imsJsonV3 = convertImsJsonToV3Compatible(imsJson);
@@ -93,7 +95,21 @@ public class Datex2JsonConverterService {
         checkIsInvalidAnnouncementGeojsonV3(feature);
         checkDurationViolationsV3(feature);
 
+        // Clear area geometries if they are not wanted
+        if (!includeAreaGeometry && feature.getProperties().announcements.stream().anyMatch(Datex2JsonConverterService::containsAreaLocation)) {
+                feature.setGeometry(null);
+        }
+
         return feature;
+    }
+
+    private static boolean containsAreaLocation(final TrafficAnnouncement announcement) {
+        return
+            announcement != null &&
+            announcement.locationDetails != null &&
+            announcement.locationDetails.areaLocation != null &&
+            announcement.locationDetails.areaLocation.areas != null &&
+            !announcement.locationDetails.areaLocation.areas.isEmpty();
     }
 
     private String convertImsJsonToV2Compatible(final String imsJson) throws JsonProcessingException {
@@ -353,7 +369,7 @@ public class Datex2JsonConverterService {
 
     private TrafficAnnouncementType getTrafficAnnouncementType(final JsonNode feature,
                                                                final SituationType situationType) {
-        if (situationType == null || situationType != SituationType.TRAFFIC_ANNOUNCEMENT) {
+        if (situationType != SituationType.TRAFFIC_ANNOUNCEMENT) {
             return null;
         }
         final JsonNode properties = feature.get("properties");

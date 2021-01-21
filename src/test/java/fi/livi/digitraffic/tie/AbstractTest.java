@@ -96,9 +96,9 @@ public abstract class AbstractTest {
         return contents;
     }
 
-    protected static String readResourceContent(final String resourcePattern) throws IOException {
-        final Resource datex2Resource = loadResource(resourcePattern);
-        return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
+    public static String readResourceContent(final String resourcePattern) throws IOException {
+        final Resource resource = loadResource(resourcePattern);
+        return FileUtils.readFileToString(resource.getFile(), StandardCharsets.UTF_8);
     }
 
     public static CameraPreset generateDummyPreset() {

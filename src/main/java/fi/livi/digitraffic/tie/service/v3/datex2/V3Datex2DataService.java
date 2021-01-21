@@ -49,9 +49,9 @@ public class V3Datex2DataService {
 
     @Transactional(readOnly = true)
     public TrafficAnnouncementFeatureCollection findActiveJson(final int activeInPastHours,
-                                                               final SituationType...situationTypes) {
+                                                               boolean includeAreaGeometry, final SituationType... situationTypes) {
         final List<Datex2> allActive = datex2Repository.findAllActiveBySituationTypeWithJson(activeInPastHours, typesAsStrings(situationTypes));
-        return convertToFeatureCollection(allActive);
+        return convertToFeatureCollection(allActive, includeAreaGeometry);
     }
 
     @Transactional(readOnly = true)
@@ -62,12 +62,13 @@ public class V3Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, final SituationType...situationTypes) {
+    public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, boolean includeAreaGeometry,
+                                                                      final SituationType... situationTypes) {
         final List<Datex2> datex2s = datex2Repository.findBySituationIdAndSituationTypeWithJson(situationId, typesAsStrings(situationTypes));
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
-        return convertToFeatureCollection(datex2s);
+        return convertToFeatureCollection(datex2s, includeAreaGeometry);
     }
 
     @Transactional(readOnly = true)
@@ -91,7 +92,7 @@ public class V3Datex2DataService {
         return Arrays.stream(situationTypes).map(Enum::name).toArray(String[]::new);
     }
 
-    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s) {
+    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s, boolean includeAreaGeometry) {
         final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(TRAFFIC_MESSAGES_DATA);
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
@@ -99,7 +100,8 @@ public class V3Datex2DataService {
                 try {
                     return datex2JsonConverterService.convertToFeatureJsonObjectV3(d2.getJsonMessage(),
                                                                                    d2.getSituationType(),
-                                                                                   d2.getTrafficAnnouncementType());
+                                                                                   d2.getTrafficAnnouncementType(),
+                                                                                   includeAreaGeometry);
                 } catch (final Exception e) {
                     log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3", e);
                     return null;

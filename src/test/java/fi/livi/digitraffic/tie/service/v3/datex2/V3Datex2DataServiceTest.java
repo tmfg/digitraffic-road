@@ -110,7 +110,7 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     private void checkFindBySituationId(final SituationType situationType, final String situationId) {
         final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(situationId, situationType);
         final TrafficAnnouncementFeatureCollection jsons =
-            v3Datex2DataService.findBySituationIdJson(situationId, situationType);
+            v3Datex2DataService.findBySituationIdJson(situationId, true, situationType);
 
         final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
 
@@ -127,7 +127,7 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
                                                     final ZonedDateTime start, final ZonedDateTime end) {
         final D2LogicalModel d2 = v3Datex2DataService.findActive(0, situationType);
         final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
-        final TrafficAnnouncementFeatureCollection activeJsons = v3Datex2DataService.findActiveJson(0, situationType);
+        final TrafficAnnouncementFeatureCollection activeJsons = v3Datex2DataService.findActiveJson(0, true, situationType);
 
         AssertHelper.assertCollectionSize(1, activeSituations);
         AssertHelper.assertCollectionSize(1, activeJsons.getFeatures());
@@ -169,7 +169,7 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
         final D2LogicalModel withOrWithoutJson = v3Datex2DataService.findActive(0);
         final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
-        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0);
+        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0, true);
 
         if (foundInDatex2 || situationPublication != null) {
             assertEquals(

@@ -247,10 +247,13 @@ public class BetaController {
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
+        @ApiParam("If parameter value is false, the GeoJson geometry will be empty for announcements with area locations.")
+        @RequestParam(required = false, defaultValue = "true")
+        final boolean includeAreaGeometry,
         @ApiParam(value = "Message type.")
         @RequestParam(required = false)
         final SituationType...situationType) {
-        return v3Datex2DataService.findActiveJson(inactiveHours, situationType);
+        return v3Datex2DataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
     @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
@@ -261,10 +264,13 @@ public class BetaController {
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
         final String situationId,
+        @ApiParam("If parameter value is false, the GeoJson geometry will be empty for announcements with area locations.")
+        @RequestParam(required = false, defaultValue = "true")
+        final boolean includeAreaGeometry,
         @ApiParam(value = "Situation type.")
         @RequestParam(required = false)
         final SituationType... situationType) {
-        return v3Datex2DataService.findBySituationIdJson(situationId, situationType);
+        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, situationType);
     }
 
     @ApiOperation(value = "Active traffic messages as Datex2")
