@@ -300,21 +300,13 @@ public class V2MaintenanceTrackingUpdateService {
         final boolean isTransition = isTransition(performedTasks);
         final boolean isLineString = isLineString(nextGeometry);
 
-
-        // DPO-1268 HARJA Kokeillaan poistaa viivageometrioiden yhdistäminen
-        if (isLineString) {
-            return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, false);
-        }
         // With linestrings we can't count speed so check distance
-//        if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString) {
-//            final double km =
-//                PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
-//            if (km > distinctLineStringObservationGapKm) {
-//                return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
-//            }
-//        } else if (isLineString) {
-//            return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, false);
-//        }
+        if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString) {
+            final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
+            if (km > distinctLineStringObservationGapKm) {
+                return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
+            }
+        }
 
         final double speedInKmH = resolveSpeedInKmHNullSafe(previousTracking, havainto.getHavaintoaika(), nextGeometry);
         final boolean overspeed = speedInKmH >= 140.0;

@@ -47,9 +47,6 @@ import fi.livi.digitraffic.tie.scheduler.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.scheduler.CameraHistoryDeleteJob;
 import fi.livi.digitraffic.tie.scheduler.CameraStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.CameraStationsStatusMetadataUpdateJob;
-import fi.livi.digitraffic.tie.scheduler.Datex2RoadworksMessageUpdateJob;
-import fi.livi.digitraffic.tie.scheduler.Datex2TrafficAlertMessageUpdateJob;
-import fi.livi.digitraffic.tie.scheduler.Datex2WeightRestrictionsMessageUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.ForecastSectionV1DataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.ForecastSectionV1MetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.ForecastSectionV2DataUpdateJob;
@@ -197,21 +194,6 @@ public class QuartzSchedulerConfig {
     public JobDetailFactoryBean locationMetadataUpdateJob() { return createJobDetail(LocationMetadataUpdateJob.class); }
 
     @Bean
-    public JobDetailFactoryBean datex2TrafficAlertMessageUpdateJob() {
-        return createJobDetail(Datex2TrafficAlertMessageUpdateJob.class);
-    }
-
-    @Bean
-    public JobDetailFactoryBean datex2RoadworksMessageUpdateJob() {
-        return createJobDetail(Datex2RoadworksMessageUpdateJob.class);
-    }
-
-    @Bean
-    public JobDetailFactoryBean datex2WeightRestrictionsMessageUpdateJob() {
-        return createJobDetail(Datex2WeightRestrictionsMessageUpdateJob.class);
-    }
-
-    @Bean
     public JobDetailFactoryBean forecastSectionV1MetadataUpdateJob() {
         return createJobDetail(ForecastSectionV1MetadataUpdateJob.class);
     }
@@ -277,21 +259,6 @@ public class QuartzSchedulerConfig {
     @Bean
     public FactoryBean<? extends Trigger> locationsMetadataUpdateJobTrigger(final JobDetail locationMetadataUpdateJob) {
         return createTrigger(locationMetadataUpdateJob);
-    }
-
-    @Bean
-    public FactoryBean<? extends Trigger> datex2TrafficAlertMessageUpdateJobTrigger(final JobDetail datex2TrafficAlertMessageUpdateJob) {
-        return createTrigger(datex2TrafficAlertMessageUpdateJob);
-    }
-
-    @Bean
-    public FactoryBean<? extends Trigger> datex2RoadworksMessageUpdateJobTrigger(final JobDetail datex2RoadworksMessageUpdateJob) {
-        return createTrigger(datex2RoadworksMessageUpdateJob);
-    }
-
-    @Bean
-    public FactoryBean<? extends Trigger> datex2WeightRestrictionsMessageUpdateJobTrigger(final JobDetail datex2WeightRestrictionsMessageUpdateJob) {
-        return createTrigger(datex2WeightRestrictionsMessageUpdateJob);
     }
 
     @Bean

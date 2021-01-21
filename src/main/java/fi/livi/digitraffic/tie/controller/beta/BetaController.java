@@ -49,7 +49,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
@@ -239,59 +239,59 @@ public class BetaController {
         return maintenanceRealizationDataService.findAllRealizationsTaskCategories();
     }
 
-    @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
+    @ApiOperation(value = "Active traffic messages as simple JSON")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH, produces = { APPLICATION_JSON_VALUE })
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of JSON traffic Datex2-messages"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
-        @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
+        @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @ApiParam(value = "Datex2 Message type.")
-        @RequestParam(value = "messageType", required = false)
-        final Datex2DetailedMessageType...messageType) {
-        return v3Datex2DataService.findActiveJson(inactiveHours, messageType);
+        @ApiParam(value = "Message type.")
+        @RequestParam(required = false)
+        final SituationType...situationType) {
+        return v3Datex2DataService.findActiveJson(inactiveHours, situationType);
     }
 
-    @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
+    @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH + "/{situationId}", produces = { APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of datex2 messages"),
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public TrafficAnnouncementFeatureCollection trafficMessageSimpleBySituationId(
-        @ApiParam(value = "Datex2 situation id.", required = true)
+        @ApiParam(value = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam(value = "Datex2 Message type.")
-        @RequestParam(value = "messageType", required = false)
-        final Datex2DetailedMessageType...messageType) {
-        return v3Datex2DataService.findAllBySituationIdJson(situationId, messageType);
+        @ApiParam(value = "Situation type.")
+        @RequestParam(required = false)
+        final SituationType... situationType) {
+        return v3Datex2DataService.findBySituationIdJson(situationId, situationType);
     }
 
-    @ApiOperation(value = "Active Datex2 messages for traffic-incident, roadwork, weight-restriction -types")
+    @ApiOperation(value = "Active traffic messages as Datex2")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic disorders"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
-        @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
+        @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @ApiParam(value = "Datex2 Message type.")
-        @RequestParam(value = "messageType", required = false)
-        final Datex2DetailedMessageType...messageType) {
-        return v3Datex2DataService.findActive(inactiveHours, messageType);
+        @ApiParam(value = "Situation type.")
+        @RequestParam(required = false)
+        final SituationType... situationType) {
+        return v3Datex2DataService.findActive(inactiveHours, situationType);
     }
 
-    @ApiOperation(value = "Datex2 messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
+    @ApiOperation(value = "Traffic messages history by situation as Datex2")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of datex2 messages"),
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public D2LogicalModel trafficMessageDatex2BySituationId(
-        @ApiParam(value = "Datex2 situation id.", required = true)
+        @ApiParam(value = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam(value = "Datex2 Message type.")
-        @RequestParam(value = "messageType", required = false)
-        final Datex2DetailedMessageType...messageType) {
-        return v3Datex2DataService.findAllBySituationId(situationId, messageType);
+        @ApiParam(value = "Situation type.")
+        @RequestParam(required = false)
+        final SituationType... situationType) {
+        return v3Datex2DataService.findAllBySituationId(situationId, situationType);
     }
 }

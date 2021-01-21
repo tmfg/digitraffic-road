@@ -60,8 +60,8 @@ public class Area extends JsonAdditionalProperties {
         WEATHER_REGION("weather region"),
         COUNTRY("country");
 
-        Type(final String value) {
-            this.value = value;
+        Type(final String fromValue) {
+            this.value = fromValue;
         }
 
         private final String value;
@@ -70,6 +70,7 @@ public class Area extends JsonAdditionalProperties {
         static {
             for (Area.Type c: values()) {
                 CONSTANTS.put(c.value, c);
+                CONSTANTS.put(c.name(), c);
             }
         }
 
@@ -77,6 +78,10 @@ public class Area extends JsonAdditionalProperties {
         public static Type fromValue(final String value) {
             final Type constant = CONSTANTS.get(value);
             return Objects.requireNonNullElseGet(constant, () -> Type.valueOf(value.toUpperCase()));
+        }
+
+        public String getFromValue() {
+            return value;
         }
     }
 }

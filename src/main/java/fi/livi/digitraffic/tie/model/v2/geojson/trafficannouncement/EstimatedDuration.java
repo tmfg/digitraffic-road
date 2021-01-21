@@ -1,6 +1,8 @@
 
 package fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement;
 
+import static fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.EstimatedDuration.DURATION_REGEXP;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,13 +27,14 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class EstimatedDuration extends JsonAdditionalProperties {
 
-    // Regexp taken from Duration class
-    @Pattern(regexp="([-+]?)P(?:([-+]?[0-9]+)D)?(T(?:([-+]?[0-9]+)H)?(?:([-+]?[0-9]+)M)?(?:([-+]?[0-9]+)(?:[.,]([0-9]{0,9}))?S)?)?", message="Invalid minimum duration!")
+    @Pattern(regexp= DURATION_REGEXP, flags = Pattern.Flag.CASE_INSENSITIVE,
+             message="Invalid minimum duration!")
     @ApiModelProperty(value = "Estimated minimum duration using ISO-8601 duration", required = true, example = "PT6H")
     @NotNull
     public String minimum;
 
-    @Pattern(regexp="([-+]?)P(?:([-+]?[0-9]+)D)?(T(?:([-+]?[0-9]+)H)?(?:([-+]?[0-9]+)M)?(?:([-+]?[0-9]+)(?:[.,]([0-9]{0,9}))?S)?)?", message="Invalid maximum duration!")
+    @Pattern(regexp=DURATION_REGEXP, flags = Pattern.Flag.CASE_INSENSITIVE,
+             message="Invalid maximum duration!")
     @ApiModelProperty(value = "Estimated maximum duration using ISO-8601 duration", dataType = "String", example = "PT8H")
     public String maximum;
 

@@ -42,8 +42,6 @@ dt.job.ForecastSectionWeatherUpdateJob.schedule =              0 0/5 * * * ?
 dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
 dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 0 0/1 * * ?
 dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
-dt.job.Datex2RoadworksMessageUpdateJob.schedule =              0 0 0/1 * * ?
-dt.job.Datex2WeightRestrictionsMessageUpdateJob.schedule =     0 0 0/1 * * ?
 # Every 12 h
 dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
 dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?

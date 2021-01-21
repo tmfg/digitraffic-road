@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2SimpleMessageUpdater;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
@@ -34,10 +41,10 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     protected Datex2UpdateService datex2UpdateService;
 
     @Autowired
-    protected Datex2Repository datex2Repository;
+    protected Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
     @Autowired
-    private Datex2SimpleMessageUpdater datex2SimpleMessageUpdater;
+    protected Datex2Repository datex2Repository;
 
     private final String incident1_past_id = "GUID50005166";
     private final String incident2_active_id = "GUID50006936";
@@ -59,11 +66,29 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
         // GUID5035473201 active
         final String weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
 
-        updateDatex2(incident1, TRAFFIC_INCIDENT);
-        updateDatex2(incident2, TRAFFIC_INCIDENT);
-        updateDatex2(incident3, TRAFFIC_INCIDENT);
-        updateDatex2(roadwork1, ROADWORK);
-        updateDatex2(weightRestriction1, WEIGHT_RESTRICTION);
+        datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
+            incident1, "", SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT)));
+        datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
+            incident2, "", SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.ACCIDENT_REPORT)));
+        datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
+            incident3, "", SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.ACCIDENT_REPORT)));
+        datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
+            roadwork1, "", SituationType.ROAD_WORK, null)));
+        datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
+            weightRestriction1, "", SituationType.WEIGHT_RESTRICTION, null)));
+    }
+
+    private Datex2MessageDto createDatex2MessageDto(final String datexMessage, final String jsonMessage, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType) {
+        final D2LogicalModel d2LogicalModel =
+            datex2XmlStringToObjectMarshaller.convertToObject(datexMessage);
+        final SituationPublication s = Datex2Helper.getSituationPublication(d2LogicalModel);
+        return new Datex2MessageDto(d2LogicalModel,
+                             situationType,
+                             trafficAnnouncementType,
+                             datexMessage,
+                             jsonMessage,
+                             ZonedDateTime.now(),
+                             s.getSituations().get(0).getId());
     }
 
     @Test
@@ -135,9 +160,5 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     private String getResponse(final String url) throws Exception {
         return mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-    }
-
-    private void updateDatex2(final String datex2Xml, final Datex2MessageType type) {
-        datex2UpdateService.updateDatex2Data(datex2SimpleMessageUpdater.convert(datex2Xml, type, ZonedDateTime.now()));
     }
 }

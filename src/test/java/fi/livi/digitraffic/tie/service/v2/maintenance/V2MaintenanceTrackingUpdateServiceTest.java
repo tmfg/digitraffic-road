@@ -383,7 +383,6 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertCollectionSize(3, trackings);
     }
 
-    @Ignore("Removed for testing of DPO-1268 HARJA Kokeillaan poistaa viivageometrioiden yhdistäminen")
     @Test
     public void lineStringsShouldBeHandledAsOneIfNoDistanceGap() throws IOException {
 

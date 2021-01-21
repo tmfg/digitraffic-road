@@ -1,0 +1,77 @@
+{
+    "type": "Feature",
+    "geometry": {"type":"Polygon","coordinates": [[[24.0, 61.0], [24.1, 61.0], [24.1, 61.1], [24.0, 61.1], [24, 61]], [[24.01, 61.01], [24.09, 61.01], [24.09, 61.09], [24.01, 61.09], [24.01, 61.01]]]},
+    "properties": {
+        "situationId": "GUID10000002",
+        "version": SITUATION_VERSION,
+        "releaseTime": "SITUATION_VERSION_DATE_TIME",
+        "locationToDisplay": {
+            "e": 331529.0,
+            "n": 6805963.0
+        },
+        "announcements": [
+            {
+                "language": "fi",
+                "title": "Erikoiskuljetus. Satakunta",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Erikoiskuljetus alueella Kankaanpää Kuljetus liikkuu 12.01.2021 klo 19:00 - 21:00 reitillä: Kankaanpään katuverkko Liikenne pysäytetään ajoittain. Kuljetuksen leveys: 9,5 m Kuljetuksen korkeus: 10,8 m Kuljetuksen pituus: 40 m Kuljetuksen kokonaismassa: 167 t Kuljetus on perillä 13.01.2021 klo 06:00 mennessä"
+                },
+                "locationDetails": {
+                    "areaLocation": {
+                        "areas": [
+                            {
+                                "name": "Suomi",
+                                "locationCode": 3,
+                                "type": "country"
+                            },
+                            {
+                                "name": "Tampereen seutu",
+                                "locationCode": 5898,
+                                "type": "weather region"
+                            },
+                            {
+                                "name": "Pirkanmaa",
+                                "locationCode": 14,
+                                "type": "province"
+                            },
+                            {
+                                "name": "Tampere",
+                                "locationCode": 408,
+                                "type": "municipality"
+                            }
+                        ]
+                    }
+                },
+                "features": [
+                    {
+                        "name" : "Liikenne pysäytetään ajoittain"
+                    },
+                    {
+                        "name" : "Kuljetuksen leveys",
+                        "quantity" : 4.5,
+                        "unit" : "m"
+                    }
+                ],
+                "comment": "TESTI TESTI TESTI\nML",
+                "timeAndDuration": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "END_DATE_TIME",
+                    "estimatedDuration": {
+                        "minimum": "PT6H",
+                        "informal": "Yli 6 tuntia"
+                    }
+                },
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            }
+        ],
+        "contact": {
+            "phone": "0206373328",
+            "fax": "0206373713",
+            "email": "helsinki.liikennekeskus@liikennevirasto.fi"
+        }
+    }
+}

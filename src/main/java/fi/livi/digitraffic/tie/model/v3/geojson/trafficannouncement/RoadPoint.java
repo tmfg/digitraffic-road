@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "A single road point", value = "RoadPointV2")
+@ApiModel(description = "A single road point", value = "RoadPointV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "municipality",

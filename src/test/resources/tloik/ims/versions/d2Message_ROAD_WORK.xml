@@ -1,0 +1,88 @@
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>2020-12-21T08:29:14.154Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID10000004" version="SITUATION_VERSION">
+            <overallSeverity>high</overallSeverity>
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000401" version="SITUATION_VERSION">
+                <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
+                <situationRecordVersionTime>SITUATION_VERSION_DATE_TIME</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>START_DATE_TIME</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 13567, Jokioinen. Tietyö. Tie 13567 välillä Jänhijoki - Latovainio, Jokioinen. Tarkempi paikka: Paikasta Latovainio 400 m, suuntaan Humppilantie. Mattilan silta. Merkittävää haittaa liikenteelle. Siltatyö Kiertotie käytössä Tie on suljettu liikenteeltä Ajankohta: 25.01.2021 08:00 - 27.01.2021 08:00. </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.37</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37128</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>2184</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37126</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>5264</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>singleAlternateLineTraffic</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID1000000402" version="1">
+                <situationRecordCreationTime>2020-12-21T08:29:13.636Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2020-12-21T08:29:13.636Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2020-12-21T08:29:13.636Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2020-12-22T00:00:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <subjects>
+                    <subjectTypeOfWorks>bridge</subjectTypeOfWorks>
+                </subjects>
+                <roadMaintenanceType>other</roadMaintenanceType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

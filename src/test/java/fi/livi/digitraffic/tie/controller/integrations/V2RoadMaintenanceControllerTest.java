@@ -92,7 +92,6 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         Assert.assertEquals(recordsBefore, recordsAfter);
     }
 
-    @Ignore("Removed for testing of DPO-1268 HARJA Kokeillaan poistaa viivageometrioiden yhdistäminen")
     @Test
     public void postWorkMachineTrackingDataAndHandleAsDistinctObservations() throws Exception {
         final long harjaUrakkaId = 999999;

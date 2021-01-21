@@ -33,12 +33,12 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2TrafficAlertHttpClient;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v1.location.LocationService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 @Import({ Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
@@ -46,8 +46,8 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
           LocationService.class, RoadDistrictService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
           TmsDataService.class, CameraImageUpdateService.class, CameraImageReader.class, CameraImageS3Writer.class,
-          Datex2TrafficAlertHttpClient.class, Datex2UpdateService.class, FileGetService.class,
-          V2Datex2UpdateService.class, Datex2JsonConverterService.class,
+          Datex2UpdateService.class, FileGetService.class,
+          V2Datex2UpdateService.class, Datex2JsonConverterService.class, V2Datex2DataService.class,
           CameraPresetHistoryUpdateService.class, FlywayService.class,
           WeatherService.class, SensorDataUpdateService.class,
 

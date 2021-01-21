@@ -22,8 +22,6 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.response.TrafficDisordersDatex2Response;
-import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
@@ -75,9 +73,10 @@ public abstract class AbstractDatex2DataServiceTest extends AbstractServiceTest 
         return (D2LogicalModel)object;
     }
 
-    protected List<Datex2MessageDto> createDtoList(final String datex2Content, final Datex2DetailedMessageType messageType) {
-        final D2LogicalModel d2LogicalModel =  createModel(datex2Content);
-        return v2Datex2UpdateService.createModels(d2LogicalModel, null, DateHelper.getZonedDateTimeNowAtUtc());
+    protected List<Datex2MessageDto> createDtoList(final String datex2Content) {
+//        final D2LogicalModel d2LogicalModel =  createModel(datex2Content);
+//        return v2Datex2UpdateService.createModels(d2LogicalModel, null, DateHelper.getZonedDateTimeNowAtUtc());
+        return null;
     }
 
     protected static String replaceVersionTimes(final String xml, final Instant replacement) {
@@ -113,11 +112,11 @@ public abstract class AbstractDatex2DataServiceTest extends AbstractServiceTest 
 
     protected void updateTrafficIncidents(final String datex2Content) {
         final String updated = replaceVersionTimes(datex2Content, getNextVersionTime());
-        datex2UpdateService.updateDatex2Data(createDtoList(updated, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT));
+        datex2UpdateService.updateDatex2Data(createDtoList(updated));
     }
 
     protected void updateRoadworks(final String datex2Content) {
-        datex2UpdateService.updateDatex2Data(createDtoList(datex2Content, Datex2DetailedMessageType.ROADWORK));
+        datex2UpdateService.updateDatex2Data(createDtoList(datex2Content));
     }
 
     protected static Instant getNextVersionTime() {
@@ -126,7 +125,7 @@ public abstract class AbstractDatex2DataServiceTest extends AbstractServiceTest 
     }
 
     protected void updateWeightRestrictions(final String datex2Content) {
-        datex2UpdateService.updateDatex2Data(createDtoList(datex2Content, Datex2DetailedMessageType.WEIGHT_RESTRICTION));
+        datex2UpdateService.updateDatex2Data(createDtoList(datex2Content));
     }
 
     protected void deleteAllDatex2() {
