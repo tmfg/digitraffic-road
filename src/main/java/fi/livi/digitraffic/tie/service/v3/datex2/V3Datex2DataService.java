@@ -17,11 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;

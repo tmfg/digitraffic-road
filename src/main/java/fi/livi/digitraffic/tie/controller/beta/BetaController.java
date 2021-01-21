@@ -48,9 +48,9 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationFeatureC
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;

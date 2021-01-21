@@ -31,19 +31,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.RoadAddressLocation;
+import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.ItineraryRoadLeg;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Restriction;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadWorkPhase;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.WorkingHour;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Worktype;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Area;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.ItineraryRoadLeg;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Restriction;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.RoadWorkPhase;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.WorkingHour;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Worktype;
 import fi.livi.digitraffic.tie.service.AbstractDatex2DataServiceTest;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
@@ -74,7 +76,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
             for (final SituationType st : SituationType.values()) {
                 final String json = readStaticImsJmessageResourceContent(jsonVersion, st, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
                 log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
-                final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature ta =
+                final fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature ta =
                     datex2JsonConverterService.convertToFeatureJsonObjectV2(json, st.getDatex2MessageType());
                 validateImsSimpleJsonVersionToGeoJsonFeatureObjectV2(st, jsonVersion, ta);
                 log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
@@ -242,9 +244,9 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
     }
 
     private void validateImsSimpleJsonVersionToGeoJsonFeatureObjectV2(final SituationType st, final ImsJsonVersion version,
-                                                                      final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+                                                                      final fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature feature) {
 
-        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties props = feature.getProperties();
+        final TrafficAnnouncementProperties props = feature.getProperties();
         final TrafficAnnouncement announcement = props.announcements.get(0);
 
         // Common
@@ -257,7 +259,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
             assertEquals("GUID10000001", props.situationId);
             assertTitleContains(announcement, "Liikennetiedote");
             assertGeometry(feature.getGeometry(), Point);
-            assertRoadAddressLocationV2(announcement, fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation.Direction.POS);
+            assertRoadAddressLocationV2(announcement, RoadAddressLocation.Direction.POS);
             assertFeatures(announcement, "Nopeusrajoitus", "Huono ajokeli");
             break;
         case EXEMPTED_TRANSPORT:
@@ -271,14 +273,14 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
             assertEquals("GUID10000003", props.situationId);
             assertTitleContains(announcement, "Painorajoitus");
             assertGeometry(feature.getGeometry(), Point);
-            assertRoadAddressLocationV2(announcement, fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation.Direction.BOTH);
+            assertRoadAddressLocationV2(announcement, RoadAddressLocation.Direction.BOTH);
             assertFeatures(announcement, "Ajoneuvon suurin sallittu massa");
             break;
         case ROAD_WORK:
             assertEquals("GUID10000004", props.situationId);
             assertTitleContains(announcement, "Tietyö");
             assertGeometry(feature.getGeometry(), Point);
-            assertRoadAddressLocationV2(announcement, fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation.Direction.UNKNOWN);
+            assertRoadAddressLocationV2(announcement, RoadAddressLocation.Direction.UNKNOWN);
             assertFeatures(announcement, "Nopeusrajoitus", "Silta pois käytöstä");
             break;
         default:
@@ -407,7 +409,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
 
 
 
-    private void assertLocationToDisplay(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties props, final ImsJsonVersion version) {
+    private void assertLocationToDisplay(final TrafficAnnouncementProperties props, final ImsJsonVersion version) {
         if (version.version < 2.08) {
             assertNotNull(props.locationToDisplay);
         } else {
@@ -415,7 +417,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
         }
     }
 
-    private void assertContacts(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties props,
+    private void assertContacts(final TrafficAnnouncementProperties props,
                                 final ImsJsonVersion version) {
         assertNotNull(props.contact.email);
         assertNotNull(props.contact.phone);
@@ -437,7 +439,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
         assertEquals(type, geometry.getType());
     }
 
-    private void assertFeatures(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement announcement,
+    private void assertFeatures(final TrafficAnnouncement announcement,
                                 final String...features) {
         for (final String f : features) {
             announcement.features.stream().filter(value -> value.contains(f)).findFirst().orElseThrow();
@@ -457,9 +459,9 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
         assertEquals(features.length, announcement.features.size());
     }
 
-    private void assertRoadAddressLocationV2(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement announcement,
-                                             final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation.Direction direction) {
-        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation ral = announcement.locationDetails.roadAddressLocation;
+    private void assertRoadAddressLocationV2(final TrafficAnnouncement announcement,
+                                             final RoadAddressLocation.Direction direction) {
+        final RoadAddressLocation ral = announcement.locationDetails.roadAddressLocation;
         if (direction != null) {
             assertEquals(direction, ral.direction);
             assertNotNull(ral.primaryPoint);
@@ -483,7 +485,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
 
     }
 
-    private void assertAreaLocation(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement announcement,
+    private void assertAreaLocation(final TrafficAnnouncement announcement,
                                     final ImsJsonVersion version) {
         final int size = version.version >= 2.08 ? 5 : 4;
         assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
@@ -512,7 +514,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
         }
     }
 
-    private void assertContainsLocationTypeV2(final List<fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.Area> areas, final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Area.Type type) {
+    private void assertContainsLocationTypeV2(final List<fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.Area> areas, final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Area.Type type) {
         areas.stream().filter(a -> a.type.equals(type.getFromValue())).findFirst().orElseThrow();
     }
 
@@ -520,7 +522,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
         areas.stream().filter(a -> a.type.equals(type)).findFirst().orElseThrow();
     }
 
-    private void assertTitleContains(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement announcement,
+    private void assertTitleContains(final TrafficAnnouncement announcement,
                                      final String title) {
         assertTrue(announcement.title.contains(title));
     }
