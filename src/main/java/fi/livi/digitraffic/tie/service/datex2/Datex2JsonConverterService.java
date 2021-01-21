@@ -52,7 +52,7 @@ public class Datex2JsonConverterService {
         this.objectMapper = objectMapper;
 
         featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
-        featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature.class);
+        featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class);
 
         genericJsonReader = objectMapper.reader();
 
@@ -76,7 +76,7 @@ public class Datex2JsonConverterService {
         return feature;
     }
 
-    public fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature convertToFeatureJsonObjectV3(final String imsJson,
+    public fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature convertToFeatureJsonObjectV3(final String imsJson,
                                                                                                                                 final SituationType situationType,
                                                                                                                                 final TrafficAnnouncementType trafficAnnouncementType,
                                                                                                                                 boolean includeAreaGeometry)
@@ -84,7 +84,7 @@ public class Datex2JsonConverterService {
         // Ims JSON String can be in 0.2.4, 0.2.6 or 0.2.8 format. Convert all to 0.2.10 format.
         final String imsJsonV3 = convertImsJsonToV3Compatible(imsJson);
 
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
+        final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature feature =
             featureJsonReaderV3.readValue(imsJsonV3);
 
         // Older
@@ -223,8 +223,8 @@ public class Datex2JsonConverterService {
         }
     }
 
-    private void checkDurationViolationsV3(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
-        final List<ConstraintViolation<fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.EstimatedDuration>> violations =
+    private void checkDurationViolationsV3(final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature feature) {
+        final List<ConstraintViolation<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration>> violations =
             getDurationViolationsV3(feature);
 
         if (!violations.isEmpty()) {
@@ -241,8 +241,8 @@ public class Datex2JsonConverterService {
         return feature.getProperties().announcements.stream().map(this::getDurationViolationsV2).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
-    private List<ConstraintViolation<fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.EstimatedDuration>> getDurationViolationsV3(
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+    private List<ConstraintViolation<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration>> getDurationViolationsV3(
+        final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature feature) {
 
         return feature.getProperties().announcements.stream().map(this::getDurationViolationsV3).flatMap(Collection::stream).collect(Collectors.toList());
     }
@@ -256,8 +256,8 @@ public class Datex2JsonConverterService {
         return Collections.emptySet();
     }
 
-    private Set<ConstraintViolation<fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.EstimatedDuration>> getDurationViolationsV3(
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement a) {
+    private Set<ConstraintViolation<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration>> getDurationViolationsV3(
+        final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement a) {
 
         if (a.timeAndDuration != null && a.timeAndDuration.estimatedDuration != null) {
             return validator.validate(a.timeAndDuration.estimatedDuration);
@@ -271,7 +271,7 @@ public class Datex2JsonConverterService {
         }
     }
 
-    private static void checkIsInvalidAnnouncementGeojsonV3(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+    private static void checkIsInvalidAnnouncementGeojsonV3(final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature feature) {
         if (feature.getProperties() == null) {
             throw new IllegalStateException("TrafficAnnouncementFeature with null properties " + ToStringHelper.toStringFull(feature));
         }
