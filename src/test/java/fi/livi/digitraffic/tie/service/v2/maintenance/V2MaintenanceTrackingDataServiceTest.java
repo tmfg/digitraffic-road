@@ -15,6 +15,7 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MIN;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithLineString;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createVerticalLineStringWGS84;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkmachine;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getEndTime;
@@ -34,7 +35,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -286,6 +286,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertCollectionSize(2, jsons);
     }
 
+    // TODO fix
     @Test
     public void findWithMultipleTasks() throws JsonProcessingException {
         final int machineCount = getRandomId(2, 10);
@@ -352,15 +353,6 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         Assert.assertEquals(startTime, props.endTime);
     }
 
-    private List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
-        final double increment = 0.01; // keeps distance between points < 2 km
-        final double range = maxY - minY;
-        final int points = (int) (range / increment);
-
-        return IntStream.range(1, points+1)
-            .mapToObj(i -> asList(x, minY + (i*increment)))
-            .collect(Collectors.toList());
-    }
 
     /**
      *                          | - linestring

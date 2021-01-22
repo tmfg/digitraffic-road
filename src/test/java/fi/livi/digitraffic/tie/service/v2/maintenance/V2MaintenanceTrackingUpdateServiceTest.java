@@ -398,7 +398,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     }
 
     @Test
-    public void singlePointLineStringsShouldBeHandledAsPointTrackings() throws IOException {
+    public void singlePointLineStringsShouldBeHandledAsLineStringTrackings() throws IOException {
 
         testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-1.json");
         testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-2.json");
@@ -409,6 +409,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // 3 LineStrings with single point in each should be combined as one tracking
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
         assertCollectionSize(1, trackings);
-        assertEquals(3, trackings.get(0).getLineString().getNumPoints());
+        // single points are duplicated (not the starting one) as two same point linestring -> 1 + 2 + 2 = 5 points
+        assertEquals(5, trackings.get(0).getLineString().getNumPoints());
     }
 }
