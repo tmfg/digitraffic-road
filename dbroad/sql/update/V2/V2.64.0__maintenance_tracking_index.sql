@@ -1,0 +1,1 @@
+create index if not exists maintenance_tracking_line_string_i on maintenance_tracking using gist(line_string);
