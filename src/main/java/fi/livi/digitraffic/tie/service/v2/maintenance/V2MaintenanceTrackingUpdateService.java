@@ -55,7 +55,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -256,7 +255,7 @@ public class V2MaintenanceTrackingUpdateService {
         return geometry.getNumPoints() > 1;
     }
 
-    private void sendToMqtt(final MaintenanceTrackingDto tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
+    private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
         if (maintenanceTrackingMqttConfiguration == null) {
             return;
         }
