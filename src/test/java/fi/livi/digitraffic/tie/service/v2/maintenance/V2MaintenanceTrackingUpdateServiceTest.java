@@ -23,7 +23,6 @@ import java.util.stream.LongStream;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -310,7 +309,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         IntStream.range(5,10).forEach(i -> {
             final KoordinaattisijaintiSchema koordinaatit = kirjaus.getHavainnot().get(i).getHavainto().getSijainti().getKoordinaatit();
             // Set forward  so far that it exceeds speed 120 km/h when there is one minute between points.
-            koordinaatit.setX(koordinaatit.getX() + 2000);
+            koordinaatit.setX(koordinaatit.getX() + 2500);
         });
         testHelper.saveTrackingData(kirjaus);
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
