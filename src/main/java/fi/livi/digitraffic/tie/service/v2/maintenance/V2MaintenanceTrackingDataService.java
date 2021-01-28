@@ -182,7 +182,7 @@ public class V2MaintenanceTrackingDataService {
             return readGeometry(tracking.getLastPointJson());
         } else {
             final Geometry<?> lineString = readGeometry(tracking.getLineStringJson());
-            if (lineString == null || lineString.getCoordinates().size() == 0) {
+            if (lineString == null || lineString.getCoordinates().size() <= 1) {
                 return readGeometry(tracking.getLastPointJson());
             }
             return lineString;
