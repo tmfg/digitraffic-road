@@ -121,7 +121,8 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
 
     @Query(value = DTO_LINESTRING_SQL +
-                   "WHERE tracking.id = :id",
+                   "WHERE tracking.id = :id\n" +
+                   "GROUP BY tracking.id\n",
            nativeQuery = true)
     MaintenanceTrackingDto getDto(long id);
 }
