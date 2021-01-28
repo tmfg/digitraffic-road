@@ -40,7 +40,8 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
 
     @Before
     public void cleanDb() {
-        testHelper.clearDb();
+        // Uncomment if you want to clear db before every test
+        // testHelper.clearDb();
     }
 
     @Ignore("Just for internal testing")
