@@ -97,9 +97,9 @@ public class MetricWriter {
 
         final String loggingKey = metric.loggingKey(meter);
 
-        final Pair<Double, Double> oldValue = metricMap.computeIfAbsent(loggingKey, x -> Pair.of(0.0, 0.0));
-        final Pair<Double, Double> newValue = Pair.of(Math.max(oldValue.getLeft(), measurement.getValue()),
-            Math.min(oldValue.getRight(), measurement.getValue()));
+        final Pair<Double, Double> oldValue = metricMap.get(loggingKey);
+        final Pair<Double, Double> newValue = oldValue == null ? Pair.of(measurement.getValue(), measurement.getValue())
+            : Pair.of(Math.max(oldValue.getLeft(), measurement.getValue()), Math.min(oldValue.getRight(), measurement.getValue()));
 
 //        LOG.info(meterName + " old values " + oldValue.getLeft() + " and " + oldValue.getRight());
 //        LOG.info(meterName + " new values " + newValue.getLeft() + " and " + newValue.getRight());
