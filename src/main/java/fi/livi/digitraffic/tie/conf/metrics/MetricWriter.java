@@ -131,19 +131,21 @@ public class MetricWriter {
         final String tagValue = metric.tagName == null ? null : meter.getId().getTag(metric.tagName);
 
         if(metric.logMin) {
-            final String key = metric.metricKey + ".min";
-            final Double oldValue = metricMap.get(key);
+            final MetricKey metricKey = new MetricKey(metric.metricKey + ".min", tagValue);
+
+            final Double oldValue = metricMap.get(metricKey);
             final Double newValue = oldValue == null ? measurement.getValue() : Math.min(oldValue, measurement.getValue());
 
-            metricMap.put(new MetricKey(key, tagValue), newValue);
+            metricMap.put(metricKey, newValue);
         }
 
         if(metric.logMax) {
-            final String key = metric.metricKey + ".max";
-            final Double oldValue = metricMap.get(key);
+            final MetricKey metricKey = new MetricKey(metric.metricKey + ".max", tagValue);
+
+            final Double oldValue = metricMap.get(metricKey);
             final Double newValue = oldValue == null ? measurement.getValue() : Math.max(oldValue, measurement.getValue());
 
-            metricMap.put(new MetricKey(key, tagValue), newValue);
+            metricMap.put(metricKey, newValue);
         }
     }
 
