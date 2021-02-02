@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -38,11 +37,11 @@ public class MaintenanceTrackingProperties extends Properties {
     @ApiModelProperty(value = "Direction of the last observation")
     public BigDecimal direction;
 
-    public MaintenanceTrackingProperties(final long id, final MaintenanceTrackingWorkMachine workMachine,
+    public MaintenanceTrackingProperties(final long id, final long workMachineId,
                                          final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
                                          final Set<MaintenanceTrackingTask> tasks, BigDecimal direction) {
         this.id = id;
-        this.workMachineId = workMachine.getId();
+        this.workMachineId = workMachineId;
         this.sendingTime = sendingTime;
         this.tasks = tasks;
         this.startTime = startTime;

@@ -20,6 +20,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.locationtech.jts.geom.Geometry;
@@ -31,7 +32,8 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 @Table(name = "MAINTENANCE_TRACKING")
-public class MaintenanceTracking implements MaintenanceTrackingDto {
+@DynamicUpdate
+public class MaintenanceTracking {
 
     @Id
     @GenericGenerator(name = "SEQ_MAINTENANCE_TRACKING", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
@@ -183,6 +185,10 @@ public class MaintenanceTracking implements MaintenanceTrackingDto {
     @Override
     public String toString() {
         return ToStringHelper.toStringFull(this);
+    }
+
+    public String toStringTiny() {
+        return ToStringHelper.toStringExcluded(this, "lineString");
     }
 
     public void appendGeometry(final Geometry geometryToAppend, final ZonedDateTime geometryObservationTime, final BigDecimal direction) {

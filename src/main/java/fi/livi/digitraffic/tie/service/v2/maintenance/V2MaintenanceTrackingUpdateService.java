@@ -55,7 +55,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -187,20 +186,21 @@ public class V2MaintenanceTrackingUpdateService {
                 final ZonedDateTime harjaObservationTime = DateHelper.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
 
                 final BigDecimal direction = getDirection(havainto, trackingData.getId());
+                final Point firstPoint = resolveFirstPoint(geometry);
                 if (status.is(TRANSITION)) {
                     log.debug("method=handleRoute WorkMachine tracking in transition");
                     // Mark found one to finished as the work machine is in transition after that
-                    // Append latest point (without the task) to tracking if it's inside time limits.
-                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, direction, harjaObservationTime,  status.isNextInsideLimits())) {
-                        sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
+                    // Append first point of next tracking as the last point of the previous tracking (without the task) if it's inside time limits.
+                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime,  status.isNextInsideLimits())) {
+                        sendToMqtt(previousTracking, firstPoint, direction, harjaObservationTime);
                     }
                 // If previous is finished or tasks has changed or time gap is too long, we create new tracking for the machine
                 } else if (status.is(NEW)) {
 
-                    // Append latest point to tracking if it's inside time limits. This happens only when task changes and
-                    // last point will be new tasks first point.
-                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, geometry, direction, harjaObservationTime, status.isNextInsideLimits())) {
-                        sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
+                    // Append first point of next tracking as the last point of the previous tracking (without the task) if it's inside time limits.
+                    // This happens only when task changes for same work machine.
+                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isNextInsideLimits())) {
+                        sendToMqtt(previousTracking, firstPoint, direction, harjaObservationTime);
                     }
 
                     final MaintenanceTrackingWorkMachine workMachine =
@@ -255,7 +255,7 @@ public class V2MaintenanceTrackingUpdateService {
         return geometry.getNumPoints() > 1;
     }
 
-    private void sendToMqtt(final MaintenanceTrackingDto tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
+    private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
         if (maintenanceTrackingMqttConfiguration == null) {
             return;
         }
@@ -279,7 +279,7 @@ public class V2MaintenanceTrackingUpdateService {
         if (havainto.getSuunta() != null) {
             final BigDecimal value = BigDecimal.valueOf(havainto.getSuunta());
             if (value.intValue() > 360 || value.intValue() < 0) {
-                log.error("Illegal direction value {} for trackingData id {}. Value should be between 0-360 degrees. Havainto:",
+                log.error("Illegal direction value {} for trackingData id {}. Value should be between 0-360 degrees. Havainto: {}",
                           value, trackingDataId, ToStringHelper.toStringExcluded(havainto, "sijainti"));
                 return null;
             }
@@ -297,10 +297,10 @@ public class V2MaintenanceTrackingUpdateService {
         final boolean isNextTimeSameOrAfter = isNextCoordinateTimeSameOrAfterPreviousNullSafe(harjaObservationTime, previousTracking);
         final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, previousTracking);
         final boolean isTransition = isTransition(performedTasks);
-
+        final boolean isLineString = isLineString(nextGeometry);
 
         // With linestrings we can't count speed so check distance
-        if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString(nextGeometry)) {
+        if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString) {
             final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
             if (km > distinctLineStringObservationGapKm) {
                 return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
@@ -364,20 +364,20 @@ public class V2MaintenanceTrackingUpdateService {
 
     /**
      *
-     * @param trackingToFinish
-     * @param latestGeometry
-     * @param direction
-     * @param latestGeometryOservationTime
-     * @param appendLatestGeometry
-     * @return true if geometry was appended to tracking
+     * @param trackingToFinish Tracking to set finished and to append last point
+     * @param latestPoint Point witch should be appended to previous tracking
+     * @param direction Direction of the machine
+     * @param latestGeometryOservationTime Time of the observation
+     * @param appendLatestPoint Should the latest point be appended to the geometry
+     * @return true if the latest point was appended to tracking
      */
-    private static boolean updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Geometry latestGeometry,
+    private static boolean updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Point latestPoint,
                                                                          final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
-                                                                         final boolean appendLatestGeometry) {
+                                                                         final boolean appendLatestPoint) {
         boolean geometryAppended = false;
         if (trackingToFinish != null && !trackingToFinish.isFinished()) {
-            if (appendLatestGeometry) {
-                trackingToFinish.appendGeometry(latestGeometry, latestGeometryOservationTime, direction);
+            if (appendLatestPoint) {
+                trackingToFinish.appendGeometry(latestPoint, latestGeometryOservationTime, direction);
                 geometryAppended = true;
             }
             trackingToFinish.setFinished();
@@ -446,7 +446,7 @@ public class V2MaintenanceTrackingUpdateService {
         final List<Coordinate> tmpCoordinates = new ArrayList<>();
         tmpCoordinates.add(coordinates.get(0));
 
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 1; i < coordinates.size(); i++) {
             final Coordinate next = coordinates.get(i);
             final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(tmpCoordinates.get(tmpCoordinates.size()-1), next);
@@ -485,7 +485,7 @@ public class V2MaintenanceTrackingUpdateService {
     private static List<Coordinate> resolveCoordinatesAsWGS84(final GeometriaSijaintiSchema sijainti) {
         if (sijainti.getViivageometria() != null) {
             final List<List<Object>> lineStringCoords = sijainti.getViivageometria().getCoordinates();
-            return lineStringCoords.stream().map(point -> {
+            final List<Coordinate> resultLineString = lineStringCoords.stream().map(point -> {
                 try {
                     final double x = ((Number) point.get(0)).doubleValue();
                     final double y = ((Number) point.get(1)).doubleValue();
@@ -493,7 +493,7 @@ public class V2MaintenanceTrackingUpdateService {
                     final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                     if (log.isDebugEnabled()) {
                         log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
-                                  x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
+                            x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
                     }
                     return PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                 } catch (Exception e) {
@@ -501,6 +501,13 @@ public class V2MaintenanceTrackingUpdateService {
                     throw e;
                 }
             }).collect(Collectors.toList());
+            if (resultLineString.size() == 1) {
+                // As we are handling LineString, there should be at least two points. In reality they should be distinct points, but here
+                // we fool a little and just duplicate the only point int the geometry to make it "LineString". This causes coordinates
+                // to be handled like LineString and not as a single Point.
+                resultLineString.add(resultLineString.get(0));
+            }
+            return resultLineString;
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
             final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());

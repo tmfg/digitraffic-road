@@ -15,6 +15,7 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MIN;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithLineString;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createVerticalLineStringWGS84;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkmachine;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getEndTime;
@@ -34,7 +35,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -286,6 +286,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertCollectionSize(2, jsons);
     }
 
+    // TODO fix
     @Test
     public void findWithMultipleTasks() throws JsonProcessingException {
         final int machineCount = getRandomId(2, 10);
@@ -352,15 +353,6 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         Assert.assertEquals(startTime, props.endTime);
     }
 
-    private List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
-        final double increment = 0.01; // keeps distance between points < 2 km
-        final double range = maxY - minY;
-        final int points = (int) (range / increment);
-
-        return IntStream.range(1, points+1)
-            .mapToObj(i -> asList(x, minY + (i*increment)))
-            .collect(Collectors.toList());
-    }
 
     /**
      *                          | - linestring
@@ -455,6 +447,34 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList());
         Assert.assertEquals(0, result.getFeatures().size());
+    }
+
+    @Test
+    public void getById() throws JsonProcessingException {
+        final Tyokone workMachine = createWorkmachine(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+
+        List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getRight());
+
+        final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
+
+        testHelper.saveTrackingData(
+            V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
+
+        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        Assert.assertEquals(1, handled);
+
+        final MaintenanceTrackingFeatureCollection result1 = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            startTime.toInstant(), startTime.toInstant(),
+            BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
+            Collections.emptyList());
+        final MaintenanceTrackingFeature feature1 = result1.getFeatures().get(0);
+
+        final MaintenanceTrackingFeature feature2 =
+            v2MaintenanceTrackingDataService.getMaintenanceTrackingById(result1.getFeatures().get(0).getProperties().id);
+
+        assertEquals(feature1.getGeometry(), feature2.getGeometry());
+        assertEquals(feature1.getProperties().id, feature2.getProperties().id);
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,

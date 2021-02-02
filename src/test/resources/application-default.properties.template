@@ -42,8 +42,6 @@ dt.job.ForecastSectionWeatherUpdateJob.schedule =              0 0/5 * * * ?
 dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
 dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 0 0/1 * * ?
 dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
-dt.job.Datex2RoadworksMessageUpdateJob.schedule =              0 0 0/1 * * ?
-dt.job.Datex2WeightRestrictionsMessageUpdateJob.schedule =     0 0 0/1 * * ?
 # Every 12 h
 dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
 dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?
@@ -115,6 +113,9 @@ logging.level.root=INFO
 # application.properties
 maintenance.tracking.job.enabled = false
 maintenance.realization.job.enabled = false
+
+# Default value for initial delay for @Scheduled jobs. This allows to disable @Scheduled jobs for tests.
+dt.scheduled.job.initialDelay.ms = 10000000000
 
 # Low logging level for tests
 logging.level.root=WARN

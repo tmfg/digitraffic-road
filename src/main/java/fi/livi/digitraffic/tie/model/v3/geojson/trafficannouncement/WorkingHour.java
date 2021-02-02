@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
@@ -53,25 +54,34 @@ public class WorkingHour extends JsonAdditionalProperties {
 
     public enum Weekday {
 
-        MONDAY("ma"),
-        TUESDAY("ti"),
-        WEDNESDAY("ke"),
-        THURSDAY("to"),
-        FRIDAY("pe"),
-        SATURDAY("la"),
-        SUNDAY("su");
+        // ma, ti ke to pe -> legacy
+        MONDAY("Monday", "ma"),
+        TUESDAY("Tuesday","ti"),
+        WEDNESDAY("Wednesday", "ke"),
+        THURSDAY("Thursday", "to"),
+        FRIDAY("Friday", "pe"),
+        SATURDAY("Saturday", "la"),
+        SUNDAY("Sunday", "su");
 
-        private final String value;
+        private final String[] values;
         private final static Map<String, Weekday> CONSTANTS = new HashMap<>();
 
         static {
-            for (Weekday c: values()) {
-                CONSTANTS.put(c.value.toUpperCase(), c);
+            for (final Weekday c: values()) {
+                for (final String v: c.values) {
+                    CONSTANTS.put(v.toUpperCase(), c);
+                }
+                CONSTANTS.put(c.name(), c);
             }
         }
 
-        Weekday(String value) {
-            this.value = value;
+        Weekday(final String...values) {
+            this.values = values;
+        }
+
+        @JsonValue
+        public String value() {
+            return this.name();
         }
 
         @JsonCreator

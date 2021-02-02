@@ -204,7 +204,7 @@
                 <generalPublicComment>
                     <comment>
                         <values>
-                            <value lang="fi">Tie 19802, eli Aapajärven tie, Pelkosenniemi. Painorajoitus. Tie 19802, eli Aapajärven tie, Pelkosenniemi.</value>
+                            <value lang="fi">Tie 130, Lempäälä. Painorajoitus. Eli vanha kolmostie tie.</value>
                         </values>
                     </comment>
                 </generalPublicComment>
@@ -516,7 +516,7 @@
         "announcements": [
           {
             "language": "fi",
-            "title": "Tie 130, Lempäälä. Tietyö",
+            "title": "Tie 3, eli Tampereen Läntinen Kehätie, Pirkkala. Tietyö",
             "location": {
               "countryCode": 6,
               "locationTableNumber": 17,

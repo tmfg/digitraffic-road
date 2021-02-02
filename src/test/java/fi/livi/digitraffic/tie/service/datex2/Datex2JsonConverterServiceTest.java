@@ -1,48 +1,54 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
+import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;
+import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Polygon;
+import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType.GENERAL;
 import static fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement.EarlyClosing.CANCELED;
-import static fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT;
-import static fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readStaticImsJmessageResourceContent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Import;
+import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2DetailedMessageType;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Area;
+import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.ItineraryRoadLeg;
+import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Restriction;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.RoadWorkPhase;
 import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.WorkingHour;
+import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Worktype;
+import fi.livi.digitraffic.tie.service.AbstractDatex2DataServiceTest;
+import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-@Import({ Datex2JsonConverterService.class, JacksonAutoConfiguration.class })
-public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
+public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTest {
+    private static final Logger log = getLogger(Datex2JsonConverterServiceTest.class);
 
-    private static final String ILLEGAL_DURATION = "Pt6H";
-    private static final String FEATURE_NAME_V2 = "Huono ajokeli";
-    private final static String FEATURE_NAME_V3 = "Nopeusrajoitus";
-    private final static double FEATURE_QUANTITY_V3 = 80.0;
-    private final static String FEATURE_UNIT_V3 = "km/h";
     public static final String MAX_DURATION = "PT8H";
     public static final String MIN_DURATION = "PT6H";
     public static final String WORK_PHASE_ID = "WP1";
@@ -53,276 +59,32 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    public static final ZonedDateTime DATE_TIME = ZonedDateTime.parse("2020-01-02T14:43:18.388Z");
-
     @Test
-    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature imsV0_2_4 =
-            ImsJsonMessageFactoryV0_2_4.createJsonMessage(DATE_TIME, FEATURE_NAME_V2);
-        final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(imsV0_2_4);
-        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_4, TRAFFIC_INCIDENT);
-        assertAnnouncementFeaturesV2(feature, FEATURE_NAME_V2, TRAFFIC_INCIDENT);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV3() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature imsV0_2_4 =
-            ImsJsonMessageFactoryV0_2_4.createJsonMessage(DATE_TIME, FEATURE_NAME_V2);
-        final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(imsV0_2_4);
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_4, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V2, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertLastActiveItinerarySegmentV3(feature, false);
+    public void convertImsSimpleJsonVersionToGeoJsonFeatureObjectV2() throws IOException {
+        for(ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
+            for (final SituationType st : SituationType.values()) {
+                final String json = readStaticImsJmessageResourceContent(jsonVersion, st, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+                log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
+                final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature ta =
+                    datex2JsonConverterService.convertToFeatureJsonObjectV2(json, st.getDatex2MessageType());
+                validateImsSimpleJsonVersionToGeoJsonFeatureObjectV2(st, jsonVersion, ta);
+                log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
+            }
+        }
     }
 
     @Test
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV2() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature imsV0_2_6 =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJsonV0_2_6 = objectMapper.writer().writeValueAsString(imsV0_2_6);
-        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_6, TRAFFIC_INCIDENT);
-        assertAnnouncementFeaturesV2(feature, FEATURE_NAME_V3, TRAFFIC_INCIDENT);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV3() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJsonV0_2_6 = objectMapper.writer().writeValueAsString(ims);
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_6, Datex2DetailedMessageType.ROADWORK);
-        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V3, Datex2DetailedMessageType.ROADWORK);
-        assertLastActiveItinerarySegmentV3(feature, true);
-        assertV0_2_6Properties(feature);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_8ToGeoJsonFeatureObjectV2() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_8.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_8.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJsonV0_2_8 = objectMapper.writer().writeValueAsString(ims);
-        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_8, TRAFFIC_INCIDENT);
-        assertAnnouncementFeaturesV2(feature, FEATURE_NAME_V3, TRAFFIC_INCIDENT);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_8ToGeoJsonFeatureObjectV3() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_8.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_8.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJsonV0_2_8 = objectMapper.writer().writeValueAsString(ims);
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_8, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V3, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertLastActiveItinerarySegmentV3(feature, true);
-        assertV0_2_8Properties(feature);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_9ToGeoJsonFeatureObjectV2() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_9.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3,
-            fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT,
-                fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL);
-        final String imsJsonV0_2_9 = objectMapper.writer().writeValueAsString(ims);
-        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_9, TRAFFIC_INCIDENT);
-        assertAnnouncementFeaturesV2(feature, FEATURE_NAME_V3, TRAFFIC_INCIDENT);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_9ToGeoJsonFeatureObjectV3() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_9.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3,
-                fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT,
-                fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_9.TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL);
-        final String imsJsonV0_2_9 = objectMapper.writer().writeValueAsString(ims);
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_9, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V3, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertLastActiveItinerarySegmentV3(feature, true);
-        assertV0_2_8Properties(feature);
-        assertV0_2_9Properties(feature);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithIllegalDuration() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_4.createJsonMessage(DATE_TIME, FEATURE_NAME_V2);
-        final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonV0_2_4_illegalDuration = StringUtils.replace(imsJsonV0_2_4, MIN_DURATION, ILLEGAL_DURATION);
-        datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_4_illegalDuration, TRAFFIC_INCIDENT);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV3WithIllegalDuration() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJsonV0_2_6 = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonV0_2_6_illegalDuration = StringUtils.replace(imsJsonV0_2_6, MIN_DURATION, ILLEGAL_DURATION);
-        datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_6_illegalDuration, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void convertImsJsonV0_2_8ToGeoJsonFeatureObjectV3WithIllegalDuration() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_8.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_8.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJsonV0_2_6 = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonV0_2_6_illegalDuration = StringUtils.replace(imsJsonV0_2_6, MIN_DURATION, ILLEGAL_DURATION);
-        datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_6_illegalDuration, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithoutDuration() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_4.createJsonMessage(DATE_TIME, FEATURE_NAME_V2);
-        ims.getProperties().getAnnouncements().forEach(a -> a.setTimeAndDuration(null));
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJson, TRAFFIC_INCIDENT);
-        assertAnnouncementFeaturesV2(feature, FEATURE_NAME_V2, TRAFFIC_INCIDENT);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV3WithoutDuration() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_4.createJsonMessage(DATE_TIME, FEATURE_NAME_V2);
-        ims.getProperties().getAnnouncements().forEach(a -> a.setTimeAndDuration(null));
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJson, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V2, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertLastActiveItinerarySegmentV3(feature, false);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithIllegalProperties() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_4.createJsonMessage(DATE_TIME, FEATURE_NAME_V2);
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonIllegalProperties = StringUtils.replace(imsJson, "\"properties\"", "\"propertypos\"");
-        datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonIllegalProperties, TRAFFIC_INCIDENT);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV3WithIllegalProperties() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonIllegalProperties = StringUtils.replace(imsJson, "\"properties\"", "\"propertypos\"");
-        datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonIllegalProperties, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void convertImsJsonV0_2_8ToGeoJsonFeatureObjectV3WithIllegalProperties() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_8.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_8.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonIllegalProperties = StringUtils.replace(imsJson, "\"properties\"", "\"propertypos\"");
-        datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonIllegalProperties, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-    }
-
-    @Test(expected = JsonMappingException.class)
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV3WithIllegalField() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonIllegalType = StringUtils.replace(imsJson, "\"type\"", "\"skype\"");
-        datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonIllegalType, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-    }
-
-    @Test(expected = JsonMappingException.class)
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV3WithIllegalGeometryType() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonIllegalGeometryType = StringUtils.replace(imsJson, "\"Point\"", "\"Joint\"");
-        datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonIllegalGeometryType, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-    }
-
-    @Test(expected = JsonMappingException.class)
-    public void convertImsJsonV0_2_8ToGeoJsonFeatureObjectV3WithIllegalField() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_8.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_8.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonIllegalType = StringUtils.replace(imsJson, "\"type\"", "\"skype\"");
-        datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonIllegalType, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-    }
-
-    @Test(expected = JsonMappingException.class)
-    public void convertImsJsonV0_2_8ToGeoJsonFeatureObjectV3WithIllegalGeometryType() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_8.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_8.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJson = objectMapper.writer().writeValueAsString(ims);
-        final String imsJsonIllegalGeometryType = StringUtils.replace(imsJson, "\"Point\"", "\"Joint\"");
-        datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonIllegalGeometryType, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithoutAnnouncements() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_4.createJsonMessage(DATE_TIME, FEATURE_NAME_V2);
-        ims.getProperties().setAnnouncements(Collections.emptyList());
-        final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
-        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature f =
-            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_4, TRAFFIC_INCIDENT);
-        assertCollectionSize(0, f.getProperties().announcements);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV3WithoutAnnouncements() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        ims.getProperties().setAnnouncements(Collections.emptyList());
-        final String imsJsonV0_2_6 = objectMapper.writer().writeValueAsString(ims);
-        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature f =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_6, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertCollectionSize(0, f.getProperties().announcements);
-    }
-
-    @Test(expected = JsonParseException.class)
-    public void convertImsJsonV0_2_4ToGeoJsonFeatureObjectV2WithIllegalJson() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_4.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_4.createJsonMessage(DATE_TIME, FEATURE_NAME_V2);
-        final String imsJsonV0_2_4 = objectMapper.writer().writeValueAsString(ims);
-        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature f =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3("{\n" + imsJsonV0_2_4, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertCollectionSize(0, f.getProperties().announcements);
-    }
-
-    @Test(expected = JsonParseException.class)
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV3WithIllegalJson() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        final String imsJsonV0_2_6 = objectMapper.writer().writeValueAsString(ims);
-        fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature f =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3("{\n" + imsJsonV0_2_6, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertCollectionSize(0, f.getProperties().announcements);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV2WithoutLastActiveItinerarySegment() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        ims.getProperties().getAnnouncements().get(0).withLastActiveItinerarySegment(null);
-        final String imsJsonV0_2_6 = objectMapper.writer().writeValueAsString(ims);
-        final TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV2(imsJsonV0_2_6, TRAFFIC_INCIDENT);
-        assertAnnouncementFeaturesV2(feature, FEATURE_NAME_V3, TRAFFIC_INCIDENT);
-    }
-
-    @Test
-    public void convertImsJsonV0_2_6ToGeoJsonFeatureObjectV3WithoutLastActiveItinerarySegment() throws JsonProcessingException {
-        final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_6.ImsGeoJsonFeature ims =
-            ImsJsonMessageFactoryV0_2_6.createJsonMessage(DATE_TIME, FEATURE_NAME_V3, FEATURE_QUANTITY_V3, FEATURE_UNIT_V3);
-        ims.getProperties().getAnnouncements().get(0).withLastActiveItinerarySegment(null);
-        final String imsJsonV0_2_6 = objectMapper.writer().writeValueAsString(ims);
-        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature =
-            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJsonV0_2_6, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertAnnouncementFeaturesV3(feature, FEATURE_NAME_V3, Datex2DetailedMessageType.TRAFFIC_ANNOUNCEMENT);
-        assertLastActiveItinerarySegmentV3(feature, false);
+    public void convertImsSimpleJsonVersionToGeoJsonFeatureObjectV3() throws IOException {
+        for(ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
+            for (final SituationType st : SituationType.values()) {
+                final String json = readStaticImsJmessageResourceContent(jsonVersion, st, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+                log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
+                final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature ta =
+                    datex2JsonConverterService.convertToFeatureJsonObjectV3(json, st, GENERAL);
+                validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(st, jsonVersion, ta);
+                log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
+            }
+        }
     }
 
     private static final String SITUATION_ID1 = "GUID00000001";
@@ -361,11 +123,11 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
 
     @Test
     public void parseFeatureJsonsFromImsJson_Feature() throws JsonProcessingException {
-        final Map<String, String> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE);
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE);
         assertEquals(1, jsons.size());
         final ObjectReader reader = objectMapper.reader();
         final JsonNode original = reader.readTree(FEATURE);
-        final JsonNode parsed = reader.readTree(jsons.get(SITUATION_ID1));
+        final JsonNode parsed = reader.readTree(jsons.get(SITUATION_ID1).getLeft());
         assertEquals(original, parsed);
     }
 
@@ -376,7 +138,7 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         final String featureCollection = createFeatureCollectionWithSituations(FEATURE, feature2);
 
         // parse features from collection and test src == result
-        final Map<String, String> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(featureCollection);
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(featureCollection);
         assertEquals(2, jsons.size());
 
         final ObjectReader reader = objectMapper.reader();
@@ -384,8 +146,8 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
         final JsonNode original2 = reader.readTree(feature2);
         assertNotEquals("Originals should differ with situationId", original1, original2);
 
-        final JsonNode parsed1 = reader.readTree(jsons.get(SITUATION_ID1));
-        final JsonNode parsed2 = reader.readTree(jsons.get(SITUATION_ID2));
+        final JsonNode parsed1 = reader.readTree(jsons.get(SITUATION_ID1).getLeft());
+        final JsonNode parsed2 = reader.readTree(jsons.get(SITUATION_ID2).getLeft());
         assertEquals(original1, parsed1);
         assertEquals(original2, parsed2);
         assertNotEquals(parsed1, parsed2);
@@ -393,43 +155,328 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
 
     @Test
     public void parseFeatureJsonsFromImsJson_FeatureEmptySituationId() {
-        final Map<String, String> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE.replace(SITUATION_ID1, ""));
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
+            datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE.replace(SITUATION_ID1, ""));
         assertEquals(0, jsons.size());
     }
 
     @Test
     public void parseFeatureJsonsFromImsJson_FeatureNoSituationId() {
-        final Map<String, String> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE.replace("situationId", "situationI"));
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
+            datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE.replace("situationId", "situationI"));
         assertEquals(0, jsons.size());
     }
 
     @Test
     public void parseFeatureJsonsFromImsJson_InvalidJson() {
-        final Map<String, String> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE_COLLECTION);
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
+            datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE_COLLECTION);
         assertEquals(0, jsons.size());
     }
 
     @Test
     public void parseFeatureJsonsFromImsJson_FeatureCollectionEmptySituationId() {
         final String featureCollection = FEATURE_COLLECTION.replace("FEATURES", FEATURE.replace(SITUATION_ID1, ""));
-        final Map<String, String> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE_COLLECTION);
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
+            datex2JsonConverterService.parseFeatureJsonsFromImsJson(featureCollection);
         assertEquals(0, jsons.size());
     }
 
     @Test
     public void parseFeatureJsonsFromImsJson_FeatureCollectionNoSituationId() {
         final String featureCollection = FEATURE_COLLECTION.replace("FEATURES", FEATURE.replace("situationId", "situationsId"));
-        final Map<String, String> jsons = datex2JsonConverterService.parseFeatureJsonsFromImsJson(FEATURE_COLLECTION);
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
+            datex2JsonConverterService.parseFeatureJsonsFromImsJson(featureCollection);
         assertEquals(0, jsons.size());
     }
 
-    private void assertAnnouncementFeaturesV2(final TrafficAnnouncementFeature feature, final String featureName,
-                                              Datex2MessageType type) {
-        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties p = feature.getProperties();
-        AssertHelper.assertCollectionSize(1, p.announcements);
-        assertEquals(type, p.getMessageType());
-        assertEquals(1, p.announcements.get(0).features.size());
-        assertEquals(featureName, p.announcements.get(0).features.get(0));
+    private void validateImsSimpleJsonVersionToGeoJsonFeatureObjectV2(final SituationType st, final ImsJsonVersion version,
+                                                                      final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+
+        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties props = feature.getProperties();
+        final TrafficAnnouncement announcement = props.announcements.get(0);
+
+        // Common
+        assertEquals(st.getDatex2MessageType(), props.getMessageType());
+        assertContacts(props, version);
+        assertLocationToDisplay(props, version);
+
+        switch (st) {
+        case TRAFFIC_ANNOUNCEMENT:
+            assertEquals("GUID10000001", props.situationId);
+            assertTitleContains(announcement, "Liikennetiedote");
+            assertGeometry(feature.getGeometry(), Point);
+            assertRoadAddressLocationV2(announcement, fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation.Direction.POS);
+            assertFeatures(announcement, "Nopeusrajoitus", "Huono ajokeli");
+            break;
+        case EXEMPTED_TRANSPORT:
+            assertEquals("GUID10000002", props.situationId);
+            assertTitleContains(announcement, "Erikoiskuljetus");
+            assertGeometry(feature.getGeometry(), Polygon);
+            assertAreaLocation(announcement, version);
+            assertFeatures(announcement, "Liikenne pysäytetään ajoittain", "Kuljetuksen leveys");
+            break;
+        case WEIGHT_RESTRICTION:
+            assertEquals("GUID10000003", props.situationId);
+            assertTitleContains(announcement, "Painorajoitus");
+            assertGeometry(feature.getGeometry(), Point);
+            assertRoadAddressLocationV2(announcement, fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation.Direction.BOTH);
+            assertFeatures(announcement, "Ajoneuvon suurin sallittu massa");
+            break;
+        case ROAD_WORK:
+            assertEquals("GUID10000004", props.situationId);
+            assertTitleContains(announcement, "Tietyö");
+            assertGeometry(feature.getGeometry(), Point);
+            assertRoadAddressLocationV2(announcement, fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation.Direction.UNKNOWN);
+            assertFeatures(announcement, "Nopeusrajoitus", "Silta pois käytöstä");
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown SituationType " + st);
+        }
+
+    }
+
+    private void validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(final SituationType st, final ImsJsonVersion version,
+                                                                      final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
+
+        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties props = feature.getProperties();
+        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement announcement = props.announcements.get(0);
+
+        // Common
+        assertContacts(props, version);
+        assertEarlyClosing(announcement, version, st);
+        assertType(props, st);
+
+        switch (st) {
+            case TRAFFIC_ANNOUNCEMENT:
+                assertEquals("GUID10000001", props.situationId);
+                assertTitleContains(announcement, "Liikennetiedote");
+                assertGeometry(feature.getGeometry(), Point);
+                assertRoadAddressLocation(announcement, fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.RoadAddressLocation.Direction.POS);
+                assertFeatures(announcement, version, Triple.of("Nopeusrajoitus", 50.0, "km/h"),
+                                             Triple.of("Huono ajokeli", null, null));
+                break;
+            case EXEMPTED_TRANSPORT:
+                assertEquals("GUID10000002", props.situationId);
+                assertTitleContains(announcement, "Erikoiskuljetus");
+                assertGeometry(feature.getGeometry(), Polygon);
+                assertAreaLocation(announcement, version);
+                assertFeatures(announcement, version,
+                                             Triple.of("Liikenne pysäytetään ajoittain", null, null),
+                                             Triple.of("Kuljetuksen leveys", 4.5, "m"));
+                assertLastActiveItinerarySegment(announcement, version);
+                break;
+            case WEIGHT_RESTRICTION:
+                assertEquals("GUID10000003", props.situationId);
+                assertTitleContains(announcement, "Painorajoitus");
+                assertGeometry(feature.getGeometry(), Point);
+                assertRoadAddressLocation(announcement, fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.RoadAddressLocation.Direction.BOTH);
+                assertFeatures(announcement, version, Triple.of("Ajoneuvon suurin sallittu massa", 2000.0, "kg"));
+
+                break;
+            case ROAD_WORK:
+                assertEquals("GUID10000004", props.situationId);
+                assertTitleContains(announcement, "Tietyö");
+                assertGeometry(feature.getGeometry(), Point);
+                assertRoadAddressLocation(announcement, fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.RoadAddressLocation.Direction.UNKNOWN);
+                assertFeatures(announcement, version,
+                                             Triple.of("Nopeusrajoitus", 40.0, "km/h"),
+                                             Triple.of("Silta pois käytöstä", null, null));
+                assertRoadWorkPhases(announcement, version);
+
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown SituationType " + st);
+        }
+    }
+
+    private void assertEarlyClosing(fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                    ImsJsonVersion version, SituationType st) {
+        if (st == SituationType.ROAD_WORK && version.version >= 2.08) {
+            assertNotNull(announcement.earlyClosing);
+        } else {
+            assertNull(announcement.earlyClosing);
+        }
+    }
+
+    private void assertRoadWorkPhases(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                      final ImsJsonVersion version) {
+        if (version.version < 2.05) {
+            AssertHelper.assertCollectionSize(0, announcement.roadWorkPhases);
+        } else {
+            AssertHelper.assertCollectionSize(1, announcement.roadWorkPhases);
+            final RoadWorkPhase rwp = announcement.roadWorkPhases.get(0);
+            assertNotNull(rwp.location);
+            assertNotNull(rwp.locationDetails.roadAddressLocation);
+            assertEquals(WorkingHour.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
+            assertNotNull(rwp.workingHours.get(0).startTime);
+            assertNotNull(rwp.workingHours.get(0).endTime);
+
+            if (version.version > 2.10) {
+                assertEquals(Worktype.Type.LIGHTING, rwp.worktypes.get(0).type);
+                assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
+                assertEquals(Restriction.Type.SPEED_LIMIT, rwp.restrictions.get(0).type);
+                assertEquals("Nopeusrajoitus", rwp.restrictions.get(0).restriction.name);
+                assertEquals(40.0, rwp.restrictions.get(0).restriction.quantity, 0.01);
+                assertEquals("km/h", rwp.restrictions.get(0).restriction.unit);
+            } else {
+                assertEquals(Worktype.Type.OTHER, rwp.worktypes.get(0).type);
+                assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
+            }
+
+            if (version.version >= 2.08) {
+                Assert.notNull(rwp.severity, "Severity should exist");
+            }
+        }
+    }
+
+    private void assertLastActiveItinerarySegment(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                                  final ImsJsonVersion version) {
+        if (version.version < 2.06) {
+            assertNull(announcement.lastActiveItinerarySegment);
+        } else {
+            assertNotNull(announcement.lastActiveItinerarySegment);
+            assertNotNull(announcement.lastActiveItinerarySegment.startTime);
+            assertNotNull(announcement.lastActiveItinerarySegment.endTime);
+            final ItineraryRoadLeg leg =
+                announcement.lastActiveItinerarySegment.legs.get(0).roadLeg;
+            assertEquals("Kotikatu 1", announcement.lastActiveItinerarySegment.legs.get(0).roadLeg.roadName);
+            assertNotNull(leg.startArea);
+            assertNotNull(leg.endArea);
+            assertNotNull(leg.roadNumber);
+        }
+    }
+
+    private void assertType(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties props, SituationType st) {
+        assertEquals(st, props.getSituationType());
+        if (st == TRAFFIC_ANNOUNCEMENT) {
+            assertNotNull(props.getTrafficAnnouncementType());
+        }
+    }
+
+
+
+    private void assertLocationToDisplay(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties props, final ImsJsonVersion version) {
+        if (version.version < 2.08) {
+            assertNotNull(props.locationToDisplay);
+        } else {
+            assertNull(props.locationToDisplay);
+        }
+    }
+
+    private void assertContacts(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementProperties props,
+                                final ImsJsonVersion version) {
+        assertNotNull(props.contact.email);
+        assertNotNull(props.contact.phone);
+        if (version.version < 2.09) {
+            assertNotNull(props.contact.fax);
+        } else {
+            assertNull(props.contact.fax);
+        }
+    }
+
+    private void assertContacts(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties props,
+                                  final ImsJsonVersion version) {
+        assertNotNull(props.contact.email);
+        assertNotNull(props.contact.phone);
+    }
+
+    private void assertGeometry(final Geometry<?> geometry,
+                                final Geometry.Type type) {
+        assertEquals(type, geometry.getType());
+    }
+
+    private void assertFeatures(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                final String...features) {
+        for (final String f : features) {
+            announcement.features.stream().filter(value -> value.contains(f)).findFirst().orElseThrow();
+        }
+        assertEquals(features.length, announcement.features.size());
+    }
+
+    private void assertFeatures(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                final ImsJsonVersion version,
+                                final Triple<String, Double, String>...features) {
+        final double v = version.version;
+        for (final Triple<String, Double, String> f : features) {
+            announcement.features.stream().filter(value -> Objects.equals(f.getLeft(), value.name) &&
+                                                           Objects.equals(v >= 2.05 ? f.getMiddle() : null, value.quantity) &&
+                                                           Objects.equals(v >= 2.05 ? f.getRight() : null, value.unit)).findFirst().orElseThrow();
+        }
+        assertEquals(features.length, announcement.features.size());
+    }
+
+    private void assertRoadAddressLocationV2(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                             final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation.Direction direction) {
+        final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.RoadAddressLocation ral = announcement.locationDetails.roadAddressLocation;
+        if (direction != null) {
+            assertEquals(direction, ral.direction);
+            assertNotNull(ral.primaryPoint);
+            assertNotNull(ral.secondaryPoint);
+        } else {
+            assertNull(ral);
+        }
+
+    }
+
+    private void assertRoadAddressLocation(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                           final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.RoadAddressLocation.Direction direction) {
+        final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.RoadAddressLocation ral = announcement.locationDetails.roadAddressLocation;
+        if (direction != null) {
+            assertEquals(direction, ral.direction);
+            assertNotNull(ral.primaryPoint);
+            assertNotNull(ral.secondaryPoint);
+        } else {
+            assertNull(ral);
+        }
+
+    }
+
+    private void assertAreaLocation(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                    final ImsJsonVersion version) {
+        final int size = version.version >= 2.08 ? 5 : 4;
+        assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
+
+        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.COUNTRY);
+        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.MUNICIPALITY);
+        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.PROVINCE);
+        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.WEATHER_REGION);
+        if (version.version >= 2.08) {
+            assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
+        }
+
+    }
+
+    private void assertAreaLocation(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                    final ImsJsonVersion version) {
+        final int size = version.version >= 2.08 ? 5 : 4;
+        assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
+
+        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.COUNTRY);
+        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.MUNICIPALITY);
+        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.PROVINCE);
+        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.WEATHER_REGION);
+        if (version.version >= 2.08) {
+            assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
+        }
+    }
+
+    private void assertContainsLocationTypeV2(final List<fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.Area> areas, final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Area.Type type) {
+        areas.stream().filter(a -> a.type.equals(type.getFromValue())).findFirst().orElseThrow();
+    }
+
+    private void assertContainsLocationType(final List<fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Area> areas, final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.Area.Type type) {
+        areas.stream().filter(a -> a.type.equals(type)).findFirst().orElseThrow();
+    }
+
+    private void assertTitleContains(final fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                     final String title) {
+        assertTrue(announcement.title.contains(title));
+    }
+
+    private void assertTitleContains(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement announcement,
+                                     final String title) {
+        assertTrue(announcement.title.contains(title));
     }
 
     private String changeSituationIdInFeature(final String featureToEdit, final String situationIdToReplace, final String replacementSituationId) {
@@ -443,11 +490,12 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
 
     private void assertAnnouncementFeaturesV3(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature,
                                               final String featureName,
-                                              Datex2DetailedMessageType type) {
+                                              final SituationType type,
+                                              final TrafficAnnouncementType trafficAnnouncementType) {
         final TrafficAnnouncementProperties p = feature.getProperties();
         AssertHelper.assertCollectionSize(1, feature.getProperties().announcements);
-        assertEquals(type.getDatex2MessageType(), p.getMessageType());
-        assertEquals(type, p.detailedMessageType);
+        assertEquals(type.getDatex2MessageType(), p.getSituationType().getDeclaringClass());
+        assertEquals(trafficAnnouncementType, p.getTrafficAnnouncementType());
         assertEquals(1, p.announcements.get(0).features.size());
         assertEquals(featureName, p.announcements.get(0).features.get(0).name);
     }
@@ -494,7 +542,7 @@ public class Datex2JsonConverterServiceTest extends AbstractServiceTest {
 
     private void assertV0_2_9Properties(final fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature feature) {
         final TrafficAnnouncementProperties f = feature.getProperties();
-        assertEquals(TRAFFIC_ANNOUNCEMENT, f.situationType);
-        assertEquals(GENERAL, f.trafficAnnouncementType);
+        assertEquals(TRAFFIC_ANNOUNCEMENT, f.getSituationType());
+        assertEquals(GENERAL, f.getTrafficAnnouncementType());
     }
 }

@@ -1,17 +1,20 @@
 package fi.livi.digitraffic.tie.service.jms;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.tie.helper.DateHelper.withoutNanos;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
-import static fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest.GUID_WITH_JSON;
-import static fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest.ImsJsonVersion;
-import static fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest.readImsMessageResourceContent;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
 import static org.apache.commons.collections.CollectionUtils.union;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.xml.transform.StringResult;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
@@ -31,13 +39,16 @@ import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
+import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1.ImsMessage;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.model.v2.geojson.trafficannouncement.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.service.AbstractDatex2DateServiceTest.ImsXmlVersion;
+import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
+@Import({ JacksonAutoConfiguration.class })
 public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(ImsDatex2JmsMessageListenerTest.class);
 
@@ -54,6 +65,13 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     @Autowired
     private V2Datex2UpdateService v2Datex2UpdateService;
 
+    @Autowired
+    @Qualifier("imsJaxb2Marshaller")
+    private Jaxb2Marshaller imsJaxb2Marshaller;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Before
     public void cleanDbBefore() {
         datex2Repository.deleteAll();
@@ -68,22 +86,20 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     public void datex2ReceiveImsMessagesAllVersions() throws IOException {
         final JMSMessageListener<ExternalIMSMessage> jmsMessageListener = createImsJmsMessageListener();
 
-        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
-            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
+        // Only 0.2.9 and 0.2.10 versions are received from now on
+        for (final ImsJsonVersion imsJsonVersion : Arrays.asList(ImsJsonVersion.V0_2_9, ImsJsonVersion.V0_2_12)) {
+            for(final SituationType type : SituationType.values()) {
                 cleanDb();
-                sendJmsMessage(imsXmlVersion, imsJsonVersion, jmsMessageListener);
-                log.info("Run activeIncidentsDatex2AndJsonEquals with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
-                checkActiveSituations(GUID_WITH_JSON);
+                log.info("Run datex2ReceiveImsMessagesAllVersions with imsJsonVersion={}", imsJsonVersion);
+                sendJmsMessage(ImsXmlVersion.V1_2_1, type, imsJsonVersion, jmsMessageListener);
+                checkActiveSituations(getSituationIdForSituationType(type));
             }
         }
     }
 
-    @Test
-    public void datex2ReceiveImsMessagesV1_2_1JsonV0_2_6WithMultipleMessages() throws IOException {
-        sendJmsMessage("tloik/ims/TrafficIncidentImsMessageV1_2_1JsonV0_2_6MultipleMessages.xml", createImsJmsMessageListener());
-        checkActiveSituations("GUID00000001", "GUID00000002", "GUID00000003", "GUID00000004", "GUID00000005", "GUID00000006", "GUID00000007");
+    public static String readSimpleJsonMessageResourceContent(final ImsJsonVersion jsonVersion) throws IOException {
+        return readResourceContent("classpath:tloik/ims/Json" + jsonVersion + ".json");
     }
-
 
     private void checkActiveSituations(final String...situationIdsToFind) {
         final List<Situation> situationIncidents = getSituations(v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT));
@@ -151,8 +167,8 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
             assertTrue(String.format("Feature title \"%s\" should exist in situation comment \"%s\"", announcement.title, situationComment),
                        situationComment.contains(announcement.title));
-            assertEquals(announcement.timeAndDuration.startTime.toInstant(),
-                         situationRecord.getValidity().getValidityTimeSpecification().getOverallStartTime());
+            assertEquals(withoutNanos(announcement.timeAndDuration.startTime.toInstant()),
+                         withoutNanos(situationRecord.getValidity().getValidityTimeSpecification().getOverallStartTime()));
         }
     }
 
@@ -161,18 +177,20 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         return new JMSMessageListener<>(new ImsMessageMarshaller(jaxb2MarshallerimsJaxb2Marshaller), dataUpdater, false, log);
     }
 
-    private void sendJmsMessage(final String resourceFilePath, JMSMessageListener<ExternalIMSMessage> messageListener) throws IOException {
-        final String xmlImsMessage = readResourceContent("classpath:" + resourceFilePath);
-        createAndSendJmsMessage(xmlImsMessage, messageListener);
-    }
-
-    private void sendJmsMessage(final ImsXmlVersion xmlVersion, final ImsJsonVersion jsonVersion,
+    private void sendJmsMessage(final ImsXmlVersion xmlVersion, final SituationType situationType, final ImsJsonVersion jsonVersion,
                                 final JMSMessageListener<ExternalIMSMessage> messageListener) throws IOException {
-        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, jsonVersion);
+        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion,
+                                                                                                 ZonedDateTime.now().minusHours(1), null);
         createAndSendJmsMessage(xmlImsMessage, messageListener);
     }
 
     private void createAndSendJmsMessage(final String xmlImsMessage, final JMSMessageListener<ExternalIMSMessage> messageListener) {
         messageListener.onMessage(createTextMessage(xmlImsMessage, getRandomId(1000, 9999).toString()));
+    }
+
+    public String convertImsMessageToString(final ImsMessage imsMessage) {
+        final StringResult result = new StringResult();
+        imsJaxb2Marshaller.marshal(imsMessage, result);
+        return result.toString();
     }
 }

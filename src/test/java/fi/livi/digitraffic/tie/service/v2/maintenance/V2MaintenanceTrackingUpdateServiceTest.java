@@ -309,7 +309,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         IntStream.range(5,10).forEach(i -> {
             final KoordinaattisijaintiSchema koordinaatit = kirjaus.getHavainnot().get(i).getHavainto().getSijainti().getKoordinaatit();
             // Set forward  so far that it exceeds speed 120 km/h when there is one minute between points.
-            koordinaatit.setX(koordinaatit.getX() + 2000);
+            koordinaatit.setX(koordinaatit.getX() + 2500);
         });
         testHelper.saveTrackingData(kirjaus);
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
@@ -397,7 +397,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     }
 
     @Test
-    public void singlePointLineStringsShouldBeHandledAsPointTrackings() throws IOException {
+    public void singlePointLineStringsShouldBeHandledAsLineStringTrackings() throws IOException {
 
         testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-1.json");
         testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-2.json");
@@ -408,6 +408,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // 3 LineStrings with single point in each should be combined as one tracking
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
         assertCollectionSize(1, trackings);
-        assertEquals(3, trackings.get(0).getLineString().getNumPoints());
+        // single points are duplicated (not the starting one) as two same point linestring -> 1 + 2 + 2 = 5 points
+        assertEquals(5, trackings.get(0).getLineString().getNumPoints());
     }
 }

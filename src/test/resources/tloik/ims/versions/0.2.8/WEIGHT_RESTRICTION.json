@@ -1,0 +1,85 @@
+{
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            23.77474,
+            61.50221
+        ]
+    },
+    "properties": {
+        "situationId": "GUID10000003",
+        "version": SITUATION_VERSION,
+        "releaseTime": "SITUATION_VERSION_DATE_TIME",
+        "announcements": [
+            {
+                "language": "fi",
+                "title": "Tie 17747, Vaasa, Mustasaari. Painorajoitus.",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Tie 17747 välillä Mullola - Saarenpää. Tarkempi paikka: Paikasta Östnäs 8,0 km, suuntaan Vähäkyrö. Ajoneuvon suurin sallittu massa: 12 t. Ajankohta: 23.12.2020 - 05.01.2021."
+                },
+                "locationDetails": {
+                    "roadAddressLocation": {
+                        "primaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 24,
+                                "distance": 3927
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37128,
+                                "name": "Marjamäki",
+                                "distance": 2184
+                            }
+                        },
+                        "secondaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 23,
+                                "distance": 5921
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37126,
+                                "name": "Pispantallin risteyssilta",
+                                "distance": 5264
+                            }
+                        },
+                        "direction": "both"
+                    }
+                },
+                "features": [
+                    {
+                        "name" : "Ajoneuvon suurin sallittu massa",
+                        "quantity" : 2000.0,
+                        "unit" : "kg"
+                    }
+                ],
+                "comment": "TESTI TESTI TESTI\nML",
+                "timeAndDuration": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "END_DATE_TIME",
+                    "estimatedDuration": {
+                        "minimum": "P3Y6M4DT12H30M5S",
+                        "informal": "Three years, six months, four days, twelve hours, thirty minutes, and five seconds"
+                    }
+                },
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            }
+        ],
+        "contact": {
+            "phone": "0206373328",
+            "fax": "0206373713",
+            "email": "helsinki.liikennekeskus@liikennevirasto.fi"
+        }
+    }
+}

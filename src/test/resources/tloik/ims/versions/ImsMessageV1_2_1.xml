@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imsMessage xmlns="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_1.xsd">
+    <messageId>50003469</messageId>
+    <date>ISO_DATE</date>
+    <messageSubject>MESSAGE_SUBJECT</messageSubject>
+    <sender>
+        <name>Name</name>
+        <email>test@testing.com</email>
+        <tel>1234</tel>
+    </sender>
+    <messageText><![CDATA[MESSAGE_TEXT]]></messageText>
+    <shortMessageText>SHORT_MESSAGE_TEXT</shortMessageText>
+    <messageContent>
+        <d2Message><![CDATA[D2_MESSAGE]]></d2Message>
+        <jMessage>
+            <![CDATA[JSON_MESSAGE]]></jMessage>
+    </messageContent>
+</imsMessage>

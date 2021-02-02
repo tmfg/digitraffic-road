@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.model.v1.datex2;
 
+@Deprecated
 public enum Datex2MessageType {
     TRAFFIC_INCIDENT,
     ROADWORK,
