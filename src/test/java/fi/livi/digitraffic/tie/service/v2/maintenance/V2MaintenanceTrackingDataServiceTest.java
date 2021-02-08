@@ -449,6 +449,34 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         Assert.assertEquals(0, result.getFeatures().size());
     }
 
+    @Test
+    public void getById() throws JsonProcessingException {
+        final Tyokone workMachine = createWorkmachine(1);
+        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+
+        List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getRight());
+
+        final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
+
+        testHelper.saveTrackingData(
+            V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
+
+        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        Assert.assertEquals(1, handled);
+
+        final MaintenanceTrackingFeatureCollection result1 = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            startTime.toInstant(), startTime.toInstant(),
+            BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
+            Collections.emptyList());
+        final MaintenanceTrackingFeature feature1 = result1.getFeatures().get(0);
+
+        final MaintenanceTrackingFeature feature2 =
+            v2MaintenanceTrackingDataService.getMaintenanceTrackingById(result1.getFeatures().get(0).getProperties().id);
+
+        assertEquals(feature1.getGeometry(), feature2.getGeometry());
+        assertEquals(feature1.getProperties().id, feature2.getProperties().id);
+    }
+
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
                                                                               final MaintenanceTrackingTask...tasks) {
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(

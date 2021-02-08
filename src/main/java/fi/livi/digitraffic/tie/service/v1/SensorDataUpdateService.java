@@ -124,7 +124,7 @@ public class SensorDataUpdateService {
         allowedWeatherStationsLotjuIdtoIds = getAllowedStationsLotjuIdtoIds(RoadStationType.WEATHER_STATION);
     }
 
-    @Scheduled(fixedRate = 20000)
+    @Scheduled(fixedRate = 20000, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
     @Transactional
     protected void persistLamSensorValues() {
         final TimestampCache timestampCache = new TimestampCache();
@@ -138,7 +138,7 @@ public class SensorDataUpdateService {
         log.info("method=persistLamSensorValues tmsBuffer for db update {} / {} incomings", updates.size(), lamValueBuffer.getIncomingElementCount());
     }
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 30000, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
     @Transactional
     protected void persistWeatherSensorValues() {
         final TimestampCache timestampCache = new TimestampCache();
