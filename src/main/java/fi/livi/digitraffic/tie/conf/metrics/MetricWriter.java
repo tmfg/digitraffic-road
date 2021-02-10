@@ -1,16 +1,5 @@
 package fi.livi.digitraffic.tie.conf.metrics;
 
-import fi.livi.digitraffic.tie.aop.NoJobLogging;
-import io.micrometer.core.instrument.Measurement;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.search.RequiredSearch;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Scheduled;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +7,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.StreamSupport;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import fi.livi.digitraffic.tie.aop.NoJobLogging;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.search.RequiredSearch;
 
 /**
  * Measure pool statistics every 100ms and log min and max once a minute.
@@ -42,7 +43,7 @@ public class MetricWriter {
         this.meterRegistry = meterRegistry;
     }
 
-    @Scheduled(fixedRate = 1000*60)
+    @Scheduled(fixedRate = 1000*60, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
     @NoJobLogging
     void printMetrics() {
         metricMap.keySet().forEach(this::logMeasurement);
@@ -52,7 +53,7 @@ public class MetricWriter {
         metricMap.clear();
     }
 
-    @Scheduled(fixedRate = 100)
+    @Scheduled(fixedRate = 100, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
     @NoJobLogging
     void updateMetrics() {
         metricsToLog.forEach(metric -> updateMeasurement(metric));

@@ -4,11 +4,15 @@ import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Polygon;
 import static fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType.GENERAL;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readStaticImsJmessageResourceContent;
+import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -23,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.ItineraryRoadLeg;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Restriction;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadWorkPhase;
@@ -48,6 +53,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.AbstractDatex2DataServiceTest;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTest {
     private static final Logger log = getLogger(Datex2JsonConverterServiceTest.class);
@@ -64,10 +70,20 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
     private ObjectWriter writerForImsGeoJsonFeature;
     private ObjectReader readerForGeometry;
 
+    @SpyBean
+    private V3RegionGeometryDataService v3RegionGeometryDataService;
+
     @Before
     public void init() {
         writerForImsGeoJsonFeature = objectMapper.writerFor(ImsGeoJsonFeature.class);
         readerForGeometry = objectMapper.readerFor(Geometry.class);
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(73), any())).thenReturn(createNewRegionGeometry(73));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
     }
 
     @Test
@@ -490,12 +506,12 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
         final int size = version.version >= 2.08 ? 5 : 4;
         assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
 
-        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.COUNTRY);
-        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.MUNICIPALITY);
-        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.PROVINCE);
-        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.WEATHER_REGION);
+        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.COUNTRY);
+        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.MUNICIPALITY);
+        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.PROVINCE);
+        assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.WEATHER_REGION);
         if (version.version >= 2.08) {
-            assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, Area.Type.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
+            assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
         }
 
     }
@@ -505,20 +521,20 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
         final int size = version.version >= 2.08 ? 5 : 4;
         assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
 
-        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.COUNTRY);
-        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.MUNICIPALITY);
-        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.PROVINCE);
-        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.WEATHER_REGION);
+        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.COUNTRY);
+        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.MUNICIPALITY);
+        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.PROVINCE);
+        assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.WEATHER_REGION);
         if (version.version >= 2.08) {
-            assertContainsLocationType(announcement.locationDetails.areaLocation.areas, Area.Type.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
+            assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
         }
     }
 
-    private void assertContainsLocationTypeV2(final List<fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.Area> areas, final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area.Type type) {
+    private void assertContainsLocationTypeV2(final List<fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.Area> areas, final AreaType type) {
         areas.stream().filter(a -> a.type.equals(type.getFromValue())).findFirst().orElseThrow();
     }
 
-    private void assertContainsLocationType(final List<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area> areas, final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area.Type type) {
+    private void assertContainsLocationType(final List<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area> areas, final AreaType type) {
         areas.stream().filter(a -> a.type.equals(type)).findFirst().orElseThrow();
     }
 

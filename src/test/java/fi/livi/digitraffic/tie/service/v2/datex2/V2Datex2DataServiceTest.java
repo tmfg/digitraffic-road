@@ -34,8 +34,9 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-@Import({ JacksonAutoConfiguration.class, TrafficMessageTestHelper.class})
+@Import({ JacksonAutoConfiguration.class, TrafficMessageTestHelper.class, V3RegionGeometryDataService.class})
 public class V2Datex2DataServiceTest extends AbstractServiceTest {
     private static final Logger log = getLogger(V2Datex2DataServiceTest.class);
 

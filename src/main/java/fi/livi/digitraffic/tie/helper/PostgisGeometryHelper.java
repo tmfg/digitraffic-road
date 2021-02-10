@@ -115,5 +115,41 @@ public class PostgisGeometryHelper {
         return distanceKm / hours;
     }
 
+    public static Geometry union(final List<Geometry> geometryCollection) {
+        return GF.buildGeometry(geometryCollection).union();
+    }
+
+    //    public static Geometry convertToPostgisGeometry(final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geometry) {
+//
+//        geojson
+//        switch (geometry.getType()) {
+//            case Point:
+//                final Coordinate c = createCoordinateWithZ(((fi.livi.digitraffic.tie.metadata.geojson.Point)geometry).getCoordinates());
+//                return createPointWithZ(c);
+//
+//            case LineString:
+//                final List<Coordinate> lineStringCoordinates = createCoordinateWithZ(((fi.livi.digitraffic.tie.metadata.geojson.LineString)geometry).getCoordinates());
+//                createLineStringWithZ()
+//                break;
+//
+//            case Polygon:
+//                break;
+//
+//            case MultiPoint:
+//                break;
+//
+//            case MultiPolygon:
+//                break;
+//
+//            case MultiLineString:
+//                break;
+//
+//            default:
+//                throw new IllegalStateException("GeoJson geometry type " + geometry.getType() + " not suported");
+//        }
+//
+//        return null;
+//    }
+
 
 }

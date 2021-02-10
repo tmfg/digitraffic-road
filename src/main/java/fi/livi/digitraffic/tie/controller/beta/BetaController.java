@@ -7,6 +7,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIO
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_REALIZATIONS_TASKS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_X;
 import static fi.livi.digitraffic.tie.controller.v2.V2DataController.RANGE_X_TXT;
@@ -49,6 +50,7 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTask;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskCategory;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceRealizationTaskOperation;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometriesDtoV3;
 import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
@@ -56,6 +58,7 @@ import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -78,18 +81,21 @@ public class BetaController {
     private final V2MaintenanceRealizationDataService maintenanceRealizationDataService;
     private final WeatherService weatherService;
     private final V3Datex2DataService v3Datex2DataService;
+    private final V3RegionGeometryDataService v3RegionGeometryDataService;
 
     @Autowired
     public BetaController(final TmsStationDatex2Service tmsStationDatex2Service,
                           final TmsDataDatex2Service tmsDataDatex2Service,
                           final V2MaintenanceRealizationDataService maintenanceRealizationDataService,
                           final WeatherService weatherService,
-                          final V3Datex2DataService v3Datex2DataService) {
+                          final V3Datex2DataService v3Datex2DataService,
+                          final V3RegionGeometryDataService v3RegionGeometryDataService) {
         this.tmsStationDatex2Service = tmsStationDatex2Service;
         this.tmsDataDatex2Service = tmsDataDatex2Service;
         this.maintenanceRealizationDataService = maintenanceRealizationDataService;
         this.weatherService = weatherService;
         this.v3Datex2DataService = v3Datex2DataService;
+        this.v3RegionGeometryDataService = v3RegionGeometryDataService;
     }
 
 
@@ -247,7 +253,8 @@ public class BetaController {
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @ApiParam("If parameter value is false, the GeoJson geometry will be empty for announcements with area locations.")
+        @ApiParam("If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
+                  "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
         @RequestParam(required = false, defaultValue = "true")
         final boolean includeAreaGeometry,
         @ApiParam(value = "Message type.")
@@ -264,13 +271,29 @@ public class BetaController {
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam("If parameter value is false, the GeoJson geometry will be empty for announcements with area locations.")
+        @ApiParam("If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
+                  "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
         @RequestParam(required = false, defaultValue = "true")
         final boolean includeAreaGeometry,
         @ApiParam(value = "Situation type.")
         @RequestParam(required = false)
         final SituationType... situationType) {
         return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, situationType);
+    }
+
+    @ApiOperation(value = "Traffic messages geometries for regions")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_PATH + "/area-geometries", produces = { APPLICATION_JSON_VALUE})
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
+                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
+    public RegionGeometriesDtoV3 areaLocationRegions(
+        @ApiParam(value = "When effectiveDate parameter is given only effective geometries on that date are returned")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime effectiveDate,
+        @ApiParam(value = "Location code id.")
+        @RequestParam(required = false)
+        final Integer...id) {
+        return v3RegionGeometryDataService.findAreaLocationRegions(effectiveDate != null ? effectiveDate.toInstant() : null, id);
     }
 
     @ApiOperation(value = "Active traffic messages as Datex2")

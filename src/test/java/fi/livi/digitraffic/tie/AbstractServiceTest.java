@@ -40,6 +40,7 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @Import({ Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
           // services
@@ -49,7 +50,7 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
           Datex2UpdateService.class, FileGetService.class,
           V2Datex2UpdateService.class, Datex2JsonConverterService.class, V2Datex2DataService.class,
           CameraPresetHistoryUpdateService.class, FlywayService.class,
-          WeatherService.class, SensorDataUpdateService.class,
+          WeatherService.class, SensorDataUpdateService.class, V3RegionGeometryDataService.class,
 
           // converters
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,

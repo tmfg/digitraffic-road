@@ -33,7 +33,7 @@ public class Area extends JsonAdditionalProperties {
     @ApiModelProperty(value = "The type of the area, example kaupunki, maakunta, sää-alue", required = true, allowableValues = "municipality,province,regional state administrative agency,weather region,country")
     @NotNull
     public String type;
-    private final Set<String> alloweTypes = Set.of("municipality", "province", "regional state administrative agency", "weather region", "country");
+    private final Set<String> alloweTypes = Set.of("municipality", "province", "regional state administrative agency", "weather region", "country", "city region", "travel region");
 
     public Area() {
     }

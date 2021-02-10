@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @Service
 public class Datex2JsonConverterService {
@@ -44,17 +46,20 @@ public class Datex2JsonConverterService {
 
     protected final Validator validator;
     protected final ObjectReader genericJsonReader;
+    private V3RegionGeometryDataService v3RegionGeometryDataService;
 
     protected ObjectMapper objectMapper;
 
     @Autowired
-    public Datex2JsonConverterService(final ObjectMapper objectMapper) {
+    public Datex2JsonConverterService(final ObjectMapper objectMapper,
+                                      final V3RegionGeometryDataService v3RegionGeometryDataService) {
         this.objectMapper = objectMapper;
 
         featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
         featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class);
 
         genericJsonReader = objectMapper.reader();
+        this.v3RegionGeometryDataService = v3RegionGeometryDataService;
 
         final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
@@ -97,9 +102,18 @@ public class Datex2JsonConverterService {
         checkIsInvalidAnnouncementGeojsonV3(feature);
         checkDurationViolationsV3(feature);
 
-        // Clear area geometries if they are not wanted
-        if (!includeAreaGeometry && feature.getProperties().announcements.stream().anyMatch(Datex2JsonConverterService::containsAreaLocation)) {
+        // Fetch/clear area geometries
+        final Optional<TrafficAnnouncement> withArea =
+            feature.getProperties().announcements.stream().filter(Datex2JsonConverterService::containsAreaLocation).findFirst();
+        if (withArea.isPresent()) {
+            if (includeAreaGeometry) {
+                final TrafficAnnouncement announcementWithGeometry = withArea.get();
+                final List<Integer> ids =
+                    announcementWithGeometry.locationDetails.areaLocation.areas.stream().map(a -> a.locationCode).collect(Collectors.toList());
+                feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(), ids.toArray(new Integer[0])));
+            } else {
                 feature.setGeometry(null);
+            }
         }
 
         return feature;
