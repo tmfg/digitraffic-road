@@ -1,24 +1,28 @@
 package fi.livi.digitraffic.tie.conf.metrics;
 
+import fi.livi.digitraffic.tie.aop.NoJobLogging;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.search.RequiredSearch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Scheduled;
-
-import fi.livi.digitraffic.tie.aop.NoJobLogging;
-import io.micrometer.core.instrument.Measurement;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.search.RequiredSearch;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_ACTIVE;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_MAX;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_PENDING;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.TAG_POOL;
 
 /**
  * Measure pool statistics every 100ms and log min and max once a minute.
@@ -30,14 +34,42 @@ public class MetricWriter {
     private static final Logger LOG = LoggerFactory.getLogger(MetricWriter.class);
 
     private final List<LoggableMetric> metricsToLog = Arrays.asList(
-        new LoggableMetric("process.cpu.usage"),
-        new TaggableMetric("jvm.memory", "used", "area"),
-        new HikariMetric("max"),
-        new HikariMetric("pending"),
-        new HikariMetric("active")
+        LoggableMetric.of("process.cpu.usage"),
+        LoggableMetric.of("jvm.memory.used").withTag("area"),
+        LoggableMetric.of(CONNECTIONS_MAX).withTag(TAG_POOL).noMin(),
+        LoggableMetric.of(CONNECTIONS_PENDING).withTag(TAG_POOL),
+        LoggableMetric.of(CONNECTIONS_ACTIVE).withTag(TAG_POOL)
     );
 
-    private static volatile Map<String, Pair<Double, Double>> metricMap = new HashMap<>();
+    private static volatile Map<MetricKey, Double> metricMap = new HashMap<>();
+
+    private static class MetricKey {
+        public final String metric;
+        public final String tag;
+
+        private MetricKey(final String metric, final String tag) {
+            this.metric = metric;
+            this.tag = tag;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            MetricKey metricKey = (MetricKey) o;
+            return Objects.equals(metric, metricKey.metric) &&
+                Objects.equals(tag, metricKey.tag);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(metric, tag);
+        }
+    }
 
     public MetricWriter(final MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
@@ -53,7 +85,7 @@ public class MetricWriter {
         metricMap.clear();
     }
 
-    @Scheduled(fixedRate = 100, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
+    @Scheduled(fixedRate = 50, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
     @NoJobLogging
     void updateMetrics() {
         metricsToLog.forEach(metric -> updateMeasurement(metric));
@@ -96,25 +128,37 @@ public class MetricWriter {
             return;
         }
 
-        final String loggingKey = metric.loggingKey(meter);
+        final String tagValue = metric.tagName == null ? null : meter.getId().getTag(metric.tagName);
 
-        final Pair<Double, Double> oldValue = metricMap.get(loggingKey);
-        final Pair<Double, Double> newValue = oldValue == null ? Pair.of(measurement.getValue(), measurement.getValue())
-            : Pair.of(Math.max(oldValue.getLeft(), measurement.getValue()), Math.min(oldValue.getRight(), measurement.getValue()));
+        if(metric.logMin) {
+            final MetricKey metricKey = new MetricKey(metric.metricKey + ".min", tagValue);
 
-//        LOG.info(meterName + " old values " + oldValue.getLeft() + " and " + oldValue.getRight());
-//        LOG.info(meterName + " new values " + newValue.getLeft() + " and " + newValue.getRight());
+            final Double oldValue = metricMap.get(metricKey);
+            final Double newValue = oldValue == null ? measurement.getValue() : Math.min(oldValue, measurement.getValue());
 
-        metricMap.put(loggingKey, newValue);
+            metricMap.put(metricKey, newValue);
+        }
+
+        if(metric.logMax) {
+            final MetricKey metricKey = new MetricKey(metric.metricKey + ".max", tagValue);
+
+            final Double oldValue = metricMap.get(metricKey);
+            final Double newValue = oldValue == null ? measurement.getValue() : Math.max(oldValue, measurement.getValue());
+
+            metricMap.put(metricKey, newValue);
+        }
     }
 
-    private void logMeasurement(final String meterName) {
-        final Pair<Double, Double> values = metricMap.get(meterName);
+    private void logMeasurement(final MetricKey metricKey) {
+        final Double value = metricMap.get(metricKey);
 
-        if(values != null) {
+        if(value != null) {
             // must set root-locale to use . as decimal separator
-            LOG.info(String.format(Locale.ROOT, "meterName=%s.max statisticValue=%.02f", meterName, values.getLeft()));
-            LOG.info(String.format(Locale.ROOT, "meterName=%s.min statisticValue=%.02f", meterName, values.getRight()));
+            if(metricKey.tag != null) {
+                LOG.info(String.format(Locale.ROOT, "meterName=%s statisticValue=%.02f tagName=%s", metricKey.metric, value, metricKey.tag));
+            } else {
+                LOG.info(String.format(Locale.ROOT, "meterName=%s statisticValue=%.02f", metricKey.metric, value));
+            }
         }
     }
 }

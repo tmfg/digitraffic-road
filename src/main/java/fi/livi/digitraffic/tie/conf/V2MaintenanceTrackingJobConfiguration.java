@@ -41,7 +41,7 @@ public class V2MaintenanceTrackingJobConfiguration {
      * This job extracts all unhandled maintenance trackings
      * from source JSON-format to db relations.
      */
-    @Scheduled(fixedDelayString = "${maintenance.tracking.job.intervalMs}")
+        @Scheduled(fixedDelayString = "${maintenance.tracking.job.intervalMs}")
     public void handleUnhandledMaintenanceTrackings() {
         final StopWatch start = StopWatch.createStarted();
         int count;
@@ -52,8 +52,11 @@ public class V2MaintenanceTrackingJobConfiguration {
                 try {
                     count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(MAX_HANDLE_COUNT_PER_CALL);
                     totalCount += count;
-                    log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}", count,
-                        startInternal.getTime(), (double) startInternal.getTime() / count);
+                    final double msPerMsg = (double) startInternal.getTime() / count;
+                    if (Double.isFinite(msPerMsg)) {
+                        log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}",
+                                 count, startInternal.getTime(), (double) startInternal.getTime() / count);
+                    }
                 } catch (final Exception e) {
                     log.error(String.format("method=handleUnhandledMaintenanceTrackings failed tookMs=%d", startInternal.getTime()), e);
                     throw e;
@@ -67,6 +70,14 @@ public class V2MaintenanceTrackingJobConfiguration {
         // Stop if all was handled: count == MAX_HANDLE_COUNT_PER_CALL
         // Make sure job stops now and then even when it cant handle all data: start.getTime() < runRateMs * 10
         } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getTime() < runRateMs * 10);
-        log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount, start.getTime(), (double)start.getTime() / totalCount);
+
+        final double msPerMsg = (double) start.getTime() / totalCount;
+        if (Double.isFinite(msPerMsg)) {
+            log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount,
+                     start.getTime(), msPerMsg);
+        } else {
+            log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={}", totalCount,
+                     start.getTime());
+        }
     }
 }
