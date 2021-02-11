@@ -70,7 +70,7 @@ public class V3RegionGeometryDataService {
         final StopWatch start = StopWatch.createStarted();
         final String latestCommitId = getLatestCommitId();
         if (StringUtils.equals(currentCommitId, latestCommitId)) {
-            // No updates
+            log.info("method=refreshCache No changes currentCommitId {} and latestCommitId {} are the same", currentCommitId, latestCommitId);
             return;
         }
         final List<RegionGeometry> regions = regionGeometryRepository.findAllByOrderByIdAsc();
