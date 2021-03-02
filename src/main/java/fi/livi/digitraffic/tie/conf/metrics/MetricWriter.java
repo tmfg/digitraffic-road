@@ -1,14 +1,9 @@
 package fi.livi.digitraffic.tie.conf.metrics;
 
-import fi.livi.digitraffic.tie.aop.NoJobLogging;
-import io.micrometer.core.instrument.Measurement;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.search.RequiredSearch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Scheduled;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_ACTIVE;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_MAX;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_PENDING;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.TAG_POOL;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,10 +14,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_ACTIVE;
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_MAX;
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_PENDING;
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.TAG_POOL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import fi.livi.digitraffic.tie.aop.NoJobLogging;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.search.RequiredSearch;
 
 /**
  * Measure pool statistics every 100ms and log min and max once a minute.
@@ -75,7 +76,7 @@ public class MetricWriter {
         this.meterRegistry = meterRegistry;
     }
 
-    @Scheduled(fixedRate = 1000*60, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
+    @Scheduled(fixedRate = 1000*60)
     @NoJobLogging
     void printMetrics() {
         metricMap.keySet().forEach(this::logMeasurement);
@@ -85,10 +86,10 @@ public class MetricWriter {
         metricMap.clear();
     }
 
-    @Scheduled(fixedRate = 50, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
+    @Scheduled(fixedRate = 50)
     @NoJobLogging
     void updateMetrics() {
-        metricsToLog.forEach(metric -> updateMeasurement(metric));
+        metricsToLog.forEach(this::updateMeasurement);
     }
 
     private void logAllAvailableMetrics() {
