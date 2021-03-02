@@ -146,8 +146,13 @@ public class TrafficMessageTestHelper extends AbstractTest {
                                                               final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
         final String path =
             "classpath:tloik/ims/versions/" +
-            jsonVersion.toString().replace("V", "").replace("_", ".") + "/"+
+            getJsonVersionString(jsonVersion) + "/"+
             situationType + ".json";
+        return readStaticImsJmessageResourceContent(path, jsonVersion, startTime, endTime);
+    }
+
+    public static String readStaticImsJmessageResourceContent(final String path, final ImsJsonVersion jsonVersion,
+                                                              final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
         log.info("Reading Jmessage resource: {}", path);
         return readResourceContent(path)
             .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
@@ -155,6 +160,7 @@ public class TrafficMessageTestHelper extends AbstractTest {
             .replace(SITUATION_VERSION_PLACEHOLDER, jsonVersion.intVersion + "")
             .replace(END_DATE_TIME_PLACEHOLDER, endTime != null ? endTime.toOffsetDateTime().toString() : "" );
     }
+
 
     public static String readStaticD2MessageResourceContent(final SituationType situationType, final ZonedDateTime startTime,
                                                             final ZonedDateTime endTime, int situationVersion) throws IOException {
@@ -166,6 +172,13 @@ public class TrafficMessageTestHelper extends AbstractTest {
             .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
             .replace(endTime != null ? "</overallStartTime>" : "RANDOMNOMATCHXYZ",
                      "</overallStartTime><overallEndTime>" + (endTime != null ? endTime.toOffsetDateTime().toString() : "") + "</overallEndTime>");
+    }
+
+    /**
+     * Converts ie. V0_2_12 to 0.2.12
+     */
+    public static String getJsonVersionString(final ImsJsonVersion jsonVersion) {
+        return jsonVersion.toString().replace("V", "").replace("_", ".");
     }
 
     public static ZonedDateTime getVersionTime(final ZonedDateTime situationStartTime, final ImsJsonVersion imsJsonVersion) {

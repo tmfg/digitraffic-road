@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.quartz.CronTrigger;
+import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -52,6 +53,7 @@ import fi.livi.digitraffic.tie.scheduler.ForecastSectionV1MetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.ForecastSectionV2DataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.ForecastSectionV2MetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.LocationMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.RegionGeometryUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationSensorConstantsMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.TmsStationsStatusMetadataUpdateJob;
@@ -112,11 +114,11 @@ public class QuartzSchedulerConfig {
                                                      final Optional<List<Trigger>> triggerBeans) throws IOException {
         final SchedulerFactoryBean factory = new SchedulerFactoryBean() {
             @Override
-            protected Scheduler createScheduler(SchedulerFactory schedulerFactory, String schedulerName) throws SchedulerException {
+            protected Scheduler createScheduler(final SchedulerFactory schedulerFactory, final String schedulerName) throws SchedulerException {
                 Scheduler scheduler = super.createScheduler(schedulerFactory, schedulerName);
 
-                final List<Trigger> triggers = triggerBeans.isPresent() ? triggerBeans.get() : Collections.emptyList();
-                final Set<JobKey> jobKeys = triggers.stream().map(f -> f.getJobKey()).collect(Collectors.toSet());
+                final List<Trigger> triggers = triggerBeans.orElse(Collections.emptyList());
+                final Set<JobKey> jobKeys = triggers.stream().map(Trigger::getJobKey).collect(Collectors.toSet());
 
                 // Remove jobs from the db that are not in current apps job list
                 for (String groupName : scheduler.getJobGroupNames()) {
@@ -142,7 +144,7 @@ public class QuartzSchedulerConfig {
         if (triggerBeans.isPresent()) {
             final List<Trigger> triggers = triggerBeans.get();
             triggers.forEach(triggerBean -> log.info("Schedule trigger={}", triggerBean.getJobKey()));
-            factory.setTriggers(triggers.toArray(new Trigger[triggers.size()]));
+            factory.setTriggers(triggers.toArray(new Trigger[0]));
         }
         return factory;
     }
@@ -214,11 +216,16 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public JobDetailFactoryBean weatherHistoryUpdateJobDetail() { return createJobDetail(WeatherHistoryUpdateJob.class); }
+    public JobDetailFactoryBean weatherHistoryUpdateJob() { return createJobDetail(WeatherHistoryUpdateJob.class); }
 
     @Bean
     public JobDetailFactoryBean cameraHistoryDeleteJob() {
         return createJobDetail(CameraHistoryDeleteJob.class);
+    }
+
+    @Bean
+    public JobDetailFactoryBean regionGeometryUpdateJob() {
+        return createJobDetail(RegionGeometryUpdateJob.class);
     }
 
     @Bean
@@ -287,11 +294,16 @@ public class QuartzSchedulerConfig {
     }
 
     @Bean
-    public FactoryBean<? extends Trigger> weatherHistoryUpdateJobTrigger(final JobDetail weatherHistoryUpdateJobDetail) {
-        return  createTrigger(weatherHistoryUpdateJobDetail);
+    public FactoryBean<? extends Trigger> weatherHistoryUpdateJobTrigger(final JobDetail weatherHistoryUpdateJob) {
+        return  createTrigger(weatherHistoryUpdateJob);
     }
 
-    private static JobDetailFactoryBean createJobDetail(final Class jobClass) {
+    @Bean
+    public FactoryBean<? extends Trigger> regionGeometryUpdateJobTrigger(final JobDetail regionGeometryUpdateJob) {
+        return  createTrigger(regionGeometryUpdateJob);
+    }
+
+    private static JobDetailFactoryBean createJobDetail(final Class<? extends Job> jobClass) {
         final JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();
         factoryBean.setJobClass(jobClass);
         // job has to be durable to be stored in DB:
@@ -320,9 +332,9 @@ public class QuartzSchedulerConfig {
     }
 
     /**
-     * @param jobDetail
-     * @param repeatIntervalMs how often is job repeated in ms. If time <= 0 it's triggered only once.
-     * @return
+     * @param jobDetail Properties of given job.
+     * @param repeatIntervalMs How often is job repeated in ms. If time <= 0 it's triggered only once.
+     * @return Factory bean for given job.
      */
     private static SimpleTriggerFactoryBean createRepeatingTrigger(final JobDetail jobDetail, final long repeatIntervalMs) {
 
@@ -341,9 +353,9 @@ public class QuartzSchedulerConfig {
     }
 
     /**
-     * @param jobDetail
+     * @param jobDetail Properties of given job.
      * @param cronExpression Cron expression for trigger schedule.
-     * @return
+     * @return Factory bean for given job.
      */
     private static CronTriggerFactoryBean createCronTrigger(final JobDetail jobDetail, final String cronExpression) {
 

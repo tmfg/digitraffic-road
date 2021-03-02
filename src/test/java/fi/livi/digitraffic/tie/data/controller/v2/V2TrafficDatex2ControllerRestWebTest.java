@@ -18,6 +18,7 @@ import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.GenericApplicationContext;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
@@ -36,15 +37,12 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     protected Datex2DataService datex2DataService;
-
-    @Autowired
-    protected Datex2UpdateService datex2UpdateService;
-
     @Autowired
     protected Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
-
     @Autowired
     protected Datex2Repository datex2Repository;
+    @Autowired
+    private GenericApplicationContext applicationContext;
 
     private final String incident1_past_id = "GUID50005166";
     private final String incident2_active_id = "GUID50006936";
@@ -54,6 +52,9 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Before
     public void updateData() throws IOException {
+        final Datex2UpdateService datex2UpdateService =
+            applicationContext.getAutowireCapableBeanFactory().createBean(Datex2UpdateService.class);
+
         datex2Repository.deleteAll();
         // GUID5000526801 in past
         final String incident1 = readResourceContent("classpath:lotju/datex2/InfoXML_2016-09-12-20-51-24-602.xml");

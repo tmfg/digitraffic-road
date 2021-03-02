@@ -1,8 +1,10 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
+import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.MultiPolygon;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Polygon;
 import static fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType.GENERAL;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getJsonVersionString;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readStaticImsJmessageResourceContent;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.Assert.assertEquals;
@@ -83,6 +85,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(73), any())).thenReturn(createNewRegionGeometry(73));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(419), any())).thenReturn(createNewRegionGeometry(419));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
     }
 
@@ -112,6 +115,22 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
                 log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
             }
         }
+    }
+
+    @Test
+    public void convertImsSimpleJsonWithMultipleAreaAnnouncementsToGeoJsonFeatureObjectV3MergesAreas() throws IOException {
+        final ImsJsonVersion jsonVersion = ImsJsonVersion.getLatestVersion();
+        final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
+        final String json = readStaticImsJmessageResourceContent(
+            "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
+            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+        log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
+        final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature ta =
+            datex2JsonConverterService.convertToFeatureJsonObjectV3(json, situationType, GENERAL, true);
+        // _WITH_MULTIPLE_ANOUNCEMENTS.json contains five areas in 1. anouncement and one area in 2. anouncement.
+        // Should be merged to MultiPolygon
+        assertGeometry(ta.getGeometry(), MultiPolygon);
+        assertEquals(5+1, ta.getGeometry().getCoordinates().size());
     }
 
     private static final String SITUATION_ID1 = "GUID00000001";
@@ -328,7 +347,7 @@ public class Datex2JsonConverterServiceTest extends AbstractDatex2DataServiceTes
             case EXEMPTED_TRANSPORT:
                 assertEquals("GUID10000002", props.situationId);
                 assertTitleContains(announcement, "Erikoiskuljetus");
-                assertGeometry(feature.getGeometry(), Polygon);
+                assertGeometry(feature.getGeometry(), MultiPolygon);
                 assertAreaLocation(announcement, version);
                 assertFeatures(announcement, version,
                                              Triple.of("Liikenne pysäytetään ajoittain", null, null),

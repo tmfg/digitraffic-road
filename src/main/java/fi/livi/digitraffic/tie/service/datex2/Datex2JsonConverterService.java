@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -102,15 +101,19 @@ public class Datex2JsonConverterService {
         checkIsInvalidAnnouncementGeojsonV3(feature);
         checkDurationViolationsV3(feature);
 
-        // Fetch/clear area geometries
-        final Optional<TrafficAnnouncement> withArea =
-            feature.getProperties().announcements.stream().filter(Datex2JsonConverterService::containsAreaLocation).findFirst();
-        if (withArea.isPresent()) {
+        // Fetch or clear area geometries
+        final List<TrafficAnnouncement> announcementsWithAreas =
+            feature.getProperties().announcements.stream().filter(Datex2JsonConverterService::containsAreaLocation).collect(Collectors.toList());
+
+        if (!announcementsWithAreas.isEmpty()) {
             if (includeAreaGeometry) {
-                final TrafficAnnouncement announcementWithGeometry = withArea.get();
-                final List<Integer> ids =
-                    announcementWithGeometry.locationDetails.areaLocation.areas.stream().map(a -> a.locationCode).collect(Collectors.toList());
-                feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(), ids.toArray(new Integer[0])));
+                feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
+                    announcementsWithAreas.stream()
+                        .map(withArea ->
+                            withArea.locationDetails.areaLocation.areas.stream()
+                                .map(a -> a.locationCode).collect(Collectors.toList()))
+                        .flatMap(Collection::stream)
+                        .toArray(Integer[]::new)));
             } else {
                 feature.setGeometry(null);
             }

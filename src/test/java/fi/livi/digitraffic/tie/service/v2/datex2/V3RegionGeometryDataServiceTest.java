@@ -18,9 +18,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.support.GenericApplicationContext;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
@@ -30,28 +28,29 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
-@Import({ V3RegionGeometryDataService.class, V3RegionGeometryUpdateService.class, RegionGeometryGitClient.class})
 public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
     private static final Logger log = getLogger(V3RegionGeometryDataServiceTest.class);
 
     @Autowired
-    private V3RegionGeometryDataService v3RegionGeometryDataService;
-    @Autowired
     private RegionGeometryRepository regionGeometryRepository;
+    @Autowired
+    private V3RegionGeometryDataService v3RegionGeometryDataService;
     @Autowired
     private DataStatusService dataStatusService;
     @Autowired
-    private ObjectMapper objectMapper;
+    private GenericApplicationContext applicationContext;
 
     @MockBean
-    private RegionGeometryGitClient regionGeometryGitClient;
+    private RegionGeometryGitClient regionGeometryGitClientMock;
 
-    private V3RegionGeometryUpdateService v3RegionGeometryUpdateService;
+    private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
 
     @Before
     public void init() {
-        // Daemon service
-        v3RegionGeometryUpdateService = new V3RegionGeometryUpdateService(regionGeometryRepository, regionGeometryGitClient, dataStatusService, objectMapper);
+        final V3RegionGeometryUpdateService v3RegionGeometryUpdateService =
+            applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryUpdateService.class);
+        v3RegionGeometryTestHelper = new V3RegionGeometryTestHelper(regionGeometryGitClientMock, v3RegionGeometryUpdateService, dataStatusService);
+
         regionGeometryRepository.deleteAll();
     }
 
@@ -66,13 +65,13 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
         final List<RegionGeometry> commit2Changes = createCommit(commitId2, secondAndThirdCommiteffectiveDate, 1,2,3);
         final List<RegionGeometry> commit3Changes = createCommit(commitId3, secondAndThirdCommiteffectiveDate, 1,2,3);
 
-        when(regionGeometryGitClient.getChangesAfterCommit(eq(null))).thenReturn(commit1Changes);
-        when(regionGeometryGitClient.getChangesAfterCommit(eq(commitId1))).thenReturn(commit2Changes);
-        when(regionGeometryGitClient.getChangesAfterCommit(eq(commitId2))).thenReturn(commit3Changes);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(commit1Changes);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(commitId1))).thenReturn(commit2Changes);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(commitId2))).thenReturn(commit3Changes);
 
-        v3RegionGeometryUpdateService.updateAreaLocationRegions(); // update to commit1
-        v3RegionGeometryUpdateService.updateAreaLocationRegions(); // update to commit2
-        v3RegionGeometryUpdateService.updateAreaLocationRegions(); // update to commit3
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit2
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit3
 
         v3RegionGeometryDataService.refreshCache();
 
@@ -95,10 +94,11 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
             RegionGeometryTestHelper.createNewRegionGeometry(1, firstCommiteffectiveDate, commitId1, AreaType.UNKNOWN));
         final List<RegionGeometry> commit2Changes = createCommit(commitId2, secondCommiteffectiveDate, 1);
 
-        when(regionGeometryGitClient.getChangesAfterCommit(eq(null))).thenReturn(commit1Changes);
-        when(regionGeometryGitClient.getChangesAfterCommit(eq(commitId1))).thenReturn(commit2Changes);
-        v3RegionGeometryUpdateService.updateAreaLocationRegions(); // update to commit1
-        v3RegionGeometryUpdateService.updateAreaLocationRegions(); // update to commit2
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(commit1Changes);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(commitId1))).thenReturn(commit2Changes);
+
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit2
         v3RegionGeometryDataService.refreshCache();
 
         // Even when asking version valid from commit1, it should not be returned as it is not valid

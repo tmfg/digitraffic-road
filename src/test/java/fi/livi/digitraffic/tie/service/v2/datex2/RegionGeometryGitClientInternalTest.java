@@ -6,34 +6,43 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
 public class RegionGeometryGitClientInternalTest extends AbstractDaemonTestWithoutS3 {
 
     @Autowired
     private RegionGeometryGitClient RegionGeometryGitClient;
-
-    @Autowired
-    private V3RegionGeometryUpdateService v3RegionGeometryUpdateService;
-
     @Autowired
     private RegionGeometryRepository regionGeometryRepository;
+    @Autowired
+    private DataStatusService dataStatusService;
+    @Autowired
+    private GenericApplicationContext applicationContext;
+
+    private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
 
     @Before
     public void cleanDb() {
 //        regionGeometryRepository.deleteAll();
+
+        final V3RegionGeometryUpdateService v3RegionGeometryUpdateService =
+            applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryUpdateService.class);
+        v3RegionGeometryTestHelper = new V3RegionGeometryTestHelper(RegionGeometryGitClient, v3RegionGeometryUpdateService,dataStatusService);
+
     }
 
     @Ignore("Just for internal testing to test data fetch from GitHub and save to db")
     @Rollback(value = false)
     @Test
     public void updateAreaLocationRegionsFromGithub() {
-        v3RegionGeometryUpdateService.updateAreaLocationRegions();
+        v3RegionGeometryTestHelper.runUpdateJob();
     }
 
     @Ignore("Just for internal testing to fetch all changes for geometries in github")

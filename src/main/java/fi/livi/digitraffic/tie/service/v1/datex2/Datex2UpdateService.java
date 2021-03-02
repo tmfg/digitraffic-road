@@ -9,6 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
+@ConditionalOnNotWebApplication
 @Service
 public class Datex2UpdateService {
     private final Datex2Repository datex2Repository;
@@ -49,7 +51,7 @@ public class Datex2UpdateService {
 
     @Transactional
     public int updateDatex2Data(final List<Datex2MessageDto> data) {
-        return (int) data.stream().filter(d -> v2Datex2UpdateService.updateDatex2Data(d)).count();
+        return (int) data.stream().filter(v2Datex2UpdateService::updateDatex2Data).count();
     }
 
 }

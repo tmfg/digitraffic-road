@@ -47,6 +47,7 @@ dt.job.Datex2RoadworksMessageUpdateJob.schedule =              0 0 0/1 * * ?
 dt.job.Datex2WeightRestrictionsMessageUpdateJob.schedule =     0 0 0/1 * * ?
 dt.job.CameraHistoryDeleteJob.schedule =                       0 0 0/1 * * ?
 dt.job.WeatherHistoryUpdateJob.schedule =                      0 0 0/1 * * ?
+dt.job.RegionGeometryUpdateJob.schedule =                      0 0 0/1 * * ?
 # Every 12 h
 dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
 dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?

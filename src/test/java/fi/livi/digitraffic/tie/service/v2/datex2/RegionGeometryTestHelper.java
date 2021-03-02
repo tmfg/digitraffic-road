@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
 import java.time.Instant;
+import java.util.Random;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,14 +16,23 @@ public class RegionGeometryTestHelper {
 
     private static final GeoJsonReader GEOJSON_READER = new GeoJsonReader();
 
-    private static final String geoJsonPolygon =
-        "{\n" +
-            "   \"type\": \"Polygon\",\n" +
-            "   \"coordinates\": [\n" +
-            "       [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],\n" +
-            "       [100.0, 1.0], [100.0, 0.0] ]\n" +
-            "   ]\n" +
+    public static String getGeneratedGeoJsonPolygon(int seed) {
+        // Generates x bewteen 27 +/- 4 and y in range 65 +/- 5
+        final Random r = new Random(seed);
+        final int xMaxDiff = 4;
+        double xDiff = xMaxDiff * r.nextGaussian();
+        final int yMaxDiff = 5;
+        double yDiff = yMaxDiff * r.nextGaussian();
+
+        return
+            "{" +
+                "\"type\":\"Polygon\"," +
+                "\"coordinates\": [" +
+                "   [["+(27.0+xDiff)+", "+(65.0+yDiff)+"], ["+(27.1+xDiff)+", "+(65.0+yDiff)+"], ["+(27.1+xDiff)+", "+(65.1+yDiff)+"], ["+(27.0+xDiff)+", "+(65.1+yDiff)+"], ["+(27.0+xDiff)+", "+(65.0+yDiff)+"]], " +
+                "   [["+(27.01+xDiff)+", "+(65.01+yDiff)+"], ["+(27.09+xDiff)+", "+(65.01+yDiff)+"], ["+(27.09+xDiff)+", "+(65.09+yDiff)+"], ["+(27.01+xDiff)+", "+(65.09+yDiff)+"], ["+(27.01+xDiff)+", "+(65.01+yDiff)+"]]" +
+                "]" +
             "}";
+    }
 
     public static RegionGeometry createNewRegionGeometry() {
         return createNewRegionGeometry(1, Instant.parse("2020-01-01T00:00:00Z"), RandomStringUtils.randomAlphanumeric(32));
@@ -37,7 +47,7 @@ public class RegionGeometryTestHelper {
 
     public static RegionGeometry createNewRegionGeometry(int locationCode, final Instant effectiveDate, final String commitId, final AreaType type) {
         try {
-            final Geometry geometry = GEOJSON_READER.read(geoJsonPolygon);
+            final Geometry geometry = GEOJSON_READER.read(getGeneratedGeoJsonPolygon(locationCode));
             return new RegionGeometry(
                 "Helsinki", locationCode, type,
                 effectiveDate, geometry,

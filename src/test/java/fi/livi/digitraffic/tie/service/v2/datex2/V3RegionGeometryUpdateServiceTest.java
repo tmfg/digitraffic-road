@@ -19,29 +19,32 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
-@Import({ V3RegionGeometryUpdateService.class, RegionGeometryGitClient.class})
 public class V3RegionGeometryUpdateServiceTest extends AbstractServiceTest {
     private static final Logger log = getLogger(V3RegionGeometryUpdateServiceTest.class);
 
+    @MockBean
+    private RegionGeometryGitClient regionGeometryGitClientMock;
     @Autowired
     private V3RegionGeometryUpdateService v3RegionGeometryUpdateService;
-
-    @MockBean
-    private RegionGeometryGitClient regionGeometryGitClient;
-
+    @Autowired
+    private DataStatusService dataStatusService;
     @Autowired
     private RegionGeometryRepository regionGeometryRepository;
 
+    private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
+
     @Before
     public void cleanDb() {
+        v3RegionGeometryTestHelper = new V3RegionGeometryTestHelper(regionGeometryGitClientMock, v3RegionGeometryUpdateService, dataStatusService);
+
         regionGeometryRepository.deleteAll();
     }
 
@@ -55,19 +58,19 @@ public class V3RegionGeometryUpdateServiceTest extends AbstractServiceTest {
         final List<RegionGeometry> commit1Changes = createCommit(commitId1, firstCommiteffectiveDate, 1,2,3);
         final List<RegionGeometry> commit2Changes = createCommit(commitId2, secondCommiteffectiveDate, 1,2,3);
 
-        when(regionGeometryGitClient.getChangesAfterCommit(eq(null))).thenReturn(commit1Changes);
-        when(regionGeometryGitClient.getChangesAfterCommit(eq(commitId1))).thenReturn(commit2Changes);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(commit1Changes);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(commitId1))).thenReturn(commit2Changes);
 
         // No commits in db -> null commit id
-        v3RegionGeometryUpdateService.updateAreaLocationRegions();
-        verify(regionGeometryGitClient, times(1)).getChangesAfterCommit(eq(null));
+        v3RegionGeometryTestHelper.runUpdateJob();
+        verify(regionGeometryGitClientMock, times(1)).getChangesAfterCommit(eq(null));
 
         final List<RegionGeometry> dbCommit1 = regionGeometryRepository.findAll(Sort.by("id"));
         Assert.assertEquals(commit1Changes.size(), dbCommit1.size());
 
         // Commit1 in db -> commitId1
-        v3RegionGeometryUpdateService.updateAreaLocationRegions();
-        verify(regionGeometryGitClient, times(1)).getChangesAfterCommit(eq(commitId1));
+        v3RegionGeometryTestHelper.runUpdateJob();
+        verify(regionGeometryGitClientMock, times(1)).getChangesAfterCommit(eq(commitId1));
 
         final List<RegionGeometry> dbCommit1And2 = regionGeometryRepository.findAll(Sort.by("id"));
         Assert.assertEquals(commit1Changes.size() + commit2Changes.size(), dbCommit1And2.size());
