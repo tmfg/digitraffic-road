@@ -104,9 +104,6 @@ mqtt.enabled=false
 # Is TMS messages available. Should be true for daemon process
 mqtt.tms.enabled=false
 
-# This allows to disable @Scheduled jobs for tests.
-dt.scheduled.annotation.enabled = false
-
 # Developer life improvements
 logging.level.root=INFO
 #logging.level.org.hibernate.SQL=DEBUG
