@@ -60,21 +60,22 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
         log.info("Handled {} trackings", count);
     }
 
+    @Ignore("Just for internal testing")
+    @Rollback(false)
+    @Test
+    public void saveAndHandleMessagesComingInWrongOrder() throws IOException {
+        testHelper.initializeForInternalTesting("seuranta-viesti-1.json"); // Should come after viesti-2
+        testHelper.initializeForInternalTesting("seuranta-viesti-2.json");
+        log.info("Handled: {}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100));
+    }
+
     @Ignore("Just for internal testing. Uncomment to test import with larger datasets")
     @Rollback(false)
     @Test
     public void longJumpInLineStringData() throws IOException {
         final StopWatch s = StopWatch.createStarted();
-//        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");
-//        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");
-//        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");
-//        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/distancegap/long-jump-1.json");
-//        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/distancegap/long-jump-2.json");
-//        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/distancegap/long-jump-3.json");
-//        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/distancegap/long-jump-4.json");
-//        testHelper.saveTrackingFromResourceToDb("classpath:harja/service/big.json");
-
-//        log.info("Handled count={} tookMs={}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100), s.getTime());
+        testHelper.initializeForInternalTesting("seuranta-big.json");
+        log.info("Handled count={} tookMs={}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100), s.getTime());
     }
 
     @Ignore("Just for internal testing.")

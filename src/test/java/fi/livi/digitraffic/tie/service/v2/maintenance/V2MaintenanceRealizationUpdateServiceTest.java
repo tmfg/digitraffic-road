@@ -192,7 +192,7 @@ public class V2MaintenanceRealizationUpdateServiceTest extends AbstractServiceTe
     @Rollback(false)
     @Test
     public void saveNewWorkMachineRealizationWithStrangeMultipleRealization() throws IOException {
-        testHelper.initializeForInternalTesting("virheellisiä-linestringeja.json");
+        testHelper.initializeForInternalTesting("toteuma-virheellisiä-linestringeja.json");
         final long count = maintenanceRealizationUpdateService.handleUnhandledRealizations(100);
         log.info("Imported {} realizations", count);
     }

@@ -412,4 +412,10 @@ public class V2MaintenanceTrackingServiceTestHelper {
         final List<Havainnot> havainnot = seuranta.getHavainnot();
         return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
     }
+
+    public void initializeForInternalTesting(final String fileName) throws IOException {
+        final String json =
+            getFormatedTrackingJson("classpath:harja/internal-testing/" + fileName);
+        saveTrackingAsJson(json);
+    }
 }
