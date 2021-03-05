@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import static org.hamcrest.core.IsEqual.*;
-import static org.hamcrest.core.IsNot.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 

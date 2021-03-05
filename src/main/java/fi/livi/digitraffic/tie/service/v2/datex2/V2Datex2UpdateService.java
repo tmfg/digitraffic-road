@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +46,11 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
-import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
+import fi.livi.digitraffic.tie.service.datex2.ImsJsonConverterService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
+@ConditionalOnNotWebApplication
 @Service
 public class V2Datex2UpdateService {
     private static final Logger log = LoggerFactory.getLogger(V2Datex2UpdateService.class);
@@ -56,17 +58,17 @@ public class V2Datex2UpdateService {
     private final Datex2Repository datex2Repository;
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
     private final DataStatusService dataStatusService;
-    private final Datex2JsonConverterService datex2JsonConverterService;
+    private final ImsJsonConverterService imsJsonConverterService;
 
     @Autowired
     public V2Datex2UpdateService(final Datex2Repository datex2Repository,
                                  final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
                                  final DataStatusService dataStatusService,
-                                 final Datex2JsonConverterService datex2JsonConverterService) {
+                                 final ImsJsonConverterService imsJsonConverterService) {
         this.datex2Repository = datex2Repository;
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
         this.dataStatusService = dataStatusService;
-        this.datex2JsonConverterService = datex2JsonConverterService;
+        this.imsJsonConverterService = imsJsonConverterService;
     }
 
     @Transactional
@@ -92,12 +94,17 @@ public class V2Datex2UpdateService {
             .count();
     }
 
+    @Transactional
+    public int updateDatex2Data(final List<Datex2MessageDto> data) {
+        return (int) data.stream().filter(this::updateDatex2Data).count();
+    }
+
     public List<Datex2MessageDto> createModels(final ExternalIMSMessage imsMessage, final ZonedDateTime importTime) {
         final D2LogicalModel d2 = datex2XmlStringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
         final String jMessage = imsMessage.getMessageContent().getJMessage();
         final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> situationIdJsonMap =
-            datex2JsonConverterService.parseFeatureJsonsFromImsJson(jMessage);
+            imsJsonConverterService.parseFeatureJsonsFromImsJson(jMessage);
         final Map<String, Situation> situationIdSituationMap = parseDatex2Situations(sp);
 
         return situationIdJsonMap.entrySet().stream()

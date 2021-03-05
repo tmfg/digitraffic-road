@@ -19,6 +19,7 @@ import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,17 +37,21 @@ import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
+@ConditionalOnWebApplication
 @Service
 public class V3RegionGeometryDataService {
     private static final Logger log = LoggerFactory.getLogger(V3RegionGeometryDataService.class);
     private final GeoJsonWriter geoJsonWriter = new GeoJsonWriter();
     private final ObjectReader geometryReader;
 
-    private final RegionGeometryRepository regionGeometryRepository;
+    private RegionGeometryRepository regionGeometryRepository;
     private final DataStatusService dataStatusService;
 
-    private RegionStatus regionStatus = new RegionStatus();
-
+    private Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode = new HashMap<>();
+    private List<RegionGeometryDtoV3> regionsInDescOrder = new ArrayList<>();
+    private String currentCommitId = null;
+    private ZonedDateTime updated;
+    private ZonedDateTime checked;
 
     @Autowired
     public V3RegionGeometryDataService(final RegionGeometryRepository regionGeometryRepository,
@@ -60,43 +65,39 @@ public class V3RegionGeometryDataService {
     }
 
     // Update Every hour
-    @Scheduled(fixedRate = 3600000)
+    @Scheduled(fixedRate = 3600000, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
     @Transactional
     public void refreshCache() {
         final StopWatch start = StopWatch.createStarted();
-        try {
-            final String latestCommitId = getLatestCommitId();
-            if (StringUtils.equals(regionStatus.currentCommitId, latestCommitId)) {
-                log.info("method=refreshCache No changes currentCommitId {} and latestCommitId {} are the same", regionStatus.currentCommitId, latestCommitId);
-                return;
-            }
-            final List<RegionGeometry> regions = regionGeometryRepository.findAllByOrderByIdAsc();
-            // Use TreeMap to preserve asc order by location code
-            final Map<Integer, List<RegionGeometry>> locationCodeToRegion = new TreeMap<>();
-
-            regions.forEach(a -> {
-                // Add only versions that are valid (type is missing for 1. versions)
-                if (a.isValid()) {
-                    final Integer locationCode = a.getLocationCode();
-                    if (!locationCodeToRegion.containsKey(locationCode)) {
-                        locationCodeToRegion.put(locationCode, new ArrayList<>());
-                    }
-                    // Add latest as 1st element -> will be in desc order
-                    locationCodeToRegion.get(locationCode).add(0, a);
-                    log.info("method=refreshCache Added version {}", a.toString());
-                } else {
-                    log.info("method=refreshCache Not adding version with illegal type {}", a.toString());
-                }
-            });
-            removeNeverValidValues(locationCodeToRegion);
-            regionStatus = new RegionStatus(locationCodeToRegion,
-                                            latestCommitId,
-                                            dataStatusService.findDataUpdatedTime(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA),
-                                            dataStatusService.findDataUpdatedTime(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK));
-
-        } catch (final Exception e) {
-            log.error("method=refreshAreaLocationRegionCache failed", e);
+        final String latestCommitId = getLatestCommitId();
+        if (StringUtils.equals(currentCommitId, latestCommitId)) {
+            log.info("method=refreshCache No changes currentCommitId {} and latestCommitId {} are the same", currentCommitId, latestCommitId);
+            return;
         }
+        final List<RegionGeometry> regions = regionGeometryRepository.findAllByOrderByIdAsc();
+        final Map<Integer, List<RegionGeometry>> locationCodeToRegion = new TreeMap<>();
+
+        regions.forEach(a -> {
+            // Add only versions that are valid (type is missing for 1. versions)
+            if (a.isValid()) {
+                final Integer locationCode = a.getLocationCode();
+                if ( !locationCodeToRegion.containsKey(locationCode)) {
+                    locationCodeToRegion.put(locationCode, new ArrayList<>());
+                }
+                // Add latest as 1st element -> will be in desc order
+                locationCodeToRegion.get(locationCode).add(0, a);
+                log.info("method=refreshCache Added version {}", a.toString());
+            } else {
+                log.info("method=refreshCache Not adding version with illegal type {}", a.toString());
+            }
+        });
+        removeNeverValidValues(locationCodeToRegion);
+        this.regionsInDescOrderMappedByLocationCode = locationCodeToRegion;
+        this.regionsInDescOrder = convertToDtoList(regionsInDescOrderMappedByLocationCode);
+        currentCommitId = latestCommitId;
+        updated = dataStatusService.findDataUpdatedTime(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA);
+        checked = dataStatusService.findDataUpdatedTime(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK);
+
         log.info("method=refreshAreaLocationRegionCache done tookMs={}", start.getTime());
     }
 
@@ -106,32 +107,30 @@ public class V3RegionGeometryDataService {
     }
 
     public RegionGeometriesDtoV3 findAreaLocationRegions(final Instant effectiveDate, final Integer...ids) {
-        final List<RegionGeometryDtoV3> filtered = filterRegionsAndConvertToDto(effectiveDate, ids);
-        return new RegionGeometriesDtoV3(filtered, regionStatus.updated, regionStatus.checked);
+        final List<RegionGeometryDtoV3> filtered = filterRegions(effectiveDate, ids);
+        return new RegionGeometriesDtoV3(filtered, updated, checked);
     }
 
     public RegionGeometry getAreaLocationRegionEffectiveOn(final int locationCode, final Instant theMoment) {
-        final List<RegionGeometry> regionsInDescOrder = regionStatus.getRegionVersionsInDescOrder(locationCode);
-        if (regionsInDescOrder == null) {
+        final List<RegionGeometry> regions = regionsInDescOrderMappedByLocationCode.get(locationCode);
+        if (regions == null) {
             log.warn("method=getAreaLocationRegionEffectiveOn No location with locationCode {} found", locationCode);
             return null;
-        } else if (regionsInDescOrder.size() == 1) {
-            return regionsInDescOrder.get(0);
+        } else if (regions.size() == 1) {
+            return regions.get(0);
         }
         // Find latest version that is valid on given moment or the first version
-        return regionsInDescOrder.stream()
+        return regions.stream()
             .filter(r -> r.getEffectiveDate().getEpochSecond() <= theMoment.getEpochSecond())
             .findFirst()
-            .orElse(regionsInDescOrder.get(0));
+            .orElse(regions.get(0));
     }
 
     public Geometry<?> getGeoJsonGeometryUnion(final Instant effectiveDate, final Integer...ids) {
         final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
         for (int id : ids) {
-            final RegionGeometry region = getAreaLocationRegionEffectiveOn(id, effectiveDate);
-            if (region != null) {
-                geometryCollection.add(region.getGeometry());
-            }
+            final RegionGeometry a = getAreaLocationRegionEffectiveOn(id, effectiveDate);
+            geometryCollection.add(a.getGeometry());
         }
         final org.locationtech.jts.geom.Geometry union = PostgisGeometryHelper.union(geometryCollection);
         return convertToGeojson(union);
@@ -177,35 +176,35 @@ public class V3RegionGeometryDataService {
         });
     }
 
-    private List<RegionGeometryDtoV3> filterRegionsAndConvertToDto(final Instant effectiveDate, final Integer...ids) {
+    private List<RegionGeometryDtoV3> filterRegions(final Instant effectiveDate, final Integer...ids) {
 
         if (ids != null && ids.length > 0) {
             // Both params given
             if (effectiveDate != null) {
-                return filterByEffectiveDateAndLocationCodesAndConvertToDto(effectiveDate, ids);
+                return filterByDateAndIds(effectiveDate, ids);
+                // Only ids params given
             }
-            // Only ids params given
-            return filterByIdsAndConvertToDto(ids);
+            return filterByIds(ids);
         // Only effectiveDate param given
         } else if (effectiveDate != null) {
-            return filterByDateAndConvertToDto(effectiveDate);
+            return filterByDate(effectiveDate);
         }
         // No params -> return all;
-        return regionStatus.allRegionsDtosInDescOrder;
+        return regionsInDescOrder;
     }
 
-    private List<RegionGeometryDtoV3> filterByDateAndConvertToDto(final Instant effectiveDate) {
-        return regionStatus.regionsInDescOrderMappedByLocationCode.keySet().stream()
+    private List<RegionGeometryDtoV3> filterByDate(final Instant effectiveDate) {
+        return regionsInDescOrderMappedByLocationCode.keySet().stream()
             .map(k -> getAreaLocationRegionEffectiveOn(k, effectiveDate))
             .filter(Objects::nonNull)
             .map(this::convertToDto)
             .collect(Collectors.toList());
     }
 
-    private List<RegionGeometryDtoV3> filterByIdsAndConvertToDto(final Integer...ids) {
+    private List<RegionGeometryDtoV3> filterByIds(final Integer...ids) {
         final Map<Integer, List<RegionGeometry>> regionsMappedByLocationCode = new HashMap<>();
         for (int id : ids) {
-            final List<RegionGeometry> regionVersions = regionStatus.getRegionVersionsInDescOrder(id);
+            final List<RegionGeometry> regionVersions = regionsInDescOrderMappedByLocationCode.get(id);
             if (regionVersions != null) {
                 regionsMappedByLocationCode.put(id, regionVersions);
             }
@@ -213,48 +212,14 @@ public class V3RegionGeometryDataService {
         return convertToDtoList(regionsMappedByLocationCode);
     }
 
-    private List<RegionGeometryDtoV3> filterByEffectiveDateAndLocationCodesAndConvertToDto(final Instant effectiveDate, final Integer...locationCodes) {
+    private List<RegionGeometryDtoV3> filterByDateAndIds(final Instant effectiveDate, final Integer...ids) {
         final List<RegionGeometryDtoV3> regions = new ArrayList<>();
-        for (int locationCode : locationCodes) {
-            final RegionGeometry region = getAreaLocationRegionEffectiveOn(locationCode, effectiveDate);
+        for (int id : ids) {
+            final RegionGeometry region = getAreaLocationRegionEffectiveOn(id, effectiveDate);
             if (region != null) {
                 regions.add(convertToDto(region));
             }
         }
         return regions;
-    }
-
-    private class RegionStatus {
-
-        private final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode;
-        public final List<RegionGeometryDtoV3> allRegionsDtosInDescOrder;
-        public final String currentCommitId;
-        public final ZonedDateTime updated;
-        public final ZonedDateTime checked;
-
-        public RegionStatus() {
-            regionsInDescOrderMappedByLocationCode = new HashMap<>();
-            allRegionsDtosInDescOrder = new ArrayList<>();
-            currentCommitId = null;
-            updated = null;
-            checked = null;
-        }
-
-        public RegionStatus(
-            final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode,
-            final String currentCommitId, final ZonedDateTime updated,
-            final ZonedDateTime checked) {
-            this.regionsInDescOrderMappedByLocationCode = regionsInDescOrderMappedByLocationCode;
-            this.currentCommitId = currentCommitId;
-            this.updated = updated;
-            this.checked = checked;
-            this.allRegionsDtosInDescOrder = convertToDtoList(regionsInDescOrderMappedByLocationCode);
-        }
-
-        public List<RegionGeometry> getRegionVersionsInDescOrder(final int locationCode) {
-            return regionsInDescOrderMappedByLocationCode != null ?
-                   regionsInDescOrderMappedByLocationCode.get(locationCode) : null;
-        }
-
     }
 }

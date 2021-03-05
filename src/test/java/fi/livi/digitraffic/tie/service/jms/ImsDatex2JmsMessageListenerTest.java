@@ -26,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Import;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringResult;
 
@@ -45,15 +43,9 @@ import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1.ImsMessage;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
-@Import({ JacksonAutoConfiguration.class })
 public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(ImsDatex2JmsMessageListenerTest.class);
-
-    @Autowired
-    private V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     private Datex2Repository datex2Repository;
@@ -61,9 +53,6 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     @Autowired
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller jaxb2MarshallerimsJaxb2Marshaller;
-
-    @Autowired
-    private V2Datex2UpdateService v2Datex2UpdateService;
 
     @Autowired
     @Qualifier("imsJaxb2Marshaller")
@@ -86,8 +75,8 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     public void datex2ReceiveImsMessagesAllVersions() throws IOException {
         final JMSMessageListener<ExternalIMSMessage> jmsMessageListener = createImsJmsMessageListener();
 
-        // Only 0.2.9 and 0.2.10 versions are received from now on
-        for (final ImsJsonVersion imsJsonVersion : Arrays.asList(ImsJsonVersion.V0_2_9, ImsJsonVersion.V0_2_12)) {
+        // Only V0_2_12 version is received at the moment
+        for (final ImsJsonVersion imsJsonVersion : Arrays.asList(ImsJsonVersion.V0_2_12)) {
             for(final SituationType type : SituationType.values()) {
                 cleanDb();
                 log.info("Run datex2ReceiveImsMessagesAllVersions with imsJsonVersion={}", imsJsonVersion);
@@ -102,17 +91,17 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     }
 
     private void checkActiveSituations(final String...situationIdsToFind) {
-        final List<Situation> situationIncidents = getSituations(v2Datex2DataService.findActive(0, TRAFFIC_INCIDENT));
-        final List<Situation> situationRoadworks = getSituations(v2Datex2DataService.findActive(0, ROADWORK));
-        final List<Situation> situationWeightRestrictions = getSituations(v2Datex2DataService.findActive(0, WEIGHT_RESTRICTION));
+        final List<Situation> situationIncidents = getSituations(getV2Datex2DataService().findActive(0, TRAFFIC_INCIDENT));
+        final List<Situation> situationRoadworks = getSituations(getV2Datex2DataService().findActive(0, ROADWORK));
+        final List<Situation> situationWeightRestrictions = getSituations(getV2Datex2DataService().findActive(0, WEIGHT_RESTRICTION));
         final Collection<Situation> situations = union(union(situationIncidents, situationRoadworks), situationWeightRestrictions);
 
         final List<TrafficAnnouncementFeature> featureIncidents =
-            v2Datex2DataService.findActiveJson(0, TRAFFIC_INCIDENT).getFeatures();
+            getV2Datex2DataService().findActiveJson(0, TRAFFIC_INCIDENT).getFeatures();
         final List<TrafficAnnouncementFeature> featureRoadworks =
-            v2Datex2DataService.findActiveJson(0, ROADWORK).getFeatures();
+            getV2Datex2DataService().findActiveJson(0, ROADWORK).getFeatures();
         final List<TrafficAnnouncementFeature> featureWeightRestrictions =
-            v2Datex2DataService.findActiveJson(0, WEIGHT_RESTRICTION).getFeatures();
+            getV2Datex2DataService().findActiveJson(0, WEIGHT_RESTRICTION).getFeatures();
         final Collection<TrafficAnnouncementFeature> features = union(union(featureIncidents, featureRoadworks), featureWeightRestrictions);
 
         assertCollectionSize("Situations size won't match.", situationIdsToFind.length, situations);
@@ -173,7 +162,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     }
 
     private JMSMessageListener<ExternalIMSMessage> createImsJmsMessageListener() {
-        final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> dataUpdater = (data) ->  v2Datex2UpdateService.updateTrafficDatex2ImsMessages(data);
+        final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> dataUpdater = (data) ->  getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(data);
         return new JMSMessageListener<>(new ImsMessageMarshaller(jaxb2MarshallerimsJaxb2Marshaller), dataUpdater, false, log);
     }
 

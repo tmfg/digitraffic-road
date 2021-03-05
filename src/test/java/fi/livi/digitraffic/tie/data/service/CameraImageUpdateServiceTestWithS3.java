@@ -8,22 +8,27 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.Resource;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.amazonaws.services.s3.model.S3Object;
 
@@ -38,7 +43,7 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
-import org.springframework.test.annotation.DirtiesContext;
+import fi.livi.digitraffic.tie.service.v1.camera.ImageUpdateInfo;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3 {
@@ -82,11 +87,11 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
             // Init image data for all loop indexes
             try {
                 when(cameraImageReader.readImage(eq(cp.getLotjuId()), any()))
-                    .thenReturn(getAsByteArray(1),
-                                getAsByteArray(2),
-                                getAsByteArray(3),
-                                getAsByteArray(4),
-                                getAsByteArray(5));
+                    .thenAnswer(invocation -> getAnswer(invocation, 1))
+                    .thenAnswer(invocation -> getAnswer(invocation, 2))
+                    .thenAnswer(invocation -> getAnswer(invocation, 3))
+                    .thenAnswer(invocation -> getAnswer(invocation, 4))
+                    .thenAnswer(invocation -> getAnswer(invocation, 5));
             } catch (IOException e) {
                 throw new RuntimeException();
             }
@@ -127,23 +132,33 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
         verify(cameraImageReader, times(10)).readImage(anyLong(), any());
     }
 
+    private Object getAnswer(final InvocationOnMock invocation, final int index) {
+        // Update info-parameter values as side effect
+        final byte[] img = readImageForIndex(index);
+        final ImageUpdateInfo info = (ImageUpdateInfo) invocation.getArguments()[1];
+        ReflectionTestUtils.setField(info, "sizeBytes", img.length);
+        ReflectionTestUtils.setField(info, "readStatus", ImageUpdateInfo.Status.SUCCESS);
+        ReflectionTestUtils.setField(info, "readDurationMs", 1000);
+        return img;
+    }
+
     @Test
     public void versionHistoryAndCameraPublicity() {
 
         final ZonedDateTime initialLastModified =
             DateHelper.toZonedDateTimeAtUtc(Instant.ofEpochSecond(Instant.now().getEpochSecond()));
 
-        final CameraPreset cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst().get();
+        final CameraPreset cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst().orElseThrow();
 
         cameraPresetHistoryUpdateService.deleteAllWithPresetId(cp.getPresetId());
         Assert.assertTrue(cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp.getPresetId()).isEmpty());
 
         try {
             when(cameraImageReader.readImage(eq(cp.getLotjuId()), any()))
-                .thenReturn(getAsByteArray(1),
-                    getAsByteArray(2),
-                    getAsByteArray(3),
-                    getAsByteArray(4));
+                .thenAnswer(invocation -> getAnswer(invocation, 1))
+                .thenAnswer(invocation -> getAnswer(invocation, 2))
+                .thenAnswer(invocation -> getAnswer(invocation, 3))
+                .thenAnswer(invocation -> getAnswer(invocation, 4));
         } catch (IOException e) {
             throw new RuntimeException();
         }
@@ -193,7 +208,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
         final byte[] image = readWeathercamS3DataVersion( CameraImageS3Writer.getVersionedKey(presetId), history.getVersionId());
         Assert.assertEquals(image.length, history.getSize().intValue());
         // S3 image data should be equal with written dat. Hidden images also has real data, no noise image.
-        assertBytes(getAsByteArray(imageDataIndex), image);
+        assertBytes(readImageForIndex(imageDataIndex), image);
 
         // S3 Object last modified should be equals with history
         final S3Object imageObject = readWeathercamS3ObjectVersion(history.getPresetId() + ".jpg", history.getVersionId());
@@ -214,7 +229,7 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
         // Check that latest image data is correct after update
         // Latest image's bytes equals with actual (public) or noise image (hidden)
         final byte[] image = readWeathercamS3Data(key);
-        assertBytes(shouldBePublic ? getAsByteArray(imageDataIndex) : service.getNoiseImage(), image);
+        assertBytes(shouldBePublic ? readImageForIndex(imageDataIndex) : service.getNoiseImage(), image);
         // S3 Object lastmodified is correct
         final S3Object imageS3Object = readWeathercamS3Object(key);
         assertLastModified(lastModified, imageS3Object);
@@ -242,12 +257,6 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
         Assert.assertArrayEquals(bytes1 , bytes2);
     }
 
-    private byte[] getAsByteArray(int i) {
-        byte[] arr = new byte[i];
-        Arrays.fill(arr, (byte)i);
-        return arr;
-    }
-
     private KuvaProtos.Kuva createKuva(final ZonedDateTime lastModified, final String presetId, final long esiasentoId, final boolean isPublic) {
         return KuvaProtos.Kuva.newBuilder()
             .mergeFrom(KuvaProtos.Kuva.getDefaultInstance())
@@ -260,5 +269,15 @@ public class CameraImageUpdateServiceTestWithS3 extends AbstractCameraTestWithS3
             .setEsiasennonNimi("Esiasento " + presetId)
             .setAsemanNimi("Asema " + presetId)
             .build();
+    }
+
+    private byte[] readImageForIndex(final int index) {
+        try {
+            final Resource resource = resourceLoader.getResource("classpath:lotju/kuva/" + index + "image.jpg");
+            final InputStream imageIs = resource.getInputStream();
+            return IOUtils.toByteArray(imageIs);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

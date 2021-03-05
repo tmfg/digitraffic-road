@@ -30,8 +30,8 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
@@ -52,8 +52,8 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     @Before
     public void updateData() throws IOException {
-        final Datex2UpdateService datex2UpdateService =
-            applicationContext.getAutowireCapableBeanFactory().createBean(Datex2UpdateService.class);
+        final V2Datex2UpdateService datex2UpdateService =
+            applicationContext.getAutowireCapableBeanFactory().createBean(V2Datex2UpdateService.class);
 
         datex2Repository.deleteAll();
         // GUID5000526801 in past

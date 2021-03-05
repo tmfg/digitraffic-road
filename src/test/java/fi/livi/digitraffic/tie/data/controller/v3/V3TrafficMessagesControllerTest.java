@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
@@ -51,19 +50,14 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-@Import(TrafficMessageTestHelper.class)
 public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
     private static final Logger log = getLogger(V3TrafficMessagesControllerTest.class);
 
     @Autowired
     protected Datex2DataService datex2DataService;
-
-    @Autowired
-    protected V2Datex2UpdateService v2Datex2UpdateService;
 
     @Autowired
     protected Datex2Repository datex2Repository;

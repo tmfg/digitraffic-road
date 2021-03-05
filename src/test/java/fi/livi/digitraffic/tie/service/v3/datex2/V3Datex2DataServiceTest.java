@@ -18,15 +18,14 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
@@ -37,14 +36,12 @@ import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnounc
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.service.AbstractDatex2DataServiceTest;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
+public class V3Datex2DataServiceTest extends AbstractRestWebTest {
     private static final Logger log = getLogger(V3Datex2DataServiceTest.class);
 
     @Autowired
@@ -56,14 +53,11 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    private ObjectReader readerForGeometry;
-
     @SpyBean
     private V3RegionGeometryDataService v3RegionGeometryDataService;
 
     @Before
     public void init() {
-        readerForGeometry = objectMapper.readerFor(Geometry.class);
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
@@ -121,33 +115,6 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
                 activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(), getSituationIdForSituationType(situationType), start, end);
             }
         }
-    }
-
-    @Ignore("TODO: Test find with true/false without area geometry parameter and geometry equals")
-    @Test
-    public void findActiveTrafficMessagesWithAreaGeometries() {
-//        trafficMessageTestHelper.cleanDb();
-//        // Create announcement with area geometry
-//        final ImsGeoJsonFeature ims = ImsJsonMessageFactory
-//            .createJsonMessage(fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT,
-//                               fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL,
-//                               true, ZonedDateTime.now(),
-//                               fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.Restriction.Type.NARROW_LANES,
-//                               "Nopeusrajoitus", 40.0, "km/h",
-//                               fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.Worktype.Type.BRIDGE,
-//                       "tloik/ims/regions/00073_Helsinki.json",
-//            readerForGeometry);
-//
-//        final String imsJson = writerForImsGeoJsonFeature.writeValueAsString(ims);
-//        // Convert to feature with includeAreaGeometry -parameter true -> should have the geometry
-//        final TrafficAnnouncementFeature resultWithGeometry =
-//            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, true);
-//        // Convert to feature with includeAreaGeometry -parameter false -> should still have the geometry as it's not an area geometry
-//        final TrafficAnnouncementFeature resultWithoutGeometry =
-//            datex2JsonConverterService.convertToFeatureJsonObjectV3(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, false);
-//
-//        assertNotNull(resultWithGeometry.getGeometry());
-//        assertNotNull(resultWithoutGeometry.getGeometry());
     }
 
     @Test

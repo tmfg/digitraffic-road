@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,26 +24,27 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.datex2.Datex2JsonConverterService;
+import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverterService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
+@ConditionalOnWebApplication
 @Service
 public class V2Datex2DataService {
     private static final Logger log = LoggerFactory.getLogger(V2Datex2DataService.class);
 
     private final Datex2Repository datex2Repository;
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
-    private final Datex2JsonConverterService datex2JsonConverterService;
+    private final V2Datex2JsonConverterService v2Datex2JsonConverterService;
     private DataStatusService dataStatusService;
 
     @Autowired
     public V2Datex2DataService(final Datex2Repository datex2Repository,
                                final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
-                               final Datex2JsonConverterService datex2JsonConverterService,
+                               final V2Datex2JsonConverterService v2Datex2JsonConverterService,
                                final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
-        this.datex2JsonConverterService = datex2JsonConverterService;
+        this.v2Datex2JsonConverterService = v2Datex2JsonConverterService;
         this.dataStatusService = dataStatusService;
     }
 
@@ -123,7 +125,7 @@ public class V2Datex2DataService {
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .map(d2 -> {
                 try {
-                    return datex2JsonConverterService.convertToFeatureJsonObjectV2(d2.getJsonMessage(), d2.getMessageType());
+                    return v2Datex2JsonConverterService.convertToFeatureJsonObjectV2(d2.getJsonMessage(), d2.getMessageType());
                 } catch (final Exception e) {
                     log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV2", e);
                     return null;

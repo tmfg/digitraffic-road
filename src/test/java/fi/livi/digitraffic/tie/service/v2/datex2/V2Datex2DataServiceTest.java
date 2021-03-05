@@ -16,10 +16,8 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
@@ -34,10 +32,8 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-@Import({ JacksonAutoConfiguration.class, TrafficMessageTestHelper.class, V3RegionGeometryDataService.class})
-public class V2Datex2DataServiceTest extends AbstractServiceTest {
+public class V2Datex2DataServiceTest extends AbstractRestWebTest {
     private static final Logger log = getLogger(V2Datex2DataServiceTest.class);
 
     @Autowired
