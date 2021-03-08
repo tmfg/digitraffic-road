@@ -46,6 +46,7 @@ import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSc
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper;
 
@@ -202,15 +203,15 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             try {
                 testHelper.saveTrackingData( // end time will be start+9 min
                     createMaintenanceTrackingWithPoints(
-                        now.plusMinutes(i * 10), 10, 1, workMachines,
+                        now.plusMinutes(i * 10L), 10, 1, workMachines,
                         SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
         testHelper.handleUnhandledWorkMachineTrackings();
-        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(x -> x.getEndTime()).min(ChronoZonedDateTime::compareTo).orElseThrow();
-        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(x -> x.getEndTime()).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
 
         log.info("min {} max {} from: {}", min, max, now.toInstant());
 
