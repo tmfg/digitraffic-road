@@ -122,8 +122,6 @@ public class CameraImageUpdateService {
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, DateHelper.toZonedDateTimeAtUtc(kuva.getAikaleima()));
         try {
             byte[] image = readKuva(kuva.getKuvaId(), info);
-//            info.updateReadStatusSuccess();
-//            info.setSizeBytes(1);
             try {
                 image = ImageManipulationService.removeJpgExifMetadata(image);
             } catch (Exception e) {
@@ -136,7 +134,6 @@ public class CameraImageUpdateService {
         } catch (final CameraImageWriteFailureException e) {
             // write attempts exhausted
         }
-
         return info;
     }
 
