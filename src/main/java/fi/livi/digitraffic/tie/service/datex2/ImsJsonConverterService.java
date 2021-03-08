@@ -1,17 +1,8 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
@@ -24,12 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.EstimatedDuration;
-import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
@@ -37,99 +23,11 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 public class ImsJsonConverterService {
     private static final Logger log = LoggerFactory.getLogger(ImsJsonConverterService.class);
 
-    protected final ObjectReader featureJsonReaderV2;
-    protected final ObjectReader featureJsonReaderV3;
-
-    protected final Validator validator;
     protected final ObjectReader genericJsonReader;
-
-    protected ObjectMapper objectMapper;
 
     @Autowired
     public ImsJsonConverterService(final ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-
-        featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
-        featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class);
-
-        genericJsonReader = objectMapper.reader();
-
-        final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
-    protected ArrayNode readAnnouncementsFromTheImsJson(final JsonNode root) {
-        final JsonNode properties = root.get("properties");
-        if (properties == null) {
-            return null;
-        }
-        return (ArrayNode)properties.get("announcements");
-    }
-
-    private void checkDurationViolationsV2(final TrafficAnnouncementFeature feature) {
-        final List<ConstraintViolation<EstimatedDuration>> violations =
-            getDurationViolationsV2(feature);
-
-        if (!violations.isEmpty()) {
-            final String joinedViolations = violations.stream()
-                .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
-                .collect(Collectors.joining(","));
-            throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
-        }
-    }
-
-    private void checkDurationViolationsV3(final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature feature) {
-        final List<ConstraintViolation<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration>> violations =
-            getDurationViolationsV3(feature);
-
-        if (!violations.isEmpty()) {
-            final String joinedViolations = violations.stream()
-                .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
-                .collect(Collectors.joining(","));
-            throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
-        }
-    }
-
-    private List<ConstraintViolation<EstimatedDuration>> getDurationViolationsV2(
-        final TrafficAnnouncementFeature feature) {
-
-        return feature.getProperties().announcements.stream().map(this::getDurationViolationsV2).flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    private List<ConstraintViolation<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration>> getDurationViolationsV3(
-        final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature feature) {
-
-        return feature.getProperties().announcements.stream().map(this::getDurationViolationsV3).flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    private Set<ConstraintViolation<EstimatedDuration>> getDurationViolationsV2(
-        final fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncement a) {
-
-        if (a.timeAndDuration != null && a.timeAndDuration.estimatedDuration != null) {
-            return validator.validate(a.timeAndDuration.estimatedDuration);
-        }
-        return Collections.emptySet();
-    }
-
-    private Set<ConstraintViolation<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration>> getDurationViolationsV3(
-        final TrafficAnnouncement a) {
-
-        if (a.timeAndDuration != null && a.timeAndDuration.estimatedDuration != null) {
-            return validator.validate(a.timeAndDuration.estimatedDuration);
-        }
-        return Collections.emptySet();
-    }
-
-    private static void checkIsInvalidAnnouncementGeojsonV2(final TrafficAnnouncementFeature feature) {
-        if (feature.getProperties() == null) {
-            throw new IllegalStateException("TrafficAnnouncementFeature with null properties " + ToStringHelper.toStringFull(feature));
-        }
-    }
-
-    private static void checkIsInvalidAnnouncementGeojsonV3(final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature feature) {
-        if (feature.getProperties() == null) {
-            throw new IllegalStateException("TrafficAnnouncementFeature with null properties " + ToStringHelper.toStringFull(feature));
-        }
+        this.genericJsonReader = objectMapper.reader();
     }
 
     /**
