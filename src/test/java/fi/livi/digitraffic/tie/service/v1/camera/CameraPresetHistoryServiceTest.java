@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -91,9 +90,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
     @Value("${dt.amazon.s3.weathercam.region}")
     private String s3WeathercamRegion;
-
-    @MockBean
-    private CameraImageS3Writer cameraImageS3Writer;
 
     @Before
     public void cleanHistory() {
@@ -590,7 +586,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     public void deleteOlderThanHours() {
         final int historySize = RandomUtils.nextInt(40, 80);
         // handle possible gap between server and db times
-        final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusSeconds(10);
+        final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusMinutes(1);
         // History for historySize-1 hours backwards
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         final List<CameraHistoryDto> history = cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);

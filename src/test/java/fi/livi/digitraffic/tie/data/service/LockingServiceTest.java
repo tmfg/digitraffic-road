@@ -22,17 +22,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.dao.LockingDao;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.service.LockingService;
-import fi.livi.digitraffic.tie.service.LockingServiceInternal;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
-@Import({LockingDao.class, LockingService.class, LockingServiceInternal.class})
-public class LockingServiceTest extends AbstractJpaTest {
+public class LockingServiceTest extends AbstractServiceTest {
     private static final Logger log = LoggerFactory.getLogger(LockingServiceTest.class);
 
     private static final String LOCK = "lock";

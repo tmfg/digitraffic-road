@@ -13,6 +13,7 @@ import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfig;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverter;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.dao.LockingDao;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryDao;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
@@ -21,6 +22,8 @@ import fi.livi.digitraffic.tie.helper.FileGetService;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.FlywayService;
+import fi.livi.digitraffic.tie.service.LockingService;
+import fi.livi.digitraffic.tie.service.LockingServiceInternal;
 import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
@@ -36,10 +39,17 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.v1.location.LocationMetadataUpdater;
 import fi.livi.digitraffic.tie.service.v1.location.LocationService;
+import fi.livi.digitraffic.tie.service.v1.location.LocationSubtypeUpdater;
+import fi.livi.digitraffic.tie.service.v1.location.LocationTypeUpdater;
+import fi.livi.digitraffic.tie.service.v1.location.LocationUpdater;
+import fi.livi.digitraffic.tie.service.v1.location.MetadataFileFetcher;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
 @Import({ Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
@@ -53,6 +63,9 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
           ImsJsonConverterService.class, V2Datex2UpdateService.class,
           V2Datex2JsonConverterService.class,
           V3RegionGeometryUpdateService.class,
+          V2MaintenanceTrackingServiceTestHelper.class, V2MaintenanceTrackingUpdateService.class,
+          LocationTypeUpdater.class, LocationMetadataUpdater.class, LocationUpdater.class, LocationSubtypeUpdater.class,
+          MetadataFileFetcher.class, LockingService.class, LockingServiceInternal.class,
 
           // converters
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,
@@ -60,6 +73,7 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
           // daos
           TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
+          LockingDao.class,
 
           // configurations
           AmazonS3ClientTestConfiguration.class, S3PropertiesConfig.class
