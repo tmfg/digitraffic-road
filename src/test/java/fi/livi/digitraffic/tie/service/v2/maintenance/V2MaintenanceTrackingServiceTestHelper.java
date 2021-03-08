@@ -67,6 +67,9 @@ public class V2MaintenanceTrackingServiceTestHelper {
     public static final String COMPANY = "Tie huolto Oy";
     public static final String COMPANY_ID = "8561566-0";
 
+    public final static Pair<Double, Double> RANGE_X = Pair.of(19.0, 32.0);
+    public final static Pair<Double, Double> RANGE_Y = Pair.of(59.0, 72.0);
+
     public static final double RANGE_X_MIN = 19.0;
     public static final double RANGE_X_MAX = 32.0;
     public static final double RANGE_Y_MIN = 59.0;
