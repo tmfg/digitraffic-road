@@ -29,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometriesDtoV3;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryDtoV3;
@@ -108,11 +109,13 @@ public class V3RegionGeometryDataService {
         return regionGeometryRepository.getLatestCommitId();
     }
 
+    @NotTransactionalServiceMethod
     public RegionGeometriesDtoV3 findAreaLocationRegions(final Instant effectiveDate, final Integer...ids) {
         final List<RegionGeometryDtoV3> filtered = filterRegionsAndConvertToDto(effectiveDate, ids);
         return new RegionGeometriesDtoV3(filtered, regionStatus.updated, regionStatus.checked);
     }
 
+    @NotTransactionalServiceMethod
     public RegionGeometry getAreaLocationRegionEffectiveOn(final int locationCode, final Instant theMoment) {
         final List<RegionGeometry> regionsInDescOrder = regionStatus.getRegionVersionsInDescOrder(locationCode);
         if (CollectionUtils.isEmpty(regionsInDescOrder)) {
@@ -126,6 +129,7 @@ public class V3RegionGeometryDataService {
             .orElse(regionsInDescOrder.get(0));
     }
 
+    @NotTransactionalServiceMethod
     public Geometry<?> getGeoJsonGeometryUnion(final Instant effectiveDate, final Integer...ids) {
         final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
         for (int id : ids) {

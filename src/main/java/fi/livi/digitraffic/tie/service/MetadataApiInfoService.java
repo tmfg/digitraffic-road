@@ -1,12 +1,12 @@
 package fi.livi.digitraffic.tie.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.documentation.MetadataApiInfo;
 import springfox.documentation.service.ApiInfo;
 
-@Service
+@Component
 public class MetadataApiInfoService {
 
     private final MessageService messageService;

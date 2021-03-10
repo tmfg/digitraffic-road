@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
@@ -96,6 +97,7 @@ public class V2Datex2DataService {
         return datex2Repository.findBySituationIdAndMessageTypeWithJson(situationId, messageType);
     }
 
+    @NotTransactionalServiceMethod
     public D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
 
         // conver Datex2s to D2LogicalModels

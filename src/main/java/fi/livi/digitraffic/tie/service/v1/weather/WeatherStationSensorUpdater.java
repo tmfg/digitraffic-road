@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -20,7 +20,7 @@ import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataService;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     private static final Logger log = LoggerFactory.getLogger(WeatherStationSensorUpdater.class);
 
@@ -56,7 +56,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         final List<TiesaaLaskennallinenAnturiVO> toUpdate =
             allTiesaaLaskennallinenAnturis.stream().filter(WeatherStationSensorUpdater::validate).collect(Collectors.toList());
 
-        final Collection invalid = CollectionUtils.subtract(allTiesaaLaskennallinenAnturis, toUpdate);
+        final Collection<TiesaaLaskennallinenAnturiVO> invalid = CollectionUtils.subtract(allTiesaaLaskennallinenAnturis, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());

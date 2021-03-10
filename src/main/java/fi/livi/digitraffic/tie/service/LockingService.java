@@ -1,20 +1,17 @@
 package fi.livi.digitraffic.tie.service;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class LockingService {
 
     private static final Logger log = LoggerFactory.getLogger(LockingService.class);
     private LockingServiceInternal lockingServiceInternal;
-    private final static Set<Long> generatedInstanceIds = new HashSet<>();
     public LockingService(final LockingServiceInternal lockingServiceInternal) {
         this.lockingServiceInternal = lockingServiceInternal;
     }

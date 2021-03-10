@@ -12,33 +12,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
-import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
-import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataService;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class TmsStationsSensorsUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationsSensorsUpdater.class);
 
     private final RoadStationSensorService roadStationSensorService;
     private final TmsStationService tmsStationService;
-    private final DataStatusService dataStatusService;
     private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
 
     @Autowired
     public TmsStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                      final TmsStationService tmsStationService,
-                                     final DataStatusService dataStatusService,
                                      final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
         this.roadStationSensorService = roadStationSensorService;
         this.tmsStationService = tmsStationService;
-        this.dataStatusService = dataStatusService;
         this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
     }
 

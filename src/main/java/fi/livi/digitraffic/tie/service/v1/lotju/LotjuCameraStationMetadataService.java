@@ -1,21 +1,18 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.AbstractVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class LotjuCameraStationMetadataService {
     private static final Logger log = LoggerFactory.getLogger(LotjuCameraStationMetadataService.class);
     private final LotjuCameraStationMetadataClient lotjuCameraStationClient;

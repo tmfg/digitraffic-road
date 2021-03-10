@@ -6,11 +6,11 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.jcabi.manifests.Manifests;
 
-@Service
+@Component
 public class BuildVersionService {
 
     private static final Logger log = LoggerFactory.getLogger(BuildVersionService.class);
@@ -44,7 +44,6 @@ public class BuildVersionService {
         return "?";
     }
 
-
     public String getAppFullVersion() {
         final String version = String.format("%s#%s@%s", getAppVersion(), getAppBuildRevision(), getAppBuildTime());
         log.info("Application version: {}", version);
@@ -65,5 +64,4 @@ public class BuildVersionService {
             return null;
         }
     }
-
 }

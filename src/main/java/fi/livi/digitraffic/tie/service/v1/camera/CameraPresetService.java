@@ -61,6 +61,7 @@ public class CameraPresetService {
         return allStations.stream().collect(Collectors.toMap(CameraPreset::getLotjuId, Function.identity()));
     }
 
+    @Transactional
     public CameraPreset save(final CameraPreset cameraPreset) {
         try {
             // Cascade none

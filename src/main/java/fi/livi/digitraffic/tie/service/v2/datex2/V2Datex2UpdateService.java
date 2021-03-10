@@ -99,7 +99,7 @@ public class V2Datex2UpdateService {
         return (int) data.stream().filter(this::updateDatex2Data).count();
     }
 
-    public List<Datex2MessageDto> createModels(final ExternalIMSMessage imsMessage, final ZonedDateTime importTime) {
+    private List<Datex2MessageDto> createModels(final ExternalIMSMessage imsMessage, final ZonedDateTime importTime) {
         final D2LogicalModel d2 = datex2XmlStringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
         final String jMessage = imsMessage.getMessageContent().getJMessage();
         final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
@@ -147,7 +147,7 @@ public class V2Datex2UpdateService {
         return datex2Repository.findDatex2SituationLatestVersionTime(situationId, situationType.name());
     }
 
-    public Datex2MessageDto convertToDatex2MessageDto(final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType,
+    private Datex2MessageDto convertToDatex2MessageDto(final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType,
                                                       final Situation situation, final String jsonValue,
                                                       final ZonedDateTime importTime,
                                                       final D2LogicalModel sourceD2, final SituationPublication sourceSituationPublication) {

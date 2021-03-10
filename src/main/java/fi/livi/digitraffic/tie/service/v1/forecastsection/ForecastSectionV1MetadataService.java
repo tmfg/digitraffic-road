@@ -40,6 +40,7 @@ public class ForecastSectionV1MetadataService {
                                                            dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA_CHECK));
     }
 
+    @Transactional(readOnly = true)
     public ForecastSectionsMetadata findForecastSectionsV1Metadata(final boolean onlyUpdateInfo) {
 
         final ForecastSectionFeatureCollection features = findForecastSectionsV1Metadata();

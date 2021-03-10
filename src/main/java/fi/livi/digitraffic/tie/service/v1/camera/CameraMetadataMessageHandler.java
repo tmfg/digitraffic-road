@@ -5,7 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
  * Service to handle JMS metadata updated messages
  */
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class CameraMetadataMessageHandler {
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataMessageHandler.class);
     private final CameraStationUpdater cameraStationUpdater;

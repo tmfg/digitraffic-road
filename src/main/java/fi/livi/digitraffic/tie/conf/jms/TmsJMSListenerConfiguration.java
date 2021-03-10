@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.conf.jms;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +11,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
+import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
-import fi.livi.digitraffic.tie.service.LockingService;
 import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
@@ -50,8 +48,8 @@ public class    TmsJMSListenerConfiguration extends AbstractJMSListenerConfigura
     }
 
     @Override
-    public JMSMessageListener<LAMRealtimeProtos.Lam> createJMSMessageListener() throws JAXBException {
-        final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> handleData = sensorDataUpdateService::updateLamData;
+    public JMSMessageListener<LAMRealtimeProtos.Lam> createJMSMessageListener() {
+        final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> handleData = sensorDataUpdateService::updateLamValueBuffer;
         final TmsMessageMarshaller messageMarshaller = new TmsMessageMarshaller();
 
         return new JMSMessageListener<>(messageMarshaller, handleData,

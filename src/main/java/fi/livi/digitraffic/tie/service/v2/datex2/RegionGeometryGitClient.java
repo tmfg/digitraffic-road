@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,7 +40,7 @@ import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class RegionGeometryGitClient {
     private static final Logger log = LoggerFactory.getLogger(RegionGeometryGitClient.class);
 

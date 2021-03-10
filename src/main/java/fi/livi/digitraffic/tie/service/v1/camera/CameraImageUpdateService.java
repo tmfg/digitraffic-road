@@ -18,7 +18,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.ImageManipulationService;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class CameraImageUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateService.class);
 
@@ -70,7 +70,7 @@ public class CameraImageUpdateService {
         return IOUtils.toByteArray(imageIs);
     }
 
-   public boolean handleKuva(final KuvaProtos.Kuva kuva) {
+    public boolean handleKuva(final KuvaProtos.Kuva kuva) {
         if (log.isDebugEnabled()) {
             log.debug("method=handleKuva Handling {}", ToStringHelper.toString(kuva));
         }

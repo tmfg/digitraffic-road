@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
@@ -30,7 +30,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class CameraDataUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraDataUpdateService.class);
 
