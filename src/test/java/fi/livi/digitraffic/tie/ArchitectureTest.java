@@ -7,8 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
 import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
@@ -45,14 +43,4 @@ public class ArchitectureTest extends AbstractServiceTest {
 
 
     }
-
-
-    @ArchTest
-    private final ArchRule loggers_should_be_private_static_final =
-        ArchRuleDefinition.fields().that().haveRawType(org.slf4j.Logger.class)
-            .should().bePrivate()
-            .andShould().beStatic()
-            .andShould().beFinal()
-            .because("we agreed on this convention");
-
 }
