@@ -28,18 +28,16 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.SensorValue;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
@@ -282,7 +280,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         return (data) -> {
             final StopWatch sw = StopWatch.createStarted();
 
-            final int updated = sensorDataUpdateService.updateWeatherData(data);
+            final int updated = sensorDataUpdateService.updateWeatherValueBuffer(data);
 
             log.info("handleData tookMs={}", sw.getTime());
             return updated;

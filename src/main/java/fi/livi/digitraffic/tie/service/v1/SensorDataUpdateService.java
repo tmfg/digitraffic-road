@@ -189,7 +189,7 @@ public class SensorDataUpdateService {
      * @return count of buffered elements
      */
     @NotTransactionalServiceMethod
-    public int updateWeatherData(final List<TiesaaMittatieto> data) {
+    public int updateWeatherValueBuffer(final List<TiesaaMittatieto> data) {
         // NOTE! no sensor filtering (check updateLamData)
 
         // Process incoming data set and store filtered items
