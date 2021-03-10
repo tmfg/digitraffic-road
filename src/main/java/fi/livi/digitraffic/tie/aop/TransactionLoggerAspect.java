@@ -14,6 +14,12 @@ import org.springframework.core.annotation.Order;
 public class TransactionLoggerAspect {
     private static final Logger log = LoggerFactory.getLogger("TransactionLogger");
 
+    private final int limit;
+
+    public TransactionLoggerAspect(final int limit) {
+        this.limit = limit;
+    }
+
     @Around("@annotation(org.springframework.transaction.annotation.Transactional)")
     public Object monitor(final ProceedingJoinPoint pjp) throws Throwable {
         final StopWatch stopWatch = StopWatch.createStarted();
@@ -26,7 +32,7 @@ public class TransactionLoggerAspect {
         } finally {
             final long tookMs = stopWatch.getTime();
 
-            if(tookMs > 999) {
+            if(tookMs > limit) {
                 log.info("Transaction jobName={}.{} tookMs={}", className, methodName, tookMs);
             }
         }
