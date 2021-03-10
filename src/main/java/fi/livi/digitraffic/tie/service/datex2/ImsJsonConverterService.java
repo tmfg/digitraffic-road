@@ -9,18 +9,17 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
-@Service
+@Component
 public class ImsJsonConverterService {
     private static final Logger log = LoggerFactory.getLogger(ImsJsonConverterService.class);
 
@@ -36,7 +35,6 @@ public class ImsJsonConverterService {
      * @param imsJson GeoJSON string
      * @return Map of situationId to GeoJSON feature JSON-string, SituationType and TrafficAnnouncementType. Empty if no features is found.
      */
-    @NotTransactionalServiceMethod
     public Map<String, Triple<String, SituationType, TrafficAnnouncementType>> parseFeatureJsonsFromImsJson(final String imsJson) {
 
         if (StringUtils.isBlank(imsJson)) {
