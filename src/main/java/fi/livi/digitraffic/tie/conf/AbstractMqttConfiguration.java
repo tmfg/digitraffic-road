@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.conf;
 
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayService.StatisticsType.STATUS;
+import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.STATUS;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -16,20 +16,20 @@ import org.slf4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.service.LockingService;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayService;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
 public abstract class AbstractMqttConfiguration {
 
 
     protected final Logger log;
-    protected final MqttRelayService mqttRelay;
+    protected final MqttRelayQueue mqttRelay;
     private final ObjectMapper objectMapper;
 
     private final String topicStringFormat;
     private final String statusTopic;
 
-    private final LockingService lockingService;
+    private final ClusteredLocker clusteredLocker;
     private final boolean requireLockForSending;
     private final String mqttClassName;
     private final long instanceId;
@@ -38,7 +38,7 @@ public abstract class AbstractMqttConfiguration {
 
     private final AtomicReference<ZonedDateTime> lastUpdated = new AtomicReference<>();
     private final AtomicReference<ZonedDateTime> lastError = new AtomicReference<>();
-    private final MqttRelayService.StatisticsType statisticsType;
+    private final MqttRelayQueue.StatisticsType statisticsType;
 
     /**
      * With this constructor sending data messages are send only by one node.
@@ -49,16 +49,16 @@ public abstract class AbstractMqttConfiguration {
      * @param topicStringFormat String format for topic generation
      * @param statusTopic Status topic
      * @param statisticsType Status message type
-     * @param lockingService LockingService to be used for db locks
+     * @param clusteredLocker LockingService to be used for db locks
      */
     public AbstractMqttConfiguration(final Logger log,
-                                     final MqttRelayService mqttRelay,
+                                     final MqttRelayQueue mqttRelay,
                                      final ObjectMapper objectMapper,
                                      final String topicStringFormat,
                                      final String statusTopic,
-                                     final MqttRelayService.StatisticsType statisticsType,
-                                     final LockingService lockingService) {
-        this(log, mqttRelay, objectMapper, topicStringFormat, statusTopic, statisticsType, lockingService, true);
+                                     final MqttRelayQueue.StatisticsType statisticsType,
+                                     final ClusteredLocker clusteredLocker) {
+        this(log, mqttRelay, objectMapper, topicStringFormat, statusTopic, statisticsType, clusteredLocker, true);
     }
 
     /**
@@ -70,16 +70,16 @@ public abstract class AbstractMqttConfiguration {
      * @param topicStringFormat String format for topic generation
      * @param statusTopic Status topic
      * @param statisticsType Status message type
-     * @param lockingService LockingService to be used for db locks
+     * @param clusteredLocker LockingService to be used for db locks
      * @param requireLockForSending Is locking needed for sending data-messages between nodes. If required only one node will be sending messages.
      */
     public AbstractMqttConfiguration(final Logger log,
-                                     final MqttRelayService mqttRelay,
+                                     final MqttRelayQueue mqttRelay,
                                      final ObjectMapper objectMapper,
                                      final String topicStringFormat,
                                      final String statusTopic,
-                                     final MqttRelayService.StatisticsType statisticsType,
-                                     final LockingService lockingService,
+                                     final MqttRelayQueue.StatisticsType statisticsType,
+                                     final ClusteredLocker clusteredLocker,
                                      final boolean requireLockForSending) {
 
         this.mqttRelay = mqttRelay;
@@ -89,10 +89,10 @@ public abstract class AbstractMqttConfiguration {
         this.log = log;
         this.statisticsType = statisticsType;
 
-        this.lockingService = lockingService;
+        this.clusteredLocker = clusteredLocker;
         this.requireLockForSending = requireLockForSending;
         this.mqttClassName = this.getClass().getSimpleName();
-        this.instanceId = LockingService.generateInstanceId();
+        this.instanceId = ClusteredLocker.generateInstanceId();
 
         // Executor for status messager
         executor.scheduleAtFixedRate(this::sendStatus, 30, 10, TimeUnit.SECONDS);
@@ -108,7 +108,7 @@ public abstract class AbstractMqttConfiguration {
 
     protected void sendMqttMessages(final Collection<DataMessage> messages) {
         // Get lock and keep it to prevent sending on multiple nodes
-        final boolean lockAcquired = !requireLockForSending || lockingService.tryLock(mqttClassName, 60, instanceId);
+        final boolean lockAcquired = !requireLockForSending || clusteredLocker.tryLock(mqttClassName, 60, instanceId);
 
         if (lockAcquired) {
             messages.forEach(this::doSendMqttMessage);
@@ -148,7 +148,7 @@ public abstract class AbstractMqttConfiguration {
 
     // This is called from executor
     private void sendStatus() {
-        final boolean lockAcquired = lockingService.tryLock(mqttClassName, 60, instanceId);
+        final boolean lockAcquired = clusteredLocker.tryLock(mqttClassName, 60, instanceId);
 
         if (lockAcquired) {
             try {

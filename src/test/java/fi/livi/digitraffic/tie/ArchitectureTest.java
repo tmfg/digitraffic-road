@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie;
 
 import org.junit.Test;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,6 @@ public class ArchitectureTest extends AbstractServiceTest {
 
     @Test
     public void publicServiceMethodMustBeTransactional() {
-
         ArchRuleDefinition
             .methods()
             .that()
@@ -40,7 +40,16 @@ public class ArchitectureTest extends AbstractServiceTest {
             .should()
             .beAnnotatedWith(Transactional.class)
             .check(importedClasses);
+    }
 
-
+    @Test
+    public void classesAnnotatedWithComponentShouldNotHaveServiceInName() {
+        ArchRuleDefinition
+            .classes()
+            .that()
+            .areAnnotatedWith(Component.class)
+            .should()
+            .haveSimpleNameNotEndingWith("Service")
+            .check(importedClasses);
     }
 }

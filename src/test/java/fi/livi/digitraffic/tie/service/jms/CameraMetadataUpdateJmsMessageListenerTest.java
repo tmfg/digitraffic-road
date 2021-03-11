@@ -37,7 +37,7 @@ import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
@@ -59,7 +59,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
 
     @SpyBean
-    private CameraImageUpdateService cameraImageUpdateService;
+    private CameraImageUpdateHandler cameraImageUpdateHandler;
 
     private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
     private JMSMessageListener<CameraMetadataUpdatedMessageDto> cameraMetadataJmsMessageListener;
@@ -68,13 +68,13 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     public void initListener() {
         // Create listener
         this.dataUpdater = (data) -> cameraMetadataMessageHandler.updateCameraMetadata(data);
-        cameraMetadataJmsMessageListener = new JMSMessageListener(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller), dataUpdater, false, log);
+        cameraMetadataJmsMessageListener = new JMSMessageListener<>(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller), dataUpdater, false, log);
     }
 
     @Test
     public void cameraMetadataUpdateReceiveMessages() {
 
-        doNothing().when(cameraImageUpdateService).hideCurrentImageForPreset(any(CameraPreset.class));
+        doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
 
         // Create camera with preset to lotju
         final KameraVO kamera_T1 = createKamera(Instant.now());
@@ -89,7 +89,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
 
         reset(lotjuCameraStationMetadataClient);
         {
@@ -110,7 +110,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
 
         reset(lotjuCameraStationMetadataClient);
         {
@@ -131,7 +131,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_2.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasentos(eq(kamera_T1.getId()));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(any(RoadStation.class));
 
         reset(lotjuCameraStationMetadataClient);
         {
@@ -158,9 +158,9 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
         // camera T1 has 2 public presets, camera changes to secret -> 2 presets to secret
-        verify(cameraImageUpdateService, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(kamera_T1.getId())));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(2)).hideCurrentImageForPreset(any(CameraPreset.class));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(kamera_T1.getId())));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(kamera_T1.getId())));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(2)).hideCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(kamera_T1.getId())));
 
         reset(lotjuCameraStationMetadataClient);
         {
@@ -178,9 +178,9 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
 
         // camera T1 has 2 public presets, camera changes to secret -> 2 presets to secret
-        verify(cameraImageUpdateService, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(kamera_T1.getId())));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(2)).hideCurrentImageForPreset(any(CameraPreset.class));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(kamera_T1.getId())));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(kamera_T1.getId())));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(2)).hideCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(kamera_T1.getId())));
 
         reset(lotjuCameraStationMetadataClient);
         {

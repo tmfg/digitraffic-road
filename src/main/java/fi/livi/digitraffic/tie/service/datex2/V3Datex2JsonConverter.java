@@ -34,8 +34,8 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @ConditionalOnWebApplication
 @Component
-public class V3Datex2JsonConverterService {
-    private static final Logger log = LoggerFactory.getLogger(V3Datex2JsonConverterService.class);
+public class V3Datex2JsonConverter {
+    private static final Logger log = LoggerFactory.getLogger(V3Datex2JsonConverter.class);
 
     protected final ObjectReader featureJsonReaderV2;
     protected final ObjectReader featureJsonReaderV3;
@@ -47,8 +47,8 @@ public class V3Datex2JsonConverterService {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    public V3Datex2JsonConverterService(final ObjectMapper objectMapper,
-                                        final V3RegionGeometryDataService v3RegionGeometryDataService) {
+    public V3Datex2JsonConverter(final ObjectMapper objectMapper,
+                                 final V3RegionGeometryDataService v3RegionGeometryDataService) {
         this.objectMapper = objectMapper;
 
         featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
@@ -84,7 +84,7 @@ public class V3Datex2JsonConverterService {
 
         // Fetch or clear area geometries
         final List<TrafficAnnouncement> announcementsWithAreas =
-            feature.getProperties().announcements.stream().filter(V3Datex2JsonConverterService::containsAreaLocation).collect(Collectors.toList());
+            feature.getProperties().announcements.stream().filter(V3Datex2JsonConverter::containsAreaLocation).collect(Collectors.toList());
 
         if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
             if (includeAreaGeometry) {

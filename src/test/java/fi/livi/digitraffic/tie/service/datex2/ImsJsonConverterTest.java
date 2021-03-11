@@ -21,11 +21,11 @@ import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
-public class ImsJsonConverterServiceTest extends AbstractServiceTest {
-    private static final Logger log = getLogger(ImsJsonConverterServiceTest.class);
+public class ImsJsonConverterTest extends AbstractServiceTest {
+    private static final Logger log = getLogger(ImsJsonConverterTest.class);
 
     @Autowired
-    private ImsJsonConverterService imsJsonConverterService;
+    private ImsJsonConverter imsJsonConverter;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -66,7 +66,7 @@ public class ImsJsonConverterServiceTest extends AbstractServiceTest {
 
     @Test
     public void parseFeatureJsonsFromImsJson_Feature() throws JsonProcessingException {
-        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons = imsJsonConverterService.parseFeatureJsonsFromImsJson(FEATURE);
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons = imsJsonConverter.parseFeatureJsonsFromImsJson(FEATURE);
         assertEquals(1, jsons.size());
         final ObjectReader reader = objectMapper.reader();
         final JsonNode original = reader.readTree(FEATURE);
@@ -81,7 +81,7 @@ public class ImsJsonConverterServiceTest extends AbstractServiceTest {
         final String featureCollection = createFeatureCollectionWithSituations(FEATURE, feature2);
 
         // parse features from collection and test src == result
-        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons = imsJsonConverterService.parseFeatureJsonsFromImsJson(featureCollection);
+        final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons = imsJsonConverter.parseFeatureJsonsFromImsJson(featureCollection);
         assertEquals(2, jsons.size());
 
         final ObjectReader reader = objectMapper.reader();
@@ -99,21 +99,21 @@ public class ImsJsonConverterServiceTest extends AbstractServiceTest {
     @Test
     public void parseFeatureJsonsFromImsJson_FeatureEmptySituationId() {
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
-            imsJsonConverterService.parseFeatureJsonsFromImsJson(FEATURE.replace(SITUATION_ID1, ""));
+            imsJsonConverter.parseFeatureJsonsFromImsJson(FEATURE.replace(SITUATION_ID1, ""));
         assertEquals(0, jsons.size());
     }
 
     @Test
     public void parseFeatureJsonsFromImsJson_FeatureNoSituationId() {
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
-            imsJsonConverterService.parseFeatureJsonsFromImsJson(FEATURE.replace("situationId", "situationI"));
+            imsJsonConverter.parseFeatureJsonsFromImsJson(FEATURE.replace("situationId", "situationI"));
         assertEquals(0, jsons.size());
     }
 
     @Test
     public void parseFeatureJsonsFromImsJson_InvalidJson() {
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
-            imsJsonConverterService.parseFeatureJsonsFromImsJson(FEATURE_COLLECTION);
+            imsJsonConverter.parseFeatureJsonsFromImsJson(FEATURE_COLLECTION);
         assertEquals(0, jsons.size());
     }
 
@@ -121,7 +121,7 @@ public class ImsJsonConverterServiceTest extends AbstractServiceTest {
     public void parseFeatureJsonsFromImsJson_FeatureCollectionEmptySituationId() {
         final String featureCollection = FEATURE_COLLECTION.replace("FEATURES", FEATURE.replace(SITUATION_ID1, ""));
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
-            imsJsonConverterService.parseFeatureJsonsFromImsJson(featureCollection);
+            imsJsonConverter.parseFeatureJsonsFromImsJson(featureCollection);
         assertEquals(0, jsons.size());
     }
 
@@ -129,7 +129,7 @@ public class ImsJsonConverterServiceTest extends AbstractServiceTest {
     public void parseFeatureJsonsFromImsJson_FeatureCollectionNoSituationId() {
         final String featureCollection = FEATURE_COLLECTION.replace("FEATURES", FEATURE.replace("situationId", "situationsId"));
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons =
-            imsJsonConverterService.parseFeatureJsonsFromImsJson(featureCollection);
+            imsJsonConverter.parseFeatureJsonsFromImsJson(featureCollection);
         assertEquals(0, jsons.size());
     }
 

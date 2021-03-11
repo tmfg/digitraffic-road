@@ -49,7 +49,7 @@ import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverterService;
+import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
@@ -95,7 +95,7 @@ public abstract class AbstractTest {
             v2Datex2DataService = new V2Datex2DataService(
                 applicationContext.getBean(Datex2Repository.class),
                 applicationContext.getBean(Datex2XmlStringToObjectMarshaller.class),
-                applicationContext.getAutowireCapableBeanFactory().createBean(V2Datex2JsonConverterService.class),
+                applicationContext.getAutowireCapableBeanFactory().createBean(V2Datex2JsonConverter.class),
                 applicationContext.getBean(DataStatusService.class));
         }
         return v2Datex2DataService;

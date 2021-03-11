@@ -13,12 +13,12 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 
 @ConditionalOnNotWebApplication
 @Component
-public class LotjuCameraStationMetadataService {
-    private static final Logger log = LoggerFactory.getLogger(LotjuCameraStationMetadataService.class);
+public class LotjuCameraStationMetadataClientWrapper {
+    private static final Logger log = LoggerFactory.getLogger(LotjuCameraStationMetadataClientWrapper.class);
     private final LotjuCameraStationMetadataClient lotjuCameraStationClient;
 
     @Autowired
-    public LotjuCameraStationMetadataService(final LotjuCameraStationMetadataClient lotjuCameraStationClient) {
+    public LotjuCameraStationMetadataClientWrapper(final LotjuCameraStationMetadataClient lotjuCameraStationClient) {
         this.lotjuCameraStationClient = lotjuCameraStationClient;
     }
 

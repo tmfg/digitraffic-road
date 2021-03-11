@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import fi.livi.digitraffic.tie.service.BuildVersionService;
+import fi.livi.digitraffic.tie.service.BuildVersionResolver;
 
 public class SwaggerUiWebTest extends AbstractRestWebTest {
 
@@ -30,7 +30,7 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private BuildVersionService versionService;
+    private BuildVersionResolver versionService;
 
     private final MediaType restContentType = MediaType.APPLICATION_JSON;
 

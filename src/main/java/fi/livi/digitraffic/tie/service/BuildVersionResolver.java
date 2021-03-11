@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 import com.jcabi.manifests.Manifests;
 
 @Component
-public class BuildVersionService {
+public class BuildVersionResolver {
 
-    private static final Logger log = LoggerFactory.getLogger(BuildVersionService.class);
+    private static final Logger log = LoggerFactory.getLogger(BuildVersionResolver.class);
 
     private static final String GIT_PROPERTIES  = "git.properties";
     private static final String GIT_COMMIT_ID_HASH = "git.commit.id.abbrev";

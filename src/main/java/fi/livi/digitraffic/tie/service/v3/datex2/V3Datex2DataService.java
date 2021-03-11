@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.datex2.V3Datex2JsonConverterService;
+import fi.livi.digitraffic.tie.service.datex2.V3Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 
 @ConditionalOnWebApplication
@@ -34,17 +34,17 @@ public class V3Datex2DataService {
     private static final Logger log = LoggerFactory.getLogger(V3Datex2DataService.class);
 
     private final Datex2Repository datex2Repository;
-    private final V3Datex2JsonConverterService v3Datex2JsonConverterService;
+    private final V3Datex2JsonConverter v3Datex2JsonConverter;
     private final DataStatusService dataStatusService;
     private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     public V3Datex2DataService(final Datex2Repository datex2Repository,
-                               final V3Datex2JsonConverterService v3Datex2JsonConverterService,
+                               final V3Datex2JsonConverter v3Datex2JsonConverter,
                                final DataStatusService dataStatusService,
                                final V2Datex2DataService v2Datex2DataService) {
         this.datex2Repository = datex2Repository;
-        this.v3Datex2JsonConverterService = v3Datex2JsonConverterService;
+        this.v3Datex2JsonConverter = v3Datex2JsonConverter;
         this.dataStatusService = dataStatusService;
         this.v2Datex2DataService = v2Datex2DataService;
     }
@@ -100,7 +100,7 @@ public class V3Datex2DataService {
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .map(d2 -> {
                 try {
-                    return v3Datex2JsonConverterService.convertToFeatureJsonObjectV3(d2.getJsonMessage(),
+                    return v3Datex2JsonConverter.convertToFeatureJsonObjectV3(d2.getJsonMessage(),
                                                                                    d2.getSituationType(),
                                                                                    d2.getTrafficAnnouncementType(),
                                                                                    includeAreaGeometry);

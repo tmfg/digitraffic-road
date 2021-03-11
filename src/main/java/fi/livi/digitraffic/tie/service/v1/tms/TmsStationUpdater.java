@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.RoadStationUpdateService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
 @Component
@@ -29,26 +29,26 @@ public class TmsStationUpdater {
 
     private final RoadStationUpdateService roadStationUpdateService;
     private final TmsStationService tmsStationService;
-    private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
+    private final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper;
 
     @Autowired
     public TmsStationUpdater(final RoadStationUpdateService roadStationUpdateService,
                              final TmsStationService tmsStationService,
-                             final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
+                             final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper) {
         this.roadStationUpdateService = roadStationUpdateService;
         this.tmsStationService = tmsStationService;
-        this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
+        this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 60000)
     public boolean updateTmsStations() {
-        final List<LamAsemaVO> asemas = lotjuTmsStationMetadataService.getLamAsemas();
+        final List<LamAsemaVO> asemas = lotjuTmsStationMetadataClientWrapper.getLamAsemas();
         return updateTmsStationsMetadata(asemas);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     public int updateTmsStationsStatuses() {
-        final List<LamAsemaVO> allLams = lotjuTmsStationMetadataService.getLamAsemas();
+        final List<LamAsemaVO> allLams = lotjuTmsStationMetadataClientWrapper.getLamAsemas();
 
         int updated = 0;
         for(LamAsemaVO from : allLams) {

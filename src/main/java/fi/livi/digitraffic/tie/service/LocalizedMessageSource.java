@@ -9,12 +9,12 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MessageService {
+public class LocalizedMessageSource {
 
     private final MessageSource messageSource;
 
     @Autowired
-    public MessageService(final MessageSource messageSource) {
+    public LocalizedMessageSource(final MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 

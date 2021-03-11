@@ -31,8 +31,8 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 
 @ConditionalOnWebApplication
 @Component
-public class V2Datex2JsonConverterService {
-    private static final Logger log = LoggerFactory.getLogger(V2Datex2JsonConverterService.class);
+public class V2Datex2JsonConverter {
+    private static final Logger log = LoggerFactory.getLogger(V2Datex2JsonConverter.class);
 
     protected final ObjectReader featureJsonReaderV2;
     protected final ObjectReader featureJsonReaderV3;
@@ -43,7 +43,7 @@ public class V2Datex2JsonConverterService {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    public V2Datex2JsonConverterService(final ObjectMapper objectMapper) {
+    public V2Datex2JsonConverter(final ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
 
         featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);

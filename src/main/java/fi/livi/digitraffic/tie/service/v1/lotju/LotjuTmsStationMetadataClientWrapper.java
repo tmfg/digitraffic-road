@@ -34,13 +34,13 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @ConditionalOnNotWebApplication
 @Component
-public class LotjuTmsStationMetadataService {
+public class LotjuTmsStationMetadataClientWrapper {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuTmsStationMetadataService.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuTmsStationMetadataClientWrapper.class);
     private final LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
 
     @Autowired
-    public LotjuTmsStationMetadataService(final LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient) {
+    public LotjuTmsStationMetadataClientWrapper(final LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient) {
         this.lotjuTmsStationMetadataClient = lotjuTmsStationMetadataClient;
     }
 

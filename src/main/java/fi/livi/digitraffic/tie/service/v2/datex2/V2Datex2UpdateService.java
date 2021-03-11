@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
-import fi.livi.digitraffic.tie.service.datex2.ImsJsonConverterService;
+import fi.livi.digitraffic.tie.service.datex2.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
@@ -58,17 +58,17 @@ public class V2Datex2UpdateService {
     private final Datex2Repository datex2Repository;
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
     private final DataStatusService dataStatusService;
-    private final ImsJsonConverterService imsJsonConverterService;
+    private final ImsJsonConverter imsJsonConverter;
 
     @Autowired
     public V2Datex2UpdateService(final Datex2Repository datex2Repository,
                                  final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
                                  final DataStatusService dataStatusService,
-                                 final ImsJsonConverterService imsJsonConverterService) {
+                                 final ImsJsonConverter imsJsonConverter) {
         this.datex2Repository = datex2Repository;
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
         this.dataStatusService = dataStatusService;
-        this.imsJsonConverterService = imsJsonConverterService;
+        this.imsJsonConverter = imsJsonConverter;
     }
 
     @Transactional
@@ -104,7 +104,7 @@ public class V2Datex2UpdateService {
         final String jMessage = imsMessage.getMessageContent().getJMessage();
         final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> situationIdJsonMap =
-            imsJsonConverterService.parseFeatureJsonsFromImsJson(jMessage);
+            imsJsonConverter.parseFeatureJsonsFromImsJson(jMessage);
         final Map<String, Situation> situationIdSituationMap = parseDatex2Situations(sp);
 
         return situationIdJsonMap.entrySet().stream()

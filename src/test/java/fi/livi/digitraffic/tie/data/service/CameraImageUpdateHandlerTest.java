@@ -13,14 +13,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageReader;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
-public class CameraImageUpdateServiceTest extends AbstractServiceTest {
+public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
 
     @MockBean
     private CameraImageReader cameraImageReader;
@@ -32,7 +32,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
     private CameraPresetService cameraPresetService;
 
     @Autowired
-    private CameraImageUpdateService service;
+    private CameraImageUpdateHandler service;
 
     @Test
     public void retryOnImageReadError() throws Exception {
@@ -42,7 +42,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
         service.handleKuva(kuva);
 
-        verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(anyLong(), any());
+        verify(cameraImageReader, times(CameraImageUpdateHandler.RETRY_COUNT)).readImage(anyLong(), any());
         verify(cameraImageS3Writer, times(0)).writeImage(any(), any(), any(), anyLong());
     }
 
@@ -55,7 +55,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
         service.handleKuva(kuva);
 
-        verify(cameraImageReader, times(CameraImageUpdateService.RETRY_COUNT)).readImage(anyLong(), any());
+        verify(cameraImageReader, times(CameraImageUpdateHandler.RETRY_COUNT)).readImage(anyLong(), any());
         verify(cameraImageS3Writer, times(0)).writeImage(any(), any(),any(), anyLong());
     }
 
@@ -68,7 +68,7 @@ public class CameraImageUpdateServiceTest extends AbstractServiceTest {
 
         service.handleKuva(kuva);
 
-        verify(cameraImageS3Writer, times(CameraImageUpdateService.RETRY_COUNT)).writeImage(any(), any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(CameraImageUpdateHandler.RETRY_COUNT)).writeImage(any(), any(), any(), anyLong());
     }
 
     private CameraPreset createPreset() {

@@ -17,20 +17,20 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
 @Component
 public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     private static final Logger log = LoggerFactory.getLogger(WeatherStationSensorUpdater.class);
 
-    private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
+    private final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper;
 
     @Autowired
     public WeatherStationSensorUpdater(final RoadStationSensorService roadStationSensorService,
-                                       final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
+                                       final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper) {
         super(roadStationSensorService);
-        this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
+        this.lotjuWeatherStationMetadataClientWrapper = lotjuWeatherStationMetadataClientWrapper;
     }
 
     /**
@@ -41,7 +41,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
 
         // Update available RoadStationSensors types to db
         final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
-                lotjuWeatherStationMetadataService.getAllTiesaaLaskennallinenAnturis();
+                lotjuWeatherStationMetadataClientWrapper.getAllTiesaaLaskennallinenAnturis();
 
         boolean updated = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
         log.info("Update weather RoadStationSensors end");

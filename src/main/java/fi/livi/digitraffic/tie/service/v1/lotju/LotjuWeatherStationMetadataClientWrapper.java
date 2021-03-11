@@ -27,13 +27,13 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallin
 
 @ConditionalOnNotWebApplication
 @Component
-public class LotjuWeatherStationMetadataService {
+public class LotjuWeatherStationMetadataClientWrapper {
 
-    private static final Logger log = LoggerFactory.getLogger(LotjuWeatherStationMetadataService.class);
+    private static final Logger log = LoggerFactory.getLogger(LotjuWeatherStationMetadataClientWrapper.class);
     private final LotjuWeatherStationMetadataClient lotjuWeatherStationClient;
 
     @Autowired
-    public LotjuWeatherStationMetadataService(final LotjuWeatherStationMetadataClient lotjuWeatherStationClient) {
+    public LotjuWeatherStationMetadataClientWrapper(final LotjuWeatherStationMetadataClient lotjuWeatherStationClient) {
         this.lotjuWeatherStationClient = lotjuWeatherStationClient;
     }
 

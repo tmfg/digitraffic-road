@@ -1,24 +1,20 @@
 package fi.livi.digitraffic.tie.conf;
 
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayService.StatisticsType.MAINTENANCE_TRACKING;
+import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.MAINTENANCE_TRACKING;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
-import fi.livi.digitraffic.tie.service.LockingService;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayService;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
 @ConditionalOnProperty("mqtt.maintenance.tracking.enabled")
 @ConditionalOnNotWebApplication
@@ -29,11 +25,11 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
     private static final String STATUS_TOPIC = "maintenance/tracking/status";
 
     @Autowired
-    public MaintenanceTrackingMqttConfiguration(final MqttRelayService mqttRelay,
+    public MaintenanceTrackingMqttConfiguration(final MqttRelayQueue mqttRelay,
                                                 final ObjectMapper objectMapper,
-                                                final LockingService lockingService) {
+                                                final ClusteredLocker clusteredLocker) {
         super(LoggerFactory.getLogger(MaintenanceTrackingMqttConfiguration.class),
-              mqttRelay, objectMapper, TOPIC, STATUS_TOPIC, MAINTENANCE_TRACKING, lockingService, false);
+              mqttRelay, objectMapper, TOPIC, STATUS_TOPIC, MAINTENANCE_TRACKING, clusteredLocker, false);
         setLastUpdated(ZonedDateTime.now());
     }
 

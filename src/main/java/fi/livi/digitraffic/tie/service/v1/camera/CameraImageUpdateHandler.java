@@ -29,8 +29,8 @@ import fi.livi.digitraffic.tie.service.ImageManipulationService;
 
 @ConditionalOnNotWebApplication
 @Component
-public class CameraImageUpdateService {
-    private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateService.class);
+public class CameraImageUpdateHandler {
+    private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateHandler.class);
 
     private final int retryDelayMs;
     private final CameraPresetService cameraPresetService;
@@ -48,7 +48,7 @@ public class CameraImageUpdateService {
     private final static String NOISE_IMG = "img/noise.jpg";
 
     @Autowired
-    CameraImageUpdateService(
+    CameraImageUpdateHandler(
         @Value("${camera-image-uploader.retry.delay.ms}")
         final int retryDelayMs,
         final CameraPresetService cameraPresetService,

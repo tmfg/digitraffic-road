@@ -25,11 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.service.LockingService;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
-public class LockingServiceTest extends AbstractServiceTest {
-    private static final Logger log = LoggerFactory.getLogger(LockingServiceTest.class);
+public class ClusteredLockerTest extends AbstractServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(ClusteredLockerTest.class);
 
     private static final String LOCK = "lock";
     private static final int LOCK_EXPIRATION_S = 2;
@@ -40,13 +40,13 @@ public class LockingServiceTest extends AbstractServiceTest {
     private static final int LOCKING_TIME_EXTRA = 20; // how long it takes after obtaining lock to get timestamp?
 
     @Autowired
-    private LockingService lockingService;
+    private ClusteredLocker clusteredLocker;
 
     @Test
     public void testGenerate() {
         Set<Long> ids = new HashSet<>();
         IntStream.range(0,20).forEach(i -> {
-            long id = LockingService.generateInstanceId();
+            long id = ClusteredLocker.generateInstanceId();
             Assert.assertFalse(ids.contains(id));
             ids.add(id);
         });
@@ -62,7 +62,7 @@ public class LockingServiceTest extends AbstractServiceTest {
 
         final ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
         for (int i = 1; i <= THREAD_COUNT; i++) {
-            futures.add(executor.submit(new TryLocker(LOCK, lockingService, lockStarts, lockerInstanceIds)));
+            futures.add(executor.submit(new TryLocker(LOCK, clusteredLocker, lockStarts, lockerInstanceIds)));
         }
 
         while (futures.stream().anyMatch(f -> !f.isDone())) {
@@ -88,7 +88,7 @@ public class LockingServiceTest extends AbstractServiceTest {
 
     private Future<Boolean> tryLock(final String lockName, final int expirationSeconds,
                                     final ExecutorService executorService) {
-        return executorService.submit(() -> lockingService.tryLock(lockName, expirationSeconds));
+        return executorService.submit(() -> clusteredLocker.tryLock(lockName, expirationSeconds));
     }
 
     @Test
@@ -153,7 +153,7 @@ public class LockingServiceTest extends AbstractServiceTest {
         final Collection<Future<?>> futures = new ArrayList<>();
         final ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
         for (int i = 1; i <= THREAD_COUNT; i++) {
-            futures.add(executor.submit(new WaitLocker(LOCK, lockingService, lockStarts, lockerInstanceIds)));
+            futures.add(executor.submit(new WaitLocker(LOCK, clusteredLocker, lockStarts, lockerInstanceIds)));
         }
 
         while (futures.stream().anyMatch(f -> !f.isDone())) {
@@ -207,20 +207,20 @@ public class LockingServiceTest extends AbstractServiceTest {
 
     private class TryLocker implements Runnable {
         private final String lock;
-        private final LockingService lockingService;
+        private final ClusteredLocker clusteredLocker;
         private List<Long> lockStarts;
         private List<Long> lockInstanceIds;
 
         /**
          * Acquires given lock LOCK_COUNT times
          * @param lock
-         * @param lockingService
+         * @param clusteredLocker
          * @param lockStarts
          * @param lockInstanceIds
          */
-        TryLocker(final String lock, final LockingService lockingService, final List<Long> lockStarts, final List<Long> lockInstanceIds) {
+        TryLocker(final String lock, final ClusteredLocker clusteredLocker, final List<Long> lockStarts, final List<Long> lockInstanceIds) {
             this.lock = lock;
-            this.lockingService = lockingService;
+            this.clusteredLocker = clusteredLocker;
             this.lockStarts = lockStarts;
             this.lockInstanceIds = lockInstanceIds;
         }
@@ -229,13 +229,13 @@ public class LockingServiceTest extends AbstractServiceTest {
         public void run() {
             int counter = 0;
             while (counter < LOCK_COUNT) {
-                final boolean locked = lockingService.tryLock(lock, LOCK_EXPIRATION_S);
+                final boolean locked = clusteredLocker.tryLock(lock, LOCK_EXPIRATION_S);
                 synchronized(LOCK) {
                     final long timestamp = System.currentTimeMillis();
                     if (locked) {
-                        log.info("Acquired Lock=[{}] for instanceId=[{}] at {}", lock, lockingService.getThreadId(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC));
+                        log.info("Acquired Lock=[{}] for instanceId=[{}] at {}", lock, clusteredLocker.getThreadId(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC));
                         lockStarts.add(timestamp);
-                        lockInstanceIds.add(lockingService.getThreadId());
+                        lockInstanceIds.add(clusteredLocker.getThreadId());
                         counter++;
                     }
                 }
@@ -249,21 +249,21 @@ public class LockingServiceTest extends AbstractServiceTest {
 
     private class WaitLocker implements Runnable {
         private final String lock;
-        private final LockingService lockingService;
+        private final ClusteredLocker clusteredLocker;
         private List<Long> lockStarts;
         private List<Long> lockInstanceIds;
 
         /**
          * Acquires given lock LOCK_COUNT times
          * @param lock
-         * @param lockingService
+         * @param clusteredLocker
          * @param lockStarts
          * @param lockInstanceIds
          */
-        WaitLocker(final String lock, final LockingService lockingService,
+        WaitLocker(final String lock, final ClusteredLocker clusteredLocker,
                    final List<Long> lockStarts, final List<Long> lockInstanceIds) {
             this.lock = lock;
-            this.lockingService = lockingService;
+            this.clusteredLocker = clusteredLocker;
             this.lockStarts = lockStarts;
             this.lockInstanceIds = lockInstanceIds;
         }
@@ -272,17 +272,17 @@ public class LockingServiceTest extends AbstractServiceTest {
         public void run() {
             int counter = 0;
             while (counter < LOCK_COUNT) {
-                lockingService.lock(lock, LOCK_EXPIRATION_S);
+                clusteredLocker.lock(lock, LOCK_EXPIRATION_S);
 
                 final long timestamp = System.currentTimeMillis();
-                log.info("Acquired Lock=[{}] for instanceId=[{}] at {}", lock, lockingService.getThreadId(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC));
+                log.info("Acquired Lock=[{}] for instanceId=[{}] at {}", lock, clusteredLocker.getThreadId(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC));
                 lockStarts.add(timestamp);
-                lockInstanceIds.add(lockingService.getThreadId());
+                lockInstanceIds.add(clusteredLocker.getThreadId());
                 counter++;
 
                 // Sleep little and then release the lock for next thread
                 sleep(200);
-                lockingService.unlock(lock);
+                clusteredLocker.unlock(lock);
                 // Sleep to make sure next thread will try the lock
                 sleep(200);
             }

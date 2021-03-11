@@ -28,11 +28,11 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V2Datex2JsonConverterServiceTest extends AbstractRestWebTest {
-    private static final Logger log = getLogger(V2Datex2JsonConverterServiceTest.class);
+public class V2Datex2JsonConverterTest extends AbstractRestWebTest {
+    private static final Logger log = getLogger(V2Datex2JsonConverterTest.class);
 
     @Autowired
-    private V2Datex2JsonConverterService v2Datex2JsonConverterService;
+    private V2Datex2JsonConverter v2Datex2JsonConverter;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -44,7 +44,7 @@ public class V2Datex2JsonConverterServiceTest extends AbstractRestWebTest {
                 final String json = readStaticImsJmessageResourceContent(jsonVersion, st, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
                 log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
                 final fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature ta =
-                    v2Datex2JsonConverterService.convertToFeatureJsonObjectV2(json, st.getDatex2MessageType());
+                    v2Datex2JsonConverter.convertToFeatureJsonObjectV2(json, st.getDatex2MessageType());
                 validateImsSimpleJsonVersionToGeoJsonFeatureObjectV2(st, jsonVersion, ta);
                 log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
             }

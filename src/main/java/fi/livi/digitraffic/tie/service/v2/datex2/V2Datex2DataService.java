@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverterService;
+import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 @ConditionalOnWebApplication
@@ -35,17 +35,17 @@ public class V2Datex2DataService {
 
     private final Datex2Repository datex2Repository;
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
-    private final V2Datex2JsonConverterService v2Datex2JsonConverterService;
+    private final V2Datex2JsonConverter v2Datex2JsonConverter;
     private DataStatusService dataStatusService;
 
     @Autowired
     public V2Datex2DataService(final Datex2Repository datex2Repository,
                                final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
-                               final V2Datex2JsonConverterService v2Datex2JsonConverterService,
+                               final V2Datex2JsonConverter v2Datex2JsonConverter,
                                final DataStatusService dataStatusService) {
         this.datex2Repository = datex2Repository;
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
-        this.v2Datex2JsonConverterService = v2Datex2JsonConverterService;
+        this.v2Datex2JsonConverter = v2Datex2JsonConverter;
         this.dataStatusService = dataStatusService;
     }
 
@@ -127,7 +127,7 @@ public class V2Datex2DataService {
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .map(d2 -> {
                 try {
-                    return v2Datex2JsonConverterService.convertToFeatureJsonObjectV2(d2.getJsonMessage(), d2.getMessageType());
+                    return v2Datex2JsonConverter.convertToFeatureJsonObjectV2(d2.getJsonMessage(), d2.getMessageType());
                 } catch (final Exception e) {
                     log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV2", e);
                     return null;

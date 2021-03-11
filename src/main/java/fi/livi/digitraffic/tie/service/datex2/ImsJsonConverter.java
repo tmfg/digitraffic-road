@@ -20,13 +20,13 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
 @Component
-public class ImsJsonConverterService {
-    private static final Logger log = LoggerFactory.getLogger(ImsJsonConverterService.class);
+public class ImsJsonConverter {
+    private static final Logger log = LoggerFactory.getLogger(ImsJsonConverter.class);
 
     protected final ObjectReader genericJsonReader;
 
     @Autowired
-    public ImsJsonConverterService(final ObjectMapper objectMapper) {
+    public ImsJsonConverter(final ObjectMapper objectMapper) {
         this.genericJsonReader = objectMapper.reader();
     }
 

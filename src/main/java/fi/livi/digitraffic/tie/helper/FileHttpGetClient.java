@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class FileGetService {
-    private static final Logger log = LoggerFactory.getLogger(FileGetService.class);
+public class FileHttpGetClient {
+    private static final Logger log = LoggerFactory.getLogger(FileHttpGetClient.class);
 
     private final RestTemplate restTemplate;
     private final RetryTemplate retryTemplate;
 
-    public FileGetService(final RestTemplate restTemplate, final RetryTemplate retryTemplate) {
+    public FileHttpGetClient(final RestTemplate restTemplate, final RetryTemplate retryTemplate) {
         this.restTemplate = restTemplate;
         this.retryTemplate = retryTemplate;
     }

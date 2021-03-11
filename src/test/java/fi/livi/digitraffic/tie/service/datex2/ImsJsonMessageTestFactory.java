@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
-import static fi.livi.digitraffic.tie.service.datex2.V3Datex2JsonConverterServiceTest.WORK_PHASE_ID;
+import static fi.livi.digitraffic.tie.service.datex2.V3Datex2JsonConverterTest.WORK_PHASE_ID;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -101,8 +101,8 @@ public class ImsJsonMessageTestFactory {
         return new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.TimeAndDuration(
             releaseTime, releaseTime.plusHours(2),
             new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.EstimatedDuration().withInformal("Yli 6 tuntia")
-                .withMaximum(V3Datex2JsonConverterServiceTest.MAX_DURATION)
-                .withMinimum(V3Datex2JsonConverterServiceTest.MIN_DURATION));
+                .withMaximum(V3Datex2JsonConverterTest.MAX_DURATION)
+                .withMinimum(V3Datex2JsonConverterTest.MIN_DURATION));
     }
 
     private static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.LocationDetails createLocationDetails(final boolean areaLocation) {

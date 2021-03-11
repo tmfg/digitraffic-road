@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LockingService {
+public class ClusteredLocker {
 
-    private static final Logger log = LoggerFactory.getLogger(LockingService.class);
+    private static final Logger log = LoggerFactory.getLogger(ClusteredLocker.class);
     private LockingServiceInternal lockingServiceInternal;
-    public LockingService(final LockingServiceInternal lockingServiceInternal) {
+    public ClusteredLocker(final LockingServiceInternal lockingServiceInternal) {
         this.lockingServiceInternal = lockingServiceInternal;
     }
 

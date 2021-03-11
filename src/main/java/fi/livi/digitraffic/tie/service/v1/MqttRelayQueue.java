@@ -18,8 +18,8 @@ import fi.livi.digitraffic.tie.conf.MqttConfig;
 
 @Component
 @ConditionalOnExpression("'${app.type}' == 'daemon' and '${config.test}' != 'true'")
-public class MqttRelayService {
-    private static final Logger logger = LoggerFactory.getLogger(MqttRelayService.class);
+public class MqttRelayQueue {
+    private static final Logger logger = LoggerFactory.getLogger(MqttRelayQueue.class);
 
     private static final Map<StatisticsType, Integer> sentStatisticsMap = new ConcurrentHashMap<>();
     private static final Map<StatisticsType, Integer> sendErrorStatisticsMap = new ConcurrentHashMap<>();
@@ -31,7 +31,7 @@ public class MqttRelayService {
     private static final Integer QOS = 0;
 
     @Autowired
-    public MqttRelayService(final MqttConfig.MqttGateway mqttGateway) {
+    public MqttRelayQueue(final MqttConfig.MqttGateway mqttGateway) {
 
         for (final StatisticsType type : StatisticsType.values()) {
             sentStatisticsMap.put(type, 0);
@@ -65,7 +65,7 @@ public class MqttRelayService {
         try {
             return messageList.take();
         } catch (Exception e) {
-            logger.error("Mqtt messageList.take() failed", e);
+            logger.error("method=getNextMessage Mqtt messageList.take() failed", e);
             return null;
         }
     }

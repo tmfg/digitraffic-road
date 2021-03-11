@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAntu
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
 @Component
@@ -27,15 +27,15 @@ public class TmsStationsSensorsUpdater {
 
     private final RoadStationSensorService roadStationSensorService;
     private final TmsStationService tmsStationService;
-    private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
+    private final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper;
 
     @Autowired
     public TmsStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                      final TmsStationService tmsStationService,
-                                     final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
+                                     final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper) {
         this.roadStationSensorService = roadStationSensorService;
         this.tmsStationService = tmsStationService;
-        this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
+        this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
     }
 
     /**
@@ -54,7 +54,7 @@ public class TmsStationsSensorsUpdater {
         log.info("Fetching LamLaskennallinenAnturis for tmsCount={} LamAsemas", tmsLotjuIds.size());
 
         final Map<Long, List<LamLaskennallinenAnturiVO>> anturisMappedByAsemaLotjuId =
-                lotjuTmsStationMetadataService.getLamLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
+                lotjuTmsStationMetadataClientWrapper.getLamLaskennallinenAnturisMappedByAsemaLotjuId(tmsLotjuIds);
 
         final List<Pair<TmsStation,  List<LamLaskennallinenAnturiVO>>> stationAnturisPairs = new ArrayList<>();
         currentTmsStationMappedByByLotjuId.values().forEach(tmsStation -> {
