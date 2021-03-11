@@ -64,13 +64,13 @@ import fi.livi.digitraffic.tie.scheduler.WeatherStationsStatusMetadataUpdateJob;
 @Configuration
 @ConditionalOnProperty(name = "dt.job.scheduler.enabled")
 @ConditionalOnNotWebApplication
-public class QuartzSchedulerConfig {
-    private static final Logger log = LoggerFactory.getLogger(QuartzSchedulerConfig.class);
+public class QuartzSchedulerConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(QuartzSchedulerConfiguration.class);
     private final Environment environment;
 
     private final static String JOB_SCHEDLULE_STRING_FORMAT = "dt.job.%s.schedule";
 
-    public QuartzSchedulerConfig(final Environment environment) {
+    public QuartzSchedulerConfiguration(final Environment environment) {
         this.environment = environment;
     }
 

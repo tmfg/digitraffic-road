@@ -9,7 +9,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 @Configuration
-public class MessageConverterConfig {
+public class MessageConverterConfiguration {
     @Bean
     public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(final Jackson2ObjectMapperBuilder builder) {
         final XmlMapper xmlMapper = builder.createXmlMapper(true).build();

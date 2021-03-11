@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie;
 
 import org.junit.Test;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.TestPropertySource;
@@ -50,6 +51,17 @@ public class ArchitectureTest extends AbstractServiceTest {
             .areAnnotatedWith(Component.class)
             .should()
             .haveSimpleNameNotEndingWith("Service")
+            .check(importedClasses);
+    }
+
+    @Test
+    public void classesAnnotatedWithConfigurationNameShouldEndWithConfiguration() {
+        ArchRuleDefinition
+            .classes()
+            .that()
+            .areAnnotatedWith(Configuration.class)
+            .should()
+            .haveSimpleNameEndingWith("Configuration")
             .check(importedClasses);
     }
 }

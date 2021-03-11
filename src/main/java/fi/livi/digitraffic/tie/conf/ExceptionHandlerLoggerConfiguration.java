@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import fi.livi.digitraffic.tie.controller.handler.DefaultExceptionHandler;
 
 @Configuration
-public class ExceptionHandlerLoggerConfig {
+public class ExceptionHandlerLoggerConfiguration {
     @Bean
     public Logger exceptionHandlerLogger() {
         return LoggerFactory.getLogger(DefaultExceptionHandler.class);

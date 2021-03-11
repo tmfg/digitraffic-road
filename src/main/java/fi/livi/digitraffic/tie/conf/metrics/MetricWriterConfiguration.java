@@ -29,10 +29,10 @@ import io.micrometer.core.instrument.search.RequiredSearch;
  * Measure pool statistics every 100ms and log min and max once a minute.
  */
 @Configuration
-public class MetricWriter {
+public class MetricWriterConfiguration {
     private final MeterRegistry meterRegistry;
 
-    private static final Logger LOG = LoggerFactory.getLogger(MetricWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MetricWriterConfiguration.class);
 
     private final List<LoggableMetric> metricsToLog = Arrays.asList(
         LoggableMetric.of("process.cpu.usage"),
@@ -72,7 +72,7 @@ public class MetricWriter {
         }
     }
 
-    public MetricWriter(final MeterRegistry meterRegistry) {
+    public MetricWriterConfiguration(final MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
     }
 

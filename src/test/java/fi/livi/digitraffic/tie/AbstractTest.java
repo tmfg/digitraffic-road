@@ -33,6 +33,8 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
@@ -53,6 +55,7 @@ import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @TestPropertySource(properties = {
     "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN"
@@ -68,6 +71,8 @@ public abstract class AbstractTest {
     protected EntityManager entityManager;
     @Autowired
     protected GenericApplicationContext applicationContext;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private V2Datex2UpdateService v2Datex2UpdateService;
     private V2Datex2DataService v2Datex2DataService;
@@ -92,10 +97,12 @@ public abstract class AbstractTest {
 
     public V2Datex2DataService getV2Datex2DataService() {
         if (v2Datex2DataService == null) {
+            final V3RegionGeometryDataService v3RegionGeometryDataService =
+                applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryDataService.class);
             v2Datex2DataService = new V2Datex2DataService(
                 applicationContext.getBean(Datex2Repository.class),
                 applicationContext.getBean(Datex2XmlStringToObjectMarshaller.class),
-                applicationContext.getAutowireCapableBeanFactory().createBean(V2Datex2JsonConverter.class),
+                new V2Datex2JsonConverter(objectMapper, v3RegionGeometryDataService),
                 applicationContext.getBean(DataStatusService.class));
         }
         return v2Datex2DataService;

@@ -25,7 +25,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 @Configuration
 @EnableIntegration
 @IntegrationComponentScan
-public class MqttConfig {
+public class MqttConfiguration {
     private final String clientId = "road_updater_" + MqttClient.generateClientId();
 
     @Bean

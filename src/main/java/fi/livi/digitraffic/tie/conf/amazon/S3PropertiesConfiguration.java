@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class S3PropertiesConfig {
+public class S3PropertiesConfiguration {
 
     @Bean
     public WeathercamS3Properties weathercamS3Properties(@Value("${dt.amazon.s3.weathercam.bucketName}") final String s3WeathercamBucketName,

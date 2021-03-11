@@ -14,6 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
     name = "dt.scheduled.annotation.enabled",
     havingValue = "true",
     matchIfMissing = true)
-public class ScheduledAnnotationConfig {
+public class ScheduledAnnotationConfiguration {
     // empty, just to init @EnableScheduling annotation
 }

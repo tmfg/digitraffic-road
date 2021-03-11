@@ -14,7 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.conf.MqttConfig;
+import fi.livi.digitraffic.tie.conf.MqttConfiguration;
 
 @Component
 @ConditionalOnExpression("'${app.type}' == 'daemon' and '${config.test}' != 'true'")
@@ -31,7 +31,7 @@ public class MqttRelayQueue {
     private static final Integer QOS = 0;
 
     @Autowired
-    public MqttRelayQueue(final MqttConfig.MqttGateway mqttGateway) {
+    public MqttRelayQueue(final MqttConfiguration.MqttGateway mqttGateway) {
 
         for (final StatisticsType type : StatisticsType.values()) {
             sentStatisticsMap.put(type, 0);

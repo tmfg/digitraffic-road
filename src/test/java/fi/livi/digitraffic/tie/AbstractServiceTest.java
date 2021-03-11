@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
-import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfig;
+import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverter;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
@@ -76,7 +76,7 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
           LockingDao.class,
 
           // configurations
-          AmazonS3ClientTestConfiguration.class, S3PropertiesConfig.class
+          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class
         })
 @TestPropertySource(properties = { "spring.localstack.enabled=false" })
 public abstract class AbstractServiceTest extends AbstractJpaTest {
