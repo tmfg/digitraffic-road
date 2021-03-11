@@ -29,8 +29,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringResult;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -57,14 +55,6 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     @Autowired
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller imsJaxb2Marshaller;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Before
-    public void cleanDbBefore() {
-        datex2Repository.deleteAll();
-    }
 
     @Before
     public void cleanDb() {

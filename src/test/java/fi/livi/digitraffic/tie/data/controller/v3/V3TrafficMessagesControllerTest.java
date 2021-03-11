@@ -99,8 +99,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 0));
-                    final String json = getResponse(getUrlWithType(true, 0));
+                    final String xml = getResponse(getUrlWithType(false, 0, situationType));
+                    final String json = getResponse(getUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -125,8 +125,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 2));
-                    final String json = getResponse(getUrlWithType(true, 2));
+                    final String xml = getResponse(getUrlWithType(false, 2, situationType));
+                    final String json = getResponse(getUrlWithType(true, 2, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -151,8 +151,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 0));
-                    final String json = getResponse(getUrlWithType(true, 0));
+                    final String xml = getResponse(getUrlWithType(false, 0, situationType));
+                    final String json = getResponse(getUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -243,7 +243,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
     private static String getUrlWithType(final boolean json, final int inactiveHours, final SituationType...messageType) {
         final String[] types = V3Datex2DataService.typesAsStrings(messageType);
         final String params = String.join(",", types);
-        return API_BETA_BASE_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?inactiveHours=" + inactiveHours + "&messageType=" + params;
+        return API_BETA_BASE_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + params;
     }
 
     private static String getUrlWithSituationId(final boolean json, final String situationId) {
