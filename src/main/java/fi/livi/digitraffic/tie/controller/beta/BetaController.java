@@ -141,12 +141,12 @@ public class BetaController {
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @ApiParam("If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
-                  "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
-        @RequestParam(required = false, defaultValue = "true")
+        @ApiParam(value = "If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
+                  "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
+        @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @ApiParam(value = "Message type.")
-        @RequestParam(required = false)
+        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType...situationType) {
         return v3Datex2DataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
@@ -159,12 +159,12 @@ public class BetaController {
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam("If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
-                  "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
-        @RequestParam(required = false, defaultValue = "true")
+        @ApiParam(value = "If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
+                  "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
+        @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @ApiParam(value = "Situation type.")
-        @RequestParam(required = false)
+        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
         return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, situationType);
     }
@@ -174,6 +174,9 @@ public class BetaController {
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public RegionGeometriesDtoV3 areaLocationRegions(
+        @ApiParam(value = "If parameter is given result will only contain update status.", defaultValue = "true")
+        @RequestParam(defaultValue = "true")
+        final boolean lastUpdated,
         @ApiParam(value = "When effectiveDate parameter is given only effective geometries on that date are returned")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -181,7 +184,7 @@ public class BetaController {
         @ApiParam(value = "Location code id.")
         @RequestParam(required = false)
         final Integer...id) {
-        return v3RegionGeometryDataService.findAreaLocationRegions(effectiveDate != null ? effectiveDate.toInstant() : null, id);
+        return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, effectiveDate != null ? effectiveDate.toInstant() : null, id);
     }
 
     @ApiOperation(value = "Active traffic messages as Datex2")
@@ -192,8 +195,8 @@ public class BetaController {
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @ApiParam(value = "Situation type.")
-        @RequestParam(required = false)
+        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
         return v3Datex2DataService.findActive(inactiveHours, situationType);
     }
@@ -206,8 +209,8 @@ public class BetaController {
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam(value = "Situation type.")
-        @RequestParam(required = false)
+        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
         return v3Datex2DataService.findAllBySituationId(situationId, situationType);
     }

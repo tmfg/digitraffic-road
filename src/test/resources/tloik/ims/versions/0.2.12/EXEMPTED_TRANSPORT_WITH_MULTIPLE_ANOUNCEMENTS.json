@@ -1,6 +1,6 @@
 {
     "type": "Feature",
-    "geometry": {"type":"Polygon","coordinates": [[[24.0, 61.0], [24.1, 61.0], [24.1, 61.1], [24.0, 61.1], [24, 61]], [[24.01, 61.01], [24.09, 61.01], [24.09, 61.09], [24.01, 61.09], [24.01, 61.01]]]},
+    "geometry": null,
     "properties": {
         "situationId": "GUID10000002",
         "version": SITUATION_VERSION,

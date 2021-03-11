@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -110,9 +111,9 @@ public class V3RegionGeometryDataService {
     }
 
     @NotTransactionalServiceMethod
-    public RegionGeometriesDtoV3 findAreaLocationRegions(final Instant effectiveDate, final Integer...ids) {
-        final List<RegionGeometryDtoV3> filtered = filterRegionsAndConvertToDto(effectiveDate, ids);
-        return new RegionGeometriesDtoV3(filtered, regionStatus.updated, regionStatus.checked);
+    public RegionGeometriesDtoV3 findAreaLocationRegions(final boolean onlyUpdateInfo, final Instant effectiveDate, final Integer...ids) {
+        return new RegionGeometriesDtoV3(onlyUpdateInfo ? Collections.emptyList() : filterRegionsAndConvertToDto(effectiveDate, ids),
+                                         regionStatus.updated, regionStatus.checked);
     }
 
     @NotTransactionalServiceMethod

@@ -11,6 +11,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.EstimatedDuration;
+import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @ConditionalOnWebApplication
 @Component
@@ -41,18 +44,21 @@ public class V2Datex2JsonConverter {
     protected final ObjectReader genericJsonReader;
 
     protected ObjectMapper objectMapper;
+    private V3RegionGeometryDataService v3RegionGeometryDataService;
 
     @Autowired
-    public V2Datex2JsonConverter(final ObjectMapper objectMapper) {
+    public V2Datex2JsonConverter(final ObjectMapper objectMapper,
+                                 final V3RegionGeometryDataService v3RegionGeometryDataService) {
         this.objectMapper = objectMapper;
 
-        featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
-        featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class);
+        this.featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
+        this.featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class);
 
-        genericJsonReader = objectMapper.reader();
+        this.genericJsonReader = objectMapper.reader();
+        this.v3RegionGeometryDataService = v3RegionGeometryDataService;
 
         final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        this.validator = factory.getValidator();
     }
 
     public TrafficAnnouncementFeature convertToFeatureJsonObjectV2(final String imsJson,
@@ -63,12 +69,37 @@ public class V2Datex2JsonConverter {
         final TrafficAnnouncementFeature feature =
             featureJsonReaderV2.readValue(imsJsonV0_2_4);
 
+        // If geometry is empty, check if it should be area geometry
+        if (feature.getGeometry() == null || feature.getGeometry().getCoordinates() == null ) {
+            // Fetch or clear area geometries
+            final List<TrafficAnnouncement> announcementsWithAreas =
+                feature.getProperties().announcements.stream().filter(V2Datex2JsonConverter::containsAreaLocation).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
+                    feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
+                        announcementsWithAreas.stream()
+                            .map(withArea ->
+                                withArea.locationDetails.areaLocation.areas.stream()
+                                    .map(a -> a.locationCode).collect(Collectors.toList()))
+                            .flatMap(Collection::stream)
+                            .toArray(Integer[]::new)));
+            }
+        }
+
         checkIsInvalidAnnouncementGeojsonV2(feature);
         checkDurationViolationsV2(feature);
 
         feature.getProperties().setMessageType(messageType);
 
         return feature;
+    }
+
+    private static boolean containsAreaLocation(final TrafficAnnouncement announcement) {
+        return
+            announcement != null &&
+                announcement.locationDetails != null &&
+                announcement.locationDetails.areaLocation != null &&
+                announcement.locationDetails.areaLocation.areas != null &&
+                !announcement.locationDetails.areaLocation.areas.isEmpty();
     }
 
     private String convertImsJsonToV2Compatible(final String imsJson) throws JsonProcessingException {

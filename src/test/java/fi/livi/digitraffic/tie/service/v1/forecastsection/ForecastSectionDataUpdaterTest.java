@@ -12,9 +12,7 @@ import java.time.ZonedDateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -22,21 +20,19 @@ import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
-import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
+import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
 public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
     private ForecastSectionClient forecastSectionClient;
 
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
     private ForecastSectionDataUpdater forecastSectionDataUpdater;
 
     @Autowired
@@ -50,8 +46,8 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
     @Autowired
     private RestTemplate restTemplate;
 
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private V2ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
+    private V2ForecastSectionMetadataUpdater forecastSectionMetadataUpdaterV2;
+    private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdaterV1;
 
     @Autowired
     private V2ForecastSectionMetadataDao v2ForecastSectionMetadataDao;
@@ -60,21 +56,31 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
     private DataStatusService dataStatusService;
 
     @Before
-    public void before() {
+    public void before() throws IOException {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
         forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
-        forecastSectionMetadataUpdater =
-            new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository, v2ForecastSectionMetadataDao, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
+        forecastSectionMetadataUpdaterV2 =
+            new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository, v2ForecastSectionMetadataDao, dataStatusService);
+        forecastSectionMetadataUpdaterV1 =
+            new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
+
     }
 
     @Test
     public void updateForecastSectionV1DataSucceeds() throws IOException {
 
+        server.expect(requestTo("/nullroads.php"))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV1.json"), MediaType.APPLICATION_JSON));
+
         server.expect(requestTo("/nullroadConditionsV1-json.php"))
             .andExpect(method(HttpMethod.GET))
             .andRespond(
                 MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadConditionsV1.json"), MediaType.APPLICATION_JSON));
+
+        forecastSectionMetadataUpdaterV1.updateForecastSectionV1Metadata();
+
 
         final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V1);
 
@@ -113,7 +119,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
             .andRespond(
                 MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadConditionsV2.json"), MediaType.APPLICATION_JSON));
 
-        final Instant metadataUpdated = forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+        final Instant metadataUpdated = forecastSectionMetadataUpdaterV2.updateForecastSectionsV2Metadata();
 
         final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V2);
 

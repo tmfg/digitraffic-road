@@ -99,7 +99,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
     }
 
     @Test
-    public void convertImsSimpleJsonWithMultipleAreaAnnouncementsToGeoJsonFeatureObjectV3MergesAreas() throws IOException {
+    public void convertImsSimpleJsonWithNullGeometryAndMultipleAreaAnnouncementsToGeoJsonFeatureObjectV3MergesAreas() throws IOException {
         final ImsJsonVersion jsonVersion = ImsJsonVersion.getLatestVersion();
         final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
         final String json = readStaticImsJmessageResourceContent(
@@ -112,6 +112,21 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
         // Should be merged to MultiPolygon
         assertGeometry(ta.getGeometry(), MultiPolygon);
         assertEquals(5+1, ta.getGeometry().getCoordinates().size());
+    }
+
+    @Test
+    public void convertImsSimpleJsonWithNullGeometryAndMultipleAreaAnnouncementsToGeoJsonFeatureObjectV3NotMergesAreas() throws IOException {
+        final ImsJsonVersion jsonVersion = ImsJsonVersion.getLatestVersion();
+        final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
+        final String json = readStaticImsJmessageResourceContent(
+            "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
+            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+        log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
+        final TrafficAnnouncementFeature ta =
+            v3Datex2JsonConverter.convertToFeatureJsonObjectV3(json, situationType, GENERAL, false);
+        // _WITH_MULTIPLE_ANOUNCEMENTS.json contains five areas in 1. anouncement and one area in 2. anouncement.
+        // Should be merged to MultiPolygon
+        assertNull(ta.getGeometry());
     }
 
     @Test
