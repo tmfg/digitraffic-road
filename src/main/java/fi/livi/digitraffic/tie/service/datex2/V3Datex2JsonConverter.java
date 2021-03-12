@@ -84,7 +84,7 @@ public class V3Datex2JsonConverter {
 
         // Fetch or clear area geometries
         final List<TrafficAnnouncement> announcementsWithAreas =
-            feature.getProperties().announcements.stream().filter(V3Datex2JsonConverter::containsAreaLocation).collect(Collectors.toList());
+            feature.getProperties().announcements.stream().filter(a -> a != null && a.containsAreaLocation()).collect(Collectors.toList());
 
         if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
             if (includeAreaGeometry) {
@@ -101,15 +101,6 @@ public class V3Datex2JsonConverter {
         }
 
         return feature;
-    }
-
-    private static boolean containsAreaLocation(final TrafficAnnouncement announcement) {
-        return
-            announcement != null &&
-            announcement.locationDetails != null &&
-            announcement.locationDetails.areaLocation != null &&
-            announcement.locationDetails.areaLocation.areas != null &&
-            !announcement.locationDetails.areaLocation.areas.isEmpty();
     }
 
     private String convertImsJsonToV3Compatible(final String imsJson) throws JsonProcessingException {

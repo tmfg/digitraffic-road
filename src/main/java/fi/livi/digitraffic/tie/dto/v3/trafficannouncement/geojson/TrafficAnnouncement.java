@@ -99,6 +99,13 @@ public class TrafficAnnouncement extends JsonAdditionalProperties {
         return ToStringHelper.toStringFull(this);
     }
 
+    public boolean containsAreaLocation() {
+        return locationDetails != null &&
+            locationDetails.areaLocation != null &&
+            locationDetails.areaLocation.areas != null &&
+            !locationDetails.areaLocation.areas.isEmpty();
+    }
+
     public enum EarlyClosing {
 
         CLOSED,

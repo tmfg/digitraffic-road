@@ -64,9 +64,8 @@ public class V3Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, boolean includeAreaGeometry,
-                                                                      final SituationType... situationTypes) {
-        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndSituationTypeWithJson(situationId, typesAsStrings(situationTypes));
+    public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, boolean includeAreaGeometry) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationIdWithJson(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
@@ -74,8 +73,8 @@ public class V3Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public D2LogicalModel findAllBySituationId(final String situationId, final SituationType...situationTypes) {
-        final List<Datex2> datex2s = datex2Repository.findBySituationIdAndSituationType(situationId, typesAsStrings(situationTypes));
+    public D2LogicalModel findAllBySituationId(final String situationId) {
+        final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }

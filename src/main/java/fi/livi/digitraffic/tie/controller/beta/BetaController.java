@@ -162,11 +162,8 @@ public class BetaController {
         @ApiParam(value = "If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
                   "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
         @RequestParam(defaultValue = "false")
-        final boolean includeAreaGeometry,
-        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
-        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
-        final SituationType... situationType) {
-        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, situationType);
+        final boolean includeAreaGeometry) {
+        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry);
     }
 
     @ApiOperation(value = "Traffic messages geometries for regions")
@@ -208,10 +205,7 @@ public class BetaController {
     public D2LogicalModel trafficMessageDatex2BySituationId(
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
-        final String situationId,
-        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
-        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
-        final SituationType... situationType) {
-        return v3Datex2DataService.findAllBySituationId(situationId, situationType);
+        final String situationId) {
+        return v3Datex2DataService.findAllBySituationId(situationId);
     }
 }

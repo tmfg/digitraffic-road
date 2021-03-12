@@ -163,9 +163,30 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "    FROM datex2_situation situation\n" +
         "    WHERE situation.situation_id = :situationId)\n" +
         "  AND situation_type in (:situationTypes)\n" +
-"  AND d.json_message IS NOT NULL", nativeQuery = true)
+        "  AND d.json_message IS NOT NULL", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findBySituationIdAndSituationTypeWithJson(final String situationId, final String...situationTypes);
+
+    @Query(value =
+           "SELECT d.*\n" +
+           "FROM datex2 d\n" +
+           "WHERE d.id in (\n" +
+           "    SELECT situation.datex2_id\n" +
+           "    FROM datex2_situation situation\n" +
+           "    WHERE situation.situation_id = :situationId)", nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<Datex2> findBySituationId(final String situationId);
+
+    @Query(value =
+           "SELECT d.*\n" +
+           "FROM datex2 d\n" +
+           "WHERE d.id in (\n" +
+           "    SELECT situation.datex2_id\n" +
+           "    FROM datex2_situation situation\n" +
+           "    WHERE situation.situation_id = :situationId)\n" +
+           "      AND d.json_message IS NOT NULL", nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    List<Datex2> findBySituationIdWithJson(final String situationId);
 
     @Query("SELECT CASE WHEN count(situation) > 0 THEN TRUE ELSE FALSE END\n" +
            "FROM Datex2Situation situation\n" +

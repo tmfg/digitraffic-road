@@ -73,7 +73,7 @@ public class V2Datex2JsonConverter {
         if (feature.getGeometry() == null || feature.getGeometry().getCoordinates() == null ) {
             // Fetch or clear area geometries
             final List<TrafficAnnouncement> announcementsWithAreas =
-                feature.getProperties().announcements.stream().filter(V2Datex2JsonConverter::containsAreaLocation).collect(Collectors.toList());
+                feature.getProperties().announcements.stream().filter(a -> a != null && a.containsAreaLocation()).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
                     feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
                         announcementsWithAreas.stream()
@@ -91,15 +91,6 @@ public class V2Datex2JsonConverter {
         feature.getProperties().setMessageType(messageType);
 
         return feature;
-    }
-
-    private static boolean containsAreaLocation(final TrafficAnnouncement announcement) {
-        return
-            announcement != null &&
-                announcement.locationDetails != null &&
-                announcement.locationDetails.areaLocation != null &&
-                announcement.locationDetails.areaLocation.areas != null &&
-                !announcement.locationDetails.areaLocation.areas.isEmpty();
     }
 
     private String convertImsJsonToV2Compatible(final String imsJson) throws JsonProcessingException {

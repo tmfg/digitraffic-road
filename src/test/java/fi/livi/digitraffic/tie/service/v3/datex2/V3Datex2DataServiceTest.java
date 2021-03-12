@@ -94,7 +94,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion);
                     log.info("checkFindBySituationId with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                         imsXmlVersion, imsJsonVersion, situationType);
-                    checkFindBySituationId(situationType, getSituationIdForSituationType(situationType));
+                    checkFindBySituationId(getSituationIdForSituationType(situationType));
                 }
             }
         }
@@ -132,10 +132,10 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
         assertActiveMessageFound(GUID_WITH_JSON, false, false);
     }
 
-    private void checkFindBySituationId(final SituationType situationType, final String situationId) {
-        final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(situationId, situationType);
+    private void checkFindBySituationId(final String situationId) {
+        final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(situationId);
         final TrafficAnnouncementFeatureCollection jsons =
-            v3Datex2DataService.findBySituationIdJson(situationId, true, situationType);
+            v3Datex2DataService.findBySituationIdJson(situationId, true);
 
         final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
 
