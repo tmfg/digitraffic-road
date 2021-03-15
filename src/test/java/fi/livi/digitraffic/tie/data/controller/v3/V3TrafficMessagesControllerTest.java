@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller.v3;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
@@ -243,11 +244,11 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
     private static String getUrlWithType(final boolean json, final int inactiveHours, final SituationType...messageType) {
         final String[] types = V3Datex2DataService.typesAsStrings(messageType);
         final String params = String.join(",", types);
-        return API_BETA_BASE_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + params;
+        return API_V3_BASE_PATH + API_DATA_PART_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + params;
     }
 
     private static String getUrlWithSituationId(final boolean json, final String situationId) {
-        return API_BETA_BASE_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "/" + situationId;
+        return API_V3_BASE_PATH + API_DATA_PART_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "/" + situationId;
     }
 
     private String getResponse(final String url) throws Exception {

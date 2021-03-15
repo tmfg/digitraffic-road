@@ -1,20 +1,19 @@
-package fi.livi.digitraffic.tie.controller.v2;
+package fi.livi.digitraffic.tie.controller.v3;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTION_WEATHER_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_JSON_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.DataController.LAST_UPDATED_PARAM;
-import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_X;
-import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_X_TXT;
-import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_Y;
-import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_Y_TXT;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -54,17 +53,19 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingTaskDto;
-import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
+import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -72,29 +73,37 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import springfox.documentation.annotations.ApiIgnore;
 
-@Api(tags = "Data v2")
+@Api(tags = "Data v3")
 @RestController
 @Validated
-@RequestMapping(API_V2_BASE_PATH + API_DATA_PART_PATH)
+@RequestMapping(API_V3_BASE_PATH + API_DATA_PART_PATH)
 @ConditionalOnWebApplication
-public class V2DataController {
+public class V3DataController {
     private final ForecastSectionDataService forecastSectionDataService;
     private final V2VariableSignService v2VariableSignService;
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
     private final WeatherService weatherService;
-    private final V2Datex2DataService v2Datex2DataService;
+    private final V3Datex2DataService v3Datex2DataService;
+    private final V3RegionGeometryDataService v3RegionGeometryDataService;
     private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
 
-    public V2DataController(final ForecastSectionDataService forecastSectionDataService,
+    public static final String RANGE_X_TXT = "Values between 19.0 and 32.0.";
+    public static final String RANGE_Y_TXT = "Values between 59.0 and 72.0.";
+    public static final String RANGE_X = "range[19.0, 32.0]";
+    public static final String RANGE_Y = "range[59.0, 72.0]";
+
+    public V3DataController(final ForecastSectionDataService forecastSectionDataService,
                             final V2VariableSignService v2VariableSignService,
                             final CameraPresetHistoryDataService cameraPresetHistoryDataService,
-                            final V2Datex2DataService v2Datex2DataService,
+                            final V3Datex2DataService v3Datex2DataService,
+                            final V3RegionGeometryDataService v3RegionGeometryDataService,
                             final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService,
                             final  WeatherService weatherService) {
         this.forecastSectionDataService = forecastSectionDataService;
         this.v2VariableSignService = v2VariableSignService;
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
-        this.v2Datex2DataService = v2Datex2DataService;
+        this.v3Datex2DataService = v3Datex2DataService;
+        this.v3RegionGeometryDataService = v3RegionGeometryDataService;
         this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
         this.weatherService = weatherService;
     }
@@ -279,60 +288,80 @@ public class V2DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 
-    @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.json", produces = { APPLICATION_JSON_VALUE })
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
-    public TrafficAnnouncementFeatureCollection datex2Json(
-        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
-        @PathVariable
-        final Datex2MessageType datex2MessageType,
-        @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
+    @ApiOperation(value = "Active traffic messages as Datex2")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
+    public D2LogicalModel trafficMessageDatex2(
+        @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
-        final int inactiveHours) {
-        return v2Datex2DataService.findActiveJson(inactiveHours, datex2MessageType);
+        final int inactiveHours,
+        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        final SituationType... situationType) {
+        return v3Datex2DataService.findActive(inactiveHours, situationType);
     }
 
-    @ApiOperation(value = "Active Datex2 messages for traffic-incident, roadwork, weight-restriction -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.xml", produces = { APPLICATION_XML_VALUE })
-    @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
-    public D2LogicalModel datex2(
-        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
+    @ApiOperation(value = "Traffic messages history by situation as Datex2")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
+                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
+    public D2LogicalModel trafficMessageDatex2BySituationId(
+        @ApiParam(value = "Situation id.", required = true)
         @PathVariable
-        final Datex2MessageType datex2MessageType,
-        @ApiParam(value = "Return datex2 messages from given amount of hours in the past.")
+        final String situationId) {
+        return v3Datex2DataService.findAllBySituationId(situationId);
+    }
+
+    @ApiOperation(value = "Active traffic messages as simple JSON")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH, produces = { APPLICATION_JSON_VALUE })
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
+    public TrafficAnnouncementFeatureCollection trafficMessageSimple(
+        @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
-        final int inactiveHours) {
-        return v2Datex2DataService.findActive(inactiveHours, datex2MessageType);
+        final int inactiveHours,
+        @ApiParam(value = "If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
+            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
+        @RequestParam(defaultValue = "false")
+        final boolean includeAreaGeometry,
+        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        final SituationType...situationType) {
+        return v3Datex2DataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
-    @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
-                    @ApiResponse(code = 404, message = "Situation id not found") })
-    public TrafficAnnouncementFeatureCollection datex2JsonBySituationId(
-        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
+    @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH + "/{situationId}", produces = { APPLICATION_JSON_VALUE})
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
+                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
+    public TrafficAnnouncementFeatureCollection trafficMessageSimpleBySituationId(
+        @ApiParam(value = "Situation id.", required = true)
         @PathVariable
-        final Datex2MessageType datex2MessageType,
-        @ApiParam(value = "Datex2 situation id.", required = true)
-        @PathVariable
-        final String situationId) {
-        return v2Datex2DataService.findAllBySituationIdJson(situationId, datex2MessageType);
+        final String situationId,
+        @ApiParam(value = "If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
+            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
+        @RequestParam(defaultValue = "false")
+        final boolean includeAreaGeometry) {
+        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry);
     }
 
-    @ApiOperation(value = "Datex2 messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.xml", produces = { APPLICATION_XML_VALUE })
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
-                    @ApiResponse(code = 404, message = "Situation id not found") })
-    public D2LogicalModel datex2BySituationId(
-        @ApiParam(value = "Datex2 Message type.", required = true, allowableValues = "traffic-incident, roadwork, weight-restriction")
-        @PathVariable
-        final Datex2MessageType datex2MessageType,
-        @ApiParam(value = "Datex2 situation id.", required = true)
-        @PathVariable
-        final String situationId) {
-        return v2Datex2DataService.findAllBySituationId(situationId, datex2MessageType);
+    @ApiOperation(value = "Traffic messages geometries for regions")
+    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_PATH + "/area-geometries", produces = { APPLICATION_JSON_VALUE})
+    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
+                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
+    public RegionGeometryFeatureCollection areaLocationRegions(
+        @ApiParam(value = "If parameter value is true result will only contain update status.", defaultValue = "true")
+        @RequestParam(defaultValue = "true")
+        final boolean lastUpdated,
+        @ApiParam(value = "When effectiveDate parameter is given only effective geometries on that date are returned")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final ZonedDateTime effectiveDate,
+        @ApiParam(value = "Location code id.")
+        @RequestParam(required = false)
+        final Integer...id) {
+        return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, effectiveDate != null ? effectiveDate.toInstant() : null, id);
     }
 
     @ApiOperation(value = "Road maintenance tracking data latest points")

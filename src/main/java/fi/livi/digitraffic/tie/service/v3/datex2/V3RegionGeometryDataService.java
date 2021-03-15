@@ -32,8 +32,9 @@ import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometriesDtoV3;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryDtoV3;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryFeature;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryProperties;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -111,9 +112,9 @@ public class V3RegionGeometryDataService {
     }
 
     @NotTransactionalServiceMethod
-    public RegionGeometriesDtoV3 findAreaLocationRegions(final boolean onlyUpdateInfo, final Instant effectiveDate, final Integer...ids) {
-        return new RegionGeometriesDtoV3(onlyUpdateInfo ? Collections.emptyList() : filterRegionsAndConvertToDto(effectiveDate, ids),
-                                         regionStatus.updated, regionStatus.checked);
+    public RegionGeometryFeatureCollection findAreaLocationRegions(final boolean onlyUpdateInfo, final Instant effectiveDate, final Integer...ids) {
+        return new RegionGeometryFeatureCollection(regionStatus.updated, regionStatus.checked,
+            onlyUpdateInfo ? Collections.emptyList() : filterRegionsAndConvertToDto(effectiveDate, ids));
     }
 
     @NotTransactionalServiceMethod
@@ -143,17 +144,17 @@ public class V3RegionGeometryDataService {
         return convertToGeojson(union);
     }
 
-    private List<RegionGeometryDtoV3> convertToDtoList(final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode) {
+    private List<RegionGeometryFeature> convertToDtoList(final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode) {
         return regionsInDescOrderMappedByLocationCode.values().stream()
             .flatMap(Collection::stream)
             .map(this::convertToDto)
             .collect(Collectors.toList());
     }
 
-    private RegionGeometryDtoV3 convertToDto(final RegionGeometry geometry) {
-        final Geometry<?> geoJsonGeometry = convertToGeojson(geometry.getGeometry());
-        return new RegionGeometryDtoV3(geometry.getName(), geometry.getLocationCode(), geometry.getType(),
-                                       geometry.getEffectiveDate(), geoJsonGeometry);
+    private RegionGeometryFeature convertToDto(final RegionGeometry geometry) {
+        return new RegionGeometryFeature(
+            convertToGeojson(geometry.getGeometry()),
+            new RegionGeometryProperties(geometry.getName(), geometry.getLocationCode(), geometry.getType(), geometry.getEffectiveDate()));
     }
 
     private Geometry<?> convertToGeojson(final org.locationtech.jts.geom.Geometry geometry) {
@@ -183,7 +184,7 @@ public class V3RegionGeometryDataService {
         });
     }
 
-    private List<RegionGeometryDtoV3> filterRegionsAndConvertToDto(final Instant effectiveDate, final Integer...ids) {
+    private List<RegionGeometryFeature> filterRegionsAndConvertToDto(final Instant effectiveDate, final Integer...ids) {
 
         if (ids != null && ids.length > 0) {
             // Both params given
@@ -200,7 +201,7 @@ public class V3RegionGeometryDataService {
         return regionStatus.allRegionsDtosInDescOrder;
     }
 
-    private List<RegionGeometryDtoV3> filterByDateAndConvertToDto(final Instant effectiveDate) {
+    private List<RegionGeometryFeature> filterByDateAndConvertToDto(final Instant effectiveDate) {
         return regionStatus.regionsInDescOrderMappedByLocationCode.keySet().stream()
             .map(k -> getAreaLocationRegionEffectiveOn(k, effectiveDate))
             .filter(Objects::nonNull)
@@ -208,7 +209,7 @@ public class V3RegionGeometryDataService {
             .collect(Collectors.toList());
     }
 
-    private List<RegionGeometryDtoV3> filterByIdsAndConvertToDto(final Integer...ids) {
+    private List<RegionGeometryFeature> filterByIdsAndConvertToDto(final Integer...ids) {
         final Map<Integer, List<RegionGeometry>> regionsMappedByLocationCode = new HashMap<>();
         for (int id : ids) {
             final List<RegionGeometry> regionVersions = regionStatus.getRegionVersionsInDescOrder(id);
@@ -219,8 +220,8 @@ public class V3RegionGeometryDataService {
         return convertToDtoList(regionsMappedByLocationCode);
     }
 
-    private List<RegionGeometryDtoV3> filterByEffectiveDateAndLocationCodesAndConvertToDto(final Instant effectiveDate, final Integer...locationCodes) {
-        final List<RegionGeometryDtoV3> regions = new ArrayList<>();
+    private List<RegionGeometryFeature> filterByEffectiveDateAndLocationCodesAndConvertToDto(final Instant effectiveDate, final Integer...locationCodes) {
+        final List<RegionGeometryFeature> regions = new ArrayList<>();
         for (int locationCode : locationCodes) {
             final RegionGeometry region = getAreaLocationRegionEffectiveOn(locationCode, effectiveDate);
             if (region != null) {
@@ -233,7 +234,7 @@ public class V3RegionGeometryDataService {
     private class RegionStatus {
 
         private final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode;
-        public final List<RegionGeometryDtoV3> allRegionsDtosInDescOrder;
+        public final List<RegionGeometryFeature> allRegionsDtosInDescOrder;
         public final String currentCommitId;
         public final ZonedDateTime updated;
         public final ZonedDateTime checked;

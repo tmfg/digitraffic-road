@@ -101,6 +101,7 @@ public class SwaggerConfiguration {
                regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*")).or(
                regex(API_V2_BASE_PATH + API_METADATA_PART_PATH + "/*.*")).or(
                regex(API_V2_BASE_PATH + API_DATA_PART_PATH + "/*.*")).or(
-               regex(API_V3_BASE_PATH + API_METADATA_PART_PATH + "/*.*"));
+               regex(API_V3_BASE_PATH + API_METADATA_PART_PATH + "/*.*")).or(
+               regex(API_V3_BASE_PATH + API_DATA_PART_PATH + "/*.*"));
     }
 }
