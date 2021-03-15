@@ -171,7 +171,7 @@ public class BetaController {
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public RegionGeometriesDtoV3 areaLocationRegions(
-        @ApiParam(value = "If parameter is given result will only contain update status.", defaultValue = "true")
+        @ApiParam(value = "If parameter value is true result will only contain update status.", defaultValue = "true")
         @RequestParam(defaultValue = "true")
         final boolean lastUpdated,
         @ApiParam(value = "When effectiveDate parameter is given only effective geometries on that date are returned")
