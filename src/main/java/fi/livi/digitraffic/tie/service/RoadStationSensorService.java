@@ -128,11 +128,11 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public Map<Long, List<SensorValueDto>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
-        final Stream<SensorValueDto> sensors = roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
+        final List<SensorValueDto> sensors = roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
                         roadStationType.getTypeNumber(),
                         sensorValueTimeLimitInMins.get(roadStationType));
 
-        return sensors.parallel()
+        return sensors.parallelStream()
             .collect(Collectors.groupingBy(SensorValueDto::getRoadStationNaturalId, Collectors.mapping(Function.identity(), toList())));
     }
 

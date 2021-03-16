@@ -49,7 +49,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "  )",
            nativeQuery = true)
     // sensor typeid 2 = rws
-    Stream<SensorValueDto> findAllPublicPublishableRoadStationSensorValues(
+    List<SensorValueDto> findAllPublicPublishableRoadStationSensorValues(
             @Param("stationTypeId")
             final int stationTypeId,
             @Param("timeLimitInMinutes")
