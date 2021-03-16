@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.SignTextRow;
 import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceDataRow;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +31,13 @@ import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatur
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignProperties;
 
 @Service
-public class V2VariableSignService {
+public class V2VariableSignDataService {
     private final V2DeviceRepository v2DeviceRepository;
     private final V2DeviceDataRepository v2DeviceDataRepository;
     private final V2CodeDescriptionRepository v2CodeDescriptionRepository;
 
-    public V2VariableSignService(final V2DeviceRepository v2DeviceRepository, final V2DeviceDataRepository v2DeviceDataRepository,
-        final V2CodeDescriptionRepository v2CodeDescriptionRepository) {
+    public V2VariableSignDataService(final V2DeviceRepository v2DeviceRepository, final V2DeviceDataRepository v2DeviceDataRepository,
+                                     final V2CodeDescriptionRepository v2CodeDescriptionRepository) {
         this.v2DeviceRepository = v2DeviceRepository;
         this.v2DeviceDataRepository = v2DeviceDataRepository;
         this.v2CodeDescriptionRepository = v2CodeDescriptionRepository;
@@ -45,9 +46,12 @@ public class V2VariableSignService {
     @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 3000)
     @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValues() {
+        final StopWatch sw = StopWatch.createStarted();
+
         final Stream<Device> devices = v2DeviceRepository.streamAll();
         final List<Long> dataIds = v2DeviceDataRepository.findLatestData();
-        final List<DeviceData> data = v2DeviceDataRepository.findAllById(dataIds);
+        final List<DeviceData> data = v2DeviceDataRepository.findDistinctByIdIn(dataIds);
+
         final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
         final List<VariableSignFeature> features = devices
             .map(d -> convert(d, dataMap))
@@ -99,7 +103,7 @@ public class V2VariableSignService {
 
         if(device.isPresent()) {
             final List<Long> latest = v2DeviceDataRepository.findLatestData(deviceId);
-            final List<DeviceData> data = v2DeviceDataRepository.findAllById(latest);
+            final List<DeviceData> data = v2DeviceDataRepository.findDistinctByIdIn(latest);
 
             return new VariableSignFeatureCollection(data.stream()
                 .map(d -> convert(device.get(), d))

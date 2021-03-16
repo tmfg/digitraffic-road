@@ -62,7 +62,7 @@ import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
-import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
+import fi.livi.digitraffic.tie.service.v2.V2VariableSignDataService;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
@@ -80,7 +80,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @ConditionalOnWebApplication
 public class V3DataController {
     private final ForecastSectionDataService forecastSectionDataService;
-    private final V2VariableSignService v2VariableSignService;
+    private final V2VariableSignDataService v2VariableSignDataService;
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
     private final WeatherService weatherService;
     private final V3Datex2DataService v3Datex2DataService;
@@ -93,14 +93,14 @@ public class V3DataController {
     public static final String RANGE_Y = "range[59.0, 72.0]";
 
     public V3DataController(final ForecastSectionDataService forecastSectionDataService,
-                            final V2VariableSignService v2VariableSignService,
+                            final V2VariableSignDataService v2VariableSignDataService,
                             final CameraPresetHistoryDataService cameraPresetHistoryDataService,
                             final V3Datex2DataService v3Datex2DataService,
                             final V3RegionGeometryDataService v3RegionGeometryDataService,
                             final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService,
                             final  WeatherService weatherService) {
         this.forecastSectionDataService = forecastSectionDataService;
-        this.v2VariableSignService = v2VariableSignService;
+        this.v2VariableSignDataService = v2VariableSignDataService;
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
         this.v3Datex2DataService = v3Datex2DataService;
         this.v3RegionGeometryDataService = v3RegionGeometryDataService;
@@ -157,9 +157,9 @@ public class V3DataController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Traffic Sign data"))
     public VariableSignFeatureCollection variableSigns(@RequestParam(value = "deviceId", required = false) final String deviceId) {
         if(deviceId != null) {
-            return v2VariableSignService.listLatestValue(deviceId);
+            return v2VariableSignDataService.listLatestValue(deviceId);
         } else {
-            return v2VariableSignService.listLatestValues();
+            return v2VariableSignDataService.listLatestValues();
         }
     }
 
@@ -167,7 +167,7 @@ public class V3DataController {
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign data"))
     public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
-        return v2VariableSignService.listLatestValue(deviceId);
+        return v2VariableSignDataService.listLatestValue(deviceId);
     }
 
     @ApiOperation("List the history of variable sign data")
@@ -175,14 +175,14 @@ public class V3DataController {
     @ApiParam("List history data of given sign")
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
     public List<TrafficSignHistory> variableSignHistory(@RequestParam(value = "deviceId") final String deviceId) {
-        return v2VariableSignService.listVariableSignHistory(deviceId);
+        return v2VariableSignDataService.listVariableSignHistory(deviceId);
     }
 
     @ApiOperation("List the history of variable sign data")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of Variable sign history"))
     public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
-        return v2VariableSignService.listVariableSignHistory(deviceId);
+        return v2VariableSignDataService.listVariableSignHistory(deviceId);
     }
 
     //@ApiOperation("List the history of sensor values from the weather road station")
