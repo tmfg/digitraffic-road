@@ -54,7 +54,7 @@ public class RoadApplicationConfiguration {
     public JdbcTemplate jdbcTemplate(final DataSource dataSource) {
         final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
-        jdbcTemplate.setFetchSize(1000);
+        jdbcTemplate.setFetchSize(5000);
 
         return jdbcTemplate;
     }
