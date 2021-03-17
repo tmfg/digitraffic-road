@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.RoadStationService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.lotju.AbstractLotjuMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
@@ -64,7 +64,7 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
     private CameraStationUpdater cameraStationUpdater;
 
     @SpyBean
-    private CameraImageUpdateService cameraImageUpdateService;
+    private CameraImageUpdateHandler cameraImageUpdateHandler;
 
     @Autowired
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
@@ -95,7 +95,7 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
     @Test
     public void testUpdateRoadStationStatuses() {
 
-        doNothing().when(cameraImageUpdateService).hideCurrentImageForPreset(any(CameraPreset.class));
+        doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
 
         lotjuLAMMetatiedotServiceMock.initStateAndService();
         lotjuTiesaaPerustiedotServiceMock.initStateAndService();
@@ -121,9 +121,9 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
         cameraStationUpdater.updateCameraStationsStatuses();
 
         // camera 2 has 5 public but camera is not public -> 5 presets to secret
-        verify(cameraImageUpdateService, times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(2L)));
-        verify(cameraImageUpdateService, times(5)).hideCurrentImageForPreset(any(CameraPreset.class));
-        verify(cameraImageUpdateService, times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
+        verify(cameraImageUpdateHandler, times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(2L)));
+        verify(cameraImageUpdateHandler, times(5)).hideCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateHandler, times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
 
         List<RoadStation> allAfterChange = roadStationService.findAll();
 

@@ -4,6 +4,7 @@ import javax.transaction.Transactional;
 
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -17,7 +18,7 @@ import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 @DataJpaTest(properties = "spring.main.web-application-type=none", excludeAutoConfiguration = {FlywayAutoConfiguration.class,
              LiquibaseAutoConfiguration.class, TestDatabaseAutoConfiguration.class, DataSourceAutoConfiguration.class},
              showSql = false)
-@Import({RoadApplicationConfiguration.class, JsonbAutoConfiguration.class})
+@Import({RoadApplicationConfiguration.class, JsonbAutoConfiguration.class, JacksonAutoConfiguration.class })
 @RunWith(SpringRunner.class)
 @Transactional
 public abstract class AbstractJpaTest extends AbstractTest {

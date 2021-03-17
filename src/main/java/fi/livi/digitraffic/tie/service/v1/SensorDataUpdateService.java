@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryDao;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
@@ -124,7 +125,7 @@ public class SensorDataUpdateService {
         allowedWeatherStationsLotjuIdtoIds = getAllowedStationsLotjuIdtoIds(RoadStationType.WEATHER_STATION);
     }
 
-    @Scheduled(fixedRate = 20000, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
+    @Scheduled(fixedRate = 20000)
     @Transactional
     protected void persistLamSensorValues() {
         final TimestampCache timestampCache = new TimestampCache();
@@ -138,7 +139,7 @@ public class SensorDataUpdateService {
         log.info("method=persistLamSensorValues tmsBuffer for db update {} / {} incomings", updates.size(), lamValueBuffer.getIncomingElementCount());
     }
 
-    @Scheduled(fixedRate = 30000, initialDelayString = "${dt.scheduled.job.initialDelay.ms}")
+    @Scheduled(fixedRate = 30000)
     @Transactional
     protected void persistWeatherSensorValues() {
         final TimestampCache timestampCache = new TimestampCache();
@@ -159,7 +160,8 @@ public class SensorDataUpdateService {
      * @param data
      * @return count of buffered elements
      */
-    public int updateLamData(final List<Lam> data) {
+    @NotTransactionalServiceMethod
+    public int updateLamValueBuffer(final List<Lam> data) {
         // Process incoming data set and store filtered items
         return lamValueBuffer.putValues(data.stream()
             // Filter only allowed stations
@@ -186,7 +188,8 @@ public class SensorDataUpdateService {
      * @param data
      * @return count of buffered elements
      */
-    public int updateWeatherData(final List<TiesaaMittatieto> data) {
+    @NotTransactionalServiceMethod
+    public int updateWeatherValueBuffer(final List<TiesaaMittatieto> data) {
         // NOTE! no sensor filtering (check updateLamData)
 
         // Process incoming data set and store filtered items

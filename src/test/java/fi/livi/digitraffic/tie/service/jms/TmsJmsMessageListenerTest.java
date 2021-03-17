@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import javax.xml.bind.JAXBException;
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -39,12 +37,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.SensorValue;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -74,8 +72,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
         /**
          * Send some data bursts to jms handler and test performance of database updates.
-         * @throws JAXBException
-         * @throws DatatypeConfigurationException
          */
     @Test
     public void test1PerformanceForReceivedMessages() throws JMSException, IOException {
@@ -203,7 +199,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private void checkDataValidity(final List<LAMRealtimeProtos.Lam> data) {
         log.info("Check data validity");
         // Assert sensor values are updated to db
-        final List<Long> lamLotjuIds = data.stream().map(p -> p.getAsemaId()).distinct().collect(Collectors.toList());
+        final List<Long> lamLotjuIds = data.stream().map(LAMRealtimeProtos.Lam::getAsemaId).distinct().collect(Collectors.toList());
         final Map<Long, List<SensorValue>> valuesMap =
             roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
 
@@ -222,7 +218,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 assertTrue(found.isPresent());
 
                 final SensorValue sv = found.get();
-                Assert.assertEquals(sv.getValue(), (double) anturi.getArvo(), 0.05d);
+                Assert.assertEquals(sv.getValue(), anturi.getArvo(), 0.05d);
 
                 if (found.get().getTimeWindowStart() != null) {
                     assertTimesEqual(timeWindowStart, sv.getTimeWindowStart());
@@ -236,16 +232,16 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         log.info("Data is valid");
     }
 
-    private JMSMessageListener createTmsJmsMessageListener(JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater) {
-        return new JMSMessageListener(new TmsMessageMarshaller(),
-                               dataUpdater, true, log);
+    private JMSMessageListener<LAMRealtimeProtos.Lam> createTmsJmsMessageListener(JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater) {
+        return new JMSMessageListener<>(new TmsMessageMarshaller(),
+            dataUpdater, true, log);
     }
 
     private JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> createLamJMSDataUpdater() {
         return (data) -> {
                 final StopWatch sw = StopWatch.createStarted();
 
-                final int updated = sensorDataUpdateService.updateLamData(data);
+                final int updated = sensorDataUpdateService.updateLamValueBuffer(data);
 
                 log.info("handleData tookMs={}", sw.getTime());
                 return updated;

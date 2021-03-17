@@ -10,7 +10,7 @@ import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.service.BuildVersionService;
+import fi.livi.digitraffic.tie.service.BuildVersionResolver;
 
 @Component
 public class ApplicationStartup implements ApplicationListener<ApplicationReadyEvent> {
@@ -21,15 +21,15 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
     private String appType;
 
     @Autowired
-    private BuildVersionService buildVersionService;
+    private BuildVersionResolver buildVersionResolver;
 
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent applicationReadyEvent) {
-        log.info("startedApp=RoadApplication appType={} version: {}", appType, buildVersionService.getAppFullVersion());
+        log.info("startedApp=RoadApplication appType={} version: {}", appType, buildVersionResolver.getAppFullVersion());
     }
 
     @EventListener
     public void onShutdown(final ContextStoppedEvent event) {
-        log.info("stoppedApp=RoadApplication appType={} version: {}", appType, buildVersionService.getAppFullVersion());
+        log.info("stoppedApp=RoadApplication appType={} version: {}", appType, buildVersionResolver.getAppFullVersion());
     }
 }

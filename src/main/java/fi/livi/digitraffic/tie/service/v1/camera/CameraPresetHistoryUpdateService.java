@@ -19,13 +19,13 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 public class CameraPresetHistoryUpdateService {
     private static final Logger log = LoggerFactory.getLogger(CameraPresetService.class);
     private final CameraPresetHistoryRepository cameraPresetHistoryRepository;
-    private final CameraImageUpdateService cameraImageUpdateService;
+    private final CameraImageUpdateHandler cameraImageUpdateHandler;
 
     @Autowired
     public CameraPresetHistoryUpdateService(final CameraPresetHistoryRepository cameraPresetHistoryRepository,
-                                            final CameraImageUpdateService cameraImageUpdateService) {
+                                            final CameraImageUpdateHandler cameraImageUpdateHandler) {
         this.cameraPresetHistoryRepository = cameraPresetHistoryRepository;
-        this.cameraImageUpdateService = cameraImageUpdateService;
+        this.cameraImageUpdateHandler = cameraImageUpdateHandler;
     }
 
     @Transactional
@@ -52,7 +52,7 @@ public class CameraPresetHistoryUpdateService {
         // If camera is not public, hide current image
         if (!rs.isPublicNow()) {
             try {
-                cameraImageUpdateService.hideCurrentImagesForCamera(rs);
+                cameraImageUpdateHandler.hideCurrentImagesForCamera(rs);
             } catch (Exception e) {
                 log.error(String.format("method=updatePresetHistoryPublicityForCamera Error while calling hideCurrentImagesForCamera " +
                                         "for cameraId: %s. History is updated but current images are not hidden in S3", cameraId), e);

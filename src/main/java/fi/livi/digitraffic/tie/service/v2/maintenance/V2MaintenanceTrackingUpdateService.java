@@ -589,8 +589,8 @@ public class V2MaintenanceTrackingUpdateService {
     }
 
     /**
-     * Gets reittitoteuma from reittitoteuma or reittitoteumat property
-     * @return havaintos of reittitoteuma
+     * Gets all trackings from the given tracking record
+     * @return trackings of the given record
      */
     private static List<Havainto> getHavaintos(final TyokoneenseurannanKirjausRequestSchema kirjaus) {
         return kirjaus.getHavainnot().stream().map(Havainnot::getHavainto).collect(Collectors.toList());

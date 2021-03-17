@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>road</artifactId>
-    <version>2.65.1</version>
+    <version>2.68.0</version>
     <packaging>jar</packaging>
 
     <name>dt-road</name>
@@ -158,6 +158,13 @@
             <version>1.2.5.RELEASE</version>
         </dependency>
 
+        <!-- JGit -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>5.10.0.202012080955-r</version>
+        </dependency>
+
         <!-- google protobuf -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
@@ -268,7 +275,15 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <version>5.4.23.Final</version>
+            <version>5.4.27.Final</version>
+        </dependency>
+
+        <!-- Library to transform GeoJSON <-> jts Geometry.
+             Version must follow jts version coming rom hibernate-spatial-->
+        <dependency>
+            <groupId>org.locationtech.jts.io</groupId>
+            <artifactId>jts-io-common</artifactId>
+            <version>1.16.0</version>
         </dependency>
 
         <!-- Logging in JSON format for ELK-stack -->
@@ -336,6 +351,13 @@
             <groupId>xyz.fabiano</groupId>
             <artifactId>spring-localstack</artifactId>
             <version>0.0.9</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit4</artifactId>
+            <version>0.17.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

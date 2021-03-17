@@ -6,33 +6,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class TmsStationSensorConstantUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationSensorConstantUpdater.class);
 
     private final TmsStationSensorConstantService tmsStationSensorConstantService;
     private final TmsStationService tmsStationService;
     private final DataStatusService dataStatusService;
-    private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
+    private final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper;
 
     @Autowired
     public TmsStationSensorConstantUpdater(final TmsStationSensorConstantService tmsStationSensorConstantService,
                                            final TmsStationService tmsStationService,
                                            final DataStatusService dataStatusService,
-                                           final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
+                                           final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper) {
         this.tmsStationSensorConstantService = tmsStationSensorConstantService;
         this.tmsStationService = tmsStationService;
         this.dataStatusService = dataStatusService;
-        this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
+        this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
     }
 
     /**
@@ -47,7 +47,7 @@ public class TmsStationSensorConstantUpdater {
 
         log.info("Fetching LamAnturiVakios for tmsCount={} LamAsemas", tmsLotjuIds.size());
 
-        List<LamAnturiVakioVO> allLamAnturiVakios = lotjuTmsStationMetadataService.getAllLamAnturiVakios(tmsLotjuIds);
+        List<LamAnturiVakioVO> allLamAnturiVakios = lotjuTmsStationMetadataClientWrapper.getAllLamAnturiVakios(tmsLotjuIds);
 
         final boolean updated = tmsStationSensorConstantService.updateSensorConstants(allLamAnturiVakios);
 
@@ -66,7 +66,7 @@ public class TmsStationSensorConstantUpdater {
     public boolean updateTmsStationsSensorConstantsValues() {
         log.info("Update TMS Stations SensorConstantValues start");
 
-        final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos = lotjuTmsStationMetadataService.getAllLamAnturiVakioArvos();
+        final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos = lotjuTmsStationMetadataClientWrapper.getAllLamAnturiVakioArvos();
 
         boolean updated = tmsStationSensorConstantService.updateSensorConstantValues(allLamAnturiVakioArvos);
 
