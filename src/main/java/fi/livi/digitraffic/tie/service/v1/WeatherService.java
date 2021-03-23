@@ -11,6 +11,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,9 +43,8 @@ public class WeatherService {
         this.sensorValueHistoryRepository = sensorValueHistoryRepository;
     }
 
-    @Transactional(readOnly = true)
+    @NotTransactionalServiceMethod
     public WeatherRootDataObjectDto findPublishableWeatherData(final boolean onlyUpdateInfo) {
-
         final ZonedDateTime updated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION);
 
         if (onlyUpdateInfo) {

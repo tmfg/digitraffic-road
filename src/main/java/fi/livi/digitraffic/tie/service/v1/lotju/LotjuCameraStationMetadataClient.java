@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
@@ -29,7 +29,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.ObjectFactory;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClient {
 
     private static final Logger log = LoggerFactory.getLogger(LotjuCameraStationMetadataClient.class);

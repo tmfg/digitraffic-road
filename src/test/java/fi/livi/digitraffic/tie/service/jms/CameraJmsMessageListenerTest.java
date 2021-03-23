@@ -54,7 +54,7 @@ import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateManager;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 @TestPropertySource(properties = { "camera-image-uploader.imageUpdateTimeout=500",
@@ -75,7 +75,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private CameraPresetService cameraPresetService;
 
     @Autowired
-    private CameraDataUpdateService cameraDataUpdateService;
+    private CameraImageUpdateManager cameraImageUpdateManager;
 
     @Autowired
     private DataStatusService dataStatusService;
@@ -159,7 +159,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
             TestTransaction.start();
             int updated = 0;
             try {
-                updated = cameraDataUpdateService.updateCameraData(data);
+                updated = cameraImageUpdateManager.updateCameraData(data);
             } catch (Exception e) {
                 Assert.fail("Data updating failed");
             }

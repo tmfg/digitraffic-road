@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.ForecastSectionWeatherDao;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherDataDto;
@@ -30,6 +31,7 @@ public class ForecastSectionDataService {
         this.dataStatusService = dataStatusService;
     }
 
+    @Transactional(readOnly = true)
     public ForecastSectionWeatherRootDto getForecastSectionWeatherData(final ForecastSectionApiVersion version, final boolean onlyUpdateInfo,
                                                                        final Integer roadNumber,
                                                                        final Double minLongitude, final Double minLatitude,

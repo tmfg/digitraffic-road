@@ -34,19 +34,17 @@ metadata.tmc.url = https://tie-test.digitraffic.fi/tmc/noncertified/
 # Fields: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
 # Only one of Day-of-Month and Day-of-Week can be set at the time (?=no value set)
 
-# Every 3 min
-dt.job.Datex2TrafficAlertMessageUpdateJob.schedule =           0 0/3 * * * ?
 # Every 5 min
 dt.job.ForecastSectionV1DataUpdateJob.schedule =               0 0/5 * * * ?
 dt.job.ForecastSectionV2DataUpdateJob.schedule =               0 0/5 * * * ?
 # Every 1 h
 dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
+dt.job.WeatherHistoryUpdateJob.schedule =                      0 3 * ? * * *
 dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 0 0/1 * * ?
 dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
-dt.job.Datex2RoadworksMessageUpdateJob.schedule =              0 0 0/1 * * ?
-dt.job.Datex2WeightRestrictionsMessageUpdateJob.schedule =     0 0 0/1 * * ?
 dt.job.CameraHistoryDeleteJob.schedule =                       0 0 0/1 * * ?
 dt.job.WeatherHistoryUpdateJob.schedule =                      0 0 0/1 * * ?
+dt.job.RegionGeometryUpdateJob.schedule =                      0 0 0/1 * * ?
 # Every 12 h
 dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
 dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?

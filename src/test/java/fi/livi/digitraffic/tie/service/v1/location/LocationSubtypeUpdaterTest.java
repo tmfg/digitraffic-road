@@ -9,14 +9,12 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.AbstractJpaTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
 
-@Import(LocationSubtypeUpdater.class)
-public class LocationSubtypeUpdaterTest extends AbstractJpaTest {
+public class LocationSubtypeUpdaterTest extends AbstractServiceTest {
     @Autowired
     private LocationSubtypeUpdater locationSubtypeUpdater;
 

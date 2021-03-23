@@ -248,7 +248,9 @@
                                     "province",
                                     "regional state administrative agency",
                                     "weather region",
-                                    "country"
+                                    "country",
+                                    "city region",
+                                    "travel region"
                                 ],
                                 "title": "The type of the area"
                             }

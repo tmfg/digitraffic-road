@@ -9,14 +9,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import fi.livi.digitraffic.tie.AbstractJpaTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.LockingDao;
 
-@Import(LockingDao.class)
-public class LockingDaoTest extends AbstractJpaTest {
+public class LockingDaoTest extends AbstractServiceTest {
     private static final Logger log = LoggerFactory.getLogger(LockingDao.class);
 
     private static final String LOCK_NAME_1 = LockingDaoTest.class.getSimpleName()+"1";

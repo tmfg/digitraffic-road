@@ -18,7 +18,7 @@ public class FreeFlowSpeedServiceTest extends AbstractServiceTest {
         final FreeFlowSpeedRootDataObjectDto object = freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(false);
 
         Assert.assertNotNull(object);
-        Assert.assertNotNull(object.getDataUpdatedTime());
+        Assert.assertNotNull(object.dataUpdatedTime);
 
         Assert.assertNotNull(object.getTmsFreeFlowSpeeds());
         Assert.assertTrue(object.getTmsFreeFlowSpeeds().size() > 0);

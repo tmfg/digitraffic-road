@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.model.v1.location.Location;
 import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
@@ -27,6 +28,7 @@ public class LocationUpdater {
         this.batchSize = batchSize;
     }
 
+    @Transactional
     public List<Location> updateLocations(final Path path, final List<LocationSubtype> locationSubtypes, final String version) {
         final List<Location> newLocations = getLocations(path, locationSubtypes, version);
 
@@ -42,7 +44,7 @@ public class LocationUpdater {
         return newLocations;
     }
 
-    public List<Location> getLocations(final Path path, final List<LocationSubtype> locationSubtypes, final String version) {
+    private List<Location> getLocations(final Path path, final List<LocationSubtype> locationSubtypes, final String version) {
         final Map<String, LocationSubtype> subtypeMap = locationSubtypes.stream().collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
 
         final LocationReader reader = new LocationReader(subtypeMap, version);

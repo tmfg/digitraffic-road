@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.AbstractVO;
@@ -20,54 +20,54 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.LockingService;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationService;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class CameraStationUpdater {
     private static final Logger log = LoggerFactory.getLogger(CameraStationUpdater.class);
 
-    private final LotjuCameraStationMetadataService lotjuCameraStationMetadataService;
+    private final LotjuCameraStationMetadataClientWrapper lotjuCameraStationMetadataClientWrapper;
     private final CameraStationUpdateService cameraStationUpdateService;
     private final CameraPresetService cameraPresetService;
     private final RoadStationService roadStationService;
     private final CameraMetadataUpdateLock lock;
 
     @Autowired
-    public CameraStationUpdater(final LotjuCameraStationMetadataService lotjuCameraStationMetadataService,
+    public CameraStationUpdater(final LotjuCameraStationMetadataClientWrapper lotjuCameraStationMetadataClientWrapper,
                                 final CameraStationUpdateService cameraStationUpdateService,
                                 final CameraPresetService cameraPresetService,
                                 final RoadStationService roadStationService,
-                                final LockingService lockingService) {
-        this.lotjuCameraStationMetadataService = lotjuCameraStationMetadataService;
+                                final ClusteredLocker clusteredLocker) {
+        this.lotjuCameraStationMetadataClientWrapper = lotjuCameraStationMetadataClientWrapper;
         this.cameraStationUpdateService = cameraStationUpdateService;
         this.cameraPresetService = cameraPresetService;
         this.roadStationService = roadStationService;
-        this.lock = new CameraMetadataUpdateLock(lockingService);
+        this.lock = new CameraMetadataUpdateLock(clusteredLocker);
     }
 
     private class CameraMetadataUpdateLock {
         private final String lockName = CameraMetadataUpdateLock.class.getSimpleName();
         private final StopWatch stopWatch;
-        private final LockingService lockingService;
+        private final ClusteredLocker clusteredLocker;
 
 
-        public CameraMetadataUpdateLock(final LockingService lockingService) {
-            this.lockingService = lockingService;
+        public CameraMetadataUpdateLock(final ClusteredLocker clusteredLocker) {
+            this.clusteredLocker = clusteredLocker;
             stopWatch = new StopWatch();
         }
 
         protected void lock() {
-            lockingService.lock(lockName, 10000);
+            clusteredLocker.lock(lockName, 10000);
             stopWatch.start();
         }
 
         protected void unlock() {
             final long time = stopWatch.getTime();
             stopWatch.reset();
-            lockingService.unlock(lockName);
+            clusteredLocker.unlock(lockName);
             log.debug("method=unlock lockedTimeMs={}", time);
         }
     }
@@ -76,7 +76,7 @@ public class CameraStationUpdater {
     public boolean updateCameras() {
         log.info("method=updateCameras start");
 
-        final List<KameraVO> kameras = lotjuCameraStationMetadataService.getKameras();
+        final List<KameraVO> kameras = lotjuCameraStationMetadataClientWrapper.getKameras();
 
         final Pair<Integer, Integer> updatedInsertedCount =
             kameras.stream().map(this::updateCameraStationAndPresets)
@@ -99,7 +99,7 @@ public class CameraStationUpdater {
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     public int updateCameraStationsStatuses() {
         log.info("method=updateCameraStationsStatuses start");
-        final List<KameraVO> kameras = lotjuCameraStationMetadataService.getKameras();
+        final List<KameraVO> kameras = lotjuCameraStationMetadataClientWrapper.getKameras();
         return kameras.stream().mapToInt(kamera -> {
             log.info("method=updateCameraStationsStatuses update lotjuId={}", kamera.getId());
             return updateCameraStation(kamera) ? 1 : 0;
@@ -108,7 +108,7 @@ public class CameraStationUpdater {
 
 
     private Pair<Integer, Integer> updateCameraStationAndPresets(final long cameraLotjuId) {
-        final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
+        final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(cameraLotjuId);
         if (kamera == null) {
             log.error("method=updateCameraStationAndPresets No Camera found with lotjuId={}", cameraLotjuId);
             return Pair.of(0,0);
@@ -127,7 +127,7 @@ public class CameraStationUpdater {
             if (!validate(kamera)) {
                 return Pair.of(0,0);
             }
-            final List<EsiasentoVO> eas = lotjuCameraStationMetadataService.getEsiasentos(kamera.getId());
+            final List<EsiasentoVO> eas = lotjuCameraStationMetadataClientWrapper.getEsiasentos(kamera.getId());
             return cameraStationUpdateService.updateOrInsertRoadStationAndPresets(kamera, eas);
 
         } finally {
@@ -142,7 +142,7 @@ public class CameraStationUpdater {
     }
 
     private boolean updateCameraStation(final long cameraLotjuId) {
-        final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(cameraLotjuId);
+        final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(cameraLotjuId);
         if (kamera == null) {
             log.error("method=updateCameraStation No Camera with lotjuId={} found", cameraLotjuId);
             return false;
@@ -180,7 +180,7 @@ public class CameraStationUpdater {
     @PerformanceMonitor()
     public boolean updateCameraPresetFromJms(final long presetLotjuId) {
         log.info("method=updateCameraPresetFromJms start lotjuId={}", presetLotjuId);
-        final EsiasentoVO esiasento = lotjuCameraStationMetadataService.getEsiasento(presetLotjuId);
+        final EsiasentoVO esiasento = lotjuCameraStationMetadataClientWrapper.getEsiasento(presetLotjuId);
 
         if (esiasento == null) {
             log.error("No CameraPreset with lotjuId={} found", presetLotjuId);
@@ -197,7 +197,7 @@ public class CameraStationUpdater {
         lock.lock();
         try {
             log.debug("method=updateCameraPreset got the lock lotjuId={}", presetLotjuId);
-            final KameraVO kamera = lotjuCameraStationMetadataService.getKamera(esiasento.getKameraId());
+            final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(esiasento.getKameraId());
             if (validate(kamera)) {
                 return cameraStationUpdateService.updatePreset(esiasento, kamera);
             } else {

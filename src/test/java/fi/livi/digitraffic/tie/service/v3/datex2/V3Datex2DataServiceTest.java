@@ -4,8 +4,12 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
+import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -13,27 +17,31 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuration;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TimeAndDuration;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.service.AbstractDatex2DataServiceTest;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
+public class V3Datex2DataServiceTest extends AbstractRestWebTest {
     private static final Logger log = getLogger(V3Datex2DataServiceTest.class);
 
     @Autowired
@@ -42,8 +50,25 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     @Autowired
     private TrafficMessageTestHelper trafficMessageTestHelper;
 
+    @Autowired
+    protected ObjectMapper objectMapper;
+
+    @SpyBean
+    private V3RegionGeometryDataService v3RegionGeometryDataService;
+
+    @Before
+    public void init() {
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
+    }
+
     @Test
     public void findActiveTrafficMessagesDatex2AndJsonEqualsForEveryVersionOfImsAndJson() throws IOException {
+
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for (final SituationType situationType : SituationType.values()) {
@@ -69,7 +94,7 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion);
                     log.info("checkFindBySituationId with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                         imsXmlVersion, imsJsonVersion, situationType);
-                    checkFindBySituationId(situationType, getSituationIdForSituationType(situationType));
+                    checkFindBySituationId(getSituationIdForSituationType(situationType));
                 }
             }
         }
@@ -107,10 +132,10 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
         assertActiveMessageFound(GUID_WITH_JSON, false, false);
     }
 
-    private void checkFindBySituationId(final SituationType situationType, final String situationId) {
-        final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(situationId, situationType);
+    private void checkFindBySituationId(final String situationId) {
+        final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(situationId);
         final TrafficAnnouncementFeatureCollection jsons =
-            v3Datex2DataService.findBySituationIdJson(situationId, situationType);
+            v3Datex2DataService.findBySituationIdJson(situationId, true);
 
         final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
 
@@ -127,7 +152,7 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
                                                     final ZonedDateTime start, final ZonedDateTime end) {
         final D2LogicalModel d2 = v3Datex2DataService.findActive(0, situationType);
         final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
-        final TrafficAnnouncementFeatureCollection activeJsons = v3Datex2DataService.findActiveJson(0, situationType);
+        final TrafficAnnouncementFeatureCollection activeJsons = v3Datex2DataService.findActiveJson(0, true, situationType);
 
         AssertHelper.assertCollectionSize(1, activeSituations);
         AssertHelper.assertCollectionSize(1, activeJsons.getFeatures());
@@ -169,7 +194,7 @@ public class V3Datex2DataServiceTest extends AbstractDatex2DataServiceTest {
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
         final D2LogicalModel withOrWithoutJson = v3Datex2DataService.findActive(0);
         final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
-        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0);
+        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0, true);
 
         if (foundInDatex2 || situationPublication != null) {
             assertEquals(

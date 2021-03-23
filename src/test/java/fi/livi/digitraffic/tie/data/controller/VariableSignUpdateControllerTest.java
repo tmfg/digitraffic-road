@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +103,7 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         assertDeviceDataCountInDb(1);
 
         final List<Long> id1 = v2DeviceDataRepository.findLatestData("t1");
-        final List<DeviceData> data1 = v2DeviceDataRepository.findAllById(id1);
+        final List<DeviceData> data1 = v2DeviceDataRepository.findDistinctByIdIn(id1);
         assertEquals(1, data1.size());
         assertEquals(2, data1.get(0).getRows().size());
         // update data
@@ -112,7 +111,7 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
         assertDeviceDataCountInDb(2);
 
         final List<Long> id2 = v2DeviceDataRepository.findLatestData("t1");
-        final List<DeviceData> data2 = v2DeviceDataRepository.findAllById(id2);
+        final List<DeviceData> data2 = v2DeviceDataRepository.findDistinctByIdIn(id2);
         assertEquals(1, data2.size());
         assertEquals(0, data2.get(0).getRows().size());
 
