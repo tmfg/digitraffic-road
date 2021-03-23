@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -67,12 +66,11 @@ public class V2ForecastSectionMetadataDao {
         "          LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
         "WHERE f.version = 2 " +
         "AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber) " +
-        "COORDINATES_LIMIT " +
+        "AND (:minLongitude IS NULL OR :minLatitude IS NULL OR :maxLongitude IS NULL OR :maxLatitude IS NULL " +
+        " OR f.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
+        "             WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude)) \n" +
         "AND (:naturalIdsIsEmpty IS TRUE OR f.natural_id IN (:naturalIds))\n" +
         "ORDER BY f.natural_id";
-
-    private static final String COORDINATES_LIMIT = "AND f.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
-        "   WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude)) ";
 
     private static final String SELECT_COORDINATES =
         "SELECT f.natural_id, c.list_order_number, '[' || array_to_string(array_agg('['|| c.longitude ||','|| c.latitude ||']' ORDER BY c.order_number), ',') || ']' AS coordinates\n" +
@@ -122,6 +120,7 @@ public class V2ForecastSectionMetadataDao {
     }
 
     public void insertCoordinates(final List<ForecastSectionV2FeatureDto> features) {
+
         final int listCount = features.stream().mapToInt(f -> f.getGeometry().getCoordinates().size()).sum();
         final MapSqlParameterSource listSources[] = new MapSqlParameterSource[listCount];
 
@@ -154,32 +153,39 @@ public class V2ForecastSectionMetadataDao {
     public List<ForecastSectionV2Feature> findForecastSectionV2Features(final Integer roadNumber, final Double minLongitude, final Double minLatitude,
                                                                         final Double maxLongitude, final Double maxLatitude,
                                                                         final List<String> naturalIds) {
+
         final HashMap<String, ForecastSectionV2Feature> featureMap = new HashMap<>();
 
         final MapSqlParameterSource paramSource = new MapSqlParameterSource()
             .addValue("roadNumber", roadNumber, Types.INTEGER)
+            .addValue("minLongitude", minLongitude, Types.DOUBLE)
+            .addValue("minLatitude", minLatitude, Types.DOUBLE)
+            .addValue("maxLongitude", maxLongitude, Types.DOUBLE)
+            .addValue("maxLatitude", maxLatitude, Types.DOUBLE)
             .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
             .addValue("naturalIds", naturalIds);
 
-        final String selectSql;
-        if(minLongitude != null && minLatitude != null && maxLongitude != null && maxLatitude != null) {
-                paramSource.addValue("minLongitude", minLongitude, Types.DOUBLE)
-                .addValue("minLatitude", minLatitude, Types.DOUBLE)
-                .addValue("maxLongitude", maxLongitude, Types.DOUBLE)
-                .addValue("maxLatitude", maxLatitude, Types.DOUBLE);
-
-                selectSql = SELECT_ALL.replace("COORDINATES_LIMIT", COORDINATES_LIMIT);
-        } else {
-            selectSql = SELECT_ALL.replace("COORDINATES_LIMIT", "");
-        }
-
-        jdbcTemplate.query(selectSql, paramSource, rs -> {
+        jdbcTemplate.query(SELECT_ALL, paramSource, rs -> {
             final String naturalId = rs.getString("natural_id");
 
-            featureMap.computeIfAbsent(naturalId, s -> convert(naturalId, rs));
+            if (!featureMap.containsKey(naturalId)) {
+                final ForecastSectionV2Feature feature = new ForecastSectionV2Feature(rs.getLong("forecast_section_id"),
+                                                                                      new MultiLineString(),
+                                                                                      new ForecastSectionV2Properties(naturalId,
+                                                                                                                      rs.getString("description"),
+                                                                                                                      Integer.parseInt(rs.getString("road_number")),
+                                                                                                                      Integer.parseInt(rs.getString("road_section_number")),
+                                                                                                                      rs.getInt("length"),
+                                                                                                                      new ArrayList<>(),
+                                                                                                                      new ArrayList<>()));
+                setRoadSegment(rs, feature);
+                setLinkId(rs, feature);
 
-            setRoadSegment(rs, featureMap.get(naturalId));
-            setLinkId(rs, featureMap.get(naturalId));
+                featureMap.put(naturalId, feature);
+            } else {
+                setRoadSegment(rs, featureMap.get(naturalId));
+                setLinkId(rs, featureMap.get(naturalId));
+            }
         });
 
         jdbcTemplate.query(SELECT_COORDINATES, paramSource, rs -> {
@@ -187,7 +193,7 @@ public class V2ForecastSectionMetadataDao {
             List coordinates = new ArrayList();
             try {
                 coordinates = new ObjectMapper().readValue(rs.getString("coordinates"), typeReference);
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 log.error("method=findForecastSectionV2Features coordinates objectMapper readValue error");
             }
             final ForecastSectionV2Feature feature = featureMap.get(rs.getString("natural_id"));
@@ -196,23 +202,6 @@ public class V2ForecastSectionMetadataDao {
 
         return featureMap.values().stream()
             .sorted(Comparator.comparing(f -> f.getProperties().getNaturalId())).collect(Collectors.toList());
-    }
-
-    private ForecastSectionV2Feature convert(final String naturalId, final ResultSet rs) {
-        try {
-            return new ForecastSectionV2Feature(rs.getLong("forecast_section_id"),
-                new MultiLineString(),
-                new ForecastSectionV2Properties(naturalId,
-                    rs.getString("description"),
-                    Integer.parseInt(rs.getString("road_number")),
-                    Integer.parseInt(rs.getString("road_section_number")),
-                    rs.getInt("length"),
-                    new ArrayList<>(),
-                    new ArrayList<>()));
-        } catch (final SQLException e) {
-            log.error("convert exception", e);
-            return null;
-        }
     }
 
     private static void setLinkId(final ResultSet rs, final ForecastSectionV2Feature feature) throws SQLException {
