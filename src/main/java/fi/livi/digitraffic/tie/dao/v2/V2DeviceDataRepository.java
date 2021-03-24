@@ -27,10 +27,11 @@ public interface V2DeviceDataRepository extends JpaRepository<DeviceData, Long> 
     List<DeviceData> findDistinctByIdIn(final List<Long> id);
 
     @Query(value =
-        "select distinct first_value(id) over (order by effect_date desc) from device_data where device_id = :deviceId",
+        "select id from device_data where device_id = :deviceId order by effect_date desc limit 1",
         nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Long> findLatestData(final String deviceId);
 
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<TrafficSignHistory> getDeviceDataByDeviceIdOrderByEffectDateDesc(final String deviceId);
 }
