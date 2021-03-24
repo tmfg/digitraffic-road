@@ -46,8 +46,6 @@ public class V2VariableSignDataService {
     @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 3000)
     @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValues() {
-        final StopWatch sw = StopWatch.createStarted();
-
         final Stream<Device> devices = v2DeviceRepository.streamAll();
         final List<Long> dataIds = v2DeviceDataRepository.findLatestData();
         final List<DeviceData> data = v2DeviceDataRepository.findDistinctByIdIn(dataIds);

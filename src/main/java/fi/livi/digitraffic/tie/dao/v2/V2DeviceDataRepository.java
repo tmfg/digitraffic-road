@@ -17,7 +17,7 @@ import javax.persistence.QueryHint;
 @Repository
 public interface V2DeviceDataRepository extends JpaRepository<DeviceData, Long> {
     @Query(value =
-        "select distinct first_value(id) over (partition by device_id order by effect_date desc) from device_data",
+        "select distinct on (device_id) id from device_data order by device_id, effect_date desc",
         nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Long> findLatestData();
