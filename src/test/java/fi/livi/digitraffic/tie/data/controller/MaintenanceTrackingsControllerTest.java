@@ -195,7 +195,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     @Test
     public void findLatestMaintenanceTrackings() throws Exception {
         final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
-        final int machineCount = 10;//getRandomId(2, 10);
+        final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
         // Generate trackings for 50 minutes changing tasks every 10 minutes
@@ -244,6 +244,40 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
                  throw new RuntimeException(e);
              }
          });
+    }
+
+    @Test
+    public void findLatestMaintenanceTrackingsWithTask() throws Exception {
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final int machineCount = getRandomId(2, 10);
+        final List<Tyokone> workMachines = createWorkMachines(machineCount);
+
+        // Generate trackings for 50 minutes changing tasks every 10 minutes
+        IntStream.range(0, 5).forEach(i -> {
+            try {
+                log.info("" + SuoritettavatTehtavat.values()[i].name());
+                testHelper.saveTrackingData( // end time will be start+9 min
+                    createMaintenanceTrackingWithPoints(
+                        now.plusMinutes(i * 10L), 10, 1, workMachines,
+                        SuoritettavatTehtavat.values()[i]));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        testHelper.handleUnhandledWorkMachineTrackings();
+        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+
+        log.info("min {} max {} from: {}", min, max, now.toInstant());
+        log.info("Machine count {}", machineCount);
+
+        // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
+        final ResultActions latestResult = getLatestTrackingsJson(
+            now.toInstant(), new HashSet<>(Collections.singleton(MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[4].name()))),
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(machineCount)));
     }
 
     @Test

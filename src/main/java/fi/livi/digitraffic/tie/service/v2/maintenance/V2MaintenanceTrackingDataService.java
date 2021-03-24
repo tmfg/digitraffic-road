@@ -79,7 +79,7 @@ public class V2MaintenanceTrackingDataService {
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
                                                    v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area) :
-                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, taskIds);
+                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertTasksToStringArray(taskIds));
         log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
 
