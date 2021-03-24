@@ -121,3 +121,4 @@ dt.scheduled.annotation.enabled = false
 logging.level.root=WARN
 logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler=WARN
 logging.level.fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService=WARN
+logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryServiceTest=INFO
