@@ -53,8 +53,8 @@ public class HostWithHealthCheck {
             throw new IllegalArgumentException(String.format("Param healthOkValue:\"%s\" can't be empty value", healthOkValue));
         }
 
-        log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healFtOkValue={}", healthUrl, dataUrl.toString(), healthTtlSeconds,
-            healthOkValue);
+        log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healthOkValue={}",
+                 healthUrl, dataUrl.toString(), healthTtlSeconds, healthOkValue);
     }
 
     /**
@@ -75,7 +75,7 @@ public class HostWithHealthCheck {
 
         final String healthString = doRequestHealthString();
 
-        if ( StringUtils.trimToEmpty(healthString).equalsIgnoreCase(healthOkValue) ) {
+        if ( StringUtils.trimToEmpty(healthString).toUpperCase().startsWith(healthOkValue.toUpperCase()) ) {
             log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true", healthUrl, dataUrl, healthString,
                 healthOkValue);
             setHealthy(true);

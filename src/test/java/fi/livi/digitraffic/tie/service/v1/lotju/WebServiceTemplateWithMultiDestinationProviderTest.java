@@ -33,7 +33,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     @Before
     public void initSoapClientSpyAndServerResponses() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, healthPath, TTL_S, healthOkValue) {};
+        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, healthPath, TTL_S, healthOkCheckValueInApplicationSettings) {};
         // Get get WebServiceTemplate, spy it and set spy to client
         webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
         client.setWebServiceTemplate(webServiceTemplate);
@@ -49,7 +49,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     @Test
     public void firstHealthOk() {
         // Health response from server OK
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 1
         clientRequestDataAndVerifyResponse(RESPONSE1);
         verifyServer1HealthCount(1);
@@ -58,8 +58,8 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
 
     @Test
     public void firstHealthNotOkSecondOk() {
-        server1WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
-        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, NOT_OK_RESPONSE_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 2
         clientRequestDataAndVerifyResponse(RESPONSE2);
         verifyServer1HealthCount(1);
@@ -69,7 +69,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     @Test
     public void firstHealthErrorSecondOk() {
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
-        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 2
         clientRequestDataAndVerifyResponse(RESPONSE2);
         verifyServer1HealthCount(1);
@@ -79,7 +79,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     @Test(expected = IllegalStateException.class)
     public void firstAndSecondHealthNotOk() {
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
-        server2WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, NOT_OK_RESPONSE_CONTENT);
 
         // Exception should be thrown
         try {
@@ -94,7 +94,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
 
     @Test
     public void healthRequestOnlyOnceAsTTLNotPassed() {
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
 
         // first request: health + data requests to server
         // second request: health from cache and data request to server
@@ -107,7 +107,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
 
     @Test
     public void healthRequestTwiceAsTTLPassed() {
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
 
         // Data request goes to server 1 both times
         clientRequestDataAndVerifyResponse(RESPONSE1); // also health request
@@ -123,8 +123,8 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
 
     @Test
     public void healthOkButDataOnServer1Fails() {
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
-        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
+        server2WhenRequestHealthThenReturn(OK, getOkResponseString());
 
         // Reset server 1 to return error on data query
         Mockito.reset(webServiceTemplate);
