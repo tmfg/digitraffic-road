@@ -147,8 +147,8 @@ public class V2MaintenanceTrackingServiceTestHelper {
         Assert.assertEquals(expectedTasks, actualTasks);
     }
 
-    private void saveTrackingDataAsPlainText(final String trackingJson) {
-        final MaintenanceTrackingData Tracking = new MaintenanceTrackingData(trackingJson);
+    private void saveTrackingDataAsPlainText(final String trackingJson, final Instant sendingTime) {
+        final MaintenanceTrackingData Tracking = new MaintenanceTrackingData(trackingJson, sendingTime);
         v2MaintenanceTrackingDataRepository.save(Tracking);
     }
 

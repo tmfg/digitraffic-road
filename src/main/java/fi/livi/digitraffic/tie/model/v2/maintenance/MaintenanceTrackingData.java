@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.model.v2.maintenance;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
@@ -43,6 +44,9 @@ public class MaintenanceTrackingData {
     @Enumerated(EnumType.STRING)
     private Status status = Status.UNHANDLED;
 
+    @Column
+    private Instant sendingTime;
+
     @Column(insertable = false, updatable = false) // auto generated
     private ZonedDateTime created;
 
@@ -59,8 +63,9 @@ public class MaintenanceTrackingData {
         // For Hibernate
     }
 
-    public MaintenanceTrackingData(final String json) {
+    public MaintenanceTrackingData(final String json, final Instant sendingTime) {
         this.json = json;
+        this.sendingTime = sendingTime;
     }
 
     public Long getId() {

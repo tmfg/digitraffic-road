@@ -6,6 +6,7 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService.NextObservationStatus.Status.TRANSITION;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -102,7 +103,8 @@ public class V2MaintenanceTrackingUpdateService {
     public void saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) {
         try {
             final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
-            final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
+            final Instant sendingTime = tyokoneenseurannanKirjaus.getOtsikko().getLahetysaika().toInstant();
+            final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json, sendingTime);
             v2MaintenanceTrackingDataRepository.save(tracking);
             if (log.isTraceEnabled()) {
                 log.trace("method=saveMaintenanceTrackingData jsonData: {}", json);
