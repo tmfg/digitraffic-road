@@ -5,12 +5,10 @@ import java.nio.file.Path;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.AbstractJpaTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 
-@Import(LocationTypeUpdater.class)
-public class LocationTypeUpdaterTest extends AbstractJpaTest {
+public class LocationTypeUpdaterTest extends AbstractServiceTest {
     @Autowired
     private LocationTypeUpdater locationTypeUpdater;
 

@@ -26,15 +26,11 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
 public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     protected Datex2DataService datex2DataService;
-
-    @Autowired
-    protected V2Datex2UpdateService v2Datex2UpdateService;
 
     @Autowired
     protected Datex2Repository datex2Repository;
@@ -61,6 +57,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
 
     @Before
     public void updateData() throws IOException {
+
         datex2Repository.deleteAll();
         // GUID5000526801 in past
         final String incident1 = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessage-2016-09-12-20-51-24-602.xml");
@@ -157,6 +154,6 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
 
     private void updateFromImsMessage(final String imsXml) {
         final ImsMessage ims = (ImsMessage) imsJaxb2Marshaller.unmarshal(new StringSource(imsXml));
-        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

@@ -5,8 +5,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_X;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceRealizationServiceTestHelper.RANGE_Y;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_X;
+import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -47,10 +46,10 @@ import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSc
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper;
 
-@Import(value = { V2MaintenanceTrackingServiceTestHelper.class })
 public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingsControllerTest.class);
 
@@ -196,7 +195,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     @Test
     public void findLatestMaintenanceTrackings() throws Exception {
         final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
-        final int machineCount = 10;//getRandomId(2, 10);
+        final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
         // Generate trackings for 50 minutes changing tasks every 10 minutes
@@ -204,15 +203,15 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             try {
                 testHelper.saveTrackingData( // end time will be start+9 min
                     createMaintenanceTrackingWithPoints(
-                        now.plusMinutes(i * 10), 10, 1, workMachines,
+                        now.plusMinutes(i * 10L), 10, 1, workMachines,
                         SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
         testHelper.handleUnhandledWorkMachineTrackings();
-        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(x -> x.getEndTime()).min(ChronoZonedDateTime::compareTo).orElseThrow();
-        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(x -> x.getEndTime()).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
 
         log.info("min {} max {} from: {}", min, max, now.toInstant());
 
@@ -245,6 +244,40 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
                  throw new RuntimeException(e);
              }
          });
+    }
+
+    @Test
+    public void findLatestMaintenanceTrackingsWithTask() throws Exception {
+        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final int machineCount = getRandomId(2, 10);
+        final List<Tyokone> workMachines = createWorkMachines(machineCount);
+
+        // Generate trackings for 50 minutes changing tasks every 10 minutes
+        IntStream.range(0, 5).forEach(i -> {
+            try {
+                log.info("" + SuoritettavatTehtavat.values()[i].name());
+                testHelper.saveTrackingData( // end time will be start+9 min
+                    createMaintenanceTrackingWithPoints(
+                        now.plusMinutes(i * 10L), 10, 1, workMachines,
+                        SuoritettavatTehtavat.values()[i]));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        testHelper.handleUnhandledWorkMachineTrackings();
+        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+
+        log.info("min {} max {} from: {}", min, max, now.toInstant());
+        log.info("Machine count {}", machineCount);
+
+        // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
+        final ResultActions latestResult = getLatestTrackingsJson(
+            now.toInstant(), new HashSet<>(Collections.singleton(MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[4].name()))),
+            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", hasSize(machineCount)));
     }
 
     @Test

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -17,20 +17,20 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationSensorUpdater.class);
 
-    private final LotjuTmsStationMetadataService lotjuTmsStationMetadataService;
+    private final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper;
 
     @Autowired
     public TmsStationSensorUpdater(final RoadStationSensorService roadStationSensorService,
-                                   final LotjuTmsStationMetadataService lotjuTmsStationMetadataService) {
+                                   final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper) {
         super(roadStationSensorService);
-        this.lotjuTmsStationMetadataService = lotjuTmsStationMetadataService;
+        this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
     }
 
     /**
@@ -41,7 +41,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
 
         // Update available RoadStationSensors types to db
         List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis =
-                lotjuTmsStationMetadataService.getAllLamLaskennallinenAnturis();
+                lotjuTmsStationMetadataClientWrapper.getAllLamLaskennallinenAnturis();
 
         boolean updated = updateAllRoadStationSensors(allLamLaskennallinenAnturis);
         log.info("Update TMS RoadStationSensors end");

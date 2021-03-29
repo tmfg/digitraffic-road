@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -81,7 +80,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     private CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
     @SpyBean
-    private CameraImageUpdateService cameraImageUpdateService;
+    private CameraImageUpdateHandler cameraImageUpdateHandler;
 
     @Autowired
     private EntityManager entityManager;
@@ -91,9 +90,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
     @Value("${dt.amazon.s3.weathercam.region}")
     private String s3WeathercamRegion;
-
-    @MockBean
-    private CameraImageS3Writer cameraImageS3Writer;
 
     @Before
     public void cleanHistory() {
@@ -163,7 +159,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     @Test
     public void historyUpdateInPast() {
 
-        doNothing().when(cameraImageUpdateService).hideCurrentImageForPreset(any(CameraPreset.class));
+        doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
 
         final List<String> presetIds = generateHistoryForPublicPresets(2, 5);
         final String modifiedPresetId = presetIds.get(0);
@@ -182,9 +178,9 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         entityManager.flush();
 
         // camera secret -> presets to secret
-        verify(cameraImageUpdateService, VerificationModeFactory.atLeast(1)).hideCurrentImageForPreset(any(CameraPreset.class));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(argThat(r -> r.getLotjuId().equals(rs.getLotjuId())));
-        verify(cameraImageUpdateService, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(argThat(r -> !r.getLotjuId().equals(rs.getLotjuId())));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.atLeast(1)).hideCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(argThat(r -> r.getLotjuId().equals(rs.getLotjuId())));
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(argThat(r -> !r.getLotjuId().equals(rs.getLotjuId())));
 
         final List<CameraPresetHistory> allUpdated = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(modifiedPresetId);
         assertEquals(true, allUpdated.get(0).getPublishable());
@@ -590,13 +586,13 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     public void deleteOlderThanHours() {
         final int historySize = RandomUtils.nextInt(40, 80);
         // handle possible gap between server and db times
-        final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusSeconds(10);
+        final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusMinutes(1);
         // History for historySize-1 hours backwards
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         final List<CameraHistoryDto> history = cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
         final long presetCount = history.get(0).cameraHistory.stream().map(PresetHistoryDto::getPresetId).distinct().count();
         final List<CameraPresetHistory> allBeforeDelete = cameraPresetHistoryRepository.findAll();
-        log.info("all {} presets {}", allBeforeDelete.size(), presetCount);
+        log.info("allBeforeDeleteSize {}, presetCount {}, historySize {}", allBeforeDelete.size(), presetCount, historySize);
         Assert.assertEquals(historySize*presetCount, allBeforeDelete.size());
         flushAndClearSession();
 
@@ -639,9 +635,10 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
             cameraPresetService.findAllPublishableCameraPresets().stream()
                 .collect(Collectors.groupingBy(CameraPreset::getCameraId))
                 .entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toList());
+
         // Get random camera
         final Map.Entry<String, List<CameraPreset>> camera =
-            all.stream().skip((int) (all.size() * Math.random())).findAny().get();
+            all.stream().skip((int) (all.size() * Math.random())).findAny().orElseThrow();
 
         camera.getValue().forEach(cameraPreset -> IntStream.range(0,historySize)
             .forEach(i -> generateHistory(cameraPreset, lastModified.minusHours(i))));

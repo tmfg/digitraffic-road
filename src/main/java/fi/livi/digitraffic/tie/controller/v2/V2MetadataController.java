@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.service.v2.V2VariableSignService;
+import fi.livi.digitraffic.tie.service.v2.V2VariableSignDataService;
 import fi.livi.digitraffic.tie.dto.v1.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
@@ -38,13 +38,13 @@ import io.swagger.annotations.ApiResponses;
 @ConditionalOnWebApplication
 public class V2MetadataController {
     private final V2ForecastSectionMetadataService v2ForecastSectionMetadataService;
-    private final V2VariableSignService v2VariableSignService;
+    private final V2VariableSignDataService v2VariableSignDataService;
 
     @Autowired
     public V2MetadataController(final V2ForecastSectionMetadataService v2ForecastSectionMetadataService,
-        final V2VariableSignService v2VariableSignService) {
+        final V2VariableSignDataService v2VariableSignDataService) {
         this.v2ForecastSectionMetadataService = v2ForecastSectionMetadataService;
-        this.v2VariableSignService = v2VariableSignService;
+        this.v2VariableSignDataService = v2VariableSignDataService;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON,
@@ -97,6 +97,6 @@ public class V2MetadataController {
     @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public VariableSignDescriptions listCodeDescriptions() {
-        return new VariableSignDescriptions(v2VariableSignService.listVariableSignTypes());
+        return new VariableSignDescriptions(v2VariableSignDataService.listVariableSignTypes());
     }
 }

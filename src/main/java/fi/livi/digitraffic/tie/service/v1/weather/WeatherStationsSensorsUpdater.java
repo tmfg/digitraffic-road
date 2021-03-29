@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
@@ -19,27 +19,27 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataService;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
-@Service
+@Component
 public class WeatherStationsSensorsUpdater {
-    private static Logger log = LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class);
+    private static final Logger log = LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class);
 
     private RoadStationSensorService roadStationSensorService;
     private final WeatherStationService weatherStationService;
     private final DataStatusService dataStatusService;
-    private final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService;
+    private final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper;
 
     @Autowired
     public WeatherStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                          final WeatherStationService weatherStationService,
                                          final DataStatusService dataStatusService,
-                                         final LotjuWeatherStationMetadataService lotjuWeatherStationMetadataService) {
+                                         final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper) {
         this.roadStationSensorService = roadStationSensorService;
         this.weatherStationService = weatherStationService;
         this.dataStatusService = dataStatusService;
-        this.lotjuWeatherStationMetadataService = lotjuWeatherStationMetadataService;
+        this.lotjuWeatherStationMetadataClientWrapper = lotjuWeatherStationMetadataClientWrapper;
     }
 
     /**
@@ -57,7 +57,7 @@ public class WeatherStationsSensorsUpdater {
 
         // Get sensors for current WeatherStations
         final Map<Long, List<TiesaaLaskennallinenAnturiVO>> currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap =
-                lotjuWeatherStationMetadataService.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(rwsLotjuIds);
+                lotjuWeatherStationMetadataClientWrapper.getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(rwsLotjuIds);
 
         final List<Pair<WeatherStation,  List<TiesaaLaskennallinenAnturiVO>>> stationAnturisPair = new ArrayList<>();
         currentLotjuIdToWeatherStationsMap.values().forEach(weatherStation -> {

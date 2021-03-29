@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.service.LockingService;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import progress.message.jclient.Connection;
 import progress.message.jclient.Queue;
@@ -34,16 +34,16 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     private final AtomicInteger lockNotAcquiredCounter = new AtomicInteger();
 
     private final QueueConnectionFactory connectionFactory;
-    private final LockingService lockingService;
+    private final ClusteredLocker clusteredLocker;
     private final Logger log;
     private QueueConnection connection;
     private JMSMessageListener<K> messageListener;
 
     public AbstractJMSListenerConfiguration(final QueueConnectionFactory connectionFactory,
-                                            final LockingService lockingService,
+                                            final ClusteredLocker clusteredLocker,
                                             final Logger log) {
         this.connectionFactory = connectionFactory;
-        this.lockingService = lockingService;
+        this.clusteredLocker = clusteredLocker;
         this.log = log;
         log.info("Init JMS configuration connectionUrls={}", connectionFactory.getConnectionURLs());
     }
@@ -114,14 +114,14 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         final JMSParameters jmsParameters = getJmsParameters();
         try {
             // If lock can be acquired then connect and start listening
-            final boolean lockAcquired = lockingService.tryLock(jmsParameters.getLockInstanceName(),
+            final boolean lockAcquired = clusteredLocker.tryLock(jmsParameters.getLockInstanceName(),
                                                                 JMS_CONNECTION_LOCK_EXPIRATION_S,
                                                                 jmsParameters.getLockInstanceId());
             // If acquired lock then start listening otherwise stop listening
             if (lockAcquired && !shutdownCalled.get()) {
                 lockAcquiredCounter.incrementAndGet();
                 log.debug("MessageListener lock acquired for " + jmsParameters.getLockInstanceName() +
-                          " (instanceId: " + LockingService.getThreadId() + ")");
+                          " (instanceId: " + ClusteredLocker.getThreadId() + ")");
 
                 // Try to connect if not connected
                 if (connection == null) {
@@ -133,20 +133,20 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             } else {
                 lockNotAcquiredCounter.incrementAndGet();
                 log.debug("MessageListener lock not acquired for {} (instanceId: {}), another " +
-                    "instance is holding the lock", jmsParameters.getLockInstanceName(), LockingService.getThreadId());
+                    "instance is holding the lock", jmsParameters.getLockInstanceName(), ClusteredLocker.getThreadId());
                 // Calling stop multiple times is safe
                 closeConnectionQuietly();
             }
         } catch (Exception e) {
             log.error("Error in connectAndListen", e);
             closeConnectionQuietly();
-            lockingService.unlock(jmsParameters.getLockInstanceName());
+            clusteredLocker.unlock(jmsParameters.getLockInstanceName());
         }
 
         // Check if shutdown was called during connection initialization
         if (shutdownCalled.get()) {
             closeConnectionQuietly();
-            lockingService.unlock(jmsParameters.getLockInstanceName());
+            clusteredLocker.unlock(jmsParameters.getLockInstanceName());
         }
     }
 

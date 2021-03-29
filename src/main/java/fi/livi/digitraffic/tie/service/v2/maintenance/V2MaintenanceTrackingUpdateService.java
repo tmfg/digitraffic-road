@@ -55,7 +55,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -256,7 +255,7 @@ public class V2MaintenanceTrackingUpdateService {
         return geometry.getNumPoints() > 1;
     }
 
-    private void sendToMqtt(final MaintenanceTrackingDto tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
+    private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
         if (maintenanceTrackingMqttConfiguration == null) {
             return;
         }
@@ -486,7 +485,7 @@ public class V2MaintenanceTrackingUpdateService {
     private static List<Coordinate> resolveCoordinatesAsWGS84(final GeometriaSijaintiSchema sijainti) {
         if (sijainti.getViivageometria() != null) {
             final List<List<Object>> lineStringCoords = sijainti.getViivageometria().getCoordinates();
-            return lineStringCoords.stream().map(point -> {
+            final List<Coordinate> resultLineString = lineStringCoords.stream().map(point -> {
                 try {
                     final double x = ((Number) point.get(0)).doubleValue();
                     final double y = ((Number) point.get(1)).doubleValue();
@@ -494,7 +493,7 @@ public class V2MaintenanceTrackingUpdateService {
                     final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                     if (log.isDebugEnabled()) {
                         log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
-                                  x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
+                            x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
                     }
                     return PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                 } catch (Exception e) {
@@ -502,6 +501,13 @@ public class V2MaintenanceTrackingUpdateService {
                     throw e;
                 }
             }).collect(Collectors.toList());
+            if (resultLineString.size() == 1) {
+                // As we are handling LineString, there should be at least two points. In reality they should be distinct points, but here
+                // we fool a little and just duplicate the only point int the geometry to make it "LineString". This causes coordinates
+                // to be handled like LineString and not as a single Point.
+                resultLineString.add(resultLineString.get(0));
+            }
+            return resultLineString;
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
             final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
@@ -583,8 +589,8 @@ public class V2MaintenanceTrackingUpdateService {
     }
 
     /**
-     * Gets reittitoteuma from reittitoteuma or reittitoteumat property
-     * @return havaintos of reittitoteuma
+     * Gets all trackings from the given tracking record
+     * @return trackings of the given record
      */
     private static List<Havainto> getHavaintos(final TyokoneenseurannanKirjausRequestSchema kirjaus) {
         return kirjaus.getHavainnot().stream().map(Havainnot::getHavainto).collect(Collectors.toList());

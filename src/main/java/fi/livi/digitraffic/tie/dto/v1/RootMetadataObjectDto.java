@@ -13,15 +13,11 @@ import io.swagger.annotations.ApiModelProperty;
 public class RootMetadataObjectDto extends RootDataObjectDto {
 
     @ApiModelProperty(value = "Data last checked date time", required = true)
-    private final ZonedDateTime dataLastCheckedTime;
+    public final ZonedDateTime dataLastCheckedTime;
 
     public RootMetadataObjectDto(final ZonedDateTime dataUpdatedTime,
                                  final ZonedDateTime dataLastCheckedTime) {
         super(dataUpdatedTime);
         this.dataLastCheckedTime = dataLastCheckedTime;
-    }
-
-    public ZonedDateTime getDataLastCheckedTime() {
-        return dataLastCheckedTime;
     }
 }

@@ -9,13 +9,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
-import fi.livi.digitraffic.tie.data.service.AbstractDatex2DataServiceTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 
-@Import({ Datex2XmlStringToObjectMarshaller.class})
-public class Datex2XmlStringToObjectMarshallerTest extends AbstractDatex2DataServiceTest {
+public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(Datex2XmlStringToObjectMarshallerTest.class);
 

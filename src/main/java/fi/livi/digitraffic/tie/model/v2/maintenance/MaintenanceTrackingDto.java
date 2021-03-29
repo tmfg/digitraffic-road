@@ -1,11 +1,10 @@
 package fi.livi.digitraffic.tie.model.v2.maintenance;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.Set;
-
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
+import java.util.stream.Collectors;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
@@ -13,21 +12,25 @@ public interface MaintenanceTrackingDto {
 
     Long getId();
 
-    ZonedDateTime getSendingTime();
+    Instant getSendingTime();
 
-    ZonedDateTime getStartTime();
+    Instant getStartTime();
 
-    ZonedDateTime getEndTime();
+    Instant getEndTime();
 
-    LineString getLineString();
+    String getLineStringJson();
 
-    Point getLastPoint();
+    String getLastPointJson();
 
     BigDecimal getDirection();
 
-    Set<MaintenanceTrackingTask> getTasks();
+    String getTasksAsString();
 
-    MaintenanceTrackingWorkMachine getWorkMachine();
+    Long getWorkMachineId();
+
+    default Set<MaintenanceTrackingTask> getTasks() {
+        return Arrays.stream(getTasksAsString().split(",")).map(s -> MaintenanceTrackingTask.valueOf(s)).collect(Collectors.toSet());
+    }
 
     default String toStringTiny() {
         return ToStringHelper.toStringExcluded(this, "lineString");

@@ -10,10 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.LockingService;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayService;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayService.StatisticsType;
+import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
+import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType;
 
 public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfiguration {
 
@@ -21,15 +21,15 @@ public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfig
     private final RoadStationType roadStationType;
 
     public AbstractMqttSensorConfiguration(final Logger log,
-                                           final MqttRelayService mqttRelay,
+                                           final MqttRelayQueue mqttRelay,
                                            final RoadStationSensorService roadStationSensorService,
                                            final ObjectMapper objectMapper,
                                            final RoadStationType roadStationType,
                                            final String messageTopic,
                                            final String statusTopic,
                                            final StatisticsType statisticsType,
-                                           final LockingService lockingService) {
-        super(log, mqttRelay, objectMapper, messageTopic, statusTopic, statisticsType, lockingService);
+                                           final ClusteredLocker clusteredLocker) {
+        super(log, mqttRelay, objectMapper, messageTopic, statusTopic, statisticsType, clusteredLocker);
         this.roadStationSensorService = roadStationSensorService;
         this.roadStationType = roadStationType;
 

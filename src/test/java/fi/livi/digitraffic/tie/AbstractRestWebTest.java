@@ -9,6 +9,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -23,7 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     protected final MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON;
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private HttpMessageConverter<?> mappingJackson2HttpMessageConverter;
 
     protected static final Matcher<String> ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER = Matchers.not(Matchers.matchesRegex("([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][1-9]):([0-6][1-9]):([0-6][1-9])(\\.[0-9]{3})?Z"));
     protected static final Matcher<String> NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER = Matchers.not(Matchers.matchesRegex("([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][1-9]):([0-6][1-9])(:([0-6][1-9])){0,1}(\\.[0-9]{0,3}){0,1}[+|-]"));
@@ -32,6 +33,9 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
 
     @Autowired
     private WebApplicationContext wac;
+
+    @Autowired
+    protected GenericApplicationContext applicationContext;
 
     protected MockMvc mockMvc;
 

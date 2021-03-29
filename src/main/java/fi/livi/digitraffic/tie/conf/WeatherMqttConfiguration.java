@@ -1,8 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayService.StatisticsType.WEATHER;
+import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.WEATHER;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -12,10 +11,10 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.service.LockingService;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayService;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
 @ConditionalOnProperty("mqtt.weather.enabled")
 @ConditionalOnNotWebApplication
@@ -26,13 +25,13 @@ public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
     private static final String WEATHER_STATUS_TOPIC = "weather/status";
 
     @Autowired
-    public WeatherMqttConfiguration(final MqttRelayService mqttRelay,
+    public WeatherMqttConfiguration(final MqttRelayQueue mqttRelay,
                                     final RoadStationSensorService roadStationSensorService,
                                     final ObjectMapper objectMapper,
-                                    final LockingService lockingService) {
+                                    final ClusteredLocker clusteredLocker) {
 
         super(LoggerFactory.getLogger(WeatherMqttConfiguration.class), mqttRelay, roadStationSensorService, objectMapper,
-              RoadStationType.WEATHER_STATION, WEATHER_TOPIC, WEATHER_STATUS_TOPIC, WEATHER, lockingService);
+              RoadStationType.WEATHER_STATION, WEATHER_TOPIC, WEATHER_STATUS_TOPIC, WEATHER, clusteredLocker);
     }
 
     @Scheduled(fixedDelayString = "${mqtt.weather.pollingIntervalMs}")

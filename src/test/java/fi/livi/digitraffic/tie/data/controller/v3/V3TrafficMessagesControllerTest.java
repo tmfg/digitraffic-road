@@ -1,13 +1,18 @@
 package fi.livi.digitraffic.tie.data.controller.v3;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
+import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -16,11 +21,12 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
@@ -34,29 +40,25 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuration;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TimeAndDuration;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementFeatureCollection;
-import fi.livi.digitraffic.tie.model.v3.geojson.trafficannouncement.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-@Import(TrafficMessageTestHelper.class)
 public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
     private static final Logger log = getLogger(V3TrafficMessagesControllerTest.class);
 
     @Autowired
     protected Datex2DataService datex2DataService;
-
-    @Autowired
-    protected V2Datex2UpdateService v2Datex2UpdateService;
 
     @Autowired
     protected Datex2Repository datex2Repository;
@@ -70,6 +72,19 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
 
     @Autowired
     private TrafficMessageTestHelper trafficMessageTestHelper;
+
+    @SpyBean
+    private V3RegionGeometryDataService v3RegionGeometryDataService;
+
+    @Before
+    public void init() {
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
+        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
+    }
 
     /**
      * Test all Ims Xml Versions and all message types to be returned by the controller
@@ -85,8 +100,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 0));
-                    final String json = getResponse(getUrlWithType(true, 0));
+                    final String xml = getResponse(getUrlWithType(false, 0, situationType));
+                    final String json = getResponse(getUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -111,8 +126,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 2));
-                    final String json = getResponse(getUrlWithType(true, 2));
+                    final String xml = getResponse(getUrlWithType(false, 2, situationType));
+                    final String json = getResponse(getUrlWithType(true, 2, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -137,8 +152,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 0));
-                    final String json = getResponse(getUrlWithType(true, 0));
+                    final String xml = getResponse(getUrlWithType(false, 0, situationType));
+                    final String json = getResponse(getUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -229,11 +244,11 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
     private static String getUrlWithType(final boolean json, final int inactiveHours, final SituationType...messageType) {
         final String[] types = V3Datex2DataService.typesAsStrings(messageType);
         final String params = String.join(",", types);
-        return API_BETA_BASE_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?inactiveHours=" + inactiveHours + "&messageType=" + params;
+        return API_V3_BASE_PATH + API_DATA_PART_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + params;
     }
 
     private static String getUrlWithSituationId(final boolean json, final String situationId) {
-        return API_BETA_BASE_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "/" + situationId;
+        return API_V3_BASE_PATH + API_DATA_PART_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "/" + situationId;
     }
 
     private String getResponse(final String url) throws Exception {

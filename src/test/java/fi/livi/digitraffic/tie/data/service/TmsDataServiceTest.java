@@ -35,7 +35,7 @@ public class TmsDataServiceTest extends AbstractServiceTest {
     public void findPublishableTmsData() {
         final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(false);
         assertNotNull(object);
-        assertNotNull(object.getDataUpdatedTime());
+        assertNotNull(object.dataUpdatedTime);
         assertNotNull(object.getTmsStations());
     }
 
@@ -43,7 +43,7 @@ public class TmsDataServiceTest extends AbstractServiceTest {
     public void findPublishableTmsDataById() {
         final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(23801);
         assertNotNull(object);
-        assertNotNull(object.getDataUpdatedTime());
+        assertNotNull(object.dataUpdatedTime);
         assertNotNull(object.getTmsStations());
         Assert.assertThat(object.getTmsStations(), not(emptyCollectionOf(TmsStationDto.class)));
     }

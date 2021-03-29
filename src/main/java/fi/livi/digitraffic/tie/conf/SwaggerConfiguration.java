@@ -25,7 +25,7 @@ import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.controller.v1.MetadataController;
-import fi.livi.digitraffic.tie.service.MetadataApiInfoService;
+import fi.livi.digitraffic.tie.service.RoadApiInfoGetter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.DocExpansion;
@@ -40,14 +40,14 @@ import springfox.documentation.swagger.web.UiConfigurationBuilder;
 })
 public class SwaggerConfiguration {
 
-    private final MetadataApiInfoService metadataApiInfoService;
+    private final RoadApiInfoGetter roadApiInfoGetter;
     private final String host;
     private final String scheme;
 
     @Autowired
-    public SwaggerConfiguration(final MetadataApiInfoService metadataApiInfoService,
+    public SwaggerConfiguration(final RoadApiInfoGetter roadApiInfoGetter,
                                 final @Value("${dt.domain.url}") String domainUrl) throws URISyntaxException {
-        this.metadataApiInfoService = metadataApiInfoService;
+        this.roadApiInfoGetter = roadApiInfoGetter;
         URI uri = new URI(domainUrl);
 
         final int port = uri.getPort();
@@ -85,7 +85,7 @@ public class SwaggerConfiguration {
             .protocols(Set.of(scheme))
             .groupName(groupName)
             .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_VALUE)))
-            .apiInfo(metadataApiInfoService.getApiInfo())
+            .apiInfo(roadApiInfoGetter.getApiInfo())
             .select()
             .paths(apiPaths)
             .build()
@@ -101,6 +101,7 @@ public class SwaggerConfiguration {
                regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*")).or(
                regex(API_V2_BASE_PATH + API_METADATA_PART_PATH + "/*.*")).or(
                regex(API_V2_BASE_PATH + API_DATA_PART_PATH + "/*.*")).or(
-               regex(API_V3_BASE_PATH + API_METADATA_PART_PATH + "/*.*"));
+               regex(API_V3_BASE_PATH + API_METADATA_PART_PATH + "/*.*")).or(
+               regex(API_V3_BASE_PATH + API_DATA_PART_PATH + "/*.*"));
     }
 }

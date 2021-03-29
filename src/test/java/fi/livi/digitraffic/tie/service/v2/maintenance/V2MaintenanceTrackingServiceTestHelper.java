@@ -21,7 +21,10 @@ import javax.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +47,7 @@ import fi.livi.digitraffic.tie.external.harja.entities.OrganisaatioSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ViivageometriasijaintiSchema;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
@@ -58,9 +62,13 @@ public class V2MaintenanceTrackingServiceTestHelper {
     private final ObjectWriter jsonWriter;
     private final EntityManager entityManager;
     private final ResourceLoader resourceLoader;
+    private static double maxLineStringGapInKilometers;
 
     public static final String COMPANY = "Tie huolto Oy";
     public static final String COMPANY_ID = "8561566-0";
+
+    public final static Pair<Double, Double> RANGE_X = Pair.of(19.0, 32.0);
+    public final static Pair<Double, Double> RANGE_Y = Pair.of(59.0, 72.0);
 
     public static final double RANGE_X_MIN = 19.0;
     public static final double RANGE_X_MAX = 32.0;
@@ -90,13 +98,17 @@ public class V2MaintenanceTrackingServiceTestHelper {
     public final static Pair<Double, Double> RANGE_X_OUTSIDE_TASK = Pair.of(26.34, 27.0);
     public final static Pair<Double, Double> RANGE_Y_OUTSIDE_TASK = Pair.of(64.1, 65.0);
 
+
+
     @Autowired
     public V2MaintenanceTrackingServiceTestHelper(final ObjectMapper objectMapper,
                                                   final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
                                                   final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
                                                   final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository,
                                                   final EntityManager entityManager,
-                                                  final ResourceLoader resourceLoader) {
+                                                  final ResourceLoader resourceLoader,
+                                                  @Value("${workmachine.tracking.distinct.linestring.observationgap.km}")
+                                                  final double maxLineStringGapInKilometers) {
 
         this.v2MaintenanceTrackingUpdateService = v2MaintenanceTrackingUpdateService;
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
@@ -105,11 +117,24 @@ public class V2MaintenanceTrackingServiceTestHelper {
         this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
         this.entityManager = entityManager;
         this.resourceLoader = resourceLoader;
+        V2MaintenanceTrackingServiceTestHelper.maxLineStringGapInKilometers = maxLineStringGapInKilometers;
     }
 
     public void clearDb() {
         v2MaintenanceTrackingRepository.deleteAllInBatch();
         v2MaintenanceTrackingDataRepository.deleteAllInBatch();
+    }
+
+    public static List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
+        final Point start = PostgisGeometryHelper.createPointWithZ(new Coordinate(x, minY));
+        final Point end = PostgisGeometryHelper.createPointWithZ(new Coordinate(x, maxY));
+        final double dist = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(start, end);
+        final int minCountOfPoints = (int)Math.ceil((dist/maxLineStringGapInKilometers));
+        double increment = (maxY-minY)/minCountOfPoints;
+
+        return IntStream.range(1, minCountOfPoints+1)
+            .mapToObj(i -> asList(x, minY + (i*increment)))
+            .collect(Collectors.toList());
     }
 
     public void checkCoordinateCount(final MaintenanceTracking tracking, final int count) {
@@ -279,10 +304,11 @@ public class V2MaintenanceTrackingServiceTestHelper {
     private static List<Havainnot> createHavainnot(final ZonedDateTime observationTime, final Tyokone workMachine, final int jobId,
                                                    final int observationCount, final int ordinal, final List<SuoritettavatTehtavat> tasks, final boolean lineString) {
 
-        // This sets speed < 50 km/h between points
-        final double coordinateFactor = 500;//(RANGE_X_MAX_ETRS - RANGE_X_MIN_ETRS) / observationCount;
+        // This sets speed < 50 km/h and distance between points < 0,5 km
+        final double coordinateFactor = 300;
         final int additionToCoordinates = (ordinal-1) * observationCount;
         if (lineString) {
+
             // LineString observation with {observationCount} points
             List<List<Object>> coordinates = IntStream.range(0, observationCount)
                 .mapToObj(i -> Arrays.<Object>asList(RANGE_X_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor,
@@ -388,5 +414,11 @@ public class V2MaintenanceTrackingServiceTestHelper {
     public static ZonedDateTime getEndTime(final TyokoneenseurannanKirjausRequestSchema seuranta) {
         final List<Havainnot> havainnot = seuranta.getHavainnot();
         return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
+    }
+
+    public void initializeForInternalTesting(final String fileName) throws IOException {
+        final String json =
+            getFormatedTrackingJson("classpath:harja/internal-testing/" + fileName);
+        saveTrackingAsJson(json);
     }
 }

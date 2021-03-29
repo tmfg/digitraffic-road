@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.controller.integrations;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_INTEGRATIONS_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_WORK_MACHINE_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.REALIZATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PLOUGHING_AND_SLUSH_REMOVAL;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.SALTING;
@@ -15,7 +14,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,26 +130,12 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
                     size, tracking.getLineString().getNumPoints());
     }
 
-    @Test
-    public void postSingleRealization() throws Exception {
-        postRealization("toteumakirjaus-yksi-reittitoteuma.json", status().isOk());
-    }
-
-    @Test
-    public void postMultipleRealization() throws Exception {
-        postRealization("toteumakirjaus-monta-reittitoteumaa.json", status().isOk());
-    }
-
     private void postTrackingJson(final String fileName) throws Exception {
         postTracking(fileName, MediaType.APPLICATION_JSON, status().isOk());
     }
 
     private void postTracking(final String fileName, final MediaType mediaType, final ResultMatcher expectResult) throws Exception {
         postData(fileName, mediaType, TRACKINGS_PATH, expectResult);
-    }
-
-    private void postRealization(final String fileName, final ResultMatcher expectResult) throws Exception {
-        postData(fileName, MediaType.APPLICATION_JSON, REALIZATIONS_PATH + "/123", expectResult);
     }
 
     private void postData(final String fileName, final MediaType mediaType, final String path, final ResultMatcher expectResult) throws Exception {

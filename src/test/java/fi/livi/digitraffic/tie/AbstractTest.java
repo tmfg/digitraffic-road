@@ -20,11 +20,13 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -32,6 +34,9 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
@@ -46,6 +51,12 @@ import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
+import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @TestPropertySource(properties = {
     "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN"
@@ -53,15 +64,19 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 public abstract class AbstractTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractTest.class);
-
-//    @Autowired
     protected static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
-
     @PersistenceContext
     protected EntityManager entityManager;
+    @Autowired
+    protected GenericApplicationContext applicationContext;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private V2Datex2UpdateService v2Datex2UpdateService;
+    private V2Datex2DataService v2Datex2DataService;
 
     public static final int LOTJU_SERVICE_RANDOM_PORT = (int) RandomUtils.nextLong(6000,7000);
 
@@ -72,6 +87,26 @@ public abstract class AbstractTest {
     @Before
     public void logSettings() {
         log.info("LOTJU_SERVICE_RANDOM_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
+    }
+
+    public V2Datex2UpdateService getV2Datex2UpdateService() {
+        if (v2Datex2UpdateService == null) {
+            v2Datex2UpdateService = applicationContext.getAutowireCapableBeanFactory().createBean(V2Datex2UpdateService .class);
+        }
+        return v2Datex2UpdateService;
+    }
+
+    public V2Datex2DataService getV2Datex2DataService() {
+        if (v2Datex2DataService == null) {
+            final V3RegionGeometryDataService v3RegionGeometryDataService =
+                applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryDataService.class);
+            v2Datex2DataService = new V2Datex2DataService(
+                applicationContext.getBean(Datex2Repository.class),
+                applicationContext.getBean(Datex2XmlStringToObjectMarshaller.class),
+                new V2Datex2JsonConverter(objectMapper, v3RegionGeometryDataService),
+                applicationContext.getBean(DataStatusService.class));
+        }
+        return v2Datex2DataService;
     }
 
     protected Path getPath(final String filename) {
@@ -96,9 +131,9 @@ public abstract class AbstractTest {
         return contents;
     }
 
-    protected static String readResourceContent(final String resourcePattern) throws IOException {
-        final Resource datex2Resource = loadResource(resourcePattern);
-        return FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8);
+    public static String readResourceContent(final String resourcePattern) throws IOException {
+        final Resource resource = loadResource(resourcePattern);
+        return FileUtils.readFileToString(resource.getFile(), StandardCharsets.UTF_8);
     }
 
     public static CameraPreset generateDummyPreset() {
@@ -184,7 +219,7 @@ public abstract class AbstractTest {
             ea.setKameraId(kameraId);
             ea.setKeruussa(true);
             ea.setJulkisuus(Julkisuus.JULKINEN);
-            ea.setSuunta("0");
+            ea.setSuunta(StringUtils.leftPad(i+"", 2, '0'));
             ea.setNimiEsitys(PRESET_PRESENTATION_NAME + ea.getId());
             eas.add(ea);
         });

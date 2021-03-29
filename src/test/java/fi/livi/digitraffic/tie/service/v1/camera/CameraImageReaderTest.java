@@ -27,13 +27,13 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
     @Before
     public void initCameraImageReader() {
         cameraImageReader = new CameraImageReader(1000, 1000, new String[] { baseUrl1, baseUrl2 },
-                                                  dataPath, healthPath, 1, healthOkValue);
+                                                  dataPath, healthPath, 1, healthOkCheckValueInApplicationSettings);
     }
 
     @Test
     public void firstHealthOk() throws IOException {
         // Health response from server OK
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 1
         final int id = randomId();
         final String presetId = randomPresetId();
@@ -49,8 +49,8 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
     @Test
     public void firstHealthNotOk() throws IOException {
         // Health response from server OK
-        server1WhenRequestHealthThenReturn(INTERNAL_SERVER_ERROR, NOT_OK_CONTENT);
-        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(INTERNAL_SERVER_ERROR, NOT_OK_RESPONSE_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 1
         final int id = randomId();
         final String presetId = randomPresetId();
@@ -69,8 +69,8 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
     @Test
     public void firstHealthOkDataNotOk() throws IOException {
         // Health response from server OK
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
-        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
+        server2WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 1
         final int id = randomId();
         final String presetId = randomPresetId();

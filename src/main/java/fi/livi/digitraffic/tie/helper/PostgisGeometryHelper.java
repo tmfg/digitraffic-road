@@ -115,5 +115,7 @@ public class PostgisGeometryHelper {
         return distanceKm / hours;
     }
 
-
+    public static Geometry union(final List<Geometry> geometryCollection) {
+        return GF.buildGeometry(geometryCollection).union();
+    }
 }

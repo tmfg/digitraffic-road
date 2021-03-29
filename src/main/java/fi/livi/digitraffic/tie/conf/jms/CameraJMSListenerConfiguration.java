@@ -11,10 +11,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraDataUpdateService;
-import fi.livi.digitraffic.tie.service.LockingService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateManager;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.camera.inQueue")
@@ -22,21 +22,21 @@ import progress.message.jclient.QueueConnectionFactory;
 public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfiguration<KuvaProtos.Kuva> {
     private static final Logger log = LoggerFactory.getLogger(CameraJMSListenerConfiguration.class);
     private final JMSParameters jmsParameters;
-    private final CameraDataUpdateService cameraDataUpdateService;
+    private final CameraImageUpdateManager cameraImageUpdateManager;
 
     @Autowired
     public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
                                           @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
-                                          @Value("#{'${jms.camera.inQueue}'.split(',')}")final List<String> jmsQueueKeys, final CameraDataUpdateService cameraDataUpdateService,
-                                          final LockingService lockingService) {
+                                          @Value("#{'${jms.camera.inQueue}'.split(',')}")final List<String> jmsQueueKeys, final CameraImageUpdateManager cameraImageUpdateManager,
+                                          final ClusteredLocker clusteredLocker) {
         super(connectionFactory,
-              lockingService,
+            clusteredLocker,
               log);
-        this.cameraDataUpdateService = cameraDataUpdateService;
+        this.cameraImageUpdateManager = cameraImageUpdateManager;
 
         jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
                                           CameraJMSListenerConfiguration.class.getSimpleName(),
-                                          LockingService.generateInstanceId());
+                                          ClusteredLocker.generateInstanceId());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
     public JMSMessageListener<KuvaProtos.Kuva> createJMSMessageListener() {
         final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> handleData = data -> {
             try {
-                return cameraDataUpdateService.updateCameraData(data);
+                return cameraImageUpdateManager.updateCameraData(data);
             } catch (Exception e) {
                 log.error("Error while handling Camera data", e);
                 return 0;

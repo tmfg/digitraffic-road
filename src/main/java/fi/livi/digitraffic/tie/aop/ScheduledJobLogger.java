@@ -26,7 +26,7 @@ public class ScheduledJobLogger {
      * By default every method with @Scheduled annotation is monitored for
      * logging execution start (debug) and end or error.
      */
-    @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
+    @Around("@annotation(org.springframework.scheduling.annotation.Scheduled) && !@annotation(fi.livi.digitraffic.tie.aop.NoJobLogging)")
     public Object monitorScheduledJob(ProceedingJoinPoint pjp) throws Throwable {
         final String method = pjp.getSignature().getName();
         // Strip away Configuration suffix and Spring proxy classes

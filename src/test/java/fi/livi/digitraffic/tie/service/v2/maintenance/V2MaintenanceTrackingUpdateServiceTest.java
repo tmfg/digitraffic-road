@@ -23,14 +23,11 @@ import java.util.stream.LongStream;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,7 +48,6 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 
-@Import({ V2MaintenanceTrackingUpdateService.class, JacksonAutoConfiguration.class, V2MaintenanceTrackingServiceTestHelper.class })
 public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingUpdateServiceTest.class);
@@ -310,7 +306,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         IntStream.range(5,10).forEach(i -> {
             final KoordinaattisijaintiSchema koordinaatit = kirjaus.getHavainnot().get(i).getHavainto().getSijainti().getKoordinaatit();
             // Set forward  so far that it exceeds speed 120 km/h when there is one minute between points.
-            koordinaatit.setX(koordinaatit.getX() + 2000);
+            koordinaatit.setX(koordinaatit.getX() + 2500);
         });
         testHelper.saveTrackingData(kirjaus);
         v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
@@ -398,7 +394,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     }
 
     @Test
-    public void singlePointLineStringsShouldBeHandledAsPointTrackings() throws IOException {
+    public void singlePointLineStringsShouldBeHandledAsLineStringTrackings() throws IOException {
 
         testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-1.json");
         testHelper.saveTrackingFromResourceToDb("classpath:harja/service/linestring/point-linestring-2.json");
@@ -409,6 +405,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // 3 LineStrings with single point in each should be combined as one tracking
         final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
         assertCollectionSize(1, trackings);
-        assertEquals(3, trackings.get(0).getLineString().getNumPoints());
+        // single points are duplicated (not the starting one) as two same point linestring -> 1 + 2 + 2 = 5 points
+        assertEquals(5, trackings.get(0).getLineString().getNumPoints());
     }
 }

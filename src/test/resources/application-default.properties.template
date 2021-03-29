@@ -23,7 +23,7 @@ metadata.server.path.image = /LOTJU/KameraKuvavarasto
 metadata.server.health.ttlInSeconds = 10
 metadata.server.image.ttlInSeconds = 10
 # TVT
-metadata.server.health.value=ok!
+metadata.server.health.value=ok
 
 # TMC locations url
 metadata.tmc.url = https://tie-test.digitraffic.fi/tmc/noncertified/
@@ -114,7 +114,11 @@ logging.level.root=INFO
 maintenance.tracking.job.enabled = false
 maintenance.realization.job.enabled = false
 
+# This allows to disable @Scheduled jobs for tests.
+dt.scheduled.annotation.enabled = false
+
 # Low logging level for tests
 logging.level.root=WARN
 logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler=WARN
 logging.level.fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService=WARN
+logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryServiceTest=INFO

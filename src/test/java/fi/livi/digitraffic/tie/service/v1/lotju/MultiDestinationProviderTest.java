@@ -14,7 +14,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     @Test
     public void firstHealthOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
         final URI dest = mdp.getDestination();
 
         assertEquals(dataUrl1, dest.toString());
@@ -25,8 +25,8 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     @Test
     public void firstHealthNotOkSecondOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
-        server1WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
-        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, NOT_OK_RESPONSE_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, getOkResponseString());
         final URI dest = mdp.getDestination();
 
         assertEquals(dataUrl2, dest.toString());
@@ -38,7 +38,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     public void firstHealthErrorSecondOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
-        server2WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, getOkResponseString());
         final URI dest = mdp.getDestination();
 
         assertEquals(dataUrl2, dest.toString());
@@ -50,7 +50,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     public void firstAndSecondHealthNotOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
-        server2WhenRequestHealthThenReturn(OK, NOT_OK_CONTENT);
+        server2WhenRequestHealthThenReturn(OK, NOT_OK_RESPONSE_CONTENT);
         try {
             mdp.getDestination();
         } catch (final IllegalStateException e) {
@@ -64,7 +64,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     @Test
     public void healthRequestOnlyOnceAsTTLNotPassed() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
         final URI dest1 = mdp.getDestination();
         assertEquals(dataUrl1, dest1.toString());
         final URI dest2 = mdp.getDestination();
@@ -77,7 +77,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     @Test
     public void healthRequestTwiceAsTTLPassed() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
-        server1WhenRequestHealthThenReturn(OK, OK_CONTENT);
+        server1WhenRequestHealthThenReturn(OK, getOkResponseString());
 
         final URI dest1 = mdp.getDestination();
         assertEquals(dataUrl1, dest1.toString());
