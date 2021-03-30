@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastConditionReason;
@@ -24,6 +23,7 @@ import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionWeather;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionWeatherPK;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 
 @Service
 public class ForecastSectionDataUpdater {
@@ -62,10 +62,9 @@ public class ForecastSectionDataUpdater {
             final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId = data.forecastSectionWeatherList.stream().collect(
                 Collectors.toMap(wd -> wd.naturalId, Function.identity()));
 
-            log.info(
-                "Forecast section weather data contains weather forecasts for apiVersion={} forecastCount={} forecast sections," +
-                " forecastSectionsInDatabase={} messageTimestamp={}",
-                version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size(), data.messageTimestamp.toInstant());
+            log.info("method=updateForecastSectionWeatherData Forecast section weather data contains weather forecasts for apiVersion={} " +
+                     "forecastCount={} forecast sections, forecastSectionsInDatabase={} messageTimestamp={}",
+                     version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size(), data.messageTimestamp.toInstant());
 
             final Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(
                 Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
@@ -75,8 +74,7 @@ public class ForecastSectionDataUpdater {
             forecastSectionRepository.saveAll(forecastSectionsByNaturalId.values());
             forecastSectionRepository.flush();
         } else {
-            log.info("No forecast section weather data received");
-
+            log.info("method=updateForecastSectionWeatherData No forecast section weather data received for apiVersion={}", version.getVersion());
             return null;
         }
 
