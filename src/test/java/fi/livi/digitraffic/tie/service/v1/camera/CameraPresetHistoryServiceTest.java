@@ -592,7 +592,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final List<CameraHistoryDto> history = cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Collections.singletonList(cameraId), null);
         final long presetCount = history.get(0).cameraHistory.stream().map(PresetHistoryDto::getPresetId).distinct().count();
         final List<CameraPresetHistory> allBeforeDelete = cameraPresetHistoryRepository.findAll();
-        log.info("all {} presets {}", allBeforeDelete.size(), presetCount);
+        log.info("allBeforeDeleteSize {}, presetCount {}, historySize {}", allBeforeDelete.size(), presetCount, historySize);
         Assert.assertEquals(historySize*presetCount, allBeforeDelete.size());
         flushAndClearSession();
 
@@ -635,6 +635,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
             cameraPresetService.findAllPublishableCameraPresets().stream()
                 .collect(Collectors.groupingBy(CameraPreset::getCameraId))
                 .entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toList());
+
         // Get random camera
         final Map.Entry<String, List<CameraPreset>> camera =
             all.stream().skip((int) (all.size() * Math.random())).findAny().orElseThrow();

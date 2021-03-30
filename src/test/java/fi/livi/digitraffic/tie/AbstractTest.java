@@ -20,6 +20,7 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -218,7 +219,7 @@ public abstract class AbstractTest {
             ea.setKameraId(kameraId);
             ea.setKeruussa(true);
             ea.setJulkisuus(Julkisuus.JULKINEN);
-            ea.setSuunta("0");
+            ea.setSuunta(StringUtils.leftPad(i+"", 2, '0'));
             ea.setNimiEsitys(PRESET_PRESENTATION_NAME + ea.getId());
             eas.add(ea);
         });

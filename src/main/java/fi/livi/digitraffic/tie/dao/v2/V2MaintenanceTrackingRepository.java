@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 
 @Repository
 public interface V2MaintenanceTrackingRepository extends JpaRepository<MaintenanceTracking, Long> {
@@ -118,7 +117,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "GROUP BY tracking.id\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
-    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<MaintenanceTrackingTask> tasks);
+    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<String> tasks);
 
     @Query(value = DTO_LINESTRING_SQL +
                    "WHERE tracking.id = :id\n" +

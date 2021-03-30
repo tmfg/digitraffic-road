@@ -9,6 +9,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Rule;
 import org.slf4j.Logger;
@@ -31,13 +32,13 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
     protected final static String[] baseUrls = { baseUrl1, baseUrl2 };
     protected final static String healthPath = "/health";
     protected final static String dataPath = "/data";
-    protected final static String healthOkValue = "ok!";
+    protected final static String healthOkCheckValueInApplicationSettings = "ok";
 
     protected final static String dataUrl1 = baseUrl1 + dataPath;
     protected final static String dataUrl2 = baseUrl2 + dataPath;
 
-    protected final static String OK_CONTENT = "ok!";
-    protected final static String NOT_OK_CONTENT = "eok";
+    private final static String OK_RESPONSE_CONTENT = "ok";
+    protected final static String NOT_OK_RESPONSE_CONTENT = "eok";
 
     protected final static int TTL_S = 1;
 
@@ -48,7 +49,8 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
     public WireMockRule wireMockRule2 = new WireMockRule(wireMockConfig().port(RANDOM_PORT2), true);
 
     protected MultiDestinationProvider createMultiDestinationProvider() {
-        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S, healthOkValue));
+        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S,
+            healthOkCheckValueInApplicationSettings));
     }
 
     protected MultiDestinationProvider createMultiDestinationProviderWithoutHealthCheck() {
@@ -105,4 +107,13 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
         assertEquals(count, loggedCount);
     }
 
+    /**
+     * Returns ok and adds randomly extra string after that
+     * @return
+     */
+    public static String getOkResponseString() {
+        final String value = OK_RESPONSE_CONTENT + RandomStringUtils.randomAlphanumeric(RandomUtils.nextInt(0, 2));
+        log.info("getOkResponseString {}", value);
+        return value;
+    }
 }
