@@ -89,16 +89,16 @@ public class CameraImageUpdateHandler {
             cameraPresetService.updateCameraPresetAndHistory(kuva.getEsiasentoId(), isResultPublic, kuva.getJulkinen(), transferInfo);
 
             if (transferInfo.isSuccess()) {
-                log.info("method=handleKuva presetId={} s3Key={} readImageStatus={} writeImageStatus={} " +
+                log.info("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} writeTooksMs={} tookMs={} " +
                         "downloadImageUrl={} imageSizeBytes={} " +
-                        "s3VersionId={} imageTimestamp={} imageTimeInPastSeconds={}",
+                        "s3VersionId=\"{}\" imageTimestamp={} imageTimeInPastSeconds={}",
                     presetId, imageKey, transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
                     transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(),
                     transferInfo.getDurationMs(), transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(), transferInfo.getVersionId(),
                     transferInfo.getLastUpdated(), transferInfo.getImageTimeInPastSeconds());
             } else {
-                log.error("method=handleKuva presetId={} s3Key={} readImageStatus={} writeImageStatus={} " +
+                log.error("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} readTotalTookMs={} writeTooksMs={} writeTotalTookMs={} tookMs={} " +
                         "downloadImageUrl={} imageSizeBytes={} " +
                         "readErro={} writeError={}",
@@ -112,7 +112,7 @@ public class CameraImageUpdateHandler {
         } else {
             // Preset doesn't exist, so we delete image
             final CameraImageS3Writer.DeleteInfo deleteInfoS3 = cameraImageS3Writer.deleteImage(imageKey);
-            log.info("method=handleKuva preset does not exists presetId={} deleteFileS3Key={} fileExists={} deleteSuccess={} tookMs={}",
+            log.info("method=handleKuva preset does not exists presetId=\"{}\" deleteFileS3Key=\"{}\" fileExists={} deleteSuccess={} tookMs={}",
                      presetId, imageKey, deleteInfoS3.isFileExists(), deleteInfoS3.isDeleteSuccess(), deleteInfoS3.getDurationMs());
             return deleteInfoS3.isSuccess();
         }
