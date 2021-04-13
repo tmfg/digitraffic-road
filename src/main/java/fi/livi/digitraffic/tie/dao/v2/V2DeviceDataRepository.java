@@ -33,5 +33,6 @@ public interface V2DeviceDataRepository extends JpaRepository<DeviceData, Long> 
     List<Long> findLatestData(final String deviceId);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @EntityGraph(attributePaths = "rows")
     List<TrafficSignHistory> getDeviceDataByDeviceIdOrderByEffectDateDesc(final String deviceId);
 }
