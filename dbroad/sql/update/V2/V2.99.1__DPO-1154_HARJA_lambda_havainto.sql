@@ -1,0 +1,29 @@
+CREATE SEQUENCE IF NOT EXISTS SEQ_MAINTENANCE_TRACKING_OBSERVATION_DATA;
+
+CREATE TABLE IF NOT EXISTS MAINTENANCE_TRACKING_OBSERVATION_DATA
+(
+    id                      BIGINT NOT NULL PRIMARY KEY,
+    observation_time        TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+    sending_time            TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+    created                 TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    modified                TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    json                    TEXT NOT NULL,
+    harja_workmachine_id    BIGINT NOT NULL,
+    harja_contract_id       BIGINT NOT NULL,
+    status                  VARCHAR(20) NOT NULL,
+    handling_info           TEXT,
+    hash                    TEXT,
+    s3_uri                  TEXT NOT NULL
+);
+
+ALTER TABLE MAINTENANCE_TRACKING_OBSERVATION_DATA
+    ADD CONSTRAINT MAINTENANCE_TRACKING_OBSERVATION_DATA_STATUS_CHECK CHECK (status IN ('UNHANDLED', 'HANDLED', 'ERROR'));
+
+CREATE INDEX MAINTENANCE_TRACKING_OBSERVATION_DATA_HANDLING_I
+    ON MAINTENANCE_TRACKING_OBSERVATION_DATA
+        USING BTREE (status, observation_time ASC, id ASC) where status = 'UNHANDLED';
+
+CREATE TRIGGER MAINTENANCE_TRACKING_OBSERVATION_DATA_MODIFIED_T BEFORE UPDATE ON MAINTENANCE_TRACKING_OBSERVATION_DATA FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+DROP INDEX  IF EXISTS maintenance_tracking_observation_data_hash_ui;
+CREATE UNIQUE INDEX maintenance_tracking_observation_data_hash_ui on maintenance_tracking_observation_data(hash);
