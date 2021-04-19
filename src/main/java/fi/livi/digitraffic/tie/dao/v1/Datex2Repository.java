@@ -17,57 +17,75 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 public interface Datex2Repository extends JpaRepository<Datex2, Long> {
 
     String FIND_ALL_ACTIVE_AS_D =
+            "WITH LATEST_SITUATION AS (\n" +
+            "    WITH s AS (\n" +
+            "        SELECT DISTINCT ON (s.situation_id) s.situation_id\n" +
+            "                                          , s.id\n" +
+            "                                          , s.datex2_id\n" +
+            "        FROM datex2_situation s\n" +
+            "        ORDER BY s.situation_id DESC, s.id DESC\n" +
+            "    )\n" +
+            "    select s.situation_id\n" +
+            "         , s.id\n" +
+            "         , s.datex2_id\n" +
+            "    FROM DATEX2 d2\n" +
+            "    INNER JOIN s ON d2.id = s.datex2_id\n" +
+            "    WHERE d2.message_type IN (:messageType)\n" +
+            ")\n" +
             "SELECT d.*\n" +
             "FROM datex2 d\n" +
-            "WHERE d.id IN (\n" +
-            "  SELECT datex2_id\n" +
-            "  FROM (\n" +
-            "         SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID \n" +
-            "                                   ORDER BY record.version_time DESC NULLS LAST, \n" +
-            "                                            record.overall_end_time DESC NULLS FIRST, \n" +
-            "                                            record.id DESC) AS rnum\n" +
-            "           , d.publication_time\n" +
-            "           , d.id AS datex2_id\n" +
-            "           , record.validy_status\n" +
-            "           , record.overall_end_time\n" +
-            "         FROM DATEX2 d\n" +
-            "         INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
-            "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
-            "         WHERE d.message_type = :messageType\n" +
-            "       ) disorder\n" +
-            "  WHERE rnum = 1\n" +
-            "    AND (disorder.overall_end_time IS NULL OR disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour')\n" +
-            "    AND (" +
-            "           disorder.validy_status <> 'SUSPENDED'\n" +
-            "       OR (disorder.validy_status = 'SUSPENDED' AND disorder.overall_end_time IS NOT null)\n" +
-            "    )\n" +
+            "INNER JOIN latest_situation ON latest_situation.datex2_id = d.id\n" +
+            "WHERE exists(\n" +
+            "    SELECT null\n" +
+            "    FROM datex2_situation_record situation_record\n" +
+            "    WHERE situation_record.datex2_situation_id = latest_situation.id\n" +
+            "      AND situation_record.life_cycle_management_canceled IS NOT TRUE\n" +
+            "      AND (\n" +
+            "            situation_record.validy_status = 'ACTIVE'\n" +
+            "            OR (situation_record.validy_status = 'DEFINED_BY_VALIDITY_TIME_SPEC'\n" +
+            "                AND (situation_record.overall_end_time IS NULL\n" +
+            "                    OR situation_record.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
+            "                )\n" +
+            "            ) OR (situation_record.validy_status = 'SUSPENDED'\n" +
+            "                  AND situation_record.version_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
+            "            )\n" +
+            "      )\n" +
             ")\n";
 
     String FIND_ALL_ACTIVE_SITUATION_TYPES_AS_D =
+            "WITH LATEST_SITUATION AS (\n" +
+            "    WITH s AS (\n" +
+            "        SELECT DISTINCT ON (s.situation_id) s.situation_id\n" +
+            "                                          , s.id\n" +
+            "                                          , s.datex2_id\n" +
+            "        FROM datex2_situation s\n" +
+            "        ORDER BY s.situation_id DESC, s.id DESC\n" +
+            "    )\n" +
+            "    select s.situation_id\n" +
+            "         , s.id\n" +
+            "         , s.datex2_id\n" +
+            "    FROM DATEX2 d2\n" +
+            "    INNER JOIN s ON d2.id = s.datex2_id\n" +
+            "    WHERE d2.situation_type IN (:situationTypes)\n" +
+            ")\n" +
             "SELECT d.*\n" +
             "FROM datex2 d\n" +
-            "WHERE d.id IN (\n" +
-            "  SELECT datex2_id\n" +
-            "  FROM (\n" +
-            "         SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID \n" +
-            "                                   ORDER BY record.version_time DESC NULLS LAST, \n" +
-            "                                            record.overall_end_time DESC NULLS FIRST, \n" +
-            "                                            record.id DESC) AS rnum\n" +
-            "           , d.publication_time\n" +
-            "           , d.id AS datex2_id\n" +
-            "           , record.validy_status\n" +
-            "           , record.overall_end_time\n" +
-            "         FROM DATEX2 d\n" +
-            "         INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
-            "         INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
-            "         WHERE d.situation_type in (:situationTypes)\n" +
-            "       ) disorder\n" +
-            "  WHERE rnum = 1\n" +
-            "    AND (disorder.overall_end_time IS NULL OR disorder.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour')\n" +
-            "    AND (" +
-            "           disorder.validy_status <> 'SUSPENDED'\n" +
-            "       OR (disorder.validy_status = 'SUSPENDED' AND disorder.overall_end_time IS NOT null)\n" +
-            "    )\n" +
+            "INNER JOIN latest_situation ON latest_situation.datex2_id = d.id\n" +
+            "WHERE exists(\n" +
+            "    SELECT null\n" +
+            "    FROM datex2_situation_record situation_record\n" +
+            "    WHERE situation_record.datex2_situation_id = latest_situation.id\n" +
+            "      AND situation_record.life_cycle_management_canceled IS NOT TRUE\n" +
+            "      AND (\n" +
+            "            situation_record.validy_status = 'ACTIVE'\n" +
+            "            OR (situation_record.validy_status = 'DEFINED_BY_VALIDITY_TIME_SPEC'\n" +
+            "                AND (situation_record.overall_end_time IS NULL\n" +
+            "                    OR situation_record.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
+            "                )\n" +
+            "            ) OR (situation_record.validy_status = 'SUSPENDED'\n" +
+            "                  AND situation_record.version_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
+            "            )\n" +
+            "      )\n" +
             ")\n";
 
     String FIND_ALL_ACTIVE_AS_D_WITH_JSON = FIND_ALL_ACTIVE_AS_D + "  AND d.json_message IS NOT NULL\n";

@@ -159,7 +159,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     private void sendJmsMessage(final ImsXmlVersion xmlVersion, final SituationType situationType, final ImsJsonVersion jsonVersion,
                                 final JMSMessageListener<ExternalIMSMessage> messageListener) throws IOException {
         final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion,
-                                                                                                 ZonedDateTime.now().minusHours(1), null);
+                                                                                                 ZonedDateTime.now().minusHours(1), null, false);
         createAndSendJmsMessage(xmlImsMessage, messageListener);
     }
 

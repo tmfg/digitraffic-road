@@ -120,41 +120,51 @@ public class TrafficMessageTestHelper extends AbstractTest {
     public void initDataFromStaticImsResourceConent(final ImsXmlVersion xmlVersion, final SituationType situationType,
                                                     final ImsJsonVersion jsonVersion,
                                                     final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
-        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime);
+        initDataFromStaticImsResourceConent(xmlVersion, situationType, jsonVersion, startTime, endTime, false);
+    }
+
+    public void initDataFromStaticImsResourceConent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+                                                    final ImsJsonVersion jsonVersion,
+                                                    final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                                    final boolean lifeCycleCanceled) throws IOException {
+        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 
     public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType, final ImsJsonVersion jsonVersion,
-                                                       final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+                                                       final ZonedDateTime startTime, final ZonedDateTime endTime, final boolean lifeCycleCanceled) throws IOException {
         final String xmlImsMessageTemplate = readImsMessageResourceContent(xmlVersion);
-        final String json = readStaticImsJmessageResourceContent(jsonVersion, situationType, startTime, endTime);
-        final String d2 = readStaticD2MessageResourceContent(situationType, startTime, endTime, jsonVersion.intVersion);
+        final String json = readStaticImsJmessageResourceContent(jsonVersion, situationType, startTime, endTime, lifeCycleCanceled);
+        final String d2 = readStaticD2MessageResourceContent(situationType, startTime, endTime, jsonVersion.intVersion, lifeCycleCanceled);
         return xmlImsMessageTemplate.replace(D2_MESSAGE_PLACEHOLDER, d2).replace(JSON_MESSAGE_PLACEHOLDER, json);
     }
 
     public static String readStaticImsJmessageResourceContent(final ImsJsonVersion jsonVersion, final SituationType situationType,
-                                                              final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+                                                              final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                                              final boolean lifeCycleCanceled) throws IOException {
         final String path =
             "classpath:tloik/ims/versions/" +
             getJsonVersionString(jsonVersion) + "/"+
             situationType + ".json";
-        return readStaticImsJmessageResourceContent(path, jsonVersion, startTime, endTime);
+        return readStaticImsJmessageResourceContent(path, jsonVersion, startTime, endTime, lifeCycleCanceled);
     }
 
     public static String readStaticImsJmessageResourceContent(final String path, final ImsJsonVersion jsonVersion,
-                                                              final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+                                                              final ZonedDateTime startTime, final ZonedDateTime endTime, final boolean lifeCycleCanceled) throws IOException {
         log.info("Reading Jmessage resource: {}", path);
         return readResourceContent(path)
             .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
             .replace(SITUATION_VERSION_DATE_TIME_PLACEHOLDER, getVersionTime(startTime, jsonVersion.intVersion).toOffsetDateTime().toString())
             .replace(SITUATION_VERSION_PLACEHOLDER, jsonVersion.intVersion + "")
-            .replace(END_DATE_TIME_PLACEHOLDER, endTime != null ? endTime.toOffsetDateTime().toString() : "" );
+            .replace(END_DATE_TIME_PLACEHOLDER, endTime != null ? endTime.toOffsetDateTime().toString() : "" )
+            .replace(lifeCycleCanceled ? "\"timeAndDuration\"" : "RANDOMNOMATCHXYZ", "\"earlyClosing\": \"CANCELED\",\n\"timeAndDuration\"");
     }
 
 
     public static String readStaticD2MessageResourceContent(final SituationType situationType, final ZonedDateTime startTime,
-                                                            final ZonedDateTime endTime, int situationVersion) throws IOException {
+                                                            final ZonedDateTime endTime, int situationVersion,
+                                                            final boolean lifeCycleCanceled) throws IOException {
         final String path = "classpath:tloik/ims/versions/d2Message_" + situationType + ".xml";
         log.info("Reading D2Message resource: {}", path);
         return readResourceContent(path)
@@ -162,7 +172,8 @@ public class TrafficMessageTestHelper extends AbstractTest {
             .replace(SITUATION_VERSION_PLACEHOLDER, situationVersion + "")
             .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
             .replace(endTime != null ? "</overallStartTime>" : "RANDOMNOMATCHXYZ",
-                     "</overallStartTime><overallEndTime>" + (endTime != null ? endTime.toOffsetDateTime().toString() : "") + "</overallEndTime>");
+                     "</overallStartTime><overallEndTime>" + (endTime != null ? endTime.toOffsetDateTime().toString() : "") + "</overallEndTime>")
+            .replace(lifeCycleCanceled ? "<cancel>false</cancel>" : "RANDOMNOMATCHXYZ", "<cancel>true</cancel>");
     }
 
     /**

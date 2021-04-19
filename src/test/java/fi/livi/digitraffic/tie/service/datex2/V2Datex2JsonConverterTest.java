@@ -68,7 +68,7 @@ public class V2Datex2JsonConverterTest extends AbstractRestWebTest {
     public void convertImsSimpleJsonVersionToGeoJsonFeatureObjectV2() throws IOException {
         for(ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
             for (final SituationType st : SituationType.values()) {
-                final String json = readStaticImsJmessageResourceContent(jsonVersion, st, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+                final String json = readStaticImsJmessageResourceContent(jsonVersion, st, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
                 log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
                 final fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature ta =
                     v2Datex2JsonConverter.convertToFeatureJsonObjectV2(json, st.getDatex2MessageType());
@@ -84,7 +84,7 @@ public class V2Datex2JsonConverterTest extends AbstractRestWebTest {
         final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
         final String json = readStaticImsJmessageResourceContent(
             "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
-            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
             v2Datex2JsonConverter.convertToFeatureJsonObjectV2(json, Datex2MessageType.TRAFFIC_INCIDENT);
