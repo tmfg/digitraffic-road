@@ -7,10 +7,6 @@ SET life_cycle_management_canceled = false;
 
 ALTER TABLE DATEX2_SITUATION_RECORD ALTER COLUMN life_cycle_management_canceled SET NOT NULL;
 
-DROP INDEX IF EXISTS datex2_situation_type_i;
-CREATE INDEX datex2_situation_type_i ON datex2 USING btree (situation_type);
-COMMENT ON INDEX datex2_situation_type_i IS 'Used to get the latest versions of situations';
-
 DROP INDEX IF EXISTS datex2_situation_situation_id_id_i;
 CREATE INDEX datex2_situation_situation_id_id_i ON datex2_situation using btree (situation_id DESC, id DESC, datex2_id DESC);
 COMMENT ON INDEX datex2_situation_situation_id_id_i IS 'Used to get the latest versions of situations';
