@@ -28,6 +28,11 @@
                         <overallStartTime>START_DATE_TIME</overallStartTime>
                     </validityTimeSpecification>
                 </validity>
+                <management>
+                    <lifeCycleManagement>
+                        <cancel>false</cancel>
+                    </lifeCycleManagement>
+                </management>
                 <generalPublicComment>
                     <comment>
                         <values>

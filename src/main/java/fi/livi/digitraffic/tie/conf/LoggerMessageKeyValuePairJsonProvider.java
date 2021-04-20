@@ -28,8 +28,8 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
 
     private final static Splitter spaceSplitter = Splitter.on(' ').omitEmptyStrings().trimResults();
     private final static Pattern tagsPattern = Pattern.compile("[<][^>]*[>]");
-    // Must start with upper or lowwer case letter
-    // Must end with number or upper or lowwer case letter
+    // Must start with upper or lower case letter
+    // Must end with number or upper or lower case letter
     // Between can be numbers, letters, one at the time of "_", "-" or "." surrounded by numbers or letters
     private final static Pattern keyPattern = Pattern.compile("^[a-zA-Z]+([_\\.-]?[a-zA-Z0-9])*$");
 
@@ -63,10 +63,13 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
         });
     }
 
-    private Object getObjectValue(final String value) {
-        if( "true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value) ) {
+    private static Object getObjectValue(final String value) {
+        if(isQuoted(value)) {
+            return value.substring(1, value.length() - 1);
+        } else if( "true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value) ) {
             return Boolean.valueOf(value);
         }
+
         try {
             // Iso date time value
             return ZonedDateTime.parse(value).toInstant().toString();
@@ -80,6 +83,10 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
         }
     }
 
+    private static boolean isQuoted(final String value) {
+        return value.length() > 2 && value.charAt(0) == '\"' && value.charAt(value.length() - 1) == '\"';
+    }
+
     private static List<Pair<String, String>> parseKeyValuePairs(final String formattedMessage) {
         final String message = stripXmlTags(formattedMessage);
         return spaceSplitter.splitToList(message)
@@ -87,8 +94,14 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
             .map(kv -> kv.split("=")) // split message chunks by =
             // Filter empty key or value pairs
             .filter(kv -> kv.length > 1 && StringUtils.isNotBlank(kv[0]) && StringUtils.isNotBlank(kv[1]) && keyPattern.matcher(kv[0]).matches())
-            .map(kv -> Pair.of(kv[0], kv[1]))
+            .map(kv -> Pair.of(kv[0], safeValue(kv[1])))
             .collect(Collectors.toList());
+    }
+
+    private static String safeValue(final String value) {
+        if(value.toUpperCase().equals("NULL")) return null;
+
+        return value;
     }
 
     private static String stripXmlTags(final String message) {

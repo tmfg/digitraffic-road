@@ -6,6 +6,7 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituat
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -112,7 +113,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                 }
-                activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(), getSituationIdForSituationType(situationType), start, end);
+                    activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(), getSituationIdForSituationType(situationType), start, end);
             }
         }
     }
@@ -128,6 +129,15 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
     public void findActiveJsonWithoutPropertiesIsNotReturned() throws IOException {
         // One active with json
         trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithNullProperties.xml");
+        // Not found, as both must exist
+        assertActiveMessageFound(GUID_WITH_JSON, false, false);
+    }
+
+    @Test
+    public void findActiveJsonCanceledIsNotReturned() throws IOException {
+        trafficMessageTestHelper.initDataFromStaticImsResourceConent(
+            ImsXmlVersion.V1_2_1, SituationType.TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
+            ZonedDateTime.now().minusDays(1), ZonedDateTime.now().plusDays(1), true);
         // Not found, as both must exist
         assertActiveMessageFound(GUID_WITH_JSON, false, false);
     }
@@ -196,15 +206,19 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
         final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
         final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0, true);
 
-        if (foundInDatex2 || situationPublication != null) {
+        if (foundInDatex2) {
             assertEquals(
                 foundInDatex2,
                 situationPublication.getSituations().stream().anyMatch(s -> s.getId().equals(situationId)));
+        } else {
+            assertNull(situationPublication);
         }
-        if (foundInJson || withJson.getFeatures().size() > 0) {
+        if (foundInJson) {
             assertEquals(
                 foundInJson,
                 withJson.getFeatures().stream().anyMatch(f -> f.getProperties().situationId.equals(situationId)));
+        } else {
+            AssertHelper.assertCollectionSize(0, withJson.getFeatures());
         }
     }
 }

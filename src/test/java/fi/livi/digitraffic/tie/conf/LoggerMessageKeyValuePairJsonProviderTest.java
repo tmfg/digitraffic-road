@@ -223,6 +223,12 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
         Assert.assertEquals("{}", result);
     }
 
+    @Test
+    public void s3VersionId() throws IOException {
+        final String result = sendEventWithFormatedMessageAndReturnResultJson("s3VersionId=\"1_9XcT207HmV5yyEExF7GhsaSzUoeNFY\"");
+        Assert.assertEquals("{\"s3VersionId\":\"1_9XcT207HmV5yyEExF7GhsaSzUoeNFY\"}", result);
+    }
+
     private String sendEventWithFormatedMessageAndReturnResultJson(final String formattedMessage) throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final JsonGenerator jsonGenerator = createJsonGenerator(out);

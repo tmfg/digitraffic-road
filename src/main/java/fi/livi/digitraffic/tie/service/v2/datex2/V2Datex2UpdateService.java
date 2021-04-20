@@ -260,7 +260,17 @@ public class V2Datex2UpdateService {
             final OverallPeriod period = validy.getValidityTimeSpecification();
             d2SituationRecord.setOverallStartTime(DateHelper.toZonedDateTimeWithoutMillisAtUtc(period.getOverallStartTime()));
             d2SituationRecord.setOverallEndTime(DateHelper.toZonedDateTimeWithoutMillisAtUtc(period.getOverallEndTime()));
+
+            // lifeCycleManagement
+            d2SituationRecord.setLifeCycleManagementCanceled(resolveIsLifeCycleManagementCanceled(record));
         }
+    }
+
+    private static boolean resolveIsLifeCycleManagementCanceled(final SituationRecord record) {
+        return record.getManagement() != null
+            && record.getManagement().getLifeCycleManagement() != null
+            && record.getManagement().getLifeCycleManagement().isCancel() != null
+            && record.getManagement().getLifeCycleManagement().isCancel();
     }
 
     /**

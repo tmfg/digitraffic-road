@@ -80,6 +80,8 @@ public class Datex2SituationRecord {
     @OneToMany(mappedBy = "situationRecord", cascade = CascadeType.ALL)
     private List<SituationRecordCommentI18n> publicComments;
 
+    private Boolean lifeCycleManagementCanceled;
+
     public Long getId() {
         return id;
     }
@@ -167,5 +169,13 @@ public class Datex2SituationRecord {
     public void setPublicComments(List<SituationRecordCommentI18n> publicComments) {
         this.publicComments = publicComments;
         publicComments.forEach(k-> k.setSituationRecord(this));
+    }
+
+    public void setLifeCycleManagementCanceled(final boolean lifeCycleManagementCanceled) {
+        this.lifeCycleManagementCanceled = lifeCycleManagementCanceled;
+    }
+
+    public boolean getLifeCycleManagementCanceled() {
+        return lifeCycleManagementCanceled;
     }
 }
