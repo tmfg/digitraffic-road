@@ -50,7 +50,7 @@ public class V2Datex2DataServiceTest extends AbstractRestWebTest {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 trafficMessageTestHelper.cleanDb();
-                trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, SituationType.TRAFFIC_ANNOUNCEMENT, imsJsonVersion, start, end);
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, SituationType.TRAFFIC_ANNOUNCEMENT, imsJsonVersion, start, end);
                 log.info("Run activeIncidentsDatex2AndJsonEquals with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
                 activeIncidentsDatex2AndJsonEquals(SituationType.TRAFFIC_ANNOUNCEMENT, start.toInstant(), imsJsonVersion);
             }
@@ -65,7 +65,7 @@ public class V2Datex2DataServiceTest extends AbstractRestWebTest {
                 final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                 final ZonedDateTime end = start.plusHours(2);
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                         imsXmlVersion, imsJsonVersion, situationType);
                 }
@@ -85,8 +85,8 @@ public class V2Datex2DataServiceTest extends AbstractRestWebTest {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 trafficMessageTestHelper.cleanDb();
-                trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
-                trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, SituationType.ROAD_WORK, imsJsonVersion, start, end);
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, SituationType.ROAD_WORK, imsJsonVersion, start, end);
                 log.info("Run findBySituationId with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
                 assertFindBySituationId(situationId, situationType);
             }

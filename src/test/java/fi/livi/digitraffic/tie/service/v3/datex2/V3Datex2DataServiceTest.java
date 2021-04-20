@@ -76,7 +76,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                     activeIncidentsDatex2AndJsonEquals(situationType, imsJsonVersion, getSituationIdForSituationType(situationType), start, end);
@@ -92,7 +92,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for (final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion);
                     log.info("checkFindBySituationId with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                         imsXmlVersion, imsJsonVersion, situationType);
                     checkFindBySituationId(getSituationIdForSituationType(situationType));
@@ -109,7 +109,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                 final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                 final ZonedDateTime end = start.plusHours(2);
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                 }
@@ -135,7 +135,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
 
     @Test
     public void findActiveJsonCanceledIsNotReturned() throws IOException {
-        trafficMessageTestHelper.initDataFromStaticImsResourceConent(
+        trafficMessageTestHelper.initDataFromStaticImsResourceContent(
             ImsXmlVersion.V1_2_1, SituationType.TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
             ZonedDateTime.now().minusDays(1), ZonedDateTime.now().plusDays(1), true);
         // Not found, as both must exist

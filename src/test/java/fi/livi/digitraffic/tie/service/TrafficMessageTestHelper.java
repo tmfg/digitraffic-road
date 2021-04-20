@@ -111,22 +111,22 @@ public class TrafficMessageTestHelper extends AbstractTest {
         return xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
     }
 
-    public void initDataFromStaticImsResourceConent(final ImsXmlVersion xmlVersion, final SituationType situationType,
-                                                    final ImsJsonVersion jsonVersion)
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+                                                     final ImsJsonVersion jsonVersion)
         throws IOException {
-        initDataFromStaticImsResourceConent(xmlVersion, situationType, jsonVersion, ZonedDateTime.now().minusHours(1), null);
+        initDataFromStaticImsResourceContent(xmlVersion, situationType, jsonVersion, ZonedDateTime.now().minusHours(1), null);
     }
 
-    public void initDataFromStaticImsResourceConent(final ImsXmlVersion xmlVersion, final SituationType situationType,
-                                                    final ImsJsonVersion jsonVersion,
-                                                    final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
-        initDataFromStaticImsResourceConent(xmlVersion, situationType, jsonVersion, startTime, endTime, false);
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+                                                     final ImsJsonVersion jsonVersion,
+                                                     final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+        initDataFromStaticImsResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime, false);
     }
 
-    public void initDataFromStaticImsResourceConent(final ImsXmlVersion xmlVersion, final SituationType situationType,
-                                                    final ImsJsonVersion jsonVersion,
-                                                    final ZonedDateTime startTime, final ZonedDateTime endTime,
-                                                    final boolean lifeCycleCanceled) throws IOException {
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+                                                     final ImsJsonVersion jsonVersion,
+                                                     final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                                     final boolean lifeCycleCanceled) throws IOException {
         final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
