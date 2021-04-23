@@ -86,7 +86,7 @@ public abstract class AbstractTest {
 
     @Before
     public void logSettings() {
-        log.info("LOTJU_SERVICE_RANDOM_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
+        log.debug("LOTJU_SERVICE_RANDOM_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
     }
 
     public V2Datex2UpdateService getV2Datex2UpdateService() {

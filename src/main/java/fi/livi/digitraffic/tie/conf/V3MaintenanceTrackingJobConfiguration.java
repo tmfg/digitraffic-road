@@ -11,28 +11,28 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
+import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
 
 @ConditionalOnProperty(name = "maintenance.tracking.job.enabled", matchIfMissing = true)
 @ConditionalOnNotWebApplication
 @Component
-public class V2MaintenanceTrackingJobConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingJobConfiguration.class);
+public class V3MaintenanceTrackingJobConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingJobConfiguration.class);
 
-    private final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
+    private final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService;
     private final ClusteredLocker clusteredLocker;
     private final long runRateMs;
 
-    private final static String LOCK_NAME = "V2MaintenanceTrackingJobConfiguration";
+    private final static String LOCK_NAME = "V3MaintenanceTrackingJobConfiguration";
 
-    private final static int MAX_HANDLE_COUNT_PER_CALL = 1;
+    private final static int MAX_HANDLE_COUNT_PER_CALL = 10;
 
     @Autowired
-    public V2MaintenanceTrackingJobConfiguration(final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
+    public V3MaintenanceTrackingJobConfiguration(final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService,
                                                  final ClusteredLocker clusteredLocker,
                                                  @Value("${maintenance.tracking.job.intervalMs}")
                                                  final long runRateMs) {
-        this.v2MaintenanceTrackingUpdateService = v2MaintenanceTrackingUpdateService;
+        this.v3MaintenanceTrackingUpdateService = v3MaintenanceTrackingUpdateService;
         this.clusteredLocker = clusteredLocker;
         this.runRateMs = runRateMs;
     }
@@ -42,7 +42,7 @@ public class V2MaintenanceTrackingJobConfiguration {
      * from source JSON-format to db relations.
      */
     @Scheduled(fixedDelayString = "${maintenance.tracking.job.intervalMs}")
-    public void handleUnhandledMaintenanceTrackings() {
+    public void handleUnhandledMaintenanceTrackingObservations() {
         final StopWatch start = StopWatch.createStarted();
         int count;
         int totalCount = 0;
@@ -50,33 +50,33 @@ public class V2MaintenanceTrackingJobConfiguration {
             if ( clusteredLocker.tryLock(LOCK_NAME, 300) ) {
                 final StopWatch startInternal = StopWatch.createStarted();
                 try {
-                    count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(MAX_HANDLE_COUNT_PER_CALL);
+                    count = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(MAX_HANDLE_COUNT_PER_CALL);
                     totalCount += count;
                     final double msPerMsg = (double) startInternal.getTime() / count;
                     if (Double.isFinite(msPerMsg)) {
-                        log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}",
+                        log.info("method=handleUnhandledMaintenanceTrackingObservations handledCount={} tookMs={} tookMsPerObservation={}",
                                  count, startInternal.getTime(), (double) startInternal.getTime() / count);
                     }
                 } catch (final Exception e) {
-                    log.error(String.format("method=handleUnhandledMaintenanceTrackings failed tookMs=%d", startInternal.getTime()), e);
+                    log.error(String.format("method=handleUnhandledMaintenanceTrackingObservations observations failed tookMs=%d", startInternal.getTime()), e);
                     throw e;
                 } finally {
                     clusteredLocker.unlock(LOCK_NAME);
                 }
             } else {
-                log.warn("method=handleUnhandledMaintenanceTrackings didn't get lock for updating tracking data.");
+                log.warn("method=handleUnhandledMaintenanceTrackingObservations didn't get lock for updating tracking data.");
                 count = 0; // to end the loop
             }
         // Stop if all was handled: count == MAX_HANDLE_COUNT_PER_CALL
         // Make sure job stops now and then even when it cant handle all data: start.getTime() < runRateMs * 10
         } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getTime() < runRateMs * 10);
 
-        final double msPerMsg = (double) start.getTime() / totalCount;
-        if (Double.isFinite(msPerMsg)) {
-            log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount,
-                     start.getTime(), msPerMsg);
+        final double msPerObservation = (double) start.getTime() / totalCount;
+        if (Double.isFinite(msPerObservation)) {
+            log.info("method=handleUnhandledMaintenanceTrackingObservations handledTotalCount={} tookMs={} tookMsPerObservation={}", totalCount,
+                     start.getTime(), msPerObservation);
         } else {
-            log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={}", totalCount,
+            log.info("method=handleUnhandledMaintenanceTrackingObservations handledTotalCount={} tookMs={}", totalCount,
                      start.getTime());
         }
     }

@@ -48,9 +48,10 @@ import fi.livi.digitraffic.tie.service.v1.location.MetadataFileFetcher;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
+import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
+import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
 
 @Import({ Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
           // services
@@ -63,7 +64,7 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
           ImsJsonConverter.class, V2Datex2UpdateService.class,
           V2Datex2JsonConverter.class,
           V3RegionGeometryUpdateService.class,
-          V2MaintenanceTrackingServiceTestHelper.class, V2MaintenanceTrackingUpdateService.class,
+          V2MaintenanceTrackingUpdateService.class, V3MaintenanceTrackingServiceTestHelper.class, V3MaintenanceTrackingUpdateService.class,
           LocationTypeUpdater.class, LocationMetadataUpdater.class, LocationUpdater.class, LocationSubtypeUpdater.class,
           MetadataFileFetcher.class, ClusteredLocker.class, LockingServiceInternal.class,
 

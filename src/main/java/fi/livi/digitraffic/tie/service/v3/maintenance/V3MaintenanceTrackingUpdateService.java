@@ -1,11 +1,12 @@
-package fi.livi.digitraffic.tie.service.v2.maintenance;
+package fi.livi.digitraffic.tie.service.v3.maintenance;
 
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.UNKNOWN;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService.NextObservationStatus.Status.NEW;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService.NextObservationStatus.Status.SAME;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService.NextObservationStatus.Status.TRANSITION;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService.NextObservationStatus.Status.NEW;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService.NextObservationStatus.Status.SAME;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService.NextObservationStatus.Status.TRANSITION;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,9 +38,9 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.conf.MaintenanceTrackingMqttConfiguration;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
+import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
@@ -54,16 +54,17 @@ import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
+import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 
 @Service
-public class V2MaintenanceTrackingUpdateService {
+public class V3MaintenanceTrackingUpdateService {
 
-    private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingUpdateService.class);
-    private final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository;
+    private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingUpdateService.class);
+    private final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
     private final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository;
     private final ObjectWriter jsonWriter;
     private final ObjectReader jsonReader;
@@ -75,7 +76,7 @@ public class V2MaintenanceTrackingUpdateService {
     private final ObjectWriter jsonWriterForHavainto;
 
     @Autowired
-    public V2MaintenanceTrackingUpdateService(final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository,
+    public V3MaintenanceTrackingUpdateService(final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository,
                                               final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
                                               final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository,
                                               final ObjectMapper objectMapper,
@@ -86,96 +87,72 @@ public class V2MaintenanceTrackingUpdateService {
                                               final int distinctObservationGapMinutes,
                                               @Value("${workmachine.tracking.distinct.linestring.observationgap.km}")
                                               final double distinctLineStringObservationGapKm) {
-        this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
+        this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
         this.v2MaintenanceTrackingWorkMachineRepository = v2MaintenanceTrackingWorkMachineRepository;
-        this.jsonWriter = objectMapper.writerFor(TyokoneenseurannanKirjausRequestSchema.class);
+        this.jsonWriter = objectMapper.writerFor(Havainto.class);
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
-        this.jsonReader = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
+        this.jsonReader = objectMapper.readerFor(Havainto.class);
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
         this.dataStatusService = dataStatusService;
         this.maintenanceTrackingMqttConfiguration = maintenanceTrackingMqttConfiguration;
-        V2MaintenanceTrackingUpdateService.distinctObservationGapMinutes = distinctObservationGapMinutes;
-        V2MaintenanceTrackingUpdateService.distinctLineStringObservationGapKm = distinctLineStringObservationGapKm;
-    }
-
-    @Transactional
-    public long deleteDataOlderThanDays(final int olderThanDays) {
-        final StopWatch start = StopWatch.createStarted();
-        final ZonedDateTime olderThanDate = DateHelper.getZonedDateTimeNowAtUtc().minus(olderThanDays, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
-        final long count = v2MaintenanceTrackingDataRepository.deleteByCreatedIsBefore(olderThanDate);
-        log.info("method=deleteDataOlderThanDays delete before {} deleted {} tookMs={}", olderThanDate, count, start.getTime());
-        return count;
-    }
-
-    @Transactional
-    public MaintenanceTrackingData saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) {
-        try {
-            final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
-            final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
-            v2MaintenanceTrackingDataRepository.save(tracking);
-            if (log.isTraceEnabled()) {
-                log.trace("method=saveMaintenanceTrackingData jsonData: {}", json);
-            }
-            return tracking;
-        } catch (final Exception e) {
-            log.error("method=saveMaintenanceTrackingData failed ", e);
-            throw new RuntimeException(e);
-        }
+        V3MaintenanceTrackingUpdateService.distinctObservationGapMinutes = distinctObservationGapMinutes;
+        V3MaintenanceTrackingUpdateService.distinctLineStringObservationGapKm = distinctLineStringObservationGapKm;
     }
 
     private int fromCacheCount = 0;
     private Pair<Integer, Long> fromDbCountAndMs = Pair.of(0,0L);
 
     @Transactional
-    public int handleUnhandledMaintenanceTrackingData(int maxToHandle) {
+    public long deleteDataOlderThanDays(final int olderThanDays) {
+        final StopWatch start = StopWatch.createStarted();
+        final Instant olderThanDate = Instant.now().minus(olderThanDays, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
+        final long count = v3MaintenanceTrackingObservationDataRepository.deleteByObservationTimeIsBefore(olderThanDate);
+        log.info("method=deleteDataOlderThanDays before {} deleted {} tookMs={}", olderThanDate, count, start.getTime());
+        return count;
+    }
+
+    @Transactional
+    public int handleUnhandledMaintenanceTrackingObservationData(int maxToHandle) {
         fromCacheCount = 0;
         fromDbCountAndMs = Pair.of(0,0L);
 
         final Map<Pair<Integer, Integer>, MaintenanceTracking> cacheByHarjaWorkMachineIdAndContractId = new HashMap<>();
-        final Stream<MaintenanceTrackingData> data = v2MaintenanceTrackingDataRepository.findUnhandled(maxToHandle);
-        final int count = (int) data.filter(trackingData -> handleMaintenanceTrackingData(trackingData, cacheByHarjaWorkMachineIdAndContractId)).count();
+        final Stream<V3MaintenanceTrackingObservationData> data = v3MaintenanceTrackingObservationDataRepository.findUnhandled(maxToHandle, 2);
+        final int count = (int) data.filter(trackingData -> handleMaintenanceTrackingObservationData(trackingData, cacheByHarjaWorkMachineIdAndContractId)).count();
         if (count > 0) {
             dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA);
         }
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED);
 
-        log.info("method=handleUnhandledMaintenanceTrackingData Read data from db {} times and from cache {} times. Db queries tookTotal {} ms and average {} ms/query",
+        log.info("method=handleUnhandledMaintenanceTrackingObservationData Read data from db {} times and from cache {} times. Db queries tookTotal {} ms and average {} ms/query",
                  fromDbCountAndMs.getLeft(), fromCacheCount,
                  fromDbCountAndMs.getRight(),
                  fromDbCountAndMs.getLeft() > 0 ? fromDbCountAndMs.getRight()/fromDbCountAndMs.getLeft() : 0);
         return count;
     }
 
-    private boolean handleMaintenanceTrackingData(final MaintenanceTrackingData trackingData, final Map<Pair<Integer, Integer>, MaintenanceTracking> cacheByHarjaWorkMachineIdAndContractId) {
+    private boolean handleMaintenanceTrackingObservationData(final V3MaintenanceTrackingObservationData trackingData, final Map<Pair<Integer, Integer>, MaintenanceTracking> cacheByHarjaWorkMachineIdAndContractId) {
         try {
-            final TyokoneenseurannanKirjausRequestSchema kirjaus = jsonReader.readValue(trackingData.getJson());
-            final String kirjausOtsikkoJson = getOtsikkoJson(trackingData.getJson());
+            final Havainto havainto = jsonReader.readValue(trackingData.getJson());
+
             // Message info
-            final String sendingSystem = kirjaus.getOtsikko().getLahettaja().getJarjestelma();
-            final ZonedDateTime sendingTime = kirjaus.getOtsikko().getLahetysaika();
-            final List<Havainto> havaintos = getHavaintos(kirjaus);
-
-            // Route
-            havaintos.forEach(havainto -> handleRoute(havainto, trackingData, sendingSystem, sendingTime, cacheByHarjaWorkMachineIdAndContractId, kirjausOtsikkoJson));
-
+            final String sendingSystem = trackingData.getSendingSystem();
+            final Instant sendingTime = trackingData.getSendingTime();
+            final String kirjausOtsikkoJson = String.format("{\n    \"jarjestelma\": \"%s\",\n    \"lahetysaika\": \"%s\"\n    \"s3\": \"%s\"\n}", sendingSystem, sendingTime, trackingData.getS3Uri());
+            handleRoute(havainto, trackingData, sendingSystem, sendingTime, cacheByHarjaWorkMachineIdAndContractId, kirjausOtsikkoJson);
             trackingData.updateStatusToHandled();
 
         } catch (final Exception e) {
-            log.error(String.format("method=handleMaintenanceTrackingData failed for id %d", trackingData.getId()), e);
+            log.error(String.format("method=handleMaintenanceTrackingObservationData failed for id %d", trackingData.getId()), e);
             trackingData.updateStatusToError();
             trackingData.appendHandlingInfo(ExceptionUtils.getStackTrace(e));
             return false;
         }
-
         return true;
     }
 
-    private static String getOtsikkoJson(final String kirjausJson) {
-        return StringUtils.substringBefore(kirjausJson, "\"havain") + "...";
-    }
-
     private void handleRoute(final Havainto havainto,
-                             final MaintenanceTrackingData trackingData, final String sendingSystem, final ZonedDateTime sendingTime,
+                             final V3MaintenanceTrackingObservationData trackingData, final String sendingSystem, final Instant sendingTime,
                              final Map<Pair<Integer, Integer>, MaintenanceTracking> cacheByHarjaWorkMachineIdAndContractId,
                              final String kirjausOtsikkoJson) {
 
@@ -220,7 +197,7 @@ public class V2MaintenanceTrackingUpdateService {
                         getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
 
                     final MaintenanceTracking created =
-                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, sendingTime,
+                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
                             harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
                             performedTasks, direction);
                     v2MaintenanceTrackingRepository.save(created);
@@ -232,10 +209,10 @@ public class V2MaintenanceTrackingUpdateService {
 
                     // previousTracking.addWorkMachineTrackingData(trackingData) does db query for all previous trackintData
                     // to populate the collection. So let's just insert the new one directly to db.
-                    v2MaintenanceTrackingRepository.addTrackingData(trackingData.getId(), previousTracking.getId());
+                    v2MaintenanceTrackingRepository.addTrackingObservationData(trackingData.getId(), previousTracking.getId());
                     cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, previousTracking);
                 } else {
-                    throw new IllegalArgumentException("Unknown status: " + status.toString());
+                    throw new IllegalArgumentException("Unknown status: " + status);
                 }
             }
 

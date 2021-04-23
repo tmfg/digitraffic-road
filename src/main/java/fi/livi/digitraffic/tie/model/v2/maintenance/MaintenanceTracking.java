@@ -29,6 +29,7 @@ import org.locationtech.jts.geom.Point;
 
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData;
 
 @Entity
 @Table(name = "MAINTENANCE_TRACKING")
@@ -86,15 +87,34 @@ public class MaintenanceTracking {
                inverseJoinColumns = @JoinColumn(name = "DATA_ID", referencedColumnName = "ID"))
     private Set<MaintenanceTrackingData> maintenanceTrackingDatas = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "MAINTENANCE_TRACKING_OBSERVATION_DATA_TRACKING",
+               joinColumns = @JoinColumn(name = "TRACKING_ID", referencedColumnName = "ID"),
+               inverseJoinColumns = @JoinColumn(name = "DATA_ID", referencedColumnName = "ID"))
+    private Set<V3MaintenanceTrackingObservationData> maintenanceTrackingObservationDatas = new HashSet<>();
+
 
     public MaintenanceTracking() {
         // For Hibernate
     }
 
-    public MaintenanceTracking(final MaintenanceTrackingData maintenanceTrackingData, final MaintenanceTrackingWorkMachine workMachine, final Integer jobId,
+    public MaintenanceTracking(final MaintenanceTrackingData maintenanceTrackingData, final MaintenanceTrackingWorkMachine workMachine,
                                final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
                                final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
+        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, lineString, tasks, direction);
         this.maintenanceTrackingDatas.add(maintenanceTrackingData);
+    }
+
+    public MaintenanceTracking(final V3MaintenanceTrackingObservationData maintenanceTrackingObservationData, final MaintenanceTrackingWorkMachine workMachine,
+                               final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
+                               final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
+        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, lineString, tasks, direction);
+        this.maintenanceTrackingObservationDatas.add(maintenanceTrackingObservationData);
+    }
+
+    private MaintenanceTracking(final MaintenanceTrackingWorkMachine workMachine,
+                                final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
         this.workMachine = workMachine;
         this.sendingSystem = sendingSystem;
         this.sendingTime = sendingTime;
@@ -105,6 +125,7 @@ public class MaintenanceTracking {
         this.tasks.addAll(tasks);
         this.direction = direction;
     }
+
 
     public Long getId() {
         return id;

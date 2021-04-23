@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -26,4 +27,5 @@ public interface V2MaintenanceTrackingDataRepository extends JpaRepository<Maint
                     "ORDER BY data.id DESC", nativeQuery = true)
     List<String> findJsonsByTrackingId(final long id);
 
+    long deleteByCreatedIsBefore(final ZonedDateTime olderThanDate);
 }

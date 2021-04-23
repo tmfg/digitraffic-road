@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_X_MAX;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_X_MIN;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MAX;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MIN;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_X_MAX;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_X_MIN;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y_MAX;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y_MIN;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -23,8 +23,9 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 
-@Import({ V2MaintenanceTrackingUpdateService.class, V2MaintenanceTrackingDataService.class, JacksonAutoConfiguration.class, V2MaintenanceTrackingServiceTestHelper.class })
+@Import({ V2MaintenanceTrackingUpdateService.class, V2MaintenanceTrackingDataService.class, JacksonAutoConfiguration.class, V3MaintenanceTrackingServiceTestHelper.class })
 public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingUpdateServiceInternalTest.class);
@@ -36,7 +37,7 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
     private V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
 
     @Autowired
-    private V2MaintenanceTrackingServiceTestHelper testHelper;
+    private V3MaintenanceTrackingServiceTestHelper testHelper;
 
     @Before
     public void cleanDb() {
