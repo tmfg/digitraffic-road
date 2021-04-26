@@ -80,7 +80,7 @@ public class Datex2SituationRecord {
     @OneToMany(mappedBy = "situationRecord", cascade = CascadeType.ALL)
     private List<SituationRecordCommentI18n> publicComments;
 
-    private Boolean lifeCycleManagementCanceled;
+    private boolean lifeCycleManagementCanceled;
 
     public Long getId() {
         return id;
