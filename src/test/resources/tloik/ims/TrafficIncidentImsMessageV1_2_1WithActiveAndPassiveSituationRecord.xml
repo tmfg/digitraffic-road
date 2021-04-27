@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imsMessage xmlns="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_0.xsd">
+    <messageId>50003469</messageId>
+    <date>2019-12-13T14:43:18.388+02:00</date>
+    <messageSubject>LIIKENNETIEDOTE 13.12.2019 14:43:18</messageSubject>
+    <messageText></messageText>
+    <shortMessageText></shortMessageText>
+    <messageContent>
+        <d2Message><![CDATA[
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>START_DATE_TIME</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID90000001" version="SITUATION_VERSION">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000101" version="SITUATION_VERSION">
+                <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
+                <situationRecordVersionTime>SITUATION_VERSION_DATE_TIME</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>suspended</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>START_DATE_TIME</overallStartTime>
+                        <overallEndTime>START_DATE_TIME</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <management>
+                    <lifeCycleManagement>
+                        <end>true</end>
+                    </lifeCycleManagement>
+                </management>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Liikennetiedote lopetettu menneisyydessä</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.37</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37128</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37126</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID1000000102" version="SITUATION_VERSION">
+                <situationRecordCreationTime>START_DATE_TIME</situationRecordCreationTime>
+                <situationRecordVersionTime>SITUATION_VERSION_DATE_TIME</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>START_DATE_TIME</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>suspended</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>START_DATE_TIME</overallStartTime>
+                        <overallEndTime>END_DATE_TIME</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <management>
+                    <lifeCycleManagement>
+                        <end>true</end>
+                    </lifeCycleManagement>
+                </management>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Record lopetettu tulevaisuudessa</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.37</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37128</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>37126</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
+        ]]></d2Message>
+        <jMessage>
+{
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            23.77474,
+            61.50221
+        ]
+    },
+    "properties": {
+        "situationId": "GUID90000001",
+        "version": SITUATION_VERSION,
+        "situationType": "traffic announcement",
+        "trafficAnnouncementType": "general",
+        "releaseTime": "SITUATION_VERSION_DATE_TIME",
+        "announcements": [
+            {
+                "language": "fi",
+                "title": "Liikennetiedote. Maan eteläosa",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Maan länsiosa Kova tuuli vaikeuttaa liikennettä. Sakea lumisade heikentää näkyvyyttä. Erittäin huono ajokeli. Lisätieto: Tuuli kinostaa lunta kaduille ja maanteille moninpaikoin. Ajankohta: 12.01.2021 klo 12:00."
+                },
+                "locationDetails": {
+                    "roadAddressLocation": {
+                        "primaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 24,
+                                "distance": 3927
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37128,
+                                "name": "Marjamäki",
+                                "distance": 2184
+                            }
+                        },
+                        "secondaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 23,
+                                "distance": 5921
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37126,
+                                "name": "Pispantallin risteyssilta",
+                                "distance": 5264
+                            }
+                        },
+                        "direction": "pos"
+                    }
+                },
+                "features": [
+                    {
+                        "name": "Nopeusrajoitus",
+                        "quantity": 50.0,
+                        "unit": "km/h"
+                    },
+                    {
+                        "name": "Huono ajokeli"
+                    }
+                ],
+                "comment": "Liikennetiedote lopetettu menneisyydessä\n",
+                "timeAndDuration": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "START_DATE_TIME",
+                    "estimatedDuration": {
+                        "minimum": "PT6H",
+                        "informal": "Yli 6 tuntia"
+                    }
+                },
+                "earlyClosing": "closed",
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            },
+            {
+                "language": "fi",
+                "title": "Liikennetiedote. Maan eteläosa",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Maan länsiosa Kova tuuli vaikeuttaa liikennettä. Sakea lumisade heikentää näkyvyyttä. Erittäin huono ajokeli. Lisätieto: Tuuli kinostaa lunta kaduille ja maanteille moninpaikoin. Ajankohta: 12.01.2021 klo 12:00."
+                },
+                "locationDetails": {
+                    "roadAddressLocation": {
+                        "primaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 24,
+                                "distance": 3927
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37128,
+                                "name": "Marjamäki",
+                                "distance": 2184
+                            }
+                        },
+                        "secondaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 23,
+                                "distance": 5921
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37126,
+                                "name": "Pispantallin risteyssilta",
+                                "distance": 5264
+                            }
+                        },
+                        "direction": "pos"
+                    }
+                },
+                "features": [
+                    {
+                        "name": "Nopeusrajoitus",
+                        "quantity": 50.0,
+                        "unit": "km/h"
+                    },
+                    {
+                        "name": "Huono ajokeli"
+                    }
+                ],
+                "comment": "Liikennetiedote lopetettu tulevaisuudessa",
+                "timeAndDuration": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "END_DATE_TIME",
+                    "estimatedDuration": {
+                        "minimum": "PT6H",
+                        "informal": "Yli 6 tuntia"
+                    }
+                },
+                "earlyClosing": "closed",
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            }
+        ],
+        "contact": {
+            "phone": "0206373328",
+            "email": "helsinki.liikennekeskus@liikennevirasto.fi"
+        }
+    }
+}
+        </jMessage>
+    </messageContent>
+</imsMessage>

@@ -25,6 +25,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>START_DATE_TIME</overallStartTime>
+                        <overallEndTime>END_DATE_TIME</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <management>
@@ -77,6 +78,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>START_DATE_TIME</overallStartTime>
+                        <overallEndTime>END_DATE_TIME</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <groupOfLocations xsi:type="Point"/>
