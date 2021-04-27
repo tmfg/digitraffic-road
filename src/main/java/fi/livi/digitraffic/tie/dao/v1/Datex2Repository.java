@@ -47,7 +47,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "                    OR situation_record.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
             "                )\n" +
             "            ) OR (situation_record.validy_status = 'SUSPENDED'\n" +
-            "                  AND situation_record.version_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
+            "                  AND COALESCE(situation_record.overall_end_time, situation_record.version_time) > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
             "            )\n" +
             "      )\n" +
             ")\n";
@@ -83,7 +83,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "                    OR situation_record.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
             "                )\n" +
             "            ) OR (situation_record.validy_status = 'SUSPENDED'\n" +
-            "                  AND situation_record.version_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
+            "                  AND COALESCE(situation_record.overall_end_time, situation_record.version_time) > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
             "            )\n" +
             "      )\n" +
             ")\n";
