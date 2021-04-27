@@ -1,13 +1,10 @@
 package fi.livi.digitraffic.tie;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.MediaType;
@@ -19,6 +16,9 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
 @TestPropertySource(properties = { "spring.localstack.enabled=false" })
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
@@ -45,11 +45,11 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
         this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
                 hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
 
-        Assert.assertNotNull("the JSON message converter must not be null",
+        assertNotNull("the JSON message converter must not be null",
                 this.mappingJackson2HttpMessageConverter);
     }
 
-    @Before
+    @BeforeEach
     public void metadataTestBaseBefore() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }

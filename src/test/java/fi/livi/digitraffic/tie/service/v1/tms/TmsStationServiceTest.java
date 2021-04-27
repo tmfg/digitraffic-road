@@ -4,12 +4,12 @@ import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.controller.TmsState.ACTIVE;
 import static fi.livi.digitraffic.tie.controller.TmsState.ALL;
 import static fi.livi.digitraffic.tie.controller.TmsState.REMOVED;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
@@ -75,7 +75,7 @@ public class TmsStationServiceTest extends AbstractServiceTest {
     public void getTmsStationByRoadStationId() throws NonPublicRoadStationException {
         final TmsStationFeature tmsStation = tmsStationService.getTmsStationByRoadStationId(23801L);
 
-        Assert.assertNotNull(tmsStation);
+        assertNotNull(tmsStation);
     }
 
     @Test

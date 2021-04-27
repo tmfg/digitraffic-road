@@ -1,11 +1,5 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -15,8 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,6 +25,8 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+
+import static org.junit.Assert.*;
 
 public class Datex2HelperTest extends AbstractServiceTest {
 
@@ -83,11 +78,13 @@ public class Datex2HelperTest extends AbstractServiceTest {
         assertSame(sp, spResult);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getSituationPublicationUnsuportedExeption() {
         final D2LogicalModel d2 = new D2LogicalModel().withPayloadPublication(new GenericPublication());
-        Datex2Helper.getSituationPublication(d2);
-        fail("Should not go here");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+                Datex2Helper.getSituationPublication(d2);
+            });
     }
 
     @Test
@@ -96,10 +93,13 @@ public class Datex2HelperTest extends AbstractServiceTest {
         Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void checkD2HasOnlyOneSituationFails() {
         final D2LogicalModel d2 = createD2LogicalModelWithSituationPublications(new Situation(), new Situation());
-        Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            Datex2Helper.checkD2HasOnlyOneSituation(d2); // no exception
+        });
     }
 
     // TODO: Datex2Helper.resolveTrafficAnnouncementTypeFromText()

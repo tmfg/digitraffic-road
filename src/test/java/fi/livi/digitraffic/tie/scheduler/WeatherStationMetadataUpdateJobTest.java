@@ -10,8 +10,7 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -95,15 +94,15 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
     @Test
     public void testUpdateWeatherStations() {
 
-        Assert.assertNull(findWithLotjuId(allInitial, 33));
-        Assert.assertNotNull(findWithLotjuId(allInitial, 34));
-        Assert.assertNull(findWithLotjuId(allInitial, 35));
-        Assert.assertNotNull(findWithLotjuId(allInitial, 36));
+        assertNull(findWithLotjuId(allInitial, 33));
+        assertNotNull(findWithLotjuId(allInitial, 34));
+        assertNull(findWithLotjuId(allInitial, 35));
+        assertNotNull(findWithLotjuId(allInitial, 36));
 
-        Assert.assertNull(findWithLotjuId(allAfterChange, 33));
-        Assert.assertNotNull(findWithLotjuId(allAfterChange, 34));
-        Assert.assertNotNull(findWithLotjuId(allAfterChange, 35)); // removed temporary -> gathering
-        Assert.assertNotNull(findWithLotjuId(allAfterChange, 36));
+        assertNull(findWithLotjuId(allAfterChange, 33));
+        assertNotNull(findWithLotjuId(allAfterChange, 34));
+        assertNotNull(findWithLotjuId(allAfterChange, 35)); // removed temporary -> gathering
+        assertNotNull(findWithLotjuId(allAfterChange, 36));
 
         final WeatherStationFeature before = findWithLotjuId(allInitial, 34);
         final WeatherStationFeature after = findWithLotjuId(allAfterChange, 34);

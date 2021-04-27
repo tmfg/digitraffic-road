@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie;
 
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +10,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 
-import fi.livi.digitraffic.tie.conf.amazon.SpringLocalstackDockerRunnerWithVersion;
 import xyz.fabiano.spring.localstack.LocalstackService;
 import xyz.fabiano.spring.localstack.annotation.SpringLocalstackProperties;
 
-@RunWith(SpringLocalstackDockerRunnerWithVersion.class)
+//@RunWith(SpringLocalstackDockerRunnerWithVersion.class)
 @SpringLocalstackProperties(services = { LocalstackService.S3 }, region = "eu-west-1", randomPorts = false)
 public abstract class AbstractDaemonTestWithS3 extends AbstractDaemonTest {
 
@@ -27,9 +25,8 @@ public abstract class AbstractDaemonTestWithS3 extends AbstractDaemonTest {
     @Value("${dt.amazon.s3.weathercam.bucketName}")
     protected String weathercamBucketName;
 
-    @Before
+    @BeforeEach
     public void initS3BucketForWeatherCam() {
-
         log.info("Init versioned S3 Bucket {} with S3: {}", weathercamBucketName, amazonS3);
 
         if (amazonS3.doesBucketExistV2(weathercamBucketName)) {

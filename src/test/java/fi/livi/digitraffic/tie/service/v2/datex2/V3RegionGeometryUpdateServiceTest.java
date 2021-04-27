@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,8 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
@@ -66,14 +66,14 @@ public class V3RegionGeometryUpdateServiceTest extends AbstractServiceTest {
         verify(regionGeometryGitClientMock, times(1)).getChangesAfterCommit(eq(null));
 
         final List<RegionGeometry> dbCommit1 = regionGeometryRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(commit1Changes.size(), dbCommit1.size());
+        assertEquals(commit1Changes.size(), dbCommit1.size());
 
         // Commit1 in db -> commitId1
         v3RegionGeometryTestHelper.runUpdateJob();
         verify(regionGeometryGitClientMock, times(1)).getChangesAfterCommit(eq(commitId1));
 
         final List<RegionGeometry> dbCommit1And2 = regionGeometryRepository.findAll(Sort.by("id"));
-        Assert.assertEquals(commit1Changes.size() + commit2Changes.size(), dbCommit1And2.size());
+        assertEquals(commit1Changes.size() + commit2Changes.size(), dbCommit1And2.size());
 
         final List<RegionGeometry> allInOrder = regionGeometryRepository.findAllByOrderByIdAsc();
 
@@ -88,9 +88,9 @@ public class V3RegionGeometryUpdateServiceTest extends AbstractServiceTest {
     private void assertVersion(final int index, final Integer locationCode, final Instant effectiveDate, final String commitId,
                                final List<RegionGeometry> allInOrder) {
         final RegionGeometry region = allInOrder.get(index);
-        Assert.assertEquals(effectiveDate, region.getEffectiveDate());
-        Assert.assertEquals(locationCode, region.getLocationCode());
-        Assert.assertEquals(commitId, region.getGitCommitId());
+        assertEquals(effectiveDate, region.getEffectiveDate());
+        assertEquals(locationCode, region.getLocationCode());
+        assertEquals(commitId, region.getGitCommitId());
     }
 
     /**

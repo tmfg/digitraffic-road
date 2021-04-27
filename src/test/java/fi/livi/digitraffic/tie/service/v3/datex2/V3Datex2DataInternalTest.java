@@ -12,8 +12,7 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Import;

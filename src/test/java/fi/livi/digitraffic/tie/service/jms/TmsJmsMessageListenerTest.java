@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.jms;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertTimesEqual;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,8 +29,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.Test;import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,7 +218,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 assertTrue(found.isPresent());
 
                 final SensorValue sv = found.get();
-                Assert.assertEquals(sv.getValue(), anturi.getArvo(), 0.05d);
+                assertEquals(sv.getValue(), anturi.getArvo(), 0.05d);
 
                 if (found.get().getTimeWindowStart() != null) {
                     assertTimesEqual(timeWindowStart, sv.getTimeWindowStart());

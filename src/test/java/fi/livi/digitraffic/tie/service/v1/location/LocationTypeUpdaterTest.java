@@ -3,8 +3,7 @@ package fi.livi.digitraffic.tie.service.v1.location;
 import java.io.File;
 import java.nio.file.Path;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 

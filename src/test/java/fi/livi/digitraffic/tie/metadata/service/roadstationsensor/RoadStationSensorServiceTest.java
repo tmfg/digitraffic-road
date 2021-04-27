@@ -4,8 +4,7 @@ import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 
 import java.util.List;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;

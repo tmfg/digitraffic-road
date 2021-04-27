@@ -40,8 +40,7 @@ import java.util.stream.IntStream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
@@ -340,17 +339,17 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
         final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-        Assert.assertEquals(1, handled);
+        assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList());
-        Assert.assertEquals(1, result.getFeatures().size());
+        assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
-        Assert.assertEquals(startTime, props.startTime);
-        Assert.assertEquals(startTime, props.endTime);
+        assertEquals(startTime, props.startTime);
+        assertEquals(startTime, props.endTime);
     }
 
 
@@ -376,13 +375,13 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
         final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-        Assert.assertEquals(1, handled);
+        assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList());
-        Assert.assertEquals(0, result.getFeatures().size());
+        assertEquals(0, result.getFeatures().size());
     }
 
     /**
@@ -406,17 +405,17 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
         final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-        Assert.assertEquals(1, handled);
+        assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList());
-        Assert.assertEquals(1, result.getFeatures().size());
+        assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
-        Assert.assertEquals(startTime, props.startTime);
-        Assert.assertEquals(startTime, props.endTime);
+        assertEquals(startTime, props.startTime);
+        assertEquals(startTime, props.endTime);
     }
 
     /**
@@ -440,13 +439,13 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
         final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-        Assert.assertEquals(1, handled);
+        assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList());
-        Assert.assertEquals(0, result.getFeatures().size());
+        assertEquals(0, result.getFeatures().size());
     }
 
     @Test
@@ -462,7 +461,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             V2MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
         final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-        Assert.assertEquals(1, handled);
+        assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result1 = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),

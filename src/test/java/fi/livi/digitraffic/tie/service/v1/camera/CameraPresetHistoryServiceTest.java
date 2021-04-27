@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -34,8 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.internal.verification.VerificationModeFactory;
+import org.junit.jupiter.api.Test;import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,14 +141,18 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalIdParameter() {
-        cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Arrays.asList("C12345", "C1234"), null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Arrays.asList("C12345", "C1234"), null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void tooLongListOfIdParameters() {
-        cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE+1), null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE + 1), null);
+        });
     }
 
     @Test
@@ -158,7 +162,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
     @Test
     public void historyUpdateInPast() {
-
         doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
 
         final List<String> presetIds = generateHistoryForPublicPresets(2, 5);
@@ -563,9 +566,9 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         List<CameraPresetHistory> historyBefore = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(preset.getPresetId());
         assertCollectionSize(4, historyBefore);
-        Assert.assertFalse(historyBefore.get(0).getPublishable()); // T1
-        Assert.assertFalse(historyBefore.get(1).getPublishable()); // T2
-        Assert.assertFalse(historyBefore.get(2).getPublishable()); // T3
+        assertFalse(historyBefore.get(0).getPublishable()); // T1
+        assertFalse(historyBefore.get(1).getPublishable()); // T2
+        assertFalse(historyBefore.get(2).getPublishable()); // T3
         assertTrue(historyBefore.get(3).getPublishable()); // T4
 
         // Set camera to public from the T1. Preset history at T2 should remain secret. Others should be public.
@@ -577,7 +580,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         List<CameraPresetHistory> historyAfter = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(preset.getPresetId());
         assertTrue(historyAfter.get(0).getPublishable()); // T1
-        Assert.assertFalse(historyAfter.get(1).getPublishable()); // T2
+        assertFalse(historyAfter.get(1).getPublishable()); // T2
         assertTrue(historyAfter.get(2).getPublishable()); // T3
         assertTrue(historyAfter.get(3).getPublishable()); // T4
     }
@@ -593,14 +596,14 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         final long presetCount = history.get(0).cameraHistory.stream().map(PresetHistoryDto::getPresetId).distinct().count();
         final List<CameraPresetHistory> allBeforeDelete = cameraPresetHistoryRepository.findAll();
         log.info("allBeforeDeleteSize {}, presetCount {}, historySize {}", allBeforeDelete.size(), presetCount, historySize);
-        Assert.assertEquals(historySize*presetCount, allBeforeDelete.size());
+        assertEquals(historySize*presetCount, allBeforeDelete.size());
         flushAndClearSession();
 
         // after delete there should be left only newer than 24 hours -> 25 left/preset
         cameraPresetHistoryUpdateService.deleteOlderThanHoursHistory(24);
         final List<CameraPresetHistory> allAfterDelete = cameraPresetHistoryRepository.findAll();
         log.info("Before {} after delete {}", allBeforeDelete.size(), allAfterDelete.size());
-        Assert.assertEquals(25*presetCount, allAfterDelete.size());
+        assertEquals(25*presetCount, allAfterDelete.size());
 
         // All presets should have history of 25
         final Map<String, List<CameraPresetHistory>> historyPerPreset =
@@ -609,7 +612,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         // All history should be equal or newer than 24 h
         final ZonedDateTime oldestLimit = lastModified.minusHours(24).minusSeconds(1);
-        allAfterDelete.forEach(h -> Assert.assertTrue(h.getLastModified().isAfter(oldestLimit)));
+        allAfterDelete.forEach(h -> assertTrue(h.getLastModified().isAfter(oldestLimit)));
     }
 
     @Ignore("Internal testing")

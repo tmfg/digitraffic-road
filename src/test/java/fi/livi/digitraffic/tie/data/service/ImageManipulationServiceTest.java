@@ -3,14 +3,13 @@ package fi.livi.digitraffic.tie.data.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.IOException;
 
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-import org.springframework.core.io.Resource;
+import org.junit.jupiter.api.Test;import org.springframework.core.io.Resource;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.service.ImageManipulationService;

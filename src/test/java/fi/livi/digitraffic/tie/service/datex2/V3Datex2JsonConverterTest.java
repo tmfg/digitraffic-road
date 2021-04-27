@@ -23,8 +23,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.util.Assert;

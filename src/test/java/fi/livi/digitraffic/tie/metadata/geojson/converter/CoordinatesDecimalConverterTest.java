@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -17,6 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CoordinatesDecimalConverterTest extends AbstractDaemonTestWithoutS3 {
@@ -41,7 +42,7 @@ public class CoordinatesDecimalConverterTest extends AbstractDaemonTestWithoutS3
         final Point point = new Point(0.1, 2.9, 2.9999999999);
         final String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(point);
         log.info(json);
-        Assert.assertEquals(POINT, json);
+        assertEquals(POINT, json);
     }
 
     @Test
@@ -53,7 +54,7 @@ public class CoordinatesDecimalConverterTest extends AbstractDaemonTestWithoutS3
         final LineString lineString = new LineString(coordinates);
         final String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(lineString);
         log.info(json);
-        Assert.assertEquals(LINE_STRING, json);
+        assertEquals(LINE_STRING, json);
     }
 
     public static List<Double> asList(Double... a) {

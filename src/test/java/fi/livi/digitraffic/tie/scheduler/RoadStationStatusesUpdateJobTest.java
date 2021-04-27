@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.scheduler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -14,8 +15,7 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -173,12 +173,12 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
 
     private void assertPublicity(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType, final boolean isPublic) {
         final RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
-        Assert.assertEquals(isPublic, found.internalIsPublic());
+        assertEquals(isPublic, found.internalIsPublic());
     }
 
     private void assertCollectionStatus(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType, final CollectionStatus collectionStatus) {
         final RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
-        Assert.assertEquals(collectionStatus, found.getCollectionStatus());
+        assertEquals(collectionStatus, found.getCollectionStatus());
     }
 
     private RoadStation findWithLotjuId(final List<RoadStation> roadStations, final Long lotjuId, final RoadStationType roadStationType) {

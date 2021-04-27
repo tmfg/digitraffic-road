@@ -5,10 +5,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 public class ForeignKeyIndexTest extends AbstractServiceTest {
 
@@ -73,7 +74,7 @@ public class ForeignKeyIndexTest extends AbstractServiceTest {
             sb.append(stringObjectMap);
             sb.append("\n");
         }
-        Assert.assertTrue(
+        assertTrue(
                 "Found foreign key(s) without index. Add to the ignore list or create indexes. Something like: \n\n" + sb.toString(),
                 foreignKeysWithoutIndex.isEmpty());
     }

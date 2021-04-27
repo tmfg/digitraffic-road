@@ -2,8 +2,7 @@ package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 public class ForecastSectionNaturalIdHelperTest {
 
     private final String naturalId = "00003_207_010_8";

@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.mockito.internal.verification.VerificationModeFactory;
+import org.junit.jupiter.api.Test;import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

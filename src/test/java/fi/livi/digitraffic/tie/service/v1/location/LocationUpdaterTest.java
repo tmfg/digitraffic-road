@@ -5,13 +5,15 @@ import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.model.v1.location.Location;
 import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LocationUpdaterTest extends AbstractServiceTest {
 
@@ -29,49 +31,52 @@ public class LocationUpdaterTest extends AbstractServiceTest {
                 .collect(Collectors.toList());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void unknownSubtype() {
-        final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_unknown_subtype.csv"), getSubtypes(), VERSION);
-        Assert.assertThat(locations, Matchers.not(Matchers.empty()));
+        assertThrows(IllegalArgumentException.class, () -> {
+            final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_unknown_subtype.csv"), getSubtypes(), VERSION);
+        });
     }
 
     @Test
     public void ok() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_ok.csv"), getSubtypes(), VERSION);
-        Assert.assertThat(locations, Matchers.not(Matchers.empty()));
+        assertThat(locations, Matchers.not(Matchers.empty()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalReference() {
-        locationUpdater.updateLocations(getPath("/locations/locations_illegal_geocode.csv"), getSubtypes(), VERSION);
+        assertThrows(IllegalArgumentException.class, () -> {
+            locationUpdater.updateLocations(getPath("/locations/locations_illegal_geocode.csv"), getSubtypes(), VERSION);
+        });
     }
 
     @Test
     public void correctAreaReference() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_correct_area_reference.csv"), getSubtypes(), VERSION);
-        Assert.assertThat(locations, Matchers.hasSize(3));
-        Assert.assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(21));
-        Assert.assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(23));
-        Assert.assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(22));
-        Assert.assertThat(locations.get(0).getAreaRef(), Matchers.nullValue());
-        Assert.assertThat(locations.get(1).getAreaRef(), Matchers.comparesEqualTo(22));
-        Assert.assertThat(locations.get(1).getLinearRef(), Matchers.nullValue());
-        Assert.assertThat(locations.get(2).getAreaRef(), Matchers.comparesEqualTo(21));
-        Assert.assertThat(locations.get(2).getLinearRef(), Matchers.nullValue());
+        assertThat(locations, Matchers.hasSize(3));
+        assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(21));
+        assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(23));
+        assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(22));
+        assertThat(locations.get(0).getAreaRef(), Matchers.nullValue());
+        assertThat(locations.get(1).getAreaRef(), Matchers.comparesEqualTo(22));
+        assertThat(locations.get(1).getLinearRef(), Matchers.nullValue());
+        assertThat(locations.get(2).getAreaRef(), Matchers.comparesEqualTo(21));
+        assertThat(locations.get(2).getLinearRef(), Matchers.nullValue());
     }
 
     @Test
     public void correctLinearReference() {
         final List<Location> locations = locationUpdater.updateLocations(getPath("/locations/locations_correct_linear_reference.csv"), getSubtypes(), VERSION);
-        Assert.assertThat(locations, Matchers.hasSize(3));
-        Assert.assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(31));
-        Assert.assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(33));
-        Assert.assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(32));
-        Assert.assertThat(locations.get(0).getLinearRef(), Matchers.nullValue());
-        Assert.assertThat(locations.get(1).getLinearRef(), Matchers.comparesEqualTo(32));
-        Assert.assertThat(locations.get(1).getAreaRef(), Matchers.nullValue());
-        Assert.assertThat(locations.get(2).getLinearRef(), Matchers.comparesEqualTo(31));
-        Assert.assertThat(locations.get(2).getAreaRef(), Matchers.nullValue());
+        assertThat(locations, Matchers.hasSize(3));
+        assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(31));
+        assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(33));
+        assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(32));
+        assertThat(locations.get(0).getLinearRef(), Matchers.nullValue());
+        assertThat(locations.get(1).getLinearRef(), Matchers.comparesEqualTo(32));
+        assertThat(locations.get(1).getAreaRef(), Matchers.nullValue());
+        assertThat(locations.get(2).getLinearRef(), Matchers.comparesEqualTo(31));
+        assertThat(locations.get(2).getAreaRef(), Matchers.nullValue());
     }
 
 }

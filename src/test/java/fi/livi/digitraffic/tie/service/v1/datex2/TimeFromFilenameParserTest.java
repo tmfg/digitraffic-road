@@ -6,7 +6,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TimeFromFilenameParserTest {
     private void test(final LocalDateTime fileTime, final ZonedDateTime expected) {
@@ -15,7 +17,7 @@ public class TimeFromFilenameParserTest {
 
         final Instant i = TimeFromFilenameParser.parseDate(filename);
 
-        Assert.assertEquals(i.toEpochMilli(), expected.toInstant().toEpochMilli());
+        assertEquals(i.toEpochMilli(), expected.toInstant().toEpochMilli());
     }
 
     @Test

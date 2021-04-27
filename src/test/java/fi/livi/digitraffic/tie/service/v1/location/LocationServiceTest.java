@@ -7,11 +7,11 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -46,19 +46,19 @@ public class LocationServiceTest extends AbstractServiceTest {
         assertNotNull(locationService.findLocation(1, VERSION0));
     }
 
-    @Test(expected = ObjectNotFoundException.class)
+    @Test
     public void findLocationNotFound() {
-        assertNotNull(locationService.findLocation(-222, LATEST));
+        assertThrows(ObjectNotFoundException.class, () -> locationService.findLocation(-222, LATEST));
     }
 
-    @Test(expected = ObjectNotFoundException.class)
+    @Test
     public void findLocationNotFoundFromOtherVersion() {
-        assertNotNull(locationService.findLocation(12187, VERSION0));
+        assertThrows(ObjectNotFoundException.class, () -> locationService.findLocation(12187, VERSION0));
     }
 
-    @Test(expected = ObjectNotFoundException.class)
+    @Test
     public void findLocationVersionNotFound() {
-        assertNotNull(locationService.findLocation(12187, "not_found"));
+        assertThrows(ObjectNotFoundException.class, () -> locationService.findLocation(12187, "not_found"));
     }
 
     @Test

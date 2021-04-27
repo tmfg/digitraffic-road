@@ -6,8 +6,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
 
@@ -50,7 +50,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     private final String roadwork1_active_id = "GUID50350441";
     private final String weightRestriction1_active_id = "GUID5035473201";
 
-    @Before
+    @BeforeEach
     public void updateData() throws IOException {
         final V2Datex2UpdateService datex2UpdateService =
             applicationContext.getAutowireCapableBeanFactory().createBean(V2Datex2UpdateService.class);
@@ -153,9 +153,9 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
 
     private void assertSituationExistenceInXml(final String situationId, final boolean shouldExist, final String xml) {
         if (shouldExist) {
-            assertTrue(situationId + " should exist in response", xml.contains(situationId));
+            assertTrue(xml.contains(situationId), situationId + " should exist in response");
         } else {
-            assertFalse(situationId + " should not exist in response", xml.contains(situationId));
+            assertFalse(xml.contains(situationId), situationId + " should not exist in response");
         }
     }
 

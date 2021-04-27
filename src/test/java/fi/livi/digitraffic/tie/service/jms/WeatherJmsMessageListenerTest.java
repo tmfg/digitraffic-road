@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.jms;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,8 +25,7 @@ import javax.jms.JMSException;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -250,7 +250,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                     anturi.getLaskennallinenAnturiId(), found.get().getRoadStationSensor().getLotjuId(),
                     NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue());
 
-                Assert.assertEquals(NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue(), 0.05d);
+                assertEquals(NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue(), 0.05d);
             }
         }
         log.info("Data is valid");

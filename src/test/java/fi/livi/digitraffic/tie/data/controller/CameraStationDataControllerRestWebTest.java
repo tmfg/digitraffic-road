@@ -12,8 +12,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoField;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
@@ -34,7 +34,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
 
     private final Instant updateTime = Instant.now().with(ChronoField.MILLI_OF_SECOND, 0);
 
-    @Before
+    @BeforeEach
     public  void initData() {
         cameraId =
                 cameraDataService.findPublishableCameraStationsData(false).getCameraStations().stream()

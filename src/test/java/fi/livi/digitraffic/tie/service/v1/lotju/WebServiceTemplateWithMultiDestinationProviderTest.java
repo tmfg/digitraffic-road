@@ -12,8 +12,7 @@ import javax.xml.bind.JAXBElement;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Test;import org.mockito.Mockito;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
@@ -76,7 +75,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         verifyServer2HealthCount(1);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void firstAndSecondHealthNotOk() {
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
         server2WhenRequestHealthThenReturn(OK, NOT_OK_RESPONSE_CONTENT);
