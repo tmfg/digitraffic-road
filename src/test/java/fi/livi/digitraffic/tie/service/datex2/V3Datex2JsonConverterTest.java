@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
     @SpyBean
     private V3RegionGeometryDataService v3RegionGeometryDataService;
 
-    @Before
+    @BeforeEach
     public void init() {
         writerForImsGeoJsonFeature = objectMapper.writerFor(ImsGeoJsonFeature.class);
         readerForGeometry = objectMapper.readerFor(Geometry.class);

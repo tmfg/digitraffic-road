@@ -29,9 +29,9 @@
         <maven.compiler.release>11</maven.compiler.release>
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
         <net.logstash.logback.version>6.3</net.logstash.logback.version>
-        <jackson.dataformat.version>2.11.3</jackson.dataformat.version>
-        <com.google.protobuf.version>3.13.0</com.google.protobuf.version>
-        <org.apache.cxf.version>3.4.0</org.apache.cxf.version>
+        <jackson.dataformat.version>2.12.3</jackson.dataformat.version>
+        <com.google.protobuf.version>3.15.8</com.google.protobuf.version>
+        <org.apache.cxf.version>3.4.3</org.apache.cxf.version>
         <io.springfox.version>3.0.0</io.springfox.version>
     </properties>
 
@@ -155,14 +155,14 @@
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
-            <version>1.2.5.RELEASE</version>
+            <version>1.3.1</version>
         </dependency>
 
         <!-- JGit -->
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>5.10.0.202012080955-r</version>
+            <version>5.11.0.202103091610-r</version>
         </dependency>
 
         <!-- google protobuf -->
@@ -232,7 +232,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.18</version>
+            <version>42.2.20</version>
         </dependency>
 
         <dependency>
@@ -283,7 +283,7 @@
         <dependency>
             <groupId>org.locationtech.jts.io</groupId>
             <artifactId>jts-io-common</artifactId>
-            <version>1.16.0</version>
+            <version>1.18.1</version>
         </dependency>
 
         <!-- Logging in JSON format for ELK-stack -->
@@ -296,7 +296,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.973</version>
+            <version>1.11.1005</version>
         </dependency>
 
         <dependency>
