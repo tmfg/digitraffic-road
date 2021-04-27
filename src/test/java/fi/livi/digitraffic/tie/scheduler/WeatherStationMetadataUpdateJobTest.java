@@ -7,9 +7,8 @@ import static org.junit.Assert.assertNull;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +56,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
     @Autowired
     private LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
 
-    @Before
+    @BeforeEach
     public void setUpLotjuClientAndInitData() {
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuWeatherStationMetadataClient);
 
@@ -86,7 +85,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
         assertEquals(3, allAfterChange.getFeatures().size());
     }
 
-    @After
+    @AfterEach
     public void restoreOriginalDestinationProviderForLotjuClients() {
         restoreLotjuClientDestinationProvider(lotjuWeatherStationMetadataClient);
     }

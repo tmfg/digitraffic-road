@@ -38,9 +38,9 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
@@ -77,7 +77,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Autowired
     private V2MaintenanceTrackingServiceTestHelper testHelper;
 
-    @Before
+    @BeforeEach
     public void init() {
         testHelper.clearDb();
     }

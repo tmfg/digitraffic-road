@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -10,9 +12,9 @@ import static org.springframework.http.HttpStatus.OK;
 
 import javax.xml.bind.JAXBElement;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.mockito.Mockito;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
@@ -29,7 +31,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     private AbstractLotjuMetadataClient client;
     private WebServiceTemplateWithMultiDestinationProviderSupport webServiceTemplate;
 
-    @Before
+    @BeforeEach
     public void initSoapClientSpyAndServerResponses() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, healthPath, TTL_S, healthOkCheckValueInApplicationSettings) {};
@@ -88,7 +90,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
             verifyServer2HealthCount(1);
             throw e;
         }
-        Assert.fail("Should not execute as IllegalStateException should have been thrown");
+        fail("Should not execute as IllegalStateException should have been thrown");
     }
 
     @Test
@@ -173,7 +175,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     }
 
     private void clientRequestDataAndVerifyResponse(String response) {
-        Assert.assertEquals(response, clientRequestData());
+        assertEquals(response, clientRequestData());
     }
 
     private Object clientRequestData() {

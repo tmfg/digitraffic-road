@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
@@ -41,7 +41,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
     @Autowired
     protected RoadDistrictService roadDistrictService;
 
-    @Before
+    @BeforeEach
     public void initData() {
         entityManager.createNativeQuery(
             "UPDATE road_station rs " +

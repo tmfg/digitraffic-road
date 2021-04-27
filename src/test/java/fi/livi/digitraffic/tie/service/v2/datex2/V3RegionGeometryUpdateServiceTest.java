@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -41,7 +40,7 @@ public class V3RegionGeometryUpdateServiceTest extends AbstractServiceTest {
 
     private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
 
-    @Before
+    @BeforeEach
     public void cleanDb() {
         v3RegionGeometryTestHelper = new V3RegionGeometryTestHelper(regionGeometryGitClientMock, v3RegionGeometryUpdateService, dataStatusService);
 

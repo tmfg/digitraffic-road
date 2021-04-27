@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -54,7 +54,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
     @Autowired
     private DataStatusService dataStatusService;
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
         forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
@@ -68,7 +68,6 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
 
     @Test
     public void updateForecastSectionV1DataSucceeds() throws IOException {
-
         server.expect(requestTo("/nullroads.php"))
             .andExpect(method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV1.json"), MediaType.APPLICATION_JSON));
@@ -85,7 +84,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
 
         final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA).toInstant();
 
-        Assert.assertEquals(dataUpdated, lastUpdated);
+        assertEquals(dataUpdated, lastUpdated);
 
         final ForecastSectionWeatherRootDto data = forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V1, false,
                                                                                                             null,

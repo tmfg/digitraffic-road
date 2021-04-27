@@ -3,12 +3,7 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowWithoutMillisAtUtc;
 import static fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.MAX_IDS_SIZE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -32,10 +27,10 @@ import javax.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;import org.mockito.internal.verification.VerificationModeFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +86,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
     @Value("${dt.amazon.s3.weathercam.region}")
     private String s3WeathercamRegion;
 
-    @Before
+    @BeforeEach
     public void cleanHistory() {
         cameraPresetHistoryRepository.deleteAll();
     }
@@ -108,7 +103,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         final CameraPresetHistory found = cameraPresetHistoryDataService.findHistoryVersionInclSecretInternal(preset.getPresetId(), history.getVersionId());
         assertNotNull(found);
-        assertNotEquals("Can't be same instance to test", history, found);
+        assertNotEquals(history, found, "Can't be same instance to test");
         assertEquals(history.getPresetId(), found.getPresetId());
         assertEquals(history.getVersionId(), found.getVersionId());
         assertEquals(history.getCameraPresetId(), found.getCameraPresetId());
@@ -134,7 +129,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
             for (CameraPresetHistory h : histories) {
                 assertEquals(presetId, h.getPresetId());
                 if (prevDate != null) {
-                    assertTrue("Previous history date must be before next", prevDate.isBefore(h.getLastModified()));
+                    assertTrue(prevDate.isBefore(h.getLastModified()), "Previous history date must be before next");
                 }
                 prevDate = h.getLastModified();
             }
@@ -416,11 +411,11 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
 
         final PresetHistoryPresenceDto deleter = presetPresencesToDelete.cameraHistoryPresences.get(0).presetHistoryPresences.get(0);
         assertEquals(presetIdToDelete, deleter.getPresetId());
-        assertTrue(presetIdToDelete, deleter.isHistoryPresent());
+        assertTrue(deleter.isHistoryPresent(), presetIdToDelete);
 
         final PresetHistoryPresenceDto notDelete = presetPresencesNotToDelete.cameraHistoryPresences.get(0).presetHistoryPresences.get(0);
         assertEquals(presetIdNotToDelete, notDelete.getPresetId());
-        assertTrue(presetIdNotToDelete, notDelete.isHistoryPresent());
+        assertTrue(notDelete.isHistoryPresent(), presetIdNotToDelete);
 
         cameraPresetHistoryUpdateService.deleteAllWithPresetId(presetIdToDelete);
 
@@ -433,7 +428,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         assertTrue(exception);
         final CameraHistoryPresencesDto notDeleted =
             cameraPresetHistoryDataService.findCameraOrPresetHistoryPresences(presetIdNotToDelete, null, null);
-        assertTrue(presetIdNotToDelete, notDeleted.cameraHistoryPresences.get(0).presetHistoryPresences.get(0).isHistoryPresent());
+        assertTrue(notDeleted.cameraHistoryPresences.get(0).presetHistoryPresences.get(0).isHistoryPresent(), presetIdNotToDelete);
 
     }
     @Test

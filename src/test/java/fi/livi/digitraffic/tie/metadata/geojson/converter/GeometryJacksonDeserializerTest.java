@@ -1,7 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,7 +30,7 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutS3
 
     private ObjectReader geoJsonGeometryReader;
 
-    @Before
+    @BeforeEach
     public void initReader() {
         geoJsonGeometryReader = objectMapper.readerFor(Geometry.class);
     }

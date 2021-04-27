@@ -2,9 +2,10 @@ package fi.livi.digitraffic.tie.service.v2.datex2;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.annotation.Rollback;
 
@@ -27,7 +28,7 @@ public class RegionGeometryGitClientInternalTest extends AbstractDaemonTestWitho
 
     private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
 
-    @Before
+    @BeforeEach
     public void cleanDb() {
 //        regionGeometryRepository.deleteAll();
 

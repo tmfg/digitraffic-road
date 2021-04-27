@@ -4,7 +4,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,10 +30,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,7 +95,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private String bucketName;
 
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
-    @Before
+    @BeforeEach
     public void initData() throws IOException {
         log.info("LOTJU_IMAGE_PATH={}", LOTJU_IMAGE_PATH);
         log.info("TEST_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
@@ -159,8 +162,8 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
             int updated = 0;
             try {
                 updated = cameraImageUpdateManager.updateCameraData(data);
-            } catch (Exception e) {
-                Assert.fail("Data updating failed");
+            } catch (final Exception e) {
+                fail("Data updating failed");
             }
             TestTransaction.flagForCommit();
             TestTransaction.end();
@@ -231,7 +234,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
 
             sw.reset();
             sw.start();
-            Assert.assertTrue("Data size too small: " + data.size(), data.size() >= 25);
+            assertTrue(data.size() >= 25, "Data size too small: " + data.size());
             cameraJmsMessageListener.drainQueueScheduled();
             log.info("Data handle took " + sw.getTime() + " ms");
             handleDataTotalTime += sw.getTime();
@@ -258,7 +261,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
             // Check written image against source image
             byte[] dst = readCameraImageFromS3(presetId);
             byte[] src = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
-            Assert.assertArrayEquals("Written image is invalid for " + presetId, src, dst);
+            assertArrayEquals("Written image is invalid for " + presetId, src, dst);
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
@@ -266,16 +269,16 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
             Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
             Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
 
-            assertEquals("Preset not updated with kuva's timestamp " + preset.getPresetId(), kuvaTaken, presetPictureLastModified);
+            assertEquals(kuvaTaken, presetPictureLastModified, "Preset not updated with kuva's timestamp " + preset.getPresetId());
         }
 
         final long latestImageTimestampToExpect = data.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow();
         final ZonedDateTime imageUpdatedInDb = dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_IMAGE_UPDATED);
-        assertEquals("Latest image update time not correct", Instant.ofEpochMilli(roundToZeroMillis(latestImageTimestampToExpect)), imageUpdatedInDb.toInstant());
+        assertEquals(Instant.ofEpochMilli(roundToZeroMillis(latestImageTimestampToExpect)), imageUpdatedInDb.toInstant(), "Latest image update time not correct");
 
         log.info("Data is valid");
-        Assert.assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms",
-                handleDataTotalTime <= maxHandleTime);
+        assertTrue(handleDataTotalTime <= maxHandleTime,
+            "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
     }
 
     private byte[] readCameraImageFromS3(final String presetId) throws IOException {

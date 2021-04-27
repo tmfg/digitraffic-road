@@ -9,7 +9,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
     private SensorValueHistoryBuilder builder;
 
-    @Before
+    @BeforeEach
     public void initS3BucketForSensorData() {
         log.info("Init S3 Bucket {} with S3: {}, {}", sensorDataS3Properties.getS3BucketName(), amazonS3);
 

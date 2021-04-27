@@ -11,9 +11,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -37,7 +38,7 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
     @Autowired
     private V2MaintenanceTrackingServiceTestHelper testHelper;
 
-    @Before
+    @BeforeEach
     public void cleanDb() {
         // Uncomment if you want to clear db before every test
         // testHelper.clearDb();

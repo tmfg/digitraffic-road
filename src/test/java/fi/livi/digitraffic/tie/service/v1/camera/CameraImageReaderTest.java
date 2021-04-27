@@ -1,15 +1,17 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
 import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.io.IOException;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.service.v1.lotju.AbstractMultiDestinationProviderTest;
@@ -23,7 +25,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
 
     private CameraImageReader cameraImageReader;
 
-    @Before
+    @BeforeEach
     public void initCameraImageReader() {
         cameraImageReader = new CameraImageReader(1000, 1000, new String[] { baseUrl1, baseUrl2 },
                                                   dataPath, healthPath, 1, healthOkCheckValueInApplicationSettings);
@@ -40,7 +42,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
         final byte[] img = cameraImageReader.readImage(id, info);
 
-        Assert.assertArrayEquals(img1, img);
+        assertArrayEquals(img1, img);
         verifyServer1HealthCount(1);
         verifyServer2HealthCount(0);
     }
@@ -58,7 +60,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
         final byte[] img = cameraImageReader.readImage(id, info);
 
-        Assert.assertArrayEquals(img2, img);
+        assertArrayEquals(img2, img);
         verifyServer1HealthCount(1);
         verifyServer2HealthCount(1);
         verifyServer1DataCount(0);
@@ -78,13 +80,13 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
         try {
             cameraImageReader.readImage(id, info);
-            Assert.fail("First request to server1 should fail and throw exception");
+            fail("First request to server1 should fail and throw exception");
         } catch (Exception e) {
             // empty
         }
         final byte[] img = cameraImageReader.readImage(id, info);
 
-        Assert.assertArrayEquals(img2, img);
+        assertArrayEquals(img2, img);
         verifyServer1HealthCount(1);
         verifyServer2HealthCount(1);
         verifyServer1DataCount(1);

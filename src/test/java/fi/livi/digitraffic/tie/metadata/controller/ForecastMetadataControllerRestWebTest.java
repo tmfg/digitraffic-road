@@ -16,8 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -44,8 +45,7 @@ public class ForecastMetadataControllerRestWebTest extends AbstractRestWebTest {
     @Autowired
     private RestTemplate restTemplate;
 
-
-    @Before
+    @BeforeEach
     public void initData() throws IOException {
         forecastSectionRepository.deleteAll();
         final ForecastSectionClient forecastSectionClient = new ForecastSectionClient(restTemplate);

@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;import org.mockito.Answers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -56,7 +57,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWith
     @Autowired
     private RestTemplate restTemplate;
 
-    @Before
+    @BeforeEach
     public void before() {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
         forecastSectionMetadataUpdater = new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository,

@@ -18,8 +18,9 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.mockito.internal.verification.VerificationModeFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
     private JMSMessageListener<CameraMetadataUpdatedMessageDto> cameraMetadataJmsMessageListener;
 
-    @Before
+    @BeforeEach
     public void initListener() {
         // Create listener
         this.dataUpdater = (data) -> cameraMetadataMessageHandler.updateCameraMetadata(data);

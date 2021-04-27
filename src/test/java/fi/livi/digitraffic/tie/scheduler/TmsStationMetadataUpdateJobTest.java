@@ -4,14 +4,16 @@ import static fi.livi.digitraffic.tie.controller.TmsState.ACTIVE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.support.destination.DestinationProvider;
@@ -57,18 +59,18 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
 
     private DestinationProvider originalDestinationProvider;
 
-    @Before
+    @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuTmsStationMetadataClient);
     }
 
-    @After
+    @AfterEach
     public void restoreOriginalDestinationProviderForLotjuClients() {
         restoreLotjuClientDestinationProvider(lotjuTmsStationMetadataClient);
     }
 
 
-    @After
+    @AfterEach
     public void restoreLotjuClient() {
         final LotjuTmsStationMetadataClient lotjuClient = getTargetObject(lotjuTmsStationMetadataClient);
         lotjuClient.setDestinationProvider(originalDestinationProvider);
@@ -180,25 +182,25 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
         log.info("sensorsInitial={}", sensorsInitial);
         log.info("sensorsAfter={}", sensorsAfter);
 
-        Assert.assertTrue(sensorsInitial.contains(5116L));
-        Assert.assertTrue(sensorsInitial.contains(5119L));
-        Assert.assertTrue(sensorsInitial.contains(5122L));
-        Assert.assertFalse(sensorsInitial.contains(5125L));
+        assertTrue(sensorsInitial.contains(5116L));
+        assertTrue(sensorsInitial.contains(5119L));
+        assertTrue(sensorsInitial.contains(5122L));
+        assertFalse(sensorsInitial.contains(5125L));
 
-        Assert.assertTrue(sensorsAfter.contains(5116L));
-        Assert.assertFalse(sensorsAfter.contains(5119L)); // public false
-        Assert.assertFalse(sensorsAfter.contains(5122L));
-        Assert.assertTrue(sensorsAfter.contains(5125L));
+        assertTrue(sensorsAfter.contains(5116L));
+        assertFalse(sensorsAfter.contains(5119L)); // public false
+        assertFalse(sensorsAfter.contains(5122L));
+        assertTrue(sensorsAfter.contains(5125L));
 
         TmsRoadStationSensorDto initialSensor = allSensorsInitial.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
         TmsRoadStationSensorDto afterChangeSensor = allSensorsAfterChange.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
-        Assert.assertNull(initialSensor.getDirection());
-        Assert.assertNull(initialSensor.getLane());
-        Assert.assertNull(initialSensor.getVehicleClass());
+        assertNull(initialSensor.getDirection());
+        assertNull(initialSensor.getLane());
+        assertNull(initialSensor.getVehicleClass());
 
-        Assert.assertEquals(1, afterChangeSensor.getDirection().intValue());
-        Assert.assertEquals(2, afterChangeSensor.getLane().intValue());
-        Assert.assertEquals(VehicleClass.TRUCK, afterChangeSensor.getVehicleClass());
+        assertEquals(1, afterChangeSensor.getDirection().intValue());
+        assertEquals(2, afterChangeSensor.getLane().intValue());
+        assertEquals(VehicleClass.TRUCK, afterChangeSensor.getVehicleClass());
     }
 
     private TmsStationFeature findWithLotjuId(final TmsStationFeatureCollection collection, final long lotjuId) {

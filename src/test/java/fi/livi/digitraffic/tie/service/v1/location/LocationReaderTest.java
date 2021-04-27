@@ -6,8 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +26,7 @@ public class LocationReaderTest extends AbstractJpaTest {
 
     private final static String VERSION = "VERSION";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final List<LocationSubtype> locationSubtypes = locationSubtypeRepository.findAll();
 
