@@ -17,8 +17,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
 @TestPropertySource(properties = { "spring.localstack.enabled=false" })
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
@@ -45,8 +45,7 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
         this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
                 hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
 
-        assertNotNull("the JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
+        assertNotNull(this.mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
     }
 
     @BeforeEach

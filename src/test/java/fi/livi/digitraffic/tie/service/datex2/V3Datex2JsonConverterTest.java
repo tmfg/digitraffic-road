@@ -7,10 +7,10 @@ import static fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType.GE
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getJsonVersionString;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readStaticImsJmessageResourceContent;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -22,11 +22,10 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.junit.Before;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -259,7 +258,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
             }
 
             if (version.version >= 2.08) {
-                Assert.notNull(rwp.severity, "Severity should exist");
+                assertNotNull(rwp.severity, "Severity should exist");
             }
         }
     }

@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
-import static org.springframework.test.util.AssertionErrors.assertNotEquals;
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -50,10 +50,10 @@ public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
 
         final ZonedDateTime deleteTime = ZonedDateTime.now().minusMinutes(61);
 
-        assertNotEquals("Db not initialized", 0, weatherService.findWeatherHistoryData(10, deleteTime, null).size());
+        assertNotEquals(0, weatherService.findWeatherHistoryData(10, deleteTime, null).size(), "Db not initialized");
 
-        assertEquals("Wrong amount elements cleaned", builder.getElementCountAt(1), sensorDataUpdateService.cleanWeatherHistoryData(deleteTime));
+        assertEquals(builder.getElementCountAt(1), sensorDataUpdateService.cleanWeatherHistoryData(deleteTime), "Wrong amount of elements cleaned");
 
-        assertEquals("Db maintenance failed", builder.getElementCountAt(0), weatherService.findWeatherHistoryData(10, deleteTime, null).size());
+        assertEquals(builder.getElementCountAt(0), weatherService.findWeatherHistoryData(10, deleteTime, null).size(), "Db maintenance failed");
     }
 }
