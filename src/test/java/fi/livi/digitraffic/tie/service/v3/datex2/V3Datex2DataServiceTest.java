@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -145,7 +144,6 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
         assertActiveMessageFound(GUID_WITH_JSON, false, false);
     }
 
-    @Rollback(false)
     @Test
     public void findTrafficAnnouncementWithActiveAndDeactiveSituationRecordIsReturned() throws IOException {
         final ZonedDateTime start = DateHelper.getZonedDateTimeNowAtUtc().minusHours(1);
