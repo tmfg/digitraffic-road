@@ -28,7 +28,7 @@ public class AmazonS3ClientTestConfiguration {
         return new AmazonDockerClientsHolder(localstackDocker);
     }
 
-//    @ConditionalOnExpression("'${spring.localstack.enabled}' == 'false'")
+    @ConditionalOnExpression("'${spring.localstack.enabled}' == 'false'")
     @Bean
     public AmazonS3 amazonS3(final @Value("${dt.amazon.s3.weathercam.region}") String region) {
 
