@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
                                    "road.datasource.hikari.maximum-pool-size=6",
                                    "logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateService=WARN"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@Ignore("Does not execute properly in CI server")
+@Disabled("Does not execute properly in CI server")
 public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 

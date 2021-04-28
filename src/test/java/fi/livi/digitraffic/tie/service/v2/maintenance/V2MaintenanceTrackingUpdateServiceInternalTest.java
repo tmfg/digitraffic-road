@@ -13,6 +13,7 @@ import java.util.Collections;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
         // testHelper.clearDb();
     }
 
-    @Ignore("Just for internal testing")
+    @Disabled("Just for internal testing")
     @Rollback(false)
     @Test
     public void handleUnhandledMaintenanceTrackingData() {
@@ -60,7 +61,7 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
         log.info("Handled {} trackings", count);
     }
 
-    @Ignore("Just for internal testing")
+    @Disabled("Just for internal testing")
     @Rollback(false)
     @Test
     public void saveAndHandleMessagesComingInWrongOrder() throws IOException {
@@ -69,7 +70,7 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
         log.info("Handled: {}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100));
     }
 
-    @Ignore("Just for internal testing. Uncomment to test import with larger datasets")
+    @Disabled("Just for internal testing. Uncomment to test import with larger datasets")
     @Rollback(false)
     @Test
     public void longJumpInLineStringData() throws IOException {
@@ -78,7 +79,7 @@ public class V2MaintenanceTrackingUpdateServiceInternalTest extends AbstractServ
         log.info("Handled count={} tookMs={}", v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100), s.getTime());
     }
 
-    @Ignore("Just for internal testing.")
+    @Disabled("Just for internal testing.")
     @Test
     public void testFind() {
         final Instant start = Instant.parse("2021-01-22T00:00:00Z");

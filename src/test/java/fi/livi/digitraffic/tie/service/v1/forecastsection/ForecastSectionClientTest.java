@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
@@ -22,9 +23,8 @@ public class ForecastSectionClientTest extends AbstractServiceTest {
     private ForecastSectionClient forecastSectionClient;
 
     @Test
-    @Ignore("For manual integration testing")
+    @Disabled("For manual integration testing")
     public void getForecastSectionV1MetadataSucceeds() {
-
         List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
         assertTrue(forecastSectionCoordinates.size() > 2);
@@ -36,18 +36,16 @@ public class ForecastSectionClientTest extends AbstractServiceTest {
     }
 
     @Test
-    @Ignore("For manual integration testing")
+    @Disabled("For manual integration testing")
     public void getForecastSectionV2MetadataSucceeds() {
-
         final ForecastSectionV2Dto forecastSectionV2Metadata = forecastSectionClient.getForecastSectionV2Metadata();
 
         assertNotNull(forecastSectionV2Metadata);
     }
 
     @Test
-    @Ignore("For manual integration testing")
+    @Disabled("For manual integration testing")
     public void getRoadConditionsSucceeds() {
-
         ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);

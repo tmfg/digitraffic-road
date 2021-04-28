@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
-@Ignore("Eats way too much memory")
+@Disabled("Eats way too much memory")
 public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)

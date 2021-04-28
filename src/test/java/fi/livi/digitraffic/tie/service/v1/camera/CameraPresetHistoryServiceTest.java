@@ -29,6 +29,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
@@ -610,7 +611,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutS3 
         allAfterDelete.forEach(h -> assertTrue(h.getLastModified().isAfter(oldestLimit)));
     }
 
-    @Ignore("Internal testing")
+    @Disabled("Internal testing")
     @Rollback(false)
     @Test
     public void generateHistoryForInternalTesting() {

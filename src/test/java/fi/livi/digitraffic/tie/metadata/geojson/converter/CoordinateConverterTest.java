@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +120,7 @@ public class CoordinateConverterTest {
         return true;
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void justConvertForTesting() {
         convertFromWGS84ToETRS89(339803.0, 6818579.0);

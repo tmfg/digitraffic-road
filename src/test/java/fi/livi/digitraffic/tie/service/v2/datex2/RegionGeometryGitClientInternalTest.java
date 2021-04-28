@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
@@ -38,14 +39,14 @@ public class RegionGeometryGitClientInternalTest extends AbstractDaemonTestWitho
 
     }
 
-    @Ignore("Just for internal testing to test data fetch from GitHub and save to db")
+    @Disabled("Just for internal testing to test data fetch from GitHub and save to db")
     @Rollback(value = false)
     @Test
     public void updateAreaLocationRegionsFromGithub() {
         v3RegionGeometryTestHelper.runUpdateJob();
     }
 
-    @Ignore("Just for internal testing to fetch all changes for geometries in github")
+    @Disabled("Just for internal testing to fetch all changes for geometries in github")
     @Test
     public void testClient() {
         final List<RegionGeometry> changes =

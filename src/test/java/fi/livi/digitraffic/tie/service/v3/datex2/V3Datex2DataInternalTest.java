@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,7 +46,7 @@ public class V3Datex2DataInternalTest extends AbstractRestWebTest {
     @Autowired
     private V2Datex2UpdateService v2Datex2UpdateService;
 
-    @Ignore("Just for internal testing")
+    @Disabled("Just for internal testing")
     @Rollback(value = false)
     @Test
     public void initTrafficMessagesEveryVersionOfImsAndJson() {
@@ -66,7 +67,7 @@ public class V3Datex2DataInternalTest extends AbstractRestWebTest {
         });
     }
 
-    @Ignore("Just for internal testing")
+    @Disabled("Just for internal testing")
     @Rollback(value = false)
     @Test
     public void importSimpleJsonWithMultipeRegionGeometries() throws IOException {
