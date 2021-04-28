@@ -39,17 +39,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "    SELECT null\n" +
             "    FROM datex2_situation_record situation_record\n" +
             "    WHERE situation_record.datex2_situation_id = latest_situation.id\n" +
-            "      AND situation_record.life_cycle_management_canceled IS NOT TRUE\n" +
-            "      AND (\n" +
-            "            situation_record.validy_status = 'ACTIVE'\n" +
-            "            OR (situation_record.validy_status = 'DEFINED_BY_VALIDITY_TIME_SPEC'\n" +
-            "                AND (situation_record.overall_end_time IS NULL\n" +
-            "                    OR situation_record.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
-            "                )\n" +
-            "            ) OR (situation_record.validy_status = 'SUSPENDED'\n" +
-            "                  AND COALESCE(situation_record.overall_end_time, situation_record.version_time) > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
-            "            )\n" +
-            "      )\n" +
+            "      AND situation_record.effective_end_time >= current_timestamp - :activeInPastHours * interval '1 hour'\n" +
             ")\n";
 
     String FIND_ALL_ACTIVE_SITUATION_TYPES_AS_D =
@@ -75,17 +65,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
             "    SELECT null\n" +
             "    FROM datex2_situation_record situation_record\n" +
             "    WHERE situation_record.datex2_situation_id = latest_situation.id\n" +
-            "      AND situation_record.life_cycle_management_canceled IS NOT TRUE\n" +
-            "      AND (\n" +
-            "            situation_record.validy_status = 'ACTIVE'\n" +
-            "            OR (situation_record.validy_status = 'DEFINED_BY_VALIDITY_TIME_SPEC'\n" +
-            "                AND (situation_record.overall_end_time IS NULL\n" +
-            "                    OR situation_record.overall_end_time > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
-            "                )\n" +
-            "            ) OR (situation_record.validy_status = 'SUSPENDED'\n" +
-            "                  AND COALESCE(situation_record.overall_end_time, situation_record.version_time) > current_timestamp - :activeInPastHours * interval '1 hour'\n" +
-            "            )\n" +
-            "      )\n" +
+            "      AND situation_record.effective_end_time >= current_timestamp - :activeInPastHours * interval '1 hour'\n" +
             ")\n";
 
     String FIND_ALL_ACTIVE_AS_D_WITH_JSON = FIND_ALL_ACTIVE_AS_D + "  AND d.json_message IS NOT NULL\n";

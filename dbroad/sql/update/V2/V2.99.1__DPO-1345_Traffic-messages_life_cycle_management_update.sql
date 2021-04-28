@@ -1,3 +1,6 @@
+ALTER TABLE datex2_situation_record
+    DISABLE TRIGGER datex2_situation_record_modified_t;
+
 -- update all situation records to canceled where cancel true exists
 update DATEX2_SITUATION_RECORD tgt
 set life_cycle_management_canceled = true
@@ -93,3 +96,10 @@ where tgt.validy_status = 'ACTIVE'
           AND s.situation_id in (select situation_id from to_deactivate)
   )
 RETURNING id as datex2_situation__id;
+
+-- update for all datex2_situation_record rows to fire trigger that updates effective_end_time
+UPDATE datex2_situation_record
+set life_cycle_management_canceled = life_cycle_management_canceled;
+
+ALTER TABLE datex2_situation_record
+    ENABLE TRIGGER datex2_situation_record_modified_t;

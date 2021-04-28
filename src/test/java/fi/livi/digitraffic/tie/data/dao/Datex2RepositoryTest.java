@@ -115,7 +115,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                 .anyMatch(s -> s.getSituationId().equals(pastSituationId))));
     }
 
-    private Datex2 createDatex2InPast2h(final String situationId, final SituationType type, TrafficAnnouncementType trafficAnnouncementType) {
+    private Datex2 createDatex2InPast2h(final String situationId, final SituationType type, final TrafficAnnouncementType trafficAnnouncementType) {
         final Datex2 datex2 = new Datex2(type, trafficAnnouncementType);
         datex2.setImportTime(ZonedDateTime.now());
         datex2.setMessage("xml message");
