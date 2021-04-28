@@ -59,7 +59,8 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @TestPropertySource(properties = {
-    "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN"
+    "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
+    "spring.localstack.enabled=false"
 })
 public abstract class AbstractTest {
 
