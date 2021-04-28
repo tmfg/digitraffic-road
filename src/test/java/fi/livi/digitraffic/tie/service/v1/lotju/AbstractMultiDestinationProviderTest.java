@@ -9,9 +9,12 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Rule;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,9 +22,14 @@ import org.springframework.http.HttpStatus;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import ru.lanwen.wiremock.ext.WiremockResolver;
+import ru.lanwen.wiremock.ext.WiremockUriResolver;
 
+@ExtendWith({
+    WiremockResolver.class,
+    WiremockUriResolver.class
+})
 public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemonTestWithoutS3 {
-
     private static final Logger log = LoggerFactory.getLogger(AbstractMultiDestinationProviderTest.class);
 
     public static final int RANDOM_PORT1 = (int)RandomUtils.nextLong(6000,6500);
@@ -42,11 +50,8 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     protected final static int TTL_S = 1;
 
-    @Rule
-    public WireMockRule wireMockRule1 = new WireMockRule(wireMockConfig().port(RANDOM_PORT1), true);
-
-    @Rule
-    public WireMockRule wireMockRule2 = new WireMockRule(wireMockConfig().port(RANDOM_PORT2), true);
+    protected WireMockServer wireMockServer1 = new WireMockServer();
+    protected WireMockServer wireMockServer2 = new WireMockServer();
 
     protected MultiDestinationProvider createMultiDestinationProvider() {
         return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S,
@@ -59,16 +64,19 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
 
     protected void server1WhenRequestHealthThenReturn(final HttpStatus returnStatus, final String returnContent) {
-        serverWhenRequestUrlThenReturn(wireMockRule1, healthPath, returnStatus, returnContent);
+        serverWhenRequestUrlThenReturn(wireMockServer1, healthPath, returnStatus, returnContent);
     }
 
     protected void server2WhenRequestHealthThenReturn(final HttpStatus returnStatus, final String returnContent) {
-        serverWhenRequestUrlThenReturn(wireMockRule2, healthPath, returnStatus, returnContent);
+        serverWhenRequestUrlThenReturn(wireMockServer2, healthPath, returnStatus, returnContent);
     }
 
-    protected void serverWhenRequestUrlThenReturn(final WireMockRule wireMockRule, final String expectedUrl, final HttpStatus returnStatus, final String returnContent) {
+    protected void serverWhenRequestUrlThenReturn(final WireMockServer server, final String expectedUrl, final HttpStatus returnStatus, final String returnContent) {
         log.info("Register url {} to return {} : {}", expectedUrl, returnStatus, returnContent);
-        wireMockRule.givenThat(
+
+        server.start();
+
+        server.givenThat(
             get(urlEqualTo(expectedUrl))
                 .willReturn(aResponse()
                 .withBody(returnContent)
@@ -76,9 +84,12 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
                 .withStatus(returnStatus.value())));
     }
 
-    protected void serverWhenRequestUrlThenReturn(final WireMockRule wireMockRule, final String expectedUrl, final HttpStatus returnStatus, final byte[] returnContent) {
+    protected void serverWhenRequestUrlThenReturn(final WireMockServer server, final String expectedUrl, final HttpStatus returnStatus, final byte[] returnContent) {
         log.info("Register url {} to return {} : {}", expectedUrl, returnStatus, returnContent);
-        wireMockRule.givenThat(
+
+        server.start();
+
+        server.givenThat(
             get(urlEqualTo(expectedUrl))
                 .willReturn(aResponse()
                     .withBody(returnContent)
@@ -87,23 +98,23 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
     }
 
     protected void verifyServer1HealthCount(final int count) {
-        verifyServerCalledCount(count, healthPath, wireMockRule1);
+        verifyServerCalledCount(count, healthPath, wireMockServer1);
     }
 
     protected void verifyServer2HealthCount(final int count) {
-        verifyServerCalledCount(count, healthPath, wireMockRule2);
+        verifyServerCalledCount(count, healthPath, wireMockServer2);
     }
 
     protected void verifyServer1DataCount(final int count) {
-        verifyServerCalledCount(count, dataPath, wireMockRule1);
+        verifyServerCalledCount(count, dataPath, wireMockServer1);
     }
 
     protected void verifyServer2DataCount(final int count) {
-        verifyServerCalledCount(count, dataPath, wireMockRule2);
+        verifyServerCalledCount(count, dataPath, wireMockServer2);
     }
 
-    protected void verifyServerCalledCount(final int count, final String pathPrefix, final WireMockRule wireMockRule) {
-        final int loggedCount = (int) wireMockRule.getAllServeEvents().stream().filter(e -> e.getRequest().getUrl().startsWith(pathPrefix)).count();
+    protected void verifyServerCalledCount(final int count, final String pathPrefix, final WireMockServer server) {
+        final int loggedCount = (int) server.getAllServeEvents().stream().filter(e -> e.getRequest().getUrl().startsWith(pathPrefix)).count();
         assertEquals(count, loggedCount);
     }
 

@@ -29,17 +29,11 @@ import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
-import org.testcontainers.containers.localstack.LocalStackContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS;
 
 @TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
@@ -111,7 +105,6 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
     @Test
     public void s3Bucket() {
-        fail("fixme");
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
         ZonedDateTime from = to.minusHours(1);

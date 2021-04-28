@@ -38,7 +38,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         // Data request goes to server 1
         final int id = randomId();
         final String presetId = randomPresetId();
-        serverWhenRequestUrlThenReturn(wireMockRule1, dataPath + "/" +  id, OK, img1);
+        serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, OK, img1);
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
         final byte[] img = cameraImageReader.readImage(id, info);
 
@@ -55,8 +55,8 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         // Data request goes to server 1
         final int id = randomId();
         final String presetId = randomPresetId();
-        serverWhenRequestUrlThenReturn(wireMockRule1, dataPath + "/" +  id, OK, img1);
-        serverWhenRequestUrlThenReturn(wireMockRule2, dataPath + "/" +  id, OK, img2);
+        serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, OK, img1);
+        serverWhenRequestUrlThenReturn(wireMockServer2, dataPath + "/" +  id, OK, img2);
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
         final byte[] img = cameraImageReader.readImage(id, info);
 
@@ -75,8 +75,8 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         // Data request goes to server 1
         final int id = randomId();
         final String presetId = randomPresetId();
-        serverWhenRequestUrlThenReturn(wireMockRule1, dataPath + "/" +  id, INTERNAL_SERVER_ERROR, (String) null);
-        serverWhenRequestUrlThenReturn(wireMockRule2, dataPath + "/" +  id, OK, img2);
+        serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, INTERNAL_SERVER_ERROR, (String) null);
+        serverWhenRequestUrlThenReturn(wireMockServer2, dataPath + "/" +  id, OK, img2);
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
         try {
             cameraImageReader.readImage(id, info);

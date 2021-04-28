@@ -43,7 +43,7 @@ public class V3Datex2DataInternalTest extends AbstractRestWebTest {
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller imsJaxb2Marshaller;
 
-    @Autowired
+//    @Autowired
     private V2Datex2UpdateService v2Datex2UpdateService;
 
     @Disabled("Just for internal testing")
