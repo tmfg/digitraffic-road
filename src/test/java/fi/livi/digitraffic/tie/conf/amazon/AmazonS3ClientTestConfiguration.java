@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.conf.amazon;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,18 +20,22 @@ import org.testcontainers.utility.DockerImageName;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 @ConditionalOnNotWebApplication
-@Configuration
+@TestConfiguration
 @Testcontainers
 public class AmazonS3ClientTestConfiguration {
 
     @Container
-    static LocalStackContainer localStack =
+    private static final LocalStackContainer localStack =
         new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.12.10"))
             .withServices(S3)
             .withEnv("DEFAULT_REGION", "eu-central-1");
 
     @Bean
     public AmazonS3 amazonS3() {
+        if(!localStack.isRunning()) {
+            localStack.start();
+        }
+
         return AmazonS3ClientBuilder.standard()
             .withCredentials(localStack.getDefaultCredentialsProvider())
             .withEndpointConfiguration(localStack.getEndpointConfiguration(S3))
