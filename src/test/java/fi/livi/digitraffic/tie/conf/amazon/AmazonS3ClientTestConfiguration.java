@@ -20,7 +20,7 @@ import org.testcontainers.utility.DockerImageName;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 @ConditionalOnNotWebApplication
-@TestConfiguration
+@Configuration
 @Testcontainers
 public class AmazonS3ClientTestConfiguration {
 
