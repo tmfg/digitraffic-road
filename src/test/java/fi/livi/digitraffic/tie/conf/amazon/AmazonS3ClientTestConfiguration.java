@@ -13,19 +13,20 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS;
 
 @ConditionalOnNotWebApplication
 @Configuration
+@Testcontainers
 public class AmazonS3ClientTestConfiguration {
 
     @Container
     static LocalStackContainer localStack =
-        new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.10.0"))
-            .withServices(S3, SQS)
+        new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.12.10"))
+            .withServices(S3)
             .withEnv("DEFAULT_REGION", "eu-central-1");
 
     @Bean
