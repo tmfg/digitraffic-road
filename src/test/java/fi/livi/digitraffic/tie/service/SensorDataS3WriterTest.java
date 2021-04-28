@@ -8,12 +8,18 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -29,23 +35,25 @@ import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
-import xyz.fabiano.spring.localstack.LocalstackService;
-import xyz.fabiano.spring.localstack.annotation.SpringLocalstackProperties;
-
+import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS;
+
 
 //@RunWith(SpringLocalstackDockerRunnerWithVersion.class)
-@SpringLocalstackProperties(services = { LocalstackService.S3 }, region = "eu-west-1", randomPorts = false)
+//@SpringLocalstackProperties(services = { LocalstackService.S3 }, region = "eu-west-1", randomPorts = false)
+@Testcontainers
 @TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
     public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
-
-    @Autowired
-    private AmazonS3 amazonS3;
 
     @Autowired
     private SensorDataS3Writer writer;
@@ -57,6 +65,17 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     SensorDataS3Properties sensorDataS3Properties;
 
     private SensorValueHistoryBuilder builder;
+
+    @Container
+    static LocalStackContainer localStack =
+        new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.10.0"))
+            .withServices(S3, SQS)
+            .withEnv("DEFAULT_REGION", "eu-central-1");
+
+    private final AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard()
+            .withCredentials(localStack.getDefaultCredentialsProvider())
+            .withEndpointConfiguration(localStack.getEndpointConfiguration(S3))
+            .build();
 
     @BeforeEach
     public void initS3BucketForSensorData() {
