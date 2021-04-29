@@ -40,8 +40,8 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     protected final static int TTL_S = 1;
 
-    protected WireMockServer wireMockServer1 = new WireMockServer(options().dynamicHttpsPort());
-    protected WireMockServer wireMockServer2 = new WireMockServer(options().dynamicHttpsPort());
+    protected WireMockServer wireMockServer1 = new WireMockServer(options().port(RANDOM_PORT1));
+    protected WireMockServer wireMockServer2 = new WireMockServer(options().port(RANDOM_PORT2));
 
     @AfterEach
     public void closeServers() {
