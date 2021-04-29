@@ -1,12 +1,13 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.net.URI;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 public class MultiDestinationProviderTest extends AbstractMultiDestinationProviderTest {
 

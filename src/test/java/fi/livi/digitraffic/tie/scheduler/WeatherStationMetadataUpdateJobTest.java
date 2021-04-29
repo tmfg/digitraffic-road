@@ -1,15 +1,14 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +24,10 @@ import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationsSensorsUpdater;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
@@ -92,7 +95,6 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
 
     @Test
     public void testUpdateWeatherStations() {
-
         assertNull(findWithLotjuId(allInitial, 33));
         assertNotNull(findWithLotjuId(allInitial, 34));
         assertNull(findWithLotjuId(allInitial, 35));

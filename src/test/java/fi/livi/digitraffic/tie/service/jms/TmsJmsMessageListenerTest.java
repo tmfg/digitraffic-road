@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.service.jms;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertTimesEqual;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,9 +27,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.Assert;
-import org.junit.FixMethodOrder;
-import org.junit.jupiter.api.Test;import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     private static final Logger log = LoggerFactory.getLogger(TmsJmsMessageListenerTest.class);
@@ -142,7 +142,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                  handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
 
         checkDataValidity(data);
-        assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+        assertTrue(handleDataTotalTime <= maxHandleTime,
+            "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
     }
 
     @Test
@@ -151,7 +152,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);
-        assertTrue("LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes, lastUpdated.isAfter(timeInPast2Minutes));
+        assertTrue(lastUpdated.isAfter(timeInPast2Minutes), "LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes);
 
         final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
             (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);

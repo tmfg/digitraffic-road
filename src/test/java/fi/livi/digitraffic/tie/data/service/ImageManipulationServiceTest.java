@@ -11,10 +11,10 @@ import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;import org.springframework.core.io.Resource;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithouLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 import fi.livi.digitraffic.tie.service.ImageManipulationService;
 
-public class ImageManipulationServiceTest extends AbstractDaemonTestWithouLocalStack {
+public class ImageManipulationServiceTest extends AbstractDaemonTestWithoutLocalStack {
 
     @Test
     public void imageExifRemovalSuccess() throws IOException, ImagingException {

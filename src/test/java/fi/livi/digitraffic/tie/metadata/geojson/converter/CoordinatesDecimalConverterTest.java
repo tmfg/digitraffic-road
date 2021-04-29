@@ -12,14 +12,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithouLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class CoordinatesDecimalConverterTest extends AbstractDaemonTestWithouLocalStack {
+public class CoordinatesDecimalConverterTest extends AbstractDaemonTestWithoutLocalStack {
     private static final Logger log = LoggerFactory.getLogger(CoordinatesDecimalConverterTest.class);
 
     @Autowired

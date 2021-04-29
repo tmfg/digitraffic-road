@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithouLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
 /**
  * Samples from https://en.wikipedia.org/wiki/GeoJSON
  */
-public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithouLocalStack {
+public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutLocalStack {
     private static final Logger log = LoggerFactory.getLogger(GeometryJacksonDeserializerTest.class);
 
     @Autowired
