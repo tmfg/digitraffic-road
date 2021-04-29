@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf.amazon;
 
 import org.mockito.Mockito;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +31,7 @@ public class AmazonS3ClientTestConfiguration {
 
     @Testcontainers
     @Configuration
-    @ConditionalOnProperty(name = "testcontainers.disabled", havingValue = "false")
+    @ConditionalOnExpression("'${testcontainers.disabled}' != 'true'")
     public static class LocalStackConfiguration {
         @Container
         private static final LocalStackContainer localStack =
