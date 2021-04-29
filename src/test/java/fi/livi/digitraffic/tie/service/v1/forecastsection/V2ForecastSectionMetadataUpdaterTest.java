@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithouLocalStack;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -33,7 +32,7 @@ import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetad
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
 @Disabled("Eats way too much memory")
-public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
+public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWithouLocalStack {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
     private ForecastSectionClient forecastSectionClient;

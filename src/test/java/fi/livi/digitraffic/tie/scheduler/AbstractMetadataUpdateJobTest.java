@@ -8,11 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithouLocalStack;
 import fi.livi.digitraffic.tie.service.v1.lotju.AbstractLotjuMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
 
-public abstract class AbstractMetadataUpdateJobTest extends AbstractDaemonTestWithoutS3 {
+public abstract class AbstractMetadataUpdateJobTest extends AbstractDaemonTestWithouLocalStack {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMetadataUpdateJobTest.class);
 

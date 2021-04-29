@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.service.v2.datex2;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -10,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.annotation.Rollback;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithouLocalStack;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
-public class RegionGeometryGitClientInternalTest extends AbstractDaemonTestWithoutS3 {
+public class RegionGeometryGitClientInternalTest extends AbstractDaemonTestWithouLocalStack {
 
     @Autowired
     private RegionGeometryGitClient RegionGeometryGitClient;

@@ -1,15 +1,11 @@
 package fi.livi.digitraffic.tie.conf.amazon;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.testcontainers.containers.localstack.LocalStackContainer;
@@ -21,24 +17,38 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 
 @ConditionalOnNotWebApplication
 @Configuration
-@Testcontainers
 public class AmazonS3ClientTestConfiguration {
 
-    @Container
-    private static final LocalStackContainer localStack =
-        new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.12.10"))
-            .withServices(S3)
-            .withEnv("DEFAULT_REGION", "eu-central-1");
+    @ConditionalOnProperty(name = "testcontainers.disabled", havingValue = "true")
+    @Configuration
+    public static class MockConfiguration {
+        @Bean
+        public AmazonS3 amazonS3() {
+            return Mockito.mock(AmazonS3.class);
+        }
+    }
 
-    @Bean
-    public AmazonS3 amazonS3() {
-        if(!localStack.isRunning()) {
-            localStack.start();
+    @Testcontainers
+    @Configuration
+    @ConditionalOnProperty(name = "testcontainers.disabled", havingValue = "false")
+    public static class LocalStackConfiguration {
+        @Container
+        private static final LocalStackContainer localStack =
+            new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.12.10"))
+                .withServices(S3)
+                .withEnv("DEFAULT_REGION", "eu-central-1");
+
+        @Bean
+        public AmazonS3 amazonS3() {
+            if(!localStack.isRunning()) {
+                localStack.start();
+            }
+
+            return AmazonS3ClientBuilder.standard()
+                .withCredentials(localStack.getDefaultCredentialsProvider())
+                .withEndpointConfiguration(localStack.getEndpointConfiguration(S3))
+                .build();
         }
 
-        return AmazonS3ClientBuilder.standard()
-            .withCredentials(localStack.getDefaultCredentialsProvider())
-            .withEndpointConfiguration(localStack.getEndpointConfiguration(S3))
-            .build();
     }
 }

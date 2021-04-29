@@ -17,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithouLocalStack;
 
-public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemonTestWithoutS3 {
+public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemonTestWithouLocalStack {
     private static final Logger log = LoggerFactory.getLogger(AbstractMultiDestinationProviderTest.class);
 
     public static final int RANDOM_PORT1 = (int)RandomUtils.nextLong(6000,6500);
