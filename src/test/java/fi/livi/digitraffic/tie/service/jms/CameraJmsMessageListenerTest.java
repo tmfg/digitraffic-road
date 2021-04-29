@@ -4,7 +4,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -30,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -262,7 +261,7 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
             // Check written image against source image
             byte[] dst = readCameraImageFromS3(presetId);
             byte[] src = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
-            assertArrayEquals("Written image is invalid for " + presetId, src, dst);
+            assertArrayEquals(src, dst, "Written image is invalid for " + presetId);
 
             // Check preset updated to db against kuva
             CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());

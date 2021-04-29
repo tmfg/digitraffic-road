@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.location;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.nio.file.Path;

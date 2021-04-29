@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,8 +24,8 @@ import javax.jms.JMSException;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -155,7 +155,8 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         assertData(data, valuesMap);
         assertDataIsJustUpdated();
 
-        assertTrue("Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms", handleDataTotalTime <= maxHandleTime);
+        assertTrue(handleDataTotalTime <= maxHandleTime,
+            "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
     }
 
     private void generateSensorValuesFor(final Collection<WeatherStation> stations,
@@ -273,7 +274,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     private static void assertLastUpdated(final ZonedDateTime lastUpdated) {
         final ZonedDateTime limit = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
-        assertTrue(String.format("LastUpdated not fresh %s, should be after %s", lastUpdated, limit), lastUpdated.isAfter(limit));
+        assertTrue(lastUpdated.isAfter(limit), String.format("LastUpdated not fresh %s, should be after %s", lastUpdated, limit));
     }
 
     private JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> createTiesaaMittatietoJMSDataUpdater() {

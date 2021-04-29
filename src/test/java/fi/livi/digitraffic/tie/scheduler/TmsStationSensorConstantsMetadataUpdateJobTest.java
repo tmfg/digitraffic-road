@@ -1,12 +1,10 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -21,6 +19,10 @@ import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpoin
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 

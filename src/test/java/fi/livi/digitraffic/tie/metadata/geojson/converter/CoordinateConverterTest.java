@@ -4,16 +4,16 @@ import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_X_MIN;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MAX;
 import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.RANGE_Y_MIN;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Point;

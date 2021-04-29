@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.scheduler;
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.JULKINEN;
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.VALIAIKAISESTI_SALAINEN;
 import static java.lang.Thread.sleep;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.transaction.TestTransaction;
 
@@ -50,7 +50,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     @MockBean
     private CameraPresetHistoryUpdateService cameraPresetHistoryUpdateService;
 
-    @After
+    @AfterEach
     public void restoreData() {
         cameraPresetService.findAllCameraPresetsMappedByLotjuId().values().forEach(cp -> {
             final RoadStation rs = cp.getRoadStation();

@@ -229,7 +229,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 }
             }
         }
-        assertTrue("Time window was set to zero sensors", timeWindowsFound);
+        assertTrue(timeWindowsFound, "Time window was set to zero sensors");
         log.info("Data is valid");
     }
 
