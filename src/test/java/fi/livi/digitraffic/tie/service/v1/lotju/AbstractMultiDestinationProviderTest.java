@@ -17,13 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
-import ru.lanwen.wiremock.ext.WiremockResolver;
-import ru.lanwen.wiremock.ext.WiremockUriResolver;
 
-@ExtendWith({
-    WiremockResolver.class,
-    WiremockUriResolver.class
-})
 public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemonTestWithoutS3 {
     private static final Logger log = LoggerFactory.getLogger(AbstractMultiDestinationProviderTest.class);
 
