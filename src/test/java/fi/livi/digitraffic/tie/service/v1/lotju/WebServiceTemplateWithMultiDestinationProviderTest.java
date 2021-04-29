@@ -88,7 +88,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         } catch (IllegalStateException e) {
             verifyServer1HealthCount(1);
             verifyServer2HealthCount(1);
-            throw e;
+            return; // this is wanted
         }
         fail("Should not execute as IllegalStateException should have been thrown");
     }

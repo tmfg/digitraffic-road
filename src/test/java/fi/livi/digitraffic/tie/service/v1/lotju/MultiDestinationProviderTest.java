@@ -45,7 +45,6 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
         verifyServer2HealthCount(1);
     }
 
-//    @Test(expected = IllegalStateException.class)
     @Test
     public void firstAndSecondHealthNotOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
@@ -56,7 +55,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
         } catch (final IllegalStateException e) {
             verifyServer1HealthCount(1);
             verifyServer2HealthCount(1);
-            throw e;
+            return; // this is wanted
         }
         Assert.fail("Should not execute as IllegalStateException should have been thrown");
     }
