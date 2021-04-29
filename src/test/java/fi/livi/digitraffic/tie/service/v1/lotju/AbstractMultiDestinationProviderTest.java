@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.v1.lotju;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
@@ -39,8 +40,8 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     protected final static int TTL_S = 1;
 
-    protected WireMockServer wireMockServer1 = new WireMockServer();
-    protected WireMockServer wireMockServer2 = new WireMockServer();
+    protected WireMockServer wireMockServer1 = new WireMockServer(options().dynamicHttpsPort());
+    protected WireMockServer wireMockServer2 = new WireMockServer(options().dynamicHttpsPort());
 
     @AfterEach
     public void closeServers() {
