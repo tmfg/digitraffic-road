@@ -11,7 +11,7 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.AfterEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -41,6 +41,12 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     protected WireMockServer wireMockServer1 = new WireMockServer();
     protected WireMockServer wireMockServer2 = new WireMockServer();
+
+    @AfterEach
+    public void closeServers() {
+        if(wireMockServer1.isRunning()) wireMockServer1.stop();
+        if(wireMockServer2.isRunning()) wireMockServer2.stop();
+    }
 
     protected MultiDestinationProvider createMultiDestinationProvider() {
         return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S,
