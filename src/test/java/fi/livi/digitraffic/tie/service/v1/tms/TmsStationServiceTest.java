@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
@@ -82,7 +82,7 @@ public class TmsStationServiceTest extends AbstractServiceTest {
     public void getTmsStationByLamId() throws NonPublicRoadStationException {
         final TmsStationFeature tmsStation = tmsStationService.getTmsStationByLamId(6L);
 
-        Assert.assertNotNull(tmsStation);
+        assertNotNull(tmsStation);
     }
 
 }

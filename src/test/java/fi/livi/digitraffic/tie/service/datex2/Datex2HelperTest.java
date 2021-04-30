@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Datex2HelperTest extends AbstractServiceTest {
 

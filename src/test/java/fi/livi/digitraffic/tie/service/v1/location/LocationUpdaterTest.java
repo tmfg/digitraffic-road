@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
