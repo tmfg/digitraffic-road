@@ -482,6 +482,9 @@
                                     <extraarg>-autoNameResolution</extraarg>
                                 </extraargs>
                             </defaultOptions>
+                            <additionalJvmArgs>
+                                -Dorg.apache.cxf.Logger=null
+                            </additionalJvmArgs>
                             <wsdlOptions>
                                 <!-- Tiesääasemien staattiset tiedot / The static information of the road weather stations -->
                                 <wsdlOption>

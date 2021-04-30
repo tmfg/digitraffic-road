@@ -32,16 +32,19 @@ public class MqttConfiguration {
     public MqttPahoClientFactory mqttClientFactory(
         @Value("${mqtt.server.url}") final String serverUrl,
         @Value("${mqtt.server.username}") final String username,
-        @Value("${mqtt.server.password}")final String password) {
+        @Value("${mqtt.server.password}") final String password,
+        @Value("${mqtt.server.maxInflight}") final int maxInflight,
+        @Value("${mqtt.server.connectionTimeout}") final int connectionTimeout,
+        @Value("${mqtt.server.keepAlive}") final int keepAlive) {
 
         final DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
         factory.getConnectionOptions().setServerURIs(serverUrl.split(","));
         factory.getConnectionOptions().setUserName(username);
         factory.getConnectionOptions().setPassword(password.toCharArray());
-        factory.getConnectionOptions().setMaxInflight(10000);
-        factory.getConnectionOptions().setConnectionTimeout(2);
+        factory.getConnectionOptions().setMaxInflight(maxInflight);
+        factory.getConnectionOptions().setConnectionTimeout(connectionTimeout);
         factory.getConnectionOptions().setCleanSession(true);
-        factory.getConnectionOptions().setKeepAliveInterval(5);
+        factory.getConnectionOptions().setKeepAliveInterval(keepAlive);
 
         return factory;
     }

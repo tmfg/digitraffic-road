@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v3.datex2;
 
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_ACTIVE_ANDPASSIVE_RECORD;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_JSON;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
@@ -59,6 +60,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
 
     @Before
     public void init() {
+        trafficMessageTestHelper.cleanDb();
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
@@ -76,7 +78,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                     activeIncidentsDatex2AndJsonEquals(situationType, imsJsonVersion, getSituationIdForSituationType(situationType), start, end);
@@ -92,7 +94,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for (final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion);
                     log.info("checkFindBySituationId with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                         imsXmlVersion, imsJsonVersion, situationType);
                     checkFindBySituationId(getSituationIdForSituationType(situationType));
@@ -109,7 +111,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                 final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                 final ZonedDateTime end = start.plusHours(2);
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                 }
@@ -134,13 +136,24 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
     }
 
     @Test
-    public void findActiveJsonCanceledIsNotReturned() throws IOException {
-        trafficMessageTestHelper.initDataFromStaticImsResourceConent(
+    public void findActiveTrafficAnnouncementCanceledIsNotReturned() throws IOException {
+        trafficMessageTestHelper.initDataFromStaticImsResourceContent(
             ImsXmlVersion.V1_2_1, SituationType.TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
             ZonedDateTime.now().minusDays(1), ZonedDateTime.now().plusDays(1), true);
         // Not found, as both must exist
         assertActiveMessageFound(GUID_WITH_JSON, false, false);
     }
+
+    @Test
+    public void findTrafficAnnouncementWithActiveAndDeactiveSituationRecordIsReturned() throws IOException {
+        final ZonedDateTime start = DateHelper.getZonedDateTimeNowAtUtc().minusHours(1);
+        final ZonedDateTime endTime = start.plusHours(2);
+        // One active with json
+        trafficMessageTestHelper.initImsDataFromFile("TrafficIncidentImsMessageV1_2_1WithActiveAndPassiveSituationRecord.xml",
+                                                     ImsJsonVersion.getLatestVersion(), start, endTime, false);
+        assertActiveMessageFound(GUID_WITH_ACTIVE_ANDPASSIVE_RECORD, true, true);
+    }
+
 
     private void checkFindBySituationId(final String situationId) {
         final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(situationId);

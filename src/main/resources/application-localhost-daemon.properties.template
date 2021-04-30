@@ -12,6 +12,9 @@ spring.main.web-application-type=none
 mqtt.server.url=tcp://localhost:1883
 mqtt.server.username=updater
 mqtt.server.password=updater
+mqtt.server.maxInflight=10000
+mqtt.server.connectionTimeout=5
+mqtt.server.keepAlive=30
 
 # Lotju SOAP APIs. If health is empty then health check is not performed.
 metadata.server.addresses=http://localhost:9011

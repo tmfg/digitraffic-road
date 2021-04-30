@@ -97,7 +97,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 0, situationType));
@@ -123,7 +123,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 2, situationType));
@@ -149,7 +149,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 0, situationType));

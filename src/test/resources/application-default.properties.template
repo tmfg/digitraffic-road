@@ -12,6 +12,9 @@ road.datasource.hikari.maximum-pool-size=6
 mqtt.server.url=tcp://address:port
 mqtt.server.username=
 mqtt.server.password=
+mqtt.server.maxInflight=
+mqtt.server.connectionTimeout=
+mqtt.server.keepAlive=
 
 # Lotju SOAP APIs. If health is empty then health check is not performed.
 metadata.server.addresses=http://localhost:#{T(fi.livi.digitraffic.tie.AbstractTest).LOTJU_SERVICE_RANDOM_PORT}
