@@ -478,8 +478,12 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertEquals( 20, count);
         assertCollectionSize(2, v2MaintenanceTrackingRepository.findAll());
         assertCollectionSize( 20, v3MaintenanceTrackingObservationDataRepository.findAll());
-        final long deleded = v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9);
-        assertEquals( 10, deleded);
+        final long deleded1 = v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 5, deleded1);
+        final long deleded2 = v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 5, deleded2);
+        final long deleded3 = v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 0, deleded3);
         assertCollectionSize( 10, v3MaintenanceTrackingObservationDataRepository.findAll());
         // Handled data is not deleted
         assertCollectionSize(2, v2MaintenanceTrackingRepository.findAll());

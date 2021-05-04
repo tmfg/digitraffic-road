@@ -99,10 +99,10 @@ public class V2MaintenanceTrackingUpdateService {
     }
 
     @Transactional
-    public long deleteDataOlderThanDays(final int olderThanDays) {
+    public long deleteDataOlderThanDays(final int olderThanDays, final int maxToDelete) {
         final StopWatch start = StopWatch.createStarted();
         final ZonedDateTime olderThanDate = DateHelper.getZonedDateTimeNowAtUtc().minus(olderThanDays, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
-        final long count = v2MaintenanceTrackingDataRepository.deleteByCreatedIsBefore(olderThanDate);
+        final long count = v2MaintenanceTrackingDataRepository.deleteByCreatedIsBefore(olderThanDate, maxToDelete);
         log.info("method=deleteDataOlderThanDays delete before {} deleted {} tookMs={}", olderThanDate, count, start.getTime());
         return count;
     }

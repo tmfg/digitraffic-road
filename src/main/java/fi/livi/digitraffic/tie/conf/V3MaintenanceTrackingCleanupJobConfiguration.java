@@ -23,7 +23,7 @@ public class V3MaintenanceTrackingCleanupJobConfiguration {
     private final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
 
     @Autowired
-    public V3MaintenanceTrackingCleanupJobConfiguration(final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService,
+        public V3MaintenanceTrackingCleanupJobConfiguration(final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService,
                                                         final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
                                                         final ClusteredLocker clusteredLocker,
                                                         @Value("${maintenance.tracking.job.intervalMs}")
@@ -37,7 +37,7 @@ public class V3MaintenanceTrackingCleanupJobConfiguration {
      */
     @Scheduled(cron = "${maintenance.tracking.job.cleanup.cron}")
     public void deleteOldMaintenanceTrackingData() {
-        v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(31);
-        v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(31);
+        while(v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(31, 1000) > 0);
+        while(v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(31, 1000) > 0);
     }
 }

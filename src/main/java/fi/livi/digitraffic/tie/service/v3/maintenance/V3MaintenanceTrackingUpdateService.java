@@ -103,10 +103,10 @@ public class V3MaintenanceTrackingUpdateService {
     private Pair<Integer, Long> fromDbCountAndMs = Pair.of(0,0L);
 
     @Transactional
-    public long deleteDataOlderThanDays(final int olderThanDays) {
+    public long deleteDataOlderThanDays(final int olderThanDays, final int maxToDelete) {
         final StopWatch start = StopWatch.createStarted();
         final Instant olderThanDate = Instant.now().minus(olderThanDays, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
-        final long count = v3MaintenanceTrackingObservationDataRepository.deleteByObservationTimeIsBefore(olderThanDate);
+        final long count = v3MaintenanceTrackingObservationDataRepository.deleteByObservationTimeIsBefore(olderThanDate, maxToDelete);
         log.info("method=deleteDataOlderThanDays before {} deleted {} tookMs={}", olderThanDate, count, start.getTime());
         return count;
     }

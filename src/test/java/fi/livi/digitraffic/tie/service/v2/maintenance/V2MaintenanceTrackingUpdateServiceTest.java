@@ -414,30 +414,47 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void deleteDataOlderThanDays() throws IOException {
         final ZonedDateTime start10Days = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusDays(10);
         final ZonedDateTime start9Days = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusDays(9);
-        final long id10Days = testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(start10Days, 10, 1, 1, ASFALTOINTI)).getId();
+
+        // Create 10 messages that are 10 days old
+        IntStream.range(0,10).forEach(i -> {
+            try {
+                testHelper.saveTrackingData(createMaintenanceTrackingWithPoints(start10Days, 10, i, 1, SuoritettavatTehtavat.ASFALTOINTI));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // Create one message that is 9 days old
         final long id9Days = testHelper.saveTrackingData(
             createMaintenanceTrackingWithPoints(start9Days, 10, 1, 1, SuoritettavatTehtavat.ASFALTOINTI)).getId();
+        // update created times to 10 and 9 days
+        final String sqlAll =
+            "UPDATE maintenance_tracking_data\n" +
+            "SET created = '%s'";
+        entityManager.createNativeQuery(String.format(sqlAll, start10Days.toInstant().toString())).executeUpdate();
         final String sql =
             "UPDATE maintenance_tracking_data\n" +
             "SET created = '%s'\n" +
             "WHERE id=%d";
-        entityManager.createNativeQuery(String.format(sql, start10Days.toInstant().toString(), id10Days)).executeUpdate();
         entityManager.createNativeQuery(String.format(sql, start9Days.toInstant().toString(), id9Days)).executeUpdate();
 
         assertCollectionSize(0, v2MaintenanceTrackingRepository.findAll());
         final int count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
 
         // Assert all handled
-        assertEquals( 2, count);
-        assertCollectionSize(2, v2MaintenanceTrackingRepository.findAll());
-        assertCollectionSize( 2, v2MaintenanceTrackingDataRepository.findAll());
+        assertEquals( 11, count);
+        assertCollectionSize(11, v2MaintenanceTrackingRepository.findAll());
+        assertCollectionSize( 11, v2MaintenanceTrackingDataRepository.findAll());
 
         // Delete data
-        final long deleded = v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9);
-        assertEquals( 1, deleded);
+        final long deleded1 = v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 5, deleded1);
+        final long deleded2 = v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 5, deleded2);
+        final long deleded3 = v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 0, deleded3);
+        // Only one that is 10 days old is not deleted
         assertCollectionSize( 1, v2MaintenanceTrackingDataRepository.findAll());
         // Handled data is not deleted
-        assertCollectionSize(2, v2MaintenanceTrackingRepository.findAll());
+        assertCollectionSize(11, v2MaintenanceTrackingRepository.findAll());
     }
 }
