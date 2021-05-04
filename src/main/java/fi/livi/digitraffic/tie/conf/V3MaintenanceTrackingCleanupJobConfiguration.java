@@ -3,13 +3,11 @@ package fi.livi.digitraffic.tie.conf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
 
@@ -23,11 +21,8 @@ public class V3MaintenanceTrackingCleanupJobConfiguration {
     private final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
 
     @Autowired
-        public V3MaintenanceTrackingCleanupJobConfiguration(final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService,
-                                                        final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
-                                                        final ClusteredLocker clusteredLocker,
-                                                        @Value("${maintenance.tracking.job.intervalMs}")
-                                                            final long runRateMs) {
+    public V3MaintenanceTrackingCleanupJobConfiguration(final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService,
+                                                        final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService) {
         this.v3MaintenanceTrackingUpdateService = v3MaintenanceTrackingUpdateService;
         this.v2MaintenanceTrackingUpdateService = v2MaintenanceTrackingUpdateService;
     }
