@@ -73,7 +73,7 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
                         // mark host not healthy
                         mdp.setHostNotHealthy(dest);
                         lastException = e;
-                        log.error(String.format("method=marshalSendAndReceive returned error for dataUrl=%s", dataUri), lastException);
+                        log.warn(String.format("method=marshalSendAndReceive returned error for dataUrl=%s", dataUri), lastException);
                     }
                 } while (tryCount < mdp.getDestinationsCount());
                 throw new IllegalStateException(String.format("No host found to return data without error dataUrls=%s", mdp.getDestinationsAsString()),
