@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -10,9 +12,8 @@ import static org.springframework.http.HttpStatus.OK;
 
 import javax.xml.bind.JAXBElement;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -30,7 +31,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     private AbstractLotjuMetadataClient client;
     private WebServiceTemplateWithMultiDestinationProviderSupport webServiceTemplate;
 
-    @Before
+    @BeforeEach
     public void initSoapClientSpyAndServerResponses() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, healthPath, TTL_S, healthOkCheckValueInApplicationSettings) {};
@@ -76,7 +77,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         verifyServer2HealthCount(1);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void firstAndSecondHealthNotOk() {
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
         server2WhenRequestHealthThenReturn(OK, NOT_OK_RESPONSE_CONTENT);
@@ -87,9 +88,9 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         } catch (IllegalStateException e) {
             verifyServer1HealthCount(1);
             verifyServer2HealthCount(1);
-            throw e;
+            return; // this is wanted
         }
-        Assert.fail("Should not execute as IllegalStateException should have been thrown");
+        fail("Should not execute as IllegalStateException should have been thrown");
     }
 
     @Test
@@ -174,7 +175,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     }
 
     private void clientRequestDataAndVerifyResponse(String response) {
-        Assert.assertEquals(response, clientRequestData());
+        assertEquals(response, clientRequestData());
     }
 
     private Object clientRequestData() {

@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.location;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -10,8 +10,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
@@ -26,7 +26,7 @@ public class LocationMetadataUpdaterTest extends AbstractServiceTest {
     private MetadataFileFetcher metadataFileFetcher;
 
     @Test
-    @Ignore
+    @Disabled
     public void findAndUpdate() throws IOException {
         locationMetadataUpdater.findAndUpdate();
         verify(metadataFileFetcher).getFilePaths(any(MetadataVersions.class));

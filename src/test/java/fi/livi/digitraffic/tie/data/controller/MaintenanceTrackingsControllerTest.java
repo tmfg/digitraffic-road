@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +84,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         return result;
     }
 
-    @Before
+    @BeforeEach
     public void initData() {
         testHelper.clearDb();
         testHelper.flushAndClearSession();

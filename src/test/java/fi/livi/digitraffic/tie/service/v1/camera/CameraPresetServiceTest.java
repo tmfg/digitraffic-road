@@ -1,14 +1,14 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CameraPresetServiceTest extends AbstractServiceTest {
 

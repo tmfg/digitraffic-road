@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -12,10 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.support.GenericApplicationContext;
@@ -45,7 +44,7 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
 
     private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
 
-    @Before
+    @BeforeEach
     public void init() {
         final V3RegionGeometryUpdateService v3RegionGeometryUpdateService =
             applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryUpdateService.class);
@@ -108,7 +107,7 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
     }
 
     private void assertVersion(final RegionGeometry expected, final RegionGeometry actual) {
-        Assert.assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getId(), actual.getId());
     }
 
     /**

@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
 /**
  * Samples from https://en.wikipedia.org/wiki/GeoJSON
  */
-public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutS3 {
+public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutLocalStack {
     private static final Logger log = LoggerFactory.getLogger(GeometryJacksonDeserializerTest.class);
 
     @Autowired
@@ -30,7 +30,7 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutS3
 
     private ObjectReader geoJsonGeometryReader;
 
-    @Before
+    @BeforeEach
     public void initReader() {
         geoJsonGeometryReader = objectMapper.readerFor(Geometry.class);
     }

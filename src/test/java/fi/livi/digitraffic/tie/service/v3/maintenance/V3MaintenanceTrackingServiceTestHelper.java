@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -23,7 +24,6 @@ import javax.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringSubstitutor;
-import org.junit.Assert;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,13 +155,13 @@ public class V3MaintenanceTrackingServiceTestHelper {
     }
 
     public void checkCoordinateCount(final MaintenanceTracking tracking, final int count) {
-        Assert.assertEquals(count, tracking.getLineString().getCoordinates().length);
+        assertEquals(count, tracking.getLineString().getCoordinates().length);
     }
 
     public void checkContainsOnlyTasksWithIds(final MaintenanceTracking tracking, final MaintenanceTrackingTask... tasks) {
         final Set<MaintenanceTrackingTask> actualTasks = tracking.getTasks();
         final HashSet<MaintenanceTrackingTask> expectedTasks = new HashSet<>(Arrays.asList(tasks));
-        Assert.assertEquals(expectedTasks, actualTasks);
+        assertEquals(expectedTasks, actualTasks);
     }
 
     private void saveTrackingDataAsPlainText(final String trackingJson) {

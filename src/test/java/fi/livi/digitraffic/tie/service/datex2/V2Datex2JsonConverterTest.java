@@ -6,10 +6,10 @@ import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Polygon;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getJsonVersionString;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readStaticImsJmessageResourceContent;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -51,7 +51,7 @@ public class V2Datex2JsonConverterTest extends AbstractRestWebTest {
     @SpyBean
     private V3RegionGeometryDataService v3RegionGeometryDataService;
 
-    @Before
+    @BeforeEach
     public void init() {
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));

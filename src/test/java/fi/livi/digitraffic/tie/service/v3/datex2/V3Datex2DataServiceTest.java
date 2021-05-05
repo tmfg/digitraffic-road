@@ -6,9 +6,7 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVer
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -19,8 +17,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -58,7 +56,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
     @SpyBean
     private V3RegionGeometryDataService v3RegionGeometryDataService;
 
-    @Before
+    @BeforeEach
     public void init() {
         trafficMessageTestHelper.cleanDb();
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));

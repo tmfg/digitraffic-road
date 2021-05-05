@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
@@ -9,9 +9,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -19,7 +18,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
@@ -29,7 +28,7 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
-public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 {
+public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutLocalStack {
 
     private ForecastSectionClient forecastSectionClient;
 
@@ -55,7 +54,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
     @Autowired
     private DataStatusService dataStatusService;
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
         forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
@@ -69,7 +68,6 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
 
     @Test
     public void updateForecastSectionV1DataSucceeds() throws IOException {
-
         server.expect(requestTo("/nullroads.php"))
             .andExpect(method(HttpMethod.GET))
             .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV1.json"), MediaType.APPLICATION_JSON));
@@ -86,7 +84,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutS3 
 
         final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA).toInstant();
 
-        Assert.assertEquals(dataUpdated, lastUpdated);
+        assertEquals(dataUpdated, lastUpdated);
 
         final ForecastSectionWeatherRootDto data = forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V1, false,
                                                                                                             null,

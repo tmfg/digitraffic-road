@@ -17,15 +17,17 @@ import java.util.stream.IntStream;
 
 import javax.transaction.Transactional;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class ClusteredLockerTest extends AbstractServiceTest {
@@ -47,7 +49,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         Set<Long> ids = new HashSet<>();
         IntStream.range(0,20).forEach(i -> {
             long id = ClusteredLocker.generateInstanceId();
-            Assert.assertFalse(ids.contains(id));
+            assertFalse(ids.contains(id));
             ids.add(id);
         });
     }
@@ -69,7 +71,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
             sleep(100);
         }
 
-        Assert.assertEquals(lockStarts.size(), THREAD_COUNT * LOCK_COUNT);
+        assertEquals(lockStarts.size(), THREAD_COUNT * LOCK_COUNT);
 
         Long prevStart = null;
         for (Long start: lockStarts) {
@@ -104,17 +106,17 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         Future<Boolean> futureLocked1 = tryLock(LOCK_NAME_1, EXPIRATION_SECONDS, executor1);
         waitCompletion(futureLocked1);
         long locked1Time = System.currentTimeMillis();
-        Assert.assertTrue(futureLocked1.get());
+        assertTrue(futureLocked1.get());
 
         // 2. lock can be acquired @ instance 2
         Future<Boolean> locked2 = tryLock(LOCK_NAME_2, EXPIRATION_SECONDS, executor2);
         waitCompletion(locked2);
-        Assert.assertTrue(locked2.get());
+        assertTrue(locked2.get());
 
         // Try to acquire 1. lock again @ instance 2 -> fail
         Future<Boolean> locked1Second = tryLock(LOCK_NAME_1, EXPIRATION_SECONDS, executor2);
         waitCompletion(locked1Second);
-        Assert.assertFalse(locked1Second.get());
+        assertFalse(locked1Second.get());
 
         // Lock 2 can be acquired after 5 seconds
         while (!locked1Second.get()) {
@@ -127,9 +129,9 @@ public class ClusteredLockerTest extends AbstractServiceTest {
                 log.info("LOCK_NAME_1 acquired: {}, time from locking {} seconds", locked1Second.get(), timeFromLocking);
             }
             if (locked1Time > (now - (EXPIRATION_SECONDS -1)*1000) ) {
-                Assert.assertFalse("Lock acquired before expiration", locked1Second.get());
+                assertFalse(locked1Second.get(), "Lock acquired before expiration");
             } else if (locked1Time < (now - (EXPIRATION_SECONDS+1) * 1000) ) {
-                Assert.assertTrue("Failed to lock after expiration", locked1Second.get());
+                assertTrue(locked1Second.get(), "Failed to lock after expiration");
             }
         }
     }
@@ -160,19 +162,19 @@ public class ClusteredLockerTest extends AbstractServiceTest {
             sleep(100);
         }
 
-        Assert.assertEquals(lockStarts.size(), THREAD_COUNT * LOCK_COUNT);
+        assertEquals(lockStarts.size(), THREAD_COUNT * LOCK_COUNT);
 
         Long prev = null;
         for (Long start: lockStarts) {
             if (prev != null) {
                 log.info("START={} previous DIFF={} s", start, (double)(start-prev)/1000.0);
-                Assert.assertTrue(String.format("start %s should be ge than previous %s",
-                    DateHelper.toZonedDateTimeAtUtc(start),
-                    DateHelper.toZonedDateTimeAtUtc(prev)),
-                    start >= prev);
+                assertTrue(start >= prev,
+                    String.format("start %s should be ge than previous %s",
+                        DateHelper.toZonedDateTimeAtUtc(start),
+                        DateHelper.toZonedDateTimeAtUtc(prev)));
                 // WaitLocker sleeps 200 ms before releasing the lock. LockService tries to lock every 100 ms, so max start time gap around 300 ms
-                Assert.assertTrue(String.format("Between lock starts should be > 200 ms but was %d", start-prev), start-prev >= 200);
-                Assert.assertTrue(String.format("Between lock starts should be < 650 ms but was %d", start-prev), start-prev <= 350);
+                assertTrue(start-prev >= 200, String.format("Between lock starts should be > 200 ms but was %d", start-prev));
+                assertTrue(start-prev <= 350, String.format("Between lock starts should be < 650 ms but was %d", start-prev));
             } else {
                 log.info("START={}", start);
             }
@@ -188,7 +190,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         Long prevInstance = null;
         for (Long instance: lockerInstanceIds) {
             if (prevInstance != null) {
-                Assert.assertTrue("Same instance got lock consecutively", !instance.equals(prevInstance));
+                assertTrue(!instance.equals(prevInstance), "Same instance got lock consecutively");
             }
             prevInstance = instance;
         }
@@ -197,12 +199,12 @@ public class ClusteredLockerTest extends AbstractServiceTest {
     private void assertNoOverlapWithExpiration(final Long start, final Long prevStart) {
         ZonedDateTime startZdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(start), ZoneOffset.UTC);
         final long startLimit = prevStart + LOCK_EXPIRATION_S * 1000 - LOCKING_TIME_EXTRA;
-        Assert.assertTrue(String.format("start %s should be ge than %s", startZdt,  ZonedDateTime.ofInstant(Instant.ofEpochMilli(startLimit), ZoneOffset.UTC)),
-            start >= startLimit);
+        assertTrue(start >= startLimit,
+            String.format("start %s should be ge than %s", startZdt,  ZonedDateTime.ofInstant(Instant.ofEpochMilli(startLimit), ZoneOffset.UTC)));
 
         final long endLimit = prevStart + (LOCK_EXPIRATION_S + LOCK_EXPIRATION_DELTA_S) * 1000;
-        Assert.assertTrue(String.format("Start %s should be le than %s", startZdt, ZonedDateTime.ofInstant(Instant.ofEpochMilli(endLimit), ZoneOffset.UTC)),
-            start <= endLimit);
+        assertTrue(start <= endLimit,
+            String.format("Start %s should be le than %s", startZdt, ZonedDateTime.ofInstant(Instant.ofEpochMilli(endLimit), ZoneOffset.UTC)));
     }
 
     private class TryLocker implements Runnable {

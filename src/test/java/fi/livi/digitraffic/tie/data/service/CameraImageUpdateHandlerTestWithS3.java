@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -19,9 +22,7 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
+import org.junit.jupiter.api.Test;import org.mockito.invocation.InvocationOnMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
             presetIds.add(cp.getPresetId());
 
             cameraPresetHistoryUpdateService.deleteAllWithPresetId(cp.getPresetId());
-            Assert.assertTrue(cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp.getPresetId()).isEmpty());
+            assertTrue(cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp.getPresetId()).isEmpty());
 
             // Init image data for all loop indexes
             try {
@@ -151,7 +152,7 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
         final CameraPreset cp = cameraPresetService.findAllPublishableCameraPresets().stream().findFirst().orElseThrow();
 
         cameraPresetHistoryUpdateService.deleteAllWithPresetId(cp.getPresetId());
-        Assert.assertTrue(cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp.getPresetId()).isEmpty());
+        assertTrue(cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp.getPresetId()).isEmpty());
 
         try {
             when(cameraImageReader.readImage(eq(cp.getLotjuId()), any()))
@@ -179,7 +180,7 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
 
         // Get history and check it is still correct
         final List<CameraPresetHistory> history = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetId);
-        Assert.assertEquals(4, history.size());
+        assertEquals(4, history.size());
 
         // Check version history to match matrix
         checkVersionedS3ObjectAndHistory(presetId, initialLastModified.plusMinutes(1), true, true, 1, history.get(0));
@@ -199,14 +200,14 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
                                                   CameraPresetHistory history) {
         // Check history data
         final boolean shouldBePublic = cameraPublicity && presetPublicity;
-        Assert.assertEquals(shouldBePublic, history.getPublishable());
+        assertEquals(shouldBePublic, history.getPublishable());
         // Last modified should equal
         final ZonedDateTime historyLastModified = history.getLastModified();
-        Assert.assertEquals(lastModified, historyLastModified);
+        assertEquals(lastModified, historyLastModified);
 
         // Check S3 image versioned data
         final byte[] image = readWeathercamS3DataVersion( CameraImageS3Writer.getVersionedKey(presetId), history.getVersionId());
-        Assert.assertEquals(image.length, history.getSize().intValue());
+        assertEquals(image.length, history.getSize().intValue());
         // S3 image data should be equal with written dat. Hidden images also has real data, no noise image.
         assertBytes(readImageForIndex(imageDataIndex), image);
 
@@ -236,14 +237,14 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
 
         // Check latest history data
         final CameraPresetHistory latestHistory = cameraPresetHistoryDataService.findLatestWithPresetIdIncSecretInternal(key.substring(0, key.length()-4));
-        Assert.assertEquals(shouldBePublic, latestHistory.getPublishable());
-        Assert.assertEquals(lastModified, latestHistory.getLastModified());
+        assertEquals(shouldBePublic, latestHistory.getPublishable());
+        assertEquals(lastModified, latestHistory.getLastModified());
     }
 
     private void assertLastModified(final ZonedDateTime expected, final S3Object imageObject) {
         final String s3LastMofidiedHeader = imageObject.getObjectMetadata().getUserMetaDataOf(CameraImageS3Writer.LAST_MODIFIED_USER_METADATA_HEADER);
         final String historyLastModifiedHeader = CameraImageS3Writer.getInLastModifiedHeaderFormat(expected.toInstant());
-        Assert.assertEquals(historyLastModifiedHeader, s3LastMofidiedHeader);
+        assertEquals(historyLastModifiedHeader, s3LastMofidiedHeader);
     }
 
     /**
@@ -254,7 +255,7 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
     }
 
     private void assertBytes(byte[] bytes1, byte[] bytes2) {
-        Assert.assertArrayEquals(bytes1 , bytes2);
+        assertArrayEquals(bytes1 , bytes2);
     }
 
     private KuvaProtos.Kuva createKuva(final ZonedDateTime lastModified, final String presetId, final long esiasentoId, final boolean isPublic) {

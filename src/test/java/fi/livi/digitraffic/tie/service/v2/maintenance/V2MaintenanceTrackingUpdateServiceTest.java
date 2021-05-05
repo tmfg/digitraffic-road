@@ -7,9 +7,9 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getEndTime;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -22,8 +22,8 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
     private int maxGapInMinutes;
 
-    @Before
+    @BeforeEach
     public void init() {
         testHelper.clearDb();
     }

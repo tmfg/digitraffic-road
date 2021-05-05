@@ -1,11 +1,9 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaTyyppi;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.AjoneuvoluokkaTyyppi;
@@ -20,7 +18,6 @@ import fi.livi.digitraffic.tie.model.VehicleClass;
 import fi.livi.digitraffic.tie.model.WeatherStationType;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 
-@RunWith(JUnit4.class)
 public class TypesTest {
 
     @Test
@@ -98,9 +95,9 @@ public class TypesTest {
         for (final AjoneuvoluokkaTyyppi at : AjoneuvoluokkaTyyppi.values()) {
             assertNotNull(VehicleClass.fromAjoneuvoluokka(at));
         }
-        Assert.assertEquals(VehicleClass.CAR, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.HA));
-        Assert.assertEquals(VehicleClass.CAR, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.PA));
-        Assert.assertEquals(VehicleClass.BUS, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.LA));
+        assertEquals(VehicleClass.CAR, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.HA));
+        assertEquals(VehicleClass.CAR, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.PA));
+        assertEquals(VehicleClass.BUS, VehicleClass.fromAjoneuvoluokka(AjoneuvoluokkaTyyppi.LA));
     }
 
 

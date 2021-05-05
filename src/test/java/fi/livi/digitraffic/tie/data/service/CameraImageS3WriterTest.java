@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,8 @@ import com.amazonaws.services.s3.model.S3Object;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
 import org.springframework.test.annotation.DirtiesContext;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
@@ -47,20 +48,18 @@ public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
             final Pair<String, byte[]> versionIdImgDataPair = versionIdImgDataPairs.get(i);
             final String versionId = versionIdImgDataPair.getKey();
             final byte[] dataFromS3 = readWeathercamS3DataVersion(versionedKey, versionId);
-            Assert.assertArrayEquals("Image data read from S3 differs from expected image data for the version",
-                                     versionIdImgDataPair.getValue(), dataFromS3);
+            assertArrayEquals(versionIdImgDataPair.getValue(), dataFromS3, "Image data read from S3 differs from expected image data for the version");
             final S3Object version = getS3ObjectVersionVersion(versionedKey, versionId);
             log.info("Version: {}", version.getObjectMetadata().getUserMetaDataOf(CameraImageS3Writer.LAST_MODIFIED_USER_METADATA_HEADER));
-            Assert.assertEquals("Image version last modified timestamp differs from the expected",
-                                getTimestampMillisForIndex(i)/1000, getLastModifiedSeconds(version));
+            assertEquals(getTimestampMillisForIndex(i)/1000, getLastModifiedSeconds(version), "Image version last modified timestamp differs from the expected");
         }
 
         // Test latest image data and last modified metadata
         final S3Object latest = amazonS3.getObject(weathercamBucketName, key);
         final byte[] dataFromS3 = latest.getObjectContent().readAllBytes();
-        Assert.assertArrayEquals("Image data read from S3 differs from expected image data for the latest image",
-                                 versionIdImgDataPairs.get(versionIdImgDataPairs.size()-1).getValue(), dataFromS3);
-        Assert.assertEquals("Latest image last modified timestamp differs from the expected", getTimestampMillisForIndex(4)/1000, getLastModifiedSeconds(latest));
+        assertArrayEquals(versionIdImgDataPairs.get(versionIdImgDataPairs.size()-1).getValue(), dataFromS3,
+            "Image data read from S3 differs from expected image data for the latest image");
+        assertEquals(getTimestampMillisForIndex(4)/1000, getLastModifiedSeconds(latest), "Latest image last modified timestamp differs from the expected");
     }
 
     /**
@@ -112,31 +111,31 @@ public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
 
     private void checkObjectExistenceInS3(final String key, final boolean shouldExist) {
         if (shouldExist) {
-            Assert.assertNotNull(amazonS3.getObject(weathercamBucketName, key));
+            assertNotNull(amazonS3.getObject(weathercamBucketName, key));
         } else {
             boolean exeption = false;
             try {
-                Assert.assertNull(amazonS3.getObject(weathercamBucketName, key));
+                assertNull(amazonS3.getObject(weathercamBucketName, key));
             } catch (AmazonS3Exception e) {
-                Assert.assertTrue(e.getMessage().contains("The specified key does not exist"));
+                assertTrue(e.getMessage().contains("The specified key does not exist"));
                 exeption = true;
             }
-            Assert.assertTrue("Exception should have been thrown", exeption);
+            assertTrue(exeption, "Exception should have been thrown");
         }
     }
 
     private void checkVersionObjectExistenceInS3(String versionedKey, String versionId, boolean shouldExist) {
         if (shouldExist) {
-            Assert.assertNotNull(getS3ObjectVersionVersion(versionedKey, versionId));
+            assertNotNull(getS3ObjectVersionVersion(versionedKey, versionId));
         } else {
             boolean exeption = false;
             try {
-                Assert.assertNotNull(getS3ObjectVersionVersion(versionedKey, versionId));
+                assertNotNull(getS3ObjectVersionVersion(versionedKey, versionId));
             } catch (Exception e) {
-                Assert.assertTrue(e.getMessage().contains("The specified key does not exist"));
+                assertTrue(e.getMessage().contains("The specified key does not exist"));
                 exeption = true;
             }
-            Assert.assertTrue("Exception should have been thrown", exeption);
+            assertTrue(exeption, "Exception should have been thrown");
         }
     }
 

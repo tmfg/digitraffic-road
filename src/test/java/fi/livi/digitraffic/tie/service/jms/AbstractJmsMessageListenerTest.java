@@ -10,13 +10,13 @@ import javax.jms.TextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.SensorDataTestUpdateService;
 
-public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTestWithoutS3 {
+public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTestWithoutLocalStack {
 
     @Autowired
     protected RoadStationSensorService roadStationSensorService;

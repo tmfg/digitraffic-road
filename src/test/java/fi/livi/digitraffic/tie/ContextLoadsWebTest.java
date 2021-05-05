@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie;
 
-import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
+import org.junit.jupiter.api.Test;import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)

@@ -6,16 +6,16 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -28,8 +28,10 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggerContextVO;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @Import({ JacksonAutoConfiguration.class })
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class LoggerMessageKeyValuePairJsonProviderTest {
     private static final Logger log = LoggerFactory.getLogger(LoggerMessageKeyValuePairJsonProviderTest.class);
 
@@ -40,7 +42,7 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
 
     private JsonFactory factory;
 
-    @Before
+    @BeforeEach
     public void init() {
         factory = new JsonFactory();
         factory.setCodec(objectMapper);
@@ -105,7 +107,7 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
         for (String allowedKey : ALLOWED_KEYS) {
             log.info("Test key {}", allowedKey);
             final String result = sendEventWithFormatedMessageAndReturnResultJson(allowedKey + "=bar");
-            Assert.assertEquals(String.format("{\"%s\":\"bar\"}", allowedKey), result);
+            assertEquals(String.format("{\"%s\":\"bar\"}", allowedKey), result);
         }
 
     }
@@ -115,7 +117,7 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
         for (String notAllowedKey : NOT_ALLOWED_KEYS) {
             log.info("Test key {}", notAllowedKey);
             final String result = sendEventWithFormatedMessageAndReturnResultJson(notAllowedKey + "=bar");
-            Assert.assertEquals("{}", result);
+            assertEquals("{}", result);
         }
 
     }
@@ -123,110 +125,110 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
     @Test
     public void simpleKeyValuePair() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo=bar");
-        Assert.assertEquals("{\"foo\":\"bar\"}", result);
+        assertEquals("{\"foo\":\"bar\"}", result);
     }
 
     @Test
     public void simpleKeyValuePair3() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("healthCheckValue=<status>ok</status>");
-        Assert.assertEquals("{\"healthCheckValue\":\"<status>ok</status>\"}", result);
+        assertEquals("{\"healthCheckValue\":\"<status>ok</status>\"}", result);
     }
 
 
     @Test
     public void simpleKeyValuePair2() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("  \n  \t    foo=bar     \n   ");
-        Assert.assertEquals("{\"foo\":\"bar\"}", result);
+        assertEquals("{\"foo\":\"bar\"}", result);
     }
 
     @Test
     public void intValue() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo=1");
-        Assert.assertEquals("{\"foo\":1}", result);
+        assertEquals("{\"foo\":1}", result);
     }
 
     @Test
     public void doubleValue() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo=1.4");
-        Assert.assertEquals("{\"foo\":1.4}", result);
+        assertEquals("{\"foo\":1.4}", result);
     }
 
     @Test
     public void doubleValueWithComma() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo=1,4");
-        Assert.assertEquals("{\"foo\":14}", result);
+        assertEquals("{\"foo\":14}", result);
     }
 
     @Test
     public void isoDateTimeOffset() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo=2020-05-01T12:00+02:00");
-        Assert.assertEquals("{\"foo\":\"2020-05-01T10:00:00Z\"}", result);
+        assertEquals("{\"foo\":\"2020-05-01T10:00:00Z\"}", result);
     }
 
     @Test
     public void isoDateTimeZ() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo=2020-05-01T12:00:00Z");
-        Assert.assertEquals("{\"foo\":\"2020-05-01T12:00:00Z\"}", result);
+        assertEquals("{\"foo\":\"2020-05-01T12:00:00Z\"}", result);
     }
 
     @Test
     public void isoDateTimeZMillis() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo=2020-05-01T12:00:00.123Z");
-        Assert.assertEquals("{\"foo\":\"2020-05-01T12:00:00.123Z\"}", result);
+        assertEquals("{\"foo\":\"2020-05-01T12:00:00.123Z\"}", result);
     }
 
     @Test
     public void keyValueChainTakesFirstPair() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo=bar=hello=world and=this");
-        Assert.assertEquals("{\"foo\":\"bar\",\"and\":\"this\"}", result);
+        assertEquals("{\"foo\":\"bar\",\"and\":\"this\"}", result);
     }
 
     @Test
     public void xmlTagsAreStripped() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("a=b " + LONG_XML);
-        Assert.assertEquals("{\"a\":\"b\"}", result);
+        assertEquals("{\"a\":\"b\"}", result);
     }
 
     @Test
     public void xmlTagsAreStripped2() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("a=b " + LONG_XML2);
-        Assert.assertEquals("{\"a\":\"b\"}", result);
+        assertEquals("{\"a\":\"b\"}", result);
     }
 
     @Test
     public void nullMessage() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson(null);
-        Assert.assertEquals("{}", result);
+        assertEquals("{}", result);
     }
 
     @Test
     public void emptyMessage() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("");
-        Assert.assertEquals("{}", result);
+        assertEquals("{}", result);
     }
 
     @Test
     public void emptyMessage2() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("    ");
-        Assert.assertEquals("{}", result);
+        assertEquals("{}", result);
     }
 
     @Test
     public void emptyResultWhenSpaces() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson(" a = b ");
-        Assert.assertEquals("{}", result);
+        assertEquals("{}", result);
     }
 
     @Test
     public void emptyResultWhenSpaces2() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("foo =bar hello= world");
-        Assert.assertEquals("{}", result);
+        assertEquals("{}", result);
     }
 
     @Test
     public void s3VersionId() throws IOException {
         final String result = sendEventWithFormatedMessageAndReturnResultJson("s3VersionId=\"1_9XcT207HmV5yyEExF7GhsaSzUoeNFY\"");
-        Assert.assertEquals("{\"s3VersionId\":\"1_9XcT207HmV5yyEExF7GhsaSzUoeNFY\"}", result);
+        assertEquals("{\"s3VersionId\":\"1_9XcT207HmV5yyEExF7GhsaSzUoeNFY\"}", result);
     }
 
     private String sendEventWithFormatedMessageAndReturnResultJson(final String formattedMessage) throws IOException {

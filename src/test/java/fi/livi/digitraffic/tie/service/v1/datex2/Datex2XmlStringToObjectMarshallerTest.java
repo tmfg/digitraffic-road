@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
 
@@ -46,13 +49,13 @@ public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
             final String dateTime = timesMatcher.group(1); // group(0) = whole match
             log.info("Found dateTime: {}", dateTime);
             if (shouldMatchIsoFormat) {
-                Assert.assertTrue("Illegal iso datetime at Zulu " + dateTime, isoDateTimeZPattern.matcher(dateTime).matches());
+                assertTrue(isoDateTimeZPattern.matcher(dateTime).matches(), "Illegal iso datetime at Zulu " + dateTime);
             } else {
-                Assert.assertFalse("Should not be iso datetime Zulu: " + dateTime, isoDateTimeZPattern.matcher(dateTime).matches());
+                assertFalse(isoDateTimeZPattern.matcher(dateTime).matches(), "Should not be iso datetime Zulu: " + dateTime);
             }
             found++;
         }
-        Assert.assertEquals(13, found);
+        assertEquals(13, found);
 
     }
 }

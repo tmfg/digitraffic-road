@@ -13,8 +13,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
         return result;
     }
 
-    @Before
+    @BeforeEach
     public void roadStationMock() {
         when(roadStationRepository.findByRoadStationId(anyLong())).thenAnswer(
             (Answer) invocationOnMock -> {

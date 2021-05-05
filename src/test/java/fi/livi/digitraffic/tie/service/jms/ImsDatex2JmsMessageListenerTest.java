@@ -9,8 +9,8 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVe
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
 import static org.apache.commons.collections.CollectionUtils.union;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller imsJaxb2Marshaller;
 
-    @Before
+    @BeforeEach
     public void cleanDb() {
         datex2Repository.deleteAll();
     }
@@ -97,22 +97,22 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         assertCollectionSize("Situations size won't match.", situationIdsToFind.length, situations);
         assertCollectionSize("GeoJSON features size won't match.", situationIdsToFind.length, features);
 
-        for (String id : situationIdsToFind) {
-            assertTrue(String.format("Situation %s not found in situations", id),situations.stream().anyMatch(s -> s.getId().equals(id)));
-            assertTrue(String.format("Situation %s not found in features", id), features.stream().anyMatch(f -> f.getProperties().situationId.equals(id)));
+        for (final String id : situationIdsToFind) {
+            assertTrue(situations.stream().anyMatch(s -> s.getId().equals(id)), String.format("Situation %s not found in situations", id));
+            assertTrue(features.stream().anyMatch(f -> f.getProperties().situationId.equals(id)), String.format("Situation %s not found in features", id));
         }
 
         checkDatex2MatchJson(situationIncidents, featureIncidents);
-        for (Situation s : situationIncidents) {
-            assertTrue(String.format("Incident situation %s not found in features.", s.getId()),featureIncidents.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())));
+        for (final Situation s : situationIncidents) {
+            assertTrue(featureIncidents.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())), String.format("Incident situation %s not found in features.", s.getId()));
         }
 
-        for (Situation s : situationWeightRestrictions) {
-            assertTrue(String.format("Weight restrictions situation %s not found in features.", s.getId()),featureWeightRestrictions.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())));
+        for (final Situation s : situationWeightRestrictions) {
+            assertTrue(featureWeightRestrictions.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())), String.format("Weight restrictions situation %s not found in features.", s.getId()));
         }
 
-        for (Situation s : situationRoadworks) {
-            assertTrue(String.format("Roadwork situation %s not found in features.", s.getId()),featureRoadworks.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())));
+        for (final Situation s : situationRoadworks) {
+            assertTrue(featureRoadworks.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())), String.format("Roadwork situation %s not found in features.", s.getId()));
         }
     }
 
@@ -126,16 +126,16 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
     private void checkDatex2MatchJson(final List<Situation> situations, final List<TrafficAnnouncementFeature> features) {
         // Assert both contains each other
-        for (Situation s : situations) {
-            assertTrue(String.format("Situation %s was not found in features.",
-                s.getId()), features.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())));
+        for (final Situation s : situations) {
+            assertTrue(features.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())),
+                String.format("Situation %s was not found in features.", s.getId()));
         }
-        for (TrafficAnnouncementFeature f : features) {
-            assertTrue(String.format("Feature %s was not found in situations.",
-                f.getProperties().situationId), situations.stream().anyMatch(s -> s.getId().equals(f.getProperties().situationId)));
+        for (final TrafficAnnouncementFeature f : features) {
+            assertTrue(situations.stream().anyMatch(s -> s.getId().equals(f.getProperties().situationId)),
+                String.format("Feature %s was not found in situations.", f.getProperties().situationId));
         }
         // Check Datex2 vs Json content
-        for (Situation s : situations) {
+        for (final Situation s : situations) {
             Optional<TrafficAnnouncementFeature> feature =
                 features.stream().filter(f -> f.getProperties().situationId.equals(s.getId())).findFirst();
             assertTrue(feature.isPresent());
@@ -144,8 +144,8 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
             final SituationRecord situationRecord = s.getSituationRecords().get(0);
             final String situationComment = situationRecord.getGeneralPublicComments().get(0).getComment().getValues().getValues().get(0).getValue();
 
-            assertTrue(String.format("Feature title \"%s\" should exist in situation comment \"%s\"", announcement.title, situationComment),
-                       situationComment.contains(announcement.title));
+            assertTrue(situationComment.contains(announcement.title),
+                String.format("Feature title \"%s\" should exist in situation comment \"%s\"", announcement.title, situationComment));
             assertEquals(withoutNanos(announcement.timeAndDuration.startTime.toInstant()),
                          withoutNanos(situationRecord.getValidity().getValidityTimeSpecification().getOverallStartTime()));
         }

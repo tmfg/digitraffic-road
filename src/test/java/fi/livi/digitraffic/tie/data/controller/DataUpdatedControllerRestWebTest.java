@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,14 +16,13 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.controller.v1.DataController;
@@ -49,7 +49,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
     @Autowired
     private DataStatusService dataStatusService;
 
-    @Before
+    @BeforeEach
     public void updateDataUpdated() {
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
@@ -71,7 +71,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
                     .andExpect(mvcResult -> {
                         final String contentType = mvcResult.getResponse().getContentType();
 
-                        Assert.notNull(contentType, "Content type not set");
+                        assertNotNull(contentType, "Content type not set");
 
                         MatcherAssert.assertThat(MediaType.valueOf(contentType), Matchers.anyOf(
                             Matchers.is(MediaType.APPLICATION_JSON),

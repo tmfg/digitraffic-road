@@ -5,6 +5,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_WORK_MACHINE_PART_
 import static fi.livi.digitraffic.tie.controller.integrations.V2RoadMaintenanceController.TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PLOUGHING_AND_SLUSH_REMOVAL;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.SALTING;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,9 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     @Autowired
     private V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
 
-    @Before
+    @BeforeEach
     public void cleanDb() {
         v2MaintenanceTrackingRepository.deleteAll();
         if (TestTransaction.isActive()) {
@@ -64,7 +65,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         postTrackingJson("pisteseuranta.json");
 
         final int recordsAfter = v2MaintenanceTrackingDataRepository.findAll().size();
-        Assert.assertEquals(recordsBefore+1, recordsAfter);
+        assertEquals(recordsBefore+1, recordsAfter);
     }
 
     @Test
@@ -75,7 +76,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         postTrackingJson("viivageometriaseuranta.json");
 
         final List<MaintenanceTrackingData> all = v2MaintenanceTrackingDataRepository.findAll();
-        Assert.assertEquals(recordsBefore+1, all.size());
+        assertEquals(recordsBefore+1, all.size());
     }
 
 
@@ -87,7 +88,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         postTracking("pisteseuranta.json", null, status().is5xxServerError());
 
         final int recordsAfter = v2MaintenanceTrackingRepository.findAll().size();
-        Assert.assertEquals(recordsBefore, recordsAfter);
+        assertEquals(recordsBefore, recordsAfter);
     }
 
     @Test
@@ -106,8 +107,7 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
         final List<MaintenanceTracking> observations = v2MaintenanceTrackingRepository
             .findAllByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedAscIdAsc(harjaTyokoneId, harjaUrakkaId);
 
-        Assert.assertEquals("Two first observations should be joined and 3rd divided as separate as record time is far from previous.",
-                   2, observations.size());
+        assertEquals(2, observations.size(), "Two first observations should be joined and 3rd divided as separate as record time is far from previous.");
 
         final MaintenanceTracking first = observations.get(0);
         final MaintenanceTracking second = observations.get(1);
@@ -122,12 +122,11 @@ public class V2RoadMaintenanceControllerTest extends AbstractRestWebTest {
     private void assertContainsTasks(final MaintenanceTracking tracking, MaintenanceTrackingTask...tasks) {
         final Set<MaintenanceTrackingTask> trackingTasks = tracking.getTasks();
         AssertHelper.assertCollectionSize(tasks.length, trackingTasks);
-        Arrays.stream(tasks).forEach(t -> Assert.assertTrue(trackingTasks.contains(t)));
+        Arrays.stream(tasks).forEach(t -> assertTrue(trackingTasks.contains(t)));
     }
 
     private void assertLinestringSize(final MaintenanceTracking tracking, final int size) {
-        Assert.assertEquals("Tracking should have " + size + " coordinates.",
-                    size, tracking.getLineString().getNumPoints());
+        assertEquals(size, tracking.getLineString().getNumPoints(), "Tracking should have " + size + " coordinates.");
     }
 
     private void postTrackingJson(final String fileName) throws Exception {

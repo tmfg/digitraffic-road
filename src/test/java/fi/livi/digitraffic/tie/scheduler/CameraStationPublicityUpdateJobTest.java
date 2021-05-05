@@ -3,7 +3,8 @@ package fi.livi.digitraffic.tie.scheduler;
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.JULKINEN;
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.VALIAIKAISESTI_SALAINEN;
 import static java.lang.Thread.sleep;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
@@ -19,9 +20,8 @@ import java.util.stream.Collectors;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -50,7 +50,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     @MockBean
     private CameraPresetHistoryUpdateService cameraPresetHistoryUpdateService;
 
-    @After
+    @AfterEach
     public void restoreData() {
         cameraPresetService.findAllCameraPresetsMappedByLotjuId().values().forEach(cp -> {
             final RoadStation rs = cp.getRoadStation();
@@ -157,9 +157,9 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         final CameraPreset cp = cameraPresetService.findCameraPresetByLotjuId(lotjuId);
         final RoadStation rs = cp.getRoadStation();
         assertEquals(publicityStart, rs.getPublicityStartTime().toInstant());
-        Assert.assertEquals(isPublicNow, rs.isPublicNow());
-        Assert.assertEquals(previousIsPublic, rs.isPublicPrevious());
-        Assert.assertEquals(isPublic, rs.internalIsPublic());
+        assertEquals(isPublicNow, rs.isPublicNow());
+        assertEquals(previousIsPublic, rs.isPublicPrevious());
+        assertEquals(isPublic, rs.internalIsPublic());
         return rs;
     }
 
@@ -170,10 +170,10 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         // uses current_timestamp
         final List<CameraPreset> allPublishable = cameraPresetService.findAllPublishableCameraPresets();
         final List<Long> publishableLotjuIds = allPublishable.stream().map(CameraPreset::getLotjuId).collect(Collectors.toList());
-        for (long lotjuId : lotjuIds) {
-            Assert.assertTrue(publishableLotjuIds.contains(lotjuId));
+        for (final long lotjuId : lotjuIds) {
+            assertTrue(publishableLotjuIds.contains(lotjuId));
         }
-        Assert.assertEquals(lotjuIds.length, publishableLotjuIds.size());
+        assertEquals(lotjuIds.length, publishableLotjuIds.size());
     }
 
     /**

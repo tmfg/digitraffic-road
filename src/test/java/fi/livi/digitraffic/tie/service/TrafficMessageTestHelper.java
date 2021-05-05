@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -68,7 +68,7 @@ public class TrafficMessageTestHelper extends AbstractTest {
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller imsJaxb2Marshaller;
 
-    @Before
+    @BeforeEach
     public void cleanDb() {
         datex2Repository.deleteAll();
     }

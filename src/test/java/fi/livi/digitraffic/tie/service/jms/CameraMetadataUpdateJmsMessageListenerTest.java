@@ -1,10 +1,6 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -18,8 +14,8 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +60,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
     private JMSMessageListener<CameraMetadataUpdatedMessageDto> cameraMetadataJmsMessageListener;
 
-    @Before
+    @BeforeEach
     public void initListener() {
         // Create listener
         this.dataUpdater = (data) -> cameraMetadataMessageHandler.updateCameraMetadata(data);

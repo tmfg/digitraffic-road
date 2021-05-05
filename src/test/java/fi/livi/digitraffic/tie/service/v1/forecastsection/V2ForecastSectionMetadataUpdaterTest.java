@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,7 +20,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -31,8 +31,8 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
-@Ignore("Eats way too much memory")
-public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWithoutS3 {
+@Disabled("Eats way too much memory")
+public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWithoutLocalStack {
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
     private ForecastSectionClient forecastSectionClient;
@@ -57,7 +57,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWith
     @Autowired
     private RestTemplate restTemplate;
 
-    @Before
+    @BeforeEach
     public void before() {
         forecastSectionClient = new ForecastSectionClient(restTemplate);
         forecastSectionMetadataUpdater = new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository,
