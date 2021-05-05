@@ -7,12 +7,10 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.core.NestedExceptionUtils;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -70,10 +68,8 @@ public class CameraImageS3Writer {
             // Put current image
             metadata.setContentLength(currentImageData.length);
             amazonS3Client.putObject(weathercamS3Properties.getS3WeathercamBucketName(), imageKey, new ByteArrayInputStream(currentImageData), metadata);
-        } catch (Exception e) {
-            log.error("method=writeCurrentImage Failed to write image to S3 s3Key={} . mostSpecificCauseMessage={} . stackTrace={}",
-                     imageKey, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
-            throw e;
+        } catch (final Exception e) {
+            throw new RuntimeException(String.format("method=writeCurrentImage Failed to write image to S3 s3Key=%s", imageKey), e);
         }
     }
 
@@ -99,10 +95,8 @@ public class CameraImageS3Writer {
                 log.debug("method=writeVersionedImage s3Key={} lastModified: {} versionId={}", versionedKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER), result.getVersionId());
             }
             return result.getVersionId();
-        } catch (Exception e) {
-            log.error("method=writeVersionedImage Failed to write image to S3 s3Key={} . mostSpecificCauseMessage={} . stackTrace={}",
-                      versionedKey, NestedExceptionUtils.getMostSpecificCause(e).getMessage(), ExceptionUtils.getStackTrace(e));
-            throw e;
+        } catch (final Exception e) {
+            throw new RuntimeException(String.format("method=writeVersionedImage Failed to write image to S3 s3Key=%s", versionedKey), e);
         }
     }
 
