@@ -69,7 +69,7 @@ public class CameraImageS3Writer {
             metadata.setContentLength(currentImageData.length);
             amazonS3Client.putObject(weathercamS3Properties.getS3WeathercamBucketName(), imageKey, new ByteArrayInputStream(currentImageData), metadata);
         } catch (final Exception e) {
-            throw new RuntimeException(String.format("method=writeCurrentImage Failed to write image to S3 s3Key=%s", imageKey), e);
+            throw new RuntimeException(String.format("%s method writeCurrentImage Failed to write image to S3 s3Key=%s", getClass().getSimpleName(), imageKey), e);
         }
     }
 
