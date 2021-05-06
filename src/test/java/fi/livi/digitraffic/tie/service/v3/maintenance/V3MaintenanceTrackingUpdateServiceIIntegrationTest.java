@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.service.v3.maintenance;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,21 +23,30 @@ public class V3MaintenanceTrackingUpdateServiceIIntegrationTest extends Abstract
 //        testHelper.clearDb();
 //    }
 
-    @Ignore("Just for internal testing")
+    @Disabled("Just for internal testing")
     @Rollback(value = false)
     @Test
     public void loadBigTrackingData() throws IOException {
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/internal-testing/seuranta-big.json");
     }
 
-    @Ignore("Just for internal testing")
+    @Disabled("Just for internal testing")
     @Rollback(value = false)
     @Test
     public void loadLongJumpInLineStringData() throws IOException {
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/distancegap/long-jump-twice-1.json");
     }
 
-    @Ignore("Just for internal testing")
+    @Disabled("Just for internal testing")
+    @Rollback(value = false)
+    @Test
+    public void loadArrayOfTrackingsData() throws IOException {
+        testHelper.clearDb();
+        testHelper.saveTrackingFromResourceToDbAsObservationsFromMultipleMessages("classpath:harja/internal-testing/tracking-array-to-combine.json");
+    }
+
+
+    @Disabled("Just for internal testing")
     @Rollback(value = false)
     @Test
     public void loadLineStrings_ShouldBeHandledAsOneIfNoDistanceGap() throws IOException {
@@ -45,7 +54,7 @@ public class V3MaintenanceTrackingUpdateServiceIIntegrationTest extends Abstract
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/linestring/linestring-second.json");
     }
 
-    @Ignore("Just for internal testing")
+    @Disabled("Just for internal testing")
     @Rollback(value = false)
     @Test
     public void loadSinglePointLineStrings_ShouldBeHandledAsLineStringTrackings() throws IOException {

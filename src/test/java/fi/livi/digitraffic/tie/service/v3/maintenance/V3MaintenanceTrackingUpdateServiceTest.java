@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
     private int maxGapInMinutes;
 
-    @Before
+    @BeforeEach
     public void init() {
         testHelper.clearDb();
     }
