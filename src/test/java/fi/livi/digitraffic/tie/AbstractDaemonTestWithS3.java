@@ -5,11 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.SetBucketVersioningConfigurationRequest;
 
+@TestPropertySource(properties = { "testcontainers.disabled=false" })
 public abstract class AbstractDaemonTestWithS3 extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(AbstractDaemonTestWithS3.class);
 

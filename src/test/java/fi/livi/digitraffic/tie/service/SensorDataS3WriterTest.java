@@ -1,5 +1,10 @@
 package fi.livi.digitraffic.tie.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
@@ -24,19 +29,14 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.opencsv.bean.CsvToBeanBuilder;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
 import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
-import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
-public class SensorDataS3WriterTest extends AbstractDaemonTest {
+public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
     public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 
     @Autowired
@@ -49,7 +49,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     private SensorValueHistoryRepository repository;
 
     @Autowired
-    SensorDataS3Properties sensorDataS3Properties;
+    private SensorDataS3Properties sensorDataS3Properties;
 
     private SensorValueHistoryBuilder builder;
 

@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 
 import org.hamcrest.Matcher;
@@ -17,10 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-@TestPropertySource(properties = { "spring.localstack.enabled=false" })
+@TestPropertySource(properties = { "testcontainers.disabled=true" })
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     protected final MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON;
 

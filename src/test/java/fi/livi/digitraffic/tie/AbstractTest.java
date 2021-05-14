@@ -60,7 +60,7 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @TestPropertySource(properties = {
     "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
-    "spring.localstack.enabled=false"
+    "testcontainers.disabled=true"
 })
 public abstract class AbstractTest {
 

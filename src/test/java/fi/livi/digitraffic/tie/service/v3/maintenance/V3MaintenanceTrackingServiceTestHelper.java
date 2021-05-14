@@ -107,8 +107,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     public final static Set<Integer> TASK_IDS_INSIDE_BOX_INTS = new HashSet<>(Arrays.asList(12911, 1368));
     public final static Pair<Double, Double> RANGE_X_OUTSIDE_TASK = Pair.of(26.34, 27.0);
     public final static Pair<Double, Double> RANGE_Y_OUTSIDE_TASK = Pair.of(64.1, 65.0);
-
-
+    private final ObjectReader jsonReaderForTrackingsArray;
 
     @Autowired
     public V3MaintenanceTrackingServiceTestHelper(final ObjectMapper objectMapper,
@@ -129,6 +128,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
         this.jsonReader = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
         this.jsonReaderForHavainto = objectMapper.readerFor(Havainto.class);
+        this.jsonReaderForTrackingsArray = objectMapper.readerForArrayOf(TyokoneenseurannanKirjausRequestSchema.class);
         this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
         this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
         this.entityManager = entityManager;
@@ -499,6 +499,14 @@ public class V3MaintenanceTrackingServiceTestHelper {
         final String json = getFormatedTrackingJson(path);
         final TyokoneenseurannanKirjausRequestSchema tracking = jsonReader.readValue(json);
         saveTrackingDataAsObservations(tracking);
+    }
+
+    public void saveTrackingFromResourceToDbAsObservationsFromMultipleMessages(final String path) throws IOException {
+        final String json = getFormatedTrackingJson(path);
+        final TyokoneenseurannanKirjausRequestSchema[] trackings = jsonReaderForTrackingsArray.readValue(json);
+        for(TyokoneenseurannanKirjausRequestSchema tracking : trackings) {
+            saveTrackingDataAsObservations(tracking);
+        }
     }
 
     public static ZonedDateTime getEndTime(final TyokoneenseurannanKirjausRequestSchema seuranta) {

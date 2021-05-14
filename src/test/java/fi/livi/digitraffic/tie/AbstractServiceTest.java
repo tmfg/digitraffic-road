@@ -79,6 +79,6 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
           // configurations
           AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class
         })
-@TestPropertySource(properties = { "spring.localstack.enabled=false" })
+@TestPropertySource(properties = { "testcontainers.disabled=true" })
 public abstract class AbstractServiceTest extends AbstractJpaTest {
 }
