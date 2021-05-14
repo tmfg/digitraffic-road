@@ -32,8 +32,8 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
         setUnmarshaller(marshaller);
 
         final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-        sender.setConnectionTimeout(30000);
-        sender.setReadTimeout(30000);
+        sender.setConnectionTimeout(60000);
+        sender.setReadTimeout(60000);
         setMessageSender(sender);
 
     }
