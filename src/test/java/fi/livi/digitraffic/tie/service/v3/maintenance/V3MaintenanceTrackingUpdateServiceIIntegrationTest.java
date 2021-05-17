@@ -45,6 +45,13 @@ public class V3MaintenanceTrackingUpdateServiceIIntegrationTest extends Abstract
         testHelper.saveTrackingFromResourceToDbAsObservationsFromMultipleMessages("classpath:harja/internal-testing/tracking-array-to-combine.json");
     }
 
+    @Disabled("Just for internal testing")
+    @Rollback(value = false)
+    @Test
+    public void handleUnhandledObservationsData() {
+        testHelper.handleUnhandledWorkMachineObservations(1000);
+    }
+
 
     @Disabled("Just for internal testing")
     @Rollback(value = false)

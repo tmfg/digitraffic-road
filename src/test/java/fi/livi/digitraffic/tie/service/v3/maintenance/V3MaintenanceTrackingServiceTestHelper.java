@@ -32,6 +32,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -66,8 +67,8 @@ public class V3MaintenanceTrackingServiceTestHelper {
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     private final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository;
     private final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
-    private final ObjectReader jsonReader;
-    private final ObjectWriter jsonWriter;
+    private final ObjectReader jsonReaderForKirjaus;
+    private final ObjectWriter jsonWriterForKirjaus;
     private final ObjectReader jsonReaderForHavainto;
     private final ObjectWriter jsonWriterForHavainto;
     private final EntityManager entityManager;
@@ -108,6 +109,8 @@ public class V3MaintenanceTrackingServiceTestHelper {
     public final static Pair<Double, Double> RANGE_X_OUTSIDE_TASK = Pair.of(26.34, 27.0);
     public final static Pair<Double, Double> RANGE_Y_OUTSIDE_TASK = Pair.of(64.1, 65.0);
     private final ObjectReader jsonReaderForTrackingsArray;
+    private final ObjectReader genericJsonReader;
+    private final ObjectWriter genericJsonWriter;
 
     @Autowired
     public V3MaintenanceTrackingServiceTestHelper(final ObjectMapper objectMapper,
@@ -124,10 +127,12 @@ public class V3MaintenanceTrackingServiceTestHelper {
         this.v2MaintenanceTrackingUpdateService = v2MaintenanceTrackingUpdateService;
         this.v3MaintenanceTrackingUpdateService = v3MaintenanceTrackingUpdateService;
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
-        this.jsonWriter = objectMapper.writerFor(TyokoneenseurannanKirjausRequestSchema.class);
-        this.jsonReader = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
+        this.jsonWriterForKirjaus = objectMapper.writerFor(TyokoneenseurannanKirjausRequestSchema.class);
+        this.jsonReaderForKirjaus = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
         this.jsonReaderForHavainto = objectMapper.readerFor(Havainto.class);
+        this.genericJsonReader = objectMapper.reader();
+        this.genericJsonWriter = objectMapper.writer();
         this.jsonReaderForTrackingsArray = objectMapper.readerForArrayOf(TyokoneenseurannanKirjausRequestSchema.class);
         this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
         this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
@@ -380,13 +385,15 @@ public class V3MaintenanceTrackingServiceTestHelper {
     }
 
     public String getFormatedTrackingJson(final String trackingJsonPath) throws IOException {
-        return jsonWriter.writeValueAsString(jsonReader.readValue(readResourceContent(trackingJsonPath)));
+        final String json = readResourceContent(trackingJsonPath);
+        final JsonNode root = new ObjectMapper().readTree(json);
+        return root.toPrettyString();
     }
 
     public void checkValidJson(final String json) {
         // Test reading as object and then back to json
         try {
-            jsonWriter.writeValueAsString(jsonReader.readValue(json));
+            genericJsonWriter.writeValueAsString(genericJsonReader.readValue(json));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
         }
@@ -394,7 +401,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     }
 
     public MaintenanceTrackingData saveTrackingAsJson(final String trackingJSon) throws JsonProcessingException {
-        final TyokoneenseurannanKirjausRequestSchema tracking = jsonReader.readValue(trackingJSon);
+        final TyokoneenseurannanKirjausRequestSchema tracking = jsonReaderForKirjaus.readValue(trackingJSon);
         return v2MaintenanceTrackingUpdateService.saveMaintenanceTrackingData(tracking);
     }
 
@@ -402,8 +409,8 @@ public class V3MaintenanceTrackingServiceTestHelper {
         return v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
     }
 
-    public int handleUnhandledWorkMachineObservations() {
-        return v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(100);
+    public int handleUnhandledWorkMachineObservations(final int maxToHandle) {
+        return v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(maxToHandle);
     }
 
     public void flushAndClearSession() {
@@ -416,7 +423,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     }
 
     public MaintenanceTrackingData saveTrackingData(final TyokoneenseurannanKirjausRequestSchema seuranta) throws JsonProcessingException {
-        return saveTrackingAsJson(jsonWriter.writeValueAsString(seuranta));
+        return saveTrackingAsJson(jsonWriterForKirjaus.writeValueAsString(seuranta));
     }
 
     String UPSERT_MAINTENANCE_TRACKING_OBSERVATION_DATA_SQL =
@@ -471,7 +478,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     }
 
     public String getFormatedTrackingJson(final TyokoneenseurannanKirjausRequestSchema seuranta) throws JsonProcessingException {
-        return jsonWriter.writeValueAsString(seuranta);
+        return jsonWriterForKirjaus.writeValueAsString(seuranta);
     }
 
     public String getFormatedObservationJson(final Havainto seuranta) throws JsonProcessingException {
@@ -497,12 +504,12 @@ public class V3MaintenanceTrackingServiceTestHelper {
 
     public void saveTrackingFromResourceToDbAsObservations(final String path) throws IOException {
         final String json = getFormatedTrackingJson(path);
-        final TyokoneenseurannanKirjausRequestSchema tracking = jsonReader.readValue(json);
+        final TyokoneenseurannanKirjausRequestSchema tracking = jsonReaderForKirjaus.readValue(json);
         saveTrackingDataAsObservations(tracking);
     }
 
     public void saveTrackingFromResourceToDbAsObservationsFromMultipleMessages(final String path) throws IOException {
-        final String json = getFormatedTrackingJson(path);
+        final String json = readResourceContent(path);
         final TyokoneenseurannanKirjausRequestSchema[] trackings = jsonReaderForTrackingsArray.readValue(json);
         for(TyokoneenseurannanKirjausRequestSchema tracking : trackings) {
             saveTrackingDataAsObservations(tracking);
