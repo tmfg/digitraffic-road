@@ -104,7 +104,7 @@ public class V3Datex2DataService {
                                                                                    d2.getTrafficAnnouncementType(),
                                                                                    includeAreaGeometry);
                 } catch (final Exception e) {
-                    log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3", e);
+                    log.error(String.format("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3 datex2.id: %s", d2.getId()), e);
                     return null;
                 }
             })

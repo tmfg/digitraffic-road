@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Parameter;
@@ -36,6 +37,7 @@ public class RegionGeometry {
     @Enumerated
     private AreaType type;
     private Instant effectiveDate;
+    @ColumnTransformer(write = "ST_MakeValid(?)")
     private Geometry geometry;
     private Instant versionDate;
     private String gitId;

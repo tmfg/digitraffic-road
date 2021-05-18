@@ -137,7 +137,14 @@ public class V3RegionGeometryDataService {
         for (int id : ids) {
             final RegionGeometry region = getAreaLocationRegionEffectiveOn(id, effectiveDate);
             if (region != null) {
-                geometryCollection.add(region.getGeometry());
+                final org.locationtech.jts.geom.Geometry geometry = region.getGeometry();
+                if(geometry.isValid()) {
+                    geometryCollection.add(geometry);
+                } else {
+                    // Try to make geometry valid by adding 0 buffer around it
+                    geometryCollection.add(geometry.buffer(0));
+                    log.warn("RegionGeometry is not valid id: {} locationCode: {} name: {} effectiveDate: {}", region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate());
+                }
             }
         }
         final org.locationtech.jts.geom.Geometry union = PostgisGeometryHelper.union(geometryCollection);
