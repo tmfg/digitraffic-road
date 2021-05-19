@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,14 +65,15 @@ public class RoadApplicationConfiguration {
     public DataSource dataSource(final @Value("${road.datasource.url}") String url,
                                  final @Value("${road.datasource.username}") String username,
                                  final @Value("${road.datasource.password}") String password,
-                                 final @Value("${road.datasource.driver}") String driver,
+                                 final @Value("${road.datasource.driver:}") String driver, // default empty if property not found
                                  final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
-        config.setDriverClassName(driver);
-
+        if (StringUtils.isNotBlank(driver)) {
+            config.setDriverClassName(driver);
+        }
         config.setMaximumPoolSize(maximumPoolSize);
 
         config.setMaxLifetime(570000);
