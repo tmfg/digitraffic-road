@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 
 import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,11 +76,20 @@ public class CameraStationUpdater {
     @PerformanceMonitor(maxWarnExcecutionTime = 450000)
     public boolean updateCameras() {
         log.info("method=updateCameras start");
-
         final List<KameraVO> kameras = lotjuCameraStationMetadataClientWrapper.getKameras();
 
+        final List<Exception> errors = new ArrayList<>();
         final Pair<Integer, Integer> updatedInsertedCount =
-            kameras.stream().map(this::updateCameraStationAndPresets)
+            kameras.stream()
+                .map(kamera -> {
+                    try {
+                        return updateCameraStationAndPresets(kamera);
+                    } catch (final Exception e) {
+                        errors.add(e);
+                        log.error(String.format("method=updateCameras had an error in method updateCameraStationAndPresets with camera lotjuId=%d", kamera.getId()), e);
+                        return Pair.of(0, 0);
+                    }
+                })
                 .reduce(Pair.of(0, 0), (p1, p2) -> Pair.of(p1.getLeft() + p2.getLeft(), p1.getRight() + p2.getRight()));
 
         final Set<Long> camerasLotjuIds = kameras.stream().map(AbstractVO::getId).collect(Collectors.toSet());
@@ -93,6 +103,11 @@ public class CameraStationUpdater {
         final boolean updatedCameras = updatedInsertedCount.getLeft() > 0 || updatedInsertedCount.getRight() > 0;
         log.info("method=updateCameras end updatedBoolean={}", updatedCameras);
 
+        if (!errors.isEmpty()) {
+            throw new RuntimeException(
+                String.format("There was %d errors in method=updateCameras and here is thrown the first of them", errors.size()), errors.get(0));
+        }
+
         return updatedCameras;
     }
 
@@ -100,10 +115,26 @@ public class CameraStationUpdater {
     public int updateCameraStationsStatuses() {
         log.info("method=updateCameraStationsStatuses start");
         final List<KameraVO> kameras = lotjuCameraStationMetadataClientWrapper.getKameras();
-        return kameras.stream().mapToInt(kamera -> {
-            log.info("method=updateCameraStationsStatuses update lotjuId={}", kamera.getId());
-            return updateCameraStation(kamera) ? 1 : 0;
+
+        final List<Exception> errors = new ArrayList<>();
+        final int updateCount = kameras.stream().mapToInt(kamera -> {
+            try {
+                log.info("method=updateCameraStationsStatuses update camera with lotjuId={}", kamera.getId());
+                return updateCameraStation(kamera) ? 1 : 0;
+            } catch (final Exception e) {
+                errors.add(e);
+                log.error(String.format("method=updateCameraStationsStatuses had an error in method updateCameraStation with camera lotjuId=%d", kamera.getId()), e);
+                return 0;
+            }
         }).sum();
+
+        if (!errors.isEmpty()) {
+            throw new RuntimeException(
+                String.format("There was %d errors in method=updateCameraStationsStatuses and here is thrown the first one of them",
+                errors.size()), errors.get(0));
+        }
+
+        return updateCount;
     }
 
 
@@ -151,11 +182,6 @@ public class CameraStationUpdater {
     }
 
     private boolean updateCameraStation(final KameraVO kamera) {
-        if (kamera == null) {
-            log.error("method=updateCameraStation No Camera given");
-            return false;
-        }
-
         // If camera station doesn't exist, we have to create it and the presets.
         if (roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId()) == null) {
             final Pair<Integer, Integer> updated = updateCameraStationAndPresets(kamera);

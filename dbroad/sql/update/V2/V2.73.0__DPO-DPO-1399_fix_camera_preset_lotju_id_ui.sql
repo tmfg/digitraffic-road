@@ -1,0 +1,2 @@
+ALTER TABLE camera_preset drop constraint if exists camera_preset_lotju_id_ui;
+CREATE UNIQUE INDEX IF NOT EXISTS camera_preset_lotju_id_ui ON camera_preset (id) WHERE camera_preset.obsolete_date IS NULL;
