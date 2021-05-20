@@ -64,11 +64,13 @@ public class RoadApplicationConfiguration {
     public DataSource dataSource(final @Value("${road.datasource.url}") String url,
                                  final @Value("${road.datasource.username}") String username,
                                  final @Value("${road.datasource.password}") String password,
+                                 final @Value("${road.datasource.driver}") String driver,
                                  final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
+        config.setDriverClassName(driver);
 
         config.setMaximumPoolSize(maximumPoolSize);
 

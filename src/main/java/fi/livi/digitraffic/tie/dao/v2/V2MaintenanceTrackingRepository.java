@@ -61,6 +61,12 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
            value = "INSERT INTO maintenance_tracking_data_tracking(data_id, tracking_id) VALUES (:dataId, :trackingId) ON CONFLICT (data_id, tracking_id) DO NOTHING")
     void addTrackingData(final long dataId, final long trackingId);
 
+    @Modifying
+    @Query(nativeQuery = true,
+           value = "INSERT INTO maintenance_tracking_observation_data_tracking(data_id, tracking_id) VALUES (:dataId, :trackingId) ON CONFLICT (data_id, tracking_id) DO NOTHING")
+    void addTrackingObservationData(final long dataId, final long trackingId);
+
+
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LINESTRING_SQL +
                    "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +

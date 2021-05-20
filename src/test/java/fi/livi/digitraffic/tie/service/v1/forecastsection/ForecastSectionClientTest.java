@@ -1,20 +1,20 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.ForecastSectionV2Dto;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Import(ForecastSectionClient.class)
 public class ForecastSectionClientTest extends AbstractServiceTest {
@@ -23,9 +23,8 @@ public class ForecastSectionClientTest extends AbstractServiceTest {
     private ForecastSectionClient forecastSectionClient;
 
     @Test
-    @Ignore("For manual integration testing")
+    @Disabled("For manual integration testing")
     public void getForecastSectionV1MetadataSucceeds() {
-
         List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
         assertTrue(forecastSectionCoordinates.size() > 2);
@@ -37,18 +36,16 @@ public class ForecastSectionClientTest extends AbstractServiceTest {
     }
 
     @Test
-    @Ignore("For manual integration testing")
+    @Disabled("For manual integration testing")
     public void getForecastSectionV2MetadataSucceeds() {
-
         final ForecastSectionV2Dto forecastSectionV2Metadata = forecastSectionClient.getForecastSectionV2Metadata();
 
         assertNotNull(forecastSectionV2Metadata);
     }
 
     @Test
-    @Ignore("For manual integration testing")
+    @Disabled("For manual integration testing")
     public void getRoadConditionsSucceeds() {
-
         ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);

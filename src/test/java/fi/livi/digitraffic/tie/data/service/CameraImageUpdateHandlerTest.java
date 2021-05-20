@@ -7,8 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
@@ -38,7 +37,7 @@ public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
     public void retryOnImageReadError() throws Exception {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
-        when(cameraImageReader.readImage(anyLong(), any())).thenThrow(new RuntimeException());
+        when(cameraImageReader.readImage(anyLong(), any())).thenThrow(new RuntimeException("GENERATED IO ERROR"));
 
         service.handleKuva(kuva);
 
@@ -64,7 +63,7 @@ public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
         when(cameraImageReader.readImage(anyLong(), any())).thenReturn(new byte[] {1});
-        doThrow(new RuntimeException()).when(cameraImageS3Writer).writeImage(any(), any(), any(), anyLong());
+        doThrow(new RuntimeException("GENERATED IO ERROR")).when(cameraImageS3Writer).writeImage(any(), any(), any(), anyLong());
 
         service.handleKuva(kuva);
 

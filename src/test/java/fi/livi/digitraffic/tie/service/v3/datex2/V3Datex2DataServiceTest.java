@@ -1,12 +1,12 @@
 package fi.livi.digitraffic.tie.service.v3.datex2;
 
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_ACTIVE_ANDPASSIVE_RECORD;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_JSON;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -17,8 +17,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -56,8 +56,9 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
     @SpyBean
     private V3RegionGeometryDataService v3RegionGeometryDataService;
 
-    @Before
+    @BeforeEach
     public void init() {
+        trafficMessageTestHelper.cleanDb();
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
@@ -75,7 +76,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                     activeIncidentsDatex2AndJsonEquals(situationType, imsJsonVersion, getSituationIdForSituationType(situationType), start, end);
@@ -91,7 +92,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for (final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion);
                     log.info("checkFindBySituationId with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                         imsXmlVersion, imsJsonVersion, situationType);
                     checkFindBySituationId(getSituationIdForSituationType(situationType));
@@ -108,11 +109,11 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                 final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                 final ZonedDateTime end = start.plusHours(2);
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                 }
-                activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(), getSituationIdForSituationType(situationType), start, end);
+                    activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(), getSituationIdForSituationType(situationType), start, end);
             }
         }
     }
@@ -131,6 +132,26 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
         // Not found, as both must exist
         assertActiveMessageFound(GUID_WITH_JSON, false, false);
     }
+
+    @Test
+    public void findActiveTrafficAnnouncementCanceledIsNotReturned() throws IOException {
+        trafficMessageTestHelper.initDataFromStaticImsResourceContent(
+            ImsXmlVersion.V1_2_1, SituationType.TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
+            ZonedDateTime.now().minusDays(1), ZonedDateTime.now().plusDays(1), true);
+        // Not found, as both must exist
+        assertActiveMessageFound(GUID_WITH_JSON, false, false);
+    }
+
+    @Test
+    public void findTrafficAnnouncementWithActiveAndDeactiveSituationRecordIsReturned() throws IOException {
+        final ZonedDateTime start = DateHelper.getZonedDateTimeNowAtUtc().minusHours(1);
+        final ZonedDateTime endTime = start.plusHours(2);
+        // One active with json
+        trafficMessageTestHelper.initImsDataFromFile("TrafficIncidentImsMessageV1_2_1WithActiveAndPassiveSituationRecord.xml",
+                                                     ImsJsonVersion.getLatestVersion(), start, endTime, false);
+        assertActiveMessageFound(GUID_WITH_ACTIVE_ANDPASSIVE_RECORD, true, true);
+    }
+
 
     private void checkFindBySituationId(final String situationId) {
         final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(situationId);
@@ -196,15 +217,19 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
         final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
         final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0, true);
 
-        if (foundInDatex2 || situationPublication != null) {
+        if (foundInDatex2) {
             assertEquals(
                 foundInDatex2,
                 situationPublication.getSituations().stream().anyMatch(s -> s.getId().equals(situationId)));
+        } else {
+            assertNull(situationPublication);
         }
-        if (foundInJson || withJson.getFeatures().size() > 0) {
+        if (foundInJson) {
             assertEquals(
                 foundInJson,
                 withJson.getFeatures().stream().anyMatch(f -> f.getProperties().situationId.equals(situationId)));
+        } else {
+            AssertHelper.assertCollectionSize(0, withJson.getFeatures());
         }
     }
 }

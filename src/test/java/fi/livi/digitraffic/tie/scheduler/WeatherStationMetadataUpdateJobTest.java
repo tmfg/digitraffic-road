@@ -1,16 +1,13 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +24,10 @@ import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationsSensorsUpdater;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
@@ -58,7 +59,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
     @Autowired
     private LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
 
-    @Before
+    @BeforeEach
     public void setUpLotjuClientAndInitData() {
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuWeatherStationMetadataClient);
 
@@ -87,23 +88,22 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
         assertEquals(3, allAfterChange.getFeatures().size());
     }
 
-    @After
+    @AfterEach
     public void restoreOriginalDestinationProviderForLotjuClients() {
         restoreLotjuClientDestinationProvider(lotjuWeatherStationMetadataClient);
     }
 
     @Test
     public void testUpdateWeatherStations() {
+        assertNull(findWithLotjuId(allInitial, 33));
+        assertNotNull(findWithLotjuId(allInitial, 34));
+        assertNull(findWithLotjuId(allInitial, 35));
+        assertNotNull(findWithLotjuId(allInitial, 36));
 
-        Assert.assertNull(findWithLotjuId(allInitial, 33));
-        Assert.assertNotNull(findWithLotjuId(allInitial, 34));
-        Assert.assertNull(findWithLotjuId(allInitial, 35));
-        Assert.assertNotNull(findWithLotjuId(allInitial, 36));
-
-        Assert.assertNull(findWithLotjuId(allAfterChange, 33));
-        Assert.assertNotNull(findWithLotjuId(allAfterChange, 34));
-        Assert.assertNotNull(findWithLotjuId(allAfterChange, 35)); // removed temporary -> gathering
-        Assert.assertNotNull(findWithLotjuId(allAfterChange, 36));
+        assertNull(findWithLotjuId(allAfterChange, 33));
+        assertNotNull(findWithLotjuId(allAfterChange, 34));
+        assertNotNull(findWithLotjuId(allAfterChange, 35)); // removed temporary -> gathering
+        assertNotNull(findWithLotjuId(allAfterChange, 36));
 
         final WeatherStationFeature before = findWithLotjuId(allInitial, 34);
         final WeatherStationFeature after = findWithLotjuId(allAfterChange, 34);

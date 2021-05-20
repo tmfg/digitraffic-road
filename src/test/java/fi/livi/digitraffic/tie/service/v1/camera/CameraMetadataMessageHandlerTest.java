@@ -14,16 +14,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto.EntityType;
 import fi.livi.digitraffic.tie.service.MetadataUpdatedMessageDto.UpdateType;
 
-public class CameraMetadataMessageHandlerTest extends AbstractDaemonTestWithoutS3 {
+public class CameraMetadataMessageHandlerTest extends AbstractDaemonTestWithoutLocalStack {
 
     @Autowired
     private CameraMetadataMessageHandler cameraMetadataMessageHandler;

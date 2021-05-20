@@ -1,12 +1,9 @@
 package fi.livi.digitraffic.tie.helper;
 
-import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
@@ -15,7 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 
-@RunWith(JUnit4.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class PostgisGeometryHelperTest extends AbstractTest {
 
     private static final Logger log = LoggerFactory.getLogger(PostgisGeometryHelperTest.class);

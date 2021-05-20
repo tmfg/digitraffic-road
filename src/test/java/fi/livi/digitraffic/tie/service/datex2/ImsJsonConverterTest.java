@@ -1,14 +1,14 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -87,7 +87,7 @@ public class ImsJsonConverterTest extends AbstractServiceTest {
         final ObjectReader reader = objectMapper.reader();
         final JsonNode original1 = reader.readTree(FEATURE);
         final JsonNode original2 = reader.readTree(feature2);
-        assertNotEquals("Originals should differ with situationId", original1, original2);
+        assertNotEquals(original1, original2, "Originals should differ with situationId");
 
         final JsonNode parsed1 = reader.readTree(jsons.get(SITUATION_ID1).getLeft());
         final JsonNode parsed2 = reader.readTree(jsons.get(SITUATION_ID2).getLeft());

@@ -1,13 +1,13 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
@@ -26,7 +26,7 @@ public class TmsDataServiceTest extends AbstractServiceTest {
     @Autowired
     private DataStatusService dataStatusService;
 
-    @Before
+    @BeforeEach
     public void updateData() {
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
     }
@@ -45,11 +45,13 @@ public class TmsDataServiceTest extends AbstractServiceTest {
         assertNotNull(object);
         assertNotNull(object.dataUpdatedTime);
         assertNotNull(object.getTmsStations());
-        Assert.assertThat(object.getTmsStations(), not(emptyCollectionOf(TmsStationDto.class)));
+        assertThat(object.getTmsStations(), not(emptyCollectionOf(TmsStationDto.class)));
     }
 
-    @Test(expected = ObjectNotFoundException.class)
+    @Test
     public void findPublishableTmsDataByIdNotFound() {
-        tmsDataService.findPublishableTmsData(-1);
+        assertThrows(ObjectNotFoundException.class, () -> {
+            tmsDataService.findPublishableTmsData(-1);
+        });
     }
 }

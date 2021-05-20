@@ -99,7 +99,16 @@ public class V2MaintenanceTrackingUpdateService {
     }
 
     @Transactional
-    public void saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) {
+    public long deleteDataOlderThanDays(final int olderThanDays, final int maxToDelete) {
+        final StopWatch start = StopWatch.createStarted();
+        final ZonedDateTime olderThanDate = DateHelper.getZonedDateTimeNowAtUtc().minus(olderThanDays, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
+        final long count = v2MaintenanceTrackingDataRepository.deleteByCreatedIsBefore(olderThanDate, maxToDelete);
+        log.info("method=deleteDataOlderThanDays delete before {} deleted {} tookMs={}", olderThanDate, count, start.getTime());
+        return count;
+    }
+
+    @Transactional
+    public MaintenanceTrackingData saveMaintenanceTrackingData(final TyokoneenseurannanKirjausRequestSchema tyokoneenseurannanKirjaus) {
         try {
             final String json = jsonWriter.writeValueAsString(tyokoneenseurannanKirjaus);
             final MaintenanceTrackingData tracking = new MaintenanceTrackingData(json);
@@ -107,6 +116,7 @@ public class V2MaintenanceTrackingUpdateService {
             if (log.isTraceEnabled()) {
                 log.trace("method=saveMaintenanceTrackingData jsonData: {}", json);
             }
+            return tracking;
         } catch (final Exception e) {
             log.error("method=saveMaintenanceTrackingData failed ", e);
             throw new RuntimeException(e);
@@ -210,7 +220,7 @@ public class V2MaintenanceTrackingUpdateService {
                         getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
 
                     final MaintenanceTracking created =
-                        new MaintenanceTracking(trackingData, workMachine, harjaContractId, sendingSystem, sendingTime,
+                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, sendingTime,
                             harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
                             performedTasks, direction);
                     v2MaintenanceTrackingRepository.save(created);

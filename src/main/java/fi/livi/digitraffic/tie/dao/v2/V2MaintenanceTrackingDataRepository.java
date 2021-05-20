@@ -1,9 +1,11 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -26,4 +28,15 @@ public interface V2MaintenanceTrackingDataRepository extends JpaRepository<Maint
                     "ORDER BY data.id DESC", nativeQuery = true)
     List<String> findJsonsByTrackingId(final long id);
 
+    @Modifying
+    @Query(value =  "DELETE FROM maintenance_tracking_data\n" +
+                    "WHERE id IN (\n" +
+                    "    SELECT id\n" +
+                    "    FROM maintenance_tracking_data\n" +
+                    "    WHERE created < :olderThanDate\n" +
+                    "      AND status <>  'UNHANDLED'\n" +
+                    "    ORDER BY id ASC\n" +
+                    "    LIMIT :maxToDelete\n" +
+                    ")", nativeQuery = true)
+    int deleteByCreatedIsBefore(final ZonedDateTime olderThanDate, final int maxToDelete);
 }

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie;
 
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.JULKINEN;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +22,7 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,8 @@ import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @TestPropertySource(properties = {
-    "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN"
+    "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
+    "testcontainers.disabled=true"
 })
 public abstract class AbstractTest {
 
@@ -84,9 +85,9 @@ public abstract class AbstractTest {
     protected static final int MAX_LOTJU_ID = 99999;
     protected static final String PRESET_PRESENTATION_NAME = "PresentationName";
 
-    @Before
+    @BeforeEach
     public void logSettings() {
-        log.info("LOTJU_SERVICE_RANDOM_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
+        log.debug("LOTJU_SERVICE_RANDOM_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
     }
 
     public V2Datex2UpdateService getV2Datex2UpdateService() {
@@ -201,7 +202,7 @@ public abstract class AbstractTest {
     }
 
     protected static Integer getRandomId(final int min, final int max) {
-        Assert.assertTrue(max > min);
+        assertTrue(max > min);
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
     }

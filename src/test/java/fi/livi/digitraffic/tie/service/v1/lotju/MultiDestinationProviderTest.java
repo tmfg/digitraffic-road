@@ -1,14 +1,15 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.net.URI;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 public class MultiDestinationProviderTest extends AbstractMultiDestinationProviderTest {
 
     @Test
@@ -46,19 +47,20 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
         verifyServer2HealthCount(1);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void firstAndSecondHealthNotOk() {
         final MultiDestinationProvider mdp = createMultiDestinationProvider();
         server1WhenRequestHealthThenReturn(BAD_REQUEST, null);
         server2WhenRequestHealthThenReturn(OK, NOT_OK_RESPONSE_CONTENT);
+
         try {
             mdp.getDestination();
         } catch (final IllegalStateException e) {
             verifyServer1HealthCount(1);
             verifyServer2HealthCount(1);
-            throw e;
+            return; // this is wanted
         }
-        Assert.fail("Should not execute as IllegalStateException should have been thrown");
+        fail("Should not execute as IllegalStateException should have been thrown");
     }
 
     @Test

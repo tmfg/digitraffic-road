@@ -4,16 +4,16 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_VARIABLE_SIGN_UPDATE_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.VariableSignUpdateController.DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.v1.VariableSignUpdateController.METADATA_PATH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
@@ -33,7 +33,7 @@ public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
     @Autowired
     public V2DeviceDataRepository v2DeviceDataRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         v2DeviceDataRepository.deleteAllInBatch();
         v2DeviceRepository.deleteAllInBatch();

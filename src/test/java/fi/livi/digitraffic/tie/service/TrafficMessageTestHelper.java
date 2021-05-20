@@ -4,10 +4,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +27,7 @@ public class TrafficMessageTestHelper extends AbstractTest {
     public final static String GUID_NO_JSON = "GUID50001234";
     public static final String FEATURE_1 = "Nopeusrajoitus";
     public static final String FEATURE_2 = "Huono ajokeli";
+    public final static String GUID_WITH_ACTIVE_ANDPASSIVE_RECORD = "GUID90000001";
 
     // Version of incoming ims message schema
     public enum ImsXmlVersion {
@@ -68,7 +68,7 @@ public class TrafficMessageTestHelper extends AbstractTest {
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller imsJaxb2Marshaller;
 
-    @Before
+    @BeforeEach
     public void cleanDb() {
         datex2Repository.deleteAll();
     }
@@ -87,15 +87,18 @@ public class TrafficMessageTestHelper extends AbstractTest {
         throw new IllegalStateException("Unknown SituationType " + situationType);
     }
 
-    public void initDataFromFile(final ImsXmlVersion xmlVersion, final ImsJsonVersion jsonVersion) throws IOException {
-        final String imsMessage = readImsMessageResourceContent(xmlVersion, jsonVersion);
-        final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(imsMessage));
+    public void initImsDataFromFile(final String file, final ImsJsonVersion jsonVersion, final ZonedDateTime startTime,
+                                    final ZonedDateTime endTime, final boolean lifeCycleCanceled) throws IOException {
+        final String raw = readResourceContent("classpath:tloik/ims/" + file);
+        final String rawWithJsonOk = replaceSimpleJsonPlaceholders(raw, jsonVersion, startTime, endTime, lifeCycleCanceled);
+        final String rawWithJsonAndDatexOk = replaceDatex2Placeholders(rawWithJsonOk, startTime, endTime, jsonVersion.intVersion, lifeCycleCanceled);
+        final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(rawWithJsonAndDatexOk));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 
     public void initDataFromFile(final String file) throws IOException {
-        final ArrayList<String> xmlImsMessages = readResourceContents("classpath:tloik/ims/" + file);
-        final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessages.get(0)));
+        final String xmlImsMessage = readResourceContent("classpath:tloik/ims/" + file);
+        final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 
@@ -111,58 +114,81 @@ public class TrafficMessageTestHelper extends AbstractTest {
         return xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
     }
 
-    public void initDataFromStaticImsResourceConent(final ImsXmlVersion xmlVersion, final SituationType situationType,
-                                                    final ImsJsonVersion jsonVersion)
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+                                                     final ImsJsonVersion jsonVersion)
         throws IOException {
-        initDataFromStaticImsResourceConent(xmlVersion, situationType, jsonVersion, ZonedDateTime.now().minusHours(1), null);
+        initDataFromStaticImsResourceContent(xmlVersion, situationType, jsonVersion, ZonedDateTime.now().minusHours(1), null);
     }
 
-    public void initDataFromStaticImsResourceConent(final ImsXmlVersion xmlVersion, final SituationType situationType,
-                                                    final ImsJsonVersion jsonVersion,
-                                                    final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
-        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime);
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+                                                     final ImsJsonVersion jsonVersion,
+                                                     final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+        initDataFromStaticImsResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime, false);
+    }
+
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+                                                     final ImsJsonVersion jsonVersion,
+                                                     final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                                     final boolean lifeCycleCanceled) throws IOException {
+        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 
     public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType, final ImsJsonVersion jsonVersion,
-                                                       final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+                                                       final ZonedDateTime startTime, final ZonedDateTime endTime, final boolean lifeCycleCanceled) throws IOException {
         final String xmlImsMessageTemplate = readImsMessageResourceContent(xmlVersion);
-        final String json = readStaticImsJmessageResourceContent(jsonVersion, situationType, startTime, endTime);
-        final String d2 = readStaticD2MessageResourceContent(situationType, startTime, endTime, jsonVersion.intVersion);
+        final String json = readStaticImsJmessageResourceContent(jsonVersion, situationType, startTime, endTime, lifeCycleCanceled);
+        final String d2 = readStaticD2MessageResourceContent(situationType, startTime, endTime, jsonVersion.intVersion, lifeCycleCanceled);
         return xmlImsMessageTemplate.replace(D2_MESSAGE_PLACEHOLDER, d2).replace(JSON_MESSAGE_PLACEHOLDER, json);
     }
 
     public static String readStaticImsJmessageResourceContent(final ImsJsonVersion jsonVersion, final SituationType situationType,
-                                                              final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+                                                              final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                                              final boolean lifeCycleCanceled) throws IOException {
         final String path =
             "classpath:tloik/ims/versions/" +
             getJsonVersionString(jsonVersion) + "/"+
             situationType + ".json";
-        return readStaticImsJmessageResourceContent(path, jsonVersion, startTime, endTime);
+        return readStaticImsJmessageResourceContent(path, jsonVersion, startTime, endTime, lifeCycleCanceled);
     }
 
     public static String readStaticImsJmessageResourceContent(final String path, final ImsJsonVersion jsonVersion,
-                                                              final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
+                                                              final ZonedDateTime startTime, final ZonedDateTime endTime, final boolean lifeCycleCanceled) throws IOException {
         log.info("Reading Jmessage resource: {}", path);
-        return readResourceContent(path)
-            .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
-            .replace(SITUATION_VERSION_DATE_TIME_PLACEHOLDER, getVersionTime(startTime, jsonVersion.intVersion).toOffsetDateTime().toString())
-            .replace(SITUATION_VERSION_PLACEHOLDER, jsonVersion.intVersion + "")
-            .replace(END_DATE_TIME_PLACEHOLDER, endTime != null ? endTime.toOffsetDateTime().toString() : "" );
+        final String content = readResourceContent(path);
+        return replaceSimpleJsonPlaceholders(content, jsonVersion, startTime, endTime, lifeCycleCanceled);
+
     }
 
-
     public static String readStaticD2MessageResourceContent(final SituationType situationType, final ZonedDateTime startTime,
-                                                            final ZonedDateTime endTime, int situationVersion) throws IOException {
+                                                            final ZonedDateTime endTime, int situationVersion,
+                                                            final boolean lifeCycleCanceled) throws IOException {
         final String path = "classpath:tloik/ims/versions/d2Message_" + situationType + ".xml";
         log.info("Reading D2Message resource: {}", path);
-        return readResourceContent(path)
-            .replace(SITUATION_VERSION_DATE_TIME_PLACEHOLDER, getVersionTime(startTime, situationVersion).toOffsetDateTime().toString())
-            .replace(SITUATION_VERSION_PLACEHOLDER, situationVersion + "")
-            .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
-            .replace(endTime != null ? "</overallStartTime>" : "RANDOMNOMATCHXYZ",
-                     "</overallStartTime><overallEndTime>" + (endTime != null ? endTime.toOffsetDateTime().toString() : "") + "</overallEndTime>");
+        final String content = readResourceContent(path);
+        return replaceDatex2Placeholders(content, startTime, endTime, situationVersion, lifeCycleCanceled);
+    }
+
+    private static String replaceSimpleJsonPlaceholders(final String content, final ImsJsonVersion jsonVersion, final ZonedDateTime startTime,
+                                                        final ZonedDateTime endTime, final boolean lifeCycleCanceled) {
+        return content.replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
+            .replace(SITUATION_VERSION_DATE_TIME_PLACEHOLDER, getVersionTime(startTime, jsonVersion.intVersion).toOffsetDateTime().toString())
+            .replace(SITUATION_VERSION_PLACEHOLDER, jsonVersion.intVersion + "")
+            .replace(END_DATE_TIME_PLACEHOLDER, endTime != null ? endTime.toOffsetDateTime().toString() : "" )
+            .replace(lifeCycleCanceled ? "\"timeAndDuration\"" : "RANDOMNOMATCHXYZ", "\"earlyClosing\": \"CANCELED\",\n\"timeAndDuration\"");
+    }
+
+    private static String replaceDatex2Placeholders(final String content, final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                                    final int situationVersion, final boolean lifeCycleCanceled) {
+        return content.replace(SITUATION_VERSION_DATE_TIME_PLACEHOLDER, getVersionTime(startTime, situationVersion).toOffsetDateTime().toString())
+                      .replace(SITUATION_VERSION_PLACEHOLDER, situationVersion + "")
+                      .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
+                      .replace(endTime != null ? END_DATE_TIME_PLACEHOLDER : "RANDOMNOMATCHXYZ", (endTime != null ? endTime.toOffsetDateTime().toString() : ""))
+                      .replace(endTime != null ? "<overallEndTime>" + END_DATE_TIME_PLACEHOLDER + "</overallEndTime>" : "RANDOMNOMATCHXYZ", "")
+//                      .replace(endTime != null ? "</overallStartTime>" : "RANDOMNOMATCHXYZ",
+//                               "</overallStartTime><overallEndTime>" + (endTime != null ? endTime.toOffsetDateTime().toString() : "") + "</overallEndTime>")
+                      .replace(lifeCycleCanceled ? "<cancel>false</cancel>" : "RANDOMNOMATCHXYZ", "<cancel>true</cancel>");
     }
 
     /**

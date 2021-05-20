@@ -2,6 +2,10 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -9,9 +13,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
@@ -32,7 +35,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
     @Autowired
     private EntityManager entityManager;
 
-    @Before
+    @BeforeEach
     public void insertDatex() {
         datex2Repository.deleteAll();
         final Datex2 datex2 = new Datex2(SituationType.ROAD_WORK, null);
@@ -65,17 +68,17 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                     createAndSaveDatex2Message(type, trafficAnnouncementType);
                     final List<Datex2> found = datex2Repository.findAll();
                     assertCollectionSize(1, found);
-                    Assert.assertEquals(type, found.get(0).getSituationType());
-                    Assert.assertEquals(trafficAnnouncementType, found.get(0).getTrafficAnnouncementType());
-                    Assert.assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
+                    assertEquals(type, found.get(0).getSituationType());
+                    assertEquals(trafficAnnouncementType, found.get(0).getTrafficAnnouncementType());
+                    assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
                 }
             } else {
                 createAndSaveDatex2Message(type, null);
                 final List<Datex2> found = datex2Repository.findAll();
                 assertCollectionSize(1, found);
-                Assert.assertEquals(type, found.get(0).getSituationType());
-                Assert.assertNull(found.get(0).getTrafficAnnouncementType());
-                Assert.assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
+                assertEquals(type, found.get(0).getSituationType());
+                assertNull(found.get(0).getTrafficAnnouncementType());
+                assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
             }
 
         }
@@ -95,7 +98,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         final String pastSituationId = "GUID12345678";
         final List<Datex2> beroreActive10Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 10);
         // Situation should not exist
-        Assert.assertFalse(beroreActive10Hours.stream()
+        assertFalse(beroreActive10Hours.stream()
             .anyMatch(d -> d.getSituations() != null && d.getSituations().stream()
                          .anyMatch(s -> s.getSituationId().equals(pastSituationId))));
 
@@ -104,18 +107,18 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
 
         // Situation should be found >= 3 h
         final List<Datex2> active3Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 3);
-        Assert.assertTrue(active3Hours.stream()
+        assertTrue(active3Hours.stream()
             .anyMatch(d -> d.getSituations() != null && d.getSituations().stream()
                 .anyMatch(s -> s.getSituationId().equals(pastSituationId))));
 
         // 2 h in past wont find it as its little bit over 2 h old
         final List<Datex2> afterActive2Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 2);
-        Assert.assertFalse(afterActive2Hours.stream()
+        assertFalse(afterActive2Hours.stream()
             .anyMatch(d -> d.getSituations() != null && d.getSituations().stream()
                 .anyMatch(s -> s.getSituationId().equals(pastSituationId))));
     }
 
-    private Datex2 createDatex2InPast2h(final String situationId, final SituationType type, TrafficAnnouncementType trafficAnnouncementType) {
+    private Datex2 createDatex2InPast2h(final String situationId, final SituationType type, final TrafficAnnouncementType trafficAnnouncementType) {
         final Datex2 datex2 = new Datex2(type, trafficAnnouncementType);
         datex2.setImportTime(ZonedDateTime.now());
         datex2.setMessage("xml message");
@@ -134,6 +137,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         record.setValidyStatus(Datex2SituationRecordValidyStatus.DEFINED_BY_VALIDITY_TIME_SPEC);
         record.setOverallStartTime(ZonedDateTime.now().minusHours(10));
         record.setOverallEndTime(ZonedDateTime.now().minusHours(2).minusSeconds(1));
+        record.setLifeCycleManagementCanceled(false);
         record.setSituation(situation);
         situation.setSituationRecords(Collections.singletonList(record));
 

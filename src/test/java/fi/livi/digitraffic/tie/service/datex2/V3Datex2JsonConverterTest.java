@@ -7,10 +7,10 @@ import static fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType.GE
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getJsonVersionString;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readStaticImsJmessageResourceContent;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -22,12 +22,11 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -70,7 +69,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
     @SpyBean
     private V3RegionGeometryDataService v3RegionGeometryDataService;
 
-    @Before
+    @BeforeEach
     public void init() {
         writerForImsGeoJsonFeature = objectMapper.writerFor(ImsGeoJsonFeature.class);
         readerForGeometry = objectMapper.readerFor(Geometry.class);
@@ -88,7 +87,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
     public void convertImsSimpleJsonVersionToGeoJsonFeatureObjectV3() throws IOException {
         for(ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
             for (final SituationType st : SituationType.values()) {
-                final String json = readStaticImsJmessageResourceContent(jsonVersion, st, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+                final String json = readStaticImsJmessageResourceContent(jsonVersion, st, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
                 log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
                 final TrafficAnnouncementFeature ta =
                     v3Datex2JsonConverter.convertToFeatureJsonObjectV3(json, st, GENERAL, true);
@@ -104,7 +103,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
         final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
         final String json = readStaticImsJmessageResourceContent(
             "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
-            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
             v3Datex2JsonConverter.convertToFeatureJsonObjectV3(json, situationType, GENERAL, true);
@@ -120,7 +119,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
         final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
         final String json = readStaticImsJmessageResourceContent(
             "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
-            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1));
+            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
             v3Datex2JsonConverter.convertToFeatureJsonObjectV3(json, situationType, GENERAL, false);
@@ -260,7 +259,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
             }
 
             if (version.version >= 2.08) {
-                Assert.notNull(rwp.severity, "Severity should exist");
+                assertNotNull(rwp.severity, "Severity should exist");
             }
         }
     }

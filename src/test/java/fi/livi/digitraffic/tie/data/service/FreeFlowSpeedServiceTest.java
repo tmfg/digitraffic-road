@@ -1,12 +1,13 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dto.v1.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.service.v1.FreeFlowSpeedService;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FreeFlowSpeedServiceTest extends AbstractServiceTest {
 
@@ -17,10 +18,10 @@ public class FreeFlowSpeedServiceTest extends AbstractServiceTest {
     public void testListAllLinkDataFromNonObsoleteStations() {
         final FreeFlowSpeedRootDataObjectDto object = freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(false);
 
-        Assert.assertNotNull(object);
-        Assert.assertNotNull(object.dataUpdatedTime);
+        assertNotNull(object);
+        assertNotNull(object.dataUpdatedTime);
 
-        Assert.assertNotNull(object.getTmsFreeFlowSpeeds());
-        Assert.assertTrue(object.getTmsFreeFlowSpeeds().size() > 0);
+        assertNotNull(object.getTmsFreeFlowSpeeds());
+        assertTrue(object.getTmsFreeFlowSpeeds().size() > 0);
     }
 }

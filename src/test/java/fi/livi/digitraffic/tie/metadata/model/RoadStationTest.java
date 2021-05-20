@@ -1,21 +1,19 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import static java.lang.Thread.sleep;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
-@RunWith(JUnit4.class)
 public class RoadStationTest {
 
     /* Publicity With time */
@@ -26,16 +24,22 @@ public class RoadStationTest {
         updatePublicityWithTime(rs);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void isNotAllowedToSetPublicityTimeForWeatherStation() {
         final RoadStation rs = RoadStation.createWeatherStation();
-        updatePublicityWithTime(rs);
+
+        assertThrows(IllegalStateException.class, () -> {
+            updatePublicityWithTime(rs);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void isNotAllowedToSetPublicityTimeForTmsStation() {
         final RoadStation rs = RoadStation.createWeatherStation();
-        updatePublicityWithTime(rs);
+
+        assertThrows(IllegalStateException.class, () -> {
+            updatePublicityWithTime(rs);
+        });
     }
 
     /* Publicity without time */

@@ -27,8 +27,14 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>START_DATE_TIME</overallStartTime>
+                        <overallEndTime>END_DATE_TIME</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
+                <management>
+                    <lifeCycleManagement>
+                        <cancel>false</cancel>
+                    </lifeCycleManagement>
+                </management>
                 <generalPublicComment>
                     <comment>
                         <values>
@@ -75,6 +81,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2020-12-22T00:00:00.000Z</overallStartTime>
+                        <overallEndTime>END_DATE_TIME</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <groupOfLocations xsi:type="Point"/>

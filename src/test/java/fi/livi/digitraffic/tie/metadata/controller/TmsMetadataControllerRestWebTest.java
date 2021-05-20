@@ -6,6 +6,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_AVAILABLE
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_PATH;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,9 +16,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -41,7 +41,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
     @Autowired
     protected RoadDistrictService roadDistrictService;
 
-    @Before
+    @BeforeEach
     public void initData() {
         entityManager.createNativeQuery(
             "UPDATE road_station rs " +
@@ -54,7 +54,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
         List<RoadStationSensor> publishable =
             roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
 
-        Assert.assertFalse(publishable.isEmpty());
+        assertFalse(publishable.isEmpty());
 
         roadStationSensorService.updateSensorsOfWeatherStations(ts.getRoadStationId(),
             RoadStationType.TMS_STATION,

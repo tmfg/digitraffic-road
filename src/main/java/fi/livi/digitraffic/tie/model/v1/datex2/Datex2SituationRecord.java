@@ -1,9 +1,11 @@
 package fi.livi.digitraffic.tie.model.v1.datex2;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -79,6 +81,18 @@ public class Datex2SituationRecord {
     @ApiModelProperty(value = "Record comments", required = true)
     @OneToMany(mappedBy = "situationRecord", cascade = CascadeType.ALL)
     private List<SituationRecordCommentI18n> publicComments;
+
+    @NotNull
+    private boolean lifeCycleManagementCanceled;
+
+    @Column(nullable = false, updatable = false, insertable = false) // auto updated
+    private Instant effectiveEndTime;
+
+    @Column(nullable = false, updatable = false, insertable = false) // auto generated
+    private Instant created;
+
+    @Column(nullable = false, updatable = false, insertable = false) // auto updated
+    private Instant modified;
 
     public Long getId() {
         return id;
@@ -168,4 +182,20 @@ public class Datex2SituationRecord {
         this.publicComments = publicComments;
         publicComments.forEach(k-> k.setSituationRecord(this));
     }
+
+    public void setLifeCycleManagementCanceled(final boolean lifeCycleManagementCanceled) {
+        this.lifeCycleManagementCanceled = lifeCycleManagementCanceled;
+    }
+
+    public boolean getLifeCycleManagementCanceled() {
+        return lifeCycleManagementCanceled;
+    }
+
+    public Instant getEffectiveEndTime() {
+        return effectiveEndTime;
+    }
+
+//    public void setEffectiveEndTime(final Instant effectiveEndTime) {
+//        this.effectiveEndTime = effectiveEndTime;
+//    }
 }

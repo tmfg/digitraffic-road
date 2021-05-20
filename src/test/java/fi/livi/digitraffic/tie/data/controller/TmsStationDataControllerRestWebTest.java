@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.ZonedDateTime;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
@@ -30,7 +30,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
     @Autowired
     private SensorValueRepository sensorValueRepository;
 
-    @Before
+    @BeforeEach
     public void updateData() {
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
         sensorValueRepository.findAll().stream()

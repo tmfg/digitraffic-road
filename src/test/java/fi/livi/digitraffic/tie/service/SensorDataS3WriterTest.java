@@ -1,5 +1,10 @@
 package fi.livi.digitraffic.tie.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
@@ -9,10 +14,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +29,14 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.opencsv.bean.CsvToBeanBuilder;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
 import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
-import fi.livi.digitraffic.tie.conf.amazon.SpringLocalstackDockerRunnerWithVersion;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
-import xyz.fabiano.spring.localstack.LocalstackService;
-import xyz.fabiano.spring.localstack.annotation.SpringLocalstackProperties;
 
-@RunWith(SpringLocalstackDockerRunnerWithVersion.class)
-@SpringLocalstackProperties(services = { LocalstackService.S3 }, region = "eu-west-1", randomPorts = false)
 @TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
-public class SensorDataS3WriterTest extends AbstractDaemonTest {
+public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
     public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 
     @Autowired
@@ -51,11 +49,11 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     private SensorValueHistoryRepository repository;
 
     @Autowired
-    SensorDataS3Properties sensorDataS3Properties;
+    private SensorDataS3Properties sensorDataS3Properties;
 
     private SensorValueHistoryBuilder builder;
 
-    @Before
+    @BeforeEach
     public void initS3BucketForSensorData() {
         log.info("Init S3 Bucket {} with S3: {}, {}", sensorDataS3Properties.getS3BucketName(), amazonS3);
 
@@ -118,21 +116,21 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         int origCount = builder.getElementCountAt(1);
         int sum = writer.writeSensorData(from, to);
 
-        Assert.assertEquals("element count mismatch", origCount, sum);
+        assertEquals(origCount, sum, "element count mismatch");
 
         //repository.findAll().stream().forEach(item -> log.info("item: {}, measured: {}", item.getRoadStationId(), item.getMeasuredTime()));
         // Check S3 object
 
         ObjectListing list = amazonS3.listObjects(sensorDataS3Properties.getS3BucketName());
 
-        Assert.assertFalse("No elements", list.getObjectSummaries().isEmpty());
+        assertFalse(list.getObjectSummaries().isEmpty(), "No elements");
 
         String objectName = list.getObjectSummaries().get(0).getKey();
 
         log.info("Read object {} from {}", objectName, sensorDataS3Properties.getS3BucketName());
         S3Object s3Object = amazonS3.getObject(sensorDataS3Properties.getS3BucketName(), objectName);
 
-        Assert.assertNotNull("S3 object not found", s3Object);
+        assertNotNull(s3Object, "S3 object not found");
 /**
         try {
             FileUtils.copyInputStreamToFile(new ByteArrayInputStream(s3Object.getObjectContent().readAllBytes()), new File("temppi.zip"));
@@ -177,7 +175,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         createS3Object(now.minusHours(minusHours));
 
         // Test missing files update
-        Assert.assertTrue("History update failure", writer.updateSensorDataS3History(from));
+        assertTrue(writer.updateSensorDataS3History(from), "History update failure");
 
         // No updates if no missing files
         //Assert.assertFalse("Invalid history update", writer.updateSensorDataS3History(from));

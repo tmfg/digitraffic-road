@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHERCAM_PATH;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -8,8 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import java.net.URI;
 import java.time.ZonedDateTime;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +94,8 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
 
     private void assertResponse(final MockHttpServletResponse response, final HttpStatus httpStatus, final String redirectUrl) {
         log.info("HTTP response: {} and redirect: {}", response.getStatus(), response.getRedirectedUrl());
-        Assert.assertEquals(httpStatus.value(), response.getStatus());
-        Assert.assertEquals(redirectUrl, response.getRedirectedUrl());
+        assertEquals(httpStatus.value(), response.getStatus());
+        assertEquals(redirectUrl, response.getRedirectedUrl());
     }
 
     private String getVersionedRedirectUrl(final String imageName, final String versionId) {

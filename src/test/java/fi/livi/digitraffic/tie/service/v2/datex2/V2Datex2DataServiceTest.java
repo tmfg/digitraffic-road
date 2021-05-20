@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.service.v2.datex2;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_JSON;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -13,8 +13,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -50,7 +49,7 @@ public class V2Datex2DataServiceTest extends AbstractRestWebTest {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 trafficMessageTestHelper.cleanDb();
-                trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, SituationType.TRAFFIC_ANNOUNCEMENT, imsJsonVersion, start, end);
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, SituationType.TRAFFIC_ANNOUNCEMENT, imsJsonVersion, start, end);
                 log.info("Run activeIncidentsDatex2AndJsonEquals with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
                 activeIncidentsDatex2AndJsonEquals(SituationType.TRAFFIC_ANNOUNCEMENT, start.toInstant(), imsJsonVersion);
             }
@@ -65,7 +64,7 @@ public class V2Datex2DataServiceTest extends AbstractRestWebTest {
                 final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                 final ZonedDateTime end = start.plusHours(2);
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                         imsXmlVersion, imsJsonVersion, situationType);
                 }
@@ -85,8 +84,8 @@ public class V2Datex2DataServiceTest extends AbstractRestWebTest {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 trafficMessageTestHelper.cleanDb();
-                trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
-                trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, SituationType.ROAD_WORK, imsJsonVersion, start, end);
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, SituationType.ROAD_WORK, imsJsonVersion, start, end);
                 log.info("Run findBySituationId with imsXmlVersion={} and imsJsonVersion={}", imsXmlVersion, imsJsonVersion);
                 assertFindBySituationId(situationId, situationType);
             }

@@ -6,16 +6,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.model.v1.location.Location;
 import fi.livi.digitraffic.tie.model.v1.location.LocationSubtype;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LocationReaderTest extends AbstractJpaTest {
     @Autowired
@@ -25,7 +26,7 @@ public class LocationReaderTest extends AbstractJpaTest {
 
     private final static String VERSION = "VERSION";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final List<LocationSubtype> locationSubtypes = locationSubtypeRepository.findAll();
 
@@ -39,7 +40,7 @@ public class LocationReaderTest extends AbstractJpaTest {
         final LocationReader reader = new LocationReader(subtypeMap, VERSION);
 
         final List<Location> locations = reader.read(getPath("/locations/locations_empty.csv"));
-        Assert.assertThat(locations, Matchers.empty());
+        assertThat(locations, Matchers.empty());
     }
 
     @Test
@@ -48,17 +49,19 @@ public class LocationReaderTest extends AbstractJpaTest {
         final LocationReader spyReader = Mockito.spy(reader);
 
         final List<Location> locations = spyReader.read(getPath("/locations/locations_illegal_geocode.csv"));
-        Assert.assertThat(locations, Matchers.hasSize(2));
-        Assert.assertThat(locations.get(0).getGeocode(), Matchers.equalTo("test"));
-        Assert.assertThat(locations.get(1).getGeocode(), Matchers.isEmptyOrNullString());
+        assertThat(locations, Matchers.hasSize(2));
+        assertThat(locations.get(0).getGeocode(), Matchers.equalTo("test"));
+        assertThat(locations.get(1).getGeocode(), Matchers.isEmptyOrNullString());
 
         //Mockito.verify(spyReader).log.error(anyString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalSubtype() {
         final LocationReader reader = new LocationReader(subtypeMap, VERSION);
 
-        reader.read(getPath("/locations/locations_illegal_subtype.csv"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            reader.read(getPath("/locations/locations_illegal_subtype.csv"));
+        });
     }
 }

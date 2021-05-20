@@ -2,14 +2,14 @@ package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.createWorkMachines;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getEndTime;
-import static fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createWorkMachines;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getEndTime;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -22,8 +22,8 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +47,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
+import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 
 public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
 
@@ -62,12 +63,12 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     private V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
 
     @Autowired
-    private V2MaintenanceTrackingServiceTestHelper testHelper;
+    private V3MaintenanceTrackingServiceTestHelper testHelper;
 
     @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
     private int maxGapInMinutes;
 
-    @Before
+    @BeforeEach
     public void init() {
         testHelper.clearDb();
     }
@@ -407,5 +408,53 @@ public class V2MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertCollectionSize(1, trackings);
         // single points are duplicated (not the starting one) as two same point linestring -> 1 + 2 + 2 = 5 points
         assertEquals(5, trackings.get(0).getLineString().getNumPoints());
+    }
+
+    @Test
+    public void deleteDataOlderThanDays() throws IOException {
+        final ZonedDateTime start10Days = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusDays(10);
+        final ZonedDateTime start9Days = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusDays(9);
+
+        // Create 10 messages that are 10 days old
+        IntStream.range(0,10).forEach(i -> {
+            try {
+                testHelper.saveTrackingData(createMaintenanceTrackingWithPoints(start10Days, 10, i, 1, SuoritettavatTehtavat.ASFALTOINTI));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        // Create one message that is 9 days old
+        final long id9Days = testHelper.saveTrackingData(
+            createMaintenanceTrackingWithPoints(start9Days, 10, 1, 1, SuoritettavatTehtavat.ASFALTOINTI)).getId();
+        // update created times to 10 and 9 days
+        final String sqlAll =
+            "UPDATE maintenance_tracking_data\n" +
+            "SET created = '%s'";
+        entityManager.createNativeQuery(String.format(sqlAll, start10Days.toInstant().toString())).executeUpdate();
+        final String sql =
+            "UPDATE maintenance_tracking_data\n" +
+            "SET created = '%s'\n" +
+            "WHERE id=%d";
+        entityManager.createNativeQuery(String.format(sql, start9Days.toInstant().toString(), id9Days)).executeUpdate();
+
+        assertCollectionSize(0, v2MaintenanceTrackingRepository.findAll());
+        final int count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+
+        // Assert all handled
+        assertEquals( 11, count);
+        assertCollectionSize(11, v2MaintenanceTrackingRepository.findAll());
+        assertCollectionSize( 11, v2MaintenanceTrackingDataRepository.findAll());
+
+        // Delete data
+        final long deleded1 = v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 5, deleded1);
+        final long deleded2 = v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 5, deleded2);
+        final long deleded3 = v2MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertEquals( 0, deleded3);
+        // Only one that is 10 days old is not deleted
+        assertCollectionSize( 1, v2MaintenanceTrackingDataRepository.findAll());
+        // Handled data is not deleted
+        assertCollectionSize(11, v2MaintenanceTrackingRepository.findAll());
     }
 }

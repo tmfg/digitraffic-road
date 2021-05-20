@@ -4,7 +4,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import java.io.IOException;
 
-import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
@@ -21,7 +20,7 @@ public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 
     protected String LOTJU_IMAGE_PATH;
 
     // NOTE! Rules uses fixed port. see DPO-489
-    @Rule
+//    @Rule
     public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(LOTJU_SERVICE_RANDOM_PORT));
 
     protected S3Object readWeathercamS3Object(final String key) {

@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -13,9 +13,9 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,20 +47,18 @@ public class CameraStationUpdateJobTest extends AbstractMetadataUpdateJobTest {
     @Autowired
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
 
-    @Before
+    @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuCameraStationMetadataClient);
     }
 
-    @After
+    @AfterEach
     public void restoreOriginalDestinationProviderForLotjuClients() {
         restoreLotjuClientDestinationProvider(lotjuCameraStationMetadataClient);
     }
 
-
     @Test
     public void testUpdateKameras() {
-
         lotjuKameraPerustiedotServiceMock.initStateAndService();
 
         // initial state cameras with lotjuId 443 has public and non public presets, 121 has 2 and 56 has 1 non public preset

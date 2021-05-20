@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.scheduler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -11,11 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -77,14 +76,14 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
 
     private Map<AbstractLotjuMetadataClient, DestinationProvider> lotjuClienOriginalDestinationProvider = new HashMap<>();
 
-    @Before
+    @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuCameraStationMetadataClient);
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuTmsStationMetadataClient);
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuWeatherStationMetadataClient);
     }
 
-    @After
+    @AfterEach
     public void restoreOriginalDestinationProviderForLotjuClients() {
         restoreLotjuClientDestinationProvider(lotjuCameraStationMetadataClient);
         restoreLotjuClientDestinationProvider(lotjuTmsStationMetadataClient);
@@ -173,12 +172,12 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
 
     private void assertPublicity(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType, final boolean isPublic) {
         final RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
-        Assert.assertEquals(isPublic, found.internalIsPublic());
+        assertEquals(isPublic, found.internalIsPublic());
     }
 
     private void assertCollectionStatus(final List<RoadStation> roadStations, final long lotjuId, final RoadStationType roadStationType, final CollectionStatus collectionStatus) {
         final RoadStation found = findWithLotjuId(roadStations, lotjuId, roadStationType);
-        Assert.assertEquals(collectionStatus, found.getCollectionStatus());
+        assertEquals(collectionStatus, found.getCollectionStatus());
     }
 
     private RoadStation findWithLotjuId(final List<RoadStation> roadStations, final Long lotjuId, final RoadStationType roadStationType) {

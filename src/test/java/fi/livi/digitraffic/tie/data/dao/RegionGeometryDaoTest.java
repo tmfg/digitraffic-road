@@ -1,16 +1,13 @@
 package fi.livi.digitraffic.tie.data.dao;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,9 @@ import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class RegionGeometryDaoTest extends AbstractJpaTest {
     private static final Logger log = LoggerFactory.getLogger(RegionGeometryDaoTest.class);
 
@@ -28,7 +28,7 @@ public class RegionGeometryDaoTest extends AbstractJpaTest {
     @Autowired
     private RegionGeometryRepository regionGeometryRepository;
 
-    @Before
+    @BeforeEach
     public void cleanDb() {
         regionGeometryRepository.deleteAll();
     }
@@ -86,7 +86,7 @@ public class RegionGeometryDaoTest extends AbstractJpaTest {
 
         final List<RegionGeometry> allDb = regionGeometryRepository.findAllByOrderByIdAsc();
         for (int i = 0; i < allInOrder.size(); i++) {
-            assertEquals("Elemets [" + i + "] not equal", allInOrder.get(i).getId(), allDb.get(i).getId());
+            assertEquals(allInOrder.get(i).getId(), allDb.get(i).getId(), "Elemets [" + i + "] not equal");
         }
     }
 }

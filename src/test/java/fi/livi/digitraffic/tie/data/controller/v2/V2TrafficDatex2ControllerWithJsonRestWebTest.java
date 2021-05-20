@@ -4,15 +4,15 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.io.IOException;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.XmlMappingException;
@@ -55,9 +55,8 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     private final String incident3_active_estimated_minimum = "PT8H";
     private final String incident3_active_estimated_maximum = "PT12H";
 
-    @Before
+    @BeforeEach
     public void updateData() throws IOException {
-
         datex2Repository.deleteAll();
         // GUID5000526801 in past
         final String incident1 = readResourceContent("classpath:tloik/ims/TrafficIncidentImsMessage-2016-09-12-20-51-24-602.xml");
@@ -142,9 +141,9 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
 
     private void assertTextExistenceInMessage(final String text, final boolean shouldExist, final String message) {
         if (shouldExist) {
-            assertTrue(text + " should exist in response", message.contains(text));
+            assertTrue(message.contains(text), text + " should exist in response");
         } else {
-            assertFalse(text + " should not exist in response", message.contains(text));
+            assertFalse(message.contains(text), text + " should not exist in response");
         }
     }
 

@@ -4,8 +4,8 @@ import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
@@ -28,8 +28,8 @@ public class RoadStationServiceTest extends AbstractServiceTest {
     public void findAllCameras() {
         final List<RoadStation> cameras = roadStationService.findByType(RoadStationType.CAMERA_STATION);
 
-        Assert.assertTrue(String.format("Collection size was expected to be %s, was %d", "> 800", cameras.size()),
-                 cameras.size() > 800);
+        Assertions.assertTrue(cameras.size() > 800,
+            String.format("Collection size was expected to be %s, was %d", "> 800", cameras.size()));
     }
 
     @Test

@@ -16,8 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.ZonedDateTime;
 import javax.validation.ConstraintViolationException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -42,7 +42,7 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
     @MockBean
     private Logger exceptionHandlerLogger;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(exceptionHandlerLogger.isErrorEnabled()).thenReturn(true);
         when(exceptionHandlerLogger.isInfoEnabled()).thenReturn(true);

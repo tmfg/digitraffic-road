@@ -7,9 +7,9 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPL
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -20,9 +20,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -76,7 +75,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
     @SpyBean
     private V3RegionGeometryDataService v3RegionGeometryDataService;
 
-    @Before
+    @BeforeEach
     public void init() {
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
         when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
@@ -97,7 +96,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 0, situationType));
@@ -123,7 +122,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 2, situationType));
@@ -149,7 +148,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceConent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 0, situationType));
@@ -198,8 +197,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
         final Situation situation = sp.getSituations().get(0);
         final TrafficAnnouncementProperties jsonProperties = feature.getProperties();
 
-        Assert.assertEquals(situationId, situation.getId());
-        Assert.assertEquals(situationId, jsonProperties.situationId);
+        assertEquals(situationId, situation.getId());
+        assertEquals(situationId, jsonProperties.situationId);
 
         final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.get(0).timeAndDuration;
 
