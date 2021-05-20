@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson;
 import java.time.Instant;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -34,7 +35,7 @@ public class RegionGeometry {
 
     private String name;
     private Integer locationCode;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private AreaType type;
     private Instant effectiveDate;
     @ColumnTransformer(write = "ST_MakeValid(?)")
