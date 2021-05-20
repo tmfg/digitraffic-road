@@ -10,3 +10,17 @@ SET type =
         when type = '6' then 'TRAVEL_REGION'
         else 'UNKNOWN'
     end;
+
+ALTER TABLE region_geometry
+ADD CONSTRAINT region_geometry_type_check CHECK (
+    type IN (
+        'MUNICIPALITY',
+        'PROVINCE',
+        'REGIONAL_STATE_ADMINISTRATIVE_AGENCY',
+        'WEATHER_REGION',
+        'COUNTRY',
+        'CITY_REGION',
+        'TRAVEL_REGION',
+        'UNKNOWN'
+    )
+);
