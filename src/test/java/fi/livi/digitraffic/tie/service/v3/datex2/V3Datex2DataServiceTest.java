@@ -6,7 +6,9 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVer
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -154,9 +156,9 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
 
 
     private void checkFindBySituationId(final String situationId) {
-        final D2LogicalModel d2 = v3Datex2DataService.findAllBySituationId(situationId);
+        final D2LogicalModel d2 = v3Datex2DataService.findBySituationId(situationId, false);
         final TrafficAnnouncementFeatureCollection jsons =
-            v3Datex2DataService.findBySituationIdJson(situationId, true);
+            v3Datex2DataService.findBySituationIdJson(situationId, true, false);
 
         final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
 

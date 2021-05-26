@@ -171,7 +171,8 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
            "WHERE d.id in (\n" +
            "    SELECT situation.datex2_id\n" +
            "    FROM datex2_situation situation\n" +
-           "    WHERE situation.situation_id = :situationId)", nativeQuery = true)
+           "    WHERE situation.situation_id = :situationId)\n" +
+           "ORDER BY d.id desc", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findBySituationId(final String situationId);
 
@@ -182,7 +183,8 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
            "    SELECT situation.datex2_id\n" +
            "    FROM datex2_situation situation\n" +
            "    WHERE situation.situation_id = :situationId)\n" +
-           "      AND d.json_message IS NOT NULL", nativeQuery = true)
+           "      AND d.json_message IS NOT NULL\n" +
+           "ORDER BY d.id desc", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findBySituationIdWithJson(final String situationId);
 
