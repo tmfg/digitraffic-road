@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Collection of forecast sections v2", value = "ForecastSectionV2FeatureCollection")
+@ApiModel(description = "GeoJSON Feature Collection of forecast sections v2", value = "ForecastSectionFeatureCollectionV2")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
 public class ForecastSectionV2FeatureCollection implements Iterable<ForecastSectionV2Feature> {
 
