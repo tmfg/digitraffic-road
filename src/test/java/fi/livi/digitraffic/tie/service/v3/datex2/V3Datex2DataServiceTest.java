@@ -1,10 +1,12 @@
 package fi.livi.digitraffic.tie.service.v3.datex2;
 
+import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_ACTIVE_ANDPASSIVE_RECORD;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_JSON;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
+import static fi.livi.digitraffic.tie.service.datex2.Datex2Helper.getSituationPublication;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -18,6 +20,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -138,7 +142,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
     @Test
     public void findActiveTrafficAnnouncementCanceledIsNotReturned() throws IOException {
         trafficMessageTestHelper.initDataFromStaticImsResourceContent(
-            ImsXmlVersion.V1_2_1, SituationType.TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
+            ImsXmlVersion.V1_2_1, TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
             ZonedDateTime.now().minusDays(1), ZonedDateTime.now().plusDays(1), true);
         // Not found, as both must exist
         assertActiveMessageFound(GUID_WITH_JSON, false, false);
@@ -152,6 +156,47 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
         trafficMessageTestHelper.initImsDataFromFile("TrafficIncidentImsMessageV1_2_1WithActiveAndPassiveSituationRecord.xml",
                                                      ImsJsonVersion.getLatestVersion(), start, endTime, false);
         assertActiveMessageFound(GUID_WITH_ACTIVE_ANDPASSIVE_RECORD, true, true);
+    }
+
+    @Test
+    public void findBySituationIdLatest() throws IOException {
+        trafficMessageTestHelper.cleanDb();
+        final ImsXmlVersion imsXmlVersion = ImsXmlVersion.getLatestVersion();
+        final int count = getRandom(5, 15);
+        final ZonedDateTime initialTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(count);
+
+        // 1. create multiple versions for one situation
+        final AtomicReference<ZonedDateTime> latestStart = new AtomicReference<>();
+        IntStream.range(0, count).forEach(i -> {
+            latestStart.set(initialTime.plusHours(i));
+            System.out.println(latestStart.get());
+            final ZonedDateTime end = latestStart.get().plusHours(1);
+            try {
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(), latestStart.get(), end);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        final String situationId = getSituationIdForSituationType(TRAFFIC_ANNOUNCEMENT);
+
+        // Make sure all versions are saved
+        assertEquals(count, v3Datex2DataService.findBySituationIdJson(situationId, false, false).getFeatures().size());
+        assertEquals(count, getSituationPublication(v3Datex2DataService.findBySituationId(situationId, false)).getSituations().size());
+
+        // Get latest versions
+        final TrafficAnnouncementFeatureCollection latestJson = v3Datex2DataService.findBySituationIdJson(situationId, false, true);
+        final D2LogicalModel latestDatex = v3Datex2DataService.findBySituationId(situationId, true);
+
+        // Make sure only the latest version is returned
+        assertEquals(latestStart.get(), latestJson.getFeatures().get(0).getProperties().announcements.get(0).timeAndDuration.startTime);
+        assertEquals(getVersionTime(latestStart.get(), ImsJsonVersion.getLatestVersion()).toEpochSecond(),
+                     getSituationPublication(latestDatex).getSituations().get(0).getSituationRecords().get(0)
+                         .getSituationRecordVersionTime().getEpochSecond());
+        assertEquals(latestStart.get().toEpochSecond(),
+                     getSituationPublication(latestDatex).getSituations().get(0).getSituationRecords().get(0)
+                         .getValidity().getValidityTimeSpecification().getOverallStartTime().getEpochSecond());
+        assertEquals(1, latestJson.getFeatures().size());
+        assertEquals(1, getSituationPublication(latestDatex).getSituations().size());
     }
 
 
@@ -206,7 +251,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTest {
                 .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
 
         assertEquals(situationType, jsonProperties.getSituationType());
-        if (situationType == SituationType.TRAFFIC_ANNOUNCEMENT) {
+        if (situationType == TRAFFIC_ANNOUNCEMENT) {
             assertEquals(TrafficAnnouncementType.GENERAL, jsonProperties.getTrafficAnnouncementType());
         }
 
