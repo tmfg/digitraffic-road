@@ -166,23 +166,41 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     List<Datex2> findBySituationIdAndSituationTypeWithJson(final String situationId, final String...situationTypes);
 
     @Query(value =
+           "WITH v_time AS (\n" +
+           "    SELECT d2s.datex2_id, MAX(sr.version_time) version_time\n" +
+           "    FROM datex2_situation_record sr\n" +
+           "    INNER JOIN datex2_situation d2s ON sr.datex2_situation_id = d2s.id\n" +
+           "    WHERE d2s.situation_id = :situationId\n" +
+           "    GROUP BY d2s.datex2_id\n" +
+           ")\n" +
            "SELECT d.*\n" +
            "FROM datex2 d\n" +
-           "WHERE d.id in (\n" +
+           "INNER JOIN v_time ON v_time.datex2_id = d.id\n" +
+           "WHERE d.id IN (\n" +
            "    SELECT situation.datex2_id\n" +
            "    FROM datex2_situation situation\n" +
-           "    WHERE situation.situation_id = :situationId)", nativeQuery = true)
+           "    WHERE situation.situation_id = :situationId)\n" +
+           "ORDER BY v_time.version_time DESC, d.id DESC", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findBySituationId(final String situationId);
 
     @Query(value =
+           "WITH v_time AS (\n" +
+           "    SELECT d2s.datex2_id, max(sr.version_time) version_time\n" +
+           "    from datex2_situation_record sr\n" +
+           "    inner join datex2_situation d2s on sr.datex2_situation_id = d2s.id\n" +
+           "    where d2s.situation_id = :situationId\n" +
+           "    group by d2s.datex2_id\n" +
+           ")\n" +
            "SELECT d.*\n" +
            "FROM datex2 d\n" +
+           "INNER JOIN v_time ON v_time.datex2_id = d.id\n" +
            "WHERE d.id in (\n" +
            "    SELECT situation.datex2_id\n" +
            "    FROM datex2_situation situation\n" +
            "    WHERE situation.situation_id = :situationId)\n" +
-           "      AND d.json_message IS NOT NULL", nativeQuery = true)
+           "      AND d.json_message IS NOT NULL\n" +
+           "ORDER BY v_time.version_time DESC, d.id DESC", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findBySituationIdWithJson(final String situationId);
 

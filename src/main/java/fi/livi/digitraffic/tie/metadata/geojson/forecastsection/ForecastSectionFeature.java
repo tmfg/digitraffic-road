@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * GeoJSON ForecastSectionFeature Object
  */
-@ApiModel(description = "GeoJSON Feature Object", value = "ForecastSectionFeature")
+@ApiModel(description = "GeoJSON Feature Object", value = "ForecastSectionFeatureV1")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class ForecastSectionFeature {
 

@@ -309,8 +309,11 @@ public class V3DataController {
     public D2LogicalModel trafficMessageDatex2BySituationId(
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
-        final String situationId) {
-        return v3Datex2DataService.findAllBySituationId(situationId);
+        final String situationId,
+        @ApiParam(value = "If parameter value is true, then only the latest message will be returned", defaultValue = "false")
+        @RequestParam(defaultValue = "false")
+        final boolean latest) {
+        return v3Datex2DataService.findBySituationId(situationId, latest);
     }
 
     @ApiOperation(value = "Active traffic messages as simple JSON")
@@ -342,8 +345,11 @@ public class V3DataController {
         @ApiParam(value = "If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
             "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
         @RequestParam(defaultValue = "false")
-        final boolean includeAreaGeometry) {
-        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry);
+        final boolean includeAreaGeometry,
+        @ApiParam(value = "If parameter value is true, the only the latest message will be returned", defaultValue = "false")
+        @RequestParam(defaultValue = "false")
+        final boolean latest) {
+        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
     @ApiOperation(value = "Traffic messages geometries for regions")
