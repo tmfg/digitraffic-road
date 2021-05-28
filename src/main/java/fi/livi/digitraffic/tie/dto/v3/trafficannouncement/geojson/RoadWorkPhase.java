@@ -44,6 +44,9 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     @ApiModelProperty(value = "Restrictions on traffic")
     public List<Restriction> restrictions = new ArrayList<>();
 
+    @ApiModelProperty(value = "Restrictions can be lifted for abnormal transports")
+    public Boolean restrictionsLiftable;
+
     @ApiModelProperty(value = "Severity of the disruption to traffic. How severely this road work phase disrupts traffic. LOW - no disruption, " +
                                "HIGH - disruption, HIGHEST - significant disruption", required = true)
     @NotNull
@@ -64,12 +67,13 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     }
 
     public RoadWorkPhase(final String id, final Location location, final LocationDetails locationDetails, final List<Worktype> worktypes, final List<Restriction> restrictions,
-                         final Severity severity, final List<WorkingHour> workingHours, final String comment, final TimeAndDuration timeAndDuration) {
+                         final Boolean restrictionsLiftable, final Severity severity, final List<WorkingHour> workingHours, final String comment, final TimeAndDuration timeAndDuration) {
         this.id = id;
         this.location = location;
         this.locationDetails = locationDetails;
         this.worktypes = worktypes;
         this.restrictions = restrictions;
+        this.restrictionsLiftable = restrictionsLiftable;
         this.severity = severity;
         this.workingHours = workingHours;
         this.comment = comment;

@@ -1,0 +1,160 @@
+{
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            23.77474,
+            61.50221
+        ]
+    },
+    "properties": {
+        "situationId": "GUID10000004",
+        "version": SITUATION_VERSION,
+        "situationType": "road work",
+        "releaseTime": "SITUATION_VERSION_DATE_TIME",
+        "announcements": [
+            {
+                "language": "fi",
+                "title": "Tie 13567, Jokioinen. Tietyö.",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Tie 13567 välillä Jänhijoki - Latovainio, Jokioinen. Tarkempi paikka: Paikasta Latovainio 400 m, suuntaan Humppilantie. Mattilan silta. Merkittävää haittaa liikenteelle. Siltatyö Kiertotie käytössä Tie on suljettu liikenteeltä Ajankohta: 25.01.2021 08:00 - 27.01.2021 08:00."
+                },
+                "locationDetails": {
+                    "roadAddressLocation": {
+                        "primaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 24,
+                                "distance": 3927
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37128,
+                                "name": "Marjamäki",
+                                "distance": 2184
+                            }
+                        },
+                        "secondaryPoint": {
+                            "municipality": "Lempäälä",
+                            "province": "Pirkanmaa",
+                            "country": "Suomi",
+                            "roadAddress": {
+                                "road": 130,
+                                "roadSection": 23,
+                                "distance": 5921
+                            },
+                            "alertCLocation": {
+                                "locationCode": 37126,
+                                "name": "Pispantallin risteyssilta",
+                                "distance": 5264
+                            }
+                        },
+                        "direction": "unknown"
+                    }
+                },
+                "features": [
+                    {
+                        "name": "Nopeusrajoitus",
+                        "quantity": 40.0,
+                        "unit": "km/h",
+                        "description" : "Pitää ajaa varovasti"
+                    },
+                    {
+                        "name": "Silta pois käytöstä",
+                        "description" : "Kiertotie ohjattu merkein"
+                    }
+                ],
+                "roadWorkPhases": [
+                    {
+                        "id": "GUID50378696",
+                        "location": {
+                            "countryCode": 6,
+                            "locationTableNumber": 17,
+                            "locationTableVersion": "1.11.37",
+                            "description": "Tie 12 välillä Tampere - Lahti, Hollola.\nTarkempi paikka: Huljala."
+                        },
+                        "locationDetails": {
+                            "roadAddressLocation": {
+                                "primaryPoint": {
+                                    "municipality": "Hollola",
+                                    "province": "Päijät-Häme",
+                                    "country": "Suomi",
+                                    "roadAddress": {
+                                        "road": 12,
+                                        "roadSection": 219,
+                                        "distance": 0
+                                    },
+                                    "alertCLocation": {
+                                        "locationCode": 2041,
+                                        "name": "Huljala"
+                                    }
+                                },
+                                "direction": "unknown"
+                            }
+                        },
+                        "worktypes": [
+                            {
+                                "type": "lighting",
+                                "description": "Valaistustyö"
+                            }
+                        ],
+                        "restrictions": [
+                            {
+                                "type": "speed limit",
+                                "restriction": {
+                                    "name": "Nopeusrajoitus",
+                                    "quantity": 40.0,
+                                    "unit": "km/h",
+                                    "description" : "Pitää ajaa varovasti"
+                                }
+                            },
+                            {
+                                "type": "detour using road ways",
+                                "restriction": {
+                                    "name": "Nopeusrajoitus",
+                                    "quantity": 40.0,
+                                    "unit": "km/h",
+                                    "description" : "Pitää ajaa varovasti"
+                                }
+                            }
+                        ],
+                        "restrictionsLiftable": true,
+                        "severity": "high",
+                        "workingHours": [
+                            {
+                                "weekday": "Monday",
+                                "startTime": "09:30:00.000",
+                                "endTime": "15:00:00.000"
+                            }
+                        ],
+                        "timeAndDuration": {
+                            "startTime": "2020-12-14T00:00:00.000Z",
+                            "endTime": "2020-12-14T23:59:59.999Z"
+                        }
+                    }
+                ],
+                "earlyClosing": "closed",
+                "comment": "TESTI TESTI TESTI\nML",
+                "timeAndDuration": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "END_DATE_TIME",
+                    "estimatedDuration": {
+                        "minimum": "P1M",
+                        "informal": "Yli kuukausi"
+                    }
+                },
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            }
+        ],
+        "contact": {
+            "phone": "0206373328",
+            "email": "helsinki.liikennekeskus@liikennevirasto.fi"
+        }
+    }
+}

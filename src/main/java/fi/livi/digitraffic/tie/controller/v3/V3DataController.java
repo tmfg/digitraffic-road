@@ -346,7 +346,7 @@ public class V3DataController {
             "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
         @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @ApiParam(value = "If parameter value is true, the only the latest message will be returned", defaultValue = "false")
+        @ApiParam(value = "If parameter value is true, then only the latest message will be returned", defaultValue = "false")
         @RequestParam(defaultValue = "false")
         final boolean latest) {
         return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);

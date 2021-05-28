@@ -44,7 +44,8 @@ public class TrafficMessageTestHelper extends AbstractTest {
         V0_2_8(2.08, 208),
         V0_2_9(2.09, 209),
         V0_2_10(2.10, 210),
-        V0_2_12(2.12, 212);
+        V0_2_12(2.12, 212),
+        V0_2_13(2.13, 213);
 
         public double version;
         public int intVersion;

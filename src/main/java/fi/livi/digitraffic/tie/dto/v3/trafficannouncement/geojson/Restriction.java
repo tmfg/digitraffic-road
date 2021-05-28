@@ -52,6 +52,7 @@ public class Restriction extends JsonAdditionalProperties {
         NARROW_LANES("narrow lanes"),
         DETOUR("detour"),
         DETOUR_SIGNS("detour signs"),
+        DETOUR_USING_ROAD_WAYS("detour using road ways"),
         SLOW_MOVING_MAINTENANCE_VEHICLE("slow moving maintenance vehicle"),
         ESTIMATED_DELAY("estimated delay"),
         NARROW_OR_CLOSED_PEDESTRIAN_AND_BICYLE_PATH("narrow or closed pedestrian and bicyle path"),
@@ -61,7 +62,7 @@ public class Restriction extends JsonAdditionalProperties {
         VEHICLE_GROSS_WEIGHT_LIMIT("vehicle gross weight limit");
 
         private final String value;
-        private final static Map<String, Type> CONSTANTS = new HashMap<String, Type>();
+        private final static Map<String, Type> CONSTANTS = new HashMap<>();
 
         static {
             for (Type c: values()) {

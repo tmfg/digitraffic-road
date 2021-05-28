@@ -246,6 +246,12 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
             assertNotNull(rwp.workingHours.get(0).startTime);
             assertNotNull(rwp.workingHours.get(0).endTime);
 
+            if (version.version >= 2.13) {
+                assertNotNull(rwp.restrictionsLiftable, "restrictionsLiftable should exist");
+                assertNotNull(rwp.restrictions.get(0).restriction.description);
+                assertEquals(Restriction.Type.DETOUR_USING_ROAD_WAYS, rwp.restrictions.get(1).type);
+                assertNotNull(rwp.restrictions.get(1).restriction.description);
+            }
             if (version.version > 2.10) {
                 assertEquals(Worktype.Type.LIGHTING, rwp.worktypes.get(0).type);
                 assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
@@ -304,9 +310,12 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
                                 final Triple<String, Double, String>...features) {
         final double v = version.version;
         for (final Triple<String, Double, String> f : features) {
-            announcement.features.stream().filter(value -> Objects.equals(f.getLeft(), value.name) &&
-                                                           Objects.equals(v >= 2.05 ? f.getMiddle() : null, value.quantity) &&
-                                                           Objects.equals(v >= 2.05 ? f.getRight() : null, value.unit)).findFirst().orElseThrow();
+            announcement.features.stream().filter(value ->
+                !Objects.equals(f.getLeft(), value.name) ||
+                !Objects.equals(v >= 2.05 ? f.getMiddle() : null, value.quantity) ||
+                !Objects.equals(v >= 2.05 ? f.getRight() : null, value.unit) ||
+                !(v >= 2.13) || value.description != null
+            ).findFirst().orElseThrow();
         }
         assertEquals(features.length, announcement.features.size());
     }
