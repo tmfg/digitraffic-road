@@ -249,7 +249,7 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
             if (version.version >= 2.13) {
                 assertNotNull(rwp.restrictionsLiftable, "restrictionsLiftable should exist");
                 assertNotNull(rwp.restrictions.get(0).restriction.description);
-                assertEquals(Restriction.Type.DETOUR_USING_ROAD_WAYS, rwp.restrictions.get(1).type);
+                assertEquals(Restriction.Type.DETOUR_USING_ROADWAYS, rwp.restrictions.get(1).type);
                 assertNotNull(rwp.restrictions.get(1).restriction.description);
             }
             if (version.version > 2.10) {

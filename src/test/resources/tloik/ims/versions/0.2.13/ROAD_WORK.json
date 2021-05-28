@@ -114,7 +114,7 @@
                                 }
                             },
                             {
-                                "type": "detour using road ways",
+                                "type": "detour using roadways",
                                 "restriction": {
                                     "name": "Nopeusrajoitus",
                                     "quantity": 40.0,
