@@ -60,7 +60,8 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @TestPropertySource(properties = {
     "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
-    "testcontainers.disabled=true"
+    "testcontainers.disabled=true",
+    "spring.cloud.config.enabled=false"
 })
 public abstract class AbstractTest {
 
