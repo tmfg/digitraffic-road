@@ -17,7 +17,8 @@ mqtt.server.connectionTimeout=
 mqtt.server.keepAlive=
 
 # Lotju SOAP APIs. If health is empty then health check is not performed.
-metadata.server.addresses=http://localhost:#{T(fi.livi.digitraffic.tie.AbstractTest).LOTJU_SERVICE_RANDOM_PORT}
+#metadata.server.addresses=http://localhost:#{T(fi.livi.digitraffic.tie.AbstractTest).LOTJU_SERVICE_RANDOM_PORT}
+metadata.server.addresses=http://localhost:80/default
 metadata.server.path.health=/healthcheck
 metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5
 metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
