@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-//@ConditionalOnNotWebApplication
-//@Configuration
+@ConditionalOnNotWebApplication
+@Configuration
 public class LotjuMockConfiguration {
 
     @Autowired
