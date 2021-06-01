@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -33,15 +34,10 @@ public class CameraImageReader {
         final int connectTimeout,
         @Value("${camera-image-uploader.http.readTimeout}")
         final int readTimeout,
-        @Value("${metadata.server.addresses}") final String[] baseUrls,
-        @Value("${metadata.server.path.image}") final String dataPath,
-        @Value("${metadata.server.path.health:#{null}}") final String healthPath,
-        @Value("${metadata.server.image.ttlInSeconds:#{10}}") final int healthTtlSeconds,
-        @Value("${metadata.server.health.value}") final String healthOkValue
-    ) {
+        final LotjuMetadataProperties lotjuMetadataProperties) {
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
-        destinationProvider = new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds, healthOkValue));
+        destinationProvider = new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(lotjuMetadataProperties));
     }
 
     public byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException {

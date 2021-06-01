@@ -34,7 +34,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
     @BeforeEach
     public void initSoapClientSpyAndServerResponses() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, healthPath, TTL_S, healthOkCheckValueInApplicationSettings) {};
+        client = new AbstractLotjuMetadataClient(marshaller, createLotjuMetadataProperties()) {};
         // Get get WebServiceTemplate, spy it and set spy to client
         webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
         client.setWebServiceTemplate(webServiceTemplate);
@@ -164,7 +164,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
 
     private void initClientWithoutHealthCheck() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        client = new AbstractLotjuMetadataClient(marshaller, baseUrls, dataPath, TTL_S) {};
+        client = new AbstractLotjuMetadataClient(marshaller, createLotjuMetadataPropertiesWithoutHealthCheck()) {};
         // Get get WebServiceTemplate, spy it and set spy to client
         webServiceTemplate = (WebServiceTemplateWithMultiDestinationProviderSupport) spy(client.getWebServiceTemplate());
         client.setWebServiceTemplate(webServiceTemplate);

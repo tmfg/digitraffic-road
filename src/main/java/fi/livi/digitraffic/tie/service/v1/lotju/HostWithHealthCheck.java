@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,12 +119,12 @@ public class HostWithHealthCheck {
         return dataUrl;
     }
 
-    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String dataPath, final String healthPath, final int healthTtlSeconds, final String healthOkValue) {
-        if ( baseUrls == null || baseUrls.length == 0 ) {
-            throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", Arrays.toString(baseUrls)));
+    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final LotjuMetadataProperties lmp) {
+        if ( lmp.getAddresses() == null || lmp.getAddresses().length == 0 ) {
+            throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", Arrays.toString(lmp.getAddresses())));
         }
-        return Arrays.stream(baseUrls)
-            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, healthPath, healthTtlSeconds, healthOkValue))
+        return Arrays.stream(lmp.getAddresses())
+            .map(baseUrl -> new HostWithHealthCheck(baseUrl, lmp.getPath().camera, lmp.getPath().health, lmp.getHealth().ttlInSeconds, lmp.getHealth().value))
             .collect(Collectors.toList());
     }
 }
