@@ -37,7 +37,7 @@ public class CameraImageReader {
         final LotjuMetadataProperties lotjuMetadataProperties) {
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
-        destinationProvider = new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(lotjuMetadataProperties));
+        destinationProvider = new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(lotjuMetadataProperties, lotjuMetadataProperties.getPath().image));
     }
 
     public byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException {

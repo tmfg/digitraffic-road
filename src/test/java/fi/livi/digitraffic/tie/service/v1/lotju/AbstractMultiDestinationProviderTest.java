@@ -52,24 +52,24 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     protected LotjuMetadataProperties createLotjuMetadataProperties() {
         return new LotjuMetadataProperties(baseUrls,
-            new LotjuMetadataProperties.Path(healthPath, dataPath),
+            new LotjuMetadataProperties.Path(healthPath, dataPath, null, null, null),
             new LotjuMetadataProperties.Health(TTL_S, healthOkCheckValueInApplicationSettings),
             new LotjuMetadataProperties.Sender(120000, 120000));
     }
 
     protected LotjuMetadataProperties createLotjuMetadataPropertiesWithoutHealthCheck() {
         return new LotjuMetadataProperties(baseUrls,
-            new LotjuMetadataProperties.Path(null, dataPath),
+            new LotjuMetadataProperties.Path(null, dataPath, null, null, null),
             new LotjuMetadataProperties.Health(TTL_S, null),
             new LotjuMetadataProperties.Sender(120000, 120000));
     }
 
     protected MultiDestinationProvider createMultiDestinationProvider() {
-        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(createLotjuMetadataProperties()));
+        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(createLotjuMetadataProperties(), dataPath));
     }
 
     protected MultiDestinationProvider createMultiDestinationProviderWithoutHealthCheck() {
-        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(createLotjuMetadataPropertiesWithoutHealthCheck()));
+        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(createLotjuMetadataPropertiesWithoutHealthCheck(), dataPath));
     }
 
     protected void server1WhenRequestHealthThenReturn(final HttpStatus returnStatus, final String returnContent) {

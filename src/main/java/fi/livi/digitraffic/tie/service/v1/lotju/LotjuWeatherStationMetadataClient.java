@@ -37,7 +37,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
     public LotjuWeatherStationMetadataClient(@Qualifier("tiesaaMetadataJaxb2Marshaller")
                                              final Jaxb2Marshaller tiesaaMetadataJaxb2Marshaller,
                                              final LotjuMetadataProperties lotjuMetadataProperties) {
-        super(tiesaaMetadataJaxb2Marshaller, lotjuMetadataProperties);
+        super(tiesaaMetadataJaxb2Marshaller, lotjuMetadataProperties, lotjuMetadataProperties.getPath().weather);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)

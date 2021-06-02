@@ -40,7 +40,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
     public LotjuCameraStationMetadataClient(@Qualifier("kameraMetadataJaxb2Marshaller")
                                             final Jaxb2Marshaller kameraMetadataJaxb2Marshaller,
                                             final LotjuMetadataProperties lotjuMetadataProperties) {
-        super(kameraMetadataJaxb2Marshaller, lotjuMetadataProperties);
+        super(kameraMetadataJaxb2Marshaller, lotjuMetadataProperties, lotjuMetadataProperties.getPath().camera);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)

@@ -43,7 +43,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
     public LotjuTmsStationMetadataClient(@Qualifier("lamMetadataJaxb2Marshaller")
                                          final Jaxb2Marshaller lamMetadataJaxb2Marshaller,
                                          final LotjuMetadataProperties lotjuMetadataProperties) {
-        super(lamMetadataJaxb2Marshaller, lotjuMetadataProperties);
+        super(lamMetadataJaxb2Marshaller, lotjuMetadataProperties, lotjuMetadataProperties.getPath().tms);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)

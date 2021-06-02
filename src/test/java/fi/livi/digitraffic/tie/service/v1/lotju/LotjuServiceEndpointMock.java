@@ -74,11 +74,11 @@ public abstract class LotjuServiceEndpointMock {
         this.stateAfterChange = stateChanged;
     }
 
-    protected <TYPE> TYPE readLotjuSoapResponse(Class<TYPE> returnType) {
+    protected <TYPE> TYPE readLotjuSoapResponse(final Class<TYPE> returnType) {
         return readLotjuSoapResponse(returnType, null);
     }
 
-    protected <TYPE> TYPE readLotjuSoapResponse(Class<TYPE> returnType, final Long lotjuId) {
+    protected <TYPE> TYPE readLotjuSoapResponse(final Class<TYPE> returnType, final Long lotjuId) {
         final String filePath = resolveFilePath(returnType.getSimpleName(), lotjuId);
         if (filePath == null) {
             return null;
@@ -99,7 +99,7 @@ public abstract class LotjuServiceEndpointMock {
         return null;
     }
 
-    private String getFilePath(final String file, final Long lotjuId, boolean changed) {
+    private String getFilePath(final String file, final Long lotjuId, final boolean changed) {
         return String.format(resourcePath + "%s%s%s.xml",
             file,
             lotjuId != null ?  lotjuId : "",
@@ -129,7 +129,7 @@ public abstract class LotjuServiceEndpointMock {
     }
 
     private class LotjuTestException extends RuntimeException {
-        public LotjuTestException(Exception e) {
+        public LotjuTestException(final Exception e) {
             super(e);
         }
     }

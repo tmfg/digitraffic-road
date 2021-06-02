@@ -38,10 +38,16 @@ public class LotjuMetadataProperties {
     public static final class Path {
         public final String health;
         public final String camera;
+        public final String tms;
+        public final String weather;
+        public final String image;
 
-        public Path(final String health, final String camera) {
+        public Path(final String health, final String camera, final String tms, final String weather, final String image) {
             this.health = health;
             this.camera = camera;
+            this.tms = tms;
+            this.weather = weather;
+            this.image = image;
         }
     }
 

@@ -119,12 +119,12 @@ public class HostWithHealthCheck {
         return dataUrl;
     }
 
-    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final LotjuMetadataProperties lmp) {
+    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final LotjuMetadataProperties lmp, final String dataPath) {
         if ( lmp.getAddresses() == null || lmp.getAddresses().length == 0 ) {
             throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", Arrays.toString(lmp.getAddresses())));
         }
         return Arrays.stream(lmp.getAddresses())
-            .map(baseUrl -> new HostWithHealthCheck(baseUrl, lmp.getPath().camera, lmp.getPath().health, lmp.getHealth().ttlInSeconds, lmp.getHealth().value))
+            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, lmp.getPath().health, lmp.getHealth().ttlInSeconds, lmp.getHealth().value))
             .collect(Collectors.toList());
     }
 }

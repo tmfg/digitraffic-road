@@ -24,10 +24,10 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
      * @param dataPath ie. /data/service
      * @param healthTtlSeconds How long is health status valid
      */
-    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final LotjuMetadataProperties lotjuMetadataProperties) {
+    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final LotjuMetadataProperties lotjuMetadataProperties, final String dataPath) {
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
         setDestinationProvider(new MultiDestinationProvider(
-            HostWithHealthCheck.createHostsWithHealthCheck(lotjuMetadataProperties)));
+            HostWithHealthCheck.createHostsWithHealthCheck(lotjuMetadataProperties, dataPath)));
 
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);
