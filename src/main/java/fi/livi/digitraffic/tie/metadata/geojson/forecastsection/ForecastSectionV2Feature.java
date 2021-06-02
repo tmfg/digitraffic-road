@@ -6,7 +6,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Object", value = "ForecastSectionFeature")
+@ApiModel(description = "GeoJSON Feature Object", value = "ForecastSectionFeatureV2")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class ForecastSectionV2Feature {
 

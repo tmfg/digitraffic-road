@@ -16,7 +16,8 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({
     "name",
     "quantity",
-    "unit"
+    "unit",
+    "description"
 })
 public class Feature extends JsonAdditionalProperties {
 
@@ -30,14 +31,18 @@ public class Feature extends JsonAdditionalProperties {
     @ApiModelProperty(value = "Unit of the feature quantity, e.g. km/h in {speed limit, 30, km/h}", example = "km/h")
     public String unit;
 
+    @ApiModelProperty(value = "Further details of the feature, e.g. description of a detour", example = "The road is narrow and winding")
+    public String description;
+
     public Feature(){
     }
 
-    public Feature(final String name, final Double quantity, final String unit) {
+    public Feature(final String name, final Double quantity, final String unit, final String description) {
         super();
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
+        this.description = description;
     }
 
     @Override

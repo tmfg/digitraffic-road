@@ -5,6 +5,8 @@ import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDelete
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -71,7 +73,8 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         // DPO-567 and DPO-681: Obsolete all presets before upgrading. Preset's LotjuIds and directions might change once in a while
         // so we want to get rid of ghosts and overlapping presetIds.
-        presets.values().forEach(CameraPreset::obsolete);
+        final Set<Long> obsoleteDbIds =
+            presets.values().stream().filter(CameraPreset::obsolete).map(CameraPreset::getId).collect(Collectors.toSet());
         entityManager.flush();
 
         for (EsiasentoVO esiasento : esiasentos) {
@@ -81,6 +84,10 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             // Existing preset
             if (cameraPreset != null) {
 
+                // return to non obsolete state as otherwise there is always hash code change
+                if (obsoleteDbIds.contains(cameraPreset.getId())) {
+                    cameraPreset.unobsolete();
+                }
                 final int hash = HashCodeBuilder.reflectionHashCode(cameraPreset);
                 final String before = cameraPreset.toString();
 

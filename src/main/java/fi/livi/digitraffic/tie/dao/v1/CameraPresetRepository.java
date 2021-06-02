@@ -110,8 +110,10 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
                ")", nativeQuery = true)
     int obsoleteCameraRoadStationsWithoutPublishablePresets();
 
+    // NULLS FIRST is the default for DESC order so this will get the one with null
+    // obsolete_date first if any such exists
     @EntityGraph(attributePaths = "roadStation")
-    CameraPreset findByLotjuId(final long presetLotjuId);
+    CameraPreset findFirstByLotjuIdOrderByObsoleteDateDesc(final long presetLotjuId);
 
     @EntityGraph(attributePaths = "roadStation")
     CameraPreset findByPresetId(String presetId);

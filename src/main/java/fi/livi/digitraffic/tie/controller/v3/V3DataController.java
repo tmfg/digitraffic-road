@@ -309,8 +309,11 @@ public class V3DataController {
     public D2LogicalModel trafficMessageDatex2BySituationId(
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
-        final String situationId) {
-        return v3Datex2DataService.findAllBySituationId(situationId);
+        final String situationId,
+        @ApiParam(value = "If the parameter value is true, then only the latest message will be returned", defaultValue = "false")
+        @RequestParam(defaultValue = "false")
+        final boolean latest) {
+        return v3Datex2DataService.findBySituationId(situationId, latest);
     }
 
     @ApiOperation(value = "Active traffic messages as simple JSON")
@@ -321,7 +324,7 @@ public class V3DataController {
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @ApiParam(value = "If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
+        @ApiParam(value = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
             "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
         @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
@@ -339,11 +342,14 @@ public class V3DataController {
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam(value = "If parameter value is false, the GeoJson geometry will be empty for announcements with area locations. " +
+        @ApiParam(value = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
             "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
         @RequestParam(defaultValue = "false")
-        final boolean includeAreaGeometry) {
-        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry);
+        final boolean includeAreaGeometry,
+        @ApiParam(value = "If the parameter value is true, then only the latest message will be returned", defaultValue = "false")
+        @RequestParam(defaultValue = "false")
+        final boolean latest) {
+        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
     @ApiOperation(value = "Traffic messages geometries for regions")
@@ -351,7 +357,7 @@ public class V3DataController {
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public RegionGeometryFeatureCollection areaLocationRegions(
-        @ApiParam(value = "If parameter value is true result will only contain update status.", defaultValue = "true")
+        @ApiParam(value = "If the parameter value is true, then the result will only contain update status.", defaultValue = "true")
         @RequestParam(defaultValue = "true")
         final boolean lastUpdated,
         @ApiParam(value = "When effectiveDate parameter is given only effective geometries on that date are returned")
