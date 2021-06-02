@@ -52,14 +52,14 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     protected LotjuMetadataProperties createLotjuMetadataProperties() {
         return new LotjuMetadataProperties(baseUrls,
-            new LotjuMetadataProperties.Path(healthPath, dataPath, null, null, null),
+            new LotjuMetadataProperties.Path(healthPath, dataPath, dataPath, dataPath, dataPath),
             new LotjuMetadataProperties.Health(TTL_S, healthOkCheckValueInApplicationSettings),
             new LotjuMetadataProperties.Sender(120000, 120000));
     }
 
     protected LotjuMetadataProperties createLotjuMetadataPropertiesWithoutHealthCheck() {
         return new LotjuMetadataProperties(baseUrls,
-            new LotjuMetadataProperties.Path(null, dataPath, null, null, null),
+            new LotjuMetadataProperties.Path(null, dataPath, dataPath, dataPath, dataPath),
             new LotjuMetadataProperties.Health(TTL_S, null),
             new LotjuMetadataProperties.Sender(120000, 120000));
     }
