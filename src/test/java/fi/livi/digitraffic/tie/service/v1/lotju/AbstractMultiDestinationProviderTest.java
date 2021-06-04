@@ -10,6 +10,7 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -49,15 +50,27 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
         if(wireMockServer2.isRunning()) wireMockServer2.stop();
     }
 
+    protected LotjuMetadataProperties createLotjuMetadataProperties() {
+        return new LotjuMetadataProperties(baseUrls,
+            new LotjuMetadataProperties.Path(healthPath, dataPath, dataPath, dataPath, dataPath),
+            new LotjuMetadataProperties.Health(TTL_S, healthOkCheckValueInApplicationSettings),
+            new LotjuMetadataProperties.Sender(120000, 120000));
+    }
+
+    protected LotjuMetadataProperties createLotjuMetadataPropertiesWithoutHealthCheck() {
+        return new LotjuMetadataProperties(baseUrls,
+            new LotjuMetadataProperties.Path(null, dataPath, dataPath, dataPath, dataPath),
+            new LotjuMetadataProperties.Health(TTL_S, null),
+            new LotjuMetadataProperties.Sender(120000, 120000));
+    }
+
     protected MultiDestinationProvider createMultiDestinationProvider() {
-        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, TTL_S,
-            healthOkCheckValueInApplicationSettings));
+        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(createLotjuMetadataProperties(), dataPath));
     }
 
     protected MultiDestinationProvider createMultiDestinationProviderWithoutHealthCheck() {
-        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, null, TTL_S, null));
+        return new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(createLotjuMetadataPropertiesWithoutHealthCheck(), dataPath));
     }
-
 
     protected void server1WhenRequestHealthThenReturn(final HttpStatus returnStatus, final String returnContent) {
         serverWhenRequestUrlThenReturn(wireMockServer1, healthPath, returnStatus, returnContent);

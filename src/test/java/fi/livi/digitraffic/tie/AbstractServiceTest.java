@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
+import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
@@ -77,7 +79,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
           LockingDao.class,
 
           // configurations
-          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class
+          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class
         })
 @TestPropertySource(properties = { "testcontainers.disabled=true" })
 public abstract class AbstractServiceTest extends AbstractJpaTest {
