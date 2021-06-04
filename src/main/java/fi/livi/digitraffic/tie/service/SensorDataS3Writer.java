@@ -58,6 +58,8 @@ public class SensorDataS3Writer {
         this.s3Client = sensorDataS3Client;
     }
 
+    // this is called from tests only!
+    @Transactional(readOnly = true)
     public boolean updateSensorDataS3History(final ZonedDateTime currentTimeWindow) {
         final AtomicBoolean fixedHistoryItems = new AtomicBoolean(false);
 
