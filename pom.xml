@@ -33,7 +33,7 @@
         <com.google.protobuf.version>3.17.1</com.google.protobuf.version>
         <org.apache.cxf.version>3.4.3</org.apache.cxf.version>
         <io.springfox.version>3.0.0</io.springfox.version>
-        <spring.cloud.version>3.0.4</spring.cloud.version>
+        <spring.cloud.version>3.0.0.M1</spring.cloud.version>
     </properties>
 
     <repositories>
