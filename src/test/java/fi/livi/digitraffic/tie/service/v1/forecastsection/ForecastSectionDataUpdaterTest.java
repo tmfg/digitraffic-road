@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTestWithoutLoc
 
     @BeforeEach
     public void before() throws IOException {
-        forecastSectionClient = new ForecastSectionClient(restTemplate);
+        forecastSectionClient = new ForecastSectionClient(restTemplate, null);
         forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
         forecastSectionMetadataUpdaterV2 =
