@@ -1,5 +1,9 @@
 ALTER TABLE lam_station
-DROP COLUMN IF EXISTS road_district_id;
+DROP COLUMN IF EXISTS road_district_id,
+DROP COLUMN IF EXISTS summer_free_flow_speed_1,
+DROP COLUMN IF EXISTS summer_free_flow_speed_2,
+DROP COLUMN IF EXISTS winter_free_flow_speed_1,
+DROP COLUMN IF EXISTS winter_free_flow_speed_2;
 
 ALTER TABLE IF EXISTS lam_station RENAME TO tms_station;
 ALTER SEQUENCE IF EXISTS seq_lam_station RENAME TO seq_tms_station;

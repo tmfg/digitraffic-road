@@ -15,9 +15,12 @@ import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
 public interface TmsFreeFlowSpeedRepository extends JpaRepository<TmsFreeFlowSpeedDto, Long> {
 
     String SELECT_TMS_AND_RS_NATURAL_IDS_AND_FREE_FLOW_SPEEDS =
-        "WITH free_flow_speed AS (\n" +
+        "WITH time_now AS (\n" +
+        "    SELECT (EXTRACT(DAY FROM now()) + (EXTRACT(MONTH FROM now())*100)) as time FROM now()\n" +
+        "),\n" +
+        "free_flow_speed AS (\n" +
         "    SELECT sc.ROAD_STATION_ID, sc.NAME, scv.VALID_FROM, scv.VALID_TO, scv.VALUE\n" +
-        "    FROM (SELECT (EXTRACT(DAY FROM now()) + (EXTRACT(MONTH FROM now())*100)) as time FROM now()) AS time_now\n" +
+        "    FROM time_now\n" +
         "       , TMS_SENSOR_CONSTANT sc INNER JOIN TMS_SENSOR_CONSTANT_VALUE scv ON scv.SENSOR_CONSTANT_LOTJU_ID = sc.LOTJU_ID\n" +
         "    WHERE sc.NAME LIKE 'VVAPAAS%'\n" +
         "      AND sc.OBSOLETE_DATE IS NULL\n" +

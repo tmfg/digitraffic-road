@@ -48,16 +48,6 @@ public class TmsStation {
 
     private LocalDate obsoleteDate;
 
-    @Column(name="summer_free_flow_speed_1")
-    private double summerFreeFlowSpeed1;
-    @Column(name="summer_free_flow_speed_2")
-    private double summerFreeFlowSpeed2;
-
-    @Column(name="winter_free_flow_speed_1")
-    private double winterFreeFlowSpeed1;
-    @Column(name="winter_free_flow_speed_2")
-    private double winterFreeFlowSpeed2;
-
     @Column(name="DIRECTION_1_MUNICIPALITY")
     private String direction1Municipality;
 
@@ -122,30 +112,6 @@ public class TmsStation {
         this.obsoleteDate = obsoleteDate;
     }
 
-    public double getSummerFreeFlowSpeed1() {
-        return summerFreeFlowSpeed1;
-    }
-
-    public void setSummerFreeFlowSpeed1(final double summerFreeFlowSpeed1) {
-        this.summerFreeFlowSpeed1 = summerFreeFlowSpeed1;
-    }
-
-    public double getSummerFreeFlowSpeed2() {
-        return summerFreeFlowSpeed2;
-    }
-
-    public void setSummerFreeFlowSpeed2(final double summerFreeFlowSpeed2) {
-        this.summerFreeFlowSpeed2 = summerFreeFlowSpeed2;
-    }
-
-    public double getWinterFreeFlowSpeed1() {
-        return winterFreeFlowSpeed1;
-    }
-
-    public void setWinterFreeFlowSpeed1(final double winterFreeFlowSpeed1) {
-        this.winterFreeFlowSpeed1 = winterFreeFlowSpeed1;
-    }
-
     public RoadStation getRoadStation() {
         return roadStation;
     }
@@ -167,14 +133,6 @@ public class TmsStation {
             roadStation.obsolete();
             setObsoleteDate(roadStation.getObsoleteDate());
         }
-    }
-
-    public double getWinterFreeFlowSpeed2() {
-        return winterFreeFlowSpeed2;
-    }
-
-    public void setWinterFreeFlowSpeed2(final double winterFreeFlowSpeed2) {
-        this.winterFreeFlowSpeed2 = winterFreeFlowSpeed2;
     }
 
     public String getDirection1Municipality() {
