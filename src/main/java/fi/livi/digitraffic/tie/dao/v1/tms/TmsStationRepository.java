@@ -17,19 +17,19 @@ import fi.livi.digitraffic.tie.model.v1.TmsStation;
 public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<TmsStation> findAll();
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId(final CollectionStatus collectionStatus);
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
 
     TmsStation findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(final long roadStationNaturalId);
@@ -46,21 +46,21 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
     TmsStation findByRoadStationIsPublicIsTrueAndNaturalId(final Long lamId);
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationPublishableIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(final Integer
         roadNumber);
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(
         final CollectionStatus removedPermanently, final Integer roadNumber);
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(final Integer
         roadNumber);
 
-    @EntityGraph(attributePaths = {"roadStation", "roadDistrict", "roadStation.roadAddress"})
+    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     TmsStation findByLotjuId(Long lotjuId);
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))

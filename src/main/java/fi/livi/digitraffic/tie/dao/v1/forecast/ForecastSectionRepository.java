@@ -18,8 +18,8 @@ import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
 public interface ForecastSectionRepository extends JpaRepository<ForecastSection, Long> {
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    @EntityGraph(attributePaths = { "road", "startRoadSection", "endRoadSection", "startRoadSection.roadDistrict", "endRoadSection.roadDistrict",
-                                    "forecastSectionCoordinateLists" }, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = { "road", "startRoadSection", "endRoadSection", "forecastSectionCoordinateLists" },
+                 type = EntityGraph.EntityGraphType.LOAD)
     List<ForecastSection> findDistinctByVersionIsOrderByNaturalIdAsc(final int version);
 
     @Modifying

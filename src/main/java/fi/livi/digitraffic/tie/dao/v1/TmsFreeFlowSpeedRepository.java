@@ -14,44 +14,32 @@ import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
 @Repository
 public interface TmsFreeFlowSpeedRepository extends JpaRepository<TmsFreeFlowSpeedDto, Long> {
 
-    @Query(value =
-            "SELECT RS.NATURAL_ID AS ROAD_STATION_NATURAL_ID" +
-            "     , LS.NATURAL_ID AS TMS_NATURAL_ID\n" +
-            "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
-            "            THEN LS.SUMMER_FREE_FLOW_SPEED_1\n" +
-            "            ELSE LS.WINTER_FREE_FLOW_SPEED_1\n" +
-            "       END AS FREE_FLOW_SPEED1\n" +
-            "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
-            "            THEN LS.SUMMER_FREE_FLOW_SPEED_2\n" +
-            "            ELSE LS.WINTER_FREE_FLOW_SPEED_2\n" +
-            "        END AS FREE_FLOW_SPEED2\n" +
-            "FROM LAM_STATION LS\n" +
-            "INNER JOIN ROAD_STATION RS ON RS.ID = LS.ROAD_STATION_ID\n" +
-            "INNER JOIN ROAD_DISTRICT RD ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
-            "WHERE LS.OBSOLETE_DATE IS NULL\n" +
-            "  AND RS.IS_PUBLIC = true",
-            nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<TmsFreeFlowSpeedDto> listAllPublicTmsFreeFlowSpeeds();
+    String SELECT_TMS_AND_RS_NATURAL_IDS_AND_FREE_FLOW_SPEEDS =
+        "WITH free_flow_speed AS (\n" +
+        "    SELECT sc.ROAD_STATION_ID, sc.NAME, scv.VALID_FROM, scv.VALID_TO, scv.VALUE\n" +
+        "    FROM (SELECT (EXTRACT(DAY FROM now()) + (EXTRACT(MONTH FROM now())*100)) as time FROM now()) AS time_now\n" +
+        "       , TMS_SENSOR_CONSTANT sc INNER JOIN TMS_SENSOR_CONSTANT_VALUE scv ON scv.SENSOR_CONSTANT_LOTJU_ID = sc.LOTJU_ID\n" +
+        "    WHERE sc.NAME LIKE 'VVAPAAS%'\n" +
+        "      AND sc.OBSOLETE_DATE IS NULL\n" +
+        "      AND ((scv.VALID_FROM <= time_now.time AND scv.VALID_TO >= time_now.time)\n" +
+        "        OR (scv.VALID_FROM >= time_now.time AND scv.VALID_TO >= time_now.time AND scv.VALID_FROM >= scv.VALID_TO)\n" +
+        "        OR (scv.VALID_FROM <= time_now.time AND scv.VALID_TO <= time_now.time AND scv.VALID_FROM >= scv.VALID_TO))\n" +
+        ")\n" +
+        "SELECT rs.natural_id AS road_station_natural_id\n" +
+        "     , tms.natural_id AS tms_natural_id\n" +
+        "     , COALESCE(free_flow_speed1.value, -1) AS free_flow_speed1\n" +
+        "     , COALESCE(free_flow_speed2.value, -1) AS free_flow_speed2\n" +
+        "FROM tms_station tms\n" +
+        "INNER JOIN road_station rs ON rs.id = tms.road_station_id\n" +
+        "LEFT OUTER JOIN free_flow_speed AS free_flow_speed1 ON free_flow_speed1.name = 'VVAPAAS1' AND free_flow_speed1.road_station_id = tms.road_station_id\n" +
+        "LEFT OUTER JOIN free_flow_speed AS free_flow_speed2 ON free_flow_speed2.name = 'VVAPAAS2' AND free_flow_speed2.road_station_id = tms.road_station_id\n" +
+        "WHERE rs.is_public = true\n";
 
-    @Query(value =
-            "SELECT RS.NATURAL_ID AS ROAD_STATION_NATURAL_ID" +
-            "     , LS.NATURAL_ID AS TMS_NATURAL_ID\n" +
-            "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
-            "            THEN LS.SUMMER_FREE_FLOW_SPEED_1\n" +
-            "            ELSE LS.WINTER_FREE_FLOW_SPEED_1\n" +
-            "       END AS FREE_FLOW_SPEED1\n" +
-            "     , CASE WHEN RD.SPEED_LIMIT_SEASON = 1\n" +
-            "            THEN LS.SUMMER_FREE_FLOW_SPEED_2\n" +
-            "            ELSE LS.WINTER_FREE_FLOW_SPEED_2\n" +
-            "        END AS FREE_FLOW_SPEED2\n" +
-            "FROM LAM_STATION LS\n" +
-            "INNER JOIN ROAD_STATION RS ON RS.ID = LS.ROAD_STATION_ID\n" +
-            "INNER JOIN ROAD_DISTRICT RD ON LS.ROAD_DISTRICT_ID = RD.ID\n" +
-            "WHERE LS.OBSOLETE_DATE IS NULL\n" +
-            "  AND RS.IS_PUBLIC = true\n" +
-            "  AND RS.NATURAL_ID = ?1",
-            nativeQuery = true)
+    @Query(value = SELECT_TMS_AND_RS_NATURAL_IDS_AND_FREE_FLOW_SPEEDS + "ORDER BY rs.natural_id", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<TmsFreeFlowSpeedDto> listAllPublicTmsFreeFlowSpeeds(final long roadStationNaturalId);
+    List<TmsFreeFlowSpeedDto> findAllPublicTmsFreeFlowSpeeds();
+
+    @Query(value = SELECT_TMS_AND_RS_NATURAL_IDS_AND_FREE_FLOW_SPEEDS + "AND RS.NATURAL_ID = :roadStationNaturalId", nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    TmsFreeFlowSpeedDto getTmsFreeFlowSpeedsByRoadStationNaturalId(final long roadStationNaturalId);
 }

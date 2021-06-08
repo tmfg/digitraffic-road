@@ -11,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -29,15 +28,15 @@ import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.TmsStationType;
 
 @Entity
-@Table(name = "LAM_STATION")
+@Table(name = "TMS_STATION")
 @DynamicUpdate
 public class TmsStation {
     private static final Logger log = LoggerFactory.getLogger(TmsStation.class);
 
     @Id
-    @GenericGenerator(name = "SEQ_LAM_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_LAM_STATION"))
-    @GeneratedValue(generator = "SEQ_LAM_STATION")
+    @GenericGenerator(name = "SEQ_TMS_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_TMS_STATION"))
+    @GeneratedValue(generator = "SEQ_TMS_STATION")
     private Long id;
 
     private long naturalId;
@@ -72,16 +71,11 @@ public class TmsStation {
     private Integer direction2MunicipalityCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "LAM_STATION_TYPE")
+    @Column(name = "TMS_STATION_TYPE")
     private TmsStationType tmsStationType;
 
     @Enumerated(EnumType.STRING)
     private CalculatorDeviceType calculatorDeviceType;
-
-    @ManyToOne
-    @JoinColumn(name="road_district_id")
-    @Fetch(FetchMode.JOIN)
-    private RoadDistrict roadDistrict;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name="road_station_id", nullable = false)
@@ -181,14 +175,6 @@ public class TmsStation {
 
     public void setWinterFreeFlowSpeed2(final double winterFreeFlowSpeed2) {
         this.winterFreeFlowSpeed2 = winterFreeFlowSpeed2;
-    }
-
-    public RoadDistrict getRoadDistrict() {
-        return roadDistrict;
-    }
-
-    public void setRoadDistrict(final RoadDistrict roadDistrict) {
-        this.roadDistrict = roadDistrict;
     }
 
     public String getDirection1Municipality() {

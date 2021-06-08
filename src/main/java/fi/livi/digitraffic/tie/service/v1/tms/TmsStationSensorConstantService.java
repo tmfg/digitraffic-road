@@ -49,11 +49,6 @@ public class TmsStationSensorConstantService {
         return obsoleted > 0 || upsert > 0;
     }
 
-    @Transactional
-    public int updateFreeFlowSpeedsOfTmsStations() {
-        return tmsSensorConstantDao.updateFreeFlowSpeedsOfTmsStations();
-    }
-
     @Transactional(readOnly = true)
     public ZonedDateTime getLatestMeasurementTime() {
         final ZonedDateTime dataUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);

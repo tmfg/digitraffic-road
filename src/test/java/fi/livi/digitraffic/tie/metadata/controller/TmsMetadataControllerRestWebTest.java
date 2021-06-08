@@ -27,7 +27,6 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
-import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
@@ -37,9 +36,6 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
-
-    @Autowired
-    protected RoadDistrictService roadDistrictService;
 
     @BeforeEach
     public void initData() {
@@ -109,7 +105,6 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
         ts.setRoadStation(rs);
         ts.setLotjuId(rs.getLotjuId());
         ts.setNaturalId(rs.getLotjuId());
-        ts.setRoadDistrict(roadDistrictService.findByNaturalId(1));
         ts.setCalculatorDeviceType(CalculatorDeviceType.DSL_5);
         ts.setName("st120_Pähkinärinne");
         ts.setDirection1Municipality("Vihti");
