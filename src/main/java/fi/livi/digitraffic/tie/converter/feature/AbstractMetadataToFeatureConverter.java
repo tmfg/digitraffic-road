@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.converter.feature;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.exception.CloneFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +37,9 @@ public class AbstractMetadataToFeatureConverter {
 
         if (roadStation.getRoadAddress() != null) {
             try {
-                properties.setRoadAddress((RoadAddress)roadStation.getRoadAddress().clone());
-            } catch (CloneNotSupportedException e) {
+                final RoadAddress clone = ObjectUtils.clone(roadStation.getRoadAddress());
+                properties.setRoadAddress(clone);
+            } catch (final CloneFailedException e) {
                 log.error("Failed to clone RoadAddress", e);
             }
         }
