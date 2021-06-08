@@ -56,7 +56,7 @@ public final class ApiPaths {
 
     // Maintenance trackings
     public static final String MAINTENANCE_TRACKINGS_PATH = "/maintenance/trackings";
-    public static final String MAINTENANCE_TRACKINGS_JSON_DATA_PATH = MAINTENANCE_TRACKINGS_PATH + "/data";
+    public static final String MAINTENANCE_TRACKINGS_JSON_DATA_PATH = MAINTENANCE_TRACKINGS_PATH + API_DATA_PART_PATH;
 
     private ApiPaths() {}
 }
