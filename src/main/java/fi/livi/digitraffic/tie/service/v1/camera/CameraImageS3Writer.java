@@ -174,28 +174,20 @@ public class CameraImageS3Writer {
             return new DeleteInfo(true, true, durationMs, key);
         }
 
-        boolean isFileExists() {
+        public boolean isFileExists() {
             return fileExists;
         }
 
-        boolean isDeleteSuccess() {
+        public boolean isDeleteSuccess() {
             return deleteSuccess;
         }
 
-        boolean isFileExistsAndDeleteSuccess() {
-            return isFileExists() && isDeleteSuccess();
-        }
-
-        boolean isSuccess() {
+        public boolean isSuccess() {
             return !isFileExists() || isDeleteSuccess();
         }
 
-        long getDurationMs() {
+        public long getDurationMs() {
             return durationMs;
-        }
-
-        String getFullPath() {
-            return fullPath;
         }
     }
 

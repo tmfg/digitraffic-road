@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,10 @@ public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
         checkObjectExistenceInS3(key2, true);
 
         // Delete key1 -> only delete markes as they are versioned
-        cameraImageS3Writer.deleteImage(key1);
+        final CameraImageS3Writer.DeleteInfo di = cameraImageS3Writer.deleteImage(key1);
+        assertTrue(di.isFileExists());
+        assertTrue(di.isDeleteSuccess());
+        assertTrue(di.isSuccess());
 
         // Check that deleted object delete marker is in place
         checkObjectExistenceInS3(key1, false); // latest version = delete marker
