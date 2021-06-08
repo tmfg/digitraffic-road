@@ -111,10 +111,6 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
         ts.setDirection1MunicipalityCode(927);
         ts.setDirection2Municipality("Helsinki");
         ts.setDirection2MunicipalityCode(91);
-        ts.setWinterFreeFlowSpeed1(70);
-        ts.setWinterFreeFlowSpeed2(70);
-        ts.setSummerFreeFlowSpeed1(80);
-        ts.setSummerFreeFlowSpeed2(80);
 
         return ts;
     }
