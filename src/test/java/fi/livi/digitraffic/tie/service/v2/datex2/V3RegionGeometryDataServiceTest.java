@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.v2.datex2;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -150,6 +151,24 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
             v3RegionGeometryDataService.findAreaLocationRegions(false, commit2EffectiveDate);
         assertCollectionSize(3, commit2All.getFeatures());
         commit2All.getFeatures().forEach(f -> assertEquals(commit2EffectiveDate, f.getProperties().effectiveDate));
+    }
+
+    @Test
+    public void findAreaLocationRegionsWithUpdateInfo() {
+        // Create commit and ask update info
+        final Instant effectiveDate = Instant.now();
+        final String commitId = RandomStringUtils.randomAlphanumeric(32);
+        final List<RegionGeometry> commitChanges = createCommit(commitId, effectiveDate, 1,2);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(commitChanges);
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1
+        v3RegionGeometryDataService.refreshCache();
+
+        // Id 1 with first effective date
+        final RegionGeometryFeatureCollection commitArea =
+            v3RegionGeometryDataService.findAreaLocationRegions(true, effectiveDate);
+        assertTrue(commitArea.getFeatures().isEmpty());
+        assertTrue(effectiveDate.minusSeconds(1).isBefore(commitArea.getDataUpdatedTime().toInstant()));
+        assertTrue(effectiveDate.plusSeconds(1).isAfter(commitArea.getDataUpdatedTime().toInstant()));
     }
 
     private void assertVersion(final RegionGeometry expected, final RegionGeometry actual) {
