@@ -52,6 +52,12 @@ public class TmsStationProperties extends RoadStationProperties {
     @ApiModelProperty(value = "Tms Station Sensors ids")
     private List<Long> stationSensors = new ArrayList<>();
 
+    @ApiModelProperty(value = "Free flow speed to direction 1 [km/h]")
+    private Double freeFlowSpeed1;
+
+    @ApiModelProperty(value = "Free flow speed to direction 2 [km/h]")
+    private Double freeFlowSpeed2;
+
     public long getId() {
         return id;
     }
@@ -163,5 +169,21 @@ public class TmsStationProperties extends RoadStationProperties {
                 .append(calculatorDeviceType)
                 .append(stationSensors)
                 .toHashCode();
+    }
+
+    public Double getFreeFlowSpeed1() {
+        return freeFlowSpeed1;
+    }
+
+    public void setFreeFlowSpeed1(final Double freeFlowSpeed1) {
+        this.freeFlowSpeed1 = freeFlowSpeed1;
+    }
+
+    public Double getFreeFlowSpeed2() {
+        return freeFlowSpeed2;
+    }
+
+    public void setFreeFlowSpeed2(final Double freeFlowSpeed2) {
+        this.freeFlowSpeed2 = freeFlowSpeed2;
     }
 }

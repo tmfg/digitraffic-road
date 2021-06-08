@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.tms;
 
 import static fi.livi.digitraffic.tie.helper.DateHelper.getNewestAtUtc;
-import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -20,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.dao.v1.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
@@ -33,7 +34,6 @@ import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 
 @Service
@@ -42,26 +42,28 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     private final TmsStationRepository tmsStationRepository;
     private final DataStatusService dataStatusService;
-    private final RoadDistrictService roadDistrictService;
     private final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter;
+    private final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository;
 
     @Autowired
     public TmsStationService(final TmsStationRepository tmsStationRepository,
                              final DataStatusService dataStatusService,
-                             final RoadDistrictService roadDistrictService,
-                             final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter) {
+                             final TmsStationMetadata2FeatureConverter tmsStationMetadata2FeatureConverter,
+                             final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository) {
         this.tmsStationRepository = tmsStationRepository;
         this.dataStatusService = dataStatusService;
-        this.roadDistrictService = roadDistrictService;
         this.tmsStationMetadata2FeatureConverter = tmsStationMetadata2FeatureConverter;
+        this.tmsFreeFlowSpeedRepository = tmsFreeFlowSpeedRepository;
     }
 
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo, final TmsState tmsState) {
         final List<TmsStation> stations = onlyUpdateInfo ? Collections.emptyList() : findPublishableStations(tmsState);
+        final List<TmsFreeFlowSpeedDto> ffs = onlyUpdateInfo ? Collections.emptyList() : tmsFreeFlowSpeedRepository.findAllPublicTmsFreeFlowSpeeds();
 
         return tmsStationMetadata2FeatureConverter.convert(
             stations,
+            ffs,
             getMetadataLastUpdated(),
             getMetadataLastChecked());
     }
@@ -69,9 +71,11 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     @Transactional(readOnly = true)
     public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
         final List<TmsStation> stations = findPublishableStations(roadNumber, tmsState);
+        final List<TmsFreeFlowSpeedDto> ffs = stations.isEmpty() ? Collections.emptyList() : tmsFreeFlowSpeedRepository.findAllPublicTmsFreeFlowSpeeds();
 
         return tmsStationMetadata2FeatureConverter.convert(
             stations,
+            ffs,
             getMetadataLastUpdated(),
             getMetadataLastChecked());
     }
@@ -208,16 +212,6 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         final Integer roadNaturalId = from.getTieosoite() != null ? from.getTieosoite().getTienumero() : null;
         final Integer roadSectionNaturalId = from.getTieosoite() != null ? from.getTieosoite().getTieosa() : null;
 
-        if (roadNaturalId != null && roadSectionNaturalId != null) {
-            to.setRoadDistrict(roadDistrictService.findByRoadSectionAndRoadNaturalId(roadSectionNaturalId, roadNaturalId));
-            if (to.getRoadDistrict() == null && !isPermanentlyDeletedKeruunTila(from.getKeruunTila())) {
-                log.warn("Could not find RoadDistrict with roadSectionNaturalId={}, roadNaturalId={} for {}",
-                         roadSectionNaturalId, roadNaturalId, ToStringHelper.toString(from));
-            }
-        } else {
-            to.setRoadDistrict(null);
-        }
-
         // Update RoadStation
         final boolean updated = updateRoadStationAttributes(from, to.getRoadStation());
         to.setObsoleteDate(to.getRoadStation().getObsoleteDate());
@@ -238,8 +232,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         if(station == null) {
             throw new ObjectNotFoundException(TmsStation.class, id);
         }
-
-        return tmsStationMetadata2FeatureConverter.convert(station);
+        final TmsFreeFlowSpeedDto ffs = tmsFreeFlowSpeedRepository.getTmsFreeFlowSpeedsByRoadStationNaturalId(station.getRoadStationNaturalId());
+        return tmsStationMetadata2FeatureConverter.convert(station, ffs != null ? ffs.getFreeFlowSpeed1OrNull() : null, ffs != null ? ffs.getFreeFlowSpeed2OrNull() : null);
     }
 
     ZonedDateTime getMetadataLastUpdated() {

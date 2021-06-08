@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -41,10 +42,8 @@ public class RoadSection {
     @ApiModelProperty(value = "Distance from the beginning to the end of the road section. (Length of the road section)")
     private Integer endDistance;
 
-    @ManyToOne
-    @JoinColumn(name = "road_district_id")
-    @Fetch(FetchMode.JOIN)
-    @ApiModelProperty(value = "District where road is located (or most of it)")
+    @Transient // Not loaded, always null for backward compatibility
+    @ApiModelProperty(value = "District where road is located (or most of it), not use anymore")
     private RoadDistrict roadDistrict;
 
     @ManyToOne
