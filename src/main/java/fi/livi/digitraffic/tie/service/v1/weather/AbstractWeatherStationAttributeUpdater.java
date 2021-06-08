@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.service.v1.weather;
 
-import java.math.BigDecimal;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TieosoiteVO;
@@ -33,9 +31,9 @@ public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoa
         to.setNameFi(from.getNimiFi());
         to.setNameSv(from.getNimiSe());
         to.setNameEn(from.getNimiEn());
-        to.setLatitude(from.getLatitudi());
-        to.setLongitude(from.getLongitudi());
-        setAltitude(to, from.getKorkeus());
+        to.setLatitude(getScaledToDbCoordinate(from.getLatitudi()));
+        to.setLongitude(getScaledToDbCoordinate(from.getLongitudi()));
+        to.setAltitude(getScaledToDbAltitude(from.getKorkeus()));
         to.setCollectionInterval(from.getKeruuVali());
         to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
         to.setMunicipality(from.getKunta());
@@ -52,15 +50,6 @@ public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoa
 
         return updateRoadAddressAttributes(from.getTieosoite(), to.getRoadAddress()) ||
                 HashCodeBuilder.reflectionHashCode(to) != hash;
-    }
-
-    // Set altitude only if there id diff as from db it comes as 0.00 and from data as 0 -> hash changes
-    private static void setAltitude(RoadStation to, final BigDecimal korkeus) {
-        if (to.getAltitude() != null && korkeus != null) {
-            if (korkeus.compareTo(to.getAltitude()) != 0) {
-                to.setAltitude(korkeus);
-            }
-        }
     }
 
     public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
