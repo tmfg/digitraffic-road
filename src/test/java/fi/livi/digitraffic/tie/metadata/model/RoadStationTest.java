@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import static java.lang.Thread.sleep;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -21,7 +19,8 @@ public class RoadStationTest {
     @Test
     public void isAllowedToSetPublicityTimeForCameraStation() {
         final RoadStation rs = RoadStation.createCameraStation();
-        updatePublicityWithTime(rs);
+
+        assertDoesNotThrow(() -> updatePublicityWithTime(rs));
     }
 
     @Test
@@ -47,19 +46,22 @@ public class RoadStationTest {
     @Test
     public void isAllowedToSetPublicityForCameraStation() {
         final RoadStation rs = RoadStation.createCameraStation();
-        updatePublicityWithoutTime(rs);
+
+        assertDoesNotThrow(() -> updatePublicityWithoutTime(rs));
     }
 
     @Test
     public void isAllowedToSetPublicityForWeatherStation() {
         final RoadStation rs = RoadStation.createWeatherStation();
-        updatePublicityWithoutTime(rs);
+
+        assertDoesNotThrow(() -> updatePublicityWithoutTime(rs));
     }
 
     @Test
     public void isAllowedToSetPublicityForTmsStation() {
         final RoadStation rs = RoadStation.createWeatherStation();
-        updatePublicityWithoutTime(rs);
+
+        assertDoesNotThrow(() -> updatePublicityWithoutTime(rs));
     }
 
     @Test

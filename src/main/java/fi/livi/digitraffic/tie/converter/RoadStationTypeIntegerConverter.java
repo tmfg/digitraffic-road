@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.converter;
+package fi.livi.digitraffic.tie.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

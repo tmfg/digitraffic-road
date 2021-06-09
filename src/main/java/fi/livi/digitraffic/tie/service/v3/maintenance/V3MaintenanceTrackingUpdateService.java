@@ -112,7 +112,7 @@ public class V3MaintenanceTrackingUpdateService {
     }
 
     @Transactional
-    public int handleUnhandledMaintenanceTrackingObservationData(int maxToHandle) {
+    public int handleUnhandledMaintenanceTrackingObservationData(final int maxToHandle) {
         fromCacheCount = 0;
         fromDbCountAndMs = Pair.of(0,0L);
 
