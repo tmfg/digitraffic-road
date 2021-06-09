@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
-import static fi.livi.digitraffic.tie.model.CollectionStatus.isPermanentlyDeletedKeruunTila;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -144,7 +142,7 @@ public class CameraStationUpdater {
     private Pair<Integer, Integer> updateCameraStationAndPresets(final long cameraLotjuId) {
         final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(cameraLotjuId);
         if (kamera == null) {
-            log.error("method=updateCameraStationAndPresets No Camera found with lotjuId={}", cameraLotjuId);
+            log.warn("method=updateCameraStationAndPresets No Camera found with lotjuId={}", cameraLotjuId);
             return Pair.of(0,0);
         }
         return updateCameraStationAndPresets(kamera);
@@ -178,7 +176,7 @@ public class CameraStationUpdater {
     private boolean updateCameraStation(final long cameraLotjuId) {
         final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(cameraLotjuId);
         if (kamera == null) {
-            log.error("method=updateCameraStation No Camera with lotjuId={} found", cameraLotjuId);
+            log.warn("method=updateCameraStation No Camera with lotjuId={} found", cameraLotjuId);
             return false;
         }
         return updateCameraStation(kamera);
@@ -212,7 +210,7 @@ public class CameraStationUpdater {
         final EsiasentoVO esiasento = lotjuCameraStationMetadataClientWrapper.getEsiasento(presetLotjuId);
 
         if (esiasento == null) {
-            log.error("No CameraPreset with lotjuId={} found", presetLotjuId);
+            log.warn("No CameraPreset with lotjuId={} found", presetLotjuId);
             return false;
         }
 
