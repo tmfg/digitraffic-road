@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.AbstractVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationService;
@@ -238,7 +239,7 @@ public class CameraStationUpdater {
 
     private boolean validate(final KameraVO kamera) {
         final boolean valid = kamera.getVanhaId() != null;
-        if (!valid && !isPermanentlyDeletedKeruunTila(kamera.getKeruunTila())) {
+        if (!valid && !CollectionStatus.isPermanentlyDeletedKeruunTila(kamera.getKeruunTila())) {
             log.error("{} is invalid: has null vanhaId", ToStringHelper.toString(kamera));
         }
         return valid;
