@@ -14,55 +14,55 @@ import fi.livi.digitraffic.tie.service.AbstractRoadStationAttributeUpdater;
 
 public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
 
-    public static boolean updateRoadStationAttributes(final LamAsemaVO from, final RoadStation to) {
+    public static boolean updateRoadStationAttributes(final LamAsemaVO la, final RoadStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         // Can insert obsolete stations
-        if ( CollectionStatus.isPermanentlyDeletedKeruunTila(from.getKeruunTila()) ) {
+        if ( CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()) ) {
             to.obsolete();
         } else {
             to.unobsolete();
         }
-        to.setLotjuId(from.getId());
-        to.updatePublicity(from.isJulkinen() == null || from.isJulkinen());
-        to.setNaturalId(from.getVanhaId().longValue());
+        to.setLotjuId(la.getId());
+        to.updatePublicity(la.isJulkinen() == null || la.isJulkinen());
+        to.setNaturalId(la.getVanhaId().longValue());
         to.setType(RoadStationType.TMS_STATION);
-        to.setName(from.getNimi());
-        to.setNameFi(from.getNimiFi());
-        to.setNameSv(from.getNimiSe());
-        to.setNameEn(from.getNimiEn());
-        to.setLatitude(getScaledToDbCoordinate(from.getLatitudi()));
-        to.setLongitude(getScaledToDbCoordinate(from.getLongitudi()));
-        to.setAltitude(getScaledToDbAltitude(from.getKorkeus()));
-        to.setCollectionInterval(from.getKeruuVali());
-        to.setCollectionStatus(CollectionStatus.convertKeruunTila(from.getKeruunTila()));
-        to.setMunicipality(from.getKunta());
-        to.setMunicipalityCode(from.getKuntaKoodi());
-        to.setProvince(from.getMaakunta());
-        to.setProvinceCode(from.getMaakuntaKoodi());
-        to.setLiviId(from.getLiviId());
-        to.setStartDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(from.getAlkamisPaiva()));
-        to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(from.getKorjaushuolto()));
-        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(from.getVuosihuolto()));
-        to.setState(RoadStationState.fromTilaTyyppi(from.getAsemanTila()));
-        to.setLocation(from.getAsemanSijainti());
-        to.setCountry(from.getMaa());
-        to.setPurpose(from.getKayttotarkoitus());
+        to.setName(la.getNimi());
+        to.setNameFi(la.getNimiFi());
+        to.setNameSv(la.getNimiSe());
+        to.setNameEn(la.getNimiEn());
+        to.setLatitude(getScaledToDbCoordinate(la.getLatitudi()));
+        to.setLongitude(getScaledToDbCoordinate(la.getLongitudi()));
+        to.setAltitude(getScaledToDbAltitude(la.getKorkeus()));
+        to.setCollectionInterval(la.getKeruuVali());
+        to.setCollectionStatus(CollectionStatus.convertKeruunTila(la.getKeruunTila()));
+        to.setMunicipality(la.getKunta());
+        to.setMunicipalityCode(la.getKuntaKoodi());
+        to.setProvince(la.getMaakunta());
+        to.setProvinceCode(la.getMaakuntaKoodi());
+        to.setLiviId(la.getLiviId());
+        to.setStartDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(la.getAlkamisPaiva()));
+        to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(la.getKorjaushuolto()));
+        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(la.getVuosihuolto()));
+        to.setState(RoadStationState.fromTilaTyyppi(la.getAsemanTila()));
+        to.setLocation(la.getAsemanSijainti());
+        to.setCountry(la.getMaa());
+        to.setPurpose(la.getKayttotarkoitus());
 
-        return updateRoadAddressAttributes(from.getTieosoite(), to.getRoadAddress()) ||
+        return updateRoadAddressAttributes(la.getTieosoite(), to.getRoadAddress()) ||
                HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    public static boolean updateRoadAddressAttributes(final TieosoiteVO from, final RoadAddress to) {
+    public static boolean updateRoadAddressAttributes(final TieosoiteVO lat, final RoadAddress to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
-        to.setRoadNumber(from.getTienumero());
-        to.setRoadSection(from.getTieosa());
-        to.setDistanceFromRoadSectionStart(from.getEtaisyysTieosanAlusta());
-        to.setCarriagewayCode(from.getAjorata());
-        to.setSideCode(from.getPuoli());
-        to.setRoadMaintenanceClass(from.getTienHoitoluokka());
-        to.setContractArea(from.getUrakkaAlue());
-        to.setContractAreaCode(from.getUrakkaAlueKoodi());
+        to.setRoadNumber(lat.getTienumero());
+        to.setRoadSection(lat.getTieosa());
+        to.setDistanceFromRoadSectionStart(lat.getEtaisyysTieosanAlusta());
+        to.setCarriagewayCode(lat.getAjorata());
+        to.setSideCode(lat.getPuoli());
+        to.setRoadMaintenanceClass(lat.getTienHoitoluokka());
+        to.setContractArea(lat.getUrakkaAlue());
+        to.setContractAreaCode(lat.getUrakkaAlueKoodi());
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 }
