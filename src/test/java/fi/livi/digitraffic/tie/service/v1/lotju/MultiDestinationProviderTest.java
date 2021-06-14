@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
@@ -10,6 +9,7 @@ import java.net.URI;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 public class MultiDestinationProviderTest extends AbstractMultiDestinationProviderTest {
 
     @Test
@@ -114,4 +114,23 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
         verifyServer1HealthCount(0);
         verifyServer2HealthCount(0);
     }
+
+    @Test
+    public void hostWithoutUrl() {
+        Assertions.assertThrows(fi.livi.digitraffic.tie.service.IllegalArgumentException.class,
+            () -> new HostWithHealthCheck(null, null, null, 0, null));
+    }
+
+    @Test
+    public void hostWithoutDatapath() {
+        Assertions.assertThrows(fi.livi.digitraffic.tie.service.IllegalArgumentException.class,
+            () -> new HostWithHealthCheck("notnull", null, null, 0, null));
+    }
+
+    @Test
+    public void hostWithoutHealthOk() {
+        Assertions.assertThrows(fi.livi.digitraffic.tie.service.IllegalArgumentException.class,
+            () -> new HostWithHealthCheck("notnull", "notnull", "notnull", 0, null));
+    }
+
 }

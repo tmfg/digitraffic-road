@@ -54,8 +54,10 @@ public class HostWithHealthCheck {
             throw new IllegalArgumentException(String.format("Param healthOkValue:\"%s\" can't be empty value", healthOkValue));
         }
 
-        log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healthOkValue={}",
-                 healthUrl, dataUrl.toString(), healthTtlSeconds, healthOkValue);
+        if(log.isInfoEnabled()) {
+            log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healthOkValue={}",
+                healthUrl, dataUrl.toString(), healthTtlSeconds, healthOkValue);
+        }
     }
 
     /**
@@ -76,7 +78,7 @@ public class HostWithHealthCheck {
 
         final String healthString = doRequestHealthString();
 
-        if ( StringUtils.trimToEmpty(healthString).toUpperCase().startsWith(healthOkValue.toUpperCase()) ) {
+        if (StringUtils.trimToEmpty(healthString).toUpperCase().startsWith(healthOkValue.toUpperCase()) ) {
             log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true", healthUrl, dataUrl, healthString,
                 healthOkValue);
             setHealthy(true);
@@ -109,9 +111,11 @@ public class HostWithHealthCheck {
     public void setHealthy(final boolean healthy) {
         final boolean changed = this.healthy != healthy;
         this.healthy = healthy;
+
         final Instant now = Instant.now();
         nextHealthCheckTime = now.plusSeconds(healthTtlSeconds);
-        if (changed) {
+
+        if (changed && log.isInfoEnabled()) {
             log.info("method=setHealthy Change server baseUrl={} dataUrl={} fromHealthy={} toHealthy={} healthChecked={}", baseUrl, dataUrl.toString(), !this.healthy, this.healthy, now);
         }
     }
