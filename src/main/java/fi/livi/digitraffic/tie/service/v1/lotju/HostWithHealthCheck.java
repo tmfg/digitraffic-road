@@ -54,10 +54,8 @@ public class HostWithHealthCheck {
             throw new IllegalArgumentException(String.format("Param healthOkValue:\"%s\" can't be empty value", healthOkValue));
         }
 
-        if(log.isInfoEnabled()) {
-            log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healthOkValue={}",
-                healthUrl, dataUrl.toString(), healthTtlSeconds, healthOkValue);
-        }
+        log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healthOkValue={}",
+            healthUrl, dataUrl, healthTtlSeconds, healthOkValue);
     }
 
     /**
@@ -115,8 +113,8 @@ public class HostWithHealthCheck {
         final Instant now = Instant.now();
         nextHealthCheckTime = now.plusSeconds(healthTtlSeconds);
 
-        if (changed && log.isInfoEnabled()) {
-            log.info("method=setHealthy Change server baseUrl={} dataUrl={} fromHealthy={} toHealthy={} healthChecked={}", baseUrl, dataUrl.toString(), !this.healthy, this.healthy, now);
+        if (changed) {
+            log.info("method=setHealthy Change server baseUrl={} dataUrl={} fromHealthy={} toHealthy={} healthChecked={}", baseUrl, dataUrl, !this.healthy, this.healthy, now);
         }
     }
     public URI getDataUrl() {
