@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
@@ -98,7 +97,7 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
     }
 
     private static String safeValue(final String value) {
-        if(value.toUpperCase().equals("NULL")) return null;
+        if("NULL".equalsIgnoreCase(value)) return null;
 
         return value;
     }
