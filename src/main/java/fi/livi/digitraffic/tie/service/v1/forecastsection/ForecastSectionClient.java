@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -33,14 +34,13 @@ public class ForecastSectionClient {
         this.baseUrl = baseUrl;
     }
 
-    @Retryable
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public List<ForecastSectionCoordinatesDto> getForecastSectionV1Metadata() {
         final LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + URL_ROADS_V1_PART, LinkedHashMap.class);
-
         return response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
-    @Retryable
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public ForecastSectionDataDto getRoadConditions(final int version) {
         if (version == 1) {
             return restTemplate.getForObject(baseUrl + URL_ROAD_CONDITIONS_V1_PART, ForecastSectionDataDto.class);
@@ -55,6 +55,7 @@ public class ForecastSectionClient {
         return new ForecastSectionCoordinatesDto(forecastSection.getKey(), entry.getName(), entry.getCoordinates());
     }
 
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public ForecastSectionV2Dto getForecastSectionV2Metadata() {
         return restTemplate.getForObject(baseUrl + URL_ROADS_V2_PART, ForecastSectionV2Dto.class);
     }
