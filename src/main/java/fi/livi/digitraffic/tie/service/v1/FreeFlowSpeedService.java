@@ -1,14 +1,15 @@
 package fi.livi.digitraffic.tie.service.v1;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.TmsFreeFlowSpeedRepository;
-import fi.livi.digitraffic.tie.dto.v1.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.dto.v1.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -35,7 +36,7 @@ public class FreeFlowSpeedService {
             return new FreeFlowSpeedRootDataObjectDto(tmsUpdated);
         } else {
             return new FreeFlowSpeedRootDataObjectDto(
-                    tmsFreeFlowSpeedRepository.listAllPublicTmsFreeFlowSpeeds(),
+                    tmsFreeFlowSpeedRepository.findAllPublicTmsFreeFlowSpeeds(),
                     tmsUpdated);
         }
     }
@@ -47,7 +48,7 @@ public class FreeFlowSpeedService {
         }
 
         return new FreeFlowSpeedRootDataObjectDto(
-                tmsFreeFlowSpeedRepository.listAllPublicTmsFreeFlowSpeeds(roadStationNaturalId),
+                Collections.singletonList(tmsFreeFlowSpeedRepository.getTmsFreeFlowSpeedsByRoadStationNaturalId(roadStationNaturalId)),
                 dataStatusService.findDataUpdatedTime(DataType.TMS_FREE_FLOW_SPEEDS_DATA));
 
     }

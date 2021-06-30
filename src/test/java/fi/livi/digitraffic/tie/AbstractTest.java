@@ -60,7 +60,8 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @TestPropertySource(properties = {
     "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
-    "testcontainers.disabled=true"
+    "testcontainers.disabled=true",
+    "spring.cloud.config.enabled=false",
 })
 public abstract class AbstractTest {
 
@@ -79,16 +80,9 @@ public abstract class AbstractTest {
     private V2Datex2UpdateService v2Datex2UpdateService;
     private V2Datex2DataService v2Datex2DataService;
 
-    public static final int LOTJU_SERVICE_RANDOM_PORT = (int) RandomUtils.nextLong(6000,7000);
-
     protected static final int MIN_LOTJU_ID = 10000;
     protected static final int MAX_LOTJU_ID = 99999;
     protected static final String PRESET_PRESENTATION_NAME = "PresentationName";
-
-    @BeforeEach
-    public void logSettings() {
-        log.debug("LOTJU_SERVICE_RANDOM_PORT={}", LOTJU_SERVICE_RANDOM_PORT);
-    }
 
     public V2Datex2UpdateService getV2Datex2UpdateService() {
         if (v2Datex2UpdateService == null) {

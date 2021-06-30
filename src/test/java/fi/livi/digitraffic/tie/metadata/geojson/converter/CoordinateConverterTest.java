@@ -4,8 +4,7 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_X_MIN;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y_MAX;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y_MIN;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -123,14 +122,16 @@ public class CoordinateConverterTest {
     @Disabled
     @Test
     public void justConvertForTesting() {
-        convertFromWGS84ToETRS89(339803.0, 6818579.0);
-        convertFromWGS84ToETRS89(RANGE_X_MIN, RANGE_Y_MIN);
-        convertFromWGS84ToETRS89(RANGE_X_MAX, RANGE_Y_MAX);
+        assertNotNull(convertFromWGS84ToETRS89(339803.0, 6818579.0));
+        assertNotNull(convertFromWGS84ToETRS89(RANGE_X_MIN, RANGE_Y_MIN));
+        assertNotNull(convertFromWGS84ToETRS89(RANGE_X_MAX, RANGE_Y_MAX));
     }
 
-    private void convertFromWGS84ToETRS89(double x, double y) {
+    private Point convertFromWGS84ToETRS89(double x, double y) {
         final Point from = new Point(x, y);
         final Point to = CoordinateConverter.convertFromWGS84ToETRS89(from);
         System.out.println("From: " + from + "\nTo:   " + to);
+
+        return to;
     }
 }

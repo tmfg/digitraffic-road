@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
+import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
@@ -24,7 +26,6 @@ import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.FlywayService;
 import fi.livi.digitraffic.tie.service.LockingServiceInternal;
-import fi.livi.digitraffic.tie.service.RoadDistrictService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.datex2.ImsJsonConverter;
@@ -55,7 +56,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
 
 @Import({ Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
           // services
-          LocationService.class, RoadDistrictService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
+          LocationService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
           RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
           TmsDataService.class, CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class, FileHttpGetClient.class,
           CameraPresetHistoryUpdateService.class, FlywayService.class,
@@ -77,7 +78,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
           LockingDao.class,
 
           // configurations
-          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class
+          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class
         })
 @TestPropertySource(properties = { "testcontainers.disabled=true" })
 public abstract class AbstractServiceTest extends AbstractJpaTest {

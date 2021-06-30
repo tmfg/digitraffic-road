@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -19,41 +19,33 @@ import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.ForecastSection
 
 @Component
 public class ForecastSectionClient {
+    private static final String URL_ROADS_V1_PART = "roads.php";
+    private static final String URL_ROADS_V2_PART = "roadsV2.php";
+    private static final String URL_ROAD_CONDITIONS_V1_PART = "roadConditionsV1-json.php";
+    private static final String URL_ROAD_CONDITIONS_V2_PART = "roadConditionsV2-json.php";
 
-    @Value("${roadConditions.baseUrl}")
-    private String baseUrl;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String roadsUrl = "roads.php";
-
-    private static final String roadsV2Url = "roadsV2.php";
-
-    private static final String roadConditionsV1Url = "roadConditionsV1-json.php";
-
-    private static final String roadConditionsV2Url = "roadConditionsV2-json.php";
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
+    private final String baseUrl;
     private final RestTemplate restTemplate;
 
-    @Autowired
-    public ForecastSectionClient(final RestTemplate restTemplate) {
+    public ForecastSectionClient(final RestTemplate restTemplate, @Value("${roadConditions.baseUrl}") final String baseUrl) {
         this.restTemplate = restTemplate;
+        this.baseUrl = baseUrl;
     }
 
-    @Retryable
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public List<ForecastSectionCoordinatesDto> getForecastSectionV1Metadata() {
-
-        final LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + roadsUrl, LinkedHashMap.class);
-
+        final LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + URL_ROADS_V1_PART, LinkedHashMap.class);
         return response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
-    @Retryable
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public ForecastSectionDataDto getRoadConditions(final int version) {
         if (version == 1) {
-            return restTemplate.getForObject(baseUrl + roadConditionsV1Url, ForecastSectionDataDto.class);
+            return restTemplate.getForObject(baseUrl + URL_ROAD_CONDITIONS_V1_PART, ForecastSectionDataDto.class);
         } else {
-            return restTemplate.getForObject(baseUrl + roadConditionsV2Url, ForecastSectionDataDto.class);
+            return restTemplate.getForObject(baseUrl + URL_ROAD_CONDITIONS_V2_PART, ForecastSectionDataDto.class);
         }
     }
 
@@ -63,8 +55,8 @@ public class ForecastSectionClient {
         return new ForecastSectionCoordinatesDto(forecastSection.getKey(), entry.getName(), entry.getCoordinates());
     }
 
+    @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public ForecastSectionV2Dto getForecastSectionV2Metadata() {
-
-        return restTemplate.getForObject(baseUrl + roadsV2Url, ForecastSectionV2Dto.class);
+        return restTemplate.getForObject(baseUrl + URL_ROADS_V2_PART, ForecastSectionV2Dto.class);
     }
 }

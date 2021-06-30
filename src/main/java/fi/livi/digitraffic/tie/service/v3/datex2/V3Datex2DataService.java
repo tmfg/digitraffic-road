@@ -64,19 +64,25 @@ public class V3Datex2DataService {
     }
 
     @Transactional(readOnly = true)
-    public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, boolean includeAreaGeometry) {
+    public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, final boolean includeAreaGeometry, boolean latest) {
         final List<Datex2> datex2s = datex2Repository.findBySituationIdWithJson(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        if (latest) {
+            return convertToFeatureCollection(datex2s.subList(0,1), includeAreaGeometry);
         }
         return convertToFeatureCollection(datex2s, includeAreaGeometry);
     }
 
     @Transactional(readOnly = true)
-    public D2LogicalModel findAllBySituationId(final String situationId) {
+    public D2LogicalModel findBySituationId(final String situationId, final boolean latest) {
         final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
+        }
+        if (latest) {
+            return v2Datex2DataService.convertToD2LogicalModel(datex2s.subList(0,1));
         }
         return v2Datex2DataService.convertToD2LogicalModel(datex2s);
     }
@@ -104,7 +110,7 @@ public class V3Datex2DataService {
                                                                                    d2.getTrafficAnnouncementType(),
                                                                                    includeAreaGeometry);
                 } catch (final Exception e) {
-                    log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3", e);
+                    log.error(String.format("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3 datex2.id: %s", d2.getId()), e);
                     return null;
                 }
             })

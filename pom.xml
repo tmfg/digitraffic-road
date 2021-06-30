@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>road</artifactId>
-    <version>2.72.2</version>
+    <version>2.75.0</version>
     <packaging>jar</packaging>
 
     <name>dt-road</name>
@@ -30,7 +30,7 @@
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
         <net.logstash.logback.version>6.3</net.logstash.logback.version>
         <jackson.dataformat.version>2.11.3</jackson.dataformat.version>
-        <com.google.protobuf.version>3.15.8</com.google.protobuf.version>
+        <com.google.protobuf.version>3.17.1</com.google.protobuf.version>
         <org.apache.cxf.version>3.4.3</org.apache.cxf.version>
         <io.springfox.version>3.0.0</io.springfox.version>
         <spring.cloud.version>3.0.0.M1</spring.cloud.version>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-starter-aws-secrets-manager-config</artifactId>
-            <version>2.3.0</version>
+            <version>2.3.1</version>
         </dependency>
 
         <dependency>
@@ -220,7 +220,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.8.0</version>
+            <version>2.9.0</version>
         </dependency>
 
         <dependency>
@@ -321,7 +321,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.1005</version>
+            <version>1.11.1030</version>
         </dependency>
 
         <dependency>
@@ -401,7 +401,7 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>0.18.0</version>
+            <version>0.19.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -696,6 +696,26 @@
             </plugin>
 
             <plugin>
+                <groupId>com.github.os72</groupId>
+                <artifactId>protoc-jar-maven-plugin</artifactId>
+                <version>3.11.4</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <addProtoSources>all</addProtoSources>
+                            <inputDirectories>
+                                <include>src/main/resources/schemas/lotju/proto</include>
+                            </inputDirectories>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
                 <version>2.2.5</version>
@@ -748,6 +768,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.1.0</version>

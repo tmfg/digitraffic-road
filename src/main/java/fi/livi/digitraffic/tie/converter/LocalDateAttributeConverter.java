@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.metadata.converter;
+package fi.livi.digitraffic.tie.converter;
 
 import java.sql.Date;
 import java.time.LocalDate;

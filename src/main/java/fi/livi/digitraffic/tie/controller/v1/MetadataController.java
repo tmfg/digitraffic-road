@@ -36,21 +36,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
-import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.dto.v1.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v1.location.LocationTypesMetadata;
+import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraWebService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionV1MetadataService;
 import fi.livi.digitraffic.tie.service.v1.location.LocationService;
-import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import io.swagger.annotations.Api;
@@ -140,6 +140,7 @@ public class MetadataController {
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 404, message = "Road Station not found") })
     public TmsStationFeature tmsStationsByRoadStationId(
+        @ApiParam("TMS station id")
         @PathVariable("id") final Long id) throws NonPublicRoadStationException {
         return tmsStationService.getTmsStationByRoadStationId(id);
     }

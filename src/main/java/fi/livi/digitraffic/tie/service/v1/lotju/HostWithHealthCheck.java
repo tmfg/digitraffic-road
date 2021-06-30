@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class HostWithHealthCheck {
         }
 
         log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healthOkValue={}",
-                 healthUrl, dataUrl.toString(), healthTtlSeconds, healthOkValue);
+            healthUrl, dataUrl, healthTtlSeconds, healthOkValue);
     }
 
     /**
@@ -75,7 +76,7 @@ public class HostWithHealthCheck {
 
         final String healthString = doRequestHealthString();
 
-        if ( StringUtils.trimToEmpty(healthString).toUpperCase().startsWith(healthOkValue.toUpperCase()) ) {
+        if (StringUtils.trimToEmpty(healthString).toUpperCase().startsWith(healthOkValue.toUpperCase()) ) {
             log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true", healthUrl, dataUrl, healthString,
                 healthOkValue);
             setHealthy(true);
@@ -108,22 +109,24 @@ public class HostWithHealthCheck {
     public void setHealthy(final boolean healthy) {
         final boolean changed = this.healthy != healthy;
         this.healthy = healthy;
+
         final Instant now = Instant.now();
         nextHealthCheckTime = now.plusSeconds(healthTtlSeconds);
+
         if (changed) {
-            log.info("method=setHealthy Change server baseUrl={} dataUrl={} fromHealthy={} toHealthy={} healthChecked={}", baseUrl, dataUrl.toString(), !this.healthy, this.healthy, now);
+            log.info("method=setHealthy Change server baseUrl={} dataUrl={} fromHealthy={} toHealthy={} healthChecked={}", baseUrl, dataUrl, !this.healthy, this.healthy, now);
         }
     }
     public URI getDataUrl() {
         return dataUrl;
     }
 
-    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final String[] baseUrls, final String dataPath, final String healthPath, final int healthTtlSeconds, final String healthOkValue) {
-        if ( baseUrls == null || baseUrls.length == 0 ) {
-            throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", Arrays.toString(baseUrls)));
+    public static List<HostWithHealthCheck> createHostsWithHealthCheck(final LotjuMetadataProperties lmp, final String dataPath) {
+        if ( lmp.getAddresses() == null || lmp.getAddresses().length == 0 ) {
+            throw new IllegalArgumentException(String.format("method=createHostsWithHealthCheck failed because no addresses in baseUrls=%s:", Arrays.toString(lmp.getAddresses())));
         }
-        return Arrays.stream(baseUrls)
-            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, healthPath, healthTtlSeconds, healthOkValue))
+        return Arrays.stream(lmp.getAddresses())
+            .map(baseUrl -> new HostWithHealthCheck(baseUrl, dataPath, lmp.getPath().health, lmp.getHealth().ttlInSeconds, lmp.getHealth().value))
             .collect(Collectors.toList());
     }
 }

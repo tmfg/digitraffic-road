@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -14,7 +16,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.support.GenericApplicationContext;
@@ -22,6 +25,8 @@ import org.springframework.context.support.GenericApplicationContext;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryFeatureCollection;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryProperties;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
@@ -104,6 +109,66 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
         // Instead commit2 version should be returned although it's not effective but it's first effective that is valid
         assertVersion(commit2Changes.get(0),
             v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(1, firstCommiteffectiveDate));
+    }
+
+    @Test
+    public void findAreaLocationRegionsWithEffectiveDateAndId() {
+        // Create two commits with two effective dates and three locations
+        final Instant commit2EffectiveDate = Instant.now();
+        final Instant commit1EffectiveDate = commit2EffectiveDate.minus(1, ChronoUnit.DAYS);
+
+        final String commitId1 = RandomStringUtils.randomAlphanumeric(32);
+        final String commitId2 = RandomStringUtils.randomAlphanumeric(32);
+
+        final List<RegionGeometry> commit1Changes = createCommit(commitId1, commit1EffectiveDate, 1,2,3);
+        final List<RegionGeometry> commit2Changes = createCommit(commitId2, commit2EffectiveDate, 1,2,3);
+
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(commit1Changes);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(commitId1))).thenReturn(commit2Changes);
+
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit2
+        v3RegionGeometryDataService.refreshCache();
+
+        // Id 1 with first effective date
+        final RegionGeometryFeatureCollection commit1Area1 =
+            v3RegionGeometryDataService.findAreaLocationRegions(false, commit1EffectiveDate, 1);
+        assertCollectionSize(1, commit1Area1.getFeatures());
+        final RegionGeometryProperties commit1Area1Props = commit1Area1.getFeatures().get(0).getProperties();
+        assertEquals(1, commit1Area1Props.locationCode);
+        assertEquals(commit1EffectiveDate, commit1Area1Props.effectiveDate);
+
+        // Id 2 with first effective date
+        final RegionGeometryFeatureCollection commit2Area1 =
+            v3RegionGeometryDataService.findAreaLocationRegions(false, commit2EffectiveDate, 1);
+        assertCollectionSize(1, commit2Area1.getFeatures());
+        final RegionGeometryProperties commit2Area1Props = commit2Area1.getFeatures().get(0).getProperties();
+        assertEquals(1, commit1Area1Props.locationCode);
+        assertEquals(commit2EffectiveDate, commit2Area1Props.effectiveDate);
+
+        // All with effective date
+        final RegionGeometryFeatureCollection commit2All =
+            v3RegionGeometryDataService.findAreaLocationRegions(false, commit2EffectiveDate);
+        assertCollectionSize(3, commit2All.getFeatures());
+        commit2All.getFeatures().forEach(f -> assertEquals(commit2EffectiveDate, f.getProperties().effectiveDate));
+    }
+
+    @Test
+    public void findAreaLocationRegionsWithUpdateInfo() {
+        // Create commit and ask update info
+        final Instant effectiveDate = Instant.now();
+        final String commitId = RandomStringUtils.randomAlphanumeric(32);
+        final List<RegionGeometry> commitChanges = createCommit(commitId, effectiveDate, 1,2);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(commitChanges);
+        v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1
+        v3RegionGeometryDataService.refreshCache();
+
+        // Id 1 with first effective date
+        final RegionGeometryFeatureCollection commitArea =
+            v3RegionGeometryDataService.findAreaLocationRegions(true, effectiveDate);
+        assertTrue(commitArea.getFeatures().isEmpty());
+        assertTrue(effectiveDate.minusSeconds(1).isBefore(commitArea.getDataUpdatedTime().toInstant()));
+        assertTrue(effectiveDate.plusSeconds(1).isAfter(commitArea.getDataUpdatedTime().toInstant()));
     }
 
     private void assertVersion(final RegionGeometry expected, final RegionGeometry actual) {

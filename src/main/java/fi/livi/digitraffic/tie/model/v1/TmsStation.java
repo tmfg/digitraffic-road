@@ -11,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -29,15 +28,15 @@ import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.TmsStationType;
 
 @Entity
-@Table(name = "LAM_STATION")
+@Table(name = "TMS_STATION")
 @DynamicUpdate
 public class TmsStation {
     private static final Logger log = LoggerFactory.getLogger(TmsStation.class);
 
     @Id
-    @GenericGenerator(name = "SEQ_LAM_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_LAM_STATION"))
-    @GeneratedValue(generator = "SEQ_LAM_STATION")
+    @GenericGenerator(name = "SEQ_TMS_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+                      parameters = @Parameter(name = "sequence_name", value = "SEQ_TMS_STATION"))
+    @GeneratedValue(generator = "SEQ_TMS_STATION")
     private Long id;
 
     private long naturalId;
@@ -48,16 +47,6 @@ public class TmsStation {
     private String name;
 
     private LocalDate obsoleteDate;
-
-    @Column(name="summer_free_flow_speed_1")
-    private double summerFreeFlowSpeed1;
-    @Column(name="summer_free_flow_speed_2")
-    private double summerFreeFlowSpeed2;
-
-    @Column(name="winter_free_flow_speed_1")
-    private double winterFreeFlowSpeed1;
-    @Column(name="winter_free_flow_speed_2")
-    private double winterFreeFlowSpeed2;
 
     @Column(name="DIRECTION_1_MUNICIPALITY")
     private String direction1Municipality;
@@ -72,16 +61,11 @@ public class TmsStation {
     private Integer direction2MunicipalityCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "LAM_STATION_TYPE")
+    @Column(name = "TMS_STATION_TYPE")
     private TmsStationType tmsStationType;
 
     @Enumerated(EnumType.STRING)
     private CalculatorDeviceType calculatorDeviceType;
-
-    @ManyToOne
-    @JoinColumn(name="road_district_id")
-    @Fetch(FetchMode.JOIN)
-    private RoadDistrict roadDistrict;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name="road_station_id", nullable = false)
@@ -128,30 +112,6 @@ public class TmsStation {
         this.obsoleteDate = obsoleteDate;
     }
 
-    public double getSummerFreeFlowSpeed1() {
-        return summerFreeFlowSpeed1;
-    }
-
-    public void setSummerFreeFlowSpeed1(final double summerFreeFlowSpeed1) {
-        this.summerFreeFlowSpeed1 = summerFreeFlowSpeed1;
-    }
-
-    public double getSummerFreeFlowSpeed2() {
-        return summerFreeFlowSpeed2;
-    }
-
-    public void setSummerFreeFlowSpeed2(final double summerFreeFlowSpeed2) {
-        this.summerFreeFlowSpeed2 = summerFreeFlowSpeed2;
-    }
-
-    public double getWinterFreeFlowSpeed1() {
-        return winterFreeFlowSpeed1;
-    }
-
-    public void setWinterFreeFlowSpeed1(final double winterFreeFlowSpeed1) {
-        this.winterFreeFlowSpeed1 = winterFreeFlowSpeed1;
-    }
-
     public RoadStation getRoadStation() {
         return roadStation;
     }
@@ -173,22 +133,6 @@ public class TmsStation {
             roadStation.obsolete();
             setObsoleteDate(roadStation.getObsoleteDate());
         }
-    }
-
-    public double getWinterFreeFlowSpeed2() {
-        return winterFreeFlowSpeed2;
-    }
-
-    public void setWinterFreeFlowSpeed2(final double winterFreeFlowSpeed2) {
-        this.winterFreeFlowSpeed2 = winterFreeFlowSpeed2;
-    }
-
-    public RoadDistrict getRoadDistrict() {
-        return roadDistrict;
-    }
-
-    public void setRoadDistrict(final RoadDistrict roadDistrict) {
-        this.roadDistrict = roadDistrict;
     }
 
     public String getDirection1Municipality() {

@@ -31,7 +31,11 @@ public class TrafficMessageTestHelper extends AbstractTest {
 
     // Version of incoming ims message schema
     public enum ImsXmlVersion {
-        V1_2_1
+        V1_2_1;
+
+        public static ImsXmlVersion getLatestVersion() {
+            return ImsXmlVersion.values()[ImsXmlVersion.values().length-1];
+        }
     }
 
     public enum ImsJsonVersion {
@@ -40,7 +44,8 @@ public class TrafficMessageTestHelper extends AbstractTest {
         V0_2_8(2.08, 208),
         V0_2_9(2.09, 209),
         V0_2_10(2.10, 210),
-        V0_2_12(2.12, 212);
+        V0_2_12(2.12, 212),
+        V0_2_13(2.13, 213);
 
         public double version;
         public int intVersion;

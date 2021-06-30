@@ -4,6 +4,7 @@ import java.net.URI;
 
 import javax.xml.bind.JAXBElement;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -23,23 +24,19 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
      * @param dataPath ie. /data/service
      * @param healthTtlSeconds How long is health status valid
      */
-    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String dataPath, final String healthPath,
-                                       final int healthTtlSeconds, final String healthOkValue) {
+    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final LotjuMetadataProperties lotjuMetadataProperties, final String dataPath) {
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
-        setDestinationProvider(new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(baseUrls, dataPath, healthPath, healthTtlSeconds, healthOkValue)));
+        setDestinationProvider(new MultiDestinationProvider(
+            HostWithHealthCheck.createHostsWithHealthCheck(lotjuMetadataProperties, dataPath)));
 
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);
 
         final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-        sender.setConnectionTimeout(60000);
-        sender.setReadTimeout(60000);
+        sender.setConnectionTimeout(lotjuMetadataProperties.getSender().connectionTimeout);
+        sender.setReadTimeout(lotjuMetadataProperties.getSender().readTimeout);
         setMessageSender(sender);
 
-    }
-
-    public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final String[] baseUrls, final String dataPath, final int healthTtlSeconds) {
-        this(marshaller, baseUrls, dataPath, null, healthTtlSeconds, null);
     }
 
     protected Object marshalSendAndReceive(final JAXBElement<?> requestPayload) {

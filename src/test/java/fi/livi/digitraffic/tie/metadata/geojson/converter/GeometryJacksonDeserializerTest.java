@@ -19,6 +19,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiPolygon;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /**
  * Samples from https://en.wikipedia.org/wiki/GeoJSON
  */
@@ -113,48 +115,56 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutLo
     @Test
     public void point() throws JsonProcessingException {
         final Point geom = geoJsonGeometryReader.readValue(POINT);
+        assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
     public void lineString() throws JsonProcessingException {
         final LineString geom = geoJsonGeometryReader.readValue(LINE_STRING);
+        assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
     public void multiLineString() throws JsonProcessingException {
         final MultiLineString geom = geoJsonGeometryReader.readValue(MULTI_LINE_STRING);
+        assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
     public void polygon() throws JsonProcessingException {
         final Polygon geom = geoJsonGeometryReader.readValue(POLYGON);
+        assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
     public void polygonWithInternalPolygon() throws JsonProcessingException {
         final Polygon geom = geoJsonGeometryReader.readValue(POLYGON_WITH_INTERNAL_POLYGON);
+        assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
     public void multiPoint() throws JsonProcessingException {
         final MultiPoint geom = geoJsonGeometryReader.readValue(MULTI_POINT);
+        assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
     public void multiPolygon() throws JsonProcessingException {
         final MultiPolygon geom = geoJsonGeometryReader.readValue(MULTI_POLYGON);
+        assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
     public void multiPolygonWithInnerPolygon() throws JsonProcessingException {
         final MultiPolygon geom = geoJsonGeometryReader.readValue(MULTI_POLYGON_WITH_INNER_POLYGON);
+        assertNotNull(geom);
         log.info(geom.toString());
     }
 }

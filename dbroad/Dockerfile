@@ -1,5 +1,5 @@
 # this is used just for waiting postgresql to initialize
-FROM postgres:10.12
+FROM postgres:12.4
 
 RUN \
 apt-get update && \

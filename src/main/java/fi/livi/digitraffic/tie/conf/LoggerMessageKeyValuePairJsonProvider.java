@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -33,10 +33,8 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
     // Between can be numbers, letters, one at the time of "_", "-" or "." surrounded by numbers or letters
     private final static Pattern keyPattern = Pattern.compile("^[a-zA-Z]+([_\\.-]?[a-zA-Z0-9])*$");
 
-
     @Override
     public void writeTo(final JsonGenerator generator, final ILoggingEvent event) {
-
         final String formattedMessage = event.getFormattedMessage();
 
         if (StringUtils.isBlank(formattedMessage)) {
@@ -73,12 +71,12 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
         try {
             // Iso date time value
             return ZonedDateTime.parse(value).toInstant().toString();
-        } catch (DateTimeParseException e) {
+        } catch (final DateTimeParseException e) {
             // empty
         }
         try {
-            return DecimalFormat.getInstance(Locale.ROOT).parse(value);
-        } catch (ParseException e) {
+            return NumberFormat.getInstance(Locale.ROOT).parse(value);
+        } catch (final ParseException e) {
             return value;
         }
     }
@@ -99,7 +97,7 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
     }
 
     private static String safeValue(final String value) {
-        if(value.toUpperCase().equals("NULL")) return null;
+        if("NULL".equalsIgnoreCase(value)) return null;
 
         return value;
     }

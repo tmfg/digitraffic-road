@@ -115,7 +115,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
 
     @Test
     public void historyVersions() {
-
         // Create 5 history item for 2 presets
         final List<String> presetIds = generateHistoryForPublicPresets(2, 5);
 
@@ -152,7 +151,8 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
 
     @Test
     public void maxListOfIdParameters() {
-        cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE), null);
+        assertDoesNotThrow(() ->
+            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE), null));
     }
 
     @Test
@@ -465,7 +465,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
 
     @Test
     public void findcameraOrPresetChanges() {
-
         // Generate preset history
         final int historySize = RandomUtils.nextInt(21, 28);
         final List<String> presetIds = generateHistoryForPublicPresets(2, historySize);
@@ -618,7 +617,9 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
         // handle possible gap between server and db times
         final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusSeconds(10);
         // History for 39 hours backwards
-        final String cameraId = generateHistoryForCamera(historySize, lastModified);
+        assertDoesNotThrow(() -> {
+            final String cameraId = generateHistoryForCamera(historySize, lastModified);
+        });
     }
 
     /**

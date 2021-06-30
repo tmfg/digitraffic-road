@@ -120,7 +120,7 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public CameraPreset findCameraPresetByLotjuId(final long presetLotjuId) {
-        return cameraPresetRepository.findByLotjuId(presetLotjuId);
+        return cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(presetLotjuId);
     }
 
     @Transactional

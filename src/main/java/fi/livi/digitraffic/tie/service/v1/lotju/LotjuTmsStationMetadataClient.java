@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +42,13 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
     @Autowired
     public LotjuTmsStationMetadataClient(@Qualifier("lamMetadataJaxb2Marshaller")
                                          final Jaxb2Marshaller lamMetadataJaxb2Marshaller,
-                                         @Value("${metadata.server.addresses}") final String[] serverAddresses,
-                                         @Value("${metadata.server.path.health:#{null}}") final String healthPath,
-                                         @Value("${metadata.server.path.tms}") final String dataPath,
-                                         @Value("${metadata.server.health.ttlInSeconds:#{30}}") final int healthTTLSeconds,
-                                         @Value("${metadata.server.health.value}") final String healthOkValue) {
-        super(lamMetadataJaxb2Marshaller, serverAddresses, dataPath, healthPath, healthTTLSeconds, healthOkValue);
+                                         final LotjuMetadataProperties lotjuMetadataProperties) {
+        super(lamMetadataJaxb2Marshaller, lotjuMetadataProperties, lotjuMetadataProperties.getPath().tms);
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
     List<LamAsemaVO> getLamAsemas() {
-
         final HaeKaikkiLAMAsemat request = new HaeKaikkiLAMAsemat();
 
         log.info("Fetching LamAsemas");

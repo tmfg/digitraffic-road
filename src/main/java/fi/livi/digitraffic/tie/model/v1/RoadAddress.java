@@ -25,10 +25,9 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonPropertyOrder({ "roadNumber", "roadSection", "distanceFromRoadSectionStart", "carriagewayCode", "sideCode" })
 @Entity
 @DynamicUpdate
-public class RoadAddress implements Cloneable {
+public class RoadAddress {
 
     public enum Side {
-
         UNKNOWN(0),
         RIGHT(1), // oikea ( mittaussuunnan oikealla puolella)
         LEFT(2), // vasen ( mittaussuunnan vasemmalla puolella)
@@ -58,7 +57,6 @@ public class RoadAddress implements Cloneable {
     }
 
     public enum Carriageway {
-
         ONE_CARRIAGEWAY(0), // yksiajoratainen osuus
         DUAL_CARRIAGEWAY_FIRST_MEASURING_DIRECTION(1), // kaksiajorataisen osuuden ykkösajorata (mittaussuunta)
         DUAL_CARRIAGEWAY_SECOND_UPSTREAM(2); // kaksiajorataisen osuuden kakkosajorata (vastasuunta)
@@ -256,9 +254,5 @@ public class RoadAddress implements Cloneable {
                 .append(contractArea)
                 .append(contractAreaCode)
                 .toHashCode();
-    }
-
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 }

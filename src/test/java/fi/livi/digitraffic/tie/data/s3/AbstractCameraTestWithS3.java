@@ -1,27 +1,18 @@
 package fi.livi.digitraffic.tie.data.s3;
 
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-
-import java.io.IOException;
-
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
+import java.io.IOException;
 
 @TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
 public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 {
 
     @Value("${metadata.server.path.image}")
     protected String LOTJU_IMAGE_PATH;
-
-    // NOTE! Rules uses fixed port. see DPO-489
-//    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().port(LOTJU_SERVICE_RANDOM_PORT));
 
     protected S3Object readWeathercamS3Object(final String key) {
         return readWeathercamS3ObjectVersion(key, null);

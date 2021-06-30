@@ -11,9 +11,9 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.stream.IntStream;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Import;
@@ -21,7 +21,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
@@ -29,12 +29,9 @@ import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
-@Import({V3RegionGeometryDataService.class})
-public class V3Datex2DataInternalTest extends AbstractRestWebTest {
+@Import({V3RegionGeometryDataService.class, TrafficMessageTestHelper.class})
+public class V3Datex2DataInternalTest extends AbstractServiceTest {
     private static final Logger log = getLogger(V3Datex2DataInternalTest.class);
-
-    @Autowired
-    private V3Datex2DataService v3Datex2DataService;
 
     @Autowired
     private TrafficMessageTestHelper trafficMessageTestHelper;
@@ -43,7 +40,7 @@ public class V3Datex2DataInternalTest extends AbstractRestWebTest {
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller imsJaxb2Marshaller;
 
-//    @Autowired
+    @Autowired
     private V2Datex2UpdateService v2Datex2UpdateService;
 
     @Disabled("Just for internal testing")

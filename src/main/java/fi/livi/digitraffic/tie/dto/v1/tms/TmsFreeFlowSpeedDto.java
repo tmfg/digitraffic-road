@@ -5,6 +5,7 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModel;
@@ -40,6 +41,16 @@ public class TmsFreeFlowSpeedDto {
 
     public double getFreeFlowSpeed2() {
         return freeFlowSpeed2;
+    }
+
+    @JsonIgnore
+    public Double getFreeFlowSpeed1OrNull() {
+        return freeFlowSpeed1 >= 0 ? freeFlowSpeed1 : null;
+    }
+
+    @JsonIgnore
+    public Double getFreeFlowSpeed2OrNull() {
+        return freeFlowSpeed2 >= 0 ? freeFlowSpeed2 : null;
     }
 
     public void setFreeFlowSpeed2(final double freeFlowSpeed2) {

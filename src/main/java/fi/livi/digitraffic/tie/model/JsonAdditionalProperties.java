@@ -35,7 +35,6 @@ public abstract class JsonAdditionalProperties {
         { fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class,
           newHashSet("bbox") },
 
-
     }).collect(Collectors.toMap(data -> (Class<?>)data[0], data -> (Set<String>)data[1]));
 
     /**

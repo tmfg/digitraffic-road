@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.model.v1.Road;
 import fi.livi.digitraffic.tie.model.v1.RoadSection;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(description = "Forecast Section Properties", value = "ForecastSectionPropertiesV1")
 @JsonPropertyOrder({ "naturalId", "description", "roadSectionNumber", "roadNumber", "roadSectionVersionNumber", "startDistance",
                      "endDistance", "length", "road", "startRoadSection", "endRoadSection" })
 public class ForecastSectionProperties {

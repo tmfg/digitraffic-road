@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.v1.tms;
 
 import java.util.List;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +40,13 @@ public class TmsStationSensorConstantUpdater {
      * Updates all available sensorConstants of tms road stations
      */
     public boolean updateTmsStationsSensorConstants() {
-        log.info("Update TMS Stations SensorConstants start");
+        final StopWatch start = StopWatch.createStarted();
 
         // Get current TmsStations
         final List<Long> tmsLotjuIds =
             tmsStationService.findAllTmsStationsLotjuIds();
 
-        log.info("Fetching LamAnturiVakios for tmsCount={} LamAsemas", tmsLotjuIds.size());
-
-        List<LamAnturiVakioVO> allLamAnturiVakios = lotjuTmsStationMetadataClientWrapper.getAllLamAnturiVakios(tmsLotjuIds);
+        final List<LamAnturiVakioVO> allLamAnturiVakios = lotjuTmsStationMetadataClientWrapper.getAllLamAnturiVakios(tmsLotjuIds);
 
         final boolean updated = tmsStationSensorConstantService.updateSensorConstants(allLamAnturiVakios);
 
@@ -56,7 +55,7 @@ public class TmsStationSensorConstantUpdater {
         }
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA_CHECK);
 
-        log.info("Update TMS Stations SensorConstants end");
+        log.info("method=updateTmsStationsSensorConstants tms count={} tookMs={}", tmsLotjuIds.size(), start.getTime());
         return updated;
     }
 
@@ -64,24 +63,19 @@ public class TmsStationSensorConstantUpdater {
      * Updates all available sensorConstants of tms road stations
      */
     public boolean updateTmsStationsSensorConstantsValues() {
-        log.info("Update TMS Stations SensorConstantValues start");
+        final StopWatch start = StopWatch.createStarted();
 
         final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos = lotjuTmsStationMetadataClientWrapper.getAllLamAnturiVakioArvos();
 
         boolean updated = tmsStationSensorConstantService.updateSensorConstantValues(allLamAnturiVakioArvos);
 
-        int countFreeFlowSpeeds = tmsStationSensorConstantService.updateFreeFlowSpeedsOfTmsStations();
-        log.info("Updated FreeFlowSpeeds for {} TmsStations", countFreeFlowSpeeds);
-        if (countFreeFlowSpeeds > 0) {
-            dataStatusService.updateDataUpdated(DataType.TMS_FREE_FLOW_SPEEDS_DATA);
-        }
-
         if (updated) {
+            dataStatusService.updateDataUpdated(DataType.TMS_FREE_FLOW_SPEEDS_DATA);
             dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
         }
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA_CHECK);
 
-        log.info("Update TMS Stations SensorConstantValues end");
+        log.info("method=updateTmsStationsSensorConstantsValues tookMs={}", start.getTime());
         return updated;
     }
 }

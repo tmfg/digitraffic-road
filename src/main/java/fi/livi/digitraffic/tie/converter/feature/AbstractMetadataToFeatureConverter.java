@@ -1,13 +1,12 @@
 package fi.livi.digitraffic.tie.converter.feature;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AbstractMetadataToFeatureConverter {
     private static final Logger log = LoggerFactory.getLogger(AbstractMetadataToFeatureConverter.class);
@@ -34,11 +33,7 @@ public class AbstractMetadataToFeatureConverter {
         properties.addName("en", roadStation.getNameEn());
 
         if (roadStation.getRoadAddress() != null) {
-            try {
-                properties.setRoadAddress((RoadAddress)roadStation.getRoadAddress().clone());
-            } catch (CloneNotSupportedException e) {
-                log.error("Failed to clone RoadAddress", e);
-            }
+            properties.setRoadAddress(copyToProperties(roadStation.getRoadAddress()));
         }
 
         properties.setLiviId(roadStation.getLiviId());
@@ -51,6 +46,22 @@ public class AbstractMetadataToFeatureConverter {
         properties.setCoordinatesETRS89(getETRS89CoordinatesPoint(roadStation));
         properties.setPurpose(roadStation.getPurpose());
     }
+
+    private static RoadAddress copyToProperties(final RoadAddress source) {
+        final RoadAddress copy = new RoadAddress();
+
+        // does not copy id or sidecode, they are not used in json
+        copy.setCarriagewayCode(source.getCarriagewayCode());
+        copy.setContractArea(source.getContractArea());
+        copy.setContractAreaCode(source.getContractAreaCode());
+        copy.setDistanceFromRoadSectionStart(source.getDistanceFromRoadSectionStart());
+        copy.setRoadMaintenanceClass(source.getRoadMaintenanceClass());
+        copy.setRoadNumber(source.getRoadNumber());
+        copy.setRoadSection(source.getRoadSection());
+
+        return copy;
+    }
+
 
     public static Point getETRS89CoordinatesPoint(RoadStation rs) {
         if (rs.getLatitude() != null && rs.getLongitude() != null) {

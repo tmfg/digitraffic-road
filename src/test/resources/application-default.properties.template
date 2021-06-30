@@ -17,7 +17,7 @@ mqtt.server.connectionTimeout=
 mqtt.server.keepAlive=
 
 # Lotju SOAP APIs. If health is empty then health check is not performed.
-metadata.server.addresses=http://localhost:#{T(fi.livi.digitraffic.tie.AbstractTest).LOTJU_SERVICE_RANDOM_PORT}
+metadata.server.addresses=http://localhost:8899
 metadata.server.path.health=/healthcheck
 metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5
 metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
@@ -108,10 +108,11 @@ mqtt.enabled=false
 mqtt.tms.enabled=false
 
 # Developer life improvements
-logging.level.root=INFO
+logging.level.root=WARN
 #logging.level.org.hibernate.SQL=DEBUG
 #logging.level.org.hibernate.type=TRACE
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+logging.level.com.amazonaws.auth.profile.internal.BasicProfileConfigLoader=ERROR
 
 # application.properties
 maintenance.tracking.job.enabled = false
@@ -119,9 +120,3 @@ maintenance.realization.job.enabled = false
 
 # This allows to disable @Scheduled jobs for tests.
 dt.scheduled.annotation.enabled = false
-
-# Low logging level for tests
-logging.level.root=WARN
-logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler=WARN
-logging.level.fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService=WARN
-logging.level.fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryServiceTest=INFO
