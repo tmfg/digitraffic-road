@@ -34,8 +34,9 @@ public class ClusteredLocker {
         while (!tryLock(lockName, expirationSeconds, overrideInstanceId)) {
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 log.error("method=lock Error sleep interrupted", e);
+                Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
         }
@@ -100,7 +101,7 @@ public class ClusteredLocker {
     /**
      * Generates unique id
      */
-    public synchronized static long generateInstanceId() {
+    public static long generateInstanceId() {
         return UUID.randomUUID().getMostSignificantBits();
     }
 }

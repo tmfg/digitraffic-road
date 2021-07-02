@@ -27,7 +27,7 @@ public class ScheduledJobLogger {
      * logging execution start (debug) and end or error.
      */
     @Around("@annotation(org.springframework.scheduling.annotation.Scheduled) && !@annotation(fi.livi.digitraffic.tie.aop.NoJobLogging)")
-    public Object monitorScheduledJob(ProceedingJoinPoint pjp) throws Throwable {
+    public Object monitorScheduledJob(final ProceedingJoinPoint pjp) throws Throwable {
         final String method = pjp.getSignature().getName();
         // Strip away Configuration suffix and Spring proxy classes
         final String jobClass = StringUtils.substringBefore(StringUtils.substringBefore(pjp.getTarget().getClass().getSimpleName(),"Configuration"), "$");
@@ -40,7 +40,7 @@ public class ScheduledJobLogger {
         Exception error = null;
         try {
             return pjp.proceed();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             error = e;
             throw e;
         } finally {
