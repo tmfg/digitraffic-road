@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.SignTextRow;
 import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceDataRow;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,11 +73,11 @@ public class V2VariableSignDataService {
             device.getRoadAddress(),
             VariableSignProperties.Direction.byValue(device.getDirection()),
             VariableSignProperties.Carriageway.byValue(device.getCarriageway()),
-            data == null ? null : data.getDisplayValue(),
-            data == null ? null : data.getAdditionalInformation(),
-            data == null ? null : data.getEffectDate(),
-            data == null ? null : data.getCause(),
-            data == null ? null : VariableSignProperties.Reliability.byValue(data.getReliability()), textRows);
+            data.getDisplayValue(),
+            data.getAdditionalInformation(),
+            data.getEffectDate(),
+            data.getCause(),
+            VariableSignProperties.Reliability.byValue(data.getReliability()), textRows);
         final Point point = CoordinateConverter.convertFromETRS89ToWGS84(new Point(device.getEtrsTm35FinX(), device.getEtrsTm35FinY()));
 
         return new VariableSignFeature(point, properties);
