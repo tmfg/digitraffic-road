@@ -62,7 +62,7 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLoca
     public void scheduledJob2() {
         count2++;
         // Ensure errors of pool size
-        if (count1 > job2StartErrorsAfter && count1 <= job2StartErrorsAfter + poolSize) {
+        if (count2 > job2StartErrorsAfter && count2 <= job2StartErrorsAfter + poolSize) {
             scheduledJob2ErrorCount++;
             assertTrue("scheduledJob2 expected error at run " + count2, false);
         }
