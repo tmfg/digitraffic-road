@@ -9,11 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
 
 @TestPropertySource(properties = { "dt.scheduled.annotation.enabled=true" })
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS) // Kill all scheduled jobs after the test
 public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLocalStack {
 
     private static final Logger log = getLogger(ScheduledAnnotationThreadTest.class);
@@ -31,7 +33,9 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLoca
     @Test
     public void checkScheduledJobsRunEvenAfterError() {
         final StopWatch start = StopWatch.createStarted();
-        while (scheduledJob2ErrorCount < 5 && scheduledJob2ErrorCount < 5 && start.getTime() < 500) {
+        while ( ( (count1 <= (job1StartErrorsAfter + poolSize + 1)) ||
+                  (count2 <= (job2StartErrorsAfter + poolSize + 1)) )  &&
+                start.getTime() < 500) {
             try {
                 Thread.sleep(10);
             } catch (final InterruptedException e) {
