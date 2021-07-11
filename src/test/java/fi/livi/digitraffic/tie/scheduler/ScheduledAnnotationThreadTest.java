@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.scheduler;
 import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -20,46 +21,51 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLoca
     @Value("${dt.scheduled.pool.size}")
     int poolSize;
 
-    private final int job1StartErrorsAt = 10;
-    private final int job2StartErrorsAt = 20;
+    private final int job1StartErrorsAfter = 10;
+    private final int job2StartErrorsAfter = 20;
     private int count1 = 0;
     private int count2 = 0;
-    private boolean scheduledJob1Error = false;
-    private boolean scheduledJob2Error = false;
+    private int scheduledJob1ErrorCount = 0;
+    private int scheduledJob2ErrorCount = 0;
 
     @Test
     public void checkScheduledJobsRunEvenAfterError() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        final StopWatch start = StopWatch.createStarted();
+        while (scheduledJob2ErrorCount < 5 && scheduledJob2ErrorCount < 5 && start.getTime() < 500) {
+            try {
+                Thread.sleep(10);
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
         // Assert that scheduledServices has been running even when there has been errors
-        Assert.assertTrue(scheduledJob1Error);
-        Assert.assertTrue(scheduledJob2Error);
-        Assert.assertTrue(count1 > job1StartErrorsAt + poolSize);
-        Assert.assertTrue(count2 > job2StartErrorsAt + poolSize);
+        Assert.assertEquals(5, scheduledJob1ErrorCount);
+        Assert.assertEquals(5, scheduledJob2ErrorCount);
+        Assert.assertTrue(count1 > job1StartErrorsAfter + poolSize);
+        Assert.assertTrue(count2 > job2StartErrorsAfter + poolSize);
+        log.info("Test took {} ms", start.getTime());
     }
 
     @Scheduled(fixedRate = 10)
     public void scheduledJob1() {
         count1++;
         // Ensure errors of pool size
-        if (count1 >= job1StartErrorsAt && count1 <= job1StartErrorsAt +poolSize) {
-            scheduledJob1Error = true;
+        if (count1 > job1StartErrorsAfter && count1 <= job1StartErrorsAfter + poolSize) {
+            scheduledJob1ErrorCount++;
             throw new RuntimeException("scheduledJob1 expected error at run " + count1);
         }
-        log.warn("scheduledJob1: {}", count1);
+        log.info("scheduledJob1: {}", count1);
     }
 
     @Scheduled(fixedRate = 10)
     public void scheduledJob2() {
         count2++;
         // Ensure errors of pool size
-        if (count1 >= job2StartErrorsAt && count1 <= job2StartErrorsAt + poolSize) {
-            scheduledJob2Error = true;
+        if (count1 > job2StartErrorsAfter && count1 <= job2StartErrorsAfter + poolSize) {
+            scheduledJob2ErrorCount++;
             assertTrue("scheduledJob2 expected error at run " + count2, false);
         }
-        log.warn("scheduledJob2: {}", count2);
+        log.info("scheduledJob2: {}", count2);
     }
 }
