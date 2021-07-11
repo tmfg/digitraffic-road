@@ -6,6 +6,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.test.context.TestPropertySource;
 
@@ -16,6 +17,11 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLoca
 
     private static final Logger log = getLogger(ScheduledAnnotationThreadTest.class);
 
+    @Value("${dt.scheduled.pool.size}")
+    int poolSize;
+
+    private final int job1StartErrorsAt = 10;
+    private final int job2StartErrorsAt = 20;
     private int count1 = 0;
     private int count2 = 0;
     private boolean scheduledJob1Error = false;
@@ -31,15 +37,15 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLoca
         // Assert that scheduledServices has been running even when there has been errors
         Assert.assertTrue(scheduledJob1Error);
         Assert.assertTrue(scheduledJob2Error);
-        Assert.assertTrue(count1 > 10);
-        Assert.assertTrue(count2 > 20);
+        Assert.assertTrue(count1 > job1StartErrorsAt + poolSize);
+        Assert.assertTrue(count2 > job2StartErrorsAt + poolSize);
     }
 
     @Scheduled(fixedRate = 10)
     public void scheduledJob1() {
         count1++;
         // Ensure errors of pool size
-        if (count1 >= 10 && count1 <= 15) {
+        if (count1 >= job1StartErrorsAt && count1 <= job1StartErrorsAt +poolSize) {
             scheduledJob1Error = true;
             throw new RuntimeException("scheduledJob1 expected error at run " + count1);
         }
@@ -50,9 +56,9 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLoca
     public void scheduledJob2() {
         count2++;
         // Ensure errors of pool size
-        if (count1 >= 15 && count1 <= 20) {
+        if (count1 >= job2StartErrorsAt && count1 <= job2StartErrorsAt + poolSize) {
             scheduledJob2Error = true;
-            assertTrue(false);
+            assertTrue("scheduledJob2 expected error at run " + count2, false);
         }
         log.warn("scheduledJob2: {}", count2);
     }
