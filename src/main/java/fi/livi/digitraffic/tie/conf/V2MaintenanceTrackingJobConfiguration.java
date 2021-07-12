@@ -70,13 +70,13 @@ public class V2MaintenanceTrackingJobConfiguration {
         // Make sure job stops now and then even when it cant handle all data: start.getTime() < runRateMs * 10
         } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getTime() < runRateMs * 10);
 
-        final double msPerMsg = (double) start.getTime() / totalCount;
-        if (Double.isFinite(msPerMsg)) {
-            log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}", totalCount,
-                     start.getTime(), msPerMsg);
+        if (totalCount > 0) {
+            final double msPerMsg = (double) start.getTime() / totalCount;
+            log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={} tookMsPerMessage={}",
+                     totalCount, start.getTime(), msPerMsg);
         } else {
-            log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={}", totalCount,
-                     start.getTime());
+            log.info("method=handleUnhandledMaintenanceTrackings handledTotalCount={} trackings tookMs={}",
+                     totalCount, start.getTime());
         }
     }
 }
