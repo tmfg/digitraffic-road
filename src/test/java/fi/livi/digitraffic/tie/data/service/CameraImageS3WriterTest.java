@@ -1,28 +1,33 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
-import org.springframework.test.annotation.DirtiesContext;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
@@ -150,7 +155,9 @@ public class CameraImageS3WriterTest extends AbstractCameraTestWithS3 {
     private long getLastModifiedSeconds(final S3Object s3Object) throws ParseException {
         final String lastModified = s3Object.getObjectMetadata().getUserMetaDataOf(CameraImageS3Writer.LAST_MODIFIED_USER_METADATA_HEADER);
         final Date lastModifiedS3Date = s3Object.getObjectMetadata().getLastModified();
-        final Date time = CameraImageS3Writer.LAST_MODIFIED_FORMAT.parse(lastModified);
+        final SimpleDateFormat sf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        sf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        final Date time = sf.parse(lastModified);
         log.info("User meta : {} S3 meta: {}", time.toInstant(), lastModifiedS3Date.toInstant());
         return time.toInstant().getEpochSecond();
     }

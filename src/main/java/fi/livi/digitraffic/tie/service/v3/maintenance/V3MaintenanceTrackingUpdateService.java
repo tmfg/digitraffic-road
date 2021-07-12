@@ -556,7 +556,7 @@ public class V3MaintenanceTrackingUpdateService {
     }
 
     private static boolean isTransition(Set<MaintenanceTrackingTask> tehtavat) {
-        return tehtavat.isEmpty();
+        return tehtavat == null || tehtavat.isEmpty();
     }
 
     private static boolean isTasksChangedNullSafe(final Set<MaintenanceTrackingTask> newTasks, final MaintenanceTracking previousTracking) {
