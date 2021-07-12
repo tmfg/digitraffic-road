@@ -9,6 +9,7 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createWorkMachines;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneHourInPast;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -43,7 +44,6 @@ import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
@@ -92,18 +92,18 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void assertNoWorkMachineIdInResult() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
         final int observationCount = 10;
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
-        testHelper.saveTrackingData( // end time will be start+9 min
-            createMaintenanceTrackingWithPoints(now, observationCount, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_PAIKKAUS));
-        testHelper.handleUnhandledWorkMachineTrackings();
+        testHelper.saveTrackingDataAsObservations( // end time will be start+9 min
+            createMaintenanceTrackingWithPoints(start, observationCount, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_PAIKKAUS));
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // First tracking
         getTrackingsJson(
-            now.toInstant(), now.plusMinutes(9).toInstant(), new HashSet<>(),
+            start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -114,22 +114,22 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findMaintenanceTrackingsWithinTime() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final List<Tyokone> firstHalfMachines = workMachines.subList(0, machineCount / 2);
         final List<Tyokone> secondHalfMachines = workMachines.subList(machineCount / 2, machineCount);
 
-        testHelper.saveTrackingData( // end time will be start+9 min
-            createMaintenanceTrackingWithPoints(now, 10, 1, firstHalfMachines, ASFALTOINTI, PAALLYSTEIDEN_PAIKKAUS));
+        testHelper.saveTrackingDataAsObservations( // end time will be start+9 min
+            createMaintenanceTrackingWithPoints(start, 10, 1, firstHalfMachines, ASFALTOINTI, PAALLYSTEIDEN_PAIKKAUS));
 
-        testHelper.saveTrackingData( // end time will be start+10+9 min
-            createMaintenanceTrackingWithPoints(now.plusMinutes(10), 10, 1, secondHalfMachines, ASFALTOINTI));
-        testHelper.handleUnhandledWorkMachineTrackings();
+        testHelper.saveTrackingDataAsObservations( // end time will be start+10+9 min
+            createMaintenanceTrackingWithPoints(start.plusMinutes(10), 10, 1, secondHalfMachines, ASFALTOINTI));
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // First tracking
         getTrackingsJson(
-            now.toInstant(), now.plusMinutes(9).toInstant(), new HashSet<>(),
+            start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -137,7 +137,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         // Second tracking
         getTrackingsJson(
-            now.plusMinutes(10).toInstant(), now.plusMinutes(10+9).toInstant(), new HashSet<>(),
+            start.plusMinutes(10).toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -145,7 +145,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         // Both
         getTrackingsJson(
-            now.toInstant(), now.plusMinutes(10+9).toInstant(), new HashSet<>(),
+            start.toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -154,26 +154,27 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findMaintenanceTrackingsWithTasks() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
         IntStream.range(0, machineCount).forEach(i -> {
             final Tyokone machine = workMachines.get(i);
             try {
-                testHelper.saveTrackingData( // end time will be start+9 min
-                    createMaintenanceTrackingWithPoints(
-                        now, 10, 1, Collections.singletonList(machine),
-                        SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i+1]));
+                // end time will be start+9 min
+                final TyokoneenseurannanKirjausRequestSchema havainnot =
+                    createMaintenanceTrackingWithPoints(start, 10, 1, Collections.singletonList(machine),
+                                                        SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]);
+                testHelper.saveTrackingDataAsObservations(havainnot);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
-        testHelper.handleUnhandledWorkMachineTrackings();
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // find with first task should only find the first tracking for machine 1.
         getTrackingsJson(
-            now.toInstant(), now.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
+            start.toInstant(), start.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -181,7 +182,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         // Search with second task should return trackings for machine 1. and 2.
         getTrackingsJson(
-            now.toInstant(), now.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
+            start.toInstant(), start.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -194,31 +195,33 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findLatestMaintenanceTrackings() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
         // Generate trackings for 50 minutes changing tasks every 10 minutes
         IntStream.range(0, 5).forEach(i -> {
             try {
-                testHelper.saveTrackingData( // end time will be start+9 min
+                // end time will be start+9 min
+                final TyokoneenseurannanKirjausRequestSchema seuranta =
                     createMaintenanceTrackingWithPoints(
-                        now.plusMinutes(i * 10L), 10, 1, workMachines,
-                        SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]));
+                        start.plusMinutes(i * 10L), 10, 1, workMachines,
+                        SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]);
+                testHelper.saveTrackingDataAsObservations(seuranta);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
-        testHelper.handleUnhandledWorkMachineTrackings();
+        testHelper.handleUnhandledWorkMachineObservations(1000);
         final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
-        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).max(ChronoZonedDateTime::compareTo).orElseThrow();
 
-        log.info("min {} max {} from: {}", min, max, now.toInstant());
+        log.info("min {} max {} from: {}", min, max, start.toInstant());
 
         log.info("Machine count {}", machineCount);
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
         final ResultActions latestResult = getLatestTrackingsJson(
-            now.toInstant(), new HashSet<>(),
+            start.toInstant(), new HashSet<>(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -232,7 +235,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         });
         // When getting all trackings we should all 5 trackings per machine -> result of machineCount*5
         final ResultActions trackingResult = getTrackingsJson(
-            now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
+            start.toInstant(), start.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -248,7 +251,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findLatestMaintenanceTrackingsWithTask() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
@@ -256,24 +259,24 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         IntStream.range(0, 5).forEach(i -> {
             try {
                 log.info("" + SuoritettavatTehtavat.values()[i].name());
-                testHelper.saveTrackingData( // end time will be start+9 min
+                testHelper.saveTrackingDataAsObservations( // end time will be start+9 min
                     createMaintenanceTrackingWithPoints(
-                        now.plusMinutes(i * 10L), 10, 1, workMachines,
+                        start.plusMinutes(i * 10L), 10, 1, workMachines,
                         SuoritettavatTehtavat.values()[i]));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
-        testHelper.handleUnhandledWorkMachineTrackings();
+        testHelper.handleUnhandledWorkMachineObservations(1000);
         final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
         final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
 
-        log.info("min {} max {} from: {}", min, max, now.toInstant());
+        log.info("min {} max {} from: {}", min, max, start.toInstant());
         log.info("Machine count {}", machineCount);
 
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
         final ResultActions latestResult = getLatestTrackingsJson(
-            now.toInstant(), new HashSet<>(Collections.singleton(MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[4].name()))),
+            start.toInstant(), new HashSet<>(Collections.singleton(MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[4].name()))),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
@@ -282,13 +285,13 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     @Test
     public void findWithBoundingBox() throws Exception {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime now = getStartTimeOneHourInPast();
 
         final List<Tyokone> workMachines = createWorkMachines(1);
         final TyokoneenseurannanKirjausRequestSchema k =
             createMaintenanceTrackingWithPoints(now, 10, 1, workMachines, ASFALTOINTI);
-        testHelper.saveTrackingData(k);
-        testHelper.handleUnhandledWorkMachineTrackings();
+        testHelper.saveTrackingDataAsObservations(k);
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
         final Double maxX = k.getHavainnot().stream().map(h -> h.getHavainto().getSijainti().getKoordinaatit().getX()).max(Double::compareTo).orElseThrow();
         final Double maxY = k.getHavainnot().stream().map(h -> h.getHavainto().getSijainti().getKoordinaatit().getY()).max(Double::compareTo).orElseThrow();

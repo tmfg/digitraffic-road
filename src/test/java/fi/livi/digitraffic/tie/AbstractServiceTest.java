@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie;
 
-import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
-import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
@@ -13,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
+import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverter;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.LockingDao;
@@ -49,7 +48,6 @@ import fi.livi.digitraffic.tie.service.v1.location.MetadataFileFetcher;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
@@ -65,7 +63,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
           ImsJsonConverter.class, V2Datex2UpdateService.class,
           V2Datex2JsonConverter.class,
           V3RegionGeometryUpdateService.class,
-          V2MaintenanceTrackingUpdateService.class, V3MaintenanceTrackingServiceTestHelper.class, V3MaintenanceTrackingUpdateService.class,
+          V3MaintenanceTrackingServiceTestHelper.class, V3MaintenanceTrackingUpdateService.class,
           LocationTypeUpdater.class, LocationMetadataUpdater.class, LocationUpdater.class, LocationSubtypeUpdater.class,
           MetadataFileFetcher.class, ClusteredLocker.class, LockingServiceInternal.class,
 

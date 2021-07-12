@@ -82,12 +82,6 @@ public class MaintenanceTracking {
     private Set<MaintenanceTrackingTask> tasks = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "MAINTENANCE_TRACKING_DATA_TRACKING",
-               joinColumns = @JoinColumn(name = "TRACKING_ID", referencedColumnName = "ID"),
-               inverseJoinColumns = @JoinColumn(name = "DATA_ID", referencedColumnName = "ID"))
-    private Set<MaintenanceTrackingData> maintenanceTrackingDatas = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "MAINTENANCE_TRACKING_OBSERVATION_DATA_TRACKING",
                joinColumns = @JoinColumn(name = "TRACKING_ID", referencedColumnName = "ID"),
                inverseJoinColumns = @JoinColumn(name = "DATA_ID", referencedColumnName = "ID"))
@@ -96,13 +90,6 @@ public class MaintenanceTracking {
 
     public MaintenanceTracking() {
         // For Hibernate
-    }
-
-    public MaintenanceTracking(final MaintenanceTrackingData maintenanceTrackingData, final MaintenanceTrackingWorkMachine workMachine,
-                               final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                               final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
-        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, lineString, tasks, direction);
-        this.maintenanceTrackingDatas.add(maintenanceTrackingData);
     }
 
     public MaintenanceTracking(final V3MaintenanceTrackingObservationData maintenanceTrackingObservationData, final MaintenanceTrackingWorkMachine workMachine,
@@ -177,14 +164,6 @@ public class MaintenanceTracking {
 
     public void setDirection(BigDecimal direction) {
         this.direction = direction;
-    }
-
-    public Set<MaintenanceTrackingData> getMaintenanceTrackingDatas() {
-        return maintenanceTrackingDatas;
-    }
-
-    public void addWorkMachineTrackingData(final MaintenanceTrackingData data) {
-        maintenanceTrackingDatas.add(data);
     }
 
     public Set<MaintenanceTrackingTask> getTasks() {

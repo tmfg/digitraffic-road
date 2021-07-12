@@ -66,7 +66,6 @@ public class V3MaintenanceTrackingUpdateService {
     private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingUpdateService.class);
     private final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
     private final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository;
-    private final ObjectWriter jsonWriter;
     private final ObjectReader jsonReader;
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     private final DataStatusService dataStatusService;
@@ -89,7 +88,6 @@ public class V3MaintenanceTrackingUpdateService {
                                               final double distinctLineStringObservationGapKm) {
         this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
         this.v2MaintenanceTrackingWorkMachineRepository = v2MaintenanceTrackingWorkMachineRepository;
-        this.jsonWriter = objectMapper.writerFor(Havainto.class);
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
         this.jsonReader = objectMapper.readerFor(Havainto.class);
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;

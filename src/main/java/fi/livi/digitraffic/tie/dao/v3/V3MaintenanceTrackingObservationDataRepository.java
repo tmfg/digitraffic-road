@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.dao.v3;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,12 @@ public interface V3MaintenanceTrackingObservationDataRepository extends JpaRepos
                     "    LIMIT :maxToDelete\n" +
                     ")", nativeQuery = true)
     int deleteByObservationTimeIsBefore(final Instant deleteDataBefore, final int maxToDelete);
+
+    @Query(value = "SELECT data.json\n" +
+                   "FROM maintenance_tracking_observation_data_tracking tracking\n" +
+                   "INNER JOIN maintenance_tracking_observation_data data on tracking.data_id = data.id\n" +
+                   "WHERE tracking.tracking_id = :id\n" +
+                   "ORDER BY data.id DESC", nativeQuery = true)
+    List<String> findJsonsByTrackingId(final long id);
+
 }
