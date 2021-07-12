@@ -52,8 +52,7 @@ public class V2MaintenanceTrackingJobConfiguration {
                 try {
                     count = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(MAX_HANDLE_COUNT_PER_CALL);
                     totalCount += count;
-                    final double msPerMsg = (double) startInternal.getTime() / count;
-                    if (Double.isFinite(msPerMsg)) {
+                    if (count > 0) {
                         log.info("method=handleUnhandledMaintenanceTrackings handledCount={} trackings tookMs={} tookMsPerMessage={}",
                                  count, startInternal.getTime(), (double) startInternal.getTime() / count);
                     }
