@@ -69,14 +69,16 @@ public class CameraImageUpdateManager {
         while ( futures.stream().anyMatch(f -> !f.isDone()) ) {
             try {
                 Thread.sleep(100L);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 log.debug("InterruptedException", e);
+
+                Thread.currentThread().interrupt();
             }
         }
         final long updateCount = futures.parallelStream().filter(p -> {
             try {
                     return p.get();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     log.error("method=updateCameraData UpdateJobManager task failed with error" , e);
                     return false;
                 }
@@ -134,9 +136,9 @@ public class CameraImageUpdateManager {
                 presetId = CameraImageUpdateHandler.resolvePresetIdFrom(null, task.kuva);
                 future = updateTaskThreadPool.submit(task);
                 return future.get(timeout, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException e) {
+            } catch (final TimeoutException e) {
                 log.error("ImageUpdateTasks failed to complete for presetId={} before timeoutMs={} ms", presetId, timeout);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error(String.format("ImageUpdateTasks failed to complete for presetId=%s with exception", presetId), e);
             } finally {
                 // This is safe even if task is already finished
@@ -149,11 +151,10 @@ public class CameraImageUpdateManager {
     }
 
     private static class ImageUpdateTask implements Callable<Boolean> {
-
         private final KuvaProtos.Kuva kuva;
         private final CameraImageUpdateHandler cameraImageUpdateHandler;
 
-        private ImageUpdateTask(final KuvaProtos.Kuva kuva, CameraImageUpdateHandler cameraImageUpdateHandler) {
+        private ImageUpdateTask(final KuvaProtos.Kuva kuva, final CameraImageUpdateHandler cameraImageUpdateHandler) {
             this.kuva = kuva;
             this.cameraImageUpdateHandler = cameraImageUpdateHandler;
         }
@@ -162,9 +163,9 @@ public class CameraImageUpdateManager {
         public Boolean call() {
             try {
                 return cameraImageUpdateHandler.handleKuva(kuva);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error(String.format("Error while calling cameraImageUpdateService.handleKuva with %s", ToStringHelper.toString(kuva)), e);
-                throw e;
+                throw new RuntimeException(e);
             }
         }
     }

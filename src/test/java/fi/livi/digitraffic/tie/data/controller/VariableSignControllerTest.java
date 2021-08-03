@@ -38,6 +38,10 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
         entityManager.createNativeQuery(
             "insert into device_data(created_date,device_id,display_value,additional_information,effect_date,cause,reliability) " +
                 "values (current_timestamp,'ID1','80',null,current_date,null,'NORMAALI');").executeUpdate();
+
+        entityManager.createNativeQuery(
+            "insert into device_data_row(device_data_id, screen, row_number, text) " +
+                "values ((select id from device_data), 1, 1, 'TEST ROW');").executeUpdate();
     }
 
     @Test

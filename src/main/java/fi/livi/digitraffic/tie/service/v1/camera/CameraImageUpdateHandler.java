@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -40,12 +41,11 @@ public class CameraImageUpdateHandler {
     private final ResourceLoader resourceLoader;
 
     public static final int RETRY_COUNT = 3;
+    private static final String NOISE_IMG = "img/noise.jpg";
 
-    private final static Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>() {{
-        put(CameraImageReadFailureException.class, true);
-        put(CameraImageWriteFailureException.class, true);
-    }};
-    private final static String NOISE_IMG = "img/noise.jpg";
+    private static final Map<Class<? extends Throwable>, Boolean> retryableExceptions = Map.of(
+        CameraImageReadFailureException.class, true,
+        CameraImageWriteFailureException.class, true);
 
     @Autowired
     CameraImageUpdateHandler(
@@ -124,15 +124,13 @@ public class CameraImageUpdateHandler {
             byte[] image = readKuva(kuva.getKuvaId(), info);
             try {
                 image = ImageManipulationService.removeJpgExifMetadata(image);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // Let's use original
                 log.warn("Failed to remove Exif metadata from image with presetId={}, using original image. Error message: {}", presetId, e.getMessage());
             }
             writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
-        } catch (final CameraImageReadFailureException e) {
-            // read attempts exhausted
-        } catch (final CameraImageWriteFailureException e) {
-            // write attempts exhausted
+        } catch (final CameraImageReadFailureException|CameraImageWriteFailureException e) {
+            // read/write attempts exhausted
         }
         return info;
     }
