@@ -63,18 +63,14 @@ public class RoadApplicationConfiguration {
     @Bean
     @Primary
     public DataSource dataSource(final @Value("${road.datasource.url}") String url,
-                                 final @Value("${road.datasource.username:}") String username, // default empty if property not found
-                                 final @Value("${road.datasource.password:}") String password, // default empty if property not found
+                                 final @Value("${road.datasource.username}") String username,
+                                 final @Value("${road.datasource.password}") String password,
                                  final @Value("${road.datasource.driver:}") String driver, // default empty if property not found
                                  final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
-        if (StringUtils.isNotBlank(username)) {
-            config.setUsername(username);
-        }
-        if (StringUtils.isNotBlank(password)) {
-            config.setPassword(password);
-        }
+        config.setUsername(username);
+        config.setPassword(password);
         if (StringUtils.isNotBlank(driver)) {
             config.setDriverClassName(driver);
         }
