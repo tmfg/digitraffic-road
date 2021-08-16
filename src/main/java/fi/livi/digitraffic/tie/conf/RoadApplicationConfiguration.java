@@ -69,10 +69,10 @@ public class RoadApplicationConfiguration {
                                  final @Value("${road.datasource.hikari.maximum-pool-size:20}") Integer maximumPoolSize) {
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
-        if (StringUtils.isNotBlank(driver)) {
+        if (StringUtils.isNotBlank(username)) {
             config.setUsername(username);
         }
-        if (StringUtils.isNotBlank(driver)) {
+        if (StringUtils.isNotBlank(password)) {
             config.setPassword(password);
         }
         if (StringUtils.isNotBlank(driver)) {
