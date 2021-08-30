@@ -34,6 +34,9 @@ public class Feature extends JsonAdditionalProperties {
     @ApiModelProperty(value = "Further details of the feature, e.g. description of a detour", example = "The road is narrow and winding")
     public String description;
 
+    @ApiModelProperty(value = "Time and expected duration of the feature.")
+    public TimeAndDuration timeAndDuration;
+
     public Feature(){
     }
 

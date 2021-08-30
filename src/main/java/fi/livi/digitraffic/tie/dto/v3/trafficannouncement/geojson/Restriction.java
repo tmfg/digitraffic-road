@@ -41,6 +41,7 @@ public class Restriction extends JsonAdditionalProperties {
     public enum Type {
 
         SPEED_LIMIT("speed limit"),
+        SPEED_LIMIT_LENGTH("speed limit length"),
         TRAFFIC_LIGHTS("traffic lights"),
         MULTIPLE_LANES_CLOSED("multiple lanes closed"),
         SINGLE_LANE_CLOSED("single lane closed"),
@@ -50,17 +51,30 @@ public class Restriction extends JsonAdditionalProperties {
         CONTRA_FLOW_TRAFFIC("contra flow traffic"),
         INTERMITTENT_SHORT_TERM_STOPS("intermittent short term stops"),
         INTERMITTENT_SHORT_TERM_CLOSURE("intermittent short term closure"),
+        INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE("intermittent stops and closure effective"),
         NARROW_LANES("narrow lanes"),
         DETOUR("detour"),
         DETOUR_SIGNS("detour signs"),
+        DETOUR_CURVES_STEEP("detour curves steep"),
+        DETOUR_CURVES_GENTLE("detour curves gentle"),
         DETOUR_USING_ROADWAYS("detour using roadways"),
+        DETOUR_SURFACE_PAVED("detour surface paved"),
+        DETOUR_SURFACE_MILLED("detour surface milled"),
+        DETOUR_SURFACE_GRAVEL("detour surface gravel"),
+        DETOUR_LENGTH("detour length"),
+        DETOUR_GROSS_WEIGHT_LIMIT("detour gross weight limit"),
         SLOW_MOVING_MAINTENANCE_VEHICLE("slow moving maintenance vehicle"),
         ESTIMATED_DELAY("estimated delay"),
+        ESTIMATED_DELAY_DURING_RUSH_HOUR("estimated delay during rush hour"),
         NARROW_OR_CLOSED_PEDESTRIAN_AND_BICYLE_PATH("narrow or closed pedestrian and bicyle path"),
         VEHICLE_HEIGHT_LIMIT("vehicle height limit"),
         VEHICLE_WIDTH_LIMIT("vehicle width limit"),
         VEHICLE_LENGTH_LIMIT("vehicle length limit"),
-        VEHICLE_GROSS_WEIGHT_LIMIT("vehicle gross weight limit");
+        VEHICLE_GROSS_WEIGHT_LIMIT("vehicle gross weight limit"),
+        ROAD_SURFACE_PAVED("road surface paved"),
+        ROAD_SURFACE_MILLED("road surface milled"),
+        ROAD_SURFACE_GRAVEL("road surface gravel"),
+        OPEN_FIRE_HEATER_IN_USE("open fire heater in use");
 
         private final String value;
         private final static Map<String, Type> CONSTANTS = new HashMap<>();

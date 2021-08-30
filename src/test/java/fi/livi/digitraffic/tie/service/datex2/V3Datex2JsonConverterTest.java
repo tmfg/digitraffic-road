@@ -252,6 +252,14 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
                 assertEquals(Restriction.Type.DETOUR_USING_ROADWAYS, rwp.restrictions.get(1).type);
                 assertNotNull(rwp.restrictions.get(1).restriction.description);
             }
+            if (version.version >= 2.14) {
+                // restriction timeAndDuration && INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE added
+                final Restriction r3 = rwp.restrictions.get(2);
+                assertNotNull(r3.restriction.description);
+                assertNotNull(r3.restriction.name);
+                assertEquals(Restriction.Type.INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE, r3.type);
+                assertNotNull(r3.restriction.timeAndDuration);
+            }
             if (version.version > 2.10) {
                 assertEquals(Worktype.Type.LIGHTING, rwp.worktypes.get(0).type);
                 assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
