@@ -123,7 +123,9 @@ public class VariableSignUpdateService {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-        log.info("method=findDuplicates duplicates " + duplicates);
+        if(!duplicates.isEmpty()) {
+            log.error("method=findDuplicates duplicates " + duplicates);
+        }
     }
 
     private DeviceData convertData(final LiikennemerkinTila lt) {
