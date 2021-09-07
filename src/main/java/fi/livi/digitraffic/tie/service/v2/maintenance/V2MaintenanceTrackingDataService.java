@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
+import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
@@ -40,7 +40,7 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 /**
  * This service returns Harja tracking data for public use
  *
- * @see V2MaintenanceTrackingUpdateService
+ * @see fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService
  * @see <a href="https://github.com/finnishtransportagency/harja">https://github.com/finnishtransportagency/harja</a>
  */
 @Service
@@ -48,7 +48,7 @@ public class V2MaintenanceTrackingDataService {
 
     private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingDataService.class);
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
-    private final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository;
+    private final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
     private final DataStatusService dataStatusService;
 
     private final ObjectMapper objectMapper;
@@ -56,11 +56,11 @@ public class V2MaintenanceTrackingDataService {
 
     @Autowired
     public V2MaintenanceTrackingDataService(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
-                                            final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository,
+                                            final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository,
                                             final DataStatusService dataStatusService,
                                             final ObjectMapper objectMapper) {
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
-        this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
+        this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
         this.dataStatusService = dataStatusService;
         this.objectMapper = objectMapper;
         geometryReader = objectMapper.readerFor(Geometry.class);
@@ -125,7 +125,7 @@ public class V2MaintenanceTrackingDataService {
 
     @Transactional(readOnly = true)
     public List<JsonNode> findTrackingDataJsonsByTrackingId(final long trackingId) {
-        return v2MaintenanceTrackingDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
+        return v3MaintenanceTrackingObservationDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
             try {
                 return objectMapper.readTree(j);
             } catch (JsonProcessingException e) {

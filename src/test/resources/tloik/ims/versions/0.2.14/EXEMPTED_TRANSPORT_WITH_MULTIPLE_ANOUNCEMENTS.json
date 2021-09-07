@@ -1,0 +1,151 @@
+{
+    "type": "Feature",
+    "geometry": null,
+    "properties": {
+        "situationId": "GUID10000002",
+        "version": SITUATION_VERSION,
+        "situationType": "exempted transport",
+        "releaseTime": "SITUATION_VERSION_DATE_TIME",
+        "announcements": [
+            {
+                "language": "fi",
+                "title": "Erikoiskuljetus. Satakunta",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Erikoiskuljetus alueella Kankaanpää Kuljetus liikkuu 12.01.2021 klo 19:00 - 21:00 reitillä: Kankaanpään katuverkko Liikenne pysäytetään ajoittain. Kuljetuksen leveys: 9,5 m Kuljetuksen korkeus: 10,8 m Kuljetuksen pituus: 40 m Kuljetuksen kokonaismassa: 167 t Kuljetus on perillä 13.01.2021 klo 06:00 mennessä"
+                },
+                "locationDetails": {
+                    "areaLocation": {
+                        "areas": [
+                            {
+                                "name": "Suomi",
+                                "locationCode": 3,
+                                "type": "country"
+                            },
+                            {
+                                "name": "Länsi- ja Sisä-Suomi",
+                                "locationCode": 7,
+                                "type": "regional state administrative agency"
+                            },
+                            {
+                                "name": "Tampereen seutu",
+                                "locationCode": 5898,
+                                "type": "weather region"
+                            },
+                            {
+                                "name": "Pirkanmaa",
+                                "locationCode": 14,
+                                "type": "province"
+                            },
+                            {
+                                "name": "Tampere",
+                                "locationCode": 408,
+                                "type": "municipality"
+                            }
+                        ]
+                    }
+                },
+                "features": [
+                    {
+                        "name" : "Liikenne pysäytetään ajoittain",
+                        "description" : "Risteysalueilla voi tulla ahdasta, joten liikennettä joudutaan rajoittamaan hetkellisesti"
+                    },
+                    {
+                        "name" : "Kuljetuksen leveys",
+                        "quantity" : 4.5,
+                        "unit" : "m"
+                    }
+                ],
+                "lastActiveItinerarySegment": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "2100-12-14T23:59:59.999Z",
+                    "legs": [
+                        {
+                            "roadLeg": {
+                                "roadNumber": "12",
+                                "roadName": "Kotikatu 1",
+                                "startArea": "Tien alku",
+                                "endArea": "Tien loppu"
+                            }
+                        }
+                    ]
+                },
+                "comment": "TESTI TESTI TESTI\nML",
+                "timeAndDuration": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "END_DATE_TIME",
+                    "estimatedDuration": {
+                        "minimum": "PT6H",
+                        "informal": "Yli 6 tuntia"
+                    }
+                },
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            },
+            {
+                "language": "fi",
+                "title": "Erikoiskuljetus. Satakunta",
+                "location": {
+                    "countryCode": 6,
+                    "locationTableNumber": 17,
+                    "locationTableVersion": "1.11.37",
+                    "description": "Erikoiskuljetus alueella Kankaanpää Kuljetus liikkuu 12.01.2021 klo 19:00 - 21:00 reitillä: Kankaanpään katuverkko Liikenne pysäytetään ajoittain. Kuljetuksen leveys: 9,5 m Kuljetuksen korkeus: 10,8 m Kuljetuksen pituus: 40 m Kuljetuksen kokonaismassa: 167 t Kuljetus on perillä 13.01.2021 klo 06:00 mennessä"
+                },
+                "locationDetails": {
+                    "areaLocation": {
+                        "areas": [
+                            {
+                                "name": "Pello",
+                                "locationCode": 419,
+                                "type": "municipality"
+                            }
+                        ]
+                    }
+                },
+                "features": [
+                    {
+                        "name" : "Liikenne pysäytetään ajoittain",
+                        "description" : "Risteysalueilla voi tulla ahdasta, joten liikennettä joudutaan rajoittamaan hetkellisesti"
+                    },
+                    {
+                        "name" : "Kuljetuksen leveys",
+                        "quantity" : 4.5,
+                        "unit" : "m",
+                        "description" : "Tämä on hurjan leveä"
+                    }
+                ],
+                "lastActiveItinerarySegment": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "2100-12-14T23:59:59.999Z",
+                    "legs": [
+                        {
+                            "roadLeg": {
+                                "roadNumber": "12",
+                                "roadName": "Kotikatu 1",
+                                "startArea": "Tien alku",
+                                "endArea": "Tien loppu"
+                            }
+                        }
+                    ]
+                },
+                "comment": "TESTI TESTI TESTI\nML",
+                "timeAndDuration": {
+                    "startTime": "START_DATE_TIME",
+                    "endTime": "END_DATE_TIME",
+                    "estimatedDuration": {
+                        "minimum": "PT6H",
+                        "informal": "Yli 6 tuntia"
+                    }
+                },
+                "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+                "sender": "Liikenneviraston tieliikennekeskus Helsinki"
+            }
+        ],
+        "contact": {
+            "phone": "0206373328",
+            "email": "helsinki.liikennekeskus@liikennevirasto.fi"
+        }
+    }
+}

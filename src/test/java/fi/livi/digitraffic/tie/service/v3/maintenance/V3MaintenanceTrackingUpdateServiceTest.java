@@ -7,6 +7,7 @@ import static fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTracking
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createWorkMachines;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getEndTime;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneDayInPast;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -76,7 +77,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
     @Test
     public void readUnhandedObservationDataWithMultipleWorkMachinesMatches() throws IOException {
-        final ZonedDateTime now = getStartTime();;
+        final ZonedDateTime now = getStartTimeOneDayInPast();;
         final int machineCount = getRandomId(2, 10);
         final int observationCount = 10;
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
@@ -129,7 +130,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void handleTrackingWithMultipleWorkMachines() throws JsonProcessingException {
         // Create maintenance tracking message for <machineCount> machines and <observationCount> observations for each machine
         // and save observations to db
-        final ZonedDateTime now = getStartTime();;
+        final ZonedDateTime now = getStartTimeOneDayInPast();;
         final int machineCount = getRandomId(2, 10);
         final int observationCount = 10;
         final TyokoneenseurannanKirjausRequestSchema seuranta =
@@ -175,7 +176,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void combineMultipleTrackings() {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = getStartTime();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
         final int observationCountPerTracking = getRandomId(5, 10);
         final int trackingMessagesCount = getRandomId(5, 10);
 
@@ -227,7 +228,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final int machineCount = getRandomId(2, 10);
         // Work machines with harja id 1,2,...(machineCount+1)
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = getStartTime();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
         final int trackingsCountPerMachine = 5;
         final int observationCountPerTracking = 10;
 
@@ -271,7 +272,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void splitTrackingWhenJobChanges() throws JsonProcessingException {
         // Work machines with harja id 1
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTime();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // next trackings start minute just after previous ends
@@ -290,7 +291,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void insideTimeLimitCombinesTrackingsAsOne() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTime();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
         final int observationCountPerTracking = 10;
         final int jobId = 1;
         // Last point will be startTime + 9 min
@@ -309,7 +310,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void timeLimitBreaksTrackingInParts() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTime();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
         // Last point will be startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -331,7 +332,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void timeLimitAndTaskChangeBreaksTrackingInParts() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTime();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -353,7 +354,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void overSpeedBreaksTrackingInTwoParts() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTime();
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         // Last point will be startTime + 9 min
         final TyokoneenseurannanKirjausRequestSchema kirjaus =
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, ASFALTOINTI);
@@ -379,7 +380,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void taskChangeBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfNextTracking() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTime();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -401,7 +402,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     @Test
     public void taskChangeToTransitionBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfTransitionTracking() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTime();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -487,9 +488,5 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertCollectionSize( 10, v3MaintenanceTrackingObservationDataRepository.findAll());
         // Handled data is not deleted
         assertCollectionSize(2, v2MaintenanceTrackingRepository.findAll());
-    }
-
-    private static ZonedDateTime getStartTime() {
-        return DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusDays(1);
     }
 }
