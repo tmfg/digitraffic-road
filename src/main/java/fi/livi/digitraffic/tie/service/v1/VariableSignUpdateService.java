@@ -116,16 +116,19 @@ public class VariableSignUpdateService {
     }
 
     private void findDuplicates(final List<DeviceData> dataList) {
-        final List<String> duplicates = dataList.stream()
-            .collect(Collectors.groupingBy(DeviceData::getDeviceId, Collectors.counting()))
+        final List<List<DeviceData>> duplicates = dataList.stream()
+            .collect(Collectors.groupingBy(DeviceData::getDeviceId))
             .entrySet().stream()
-                .filter(e -> e.getValue() > 1)
-                .map(Map.Entry::getKey)
+                .filter(e -> e.getValue().size() > 1)
+                .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
 
-        if(!duplicates.isEmpty()) {
-            log.error("method=findDuplicates duplicates " + duplicates);
-        }
+        duplicates.forEach(duplicateList -> {
+            final String list = duplicateList.stream()
+                .map(dd -> String.format("%s %s %s %s", dd.getDeviceId(), dd.getDisplayValue(), dd.getEffectDate(), dd.getCreatedDate()))
+                .collect(Collectors.joining());
+            log.error("method=findDuplicates duplicates " + list);
+        });
     }
 
     private DeviceData convertData(final LiikennemerkinTila lt) {
