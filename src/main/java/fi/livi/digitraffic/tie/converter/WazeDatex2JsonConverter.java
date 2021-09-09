@@ -71,20 +71,23 @@ public class WazeDatex2JsonConverter {
 
 
         final String id = properties.situationId;
-        final String street = announcement.locationDetails.roadAddressLocation.primaryPoint.roadAddress.road.toString();
-        final String reference = announcement.sender;
+        final String street = String.format("Road %s", announcement.locationDetails.roadAddressLocation.primaryPoint.roadAddress.road.toString());
 
         final String description = createDescription(announcement, contact);
 
-        final WazeFeedAnnouncementDto.Direction direction = convertDirection(announcement.locationDetails.roadAddressLocation.direction);
+        final Optional<WazeFeedAnnouncementDto.Direction> direction = convertDirection(announcement.locationDetails.roadAddressLocation.direction, geometry);
 
-        final Optional<String> maybePolyline = formatPolyline(geometry, direction == WazeFeedAnnouncementDto.Direction.BOTH_DIRECTIONS);
+        final Optional<String> maybePolyline = formatPolyline(geometry, direction);
 
-        return maybePolyline.map(x -> new WazeFeedAnnouncementDto(id, street, description, direction, reference, x));
+        return maybePolyline.map(x -> new WazeFeedAnnouncementDto(id, street, description, direction, x));
     }
 
-    private WazeFeedAnnouncementDto.Direction convertDirection(final RoadAddressLocation.Direction direction) {
+    private Optional<WazeFeedAnnouncementDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, Geometry<?> geometry) {
         final WazeFeedAnnouncementDto.Direction result;
+
+        if (geometry instanceof Point) {
+            return Optional.empty();
+        }
 
         switch (direction) {
         case BOTH:
@@ -98,7 +101,7 @@ public class WazeDatex2JsonConverter {
             break;
         }
 
-        return result;
+        return Optional.of(result);
     }
 
     private String createDescription(final TrafficAnnouncement announcement, final Contact contact) {
@@ -119,16 +122,16 @@ public class WazeDatex2JsonConverter {
             announcement.sender,
             contact.phone,
             contact.email
-        );
+        ).substring(0, 40);
     }
 
-    public static Optional<String> formatPolyline(final Geometry<?> geometry, final boolean bothWays) {
+    public static Optional<String> formatPolyline(final Geometry<?> geometry, final Optional<WazeFeedAnnouncementDto.Direction> direction) {
         if (geometry instanceof Point) {
             final Point point = (Point) geometry;
             return Optional.of(formatPolylineFromPoint(point));
         } else if (geometry instanceof MultiLineString) {
             final MultiLineString multiLineString = (MultiLineString) geometry;
-            return Optional.of(formatPolylineFromMultiLineString(multiLineString, bothWays));
+            return Optional.of(formatPolylineFromMultiLineString(multiLineString, direction));
         }
 
         logger.warn(String.format("method=formatPolyline Unknown geometry type %s", geometry.getClass().getSimpleName()));
@@ -139,9 +142,10 @@ public class WazeDatex2JsonConverter {
         return String.format("%f %f", point.getLongitude(), point.getLatitude());
     }
 
-    private static String formatPolylineFromMultiLineString(final MultiLineString multiLineString, final boolean bothWays) {
+    private static String formatPolylineFromMultiLineString(final MultiLineString multiLineString, final Optional<WazeFeedAnnouncementDto.Direction> direction) {
         final List<List<Double>> path = multiLineString.getCoordinates().stream().flatMap(Collection::stream).collect(Collectors.toList());
 
+        final boolean bothWays = direction.map(x -> x == WazeFeedAnnouncementDto.Direction.BOTH_DIRECTIONS).orElse(false);
         if (bothWays) {
             final List<List<Double>> copy = new ArrayList<>(path);
             Collections.reverse(copy);

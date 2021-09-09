@@ -1,29 +1,28 @@
 package fi.livi.digitraffic.tie.dto;
 
 import java.io.Serializable;
-import java.util.Objects;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class WazeFeedAnnouncementDto implements Serializable {
     public final Type type = Type.ACCIDENT;
+    public final String reference = "FINTRAFFIC";
 
     public final String id;
     public final String street;
     public final String description;
-    public final Direction direction;
-    public final String reference;
     public final String polyline;
 
-    public WazeFeedAnnouncementDto(String id, String street, String description, Direction direction, String reference,
-                                   String polyline) {
+    @JsonInclude(JsonInclude.Include.NON_ABSENT)
+    public final Optional<Direction> direction;
+
+    public WazeFeedAnnouncementDto(String id, String street, String description, Optional<Direction> direction, String polyline) {
         this.id = id;
         this.street = street;
         this.description = description;
         this.direction = direction;
-        this.reference = reference;
         this.polyline = polyline;
     }
 
