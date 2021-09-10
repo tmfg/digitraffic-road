@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -267,6 +266,7 @@ public class RoadStationSensorService {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
+        predicates.add( cb.isNull(root.get("obsoleteDate")));
         for (List<Long> ids : Iterables.partition(sensorsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
