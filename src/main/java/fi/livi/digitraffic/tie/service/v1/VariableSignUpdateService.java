@@ -107,7 +107,7 @@ public class VariableSignUpdateService {
                 .map(this::convertData)
                 .collect(Collectors.toList());
 
-            findDuplicates(newData);
+//            findDuplicates(newData);
 
             v2DeviceDataRepository.saveAll(newData);
         } finally {
@@ -126,8 +126,8 @@ public class VariableSignUpdateService {
         duplicates.forEach(duplicateList -> {
             final String list = duplicateList.stream()
                 .map(dd -> String.format("%s %s %s %s", dd.getDeviceId(), dd.getDisplayValue(), dd.getEffectDate(), dd.getCreatedDate()))
-                .collect(Collectors.joining());
-            log.error("method=findDuplicates duplicates " + list);
+                .collect(Collectors.joining("\n"));
+            log.info("method=findDuplicates duplicates " + list);
         });
     }
 
