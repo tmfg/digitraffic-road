@@ -70,7 +70,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final List<String> featureList =
             List.of("Onnettomuus", "Onnettomuuspaikan pelastus- ja raivaustyöt käynnissä", "Tie on suljettu liikenteeltä");
 
-        final Map<String, String> hm =
+        final Map<String, Optional<String>> hm =
             WazeFeedServiceTestHelper.createIncidentMap(additionalInformation, comment, descriptionLine, estimatedDurationInformal, startTime,
                 email, phone, sender, situationId, street);
 
@@ -247,5 +247,23 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         final String polyline = maybePolyline.get();
         assertEquals("25.180874 61.569262 25.180826 61.569394 25.180754 61.569586 25.180681 61.569794 25.180601 61.570065 25.212664 61.586387 25.212674 61.586377", polyline);
+    }
+
+    @Test
+    public void checkForNullValues() {
+        final String situationId = "GUID12345";
+        final String situationRecordId = "GUID12346";
+        final List<String> featureList = List.of();
+
+        final Map<String, Optional<String>> hm =
+            WazeFeedServiceTestHelper.createIncidentMap(null, null, null, null,
+                null, null, null, null, situationId, null);
+
+        final String jsonMessage = wazeFeedServiceTestHelper.createJsonMessage(hm, RoadAddressLocation.Direction.BOTH, featureList);
+
+        wazeFeedServiceTestHelper.insertAccident(situationId, situationRecordId, jsonMessage);
+
+        final List<WazeFeedAnnouncementDto> allActive = wazeFeedService.findActive();
+        assertEquals(0, allActive.size());
     }
 }

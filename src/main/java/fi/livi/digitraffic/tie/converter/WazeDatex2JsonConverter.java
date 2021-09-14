@@ -71,15 +71,31 @@ public class WazeDatex2JsonConverter {
 
 
         final String id = properties.situationId;
-        final String street = String.format("Road %s", announcement.locationDetails.roadAddressLocation.primaryPoint.roadAddress.road.toString());
+        final Optional<String> maybeStreet = getRoadAddress(announcement);
 
-        final String description = createDescription(announcement, contact);
+        final Optional<String> maybeDescription = createDescription(announcement, contact);
 
         final Optional<WazeFeedAnnouncementDto.Direction> direction = convertDirection(announcement.locationDetails.roadAddressLocation.direction, geometry);
 
         final Optional<String> maybePolyline = formatPolyline(geometry, direction);
 
-        return maybePolyline.map(x -> new WazeFeedAnnouncementDto(id, street, description, direction, x));
+        return maybePolyline.flatMap(polyline ->
+            maybeStreet.flatMap(street ->
+                maybeDescription.map(description ->
+                    new WazeFeedAnnouncementDto(id, street, description, direction, polyline))));
+    }
+
+
+    private Optional<String> getRoadAddress(final TrafficAnnouncement announcement) {
+        Optional<String> address;
+
+        try {
+            address = Optional.of(announcement.locationDetails.roadAddressLocation.primaryPoint.roadAddress.road.toString());
+        } catch (NullPointerException e) {
+            address = Optional.empty();
+        }
+
+        return address.map(s -> String.format("Road %s", s));
     }
 
     private Optional<WazeFeedAnnouncementDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, Geometry<?> geometry) {
@@ -104,25 +120,35 @@ public class WazeDatex2JsonConverter {
         return Optional.of(result);
     }
 
-    private String createDescription(final TrafficAnnouncement announcement, final Contact contact) {
+    private Optional<String> createDescription(final TrafficAnnouncement announcement, final Contact contact) {
         final String detailedDescription = announcement.features.stream()
             .map(x -> String.format("%s.", x.name))
             .collect(Collectors.joining("\n"));
 
         final ZonedDateTime dateTime = announcement.timeAndDuration.startTime;
 
-        return String.format("%s\n\n%s\n\nLisätieto: %s\n\nAjankohta: %s klo %s. Arvioitu kesto: %s.\n\n%s\n\n%s\nPuh: %s\nSähköposti: %s",
-            announcement.location.description,
-            detailedDescription,
-            announcement.comment,
-            dateTime.format(dateFormatter),
-            dateTime.format(timeFormatter),
-            announcement.timeAndDuration.estimatedDuration.informal,
-            announcement.additionalInformation,
-            announcement.sender,
-            contact.phone,
-            contact.email
-        ).substring(0, 40);
+        final String descriptionFormatString = "%s\n\n%s\n\nLisätieto: %s\n\nAjankohta: %s klo %s. Arvioitu kesto: %s.\n\n%s\n\n%s\nPuh: %s\nSähköposti: %s";
+
+        Optional<String> description;
+
+        try {
+            description = Optional.of(String.format(descriptionFormatString,
+                announcement.location.description,
+                detailedDescription,
+                announcement.comment,
+                dateTime.format(dateFormatter),
+                dateTime.format(timeFormatter),
+                announcement.timeAndDuration.estimatedDuration.informal,
+                announcement.additionalInformation,
+                announcement.sender,
+                contact.phone,
+                contact.email
+            ));
+        } catch (NullPointerException e) {
+            description = Optional.empty();
+        }
+
+        return description.map(s -> s.substring(0, 40));
     }
 
     public static Optional<String> formatPolyline(final Geometry<?> geometry, final Optional<WazeFeedAnnouncementDto.Direction> direction) {

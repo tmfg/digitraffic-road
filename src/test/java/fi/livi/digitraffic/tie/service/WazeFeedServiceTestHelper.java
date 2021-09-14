@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class WazeFeedServiceTestHelper {
 
     public void insertAccident(final String situationId, final String situationRecordId, final RoadAddressLocation.Direction direction,
                                final String street, final String sender, final Geometry<?> geometry) {
-        final Map<String, String> hm = createIncidentMap(
+        final Map<String, Optional<String>> hm = createIncidentMap(
             "additional information",
             "comment",
             "description",
@@ -121,7 +122,7 @@ public class WazeFeedServiceTestHelper {
         datex2Repository.save(datex2);
     }
 
-    public String createJsonMessage(final Map<String, String> params, final RoadAddressLocation.Direction direction,
+    public String createJsonMessage(final Map<String, Optional<String>> params, final RoadAddressLocation.Direction direction,
                                     final List<String> features) {
         final MultiLineString geometry = new MultiLineString();
         final List<List<Double>> coordinates1 = new ArrayList<>();
@@ -142,7 +143,7 @@ public class WazeFeedServiceTestHelper {
         return createJsonMessage(geometry, params, direction, features);
     }
 
-    public String createJsonMessage(final Geometry<?> geometry, final Map<String, String> params,
+    public String createJsonMessage(final Geometry<?> geometry, final Map<String, Optional<String>> params,
                                     final RoadAddressLocation.Direction direction, final List<String> features) {
 
         final TrafficAnnouncementProperties properties = createTrafficAnnouncementProperties(params, direction, features);
@@ -160,7 +161,7 @@ public class WazeFeedServiceTestHelper {
         return json;
     }
 
-    private TrafficAnnouncementProperties createTrafficAnnouncementProperties(final Map<String, String> params,
+    private TrafficAnnouncementProperties createTrafficAnnouncementProperties(final Map<String, Optional<String>> params,
                                                                               final RoadAddressLocation.Direction direction,
                                                                               final List<String> features) {
         final List<Feature> ftrs = features.stream()
@@ -168,59 +169,72 @@ public class WazeFeedServiceTestHelper {
             .collect(Collectors.toList());
 
         final RoadPoint roadPoint = new RoadPoint();
-        roadPoint.roadAddress = new RoadAddress(Integer.parseInt(params.get("street")), 0, 0);
+        roadPoint.roadAddress = new RoadAddress(params.get("street").map(Integer::parseInt).orElse(null), 0, 0);
         roadPoint.alertCLocation = new AlertCLocation();
 
         final RoadAddressLocation roadAddressLocation = new RoadAddressLocation(roadPoint, null, direction, "");
 
         final TimeAndDuration timeAndDuration = new TimeAndDuration(
-            ZonedDateTime.parse(params.get("startTime")),
+            params.get("startTime")
+                .map(ZonedDateTime::parse)
+                .orElse(null),
             null,
-            new EstimatedDuration("PT1H", "PT3H", params.get("estimatedDurationInformal"))
+            params.get("estimatedDurationInformal")
+                .map(x -> new EstimatedDuration("PT1H", "PT3H", x))
+                .orElse(null)
         );
 
         final TrafficAnnouncement announcement =  new TrafficAnnouncement(
             null,
-            params.get("title"),
-            new Location(6, 17, "1_11_40", params.get("description")),
+            null,
+            params.get("description")
+                .map(x -> new Location(6, 17, "1_11_40", x))
+                .orElse(null),
             new LocationDetails(null, roadAddressLocation),
             ftrs,
             new ArrayList<>(),
             null,
             null,
-            params.get("comment"),
+            params.get("comment")
+                .orElse(null),
             timeAndDuration,
-            params.get("additionalInformation"),
+            params.get("additionalInformation")
+                .orElse(null),
             params.get("sender")
+                .orElse(null)
         );
 
+        final Contact contact = params.get("phone")
+            .flatMap(phone -> params.get("email").map(email -> new Contact(phone, email)))
+            .orElse(null);
+
         return new TrafficAnnouncementProperties(
-            params.get("situationId"),
+            params.get("situationId").orElse(null),
             11,
             null,
             null,
             null,
             List.of(announcement),
-            new Contact(params.get("phone"), params.get("email"))
+            contact
         );
     }
 
-    public static Map<String, String> createIncidentMap(final String additionalInformation, final String comment, final String description,
-                                                        final String estimatedDurationInformal, final String startTime, final String email,
-                                                        final String phone, final String sender, final String situationId,
-                                                        final String street) {
-        final Map<String, String> hm = new HashMap<>();
+    public static Map<String, Optional<String>> createIncidentMap(final String additionalInformation, final String comment, final String description,
+                                                                  final String estimatedDurationInformal, final String startTime, final String email,
+                                                                  final String phone, final String sender, final String situationId,
+                                                                  final String street) {
+        final Map<String, Optional<String>> hm = new HashMap<>();
 
-        hm.put("additionalInformation", additionalInformation);
-        hm.put("comment", comment);
-        hm.put("description", description);
-        hm.put("estimatedDurationInformal", estimatedDurationInformal);
-        hm.put("startTime", startTime);
-        hm.put("email", email);
-        hm.put("phone", phone);
-        hm.put("sender", sender);
-        hm.put("situationId", situationId);
-        hm.put("street", street);
+        hm.put("additionalInformation", Optional.ofNullable(additionalInformation));
+        hm.put("comment", Optional.ofNullable(comment));
+        hm.put("description", Optional.ofNullable(description));
+        hm.put("estimatedDurationInformal", Optional.ofNullable(estimatedDurationInformal));
+        hm.put("startTime", Optional.ofNullable(startTime));
+        hm.put("email", Optional.ofNullable(email));
+        hm.put("phone", Optional.ofNullable(phone));
+        hm.put("sender", Optional.ofNullable(sender));
+        hm.put("situationId", Optional.ofNullable(situationId));
+        hm.put("street", Optional.ofNullable(street));
 
         return hm;
     }
