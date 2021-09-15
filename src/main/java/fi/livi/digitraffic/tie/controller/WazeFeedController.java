@@ -4,6 +4,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +20,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @Validated
 @RequestMapping(ApiPaths.API_INTEGRATIONS_BASE_PATH)
-@ConditionalOnWebApplication
 @ApiIgnore
+@ConditionalOnWebApplication
+@ConditionalOnProperty(prefix="dt.waze", name="enabled", havingValue="true")
 public class WazeFeedController {
     private final WazeFeedService wazeFeedService;
 
