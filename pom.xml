@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>road</artifactId>
-    <version>2.78.0</version>
+    <version>2.79.0</version>
     <packaging>jar</packaging>
 
     <name>dt-road</name>
@@ -505,7 +505,7 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
-                <version>3.4.3</version>
+                <version>${org.apache.cxf.version}</version>
                 <executions>
                     <execution>
                         <id>generate-sources</id>
@@ -716,6 +716,7 @@
                             <inputDirectories>
                                 <include>src/main/resources/schemas/lotju/proto</include>
                             </inputDirectories>
+                            <outputDirectory>${project.build.directory}/generated-sources/lotju-proto</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

@@ -37,14 +37,14 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
      * Updates all available weather road station sensors
      */
     public boolean updateRoadStationSensors() {
-        log.info("Update weather RoadStationSensors start");
+        log.info("method=updateRoadStationSensors Update weather RoadStationSensors start");
 
         // Update available RoadStationSensors types to db
         final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
                 lotjuWeatherStationMetadataClientWrapper.getAllTiesaaLaskennallinenAnturis();
 
         boolean updated = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
-        log.info("Update weather RoadStationSensors end");
+        log.info("method=updateRoadStationSensors Update weather RoadStationSensors end");
         return updated;
     }
 

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -228,7 +227,7 @@ public class RoadStationSensorService {
             }
             return UpdateStatus.NOT_UPDATED;
         } else {
-            RoadStationSensor newSensor = new RoadStationSensor();
+            final RoadStationSensor newSensor = new RoadStationSensor();
             updateRoadStationSensorAttributes(anturi, newSensor);
             save(newSensor);
             log.info("Created new {}", newSensor);
@@ -249,7 +248,7 @@ public class RoadStationSensorService {
             }
             return UpdateStatus.NOT_UPDATED;
         } else {
-            RoadStationSensor newSensor = new RoadStationSensor();
+            final RoadStationSensor newSensor = new RoadStationSensor();
             updateRoadStationSensorAttributes(anturi, newSensor);
             save(newSensor);
             log.info("Created new {}", newSensor);
@@ -262,11 +261,12 @@ public class RoadStationSensorService {
         final CriteriaBuilder cb = createCriteriaBuilder();
         final CriteriaUpdate<RoadStationSensor> update = cb.createCriteriaUpdate(RoadStationSensor.class);
         final Root<RoadStationSensor> root = update.from(RoadStationSensor.class);
-        EntityType<RoadStationSensor> rootModel = root.getModel();
+        final EntityType<RoadStationSensor> rootModel = root.getModel();
         update.set("obsoleteDate", LocalDate.now());
 
-        List<Predicate> predicates = new ArrayList<>();
+        final List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
+        predicates.add( cb.isNull(root.get("obsoleteDate")));
         for (List<Long> ids : Iterables.partition(sensorsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
