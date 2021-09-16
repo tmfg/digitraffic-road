@@ -20,11 +20,13 @@ public interface WazeDatex2Repository extends JpaRepository<Datex2, Long> {
         "    from datex2_situation ds\n" +
         "    order by ds.situation_id desc, ds.id desc\n" +
         ")\n" +
-        "select d2.*\n" +
+        "select distinct on (d2.id) d2.*\n" +
         "from datex2 d2\n" +
         "join situation s on s.datex2_id = d2.id\n" +
+        "join datex2_situation_record dsr on s.datex2_id = dsr.datex2_situation_id\n" +
         "where d2.situation_type = 'TRAFFIC_ANNOUNCEMENT'\n" +
-        "  and d2.traffic_announcement_type = 'ACCIDENT_REPORT'\n" +
+        "  and (d2.traffic_announcement_type = 'ACCIDENT_REPORT' or d2.traffic_announcement_type = 'GENERAL')\n" +
+        "  and dsr.validy_status = 'ACTIVE'" +
         "  and d2.json_message is not null\n" +
         "  and exists(\n" +
         "        select null\n" +
@@ -32,7 +34,7 @@ public interface WazeDatex2Repository extends JpaRepository<Datex2, Long> {
         "        where dsr.datex2_situation_id = s.id\n" +
         "          and dsr.effective_end_time > current_timestamp\n" +
         "    )\n" +
-        "order by d2.publication_time, d2.id";
+        "order by d2.id";
 
     @Query(value = FIND_ALL_ACTIVE, nativeQuery = true)
     List<Datex2> findAllActive();

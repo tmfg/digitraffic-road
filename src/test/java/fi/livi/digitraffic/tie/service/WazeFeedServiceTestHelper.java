@@ -45,6 +45,8 @@ public class WazeFeedServiceTestHelper {
     private final Datex2Repository datex2Repository;
     private final ObjectWriter genericJsonWriter;
 
+    private Integer situationCounter = 1000;
+
     @Autowired
     public WazeFeedServiceTestHelper(final ObjectMapper objectMapper, final Datex2Repository datex2Repository) {
         this.datex2Repository = datex2Repository;
@@ -89,7 +91,8 @@ public class WazeFeedServiceTestHelper {
             "phone",
             sender,
             situationId,
-            street
+            street,
+            "general"
         );
 
         final String jsonMessage = createJsonMessage(geometry, hm, direction, List.of("line1", "line3"));
@@ -98,7 +101,11 @@ public class WazeFeedServiceTestHelper {
     }
 
     public void insertAccident(final String situationId, final String situationRecordId, final String jsonMessage) {
-        final Datex2 datex2 = new Datex2(SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.ACCIDENT_REPORT);
+        insertAccident(situationId, situationRecordId, jsonMessage, TrafficAnnouncementType.ACCIDENT_REPORT);
+    }
+
+    public void insertAccident(final String situationId, final String situationRecordId, final String jsonMessage, final TrafficAnnouncementType trafficAnnouncementType) {
+        final Datex2 datex2 = new Datex2(SituationType.TRAFFIC_ANNOUNCEMENT, trafficAnnouncementType);
         final Datex2Situation situation = new Datex2Situation();
         final Datex2SituationRecord situationRecord = new Datex2SituationRecord();
         final ZonedDateTime dateTimeNow = ZonedDateTime.now();
@@ -149,7 +156,7 @@ public class WazeFeedServiceTestHelper {
         final TrafficAnnouncementProperties properties = createTrafficAnnouncementProperties(params, direction, features);
         final TrafficAnnouncementFeature feature = new TrafficAnnouncementFeature(geometry, properties);
 
-        String json = "";
+        String json;
 
         try {
             json = genericJsonWriter.writeValueAsString(feature);
@@ -164,9 +171,7 @@ public class WazeFeedServiceTestHelper {
     private TrafficAnnouncementProperties createTrafficAnnouncementProperties(final Map<String, Optional<String>> params,
                                                                               final RoadAddressLocation.Direction direction,
                                                                               final List<String> features) {
-        final List<Feature> ftrs = features.stream()
-            .map(x -> new Feature(x, null, null, null))
-            .collect(Collectors.toList());
+        final List<Feature> ftrs = convertToFeatures(features);
 
         final RoadPoint roadPoint = new RoadPoint();
         roadPoint.roadAddress = new RoadAddress(params.get("street").map(Integer::parseInt).orElse(null), 0, 0);
@@ -211,18 +216,46 @@ public class WazeFeedServiceTestHelper {
         return new TrafficAnnouncementProperties(
             params.get("situationId").orElse(null),
             11,
-            null,
-            null,
+            SituationType.TRAFFIC_ANNOUNCEMENT,
+            params.get("trafficAnnouncementType").map(this::convertToTrafficAnnouncementType).orElse(null),
             null,
             List.of(announcement),
             contact
         );
     }
 
+    private List<Feature> convertToFeatures(final List<String> features) {
+        if (features == null) {
+            return null;
+        }
+
+        return features.stream()
+            .map(x -> new Feature(x, null, null, null))
+            .collect(Collectors.toList());
+    }
+
+    private TrafficAnnouncementType convertToTrafficAnnouncementType(final String stringValue) {
+        switch (stringValue) {
+        case "preliminary_accident_report":
+            return TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT;
+        case "accident_report":
+            return TrafficAnnouncementType.ACCIDENT_REPORT;
+        case "general":
+        default:
+            return TrafficAnnouncementType.GENERAL;
+        }
+    }
+
+    public String nextSituationRecord() {
+        final String situationIdTemplate = "GUID%s";
+        this.situationCounter++;
+        return String.format(situationIdTemplate, this.situationCounter);
+    }
+
     public static Map<String, Optional<String>> createIncidentMap(final String additionalInformation, final String comment, final String description,
                                                                   final String estimatedDurationInformal, final String startTime, final String email,
                                                                   final String phone, final String sender, final String situationId,
-                                                                  final String street) {
+                                                                  final String street, final String trafficAnnouncementType) {
         final Map<String, Optional<String>> hm = new HashMap<>();
 
         hm.put("additionalInformation", Optional.ofNullable(additionalInformation));
@@ -235,6 +268,7 @@ public class WazeFeedServiceTestHelper {
         hm.put("sender", Optional.ofNullable(sender));
         hm.put("situationId", Optional.ofNullable(situationId));
         hm.put("street", Optional.ofNullable(street));
+        hm.put("trafficAnnouncementType", Optional.ofNullable(trafficAnnouncementType));
 
         return hm;
     }
