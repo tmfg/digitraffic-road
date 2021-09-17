@@ -188,6 +188,11 @@ public class CameraStationUpdater {
     public boolean updateCameraPreset(final long presetLotjuId,
                                       final MetadataUpdatedMessageDto.UpdateType updateType) {
         log.info("method=updateCameraPreset start lotjuId={} type={}", presetLotjuId, updateType);
+
+        if (updateType.isDelete()) {
+            return cameraPresetService.obsoleteCameraPresetWithLotjuId(presetLotjuId);
+        }
+
         final EsiasentoVO esiasento = lotjuCameraStationMetadataClientWrapper.getEsiasento(presetLotjuId);
 
         if (esiasento == null) {
@@ -195,28 +200,24 @@ public class CameraStationUpdater {
             return false;
         }
 
-        lock.lock();
-        try {
-            if (updateType.isDelete()) {
-                return cameraPresetService.obsoleteCameraPresetWithLotjuId(presetLotjuId);
-            }
+        // If camera preset doesn't exist, we have to create it -> just update the whole station
+        if (cameraPresetService.findCameraPresetByLotjuId(presetLotjuId) == null) {
+            final Pair<Integer, Integer> updated = updateCameraStationAndPresets(esiasento.getKameraId());
+            return updated.getLeft() > 0 || updated.getRight() > 0;
+        }
 
-            // If camera preset doesn't exist, we have to create it -> just update the whole station
-            if (cameraPresetService.findCameraPresetByLotjuId(presetLotjuId) == null) {
-                final Pair<Integer, Integer> updated = updateCameraStationAndPresets(esiasento.getKameraId());
-                return updated.getLeft() > 0 || updated.getRight() > 0;
-            }
-
-            // Otherwise update only the given preset
-            log.debug("method=updateCameraPreset got the lock lotjuId={}", presetLotjuId);
-            final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(esiasento.getKameraId());
-            if (validate(kamera)) {
+        // Otherwise update only the given preset
+        log.debug("method=updateCameraPreset got the lock lotjuId={}", presetLotjuId);
+        final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(esiasento.getKameraId());
+        if (validate(kamera)) {
+            lock.lock();
+            try {
                 return cameraStationUpdateService.updatePreset(esiasento, kamera);
-            } else {
-                return false;
+            } finally {
+                lock.unlock();
             }
-        } finally {
-            lock.unlock();
+        } else {
+            return false;
         }
     }
 
