@@ -104,16 +104,20 @@ public class WazeDatex2JsonConverter {
         Optional<String> address;
 
         try {
-            address = Optional.of(announcement.locationDetails.roadAddressLocation.primaryPoint.roadAddress.road.toString());
+            address = Optional.of(String.format("%s - %s, %s",
+                announcement.locationDetails.roadAddressLocation.primaryPoint.roadAddress.road,
+                announcement.locationDetails.roadAddressLocation.primaryPoint.roadName,
+                announcement.locationDetails.roadAddressLocation.primaryPoint.municipality
+            ));
         } catch (NullPointerException e) {
             address = Optional.empty();
         }
 
-        return address.map(s -> String.format("Road %s", s));
+        return address;
     }
 
     private Optional<WazeFeedAnnouncementDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, Geometry<?> geometry) {
-        if (geometry == null || geometry instanceof Point) {
+        if (direction == null || geometry == null || geometry instanceof Point) {
             return Optional.empty();
         }
 
