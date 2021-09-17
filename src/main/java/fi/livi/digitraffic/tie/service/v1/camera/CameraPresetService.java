@@ -124,8 +124,8 @@ public class CameraPresetService {
     }
 
     @Transactional
-    public void updateCameraPresetAndHistory(final long cameraPresetLotjuId, final boolean isImagePublic, final boolean isPresetPublic,
-                                             final ImageUpdateInfo updateInfo) {
+    public void updateCameraPresetAndHistoryWithLotjuId(final long cameraPresetLotjuId, final boolean isImagePublic, final boolean isPresetPublic,
+                                                        final ImageUpdateInfo updateInfo) {
         final CameraPreset cameraPreset = findCameraPresetByLotjuId(cameraPresetLotjuId);
         // Update version data only if write has succeeded
         if (updateInfo.isSuccess()) {
@@ -149,7 +149,22 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public CameraPreset findCameraPresetByPresetId(String presetId) {
+    public CameraPreset findCameraPresetByPresetId(final String presetId) {
         return cameraPresetRepository.findByPresetId(presetId);
+    }
+
+    @Transactional
+    public boolean obsoleteCameraStationWithLotjuId(final long lotjuId) {
+        final List<CameraPreset> presets = cameraPresetRepository.findByRoadStation_LotjuId(lotjuId);
+        return presets.stream().filter(CameraPreset::obsolete).count() > 0;
+    }
+
+    @Transactional
+    public boolean obsoleteCameraPresetWithLotjuId(final long presetLotjuId) {
+        final CameraPreset cp = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(presetLotjuId);
+        if (cp != null) {
+            return cp.obsolete();
+        }
+        return false;
     }
 }

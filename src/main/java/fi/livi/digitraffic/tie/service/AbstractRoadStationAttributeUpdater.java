@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
-public class AbstractRoadStationAttributeUpdater {
+public abstract class AbstractRoadStationAttributeUpdater {
 
     public static boolean setRoadAddressIfNotSet(final RoadStation rs) {
         if (rs.getRoadAddress() == null) {
@@ -24,4 +24,5 @@ public class AbstractRoadStationAttributeUpdater {
         return value != null ? value.setScale(2, RoundingMode.HALF_UP) : null;
     }
 
+    public abstract boolean obsoleteStationWithLotjuId(final long lotjuId);
 }

@@ -1,6 +1,10 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -31,10 +35,10 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataUpdateMessageHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 
@@ -42,7 +46,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataUpdateJmsMessageListenerTest.class);
 
     @Autowired
-    private CameraMetadataMessageHandler cameraMetadataMessageHandler;
+    private CameraMetadataUpdateMessageHandler cameraMetadataUpdateMessageHandler;
 
     @Autowired
     @Qualifier("kameraMetadataChangeJaxb2Marshaller")
@@ -63,7 +67,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     @BeforeEach
     public void initListener() {
         // Create listener
-        this.dataUpdater = (data) -> cameraMetadataMessageHandler.updateCameraMetadata(data);
+        this.dataUpdater = (data) -> cameraMetadataUpdateMessageHandler.updateCameraMetadataFromJms(data);
         cameraMetadataJmsMessageListener = new JMSMessageListener<>(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller), dataUpdater, false, log);
     }
 
@@ -220,7 +224,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
             "%s" +
             "    </asemat>\n" +
             "</metatietomuutos>",
-            tyyppi.name(), ids.toString());
+            tyyppi.name(), ids);
     }
 
     private static String getCameraUpdateMessage(final long lotjuId) {

@@ -106,6 +106,16 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
         }
     }
 
+    @Override
+    @Transactional
+    public boolean obsoleteStationWithLotjuId(final long lotjuId) {
+        final WeatherStation station = weatherStationRepository.findByLotjuId(lotjuId);
+        if (station != null) {
+            return station.obsolete();
+        }
+        return false;
+    }
+
     private static boolean updateWeatherStationAttributes(final TiesaaAsemaVO from,
                                                           final WeatherStation to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);

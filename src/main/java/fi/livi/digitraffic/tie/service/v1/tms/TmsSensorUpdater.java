@@ -13,39 +13,66 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationSensorUpdater;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
+import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
 @Component
-public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
-    private static final Logger log = LoggerFactory.getLogger(TmsStationSensorUpdater.class);
+public class TmsSensorUpdater extends AbstractRoadStationSensorUpdater {
+    private static final Logger log = LoggerFactory.getLogger(TmsSensorUpdater.class);
 
+    private DataStatusService dataStatusService;
     private final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper;
 
     @Autowired
-    public TmsStationSensorUpdater(final RoadStationSensorService roadStationSensorService,
-                                   final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper) {
+    public TmsSensorUpdater(final RoadStationSensorService roadStationSensorService,
+                            final DataStatusService dataStatusService,
+                            final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper) {
         super(roadStationSensorService);
+        this.dataStatusService = dataStatusService;
         this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
     }
 
     /**
-     * Updates all available tms road station sensors
+     * Updates all available tms sensors
      */
-    public boolean updateRoadStationSensors() {
-        log.info("Update TMS RoadStationSensors start");
+    public boolean updateTmsSensors() {
+        log.info("method=updateTmsSensors start");
 
         // Update available RoadStationSensors types to db
-        List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis =
+        final List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis =
                 lotjuTmsStationMetadataClientWrapper.getAllLamLaskennallinenAnturis();
 
         boolean updated = updateAllRoadStationSensors(allLamLaskennallinenAnturis);
         log.info("Update TMS RoadStationSensors end");
         return updated;
+    }
+
+    public boolean updateTmsSensor(final long lotjuId,
+                                   final MetadataUpdatedMessageDto.UpdateType updateType) {
+        log.info("method=updateTmsSensor lotjuId={}", lotjuId);
+
+        if (updateType.isDelete()) {
+            if (roadStationSensorService.obsoleteSensor(lotjuId, RoadStationType.TMS_STATION)) {
+                dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
+                return true;
+            }
+        } else {
+            final LamLaskennallinenAnturiVO anturi = lotjuTmsStationMetadataClientWrapper.getLamLaskennallinenAnturi(lotjuId);
+            if (anturi == null) {
+                log.warn("method=updateTmsSensor Weather sensor with lotjuId={} not found", lotjuId);
+            } else if ( roadStationSensorService.updateOrInsert(anturi).isUpdateOrInsert() ) {
+                dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean updateAllRoadStationSensors(final List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis) {
@@ -54,7 +81,7 @@ public class TmsStationSensorUpdater extends AbstractRoadStationSensorUpdater {
         int inserted = 0;
 
         final List<LamLaskennallinenAnturiVO> toUpdate =
-            allLamLaskennallinenAnturis.stream().filter(TmsStationSensorUpdater::validate).collect(Collectors.toList());
+            allLamLaskennallinenAnturis.stream().filter(TmsSensorUpdater::validate).collect(Collectors.toList());
 
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
         final int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);

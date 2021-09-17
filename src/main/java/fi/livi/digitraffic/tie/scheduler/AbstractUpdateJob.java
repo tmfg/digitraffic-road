@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @DisallowConcurrentExecution
 @ConditionalOnNotWebApplication
 public abstract class AbstractUpdateJob implements Job {

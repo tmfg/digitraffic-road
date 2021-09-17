@@ -165,6 +165,16 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         }
     }
 
+    @Override
+    @Transactional
+    public boolean obsoleteStationWithLotjuId(final long lotjuId) {
+        final TmsStation station = tmsStationRepository.findByLotjuId(lotjuId);
+        if (station != null) {
+            return station.obsolete();
+        }
+        return false;
+    }
+
     private List<TmsStation> findPublishableStations(final Integer roadNumber, final TmsState tmsState) {
         switch(tmsState) {
         case ACTIVE:
@@ -228,7 +238,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         return roadStationVanhaId == null ? null : roadStationVanhaId - 23000L;
     }
 
-    private TmsStationFeature convert(final Long id, final TmsStation station) throws NonPublicRoadStationException {
+    private TmsStationFeature convert(final Long id, final TmsStation station) {
         if(station == null) {
             throw new ObjectNotFoundException(TmsStation.class, id);
         }

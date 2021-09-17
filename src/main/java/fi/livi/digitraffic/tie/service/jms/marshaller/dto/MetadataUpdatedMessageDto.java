@@ -1,7 +1,9 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.jms.marshaller.dto;
 
 import java.time.Instant;
 import java.util.Set;
+
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 public class MetadataUpdatedMessageDto {
 
@@ -10,7 +12,7 @@ public class MetadataUpdatedMessageDto {
         INSERT, // LISAYS
         DELETE; // POISTO
 
-        public static UpdateType fromNameValue(final String name) {
+        public static UpdateType fromExternalValue(final String name) {
             switch(name) {
             case "PAIVITYS":
                 return UPDATE;
@@ -21,6 +23,10 @@ public class MetadataUpdatedMessageDto {
             default:
                 throw new IllegalArgumentException("Unknown metadata UpdateType " + name);
             }
+        }
+
+        public boolean isDelete() {
+            return this.equals(DELETE);
         }
     }
 

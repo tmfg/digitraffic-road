@@ -52,7 +52,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
         assertFalse(publishable.isEmpty());
 
-        roadStationSensorService.updateSensorsOfWeatherStations(ts.getRoadStationId(),
+        roadStationSensorService.updateSensorsOfRoadStation(ts.getRoadStationId(),
             RoadStationType.TMS_STATION,
             publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
     }

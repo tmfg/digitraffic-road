@@ -4,22 +4,25 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
-import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiLaskennallisetAnturit;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiTiesaaAsemat;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiTiesaaAsematResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeLaskennallinenAnturi;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeLaskennallinenAnturiResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeTiesaaAsema;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeTiesaaAsemaResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeTiesaaAsemanLaskennallisetAnturit;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeTiesaaAsemanLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ObjectFactory;
@@ -78,4 +81,26 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
         return response.getValue().getLaskennallinenAnturi();
     }
 
+    @Retryable(maxAttempts = 5)
+    public TiesaaAsemaVO getTiesaaAsema(final long lotjuId) {
+        final HaeTiesaaAsema request = new HaeTiesaaAsema();
+        request.setId(lotjuId);
+
+        final JAXBElement<HaeTiesaaAsemaResponse> response =
+            (JAXBElement<HaeTiesaaAsemaResponse>)
+                marshalSendAndReceive(objectFactory.createHaeTiesaaAsema(request));
+
+        return response.getValue().getTiesaaAsema();
+    }
+
+    public TiesaaLaskennallinenAnturiVO getTiesaaLaskennallinenAnturi(final Long lotjuId) {
+        final HaeLaskennallinenAnturi request = new HaeLaskennallinenAnturi();
+        request.setId(lotjuId);
+
+        final JAXBElement<HaeLaskennallinenAnturiResponse> response =
+            (JAXBElement<HaeLaskennallinenAnturiResponse>)
+                marshalSendAndReceive(objectFactory.createHaeLaskennallinenAnturi(request));
+
+        return response.getValue().getLaskennallinenAnturi();
+    }
 }

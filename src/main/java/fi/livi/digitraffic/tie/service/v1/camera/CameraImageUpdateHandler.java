@@ -3,10 +3,8 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -86,7 +84,7 @@ public class CameraImageUpdateHandler {
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageKey, isResultPublic);
 
-            cameraPresetService.updateCameraPresetAndHistory(kuva.getEsiasentoId(), isResultPublic, kuva.getJulkinen(), transferInfo);
+            cameraPresetService.updateCameraPresetAndHistoryWithLotjuId(kuva.getEsiasentoId(), isResultPublic, kuva.getJulkinen(), transferInfo);
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +

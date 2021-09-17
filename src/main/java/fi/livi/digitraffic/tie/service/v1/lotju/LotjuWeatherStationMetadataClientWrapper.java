@@ -76,6 +76,18 @@ public class LotjuWeatherStationMetadataClientWrapper {
         return lotjuWeatherStationClient.getAllTiesaaLaskennallinenAnturis();
     }
 
+    public TiesaaAsemaVO getTiesaaAsema(final long lotjuId) {
+        return lotjuWeatherStationClient.getTiesaaAsema(lotjuId);
+    }
+
+    public List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(final Long lotjuId) {
+        return lotjuWeatherStationClient.getTiesaaAsemanLaskennallisetAnturit(lotjuId);
+    }
+
+    public TiesaaLaskennallinenAnturiVO getTiesaaLaskennallinenAnturi(final Long lotjuId) {
+        return lotjuWeatherStationClient.getTiesaaLaskennallinenAnturi(lotjuId);
+    }
+
     private class LaskennallisetAnturitFetcher implements Callable<Integer> {
 
         private final Long tiesaaAsemaLotjuId;

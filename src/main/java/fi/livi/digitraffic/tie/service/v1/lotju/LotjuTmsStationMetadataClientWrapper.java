@@ -48,10 +48,20 @@ public class LotjuTmsStationMetadataClientWrapper {
         return lotjuTmsStationMetadataClient.getLamAsemas();
     }
 
+    public LamAsemaVO getLamAsema(final long tmsStationLotjuId) {
+        return lotjuTmsStationMetadataClient.getLamAsema(tmsStationLotjuId);
+    }
+
+    public LamLaskennallinenAnturiVO getLamLaskennallinenAnturi(final long lotjuId) {
+        return lotjuTmsStationMetadataClient.getLamLaskennallinenAnturi(lotjuId);
+    }
     public List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
         return lotjuTmsStationMetadataClient.getAllLamLaskennallinenAnturis();
     }
 
+    public List<LamLaskennallinenAnturiVO> getLamAsemanLaskennallisetAnturit(final long tmsLotjuId) {
+        return lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(tmsLotjuId);
+    }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 800000, maxErroExcecutionTime = 1000000)
     public Map<Long, List<LamLaskennallinenAnturiVO>> getLamLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
@@ -62,7 +72,7 @@ public class LotjuTmsStationMetadataClientWrapper {
 
         final StopWatch start = StopWatch.createStarted();
         for (final Long tmsLotjuId : tmsLotjuIds) {
-            completionService.submit(() -> Pair.of(tmsLotjuId, lotjuTmsStationMetadataClient.getTiesaaLaskennallinenAnturis(tmsLotjuId)));
+            completionService.submit(() -> Pair.of(tmsLotjuId, lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(tmsLotjuId)));
         }
 
         int countAnturis = 0;
@@ -89,6 +99,11 @@ public class LotjuTmsStationMetadataClientWrapper {
                  countAnturis, lamAnturisMappedByTmsLotjuId.size(), start.getTime());
         return lamAnturisMappedByTmsLotjuId;
     }
+
+    public LamAnturiVakioVO getLamAnturiVakio(final long anturiVakiolotjuId) {
+        return lotjuTmsStationMetadataClient.getLamAnturiVakio(anturiVakiolotjuId);
+    }
+
 
     @PerformanceMonitor(maxWarnExcecutionTime = 150000, maxErroExcecutionTime = 200000)
     public List<LamAnturiVakioVO> getAllLamAnturiVakios(final Collection<Long> tmsLotjuIds) {
@@ -123,6 +138,11 @@ public class LotjuTmsStationMetadataClientWrapper {
                  allAnturiVakios.size(), tmsLotjuIds.size(), start.getTime());
         return allAnturiVakios;
     }
+
+    public LamAnturiVakioArvoVO getLamAnturiVakioArvo(final long anturiVakioArvoLotjuId) {
+        return lotjuTmsStationMetadataClient.getAllAnturiVakioArvo(anturiVakioArvoLotjuId);
+    }
+
 
     @PerformanceMonitor(maxWarnExcecutionTime = 120000, maxErroExcecutionTime = 200000)
     public List<LamAnturiVakioArvoVO> getAllLamAnturiVakioArvos() {

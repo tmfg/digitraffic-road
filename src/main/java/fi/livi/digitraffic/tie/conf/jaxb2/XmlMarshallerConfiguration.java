@@ -14,7 +14,17 @@ public class XmlMarshallerConfiguration {
 
     @Bean
     public Jaxb2Marshaller kameraMetadataChangeJaxb2Marshaller() {
-        return createMarshaller("fi.livi.digitraffic.tie.lotju.xsd.metatietomuutos.kameratietovirta");
+        return createMarshaller("fi.livi.digitraffic.tie.external.lotju.metatietomuutos.kamera.tietovirta");
+    }
+
+    @Bean
+    public Jaxb2Marshaller lamMetadataChangeJaxb2Marshaller() {
+        return createMarshaller("fi.livi.digitraffic.tie.external.lotju.metatietomuutos.lam.tietovirta");
+    }
+
+    @Bean
+    public Jaxb2Marshaller tiesaaMetadataChangeJaxb2Marshaller() {
+        return createMarshaller("fi.livi.digitraffic.tie.external.lotju.metatietomuutos.tiesaa.tietovirta");
     }
 
     @Bean

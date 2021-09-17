@@ -13,10 +13,13 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationSensorUpdater;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
+import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
@@ -25,12 +28,15 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
     private static final Logger log = LoggerFactory.getLogger(WeatherStationSensorUpdater.class);
 
     private final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper;
+    private DataStatusService dataStatusService;
 
     @Autowired
     public WeatherStationSensorUpdater(final RoadStationSensorService roadStationSensorService,
-                                       final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper) {
+                                       final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper,
+                                       final DataStatusService dataStatusService) {
         super(roadStationSensorService);
         this.lotjuWeatherStationMetadataClientWrapper = lotjuWeatherStationMetadataClientWrapper;
+        this.dataStatusService = dataStatusService;
     }
 
     /**
@@ -46,6 +52,26 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         boolean updated = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
         log.info("method=updateRoadStationSensors Update weather RoadStationSensors end");
         return updated;
+    }
+
+    public boolean updateWeatherSensor(final Long lotjuId, final MetadataUpdatedMessageDto.UpdateType updateType) {
+        log.info("method=updateWeatherSensor start lotjuId={} type={}", lotjuId, updateType);
+
+        if (updateType.isDelete()) {
+            if (roadStationSensorService.obsoleteSensor(lotjuId, RoadStationType.WEATHER_STATION)) {
+                dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA);
+                return true;
+            }
+        } else {
+            final TiesaaLaskennallinenAnturiVO anturi = lotjuWeatherStationMetadataClientWrapper.getTiesaaLaskennallinenAnturi(lotjuId);
+            if (anturi == null) {
+                log.info("method=updateWeatherSensor Weather sensor with lotjuId={} not found", lotjuId);
+            } else if ( roadStationSensorService.updateOrInsert(anturi).isUpdateOrInsert() ) {
+                dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA);
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean updateAllRoadStationSensors(final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis) {
@@ -85,4 +111,6 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
     private static boolean validate(final TiesaaLaskennallinenAnturiVO anturi) {
         return anturi.getId() != null && anturi.getVanhaId() != null;
     }
+
+
 }

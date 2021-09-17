@@ -197,9 +197,9 @@ public class RoadStationSensorService {
      * @return Pair of deleted and inserted count of sensors for given weather station
      */
     @Transactional
-    public Pair<Integer, Integer> updateSensorsOfWeatherStations(final long roadStationId,
-                                                                 final RoadStationType roadStationType,
-                                                                 final List<Long> sensorslotjuIds) {
+    public Pair<Integer, Integer> updateSensorsOfRoadStation(final long roadStationId,
+                                                             final RoadStationType roadStationType,
+                                                             final List<Long> sensorslotjuIds) {
 
         final int deleted = sensorslotjuIds.isEmpty() ?
                                 roadStationSensorRepository.deleteRoadStationsSensors(roadStationId) :
@@ -273,6 +273,12 @@ public class RoadStationSensorService {
         update.where(cb.and(predicates.toArray(new Predicate[0])));
 
         return this.entityManager.createQuery(update).executeUpdate();
+    }
+
+    @Transactional
+    public boolean obsoleteSensor(final long lotjuId, final RoadStationType roadStationType) {
+        final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(roadStationType, lotjuId);
+        return sensor.obsolete();
     }
 
     private static boolean updateRoadStationSensorAttributes(final LamLaskennallinenAnturiVO from, final RoadStationSensor to) {
