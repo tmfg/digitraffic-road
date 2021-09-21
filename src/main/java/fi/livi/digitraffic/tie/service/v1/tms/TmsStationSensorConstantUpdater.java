@@ -40,7 +40,7 @@ public class TmsStationSensorConstantUpdater {
     public boolean updateTmsStationsSensorConstant(final long anturilotjuId,
                                                    final MetadataUpdatedMessageDto.UpdateType updateType) {
         if (updateType.isDelete()) {
-            if (tmsStationSensorConstantService.obsoleteSensorConstantValue(anturilotjuId)) {
+            if (tmsStationSensorConstantService.obsoleteSensorConstantWithLotjuId(anturilotjuId)) {
                 dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA);
                 return true;
             }
@@ -81,15 +81,15 @@ public class TmsStationSensorConstantUpdater {
 
     public boolean updateTmsStationsSensorConstantValue(final long lamAnturiVakioArvoLotjuId, final MetadataUpdatedMessageDto.UpdateType updateType) {
         if (updateType.isDelete()) {
-            if ( tmsStationSensorConstantService.obsoleteSensorConstantValue(lamAnturiVakioArvoLotjuId) ) {
+            if ( tmsStationSensorConstantService.obsoleteSensorConstantValueWithSensorConstantLotjuId(lamAnturiVakioArvoLotjuId) ) {
                 dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
                 return true;
             }
         } else {
-            final LamAnturiVakioArvoVO anturiVakioArvo = lotjuTmsStationMetadataClientWrapper.getLamAnturiVakioArvo(lamAnturiVakioArvoLotjuId);
-            if ( anturiVakioArvo == null ) {
-                log.warn("method=updateTmsStation TMS stationg sensor constant value with lotjuId={} not found", lamAnturiVakioArvoLotjuId);
-            } else if (tmsStationSensorConstantService.updateSensorConstantValue(anturiVakioArvo))  {
+            final List<LamAnturiVakioArvoVO> anturiVakioArvo = lotjuTmsStationMetadataClientWrapper.getAnturiVakioArvos(lamAnturiVakioArvoLotjuId);
+            if ( anturiVakioArvo.isEmpty() ) {
+                log.warn("method=updateTmsStationsSensorConstantValue sensor constant value with SensorConstant lotjuId={} not found", lamAnturiVakioArvoLotjuId);
+            } else if (tmsStationSensorConstantService.updateSingleSensorConstantValues(anturiVakioArvo))  {
                 dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
                 return true;
             }

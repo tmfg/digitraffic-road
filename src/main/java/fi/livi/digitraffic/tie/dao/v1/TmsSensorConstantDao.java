@@ -79,7 +79,7 @@ public class TmsSensorConstantDao {
             paramMap);
     }
 
-    public int obsoleteSensorConstant(final Long lotjuId) {
+    public int obsoleteSensorConstantWithLotjuId(final Long lotjuId) {
         final Map<String, Long> paramMap = Collections.singletonMap("id", lotjuId);
         return namedParameterJdbcTemplate.update(
             "UPDATE TMS_SENSOR_CONSTANT\n" +
@@ -108,7 +108,6 @@ public class TmsSensorConstantDao {
     }
 
     public int updateSensorConstantValues(final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos) {
-
 
         final ArrayList<Map<String, Object>> batchData = new ArrayList<>();
         allLamAnturiVakioArvos.forEach(v -> {
@@ -152,12 +151,12 @@ public class TmsSensorConstantDao {
             paramMap);
     }
 
-    public int obsoleteSensorConstantValue(final long lotjuId) {
-        final Map<String, Long> paramMap = Collections.singletonMap("id", lotjuId);
+    public int obsoleteSensorConstantValueWithSensorConstantLotjuId(final long sensorConstantLotjuId) {
+        final Map<String, Long> paramMap = Collections.singletonMap("sensorConstantLotjuId", sensorConstantLotjuId);
         return namedParameterJdbcTemplate.update(
             "UPDATE TMS_SENSOR_CONSTANT_VALUE\n" +
                 "SET OBSOLETE_DATE = now()\n" +
-                "WHERE lotju_id = (:id)\n" +
+                "WHERE sensor_constant_lotju_id = :sensorConstantLotjuId\n" +
                 "AND obsolete_date is null",
             paramMap);
     }

@@ -30,6 +30,10 @@ public class CameraMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
             }
             throw new IllegalArgumentException("Unknown EntityType " + value);
         }
+
+        public String getExternalValue() {
+            return externalValue;
+        }
     }
 
     private final EntityType entityType;

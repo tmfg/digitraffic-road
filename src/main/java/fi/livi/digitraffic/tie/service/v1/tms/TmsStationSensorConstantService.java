@@ -47,14 +47,15 @@ public class TmsStationSensorConstantService {
     }
 
     @Transactional(readOnly = true)
-    public boolean obsoleteSensorConstant(final long lotjuId) {
-        return tmsSensorConstantDao.obsoleteSensorConstant(lotjuId) > 0;
+    public boolean obsoleteSensorConstantWithLotjuId(final long lotjuId) {
+        return tmsSensorConstantDao.obsoleteSensorConstantWithLotjuId(lotjuId) > 0;
     }
 
     @Transactional
-    public boolean updateSensorConstantValue(final LamAnturiVakioArvoVO lamAnturiVakioArvo) {
-        final int upsert = tmsSensorConstantDao.updateSensorConstantValues(Collections.singletonList(lamAnturiVakioArvo));
-        log.info("method=updateSensorConstantValue upsert={}", upsert);
+    public boolean updateSingleSensorConstantValues(final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos) {
+        lamAnturiVakioArvos.forEach(v -> tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantLotjuId(v.getAnturiVakioId()));
+        final int upsert = tmsSensorConstantDao.updateSensorConstantValues(lamAnturiVakioArvos);
+        log.info("method=updateSingleSensorConstantValues upsert={}", upsert);
         return upsert > 0;
     }
 
@@ -68,8 +69,8 @@ public class TmsStationSensorConstantService {
     }
 
     @Transactional(readOnly = true)
-    public boolean obsoleteSensorConstantValue(final long lotjuId) {
-        return tmsSensorConstantDao.obsoleteSensorConstantValue(lotjuId) > 0;
+    public boolean obsoleteSensorConstantValueWithSensorConstantLotjuId(final long sensorConstantLotjuId) {
+        return tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantLotjuId(sensorConstantLotjuId) > 0;
     }
 
 

@@ -8,9 +8,15 @@ import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 public class MetadataUpdatedMessageDto {
 
     public enum UpdateType {
-        UPDATE, // PAIVITYS
-        INSERT, // LISAYS
-        DELETE; // POISTO
+        UPDATE("PAIVITYS"), // PAIVITYS
+        INSERT("LISAYS"), // LISAYS
+        DELETE("POISTO"); // POISTO
+
+        private final String externalValue;
+
+        UpdateType(final String externalValue) {
+            this.externalValue = externalValue;
+        }
 
         public static UpdateType fromExternalValue(final String name) {
             switch(name) {
@@ -27,6 +33,10 @@ public class MetadataUpdatedMessageDto {
 
         public boolean isDelete() {
             return this.equals(DELETE);
+        }
+
+        public String getExternalValue() {
+            return externalValue;
         }
     }
 

@@ -139,10 +139,41 @@ public class LotjuTmsStationMetadataClientWrapper {
         return allAnturiVakios;
     }
 
-    public LamAnturiVakioArvoVO getLamAnturiVakioArvo(final long anturiVakioArvoLotjuId) {
-        return lotjuTmsStationMetadataClient.getAllAnturiVakioArvo(anturiVakioArvoLotjuId);
-    }
+    public List<LamAnturiVakioArvoVO> getAnturiVakioArvos(final long anturiVakioArvoLotjuId) {
+        final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos = new ArrayList<>();
 
+        final ExecutorService executor = Executors.newFixedThreadPool(5);
+        final CompletionService<LamAnturiVakioArvoVO> completionService = new ExecutorCompletionService<>(executor);
+
+        final StopWatch start = StopWatch.createStarted();
+        int monthCounter = 0;
+        while (monthCounter < 12) {
+            monthCounter++;
+            final int month = monthCounter;
+            completionService.submit(() -> lotjuTmsStationMetadataClient.getAnturiVakioArvot(anturiVakioArvoLotjuId, month, 1));
+        }
+        log.info("method=getAnturiVakioArvos for {} months", monthCounter);
+
+        // It's necessary to wait all executors to complete.
+        for (int i = 0; i < monthCounter; i++) {
+            try {
+                final LamAnturiVakioArvoVO values = completionService.take().get();
+                lamAnturiVakioArvos.add(values);
+                log.debug("method=getAnturiVakioArvos {}/{}", lamAnturiVakioArvos.size(), monthCounter);
+            } catch (final InterruptedException | ExecutionException e) {
+                log.error("method=getAnturiVakioArvos Error while fetching LamAnturiVakioArvo", e);
+                executor.shutdownNow();
+                throw new RuntimeException(e);
+            }
+        }
+        executor.shutdown();
+
+        final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
+
+        log.info("method=getAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
+                 lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getTime());
+        return distincLamAnturiVakios;
+    }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 120000, maxErroExcecutionTime = 200000)
     public List<LamAnturiVakioArvoVO> getAllLamAnturiVakioArvos() {
@@ -152,7 +183,6 @@ public class LotjuTmsStationMetadataClientWrapper {
         final ExecutorService executor = Executors.newFixedThreadPool(5);
         final CompletionService<List<LamAnturiVakioArvoVO>> completionService = new ExecutorCompletionService<>(executor);
 
-
         final StopWatch start = StopWatch.createStarted();
         int monthCounter = 0;
         while (monthCounter < 12) {
@@ -160,34 +190,44 @@ public class LotjuTmsStationMetadataClientWrapper {
             final int month = monthCounter;
             completionService.submit(() -> lotjuTmsStationMetadataClient.getAllAnturiVakioArvos(month, 1));
         }
-        log.info("Fetch LamAnturiVakioArvos for {} months", monthCounter);
+        log.info("method=getAllLamAnturiVakioArvos Fetch LamAnturiVakioArvos for {} months", monthCounter);
 
-        int countLamAnturiVakioArvos = 0;
         // It's necessary to wait all executors to complete.
         for (int i = 0; i < monthCounter; i++) {
             try {
                 final List<LamAnturiVakioArvoVO> values = completionService.take().get();
-                countLamAnturiVakioArvos += values.size();
                 lamAnturiVakioArvos.addAll(values);
-                log.debug("Got {} LamAnturiVakioArvos, {}/{}", values.size(), i+1, monthCounter);
+                log.debug("method=getAllLamAnturiVakioArvos Got {} LamAnturiVakioArvos, {}/{}", values.size(), i+1, monthCounter);
             } catch (final InterruptedException | ExecutionException e) {
-                log.error("Error while fetching LamAnturiVakioArvos", e);
+                log.error("method=getAllLamAnturiVakioArvos Error while fetching LamAnturiVakioArvos", e);
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
         }
         executor.shutdown();
 
-        List<LamAnturiVakioArvoVO> distincLamAnturiVakios = lamAnturiVakioArvos.parallelStream()
+        final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
+
+        log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
+                 lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getTime());
+        return distincLamAnturiVakios;
+    }
+
+    /**
+     * When LamAnturiVakioArvos are fetched for every month there is distinct values ie.
+     * values that are valid from 6 x 1.1.–30.6. and 6 x 1.7.–31.12. So return value will
+     * contain only 1 x 1.1.–30.6. and 1 x 1.7.–31.12.
+     *
+     * Returns distinct LamAnturiVakioArvo
+     * @param lamAnturiVakioArvos values to reduce
+     * @return distinct values
+     */
+    private List<LamAnturiVakioArvoVO> filterDistinctLamAnturiVakioArvos(final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos) {
+        return lamAnturiVakioArvos.parallelStream()
             .map(LamAnturiVakioArvoWrapper::new)
             .distinct()
             .map(LamAnturiVakioArvoWrapper::unWrap)
             .collect(Collectors.toList());
-
-        log.debug("Distinct lamAnturiVakioArvos {} was before {}", distincLamAnturiVakios.size(), lamAnturiVakioArvos.size());
-        log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
-                 countLamAnturiVakioArvos, monthCounter, distincLamAnturiVakios.size(), start.getTime());
-        return distincLamAnturiVakios;
     }
 
     private class LamAnturiVakioArvoWrapper {

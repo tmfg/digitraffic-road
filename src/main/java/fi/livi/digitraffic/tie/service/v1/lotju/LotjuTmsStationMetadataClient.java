@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakio;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioArvot;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioArvotResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakio;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakioResponse;
@@ -76,7 +78,8 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
-    public LamLaskennallinenAnturiVO getLamLaskennallinenAnturi(final long lotjuId) {
+    @Retryable(maxAttempts = 5)
+    LamLaskennallinenAnturiVO getLamLaskennallinenAnturi(final long lotjuId) {
         final HaeLAMLaskennallinenAnturi request = new HaeLAMLaskennallinenAnturi();
         request.setId(lotjuId);
         final JAXBElement<HaeLAMLaskennallinenAnturiResponse> response = (JAXBElement<HaeLAMLaskennallinenAnturiResponse>)
@@ -106,7 +109,9 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         return response.getValue().getLaskennallinenAnturi();
     }
 
-    public LamAnturiVakioVO getLamAnturiVakio(final long anturiVakiolotjuId) {
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @Retryable(maxAttempts = 5)
+    LamAnturiVakioVO getLamAnturiVakio(final long anturiVakiolotjuId) {
         final HaeAnturiVakio haeAnturiVakioRequest = new HaeAnturiVakio();
         haeAnturiVakioRequest.setAnturiVakioId(anturiVakiolotjuId);
 
@@ -143,16 +148,18 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         return haeKaikkiAnturiVakioArvotResponse.getValue().getLamanturivakiot();
     }
 
-    public LamAnturiVakioArvoVO getAllAnturiVakioArvo(final long anturiVakioArvoLotjuId) {
-//        final HaeAnturiVakioArvo haeKaikkiAnturiVakioArvotRequest =
-//            new HaeKaikkiAnturiVakioArvot();
-//        haeKaikkiAnturiVakioArvotRequest.setKuukausi(month);
-//        haeKaikkiAnturiVakioArvotRequest.setPaiva(dayOfMonth);
-//
-//        final JAXBElement<HaeKaikkiAnturiVakioArvotResponse> haeKaikkiAnturiVakioArvotResponse =
-//            (JAXBElement<HaeKaikkiAnturiVakioArvotResponse>)
-//                marshalSendAndReceive(objectFactory.createHaeKaikkiAnturiVakioArvot(haeKaikkiAnturiVakioArvotRequest));
-//        return haeKaikkiAnturiVakioArvotResponse.getValue().getLamanturivakiot();
-        return null;
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @Retryable(maxAttempts = 5)
+    LamAnturiVakioArvoVO getAnturiVakioArvot(final long anturiVakioLotjuId, final int month, final int dayOfMonth) {
+        final HaeAnturiVakioArvot haeAnturiVakioArvot =
+            new HaeAnturiVakioArvot();
+        haeAnturiVakioArvot.setAnturiVakioId(anturiVakioLotjuId);
+        haeAnturiVakioArvot.setKuukausi(month);
+        haeAnturiVakioArvot.setPaiva(dayOfMonth);
+
+        final JAXBElement<HaeAnturiVakioArvotResponse> haeKaikkiAnturiVakioArvotResponse =
+            (JAXBElement<HaeAnturiVakioArvotResponse>)
+                marshalSendAndReceive(objectFactory.createHaeAnturiVakioArvot(haeAnturiVakioArvot));
+        return haeKaikkiAnturiVakioArvotResponse.getValue().getLamanturivakio();
     }
 }
