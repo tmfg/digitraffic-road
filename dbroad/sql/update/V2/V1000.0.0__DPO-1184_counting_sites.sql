@@ -25,6 +25,7 @@ create table counting_site_counter (
 
 alter table counting_site_counter add constraint counting_site_counter_domain_fkey foreign key (domain_name) references counting_site_domain(name);
 alter table counting_site_counter add constraint counting_site_counter_user_type_fkey foreign key (user_type) references counting_site_user_type(id);
+alter table counting_site_counter add constraint counting_site_domain_site_key unique (domain_name, site_id);
 
 create index counting_site_counter_domain_fk on counting_site_counter(domain_name);
 create index counting_site_counter_user_type_fk on counting_site_counter(user_type);
@@ -40,3 +41,17 @@ create table counting_site_data (
 alter table counting_site_data add constraint counting_site_data_counter_fkey foreign key (counter_id) references counting_site_counter(id);
 
 create index counting_site_data_site_fko on counting_site_counter(site_id);
+
+insert into counting_site_user_type(id, name)
+    values
+    	(1, 'pedestrian'),
+	    (2, 'bicycle'),
+	    (3, 'horse'),
+	    (4, 'car'),
+	    (5, 'bus'),
+	    (6, 'minibus'),
+	    (7, 'undefined'),
+	    (8, 'motorcycle'),
+	    (9, 'kayak'),
+	    (13, 'e-scooter'),
+	    (14, 'truck');
