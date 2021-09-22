@@ -27,6 +27,8 @@ alter table counting_site_counter add constraint counting_site_counter_domain_fk
 alter table counting_site_counter add constraint counting_site_counter_user_type_fkey foreign key (user_type) references counting_site_user_type(id);
 alter table counting_site_counter add constraint counting_site_domain_site_key unique (domain_name, site_id);
 
+create sequence counting_site_counter_id_seq;
+
 create index counting_site_counter_domain_fk on counting_site_counter(domain_name);
 create index counting_site_counter_user_type_fk on counting_site_counter(user_type);
 
@@ -39,6 +41,8 @@ create table counting_site_data (
 );
 
 alter table counting_site_data add constraint counting_site_data_counter_fkey foreign key (counter_id) references counting_site_counter(id);
+
+create sequence counting_site_data_id_seq;
 
 create index counting_site_data_site_fki on counting_site_counter(site_id);
 
