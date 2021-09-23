@@ -1,8 +1,8 @@
 create table counting_site_domain (
 	name 			text 	primary key,
 	description 	text,
-	added_date		timestamp(0) with time zone,
-	removed_date	timestamp(0) with time zone null
+	added_timestamp		timestamp(0) with time zone,
+	removed_timestamp	timestamp(0) with time zone null
 );
 
 create table counting_site_user_type (
@@ -11,16 +11,17 @@ create table counting_site_user_type (
 );
 
 create table counting_site_counter (
-	id				bigint 	    primary key,
-	site_id			integer,
-	domain_name		text,
-	site_domain		text,
-	location		geography(point),
-	user_type		smallint,
-	interval		smallint,
-	direction		smallint,
-	added_date		timestamp(0) with time zone,
-	removed_date	timestamp(0) with time zone null
+	id			    	bigint 	    primary key,
+	site_id			    integer,
+	domain_name	    	text,
+	site_domain 		text,
+	location		    geography(point),
+	user_type	    	smallint,
+	interval		    smallint,
+	direction		    smallint,
+	added_timestamp	    timestamp(0) with time zone,
+    last_data_timestamp timestamp(0) with time zone,
+	removed_timestamp	timestamp(0) with time zone null
 );
 
 alter table counting_site_counter add constraint counting_site_counter_domain_fkey foreign key (domain_name) references counting_site_domain(name);
