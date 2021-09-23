@@ -15,6 +15,7 @@ create table counting_site_counter (
 	site_id			    integer,
 	domain_name	    	text,
 	site_domain 		text,
+	name                text,
 	location		    geography(point),
 	user_type	    	smallint,
 	interval		    smallint,
