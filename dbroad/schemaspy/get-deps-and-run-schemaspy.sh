@@ -9,7 +9,9 @@ cd ${BASEDIR}
 echo "Running at dir $(pwd)"
 
 mkdir -p ${BASEDIR}/lib
-
+rm -f ${BASEDIR}/lib/schemaspy.jar
+rm -f ${BASEDIR}/lib/postgresql.jar
+rm -f ${BASEDIR}/lib/schemaspy.properties
 SS_JAR="${BASEDIR}/lib/schemaspy.jar"
 PG_JAR="${BASEDIR}/lib/postgresql.jar"
 
@@ -20,7 +22,7 @@ then
 else
     Z_FLAG=
 fi
-curl ${Z_FLAG} -o ${SS_JAR} -L https://github.com/schemaspy/schemaspy/releases/download/v6.0.0/schemaspy-6.0.0.jar
+curl ${Z_FLAG} -o ${SS_JAR} -L https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar
 
 if test -e ${PG_JAR}
 then
@@ -28,7 +30,7 @@ then
 else
     Z_FLAG=
 fi
-curl ${Z_FLAG} -o ${PG_JAR} -L https://jdbc.postgresql.org/download/postgresql-42.2.5.jar
+curl ${Z_FLAG} -o ${PG_JAR} -L https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
 
 # Copy default parameters, read command line parameters and replace in properties
 cp ${BASEDIR}/schemaspy-default.properties ${BASEDIR}/lib/schemaspy.properties
