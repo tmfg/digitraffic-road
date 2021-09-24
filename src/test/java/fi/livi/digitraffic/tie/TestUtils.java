@@ -59,16 +59,6 @@ public class TestUtils {
         return resourceLoader.getResource(pattern);
     }
 
-    public ArrayList<String> readResourceContents(final String resourcePattern) throws IOException {
-        final List<Resource> datex2Resources = loadResources(resourcePattern);
-        final ArrayList<String> contents = new ArrayList<>();
-
-        for (final Resource datex2Resource : datex2Resources) {
-            contents.add(FileUtils.readFileToString(datex2Resource.getFile(), StandardCharsets.UTF_8));
-        }
-        return contents;
-    }
-
     public static String readResourceContent(final String resourcePattern) throws IOException {
         final Resource resource = loadResource(resourcePattern);
         return FileUtils.readFileToString(resource.getFile(), StandardCharsets.UTF_8);

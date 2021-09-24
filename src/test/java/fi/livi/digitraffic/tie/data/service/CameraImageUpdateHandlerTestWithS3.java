@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static fi.livi.digitraffic.tie.TestUtils.loadResource;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -275,7 +276,7 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
 
     private byte[] readImageForIndex(final int index) {
         try {
-            final Resource resource = resourceLoader.getResource("classpath:lotju/kuva/" + index + "image.jpg");
+            final Resource resource = loadResource("classpath:lotju/kuva/" + index + "image.jpg");
             final InputStream imageIs = resource.getInputStream();
             return IOUtils.toByteArray(imageIs);
         } catch (IOException e) {
