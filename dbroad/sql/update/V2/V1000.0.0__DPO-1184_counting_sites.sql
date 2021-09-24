@@ -17,7 +17,7 @@ create table counting_site_counter (
 	site_domain 		text,
 	name                text,
 	location		    geography(point),
-	user_type	    	smallint,
+	user_type_id    	smallint,
 	interval		    smallint,
 	direction		    smallint,
 	added_timestamp	    timestamp(0) with time zone,
@@ -26,13 +26,13 @@ create table counting_site_counter (
 );
 
 alter table counting_site_counter add constraint counting_site_counter_domain_fkey foreign key (domain_name) references counting_site_domain(name);
-alter table counting_site_counter add constraint counting_site_counter_user_type_fkey foreign key (user_type) references counting_site_user_type(id);
+alter table counting_site_counter add constraint counting_site_counter_user_type_fkey foreign key (user_type_id) references counting_site_user_type(id);
 alter table counting_site_counter add constraint counting_site_domain_site_key unique (domain_name, site_id);
 
 create sequence counting_site_counter_id_seq;
 
-create index counting_site_counter_domain_fk on counting_site_counter(domain_name);
-create index counting_site_counter_user_type_fk on counting_site_counter(user_type);
+create index counting_site_counter_domain_fki on counting_site_counter(domain_name);
+create index counting_site_counter_user_type_fki on counting_site_counter(user_type_id);
 
 create table counting_site_data (
 	id					bigint	primary key,
