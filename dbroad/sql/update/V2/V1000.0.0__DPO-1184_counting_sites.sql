@@ -46,7 +46,7 @@ alter table counting_site_data add constraint counting_site_data_counter_fkey fo
 
 create sequence counting_site_data_id_seq;
 
-create index counting_site_data_site_fki on counting_site_counter(site_id);
+create index counting_site_data_counter_fki on counting_site_data(counter_id);
 
 insert into counting_site_user_type(id, name)
     values
