@@ -14,9 +14,10 @@ import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = {
     "config.test=true",
-    "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
     "testcontainers.disabled=true",
-    "spring.cloud.config.enabled=false"
+    "spring.cloud.config.enabled=false",
+    "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
+    "logging.level.com.tngtech.archunit=INFO"
 })
 public abstract class AbstractTest {
 
