@@ -12,7 +12,8 @@ import java.time.ZonedDateTime;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -24,7 +25,6 @@ import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.matcher.ZonedDateTimeMatcher;
 
-// Methods are in BetaController now
 public class CameraHistoryControllerTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(CameraHistoryControllerTest.class);
 

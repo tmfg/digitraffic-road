@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,9 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class ForeignKeyIndexTest extends AbstractServiceTest {
+public class ForeignKeyIndexTest extends AbstractJpaTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

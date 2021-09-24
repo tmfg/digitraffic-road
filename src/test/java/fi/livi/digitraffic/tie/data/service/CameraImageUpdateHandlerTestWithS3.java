@@ -22,13 +22,13 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Test;import org.mockito.invocation.InvocationOnMock;
+import org.junit.jupiter.api.Test;
+import org.mockito.invocation.InvocationOnMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.amazonaws.services.s3.model.S3Object;
@@ -46,7 +46,8 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateServic
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.ImageUpdateInfo;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+// TODO not test driven?
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3 {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateHandlerTestWithS3.class);

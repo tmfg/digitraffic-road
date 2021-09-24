@@ -1,5 +1,10 @@
 package fi.livi.digitraffic.tie.scheduler;
 
+import static fi.livi.digitraffic.tie.TestUtils.MIN_LOTJU_ID;
+import static fi.livi.digitraffic.tie.TestUtils.createEsiasentos;
+import static fi.livi.digitraffic.tie.TestUtils.createKamera;
+import static fi.livi.digitraffic.tie.TestUtils.createKameraJulkisuus;
+import static fi.livi.digitraffic.tie.TestUtils.getInstant;
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.JULKINEN;
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.VALIAIKAISESTI_SALAINEN;
 import static java.lang.Thread.sleep;

@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -26,16 +25,15 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class WeathercamControllerTest extends AbstractRestWebTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeathercamControllerTest.class);
 
-    @MockBean
-    private CameraPresetHistoryDataService cameraPresetHistoryDataService;
-
     @Autowired
     private WeathercamS3Properties weathercamS3Properties;
+
+    @MockBean
+    protected CameraPresetHistoryDataService cameraPresetHistoryDataServiceMock;
 
     private final String imageName = "C7777701.jpg";
     private final String versionId = "qwerty";
@@ -43,10 +41,10 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @Test
     public void getPublicImage() throws Exception {
 
-        Mockito.when(cameraPresetHistoryDataService.findHistoryVersionInclSecretInternal(eq(getPresetId(imageName)), eq(versionId)))
+        Mockito.when(cameraPresetHistoryDataServiceMock.findHistoryVersionInclSecretInternal(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, true, ZonedDateTime.now()));
 
-        Mockito.when(cameraPresetHistoryDataService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
+        Mockito.when(cameraPresetHistoryDataServiceMock.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.PUBLIC);
 
         MockHttpServletResponse response = requestImage(imageName, versionId);
@@ -56,10 +54,10 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @Test
     public void getSecretImage() throws Exception {
 
-        Mockito.when(cameraPresetHistoryDataService.findHistoryVersionInclSecretInternal(eq(getPresetId(imageName)), eq(versionId)))
+        Mockito.when(cameraPresetHistoryDataServiceMock.findHistoryVersionInclSecretInternal(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, false, ZonedDateTime.now()));
 
-        Mockito.when(cameraPresetHistoryDataService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
+        Mockito.when(cameraPresetHistoryDataServiceMock.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.SECRET);
 
         MockHttpServletResponse response = requestImage(imageName, versionId);
@@ -69,10 +67,10 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @Test
     public void getTooOldImage() throws Exception {
 
-        Mockito.when(cameraPresetHistoryDataService.findHistoryVersionInclSecretInternal(eq(getPresetId(imageName)), eq(versionId)))
+        Mockito.when(cameraPresetHistoryDataServiceMock.findHistoryVersionInclSecretInternal(eq(getPresetId(imageName)), eq(versionId)))
             .thenReturn(createHistory(imageName, versionId, true, ZonedDateTime.now().minusHours(25)));
 
-        Mockito.when(cameraPresetHistoryDataService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
+        Mockito.when(cameraPresetHistoryDataServiceMock.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.TOO_OLD);
 
         MockHttpServletResponse response = requestImage(imageName, versionId);
@@ -82,10 +80,10 @@ public class WeathercamControllerTest extends AbstractRestWebTest {
     @Test
     public void getNotExistingImage() throws Exception {
 
-        Mockito.when(cameraPresetHistoryDataService.findHistoryVersionInclSecretInternal(anyString(), anyString()))
+        Mockito.when(cameraPresetHistoryDataServiceMock.findHistoryVersionInclSecretInternal(anyString(), anyString()))
             .thenReturn(null);
 
-        Mockito.when(cameraPresetHistoryDataService.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
+        Mockito.when(cameraPresetHistoryDataServiceMock.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.NOT_FOUND);
 
         final MockHttpServletResponse response = requestImage(imageName, versionId);

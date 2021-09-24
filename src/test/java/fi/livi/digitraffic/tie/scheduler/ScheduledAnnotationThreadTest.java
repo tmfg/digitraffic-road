@@ -9,14 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 
 @TestPropertySource(properties = { "dt.scheduled.annotation.enabled=true" })
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS) // Kill all scheduled jobs after the test
-public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLocalStack {
+public class ScheduledAnnotationThreadTest extends AbstractDaemonTest {
 
     private static final Logger log = getLogger(ScheduledAnnotationThreadTest.class);
 
@@ -59,7 +57,7 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLoca
             scheduledJob1ErrorCount++;
             throw new RuntimeException("scheduledJob1 expected error at run " + count1);
         }
-        log.info("scheduledJob1: {}", count1);
+//        log.info("scheduledJob1: {}", count1);
     }
 
     @Scheduled(fixedRate = 10)
@@ -70,6 +68,6 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTestWithoutLoca
             scheduledJob2ErrorCount++;
             assertTrue("scheduledJob2 expected error at run " + count2, false);
         }
-        log.info("scheduledJob2: {}", count2);
+//        log.info("scheduledJob2: {}", count2);
     }
 }

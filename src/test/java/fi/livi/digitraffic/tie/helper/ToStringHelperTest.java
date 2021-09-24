@@ -1,15 +1,15 @@
 package fi.livi.digitraffic.tie.helper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
-import fi.livi.digitraffic.tie.AbstractSpringJUnitTest;
+import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-public class ToStringHelperTest extends AbstractSpringJUnitTest {
+public class ToStringHelperTest extends AbstractTest {
 
     @Test
     public void testKameraToString() {

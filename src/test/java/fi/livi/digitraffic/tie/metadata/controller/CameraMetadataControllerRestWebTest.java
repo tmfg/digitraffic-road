@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.controller;
 
+import static fi.livi.digitraffic.tie.TestUtils.generateDummyPreset;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_STATIONS_PATH;
@@ -17,17 +18,14 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
-import fi.livi.digitraffic.tie.service.RoadStationUpdateService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
-@Import(RoadStationUpdateService.class)
 public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
@@ -42,7 +40,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
                      "WHERE rs.obsolete_date is null " +
                      "  AND rs.road_station_type = '" + RoadStationType.CAMERA_STATION + "'").executeUpdate();
 
-        CameraPreset cp = generateDummyPreset();
+        final CameraPreset cp = generateDummyPreset();
 
         cameraPresetService.save(cp);
         // Persist to db and clear context to force saved data re-read from db

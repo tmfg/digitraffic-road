@@ -3,7 +3,13 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowWithoutMillisAtUtc;
 import static fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.MAX_IDS_SIZE;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -11,6 +17,7 @@ import static org.mockito.Mockito.verify;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,7 +46,8 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
@@ -55,7 +63,7 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
 
-public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLocalStack {
+public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     private static final Logger log = LoggerFactory.getLogger(CameraPresetHistoryServiceTest.class);
 
@@ -475,7 +483,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
 
         // Must end transaction to save different timestamps to db
         endTransactionAndStartNew();
-        sleep(1000);
+        sleep(10);
 
         // Generate 3 changes in the history
         IntStream.range(1,4).forEach(i -> {
@@ -505,7 +513,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
                 cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn, Collections.singletonList(cp1.getPresetId()))
                     .changes;
             final CameraHistoryChangesDto changesBeforeDto =
-                cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn.minusSeconds(1), Collections.singletonList(cp1.getPresetId()));
+                cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn.minus(600, ChronoUnit.MILLIS), Collections.singletonList(cp1.getPresetId()));
             final List<PresetHistoryChangeDto> changesBefore = changesBeforeDto.changes;
 
 
@@ -543,7 +551,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
 
     @Test
     public void presetNotPublicInPast() {
-        final CameraPreset preset = cameraPresetService.save(generateDummyPreset());
+        final CameraPreset preset = cameraPresetService.save(TestUtils.generateDummyPreset());
         final ZonedDateTime T1 = getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
         final ZonedDateTime T2 = T1.plusHours(1);
         final ZonedDateTime T3 = T1.plusHours(2);

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
+import static fi.livi.digitraffic.tie.TestUtils.generateDummyPreset;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

@@ -17,7 +17,7 @@ import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
  * https://www.archunit.org/userguide/html/000_Index.html
  */
 @TestPropertySource(properties = { "logging.level.com.tngtech.archunit=INFO" })
-public class ArchitectureTest extends AbstractServiceTest {
+public class ArchitectureTest extends AbstractTest {
 
     private final JavaClasses importedClasses = new ClassFileImporter().importPackages("fi.livi.digitraffic");
 

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
+import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static fi.livi.digitraffic.tie.service.datex2.V3Datex2JsonConverterTest.WORK_PHASE_ID;
 
 import java.io.IOException;
@@ -9,7 +10,6 @@ import java.util.Collections;
 
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.Area;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.AreaLocation;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.Feature;
@@ -48,7 +48,7 @@ public class ImsJsonMessageTestFactory {
         final ObjectReader readerForGeometry)
         throws IOException {
 
-        final String geometryJson = AbstractTest.readResourceContent("classpath:" + geometryPath);
+        final String geometryJson = readResourceContent("classpath:" + geometryPath);
         final Geometry<?> geometry = readerForGeometry.readValue(geometryJson);
         final fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.TrafficAnnouncementProperties
             properties = new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_12.TrafficAnnouncementProperties()
