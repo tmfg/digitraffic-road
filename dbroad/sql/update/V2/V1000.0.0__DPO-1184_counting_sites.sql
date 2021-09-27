@@ -1,28 +1,28 @@
 create table counting_site_domain (
 	name 			text 	primary key,
-	description 	text,
-	added_timestamp		timestamp(0) with time zone,
-	removed_timestamp	timestamp(0) with time zone null
+	description 	text    not null,
+	added_timestamp		timestamp(0) with time zone not null,
+	removed_timestamp	timestamp(0) with time zone
 );
 
 create table counting_site_user_type (
 	id				smallint	primary key,
-	name			text
+	name			text        not null
 );
 
 create table counting_site_counter (
 	id			    	bigint 	    primary key,
-	site_id			    integer,
-	domain_name	    	text,
-	site_domain 		text,
-	name                text,
-	location		    geography(point),
-	user_type_id    	smallint,
-	interval		    smallint,
-	direction		    smallint,
-	added_timestamp	    timestamp(0) with time zone,
+	site_id			    integer     not null,
+	domain_name	    	text        not null,
+	site_domain 		text        not null,
+	name                text        not null,
+	location		    geography(point)    not null,
+    user_type_id    	smallint    not null,
+	interval		    smallint    not null,
+	direction		    smallint    not null,
+	added_timestamp	    timestamp(0) with time zone not null,
     last_data_timestamp timestamp(0) with time zone,
-	removed_timestamp	timestamp(0) with time zone null
+	removed_timestamp	timestamp(0) with time zone
 );
 
 alter table counting_site_counter add constraint counting_site_counter_domain_fkey foreign key (domain_name) references counting_site_domain(name);
@@ -36,11 +36,11 @@ create index counting_site_counter_user_type_fki on counting_site_counter(user_t
 
 create table counting_site_data (
 	id					bigint	primary key,
-	counter_id			bigint,
-	interval            smallint,
-	data_timestamp		timestamp(0) with time zone,
-	count				integer null,
-	status				smallint null
+	counter_id			bigint  not null,
+	interval            smallint    not null,
+	data_timestamp		timestamp(0) with time zone not null,
+	count				integer,
+	status				smallint
 );
 
 alter table counting_site_data add constraint counting_site_data_counter_fkey foreign key (counter_id) references counting_site_counter(id);
