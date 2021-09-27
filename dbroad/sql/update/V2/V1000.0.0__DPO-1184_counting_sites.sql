@@ -37,6 +37,7 @@ create index counting_site_counter_user_type_fki on counting_site_counter(user_t
 create table counting_site_data (
 	id					bigint	primary key,
 	counter_id			bigint,
+	interval            smallint,
 	data_timestamp		timestamp(0) with time zone,
 	count				integer null,
 	status				smallint null
