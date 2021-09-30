@@ -43,8 +43,8 @@ public class TestUtils {
 
     public static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-    public static final int MIN_LOTJU_ID = 10000;
-    public static final int MAX_LOTJU_ID = 99999;
+    public static final int MIN_LOTJU_ID = 100000;
+    public static final int MAX_LOTJU_ID = 999999;
     public static final String PRESET_PRESENTATION_NAME = "PresentationName";
 
     public static Path getPath(final String filename) {

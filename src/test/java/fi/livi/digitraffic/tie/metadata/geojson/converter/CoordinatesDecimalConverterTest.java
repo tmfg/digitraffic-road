@@ -18,7 +18,6 @@ import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CoordinatesDecimalConverterTest extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(CoordinatesDecimalConverterTest.class);
 

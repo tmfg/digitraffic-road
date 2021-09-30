@@ -48,7 +48,6 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.ImageUpdateInfo;
 
 // TODO not test driven?
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3 {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateHandlerTestWithS3.class);
