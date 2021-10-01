@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,9 +21,6 @@ import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper;
-
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RegionGeometryDaoTest extends AbstractJpaTest {
     private static final Logger log = LoggerFactory.getLogger(RegionGeometryDaoTest.class);

@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,6 @@ import fi.livi.digitraffic.tie.conf.RoadApplicationConfiguration;
 @Transactional
 public abstract class AbstractJpaTest extends AbstractTest {
 
-
-
+    @PersistenceContext
+    protected EntityManager entityManager;
 }

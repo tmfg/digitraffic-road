@@ -20,7 +20,7 @@ then
 else
     Z_FLAG=
 fi
-curl ${Z_FLAG} -o ${SS_JAR} -L https://github.com/schemaspy/schemaspy/releases/download/v6.0.0/schemaspy-6.0.0.jar
+curl ${Z_FLAG} -o ${SS_JAR} -L https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar
 
 if test -e ${PG_JAR}
 then

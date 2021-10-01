@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
@@ -35,7 +34,6 @@ import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 
-@TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
 public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
     public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 
@@ -70,6 +68,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
 
         // Init same db-content
         builder = new SensorValueHistoryBuilder(repository, log)
+            .truncate()
             .setReferenceTime(time)
             .buildRandom(10, 10, 10, 0, min)
             .buildRandom(50, 10, 10, min + 1, min + 61)

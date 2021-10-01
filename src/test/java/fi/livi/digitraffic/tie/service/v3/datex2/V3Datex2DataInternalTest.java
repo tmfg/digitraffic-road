@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v3.datex2;
 
+import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.D2_MESSAGE_PLACEHOLDER;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.JSON_MESSAGE_PLACEHOLDER;
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Import;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.xml.transform.StringSource;
@@ -29,7 +29,6 @@ import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
-@Import({V3RegionGeometryDataService.class, TrafficMessageTestHelper.class})
 public class V3Datex2DataInternalTest extends AbstractServiceTest {
     private static final Logger log = getLogger(V3Datex2DataInternalTest.class);
 

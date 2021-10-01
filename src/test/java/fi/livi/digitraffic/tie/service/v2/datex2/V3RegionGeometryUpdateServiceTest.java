@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
@@ -29,8 +29,6 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 public class V3RegionGeometryUpdateServiceTest extends AbstractServiceTest {
     private static final Logger log = getLogger(V3RegionGeometryUpdateServiceTest.class);
 
-    @MockBean
-    private RegionGeometryGitClient regionGeometryGitClientMock;
     @Autowired
     private V3RegionGeometryUpdateService v3RegionGeometryUpdateService;
     @Autowired

@@ -1,14 +1,14 @@
 package fi.livi.digitraffic.tie.data.s3;
 
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.TestPropertySource;
-
 import java.io.IOException;
 
-@TestPropertySource(properties = { "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN" })
+import org.springframework.beans.factory.annotation.Value;
+
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+
+import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
+
 public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 {
 
     @Value("${metadata.server.path.image}")

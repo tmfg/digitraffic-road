@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.service;
 
+import static fi.livi.digitraffic.tie.TestUtils.loadResource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
@@ -9,12 +10,13 @@ import java.io.IOException;
 
 import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;import org.springframework.core.io.Resource;
+import org.junit.jupiter.api.Test;
+import org.springframework.core.io.Resource;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.service.ImageManipulationService;
 
-public class ImageManipulationServiceTest extends AbstractDaemonTestWithoutLocalStack {
+public class ImageManipulationServiceTest extends AbstractDaemonTest {
 
     @Test
     public void imageExifRemovalSuccess() throws IOException, ImagingException {

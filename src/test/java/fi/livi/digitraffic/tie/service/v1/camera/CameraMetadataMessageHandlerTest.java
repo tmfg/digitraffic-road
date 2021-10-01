@@ -14,21 +14,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto.EntityType;
 import fi.livi.digitraffic.tie.service.MetadataUpdatedMessageDto.UpdateType;
 
-public class CameraMetadataMessageHandlerTest extends AbstractDaemonTestWithoutLocalStack {
+public class CameraMetadataMessageHandlerTest extends AbstractDaemonTest {
 
     @Autowired
     private CameraMetadataMessageHandler cameraMetadataMessageHandler;
 
     @MockBean
-    CameraStationUpdater cameraStationUpdater;
+    CameraStationUpdater cameraStationUpdaterMock;
 
     @Test
     public void cameraMessagesShouldTriggerUpdate() {
@@ -65,31 +66,31 @@ public class CameraMetadataMessageHandlerTest extends AbstractDaemonTestWithoutL
     private void verifyMessageWontTriggersUpdate(final UpdateType updateType,
                                                  final EntityType entityType) {
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(entityType, updateType));
-        verifyNoInteractions(cameraStationUpdater);
+        verifyNoInteractions(cameraStationUpdaterMock);
     }
 
     private void verifyCameraMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraStationFromJms(1L)).thenReturn(true);
+        when(cameraStationUpdaterMock.updateCameraStationFromJms(1L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.CAMERA, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraStationFromJms(eq(1L));
-        verifyNoMoreInteractions(cameraStationUpdater);
-        reset(cameraStationUpdater);
+        verify(cameraStationUpdaterMock, times(1)).updateCameraStationFromJms(eq(1L));
+        verifyNoMoreInteractions(cameraStationUpdaterMock);
+        reset(cameraStationUpdaterMock);
     }
 
     private void verifyPresetaMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraPresetFromJms(1L)).thenReturn(true);
+        when(cameraStationUpdaterMock.updateCameraPresetFromJms(1L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.PRESET, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraPresetFromJms(eq(1L));
-        verifyNoMoreInteractions(cameraStationUpdater);
-        reset(cameraStationUpdater);
+        verify(cameraStationUpdaterMock, times(1)).updateCameraPresetFromJms(eq(1L));
+        verifyNoMoreInteractions(cameraStationUpdaterMock);
+        reset(cameraStationUpdaterMock);
     }
 
     private void verifyRoadAddressMessageTriggersUpdate(final UpdateType updateType) {
-        when(cameraStationUpdater.updateCameraStationFromJms(2L)).thenReturn(true);
+        when(cameraStationUpdaterMock.updateCameraStationFromJms(2L)).thenReturn(true);
         cameraMetadataMessageHandler.updateCameraMetadata(createMessage(EntityType.ROAD_ADDRESS, updateType));
-        verify(cameraStationUpdater, times(1)).updateCameraStationFromJms(eq(2L));
-        verifyNoMoreInteractions(cameraStationUpdater);
-        reset(cameraStationUpdater);
+        verify(cameraStationUpdaterMock, times(1)).updateCameraStationFromJms(eq(2L));
+        verifyNoMoreInteractions(cameraStationUpdaterMock);
+        reset(cameraStationUpdaterMock);
     }
 
     private List<CameraMetadataUpdatedMessageDto> createMessage(final EntityType entityType, final UpdateType updateType) {
