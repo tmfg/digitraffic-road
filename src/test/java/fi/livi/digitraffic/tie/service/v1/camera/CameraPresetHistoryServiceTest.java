@@ -34,6 +34,7 @@ import javax.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.TestUtils;
@@ -95,8 +95,15 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
     private String s3WeathercamRegion;
 
     @BeforeEach
-    public void cleanHistory() {
+    public void initData() {
         cameraPresetHistoryRepository.deleteAll();
+        final List<List<CameraPreset>> cs = TestUtils.generateDummyCameraStations(4,2);
+        cs.forEach(camera -> camera.forEach(preset -> entityManager.persist(preset)));
+    }
+
+    @AfterEach
+    public void clearData() {
+        TestUtils.truncateCameraData(entityManager);
     }
 
     @Test
@@ -482,7 +489,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         final List<CameraPresetHistory> allBefore = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp1.getPresetId());
 
         // Must end transaction to save different timestamps to db
-        endTransactionAndStartNew();
+        TestUtils.endTransactionAndStartNew();
         sleep(10);
 
         // Generate 3 changes in the history
@@ -495,7 +502,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
             changeTimes.add(h.getLastModified());
             cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs1);
             // Must end transaction to save different timestamps to db
-            endTransactionAndStartNew();
+            TestUtils.endTransactionAndStartNew();
             sleep(1000);
         });
         flushAndClearSession();
@@ -679,12 +686,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     private static List<String> generateCameraIds(final int count) {
         return IntStream.range(0, count).mapToObj(i -> String.format("C%s", StringUtils.leftPad(String.valueOf(i), 5, "0"))).collect(Collectors.toList());
-    }
-
-    private void endTransactionAndStartNew() {
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        TestTransaction.start();
     }
 
     private void flushAndClearSession() {

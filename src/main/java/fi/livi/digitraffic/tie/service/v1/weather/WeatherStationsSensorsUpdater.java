@@ -84,7 +84,7 @@ public class WeatherStationsSensorsUpdater {
             WeatherStation ws = pair.getKey();
             final List<TiesaaLaskennallinenAnturiVO> anturis = pair.getRight();
             final List<Long> sensorslotjuIds = anturis.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(ws.getRoadStationId(),
+            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfRoadStation(ws.getRoadStationId(),
                                                                                                              RoadStationType.WEATHER_STATION,
                                                                                                              sensorslotjuIds);
             countRemoved += deletedInserted.getLeft();

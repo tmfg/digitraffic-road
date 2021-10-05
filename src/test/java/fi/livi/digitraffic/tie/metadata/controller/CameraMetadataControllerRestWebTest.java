@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
@@ -33,16 +31,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @BeforeEach
     public void initData() {
-        // Obsolete all existing stations
-        entityManager.createNativeQuery(
-            "UPDATE road_station rs " +
-                     "SET obsolete_date = now() " +
-                     "WHERE rs.obsolete_date is null " +
-                     "  AND rs.road_station_type = '" + RoadStationType.CAMERA_STATION + "'").executeUpdate();
-
-        final CameraPreset cp = generateDummyPreset();
-
-        cameraPresetService.save(cp);
+        cameraPresetService.save(generateDummyPreset());
         // Persist to db and clear context to force saved data re-read from db
         entityManager.flush();
         entityManager.clear();

@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
-import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.dto.v1.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
@@ -112,7 +111,7 @@ public class MetadataController {
                                                                                                                 MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationFeature tmsStationsByTmsNumber(
-        @PathVariable("number") final Long tmsNumber) throws NonPublicRoadStationException {
+        @PathVariable("number") final Long tmsNumber) {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
@@ -126,7 +125,7 @@ public class MetadataController {
         @PathVariable("number") final Integer roadNumber,
         @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
         @RequestParam(value = "state", required = false, defaultValue = "active")
-        final String stateString) throws NonPublicRoadStationException {
+        final String stateString) {
 
         final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
 
@@ -141,7 +140,7 @@ public class MetadataController {
                         @ApiResponse(code = 404, message = "Road Station not found") })
     public TmsStationFeature tmsStationsByRoadStationId(
         @ApiParam("TMS station id")
-        @PathVariable("id") final Long id) throws NonPublicRoadStationException {
+        @PathVariable("id") final Long id) {
         return tmsStationService.getTmsStationByRoadStationId(id);
     }
 

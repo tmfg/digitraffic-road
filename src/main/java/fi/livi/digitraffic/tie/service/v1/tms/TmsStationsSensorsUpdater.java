@@ -84,7 +84,7 @@ public class TmsStationsSensorsUpdater {
             final List<LamLaskennallinenAnturiVO> anturis = pair.getRight();
             try {
                 final List<Long> sensorslotjuIds = anturis.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-                final Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(tms.getRoadStationId(),
+                final Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfRoadStation(tms.getRoadStationId(),
                     RoadStationType.TMS_STATION,
                     sensorslotjuIds);
                 countRemoved += deletedInserted.getLeft();
