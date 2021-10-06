@@ -19,9 +19,9 @@ mqtt.server.keepAlive=30
 # Lotju SOAP APIs. If health is empty then health check is not performed.
 metadata.server.addresses=http://localhost:9011
 metadata.server.path.health=/healthcheck
-metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5
+metadata.server.path.tms=/LOTJU/LAMMetatiedot/v7
 metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
-metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v4
+metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v6
 metadata.server.path.image = /LOTJU/KameraKuvavarasto
 metadata.server.health.ttlInSeconds = 10
 metadata.server.image.ttlInSeconds = 10

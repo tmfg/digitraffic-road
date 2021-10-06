@@ -545,7 +545,7 @@
                             <wsdlOptions>
                                 <!-- Tiesääasemien staattiset tiedot / The static information of the road weather stations -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v4/TiesaaPerustiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v6/TiesaaMetatiedot.wsdl</wsdl>
                                     <packagenames>
                                         <packagename>fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa</packagename>
                                     </packagenames>
@@ -553,7 +553,7 @@
 
                                 <!-- LAM-pisteiden staattiset tiedot / The static information of the Traffic Flow Measurement System (TMS) -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v5/LAMMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v7/LAMMetatiedot.wsdl</wsdl>
                                     <packagenames>
                                         <packagename>fi.livi.digitraffic.tie.external.lotju.metadata.lam</packagename>
                                     </packagenames>
@@ -561,7 +561,7 @@
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of the weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v7/KameraPerustiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v7/KameraMetatiedot.wsdl</wsdl>
                                     <packagenames>
                                         <packagename>fi.livi.digitraffic.tie.external.lotju.metadata.kamera</packagename>
                                     </packagenames>

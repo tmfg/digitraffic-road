@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiLaskennallisetAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2017/05/02">
+<ns2:HaeKaikkiLaskennallisetAnturitResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2019/09/27">
     <ns2:laskennallinenAnturi>
         <id>54</id>
         <b>220</b>

@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiAnturiVakioArvotResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2018/03/12">
+<ns2:HaeKaikkiAnturiVakioArvotResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/LAMmetatiedot/2020/10/07">
     <!-- Lam 1 -->
     <!-- VVAPAAS1 -->
     <ns2:lamanturivakiot>

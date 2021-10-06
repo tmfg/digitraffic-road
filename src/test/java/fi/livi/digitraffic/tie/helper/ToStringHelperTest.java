@@ -1,15 +1,15 @@
 package fi.livi.digitraffic.tie.helper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
-import fi.livi.digitraffic.tie.AbstractSpringJUnitTest;
+import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-public class ToStringHelperTest extends AbstractSpringJUnitTest {
+public class ToStringHelperTest extends AbstractTest {
 
     @Test
     public void testKameraToString() {
@@ -45,7 +45,7 @@ public class ToStringHelperTest extends AbstractSpringJUnitTest {
         tsa.setVanhaId(23210);
         tsa.setNimi("L_vt12_Vammala");
         assertEquals(
-                "{\"class\":\"TiesaaAsemaVO\",\"aliasemaId\":null,\"antureillaKaapelikaivo\":null,\"antureillaPutkitukset\":null,\"anturiliitantaHuoltotarranMerkinnat\":null,\"anturiliitantaSarjanumero\":null,\"anturiliitantaValmistusviikko\":null,\"anturiliitantaValmistusvuosi\":null,\"anturiliitantayksikko\":null,\"ip\":null,\"kaapelikaivonKunto\":null,\"kehikko\":null,\"kehikonHuoltotarranMerkinnat\":null,\"kehikonSarjanumero\":null,\"kehikonValmistusviikko\":null,\"kehikonValmistusvuosi\":null,\"lisakuvaus\":null,\"master\":null,\"merkittavyys\":null,\"portti\":null,\"putkienMateriaali\":null,\"tyyppi\":null,\"ymparistoKuvaus\":null,\"aikakatkaisu\":null,\"aikavyohyke\":null,\"aliverkonPeite\":null,\"alkamisPaiva\":null,\"asemanSijainti\":null,\"asemanTila\":null,\"hankeId\":null,\"huoltoPuutteet\":null,\"huoltolevikkeenEtaisyysAsemasta\":null,\"julkinen\":null,\"keruuVali\":null,\"keruunTila\":null,\"korjaushuolto\":null,\"kunta\":null,\"kuntaKoodi\":null,\"laitekaappiId\":null,\"lisatieto\":null,\"liviId\":null,\"maa\":null,\"maakunta\":null,\"maakuntaKoodi\":null,\"nimiEn\":null,\"nimiFi\":null,\"nimiSe\":null,\"ohjelmistoversio\":null,\"paattymisPaiva\":null,\"riittavanKokoinenHuoltolevike\":null,\"synkronoituTierekisteriin\":null,\"vanhaId\":23210,\"verkkolaiteId\":null,\"vuosihuolto\":null,\"yhdyskaytava\":null,\"yhteysTapa\":null,\"korkeus\":null,\"latitudi\":null,\"longitudi\":null,\"tieosoite\":null,\"kuvaus\":null,\"nimi\":\"L_vt12_Vammala\",\"takuunPaattymisPvm\":null,\"id\":607,\"luonut\":null,\"luotu\":null,\"muokattu\":null,\"muokkaaja\":null}",
+                "{\"class\":\"TiesaaAsemaVO\",\"aliasemaId\":null,\"antureillaKaapelikaivo\":null,\"antureillaPutkitukset\":null,\"anturiliitantaHuoltotarranMerkinnat\":null,\"anturiliitantaSarjanumero\":null,\"anturiliitantaValmistusviikko\":null,\"anturiliitantaValmistusvuosi\":null,\"anturiliitantayksikko\":null,\"ip\":null,\"kaapelikaivonKunto\":null,\"kayttajatunnus\":null,\"kehikko\":null,\"kehikonHuoltotarranMerkinnat\":null,\"kehikonSarjanumero\":null,\"kehikonValmistusviikko\":null,\"kehikonValmistusvuosi\":null,\"lisakuvaus\":null,\"master\":null,\"merkittavyys\":null,\"portti\":null,\"putkienMateriaali\":null,\"salasana\":null,\"tyyppi\":null,\"ymparistoKuvaus\":null,\"aikakatkaisu\":null,\"aikavyohyke\":null,\"aliverkonPeite\":null,\"alkamisPaiva\":null,\"asemanSijainti\":null,\"asemanTila\":null,\"hankeId\":null,\"huoltoPuutteet\":null,\"huoltolevikkeenEtaisyysAsemasta\":null,\"julkinen\":null,\"keruuVali\":null,\"keruunTila\":null,\"korjaushuolto\":null,\"kunta\":null,\"kuntaKoodi\":null,\"laitekaappiId\":null,\"lisatieto\":null,\"liviId\":null,\"maa\":null,\"maakunta\":null,\"maakuntaKoodi\":null,\"nimiEn\":null,\"nimiFi\":null,\"nimiSe\":null,\"ohjelmistoversio\":null,\"paattymisPaiva\":null,\"riittavanKokoinenHuoltolevike\":null,\"synkronoituTierekisteriin\":null,\"vanhaId\":23210,\"verkkolaiteId\":null,\"vuosihuolto\":null,\"yhdyskaytava\":null,\"yhteysTapa\":null,\"korkeus\":null,\"latitudi\":null,\"longitudi\":null,\"tieosoite\":null,\"kuvaus\":null,\"nimi\":\"L_vt12_Vammala\",\"takuunPaattymisPvm\":null,\"id\":607,\"luonut\":null,\"luotu\":null,\"muokattu\":null,\"muokkaaja\":null}",
                 ToStringHelper.toStringFull(tsa));
     }
 

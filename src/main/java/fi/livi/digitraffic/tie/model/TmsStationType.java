@@ -9,6 +9,7 @@ public enum TmsStationType {
     DSL_4("DSL_4"),
     DSL_6("DSL_6"),
     E_18("E18"),
+    LML_1("LML_1"),
     OLD("OLD"),
 
     // legacy values
