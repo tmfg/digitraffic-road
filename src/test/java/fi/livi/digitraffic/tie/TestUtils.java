@@ -28,6 +28,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
@@ -315,9 +316,15 @@ public class TestUtils {
         entityManager.flush();
     }
 
-    public static void endTransactionAndStartNew() {
+    public static void commitAndEndTransactionAndStartNew() {
         TestTransaction.flagForCommit();
-        TestTransaction.end();
+        try {
+            TestTransaction.end();
+        } catch (final UnexpectedRollbackException e) {
+            // Don't care as now transaction is rolled back and ended
+            // This sometimes happens in test cleanup as the transaction is marked as roll back only and is ok
+        }
         TestTransaction.start();
+        TestTransaction.flagForCommit();
     }
 }

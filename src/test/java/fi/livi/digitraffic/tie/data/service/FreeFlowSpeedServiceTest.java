@@ -37,7 +37,7 @@ public class FreeFlowSpeedServiceTest extends AbstractServiceTest {
         final TmsStation tms = TestUtils.generateDummyTmsStation();
         entityManager.persist(tms);
         entityManager.flush();
-        TestUtils.endTransactionAndStartNew(); // Native queries must see commits
+        TestUtils.commitAndEndTransactionAndStartNew(); // Native queries must see commits
 
         final LamAnturiVakioVO vakio1 = TestUtils.createLamAnturiVakio(tms.getLotjuId(), "VVAPAAS1");
         final LamAnturiVakioVO vakio2 = TestUtils.createLamAnturiVakio(tms.getLotjuId(), "VVAPAAS2");
@@ -57,7 +57,7 @@ public class FreeFlowSpeedServiceTest extends AbstractServiceTest {
     @AfterEach
     public void cleanDb() {
         TestUtils.truncateTmsData(entityManager);
-        TestUtils.endTransactionAndStartNew(); // persist changes
+        TestUtils.commitAndEndTransactionAndStartNew(); // persist changes
     }
 
     @Test

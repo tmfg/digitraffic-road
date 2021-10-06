@@ -13,11 +13,11 @@ import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.matcher.ZonedDateTimeMatcher;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
@@ -39,18 +38,18 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
 
     private static final int IMAGE_SIZE = 100000;
 
-    @Autowired
-    private CameraPresetHistoryRepository cameraPresetHistoryRepository;
-
     private List<List<CameraPreset>> cameras3Presets2;
 
     @BeforeEach
     public void initData() {
-        TestUtils.truncateCameraData(entityManager);
-        TestUtils.endTransactionAndStartNew();
-        cameraPresetHistoryRepository.deleteAll();
         cameras3Presets2 = TestUtils.generateDummyCameraStations(3,2);
         cameras3Presets2.forEach(cameraPresets -> cameraPresets.forEach(preset -> entityManager.persist(preset)));
+    }
+
+    @AfterEach
+    public void clearData() {
+        TestUtils.truncateCameraData(entityManager);
+        TestUtils.commitAndEndTransactionAndStartNew();
     }
 
     private ResultActions getJson(final String url) throws Exception {
@@ -98,7 +97,6 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         getJson("/history?id=" + presetId)
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(0)));
-        ;
     }
 
     @Test
@@ -141,7 +139,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     @Test
     public void historyAtGivenTime() throws Exception {
         final String presetId = cameras3Presets2.get(0).get(0).getPresetId();
-        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();;
+        final ZonedDateTime now = getZonedDateTimeNowAtUtcWithoutMillis();
         insertTestData(presetId, now);
         final String versionId = insertTestData(presetId, now.minusHours(1));
 

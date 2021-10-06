@@ -34,6 +34,7 @@ import javax.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -97,13 +98,17 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
     @BeforeEach
     public void initData() {
         cameraPresetHistoryRepository.deleteAll();
-        final List<List<CameraPreset>> cs = TestUtils.generateDummyCameraStations(4,2);
-        cs.forEach(camera -> camera.forEach(preset -> entityManager.persist(preset)));
+        TestUtils.generateDummyCameraStations(4,2)
+            .forEach(camera -> camera.forEach(preset -> entityManager.persist(preset)));
+        entityManager.flush();
     }
 
     @AfterEach
     public void clearData() {
+        final StopWatch sw = StopWatch.createStarted();
+        TestUtils.commitAndEndTransactionAndStartNew();
         TestUtils.truncateCameraData(entityManager);
+        TestUtils.commitAndEndTransactionAndStartNew(); // make sure db is cleaned
     }
 
     @Test
@@ -152,16 +157,14 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     @Test
     public void illegalIdParameter() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Arrays.asList("C12345", "C1234"), null);
-        });
+        assertThrows(IllegalArgumentException.class, () ->
+            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Arrays.asList("C12345", "C1234"), null));
     }
 
     @Test
     public void tooLongListOfIdParameters() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE + 1), null);
-        });
+        assertThrows(IllegalArgumentException.class, () ->
+            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE + 1), null));
     }
 
     @Test
@@ -274,17 +277,17 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
     @Test
     public void findCameraOrPresetHistoryPresencesNullId() {
         final List<String> presetIds = generateHistoryForPublicPresets(5, 1);
-        CameraPresetHistory secret = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetIds.get(0)).get(0);
+        final CameraPresetHistory secret = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetIds.get(0)).get(0);
         secret.setPublishable(false);
         entityManager.flush();
 
-        CameraHistoryPresencesDto allCameraPresences =
+        final CameraHistoryPresencesDto allCameraPresences =
             cameraPresetHistoryDataService.findCameraOrPresetHistoryPresences(null, null, null);
-        List<PresetHistoryPresenceDto> allPresetPresences =
+        final List<PresetHistoryPresenceDto> allPresetPresences =
             allCameraPresences.cameraHistoryPresences.stream().flatMap(c -> c.presetHistoryPresences.stream()).collect(Collectors.toList());
 
         // Secret can't be found
-        Optional<PresetHistoryPresenceDto> secretPresence =
+        final Optional<PresetHistoryPresenceDto> secretPresence =
             allPresetPresences.stream().filter(h -> h.getPresetId().equals(secret.getPresetId())).findFirst();
         assertTrue(secretPresence.isPresent());
         assertFalse(secretPresence.get().isHistoryPresent());
@@ -489,7 +492,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         final List<CameraPresetHistory> allBefore = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp1.getPresetId());
 
         // Must end transaction to save different timestamps to db
-        TestUtils.endTransactionAndStartNew();
+        TestUtils.commitAndEndTransactionAndStartNew();
         sleep(10);
 
         // Generate 3 changes in the history
@@ -502,7 +505,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
             changeTimes.add(h.getLastModified());
             cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs1);
             // Must end transaction to save different timestamps to db
-            TestUtils.endTransactionAndStartNew();
+            TestUtils.commitAndEndTransactionAndStartNew();
             sleep(1000);
         });
         flushAndClearSession();

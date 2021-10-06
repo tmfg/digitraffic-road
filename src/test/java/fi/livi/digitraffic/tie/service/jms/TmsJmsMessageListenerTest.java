@@ -78,7 +78,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     public void initData() {
         TestUtils.generateDummyTmsStations(50).forEach(s -> entityManager.persist(s));
         entityManager.flush();
-        TestUtils.endTransactionAndStartNew();
+        TestUtils.commitAndEndTransactionAndStartNew();
     }
 
     /**
@@ -89,7 +89,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
         final Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
         final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater = createLamJMSDataUpdater();
-        final JMSMessageListener tmsJmsMessageListener = createTmsJmsMessageListener(dataUpdater);
+        final JMSMessageListener<LAMRealtimeProtos.Lam> tmsJmsMessageListener = createTmsJmsMessageListener(dataUpdater);
         final List<RoadStationSensor> publishableSensors = findPublishableRoadStationSensors(RoadStationType.TMS_STATION);
 
         Iterator<TmsStation> stationsIter = lamsWithLotjuId.values().iterator();

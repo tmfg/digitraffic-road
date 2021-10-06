@@ -57,7 +57,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     @AfterEach
     public void cleanDb() {
         TestUtils.truncateCameraData(entityManager);
-        TestUtils.endTransactionAndStartNew();
+        TestUtils.commitAndEndTransactionAndStartNew();
     }
 
     @Test
@@ -162,7 +162,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     private void checkAllPublishableCameraPresetsContainsOnly(long ... lotjuIds) {
         // End current transaction and starts new as query uses current_timestamp from db
         // and it is same as transaction start time.
-        TestUtils.endTransactionAndStartNew();
+        TestUtils.commitAndEndTransactionAndStartNew();
         // uses current_timestamp
         final List<CameraPreset> allPublishable = cameraPresetService.findAllPublishableCameraPresets();
         final List<Long> publishableLotjuIds = allPublishable.stream().map(CameraPreset::getLotjuId).collect(Collectors.toList());
