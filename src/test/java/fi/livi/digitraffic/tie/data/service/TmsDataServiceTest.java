@@ -1,17 +1,16 @@
 package fi.livi.digitraffic.tie.data.service;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyCollectionOf;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsStationDto;
+import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -26,8 +25,14 @@ public class TmsDataServiceTest extends AbstractServiceTest {
     @Autowired
     private DataStatusService dataStatusService;
 
+    private long tmsId;
+
     @BeforeEach
     public void updateData() {
+        TestUtils.generateDummyTmsStations(2).forEach(s -> {
+            tmsId = s.getRoadStationNaturalId();
+            entityManager.persist(s);
+        });
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
     }
 
@@ -36,16 +41,15 @@ public class TmsDataServiceTest extends AbstractServiceTest {
         final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(false);
         assertNotNull(object);
         assertNotNull(object.dataUpdatedTime);
-        assertNotNull(object.getTmsStations());
+        AssertHelper.assertCollectionSize(2, object.getTmsStations());
     }
 
     @Test
     public void findPublishableTmsDataById() {
-        final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(23801);
+        final TmsRootDataObjectDto object = tmsDataService.findPublishableTmsData(tmsId);
         assertNotNull(object);
         assertNotNull(object.dataUpdatedTime);
-        assertNotNull(object.getTmsStations());
-        assertThat(object.getTmsStations(), not(emptyCollectionOf(TmsStationDto.class)));
+        AssertHelper.assertCollectionSize(1, object.getTmsStations());
     }
 
     @Test

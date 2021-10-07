@@ -8,15 +8,54 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.v1.WeatherStation;
+import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWebTest {
+
+    @Autowired
+    private RoadStationSensorService roadStationSensorService;
+
+    @Autowired
+    private DataStatusService dataStatusService;
+
+    @BeforeEach
+    public void initData() {
+        final WeatherStation ws = TestUtils.generateDummyWeatherStation();
+        entityManager.persist(ws);
+
+        final List<RoadStationSensor> publishable =
+            roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
+
+        assertFalse(publishable.isEmpty());
+
+        roadStationSensorService.updateSensorsOfRoadStation(
+            ws.getRoadStationId(),
+            RoadStationType.WEATHER_STATION,
+            publishable.stream().map(RoadStationSensor::getLotjuId)
+                .collect(Collectors.toList()));
+
+//        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
+    }
+
 
 
     @Test

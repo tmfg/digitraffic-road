@@ -1,5 +1,11 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -9,11 +15,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.datex2.Accident;
 import fi.livi.digitraffic.tie.datex2.Comment;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -25,8 +33,6 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class Datex2HelperTest extends AbstractServiceTest {
 
@@ -128,7 +134,7 @@ public class Datex2HelperTest extends AbstractServiceTest {
     private Situation createSituationWithComment(final String[] token) {
         final String tokenToUse =
             token == null ? "" :
-                            token[getRandom(0, token.length)];
+                            token[TestUtils.getRandom(0, token.length)];
         final Instant now = Instant.now();
         final Situation s = createSituationWithRecordsVersionTimes(now.minusSeconds(60 * 2), now.minusSeconds(60), now);
         s.getSituationRecords().get(0).withGeneralPublicComments(createGeneralPublicComments("Diipadaapaa", tokenToUse, "Hello World!"));

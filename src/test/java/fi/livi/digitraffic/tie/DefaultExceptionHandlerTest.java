@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.ZonedDateTime;
+
 import javax.validation.ConstraintViolationException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -22,19 +23,15 @@ import org.slf4j.Logger;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.service.BadRequestException;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v1.TmsDataService;
-import fi.livi.digitraffic.tie.service.BadRequestException;
 
-@TestPropertySource(properties = {
-    "road.datasource.hikari.maximum-pool-size=1",
-})
 public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
     @MockBean
     private TmsDataService tmsDataService;

@@ -1,1 +1,0 @@
-insert into data_updated(id, data_type, updated) values(nextval('seq_data_updated'), 'TMS_FREE_FLOW_SPEEDS_DATA', '2018-02-15');

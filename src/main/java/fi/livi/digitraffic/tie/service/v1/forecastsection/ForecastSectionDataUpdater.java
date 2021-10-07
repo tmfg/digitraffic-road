@@ -56,7 +56,7 @@ public class ForecastSectionDataUpdater {
             return null;
         }
 
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(version.getVersion());
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsAndObsoleteDateIsNullOrderByNaturalIdAsc(version.getVersion());
 
         if(data.forecastSectionWeatherList != null) {
             final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId = data.forecastSectionWeatherList.stream().collect(

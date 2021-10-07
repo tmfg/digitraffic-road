@@ -8,21 +8,31 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.SensorDataTestUpdateService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 
-public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTestWithoutLocalStack {
+public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest {
 
     @Autowired
     protected RoadStationSensorService roadStationSensorService;
 
     @Autowired
     protected SensorDataTestUpdateService sensorDataUpdateService;
+
+    @MockBean
+    protected LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
+
+    @SpyBean
+    protected CameraImageUpdateHandler cameraImageUpdateHandler;
 
     protected List<RoadStationSensor> findPublishableRoadStationSensors(final RoadStationType roadStationType) {
         return roadStationSensorService

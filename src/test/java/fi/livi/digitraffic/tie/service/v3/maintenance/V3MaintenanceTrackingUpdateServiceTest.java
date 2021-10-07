@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v3.maintenance;
 
+import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData.Status.HANDLED;

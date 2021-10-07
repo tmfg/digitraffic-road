@@ -33,4 +33,4 @@
 /dbroad/flyway-dev/flyway-test.conf
 /pom.xml.versionsBackup
 # JUnit Insights Reports
-/build/reports/
+/build/reports

@@ -108,6 +108,11 @@ public class SensorValueHistoryBuilder {
         return this;
     }
 
+    public SensorValueHistoryBuilder truncate() {
+        repository.deleteAll();
+        return this;
+    }
+
     public int getElementCountAt(int index) {
         return createdCounts.get(index);
     }
