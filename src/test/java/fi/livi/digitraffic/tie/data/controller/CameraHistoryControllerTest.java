@@ -42,6 +42,8 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
 
     @BeforeEach
     public void initData() {
+        TestUtils.truncateCameraData(entityManager);
+        TestUtils.commitAndEndTransactionAndStartNew();
         cameras3Presets2 = TestUtils.generateDummyCameraStations(3,2);
         cameras3Presets2.forEach(cameraPresets -> cameraPresets.forEach(preset -> entityManager.persist(preset)));
     }
@@ -72,7 +74,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
         final String cameraId = getCameraIdFromPresetId(presetId);
         entityManager.createNativeQuery(
             "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created, preset_public)\n" +
-            "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  (select id from camera_preset where preset_id = '" + presetId + "') , timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " +
+            "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  (select id from camera_preset where preset_id = '" + presetId + "' and obsolete_date IS NULL) , timestamp with time zone '" + lastModified.toInstant() + "', " + isPublic + ", " +
                 IMAGE_SIZE + ", NOW(), "+ true +")")
             .executeUpdate();
         return versionId;
