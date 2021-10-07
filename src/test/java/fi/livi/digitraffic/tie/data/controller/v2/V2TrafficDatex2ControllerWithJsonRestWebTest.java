@@ -27,12 +27,8 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 
 public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWebTest {
-
-    @Autowired
-    protected Datex2DataService datex2DataService;
 
     @Autowired
     protected Datex2Repository datex2Repository;

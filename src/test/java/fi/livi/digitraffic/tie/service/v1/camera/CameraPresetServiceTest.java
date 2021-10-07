@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 
 import static fi.livi.digitraffic.tie.TestUtils.generateDummyPreset;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 
 public class CameraPresetServiceTest extends AbstractServiceTest {
@@ -19,8 +19,9 @@ public class CameraPresetServiceTest extends AbstractServiceTest {
 
     @Test
     public void findAll() {
+        TestUtils.generateDummyCameraStations(2, 3).forEach(s -> s.forEach(p -> entityManager.persist(p)));
         final Map<Long, CameraPreset> all = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
-        assertTrue(all.size() > 0);
+        assertEquals(6, all.size());
     }
 
     @Test

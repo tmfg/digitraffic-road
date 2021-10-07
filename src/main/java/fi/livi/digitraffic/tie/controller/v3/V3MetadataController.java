@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
-import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.location.LocationFeatureCollection;
@@ -167,7 +166,7 @@ public class V3MetadataController {
         MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationFeature tmsStationsByTmsNumber(
-        @PathVariable("number") final Long tmsNumber) throws NonPublicRoadStationException {
+        @PathVariable("number") final Long tmsNumber) {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
@@ -195,7 +194,7 @@ public class V3MetadataController {
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
         @ApiResponse(code = 404, message = "Road Station not found") })
     public TmsStationFeature tmsStationsByRoadStationId(
-        @PathVariable("id") final Long id) throws NonPublicRoadStationException {
+        @PathVariable("id") final Long id) {
         return tmsStationService.getTmsStationByRoadStationId(id);
     }
 

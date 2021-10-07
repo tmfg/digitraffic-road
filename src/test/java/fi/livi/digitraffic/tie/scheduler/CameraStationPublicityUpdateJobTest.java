@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static fi.livi.digitraffic.tie.TestUtils.MIN_LOTJU_ID;
 import static fi.livi.digitraffic.tie.TestUtils.createEsiasentos;
 import static fi.livi.digitraffic.tie.TestUtils.createKamera;
 import static fi.livi.digitraffic.tie.TestUtils.createKameraJulkisuus;
@@ -29,8 +28,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.transaction.TestTransaction;
 
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotException;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
@@ -56,17 +55,9 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     private CameraPresetHistoryUpdateService cameraPresetHistoryUpdateService;
 
     @AfterEach
-    public void restoreData() {
-        cameraPresetService.findAllCameraPresetsMappedByLotjuId().values().forEach(cp -> {
-            final RoadStation rs = cp.getRoadStation();
-            if (rs.getLotjuId() < MIN_LOTJU_ID) {
-                rs.updatePublicity(true);
-                rs.unobsolete();
-                cp.setPublic(true);
-                cp.unobsolete();
-            }
-        });
-        endTransactionAndStartNew();
+    public void cleanDb() {
+        TestUtils.truncateCameraData(entityManager);
+        TestUtils.commitAndEndTransactionAndStartNew();
     }
 
     @Test
@@ -171,7 +162,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     private void checkAllPublishableCameraPresetsContainsOnly(long ... lotjuIds) {
         // End current transaction and starts new as query uses current_timestamp from db
         // and it is same as transaction start time.
-        endTransactionAndStartNew();
+        TestUtils.commitAndEndTransactionAndStartNew();
         // uses current_timestamp
         final List<CameraPreset> allPublishable = cameraPresetService.findAllPublishableCameraPresets();
         final List<Long> publishableLotjuIds = allPublishable.stream().map(CameraPreset::getLotjuId).collect(Collectors.toList());
@@ -210,15 +201,5 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         cameraStationUpdater.updateCameras();
         // Some data is read with native query and data mut be flushed to db
         entityManager.flush();
-    }
-
-    /**
-     * Ends current transaction and starts new. Needed when using current_timestamp from db
-     * as it is same as transaction start time.
-     */
-    private void endTransactionAndStartNew() {
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        TestTransaction.start();
     }
 }
