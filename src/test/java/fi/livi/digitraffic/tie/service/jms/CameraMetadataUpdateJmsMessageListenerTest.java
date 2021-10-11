@@ -1,5 +1,14 @@
 package fi.livi.digitraffic.tie.service.jms;
 
+import static fi.livi.digitraffic.tie.TestUtils.PRESET_PRESENTATION_NAME;
+import static fi.livi.digitraffic.tie.TestUtils.createEsiasentos;
+import static fi.livi.digitraffic.tie.TestUtils.createKamera;
+import static fi.livi.digitraffic.tie.TestUtils.createKameraJulkisuus;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,8 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
@@ -45,8 +52,8 @@ import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedM
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataUpdateMessageHandler;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 
 public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataUpdateJmsMessageListenerTest.class);

@@ -9,8 +9,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -18,9 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import com.github.tomakehurst.wiremock.WireMockServer;
 
-public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemonTestWithoutLocalStack {
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
+
+public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(AbstractMultiDestinationProviderTest.class);
 
     public static final int RANDOM_PORT1 = (int)RandomUtils.nextLong(6000,6500);

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.controller.v2;
 
+import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
@@ -25,12 +26,9 @@ import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0.ImsMessage;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
+import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 
 public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWebTest {
-
-    @Autowired
-    protected Datex2DataService datex2DataService;
 
     @Autowired
     protected Datex2Repository datex2Repository;
@@ -45,6 +43,9 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private TrafficMessageTestHelper trafficMessageTestHelper;
 
     private final String incident1_past_id = "GUID50005166";
     private final String incident2_active_id = "GUID50006936";
@@ -153,6 +154,6 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
 
     private void updateFromImsMessage(final String imsXml) {
         final ImsMessage ims = (ImsMessage) imsJaxb2Marshaller.unmarshal(new StringSource(imsXml));
-        getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        trafficMessageTestHelper.getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 }

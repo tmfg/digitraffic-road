@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.support.GenericApplicationContext;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -44,10 +45,13 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
     @Autowired
     private GenericApplicationContext applicationContext;
 
-    @MockBean
-    private RegionGeometryGitClient regionGeometryGitClientMock;
-
     private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
+
+    @MockBean
+    protected RegionGeometryGitClient regionGeometryGitClientMock;
+
+    @SpyBean
+    protected V3RegionGeometryDataService v3RegionGeometryDataServiceSpy;
 
     @BeforeEach
     public void init() {

@@ -6,7 +6,7 @@
 
     <groupId>fi.fta.digitraffic</groupId>
     <artifactId>road</artifactId>
-    <version>2.78.0</version>
+    <version>2.79.0</version>
     <packaging>jar</packaging>
 
     <name>dt-road</name>
@@ -47,6 +47,11 @@
             <id>repository.spring.milestone</id>
             <name>Spring Milestone Repository</name>
             <url>https://repo.spring.io/milestone</url>
+        </repository>
+        <repository>
+            <id>jcenter</id>
+            <name>jcenter</name>
+            <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
 
@@ -410,6 +415,13 @@
             <version>0.21.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>de.adesso</groupId>
+            <artifactId>junit-insights</artifactId>
+            <version>1.1.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <!-- If you have access to scm then you can place actual url's.
@@ -496,9 +508,11 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
                 <configuration>
-                    <verbose>true</verbose>
-                    <fork>true</fork>
-                    <argLine>-XX:MaxPermSize=500M</argLine>
+                    <!-- <argLine>-Xms512m -Xmx1024M ${argLine}</argLine> -->
+                    <systemPropertyVariables>
+                        <de.adesso.junitinsights.enabled>true</de.adesso.junitinsights.enabled>
+                        <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
@@ -531,7 +545,7 @@
                             <wsdlOptions>
                                 <!-- Tiesääasemien staattiset tiedot / The static information of the road weather stations -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v4/TiesaaPerustiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v6/TiesaaMetatiedot.wsdl</wsdl>
                                     <packagenames>
                                         <packagename>fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa</packagename>
                                     </packagenames>
@@ -539,7 +553,7 @@
 
                                 <!-- LAM-pisteiden staattiset tiedot / The static information of the Traffic Flow Measurement System (TMS) -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v5/LAMMetatiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v7/LAMMetatiedot.wsdl</wsdl>
                                     <packagenames>
                                         <packagename>fi.livi.digitraffic.tie.external.lotju.metadata.lam</packagename>
                                     </packagenames>
@@ -547,7 +561,7 @@
 
                                 <!-- Kelikameroiden staattiset tiedot / The static information of the weather cameras -->
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v7/KameraPerustiedot.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/resources/schemas/lotju/metadata/v7/KameraMetatiedot.wsdl</wsdl>
                                     <packagenames>
                                         <packagename>fi.livi.digitraffic.tie.external.lotju.metadata.kamera</packagename>
                                     </packagenames>
@@ -816,6 +830,10 @@
                         </fileset>
                         <fileset>
                             <directory>${basedir}/dbroad/schemaspy/lib</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>${basedir}/build</directory>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                     </filesets>

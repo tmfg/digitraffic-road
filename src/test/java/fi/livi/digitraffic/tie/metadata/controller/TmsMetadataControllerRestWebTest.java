@@ -21,10 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
-import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
@@ -39,15 +38,10 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @BeforeEach
     public void initData() {
-        entityManager.createNativeQuery(
-            "UPDATE road_station rs " +
-                "SET obsolete_date = now() " +
-                "WHERE rs.obsolete_date is null " +
-                "  AND rs.road_station_type = '" + RoadStationType.TMS_STATION + "'").executeUpdate();
-        TmsStation ts = generateDummyTmsStation();
+        final TmsStation ts = TestUtils.generateDummyTmsStation();
         tmsStationRepository.save(ts);
 
-        List<RoadStationSensor> publishable =
+        final List<RoadStationSensor> publishable =
             roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
 
         assertFalse(publishable.isEmpty());
@@ -56,7 +50,6 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
             RoadStationType.TMS_STATION,
             publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
     }
-
 
     @Test
     public void testTmsMetadataRestApi() throws Exception {
@@ -96,22 +89,5 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.roadStationSensors[0].lane").hasJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].direction").hasJsonPath())
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
-    }
-
-    private TmsStation generateDummyTmsStation() {
-        final RoadStation rs = generateDummyRoadStation(RoadStationType.TMS_STATION);
-
-        final TmsStation ts = new TmsStation();
-        ts.setRoadStation(rs);
-        ts.setLotjuId(rs.getLotjuId());
-        ts.setNaturalId(rs.getLotjuId());
-        ts.setCalculatorDeviceType(CalculatorDeviceType.DSL_5);
-        ts.setName("st120_Pähkinärinne");
-        ts.setDirection1Municipality("Vihti");
-        ts.setDirection1MunicipalityCode(927);
-        ts.setDirection2Municipality("Helsinki");
-        ts.setDirection2MunicipalityCode(91);
-
-        return ts;
     }
 }

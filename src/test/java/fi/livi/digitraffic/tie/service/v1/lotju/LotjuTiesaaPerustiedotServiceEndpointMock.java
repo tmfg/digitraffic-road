@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaLaskenn
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaPerustiedotEndpoint;
-import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaPerustiedotEndpointImplService;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaPerustiedotV6;
 
 public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpointMock implements TiesaaPerustiedotEndpoint {
 
@@ -49,7 +49,7 @@ public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     private LotjuTiesaaPerustiedotServiceEndpointMock(final String metadataServerAddressWeather, final ResourceLoader resourceLoader,
                                                       final Jaxb2Marshaller jaxb2Marshaller) {
         super(resourceLoader, metadataServerAddressWeather, TiesaaPerustiedotEndpoint.class,
-              TiesaaPerustiedotEndpointImplService.SERVICE, jaxb2Marshaller, LOTJU_TIESAA_RESOURCE_PATH);
+              TiesaaPerustiedotV6.SERVICE, jaxb2Marshaller, LOTJU_TIESAA_RESOURCE_PATH);
     }
 
     @Override

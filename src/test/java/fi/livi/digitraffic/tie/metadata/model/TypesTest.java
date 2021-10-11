@@ -5,11 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
-import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaTyyppi;
+import fi.livi.digitraffic.tie.AbstractTest;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraTyyppi;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.AjoneuvoluokkaTyyppi;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LaiteTyyppi;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaTyyppi;
-import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraTyyppi;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaTyyppi;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationState;
@@ -18,7 +19,7 @@ import fi.livi.digitraffic.tie.model.VehicleClass;
 import fi.livi.digitraffic.tie.model.WeatherStationType;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 
-public class TypesTest {
+public class TypesTest extends AbstractTest {
 
     @Test
     public void testAllCameraTypes() {

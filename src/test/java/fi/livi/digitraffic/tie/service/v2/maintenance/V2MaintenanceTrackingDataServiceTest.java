@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
+import static fi.livi.digitraffic.tie.TestUtils.getRandom;
+import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUS_JA_SOHJONPOISTO;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
@@ -42,8 +44,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,7 +61,6 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 
-@Import({ JacksonAutoConfiguration.class, V3MaintenanceTrackingServiceTestHelper.class, V2MaintenanceTrackingDataService.class })
 public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
     final static Pair<Double, Double> BOUNDING_BOX_X_RANGE = Pair.of(20.0, 30.0);

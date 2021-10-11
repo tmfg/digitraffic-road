@@ -1,7 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
 import static java.lang.Thread.sleep;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -9,10 +12,11 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 
+import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
-public class RoadStationTest {
+public class RoadStationTest extends AbstractTest {
 
     /* Publicity With time */
 

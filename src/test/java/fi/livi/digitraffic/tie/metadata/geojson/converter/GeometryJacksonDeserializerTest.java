@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -10,7 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
@@ -19,12 +21,10 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiPolygon;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 /**
  * Samples from https://en.wikipedia.org/wiki/GeoJSON
  */
-public class GeometryJacksonDeserializerTest extends AbstractDaemonTestWithoutLocalStack {
+public class GeometryJacksonDeserializerTest extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(GeometryJacksonDeserializerTest.class);
 
     @Autowired

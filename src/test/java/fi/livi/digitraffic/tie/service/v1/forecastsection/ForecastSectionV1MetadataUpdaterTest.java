@@ -1,10 +1,13 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
-import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
-import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.service.DataStatusService;
+import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+
+import java.io.IOException;
+import java.time.ZonedDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
@@ -12,27 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.time.Instant;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-
-@TestPropertySource(properties = { "logging.level.fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionV1MetadataUpdater=WARN" })
-public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWithoutLocalStack {
-
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private ForecastSectionClient forecastSectionClient;
-
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater;
+public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTest {
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
@@ -48,10 +40,16 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
     @Autowired
     private RestTemplate restTemplate;
 
+    @MockBean(answer = Answers.CALLS_REAL_METHODS)
+    protected ForecastSectionClient forecastSectionClientMockRealMethods;
+
+    @MockBean(answer = Answers.CALLS_REAL_METHODS)
+    protected ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdaterMockRealMethods;
+
     @BeforeEach
     public void before() {
-        forecastSectionClient = new ForecastSectionClient(restTemplate, null);
-        forecastSectionMetadataUpdater = new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
+        forecastSectionClientMockRealMethods = new ForecastSectionClient(restTemplate, null);
+        forecastSectionMetadataUpdaterMockRealMethods = new ForecastSectionV1MetadataUpdater(forecastSectionClientMockRealMethods, forecastSectionRepository, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 
@@ -60,22 +58,19 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTestWith
 
         server.expect(requestTo("/nullroads.php"))
             .andExpect(method(HttpMethod.GET))
-            .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV1.json"), MediaType.APPLICATION_JSON));
+            .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV1_min.json"), MediaType.APPLICATION_JSON));
 
-        forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
-
-        final Instant lastUpdate = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA).toInstant();
-        final Instant now = Instant.now();
-        assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
-        assertTrue(now.minusSeconds(2).isBefore(lastUpdate));
-        assertTrue(now.plusSeconds(2).isAfter(lastUpdate));
+        forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionV1Metadata();
 
         final ForecastSectionFeatureCollection collection = forecastSectionService.findForecastSectionsV1Metadata();
+        final ZonedDateTime now = ZonedDateTime.now();
+        assertEquals(now.toEpochSecond(), collection.getDataUpdatedTime().toEpochSecond(), 2);
+        assertEquals(now.toEpochSecond(), collection.getDataLastCheckedTime().toEpochSecond(), 2);
 
-        assertEquals(277, collection.getFeatures().size());
-        assertEquals("00001_001_000_0", collection.getFeatures().get(0).getProperties().getNaturalId());
+        assertEquals(3, collection.getFeatures().size());
+        assertEquals("00009_231_000_0", collection.getFeatures().get(0).getProperties().getNaturalId());
         assertEquals(10, collection.getFeatures().get(0).getGeometry().getCoordinates().size());
-        assertEquals(Double.parseDouble("24.944"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0).doubleValue(), 0.01);
-        assertEquals(Double.parseDouble("60.167"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(1).doubleValue(), 0.01);
+        assertEquals(Double.parseDouble("25.601"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0).doubleValue(), 0.01);
+        assertEquals(Double.parseDouble("62.032"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(1).doubleValue(), 0.01);
     }
 }

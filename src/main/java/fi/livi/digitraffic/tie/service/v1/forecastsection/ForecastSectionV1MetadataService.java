@@ -34,7 +34,7 @@ public class ForecastSectionV1MetadataService {
 
     @Transactional(readOnly = true)
     public ForecastSectionFeatureCollection findForecastSectionsV1Metadata() {
-        List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(1);
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsAndObsoleteDateIsNullOrderByNaturalIdAsc(1);
         return forecastSectionV1ToFeatureConverter.convert(forecastSections,
                                                            dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA),
                                                            dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_METADATA_CHECK));

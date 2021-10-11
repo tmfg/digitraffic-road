@@ -1,17 +1,16 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
-import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
-import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
-import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
-import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
-import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
+import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +21,18 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.util.Arrays;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
+import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
+import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-
-@Disabled("Eats way too much memory")
-public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWithoutLocalStack {
-
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private ForecastSectionClient forecastSectionClient;
-
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private V2ForecastSectionMetadataUpdater forecastSectionMetadataUpdater;
+public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
@@ -56,24 +51,30 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWith
     @Autowired
     private RestTemplate restTemplate;
 
+    @MockBean(answer = Answers.CALLS_REAL_METHODS)
+    private ForecastSectionClient forecastSectionClientMockRealMethods;
+
+    @MockBean(answer = Answers.CALLS_REAL_METHODS)
+    private V2ForecastSectionMetadataUpdater forecastSectionMetadataUpdaterMockRealMethods;
+
+
     @BeforeEach
     public void before() {
-        forecastSectionClient = new ForecastSectionClient(restTemplate, null);
-        forecastSectionMetadataUpdater = new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository,
-            v2ForecastSectionMetadataDao,
-                                                                              dataStatusService);
+        forecastSectionClientMockRealMethods = new ForecastSectionClient(restTemplate, null);
+        forecastSectionMetadataUpdaterMockRealMethods =
+            new V2ForecastSectionMetadataUpdater(forecastSectionClientMockRealMethods, forecastSectionRepository,
+                                                 v2ForecastSectionMetadataDao,dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 
     @Test
     public void updateForecastSectionV2MetadataSucceeds() throws IOException {
-
         server.expect(requestTo("/nullroadsV2.php"))
             .andExpect(method(HttpMethod.GET))
             .andRespond(
-                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2.json"), MediaType.APPLICATION_JSON));
+                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
 
-        final Instant updated = forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+        final Instant updated = forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
         final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA).toInstant();
 
         assertEquals(updated, lastUpdated);
@@ -81,31 +82,34 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWith
         final ForecastSectionV2FeatureCollection featureCollection =
             v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null,
                                                                           null);
+        final Instant now = Instant.now();
+        assertEquals(updated, featureCollection.dataUpdatedTime.toInstant());
+        assertEquals(now.getEpochSecond(), featureCollection.dataLastCheckedTime.toEpochSecond(), 2);
 
         final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
+        assertEquals(3, featureCollection.getFeatures().size());
+        assertEquals("00003_218_04302_0_0", feature.getProperties().getNaturalId());
 
-        assertEquals(9473, featureCollection.getFeatures().size());
+        final List<List<List<Double>>> coordinates = feature.getGeometry().getCoordinates();
+        assertEquals(9, coordinates.get(0).size());
 
-        assertEquals("00001_001_00000_1_0", feature.getProperties().getNaturalId());
+        assertCoordinates(22.9983705, coordinates.get(0).get(0).get(0));
+        assertCoordinates(62.1215860, coordinates.get(0).get(0).get(1));
+        assertCoordinates(22.9980918, coordinates.get(0).get(1).get(0));
+        assertCoordinates(62.1217175, coordinates.get(0).get(1).get(1));
+        assertEquals(2, coordinates.get(15).size());
+        assertCoordinates(22.9800960, coordinates.get(15).get(0).get(0));
+        assertCoordinates(62.1412124, coordinates.get(15).get(0).get(1));
+        assertCoordinates(22.9800859, coordinates.get(15).get(1).get(0));
+        assertCoordinates(62.1414056, coordinates.get(15).get(1).get(1));
 
-        assertEquals(2, feature.getGeometry().getCoordinates().get(0).size());
-        assertCoordinates(24.9430081, feature.getGeometry().getCoordinates().get(0).get(0).get(0));
-        assertCoordinates(60.1667212, feature.getGeometry().getCoordinates().get(0).get(0).get(1));
-        assertCoordinates(24.9418095, feature.getGeometry().getCoordinates().get(0).get(1).get(0));
-        assertCoordinates(60.1675145, feature.getGeometry().getCoordinates().get(0).get(1).get(1));
-        assertEquals(12, feature.getGeometry().getCoordinates().get(70).size());
-        assertCoordinates(24.9336238, feature.getGeometry().getCoordinates().get(70).get(0).get(0));
-        assertCoordinates(60.1739127, feature.getGeometry().getCoordinates().get(70).get(0).get(1));
-        assertCoordinates(24.9335811, feature.getGeometry().getCoordinates().get(70).get(1).get(0));
-        assertCoordinates(60.1739668, feature.getGeometry().getCoordinates().get(70).get(1).get(1));
+        assertEquals(1, feature.getProperties().getRoadSegments().size());
+        assertEquals(4302, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());
+        assertEquals(6829, feature.getProperties().getRoadSegments().get(0).getEndDistance().intValue());
 
-        assertEquals(2, feature.getProperties().getRoadSegments().size());
-        assertEquals(0, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());
-        assertEquals(3264, feature.getProperties().getRoadSegments().get(1).getEndDistance().intValue());
-
-        assertEquals(52, feature.getProperties().getLinkIdList().size());
-        assertEquals(441054L, feature.getProperties().getLinkIdList().get(0).longValue());
-        assertEquals(452523L, feature.getProperties().getLinkIdList().get(51).longValue());
+        assertEquals(16, feature.getProperties().getLinkIdList().size());
+        assertEquals(3878918L, feature.getProperties().getLinkIdList().get(0).longValue());
+        assertEquals(3879183L, feature.getProperties().getLinkIdList().get(15).longValue());
     }
 
     @Test
@@ -116,7 +120,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWith
             .andRespond(
                 MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
 
-        forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+        forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
 
         final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, 3,
                                                                                                                                    null, null,
@@ -152,7 +156,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTestWith
             .andRespond(
                 MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
 
-        forecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+        forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
 
         final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null,
                                                                                                                                    null, null,

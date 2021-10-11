@@ -54,7 +54,7 @@ public class ForecastSectionV1MetadataUpdater {
 
         final List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsOrderByNaturalIdAsc(1);
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsAndObsoleteDateIsNullOrderByNaturalIdAsc(1);
         final Set<String> existingForecastSections = forecastSections.stream().map(ForecastSection::getNaturalId).collect(Collectors.toSet());
 
         printLogInfo(forecastSectionCoordinates, forecastSections);
@@ -68,7 +68,7 @@ public class ForecastSectionV1MetadataUpdater {
                 fs -> existingForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(ForecastSectionCoordinatesDto::getNaturalId, c -> c));
 
         final Set<String> receivedForecastSections = forecastSectionCoordinates.stream().map(ForecastSectionCoordinatesDto::getNaturalId).collect(Collectors.toSet());
-
+        // 00001_001_000_0, 00001_006_000_0
         final Map<String, ForecastSection> forecastSectionsToDelete = forecastSections.stream().filter(
                 fs -> !receivedForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(ForecastSection::getNaturalId, c -> c));
 

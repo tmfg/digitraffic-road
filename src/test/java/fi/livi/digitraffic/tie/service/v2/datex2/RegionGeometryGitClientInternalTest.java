@@ -10,14 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.annotation.Rollback;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
-public class RegionGeometryGitClientInternalTest extends AbstractDaemonTestWithoutLocalStack {
+public class RegionGeometryGitClientInternalTest extends AbstractDaemonTest {
 
     @Autowired
     private RegionGeometryGitClient RegionGeometryGitClient;

@@ -39,7 +39,7 @@ public class TmsStationSensorConstantService {
 
     @Transactional
     public boolean updateSensorConstants(final List<LamAnturiVakioVO> allLamAnturiVakios) {
-        List<Long> ids = allLamAnturiVakios.stream().map(LamAnturiVakioVO::getId).collect(Collectors.toList());
+        final List<Long> ids = allLamAnturiVakios.stream().map(LamAnturiVakioVO::getId).collect(Collectors.toList());
         final int obsoleted = tmsSensorConstantDao.obsoleteSensorConstantsExcludingIds(ids);
         final int upsert = tmsSensorConstantDao.updateSensorConstants(allLamAnturiVakios);
         log.info("updateSensorConstants upsert={}, obsoleted={}", upsert, obsoleted);
