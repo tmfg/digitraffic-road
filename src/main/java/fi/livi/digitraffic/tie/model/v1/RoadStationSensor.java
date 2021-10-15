@@ -333,4 +333,8 @@ public class RoadStationSensor {
     public Integer getDirection() {
         return direction;
     }
+
+    public boolean isPublishable() {
+        return publishable;
+    }
 }

@@ -100,7 +100,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(RoadStationType roadStationType) {
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(final RoadStationType roadStationType) {
         final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
         return all.stream().collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
     }

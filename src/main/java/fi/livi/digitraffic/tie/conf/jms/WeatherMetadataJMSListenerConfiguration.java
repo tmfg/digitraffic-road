@@ -33,7 +33,7 @@ public class WeatherMetadataJMSListenerConfiguration extends AbstractJMSListener
                                                    final WeatherMetadataUpdateMessageHandler weatherMetadataUpdateMessageHandler,
                                                    final ClusteredLocker clusteredLocker,
                                                    @Qualifier("tiesaaMetadataChangeJaxb2Marshaller")
-                                                    final Jaxb2Marshaller tiesaaMetadataChangeJaxb2Marshaller) {
+                                                   final Jaxb2Marshaller tiesaaMetadataChangeJaxb2Marshaller) {
         super(connectionFactory, clusteredLocker, log);
         this.weatherMetadataUpdateMessageHandler = weatherMetadataUpdateMessageHandler;
         this.tiesaaMetadataChangeJaxb2Marshaller = tiesaaMetadataChangeJaxb2Marshaller;

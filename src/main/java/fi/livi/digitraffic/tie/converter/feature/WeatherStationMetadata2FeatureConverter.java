@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.converter.feature;
 
-import static fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository.WEATHER_STATION_TYPE;
-
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -14,12 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.converter.StationSensorConverter;
+import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
 import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 
@@ -28,19 +27,19 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
     private static final Logger log = LoggerFactory.getLogger( WeatherStationMetadata2FeatureConverter.class );
 
     private final WeatherStationRepository weatherStationRepository;
-    private final StationSensorConverter stationSensorConverter;
+    private final StationSensorConverterService stationSensorConverterService;
 
     @Autowired
     public WeatherStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter,
-        final WeatherStationRepository weatherStationRepository, final StationSensorConverter stationSensorConverter) {
+        final WeatherStationRepository weatherStationRepository, final StationSensorConverterService stationSensorConverterService) {
         super(coordinateConverter);
         this.weatherStationRepository = weatherStationRepository;
-        this.stationSensorConverter = stationSensorConverter;
+        this.stationSensorConverterService = stationSensorConverterService;
     }
 
     public WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {
 
-        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createPublishableSensorMap(WEATHER_STATION_TYPE);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorMap(RoadStationType.WEATHER_STATION);
         final List<WeatherStationFeature> features =
             stations.stream()
                 .filter(rws -> rws.getRoadStation().isPublicNow())

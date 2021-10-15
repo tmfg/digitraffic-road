@@ -24,12 +24,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType;
 
-public class WeatherMetadataUpdateMessageHandlerTest extends AbstractDaemonTestWithoutLocalStack {
+public class WeatherMetadataUpdateMessageHandlerTest extends AbstractDaemonTest {
 
     @Autowired
     private WeatherMetadataUpdateMessageHandler weatherMetadataUpdateMessageHandler;

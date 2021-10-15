@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
-import fi.livi.digitraffic.tie.converter.StationSensorConverter;
+import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.LockingDao;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryDao;
@@ -76,7 +76,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
           V3RegionGeometryDataService.class, V2MaintenanceTrackingDataService.class,
 
           // converters
-          TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverter.class,
+          TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverterService.class,
           ObjectMapper.class,
 
           // daos

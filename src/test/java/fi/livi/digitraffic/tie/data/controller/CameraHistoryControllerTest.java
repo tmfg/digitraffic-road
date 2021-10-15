@@ -59,7 +59,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
 
         get.contentType(MediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
-        log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
+//        log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
     }
 

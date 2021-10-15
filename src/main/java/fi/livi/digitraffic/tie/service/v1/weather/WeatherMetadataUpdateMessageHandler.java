@@ -40,7 +40,7 @@ public class WeatherMetadataUpdateMessageHandler {
         int updateCount = 0;
 
         for (WeatherMetadataUpdatedMessageDto u : weatherMetadataUpdates) {
-            log.debug("method=updateWeatherMetadataFromJms {}", ToStringHelper.toStringFull(u));
+            log.info("method=updateWeatherMetadataFromJms {}", ToStringHelper.toStringFull(u));
             final EntityType type = u.getEntityType();
             final MetadataUpdatedMessageDto.UpdateType updateType = u.getUpdateType();
 
@@ -51,8 +51,14 @@ public class WeatherMetadataUpdateMessageHandler {
                         updateCount++;
                     }
                     break;
-                case WEATHER_COMPUTATIONAL_SENSOR:
                 case WEATHER_STATION_COMPUTATIONAL_SENSOR:
+                    if (updateType.isDelete()) {
+                        weatherStationUpdater.updateWeatherStationAndSensors(u.getLotjuId(), UPDATE);
+                    } else if (weatherStationUpdater.updateWeatherStationAndSensors(u.getLotjuId(), updateType)) {
+                        updateCount++;
+                    }
+                    break;
+                case WEATHER_COMPUTATIONAL_SENSOR:
                     if (weatherStationSensorUpdater.updateWeatherSensor(u.getLotjuId(), updateType)) {
                         updateCount++;
                     }
@@ -63,6 +69,9 @@ public class WeatherMetadataUpdateMessageHandler {
                 case ROAD_ADDRESS:
                     updateCount += u.getAsemmaLotjuIds().stream()
                         .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
+                    if (u.getAsemmaLotjuIds().isEmpty()) {
+                        log.warn("method=updateWeatherMetadataFromJms message had no station id's {}", ToStringHelper.toStringFull(u));
+                    }
                     break;
 
                 case WEATHER_SENSOR:

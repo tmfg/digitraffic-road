@@ -9,11 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -26,7 +21,7 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
@@ -50,9 +46,7 @@ import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessa
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto.EntityType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataUpdateMessageHandler;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
@@ -70,12 +64,6 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
 
     @Autowired
     private CameraPresetRepository cameraPresetRepository;
-
-    @MockBean
-    private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
-
-    @SpyBean
-    private CameraImageUpdateHandler cameraImageUpdateHandler;
 
     private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
     private JMSMessageListener<CameraMetadataUpdatedMessageDto> cameraMetadataJmsMessageListener;
@@ -213,7 +201,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         final CameraPreset ps2 = presets.get(1);
 
         sendMessage(getPresetUpdateMessageXml(UpdateType.DELETE, presets.get(0).getLotjuId()));
-        entityManagerFlushAndDetach(ps1, ps2);
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         final CameraPreset preset1 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps1.getLotjuId());
         final CameraPreset preset2 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps2.getLotjuId());
@@ -229,7 +217,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         final CameraPreset ps2 = presets.get(1);
 
         sendMessage(getPresetUpdateMessageXml(UpdateType.DELETE, presets.get(0).getLotjuId()));
-        entityManagerFlushAndDetach(ps1, ps2);
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         final CameraPreset preset1 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps1.getLotjuId());
         final CameraPreset preset2 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps2.getLotjuId());
@@ -245,13 +233,13 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         final CameraPreset ps2 = presets.get(1);
 
         sendMessage(getCameraUpdateMessageXml(UpdateType.DELETE, ps1.getCameraLotjuId()));
-        entityManagerFlushAndDetach(ps1, ps2);
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         final CameraPreset preset1 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps1.getLotjuId());
         final CameraPreset preset2 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps2.getLotjuId());
 
         assertFalse(preset1.isPublishable());
-        assertTrue(preset2.isPublishable());
+        assertFalse(preset2.isPublishable());
     }
 
     private enum Tyyppi {
@@ -270,13 +258,15 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     }
 
     private List<CameraPreset> createAndSaveCameraPresets(final int count) {
-        final AtomicLong cameraId = new AtomicLong(-1L);
+        final AtomicReference<RoadStation> rs = new AtomicReference<>();
         return IntStream.range(0, count).mapToObj(i -> {
-            final CameraPreset ps = generateDummyPreset();
-            if (cameraId.get() == -1L) {
-                cameraId.set(ps.getCameraLotjuId());
-            };
-            ps.setCameraLotjuId(cameraId.get());
+            final CameraPreset ps = TestUtils.generateDummyPreset();
+            // Every preset for same station has same roadstation
+            if (rs.get() == null) {
+                rs.set(ps.getRoadStation());
+            }
+            ps.setCameraLotjuId(rs.get().getLotjuId());
+            ps.setRoadStation(rs.get());
             cameraPresetService.save(ps);
             return ps;
         }).collect(Collectors.toList());

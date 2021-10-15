@@ -13,8 +13,11 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,6 +42,8 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KeruunTILA;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TieosoiteVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
+import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
@@ -56,9 +61,15 @@ public class TestUtils {
 
     public static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-    public static final int MIN_LOTJU_ID = 1;
+    public static final int MIN_LOTJU_ID = 500;
     public static final int MAX_LOTJU_ID = 99999;
     public static final String PRESET_PRESENTATION_NAME = "PresentationName";
+
+    private final static AtomicReference<Set<String>> reservedPresetIds = new AtomicReference<>();
+
+    static {
+        reservedPresetIds.set(new HashSet<>());
+    }
 
     public static Path getPath(final String filename) {
         return new File(TestUtils.class.getResource(filename).getFile()).toPath();
@@ -87,12 +98,14 @@ public class TestUtils {
         cp.setRoadStation(rs);
 
         final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
-        final String presetId = CameraHelper.convertCameraIdToPresetId(cameraId, String.valueOf(RandomUtils.nextLong(0, 100)));
+        final String presetId = generateUniquePresetId(cameraId);
+
+
         cp.setCameraId(cameraId);
         cp.setPresetId(presetId);
         cp.setPresetName1("presentationName_" + cp.getPresetId());
         cp.setPublic(true);
-        cp.setLotjuId(getRandomLotjuIdLong());
+        cp.setLotjuId(getRandomLotjuId());
         cp.setInCollection(true);
         cp.setCameraType(CameraType.VAPIX);
         cp.setCompression(50);
@@ -112,7 +125,7 @@ public class TestUtils {
     public static RoadStation generateDummyRoadStation(final RoadStationType roadStationType, final String nameSuffix) {
 
         final RoadStation rs = RoadStation.createRoadStation(roadStationType);
-        rs.setNaturalId(getRandomLotjuIdLong());
+        rs.setNaturalId(getRandomLotjuId());
         rs.setLotjuId(rs.getNaturalId());
         rs.setName(roadStationType.name());
         rs.updatePublicity(true);
@@ -168,7 +181,7 @@ public class TestUtils {
         final List<EsiasentoVO> eas = new ArrayList<>();
         IntStream.range(0, count).forEach(i -> {
             final EsiasentoVO ea = new EsiasentoVO();
-            ea.setId(getRandomLotjuIdLong());
+            ea.setId(getRandomLotjuId());
             ea.setKameraId(kameraId);
             ea.setKeruussa(true);
             ea.setJulkisuus(Julkisuus.JULKINEN);
@@ -181,7 +194,7 @@ public class TestUtils {
 
     public static KameraVO createKamera(final Instant publicFrom) {
         final KameraVO k = new KameraVO();
-        k.setVanhaId(getRandomLotjuId());
+        k.setVanhaId((int)getRandomLotjuId());
         k.setId(Long.valueOf(k.getVanhaId()));
         k.setNimi("Kamera-asema");
         k.setJulkisuus(createKameraJulkisuus(publicFrom, JULKINEN));
@@ -190,6 +203,35 @@ public class TestUtils {
         k.setTieosoite(to);
 
         return k;
+    }
+
+    public static TiesaaAsemaVO createTiesaaAsema(final long lotjuId) {
+        final TiesaaAsemaVO tsa = new TiesaaAsemaVO();
+        tsa.setId(lotjuId);
+        tsa.setVanhaId(tsa.getId().intValue());
+        tsa.setJulkinen(true);
+        tsa.setNimi("Tiesääasema_" + lotjuId);
+        tsa.setNimiFi(tsa.getNimi());
+        tsa.setNimiEn(tsa.getNimi());
+        tsa.setNimiSe(tsa.getNimi());
+        tsa.setKeruunTila(fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.KeruunTILA.KERUUSSA);
+        tsa.setJulkinen(true);
+        tsa.setTieosoite(createWeatherStationTieOsoite(lotjuId));
+        tsa.getTieosoite().setId();
+        return tsa;
+    }
+
+    private static fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TieosoiteVO createWeatherStationTieOsoite(final long tieosoiteLotjuId) {
+        final fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TieosoiteVO to =
+            new fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TieosoiteVO();
+        to.setId(tieosoiteLotjuId);
+        to.setUrakkaAlue("Alue_" + tieosoiteLotjuId);
+        to.setLuonut("Testi");
+        to.setTienumero(getRandomId(0, 1000));
+        to.setTieosa(to.getTienumero());
+        to.setEtaisyysTieosanAlusta(to.getTienumero());
+        to.set
+        return to;
     }
 
     public static Instant getInstant(int secondsToAdd) {
@@ -203,12 +245,17 @@ public class TestUtils {
         return julkisuus;
     }
 
-    public static int getRandomLotjuId() {
+    public static long getRandomLotjuId() {
         return getRandomId(MIN_LOTJU_ID, MAX_LOTJU_ID);
     }
 
-    public static long getRandomLotjuIdLong() {
-        return getRandomLotjuId();
+    private static String generateUniquePresetId(final String cameraId) {
+        final AtomicReference<String> presetId = new AtomicReference<>();
+        while (presetId.get() == null || reservedPresetIds.get().stream().filter(reserved -> reserved.equals(presetId.get())).findFirst().isPresent()) {
+            presetId.set(CameraHelper.convertCameraIdToPresetId(cameraId, String.valueOf(RandomUtils.nextLong(0, 100))));
+        }
+        reservedPresetIds.get().add(presetId.get());
+        return presetId.get();
     }
 
     public static List<TmsStation> generateDummyTmsStations(final int count) {
@@ -262,7 +309,7 @@ public class TestUtils {
         final LamAnturiVakioVO vakio1 = new LamAnturiVakioVO();
         vakio1.setNimi(name);
         vakio1.setAsemaId(stationlotjuId);
-        vakio1.setId(TestUtils.getRandomLotjuIdLong());
+        vakio1.setId(TestUtils.getRandomLotjuId());
         return vakio1;
     }
 
@@ -271,7 +318,7 @@ public class TestUtils {
         vapaaNopeus.setAnturiVakioId(anturiVakioId);
         vapaaNopeus.setVoimassaAlku(voimassaAlku);
         vapaaNopeus.setVoimassaLoppu(voimassaLoppu);
-        vapaaNopeus.setId(TestUtils.getRandomLotjuIdLong());
+        vapaaNopeus.setId(TestUtils.getRandomLotjuId());
         vapaaNopeus.setArvo(arvo);
         return vapaaNopeus;
     }
@@ -302,6 +349,9 @@ public class TestUtils {
 
     public static void truncateTmsData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE tms_station DISABLE TRIGGER trg_lam_station_delete").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id > " + MIN_LOTJU_ID + " AND road_station_type = 'TMS_STATION'").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id > " + MIN_LOTJU_ID + " AND road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM tms_station").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE tms_station ENABLE TRIGGER trg_lam_station_delete").executeUpdate();
@@ -310,6 +360,9 @@ public class TestUtils {
 
     public static void truncateWeatherData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE weather_station DISABLE TRIGGER trg_weather_station_delete").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id > " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id > " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM weather_station").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE weather_station ENABLE TRIGGER trg_weather_station_delete").executeUpdate();
@@ -326,5 +379,41 @@ public class TestUtils {
         }
         TestTransaction.start();
         TestTransaction.flagForCommit();
+    }
+
+    public static void entityManagerFlushAndClear(final EntityManager entityManager) {
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+    public static List<TiesaaLaskennallinenAnturiVO> createTiesaaAsemaAnturit(final int count) {
+        return IntStream.range(0,count).mapToObj(i -> TestUtils.createTiesaaAsemaAnturi()).collect(Collectors.toList());
+    }
+
+    public static TiesaaLaskennallinenAnturiVO createTiesaaAsemaAnturi() {
+        final TiesaaLaskennallinenAnturiVO anturi = new TiesaaLaskennallinenAnturiVO();
+        anturi.setId(getRandomLotjuId());
+        anturi.setJulkinen(true);
+        anturi.setLyhytNimi("TSA_" + anturi.getId());
+        anturi.setNimi("TiesaaLaskennallinenAnturi_" + anturi.getId());
+        anturi.setVanhaId(anturi.getId().intValue());
+        anturi.setEsitysnimiFi(anturi.getNimi() + "_fi");
+        anturi.setEsitysnimiEn(anturi.getNimi() + "_en");
+        anturi.setEsitysnimiSe(anturi.getNimi() + "_sv");
+        anturi.setLaskentaKaava("1+1=3");
+        anturi.setKuvausFi(anturi.getEsitysnimiFi());
+        anturi.setKuvausEn(anturi.getEsitysnimiEn());
+        anturi.setKuvausSe(anturi.getEsitysnimiSe());
+        return anturi;
+    }
+
+    public static void addAllowedSensor(final long lotjuId, final RoadStationType roadStationType, final EntityManager entityManager) {
+        entityManager.createNativeQuery(
+            "INSERT INTO ALLOWED_ROAD_STATION_SENSOR " +
+            "SELECT NEXTVAL('seq_allowed_sensor') as id, " +
+            lotjuId + " as natural_id, '" +
+            roadStationType.name() + "' as road_station_type" +
+            " ON CONFLICT DO NOTHING").executeUpdate();
+
     }
 }
