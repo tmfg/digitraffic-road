@@ -18,20 +18,16 @@ import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto.EntityType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
+import fi.livi.digitraffic.tie.service.v1.AbstractMetadataUpdateMessageHandlerTest;
 
-public class CameraMetadataUpdateMessageHandlerTest extends AbstractDaemonTest {
+public class CameraMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateMessageHandlerTest {
 
     @Autowired
     private CameraMetadataUpdateMessageHandler cameraMetadataUpdateMessageHandler;
-
-    @MockBean
-    private CameraStationUpdater cameraStationUpdater;
 
     @AfterEach
     protected void verifyNoMoreInteractionsAndResetMocks() {

@@ -16,26 +16,16 @@ import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMessageDto.EntityType;
+import fi.livi.digitraffic.tie.service.v1.AbstractMetadataUpdateMessageHandlerTest;
 
-public class TmsMetadataUpdateMessageHandlerTest extends AbstractDaemonTest {
+public class TmsMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateMessageHandlerTest {
 
     @Autowired
     private TmsMetadataUpdateMessageHandler tmsMetadataUpdateMessageHandler;
-
-    @MockBean
-    private TmsStationUpdater tmsStationUpdater;
-
-    @MockBean
-    private TmsSensorUpdater tmsSensorUpdater;
-
-    @MockBean
-    private TmsStationSensorConstantUpdater tmsStationSensorConstantUpdater;
 
     @AfterEach
     protected void verifyNoMoreInteractionsAndResetMocks() {

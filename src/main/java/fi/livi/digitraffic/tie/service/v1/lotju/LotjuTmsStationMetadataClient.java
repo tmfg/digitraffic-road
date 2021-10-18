@@ -13,6 +13,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakio;
@@ -55,6 +56,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public List<LamAsemaVO> getLamAsemas() {
         final HaeKaikkiLAMAsemat request = new HaeKaikkiLAMAsemat();
 
@@ -67,6 +69,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public LamAsemaVO getLamAsema(final long id) {
         final HaeLAMAsema request = new HaeLAMAsema();
         request.setId(id);
@@ -79,6 +82,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public LamLaskennallinenAnturiVO getLamLaskennallinenAnturi(final long lotjuId) {
         final HaeLAMLaskennallinenAnturi request = new HaeLAMLaskennallinenAnturi();
         request.setId(lotjuId);
@@ -89,6 +93,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public List<LamLaskennallinenAnturiVO> getLamAsemanLaskennallisetAnturit(final long lamAsemaLotjuId) {
 
         final HaeLAMAsemanLaskennallisetAnturit request = new HaeLAMAsemanLaskennallisetAnturit();
@@ -100,6 +105,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
         final HaeKaikkiLAMLaskennallisetAnturit request = new HaeKaikkiLAMLaskennallisetAnturit();
         log.info("Fetching LAMLaskennallisetAnturis");
@@ -111,6 +117,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public LamAnturiVakioVO getLamAnturiVakio(final long anturiVakiolotjuId) {
         final HaeAnturiVakio haeAnturiVakioRequest = new HaeAnturiVakio();
         haeAnturiVakioRequest.setAnturiVakioId(anturiVakiolotjuId);
@@ -123,6 +130,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public List<LamAnturiVakioVO> getAsemanAnturiVakios(final Long lotjuId) {
         final HaeAsemanAnturiVakio haeAsemanAnturiVakioRequest =
             new HaeAsemanAnturiVakio();
@@ -136,6 +144,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public List<LamAnturiVakioArvoVO> getAllAnturiVakioArvos(final int month, final int dayOfMonth) {
         final HaeKaikkiAnturiVakioArvot haeKaikkiAnturiVakioArvotRequest =
             new HaeKaikkiAnturiVakioArvot();
@@ -150,6 +159,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
     public LamAnturiVakioArvoVO getAnturiVakioArvot(final long anturiVakioLotjuId, final int month, final int dayOfMonth) {
         final HaeAnturiVakioArvot haeAnturiVakioArvot =
             new HaeAnturiVakioArvot();
