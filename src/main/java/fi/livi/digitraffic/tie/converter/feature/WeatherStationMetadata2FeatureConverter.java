@@ -39,7 +39,7 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
 
     public WeatherStationFeatureCollection convert(final List<WeatherStation> stations, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {
 
-        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorMap(RoadStationType.WEATHER_STATION);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(RoadStationType.WEATHER_STATION);
         final List<WeatherStationFeature> features =
             stations.stream()
                 .filter(rws -> rws.getRoadStation().isPublicNow())

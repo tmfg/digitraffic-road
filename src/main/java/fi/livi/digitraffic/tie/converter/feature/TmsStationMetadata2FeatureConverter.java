@@ -45,7 +45,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
                                                final ZonedDateTime lastUpdated,
                                                final ZonedDateTime dataLastCheckedTime) {
 
-        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorMap(RoadStationType.TMS_STATION);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(RoadStationType.TMS_STATION);
         final Map<Long, Pair<Double, Double>> rsNaturalIdToFreeFlosSpeedsMap =
             freeFlowSpeeds.stream()
                 .collect(Collectors.toMap(TmsFreeFlowSpeedDto::getRoadStationNaturalId,
@@ -78,7 +78,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
 
 
     public TmsStationFeature convert(final TmsStation tms, final Double freeFlowSpeed1, final Double freeFlowSpeed2) {
-        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorMap(tms.getRoadStationId(), RoadStationType.TMS_STATION);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(tms.getRoadStationId(), RoadStationType.TMS_STATION);
         return convert(sensorMap, tms, freeFlowSpeed1, freeFlowSpeed2);
     }
 

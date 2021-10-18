@@ -106,7 +106,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final RoadStation after = getWeatherStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID);
         assertEquals(ROAD_STATION_LOTJU_ID, after.getLotjuId());
         assertTrue(after.isPublishable());
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorMap(after.getId(), RoadStationType.WEATHER_STATION);
+        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.WEATHER_STATION);
         assertCollectionSize(1, sensors.get(after.getId()));
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_1.getRight(), sensors.get(after.getId()).get(0).longValue());
     }
@@ -155,7 +155,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final RoadStation after = getWeatherStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID);
         assertEquals(tsa.getNimiEn(), after.getNameEn());
 
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorMap(after.getId(), RoadStationType.WEATHER_STATION);
+        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.WEATHER_STATION);
         assertCollectionSize(1, sensors.get(after.getId()));
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_2.getRight(), sensors.get(after.getId()).get(0).longValue());
     }
@@ -199,7 +199,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         // 3. Assert station is still public
         assertTrue(getWeatherStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID).isPublishable());
         // And sensor 1 is deleted
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorMap(rws.getRoadStationId(), RoadStationType.WEATHER_STATION);
+        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rws.getRoadStationId(), RoadStationType.WEATHER_STATION);
         assertCollectionSize(1, sensors.get(rws.getRoadStationId()));
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_2.getRight(), sensors.get(rws.getRoadStationId()).get(0).longValue());
     }
@@ -230,7 +230,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         assertTrue(allSensors.stream().filter(s -> s.getLotjuId().equals(NEW_LOTJU_ID)).findFirst().isPresent());
         // And it is added to road station
         final long rwsId = getWeatherStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID).getId();
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorMap(rwsId, RoadStationType.WEATHER_STATION);
+        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rwsId, RoadStationType.WEATHER_STATION);
         assertCollectionSize(1, sensors.get(rwsId));
         assertEquals(NEW_LOTJU_ID, sensors.get(rwsId).get(0).longValue());
     }

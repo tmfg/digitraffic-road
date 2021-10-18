@@ -116,7 +116,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractDaem
         final RoadStation after = getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID);
         assertEquals(ROAD_STATION_LOTJU_ID, after.getLotjuId());
         assertTrue(after.isPublishable());
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorMap(after.getId(), RoadStationType.TMS_STATION);
+        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.TMS_STATION);
         AssertHelper.assertCollectionSize(1, sensors.get(after.getId()));
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_1.getRight(), sensors.get(after.getId()).get(0).longValue());
     }
@@ -146,7 +146,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractDaem
         final RoadStation after = getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID);
         assertEquals(lam.getNimiEn(), after.getNameEn());
 
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorMap(after.getId(), RoadStationType.TMS_STATION);
+        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.TMS_STATION);
         AssertHelper.assertCollectionSize(1, sensors.get(after.getId()));
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_2.getRight(), sensors.get(after.getId()).get(0).longValue());
     }
@@ -193,7 +193,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractDaem
         assertTrue(allSensors.stream().filter(s -> s.getLotjuId().equals(NEW_LOTJU_ID)).findFirst().isPresent());
         // And it is added to road station
         final long tmsId = getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID).getId();
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorMap(tmsId, RoadStationType.TMS_STATION);
+        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(tmsId, RoadStationType.TMS_STATION);
         AssertHelper.assertCollectionSize(1, sensors.get(tmsId));
         assertEquals(NEW_LOTJU_ID, sensors.get(tmsId).get(0).longValue());
     }

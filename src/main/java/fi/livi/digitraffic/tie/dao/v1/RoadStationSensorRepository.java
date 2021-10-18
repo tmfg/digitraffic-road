@@ -61,7 +61,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "  and sensor.road_station_type = :stationType\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
-    List<StationSensors> getStationPublishableSensorsByStationIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String
+    List<StationSensors> getRoadStationPublishableSensorsNaturalIdsByStationIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String
         stationType);
 
 

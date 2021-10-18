@@ -25,7 +25,7 @@ public class StationSensorConverterService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<Long>> getPublishableSensorMap(final RoadStationType type) {
+    public Map<Long, List<Long>> getPublishableSensorsNaturalIdsMappedByRoadStationId(final RoadStationType type) {
         if (type.equals(RoadStationType.TMS_STATION) || type.equals(RoadStationType.WEATHER_STATION)) {
             final List<StationSensors> list = roadStationSensorRepository.listStationPublishableSensorsByType(type.name());
             return createMap(list);
@@ -34,11 +34,11 @@ public class StationSensorConverterService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<Long>> getPublishableSensorMap(final Long roadStationId, final RoadStationType type) {
+    public Map<Long, List<Long>> getPublishableSensorsNaturalIdsMappedByRoadStationId(final Long roadStationId, final RoadStationType type) {
         if (type.equals(RoadStationType.TMS_STATION) || type.equals(RoadStationType.WEATHER_STATION)) {
-        return roadStationId == null ?
-            Collections.emptyMap() :
-            createMap(roadStationSensorRepository.getStationPublishableSensorsByStationIdAndType(roadStationId, type.name()));
+            return roadStationId == null ?
+                Collections.emptyMap() :
+                createMap(roadStationSensorRepository.getRoadStationPublishableSensorsNaturalIdsByStationIdAndType(roadStationId, type.name()));
         }
         throw new IllegalArgumentException(String.format("RoadStationType %s not suported", type.name()));
     }
@@ -46,12 +46,12 @@ public class StationSensorConverterService {
     private static Map<Long, List<Long>> createMap(final List<StationSensors> sensors) {
         final Map<Long, List<Long>> sensorMap = new HashMap<>();
 
-        sensors.forEach(ss -> sensorMap.put(ss.getRoadStationId(), sensorList(ss.getSensors())));
+        sensors.forEach(ss -> sensorMap.put(ss.getRoadStationId(), parseSensorIdsToList(ss.getSensors())));
 
         return sensorMap;
     }
 
-    private static List<Long> sensorList(final String sensorList) {
+    private static List<Long> parseSensorIdsToList(final String sensorList) {
         return Stream.of(sensorList.split(",")).map(Long::valueOf).collect(Collectors.toList());
     }
 
