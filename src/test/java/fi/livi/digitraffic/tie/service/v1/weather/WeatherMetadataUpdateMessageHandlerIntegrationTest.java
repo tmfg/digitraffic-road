@@ -28,7 +28,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
@@ -45,8 +44,9 @@ import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType;
+import fi.livi.digitraffic.tie.service.v1.AbstractMetadataUpdateMessageHandlerIntegrationTest;
 
-public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends AbstractDaemonTest {
+public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends AbstractMetadataUpdateMessageHandlerIntegrationTest {
 
     @Autowired
     private WeatherMetadataUpdateMessageHandler weatherMetadataUpdateMessageHandler;
