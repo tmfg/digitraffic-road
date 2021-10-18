@@ -55,7 +55,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamAsemaVO> getLamAsemas() {
+    public List<LamAsemaVO> getLamAsemas() {
         final HaeKaikkiLAMAsemat request = new HaeKaikkiLAMAsemat();
 
         log.info("Fetching LamAsemas");
@@ -67,7 +67,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    LamAsemaVO getLamAsema(final long id) {
+    public LamAsemaVO getLamAsema(final long id) {
         final HaeLAMAsema request = new HaeLAMAsema();
         request.setId(id);
 
@@ -79,7 +79,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    LamLaskennallinenAnturiVO getLamLaskennallinenAnturi(final long lotjuId) {
+    public LamLaskennallinenAnturiVO getLamLaskennallinenAnturi(final long lotjuId) {
         final HaeLAMLaskennallinenAnturi request = new HaeLAMLaskennallinenAnturi();
         request.setId(lotjuId);
         final JAXBElement<HaeLAMLaskennallinenAnturiResponse> response = (JAXBElement<HaeLAMLaskennallinenAnturiResponse>)
@@ -89,7 +89,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamLaskennallinenAnturiVO> getLamAsemanLaskennallisetAnturit(final long lamAsemaLotjuId) {
+    public List<LamLaskennallinenAnturiVO> getLamAsemanLaskennallisetAnturit(final long lamAsemaLotjuId) {
 
         final HaeLAMAsemanLaskennallisetAnturit request = new HaeLAMAsemanLaskennallisetAnturit();
         request.setId(lamAsemaLotjuId);
@@ -100,7 +100,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
+    public List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
         final HaeKaikkiLAMLaskennallisetAnturit request = new HaeKaikkiLAMLaskennallisetAnturit();
         log.info("Fetching LAMLaskennallisetAnturis");
         final JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse>)
@@ -111,7 +111,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    LamAnturiVakioVO getLamAnturiVakio(final long anturiVakiolotjuId) {
+    public LamAnturiVakioVO getLamAnturiVakio(final long anturiVakiolotjuId) {
         final HaeAnturiVakio haeAnturiVakioRequest = new HaeAnturiVakio();
         haeAnturiVakioRequest.setAnturiVakioId(anturiVakiolotjuId);
 
@@ -123,7 +123,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamAnturiVakioVO> getAsemanAnturiVakios(final Long lotjuId) {
+    public List<LamAnturiVakioVO> getAsemanAnturiVakios(final Long lotjuId) {
         final HaeAsemanAnturiVakio haeAsemanAnturiVakioRequest =
             new HaeAsemanAnturiVakio();
         haeAsemanAnturiVakioRequest.setAsemaId(lotjuId);
@@ -136,7 +136,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamAnturiVakioArvoVO> getAllAnturiVakioArvos(final int month, final int dayOfMonth) {
+    public List<LamAnturiVakioArvoVO> getAllAnturiVakioArvos(final int month, final int dayOfMonth) {
         final HaeKaikkiAnturiVakioArvot haeKaikkiAnturiVakioArvotRequest =
             new HaeKaikkiAnturiVakioArvot();
         haeKaikkiAnturiVakioArvotRequest.setKuukausi(month);
@@ -150,16 +150,16 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    LamAnturiVakioArvoVO getAnturiVakioArvot(final long anturiVakioLotjuId, final int month, final int dayOfMonth) {
+    public LamAnturiVakioArvoVO getAnturiVakioArvot(final long anturiVakioLotjuId, final int month, final int dayOfMonth) {
         final HaeAnturiVakioArvot haeAnturiVakioArvot =
             new HaeAnturiVakioArvot();
         haeAnturiVakioArvot.setAnturiVakioId(anturiVakioLotjuId);
         haeAnturiVakioArvot.setKuukausi(month);
         haeAnturiVakioArvot.setPaiva(dayOfMonth);
 
-        final JAXBElement<HaeAnturiVakioArvotResponse> haeKaikkiAnturiVakioArvotResponse =
+        final JAXBElement<HaeAnturiVakioArvotResponse> haeAnturiVakioArvoResponse =
             (JAXBElement<HaeAnturiVakioArvotResponse>)
                 marshalSendAndReceive(objectFactory.createHaeAnturiVakioArvot(haeAnturiVakioArvot));
-        return haeKaikkiAnturiVakioArvotResponse.getValue().getLamanturivakio();
+        return haeAnturiVakioArvoResponse.getValue().getLamanturivakio();
     }
 }

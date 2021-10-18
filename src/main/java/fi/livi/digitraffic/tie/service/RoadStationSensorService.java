@@ -210,7 +210,9 @@ public class RoadStationSensorService {
                                 0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType.name(),
                                                                                          roadStationId,
                                                                                          sensorslotjuIds);
-
+        if (deleted > 0 || inserted > 0) {
+            log.info("method=updateSensorsOfRoadStation removeCount={} and insertCount={}", deleted, inserted);
+        }
         return Pair.of(deleted, inserted);
     }
 

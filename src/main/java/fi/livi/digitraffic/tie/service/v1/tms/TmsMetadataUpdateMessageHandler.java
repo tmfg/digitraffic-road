@@ -43,7 +43,7 @@ public class TmsMetadataUpdateMessageHandler {
 
     // Disable info logging as it can be normally over 1 s. Log only if over default warning level 5 s.
     @PerformanceMonitor(maxInfoExcecutionTime = 100000)
-    public int updateTmsMetadataFromJms(List<TmsMetadataUpdatedMessageDto> tmsMetadataUpdates) {
+    public int updateTmsMetadataFromJms(final List<TmsMetadataUpdatedMessageDto> tmsMetadataUpdates) {
         int updateCount = 0;
 
         for (TmsMetadataUpdatedMessageDto u : tmsMetadataUpdates) {

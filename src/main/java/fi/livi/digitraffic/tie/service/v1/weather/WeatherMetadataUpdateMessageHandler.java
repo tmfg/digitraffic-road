@@ -36,7 +36,7 @@ public class WeatherMetadataUpdateMessageHandler {
 
     // Disable info logging as it can be normally over 1 s. Log only if over default warning level 5 s.
     @PerformanceMonitor(maxInfoExcecutionTime = 100000)
-    public int updateWeatherMetadataFromJms(List<WeatherMetadataUpdatedMessageDto> weatherMetadataUpdates) {
+    public int updateWeatherMetadataFromJms(final List<WeatherMetadataUpdatedMessageDto> weatherMetadataUpdates) {
         int updateCount = 0;
 
         for (WeatherMetadataUpdatedMessageDto u : weatherMetadataUpdates) {
@@ -62,11 +62,12 @@ public class WeatherMetadataUpdateMessageHandler {
                     if (weatherStationSensorUpdater.updateWeatherSensor(u.getLotjuId(), updateType)) {
                         updateCount++;
                     }
-                    // Even when updateType would be delete, this means always update for station
+                    // Even when updateType would be delete, this means we also have to update the station
                     updateCount += u.getAsemmaLotjuIds().stream()
                         .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
                     break;
                 case ROAD_ADDRESS:
+                    // All ROAD_ADDRESS update types just calls update for road station
                     updateCount += u.getAsemmaLotjuIds().stream()
                         .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
                     if (u.getAsemmaLotjuIds().isEmpty()) {

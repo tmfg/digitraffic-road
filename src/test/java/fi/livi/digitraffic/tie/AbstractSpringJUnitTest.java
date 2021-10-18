@@ -7,10 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
 
-
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
+import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClient;
 
 /**
  To keep created context count as low as possible take in account that configuration
@@ -55,4 +57,11 @@ public abstract class AbstractSpringJUnitTest extends AbstractTest {
 
     @Autowired
     protected EntityManager entityManager;
+
+    @MockBean
+    protected LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
+
+    @MockBean
+    protected LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
+
 }

@@ -53,7 +53,7 @@ public class TmsStationSensorConstantService {
 
     @Transactional
     public boolean updateSingleSensorConstantValues(final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos) {
-        lamAnturiVakioArvos.forEach(v -> tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantLotjuId(v.getAnturiVakioId()));
+        lamAnturiVakioArvos.forEach(v -> tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantValueLotjuId(v.getAnturiVakioId()));
         final int upsert = tmsSensorConstantDao.updateSensorConstantValues(lamAnturiVakioArvos);
         log.info("method=updateSingleSensorConstantValues upsert={}", upsert);
         return upsert > 0;
@@ -69,8 +69,8 @@ public class TmsStationSensorConstantService {
     }
 
     @Transactional(readOnly = true)
-    public boolean obsoleteSensorConstantValueWithSensorConstantLotjuId(final long sensorConstantLotjuId) {
-        return tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantLotjuId(sensorConstantLotjuId) > 0;
+    public boolean obsoleteSensorConstantValueWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId) {
+        return tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantValueLotjuId(sensorConstantValueLotjuId) > 0;
     }
 
 

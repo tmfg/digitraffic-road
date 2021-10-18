@@ -81,7 +81,7 @@ public class TmsStationSensorConstantUpdater {
 
     public boolean updateTmsStationsSensorConstantValue(final long lamAnturiVakioArvoLotjuId, final MetadataUpdatedMessageDto.UpdateType updateType) {
         if (updateType.isDelete()) {
-            if ( tmsStationSensorConstantService.obsoleteSensorConstantValueWithSensorConstantLotjuId(lamAnturiVakioArvoLotjuId) ) {
+            if ( tmsStationSensorConstantService.obsoleteSensorConstantValueWithSensorConstantValueLotjuId(lamAnturiVakioArvoLotjuId) ) {
                 dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
                 return true;
             }

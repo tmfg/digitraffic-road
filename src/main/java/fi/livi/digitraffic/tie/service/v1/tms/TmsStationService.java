@@ -229,7 +229,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             hash != HashCodeBuilder.reflectionHashCode(to);
     }
 
-    private TmsStation findTmsStationByLotjuId(final Long lotjuId) {
+    @Transactional
+    public TmsStation findTmsStationByLotjuId(final Long lotjuId) {
         return tmsStationRepository.findByLotjuId(lotjuId);
     }
 

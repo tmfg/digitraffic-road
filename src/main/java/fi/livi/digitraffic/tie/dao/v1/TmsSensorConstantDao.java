@@ -93,7 +93,7 @@ public class TmsSensorConstantDao {
 
         final ArrayList<Map<String, Object>> batchData = new ArrayList<>();
         allLamAnturiVakios.forEach(lamAnturiVakio -> {
-            HashMap<String, Object> params = new HashMap<String, Object>();
+            HashMap<String, Object> params = new HashMap<>();
             params.put("sensorConstantLotjuId", lamAnturiVakio.getId());
             params.put("sensorConstantName", lamAnturiVakio.getNimi());
             params.put("sensorConstantRoadStationLotjuId", lamAnturiVakio.getAsemaId());
@@ -111,7 +111,7 @@ public class TmsSensorConstantDao {
 
         final ArrayList<Map<String, Object>> batchData = new ArrayList<>();
         allLamAnturiVakioArvos.forEach(v -> {
-            HashMap<String, Object> params = new HashMap<String, Object>();
+            HashMap<String, Object> params = new HashMap<>();
             params.put("sensorConstantValueLotjuId", v.getId());
             params.put("sensorConstantLotjuId", v.getAnturiVakioId());
             params.put("sensorConstantValue", v.getArvo());
@@ -151,12 +151,12 @@ public class TmsSensorConstantDao {
             paramMap);
     }
 
-    public int obsoleteSensorConstantValueWithSensorConstantLotjuId(final long sensorConstantLotjuId) {
-        final Map<String, Long> paramMap = Collections.singletonMap("sensorConstantLotjuId", sensorConstantLotjuId);
+    public int obsoleteSensorConstantValueWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId) {
+        final Map<String, Long> paramMap = Collections.singletonMap("sensorConstantValueLotjuId", sensorConstantValueLotjuId);
         return namedParameterJdbcTemplate.update(
             "UPDATE TMS_SENSOR_CONSTANT_VALUE\n" +
                 "SET OBSOLETE_DATE = now()\n" +
-                "WHERE sensor_constant_lotju_id = :sensorConstantLotjuId\n" +
+                "WHERE lotju_id = :sensorConstantValueLotjuId\n" +
                 "AND obsolete_date is null",
             paramMap);
     }
