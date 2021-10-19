@@ -29,7 +29,6 @@ import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.RoadStationUpdateService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
-import fi.livi.digitraffic.tie.service.v1.MetadataUpdateClusteredLock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
@@ -41,7 +40,7 @@ public class WeatherStationUpdater  {
     private final RoadStationUpdateService roadStationUpdateService;
     private final WeatherStationService weatherStationService;
     private final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper;
-    private final MetadataUpdateClusteredLock lock;
+    private final ClusteredLocker.ClusteredLock lock;
     private DataStatusService dataStatusService;
     private RoadStationService roadStationService;
     private RoadStationSensorService roadStationSensorService;
@@ -57,7 +56,7 @@ public class WeatherStationUpdater  {
         this.roadStationUpdateService = roadStationUpdateService;
         this.weatherStationService = weatherStationService;
         this.lotjuWeatherStationMetadataClientWrapper = lotjuWeatherStationMetadataClientWrapper;
-        this.lock = new MetadataUpdateClusteredLock(clusteredLocker, this.getClass().getSimpleName());
+        this.lock = clusteredLocker.createClusteredLock(this.getClass().getSimpleName(), 10000);
         this.dataStatusService = dataStatusService;
         this.roadStationService = roadStationService;
         this.roadStationSensorService = roadStationSensorService;
@@ -146,7 +145,7 @@ public class WeatherStationUpdater  {
         final List<TiesaaAsemaVO> toUpdate =
             tiesaaAsemas.stream().filter(this::validate).collect(Collectors.toList());
 
-        final Collection<TiesaaAsemaVO> invalid = CollectionUtils.subtract(tiesaaAsemas, toUpdate);
+        final Collection<?> invalid = CollectionUtils.subtract(tiesaaAsemas, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
         List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaAsemaVO::getId).collect(Collectors.toList());

@@ -40,26 +40,26 @@ public class CameraMetadataUpdateMessageHandler {
     public int updateCameraMetadataFromJms(List<CameraMetadataUpdatedMessageDto> cameraMetadataUpdates) {
         int updateCount = 0;
 
-        for (CameraMetadataUpdatedMessageDto u : cameraMetadataUpdates) {
-            log.debug("method=updateCameraMetadataFromJms {}", ToStringHelper.toStringFull(u));
-            final EntityType type = u.getEntityType();
-            final UpdateType updateType = u.getUpdateType();
+        for (CameraMetadataUpdatedMessageDto message : cameraMetadataUpdates) {
+            log.debug("method=updateCameraMetadataFromJms {}", ToStringHelper.toStringFull(message));
+            final EntityType type = message.getEntityType();
+            final UpdateType updateType = message.getUpdateType();
 
-            if ( u.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
+            if ( message.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
                 switch (type) {
                 case CAMERA:
-                    if (cameraStationUpdater.updateCameraStation(u.getLotjuId(), updateType)) {
+                    if (cameraStationUpdater.updateCameraStation(message.getLotjuId(), updateType)) {
                         updateCount++;
                     }
                     break;
                 case PRESET:
-                    if (cameraStationUpdater.updateCameraPreset(u.getLotjuId(), updateType)) {
+                    if (cameraStationUpdater.updateCameraPreset(message.getLotjuId(), updateType)) {
                         updateCount++;
                     }
                     break;
                 case ROAD_ADDRESS:
                     // Even in case of delete of the address the update type for station is UPDATE
-                    updateCount += u.getAsemmaLotjuIds().stream()
+                    updateCount += message.getAsemmaLotjuIds().stream()
                         .filter(asemaId -> cameraStationUpdater.updateCameraStation(asemaId, UPDATE)).count();
                     break;
                 case MASTER_STORAGE:
@@ -68,7 +68,7 @@ public class CameraMetadataUpdateMessageHandler {
                     // no handle
                     break;
                 default:
-                    throw new IllegalArgumentException("Unknown EntityType " + type);
+                    log.error(String.format("method=updateCameraMetadataFromJms Unknown EntityType %s", type));
                 }
             }
         }

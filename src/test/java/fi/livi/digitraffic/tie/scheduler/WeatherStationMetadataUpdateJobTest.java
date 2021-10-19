@@ -1,11 +1,13 @@
 package fi.livi.digitraffic.tie.scheduler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -24,10 +26,6 @@ import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationsSensorsUpdater;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
@@ -92,7 +90,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
     public void restoreOriginalDestinationProviderForLotjuClients() {
         restoreLotjuClientDestinationProvider(lotjuWeatherStationMetadataClient);
     }
-
+    // (name_fi ASC, road_station_type ASC, natural_id ASC, obsolete_date ASC);
     @Test
     public void testUpdateWeatherStations() {
         assertNull(findWithLotjuId(allInitial, 33));
@@ -138,7 +136,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
         final RoadStationSensor sensorInitial = findSensorWithLotjuId(initial36, 1, true);
         final RoadStationSensor sensorAfter = findSensorWithLotjuId(after36, 1, false);
 
-
+        assertNotNull(sensorInitial);
         assertEquals("EsitysFi", sensorInitial.getPresentationNameFi());
         assertEquals("EsitysFi2", sensorAfter.getPresentationNameFi());
 

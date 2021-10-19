@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
@@ -88,7 +89,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     @BeforeEach
     public void initData() {
         testHelper.clearDb();
-        testHelper.flushAndClearSession();
+        TestUtils.entityManagerFlushAndClear(entityManager);
     }
 
     @Test

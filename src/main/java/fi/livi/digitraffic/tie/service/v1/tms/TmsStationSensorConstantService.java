@@ -42,7 +42,7 @@ public class TmsStationSensorConstantService {
         final List<Long> ids = allLamAnturiVakios.stream().map(LamAnturiVakioVO::getId).collect(Collectors.toList());
         final int obsoleted = tmsSensorConstantDao.obsoleteSensorConstantsExcludingIds(ids);
         final int upsert = tmsSensorConstantDao.updateSensorConstants(allLamAnturiVakios);
-        log.info("updateSensorConstants upsert={}, obsoleted={}", upsert, obsoleted);
+        log.info("updateSensorConstants upsertCount={}, obsoleteCount={}", upsert, obsoleted);
         return obsoleted > 0 || upsert > 0;
     }
 
@@ -64,7 +64,7 @@ public class TmsStationSensorConstantService {
         final List<Long> ids = allLamAnturiVakioArvos.stream().map(LamAnturiVakioArvoVO::getId).collect(Collectors.toList());
         final int obsoleted = tmsSensorConstantDao.obsoleteSensorConstantValuesExcludingIds(ids);
         final int upsert = tmsSensorConstantDao.updateSensorConstantValues(allLamAnturiVakioArvos);
-        log.info("method=updateSensorConstantValues upsert={}, obsoleted={}", upsert, obsoleted);
+        log.info("method=updateSensorConstantValues upsert={}, obsoleteCount={}", upsert, obsoleted);
         return obsoleted > 0 || upsert > 0;
     }
 

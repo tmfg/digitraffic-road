@@ -8,9 +8,9 @@ import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 public class MetadataUpdatedMessageDto {
 
     public enum UpdateType {
-        UPDATE("PAIVITYS"), // PAIVITYS
-        INSERT("LISAYS"), // LISAYS
-        DELETE("POISTO"); // POISTO
+        UPDATE("PAIVITYS"),
+        INSERT("LISAYS"),
+        DELETE("POISTO");
 
         private final String externalValue;
 
@@ -43,7 +43,7 @@ public class MetadataUpdatedMessageDto {
     private final Long lotjuId;
     private final Set<Long> asemmaLotjuIds;
     private final UpdateType updateType;
-    private Instant updateTime;
+    private final Instant updateTime;
 
     public MetadataUpdatedMessageDto(final Long lotjuId, final Set<Long> asemmaLotjuIds, final UpdateType updateType, final Instant updateTime) {
         this.lotjuId = lotjuId;

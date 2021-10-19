@@ -82,7 +82,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         final List<TiesaaLaskennallinenAnturiVO> toUpdate =
             allTiesaaLaskennallinenAnturis.stream().filter(WeatherStationSensorUpdater::validate).collect(Collectors.toList());
 
-        final Collection<TiesaaLaskennallinenAnturiVO> invalid = CollectionUtils.subtract(allTiesaaLaskennallinenAnturis, toUpdate);
+        final Collection<?> invalid = CollectionUtils.subtract(allTiesaaLaskennallinenAnturis, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
@@ -97,9 +97,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
             }
         }
 
-        log.info("method=updateAllRoadStationSensors roadStationSensors obsoletedCount={} roadStationType={}", obsoleted, RoadStationType.WEATHER_STATION);
-        log.info("method=updateAllRoadStationSensors roadStationSensors updatedCount={} roadStationType={}", updated, RoadStationType.WEATHER_STATION);
-        log.info("method=updateAllRoadStationSensors roadStationSensors insertedCount={} roadStationType={}", inserted, RoadStationType.WEATHER_STATION);
+        log.info("method=updateAllRoadStationSensors roadStationSensors obsoletedCount={} updatedCount={} insertedCount={} roadStationType={} ", obsoleted, updated, inserted, RoadStationType.WEATHER_STATION);
 
         if (!invalid.isEmpty()) {
             log.warn("method=updateAllRoadStationSensors roadStationSensors invalidCount={} roadStationType={}", invalid.size(), RoadStationType.WEATHER_STATION);

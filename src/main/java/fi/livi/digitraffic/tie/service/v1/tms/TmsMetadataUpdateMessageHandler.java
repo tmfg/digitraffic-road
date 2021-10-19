@@ -46,40 +46,40 @@ public class TmsMetadataUpdateMessageHandler {
     public int updateTmsMetadataFromJms(final List<TmsMetadataUpdatedMessageDto> tmsMetadataUpdates) {
         int updateCount = 0;
 
-        for (TmsMetadataUpdatedMessageDto u : tmsMetadataUpdates) {
-            log.debug("method=updateTmsMetadataFromJms {}", ToStringHelper.toStringFull(u));
-            final EntityType type = u.getEntityType();
-            final UpdateType updateType = u.getUpdateType();
+        for (TmsMetadataUpdatedMessageDto message : tmsMetadataUpdates) {
+            log.debug("method=updateTmsMetadataFromJms {}", ToStringHelper.toStringFull(message));
+            final EntityType type = message.getEntityType();
+            final UpdateType updateType = message.getUpdateType();
 
-            if ( u.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
+            if ( message.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
                 switch (type) {
                 case TMS_STATION:
-                    if ( tmsStationUpdater.updateTmsStationAndSensors(u.getLotjuId(), updateType) ) {
+                    if ( tmsStationUpdater.updateTmsStationAndSensors(message.getLotjuId(), updateType) ) {
                         updateCount++;
                     }
                     break;
                 case TMS_COMPUTATIONAL_SENSOR:
                     // Contains also id's of the stations affected
-                    if ( tmsSensorUpdater.updateTmsSensor(u.getLotjuId(), updateType) ) {
+                    if ( tmsSensorUpdater.updateTmsSensor(message.getLotjuId(), updateType) ) {
                         updateCount++;
                     }
                     // Even when updateType would be delete, this means always update for station
-                    updateCount += u.getAsemmaLotjuIds().stream()
+                    updateCount += message.getAsemmaLotjuIds().stream()
                         .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
                     break;
                 case TMS_SENSOR_CONSTANT:
-                    if ( tmsStationSensorConstantUpdater.updateTmsStationsSensorConstant(u.getLotjuId(), updateType) ) {
+                    if ( tmsStationSensorConstantUpdater.updateTmsStationsSensorConstant(message.getLotjuId(), updateType) ) {
                         updateCount++;
                     }
                     break;
                 case TMS_SENSOR_CONSTANT_VALUE:
-                    if ( tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(u.getLotjuId(), updateType) ) {
+                    if ( tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(message.getLotjuId(), updateType) ) {
                         updateCount++;
                     }
                     break;
                 case ROAD_ADDRESS:
                     // Always update
-                    updateCount += u.getAsemmaLotjuIds().stream()
+                    updateCount += message.getAsemmaLotjuIds().stream()
                         .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
                     break;
                 case TMS_SENSOR:
@@ -87,7 +87,7 @@ public class TmsMetadataUpdateMessageHandler {
                     // Only computational sensors matters
                     break;
                 default:
-                    throw new IllegalArgumentException("Unknown EntityType " + type);
+                    log.error(String.format("method=updateTmsMetadataFromJms Unknown EntityType %s", type));
                 }
             }
         }

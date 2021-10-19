@@ -29,7 +29,6 @@ import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.RoadStationUpdateService;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
-import fi.livi.digitraffic.tie.service.v1.MetadataUpdateClusteredLock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
@@ -39,7 +38,7 @@ public class TmsStationUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationUpdater.class);
 
     private final RoadStationUpdateService roadStationUpdateService;
-    private final MetadataUpdateClusteredLock lock;
+    private final ClusteredLocker.ClusteredLock lock;
     private DataStatusService dataStatusService;
     private RoadStationService roadStationService;
     private final TmsStationService tmsStationService;
@@ -59,7 +58,7 @@ public class TmsStationUpdater {
         this.tmsStationService = tmsStationService;
         this.roadStationSensorService = roadStationSensorService;
         this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
-        this.lock = new MetadataUpdateClusteredLock(clusteredLocker, this.getClass().getSimpleName());
+        this.lock = clusteredLocker.createClusteredLock(this.getClass().getSimpleName(), 10000);
         this.dataStatusService = dataStatusService;
     }
 
@@ -106,7 +105,7 @@ public class TmsStationUpdater {
         final int obsoleted = roadStationUpdateService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
         log.info("Not to obsolete lotju ids {}", notToObsoleteLotjuIds);
 
-        final Collection<LamAsemaVO> invalid = (Collection<LamAsemaVO>)CollectionUtils.subtract(lamAsemas, toUpdate);
+        final Collection<?> invalid = CollectionUtils.subtract(lamAsemas, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
         for (LamAsemaVO tsa : toUpdate) {
@@ -119,11 +118,9 @@ public class TmsStationUpdater {
         }
 
 
-        log.info("Obsoleted={} TmsStations", obsoleted);
-        log.info("Updated={} TmsStations", updated);
-        log.info("Inserted={} TmsStations", inserted);
+        log.info("method=updateTmsStationsMetadata obsoleteCount={} updateCount={} insertCount={}", obsoleted, updated, inserted);
         if (!invalid.isEmpty()) {
-            log.warn("Invalid WeatherStations from lotju invalidCount={}", invalid.size());
+            log.warn("method=updateTmsStationsMetadata Invalid TmsStations from lotju invalidCount={}", invalid.size());
         }
 
         return obsoleted > 0 || inserted > 0 || updated > 0;

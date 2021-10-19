@@ -40,8 +40,8 @@ public class JMSConfiguration {
         // Maximum total time to try connection to different brokers
         connectionFactory.setInitialConnectTimeout(60);
         connectionFactory.setConnectionURLs(jmsConnectionUrls);
-//        connectionFactory.setDefaultUser(jmsUserId);
-//        connectionFactory.setDefaultPassword(jmsPassword);
+        connectionFactory.setDefaultUser(jmsUserId);
+        connectionFactory.setDefaultPassword(jmsPassword);
         log.info("Create JMS QueueConnectionFactory {}", connectionFactory);
         return connectionFactory;
     }

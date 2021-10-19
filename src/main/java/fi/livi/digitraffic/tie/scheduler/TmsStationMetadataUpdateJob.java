@@ -10,7 +10,6 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationsSensorsUpdater;
 
-@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @DisallowConcurrentExecution
 public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
 
@@ -44,7 +43,7 @@ public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
 
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
 
-        log.info("UpdateRoadStationSensors took: sensorsTimeMs={} ms, updateTmsStations took: stationsTimeMs={} ms, updateTmsStationsSensors took: stationsSensorsTimeMs={} ms",
-                sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensorsWatch.getTime());
+        log.info("method=doExecute UpdateRoadStationSensors took: sensorsTimeMs={} ms, updateTmsStations took: stationsTimeMs={} ms, updateTmsStationsSensors took: stationsSensorsTimeMs={} ms",
+                 sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensorsWatch.getTime());
     }
 }

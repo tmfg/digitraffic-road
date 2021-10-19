@@ -508,7 +508,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
             TestUtils.commitAndEndTransactionAndStartNew();
             sleep(1000);
         });
-        flushAndClearSession();
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         final List<CameraPresetHistory> allAfter = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp1.getPresetId());
 
@@ -586,7 +586,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         // Set camera to public from the T1. Preset history at T2 should remain secret. Others should be public.
         final RoadStation rs = preset.getRoadStation();
         rs.updatePublicity(true, T1);
-        flushAndClearSession();
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
 
@@ -609,7 +609,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         final List<CameraPresetHistory> allBeforeDelete = cameraPresetHistoryRepository.findAll();
         log.info("allBeforeDeleteSize {}, presetCount {}, historySize {}", allBeforeDelete.size(), presetCount, historySize);
         assertEquals(historySize*presetCount, allBeforeDelete.size());
-        flushAndClearSession();
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         // after delete there should be left only newer than 24 hours -> 25 left/preset
         cameraPresetHistoryUpdateService.deleteOlderThanHoursHistory(24);
@@ -689,10 +689,5 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     private static List<String> generateCameraIds(final int count) {
         return IntStream.range(0, count).mapToObj(i -> String.format("C%s", StringUtils.leftPad(String.valueOf(i), 5, "0"))).collect(Collectors.toList());
-    }
-
-    private void flushAndClearSession() {
-        entityManager.flush();
-        entityManager.clear();
     }
 }

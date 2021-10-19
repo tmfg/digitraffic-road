@@ -23,7 +23,6 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
-import fi.livi.digitraffic.tie.service.v1.MetadataUpdateClusteredLock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
@@ -35,7 +34,7 @@ public class CameraStationUpdater {
     private final CameraStationUpdateService cameraStationUpdateService;
     private final CameraPresetService cameraPresetService;
     private final RoadStationService roadStationService;
-    private final MetadataUpdateClusteredLock lock;
+    private final ClusteredLocker.ClusteredLock lock;
 
     @Autowired
     public CameraStationUpdater(final LotjuCameraStationMetadataClientWrapper lotjuCameraStationMetadataClientWrapper,
@@ -47,7 +46,7 @@ public class CameraStationUpdater {
         this.cameraStationUpdateService = cameraStationUpdateService;
         this.cameraPresetService = cameraPresetService;
         this.roadStationService = roadStationService;
-        this.lock = new MetadataUpdateClusteredLock(clusteredLocker, this.getClass().getSimpleName());
+        this.lock = clusteredLocker.createClusteredLock(this.getClass().getSimpleName(), 10000);
     }
 
 

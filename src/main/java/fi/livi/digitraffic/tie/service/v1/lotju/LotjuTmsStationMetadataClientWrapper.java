@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -146,32 +147,28 @@ public class LotjuTmsStationMetadataClientWrapper {
         final CompletionService<LamAnturiVakioArvoVO> completionService = new ExecutorCompletionService<>(executor);
 
         final StopWatch start = StopWatch.createStarted();
-        int monthCounter = 0;
-        while (monthCounter < 12) {
-            monthCounter++;
-            final int month = monthCounter;
-            completionService.submit(() -> lotjuTmsStationMetadataClient.getAnturiVakioArvot(anturiVakioArvoLotjuId, month, 1));
-        }
-        log.info("method=getAnturiVakioArvos for {} months", monthCounter);
+        IntStream.range(1,13).forEach(month ->
+            completionService.submit(() -> lotjuTmsStationMetadataClient.getAnturiVakioArvot(anturiVakioArvoLotjuId, month, 1)));
+        log.info("method=getAnturiVakioArvos for 12 months");
 
         // It's necessary to wait all executors to complete.
-        for (int i = 0; i < monthCounter; i++) {
+        IntStream.range(1,13).forEach(month -> {
             try {
                 final LamAnturiVakioArvoVO values = completionService.take().get();
                 lamAnturiVakioArvos.add(values);
-                log.debug("method=getAnturiVakioArvos {}/{}", lamAnturiVakioArvos.size(), monthCounter);
+                log.debug("method=getAnturiVakioArvos {}/12", lamAnturiVakioArvos.size());
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("method=getAnturiVakioArvos Error while fetching LamAnturiVakioArvo", e);
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
-        }
+        });
         executor.shutdown();
 
         final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
 
-        log.info("method=getAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
-                 lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getTime());
+        log.info("method=getAnturiVakioArvos fetchedCount={} for 12 months distincLamAnturiVakiosCount={} tookMs={}",
+                 lamAnturiVakioArvos.size(), distincLamAnturiVakios.size(), start.getTime());
         return distincLamAnturiVakios;
     }
 

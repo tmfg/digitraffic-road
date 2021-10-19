@@ -226,6 +226,12 @@ public class RoadStation {
     public boolean isObsolete() {
         return obsoleteDate != null;
     }
+
+    /**
+     * Makes station obsolete if it's not already
+     *
+     * @return true is state was changed (station was not obsolete before)
+     */
     public boolean obsolete() {
         if (obsoleteDate == null) {
             setObsoleteDate(LocalDate.now());

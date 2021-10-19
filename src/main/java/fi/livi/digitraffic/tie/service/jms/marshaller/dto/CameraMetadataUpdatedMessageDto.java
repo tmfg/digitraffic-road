@@ -10,9 +10,9 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 public class CameraMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
 
     public enum EntityType {
-        CAMERA("KAMERA"),                 // KAMERA
-        VIDEO_SERVER("VIDEOPALVELIN"),           //
-        CAMERA_CONFIGURATION("KAMERAKOKOONPANO"),   //
+        CAMERA("KAMERA"),
+        VIDEO_SERVER("VIDEOPALVELIN"),
+        CAMERA_CONFIGURATION("KAMERAKOKOONPANO"),
         PRESET("ESIASENTO"),
         MASTER_STORAGE("MASTER_TIETOVARASTO"),
         ROAD_ADDRESS("TIEOSOITE");

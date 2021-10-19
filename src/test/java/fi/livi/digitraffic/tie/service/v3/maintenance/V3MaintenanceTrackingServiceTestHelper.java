@@ -394,11 +394,6 @@ public class V3MaintenanceTrackingServiceTestHelper {
         return handled;
     }
 
-    public void flushAndClearSession() {
-        entityManager.flush();
-        entityManager.clear();
-    }
-
     private String readResourceContent(final String resourcePattern) throws IOException {
         return FileUtils.readFileToString(resourceLoader.getResource(resourcePattern).getFile(), UTF_8);
     }
@@ -435,7 +430,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
         for(final Havainnot havainnot : seuranta.getHavainnot()) {
             final Havainto h = havainnot.getHavainto();
             final String json = jsonWriterForHavainto.writeValueAsString(h);
-            Map<String, Object> valuesMap = new HashMap();
+            Map<String, Object> valuesMap = new HashMap<>();
             valuesMap.put("observationTime", h.getHavaintoaika().toInstant().toString());
             valuesMap.put("sendingTime", sendingTime.toString());
             valuesMap.put("json", json);

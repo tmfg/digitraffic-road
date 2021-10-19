@@ -39,39 +39,39 @@ public class WeatherMetadataUpdateMessageHandler {
     public int updateWeatherMetadataFromJms(final List<WeatherMetadataUpdatedMessageDto> weatherMetadataUpdates) {
         int updateCount = 0;
 
-        for (WeatherMetadataUpdatedMessageDto u : weatherMetadataUpdates) {
-            log.info("method=updateWeatherMetadataFromJms {}", ToStringHelper.toStringFull(u));
-            final EntityType type = u.getEntityType();
-            final MetadataUpdatedMessageDto.UpdateType updateType = u.getUpdateType();
+        for (WeatherMetadataUpdatedMessageDto message : weatherMetadataUpdates) {
+            log.info("method=updateWeatherMetadataFromJms {}", ToStringHelper.toStringFull(message));
+            final EntityType type = message.getEntityType();
+            final MetadataUpdatedMessageDto.UpdateType updateType = message.getUpdateType();
 
-            if ( u.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
+            if ( message.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
                 switch (type) {
                 case WEATHER_STATION:
-                    if (weatherStationUpdater.updateWeatherStationAndSensors(u.getLotjuId(), updateType)) {
+                    if (weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), updateType)) {
                         updateCount++;
                     }
                     break;
                 case WEATHER_STATION_COMPUTATIONAL_SENSOR:
                     if (updateType.isDelete()) {
-                        weatherStationUpdater.updateWeatherStationAndSensors(u.getLotjuId(), UPDATE);
-                    } else if (weatherStationUpdater.updateWeatherStationAndSensors(u.getLotjuId(), updateType)) {
+                        weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), UPDATE);
+                    } else if (weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), updateType)) {
                         updateCount++;
                     }
                     break;
                 case WEATHER_COMPUTATIONAL_SENSOR:
-                    if (weatherStationSensorUpdater.updateWeatherSensor(u.getLotjuId(), updateType)) {
+                    if (weatherStationSensorUpdater.updateWeatherSensor(message.getLotjuId(), updateType)) {
                         updateCount++;
                     }
                     // Even when updateType would be delete, this means we also have to update the station
-                    updateCount += u.getAsemmaLotjuIds().stream()
+                    updateCount += message.getAsemmaLotjuIds().stream()
                         .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
                     break;
                 case ROAD_ADDRESS:
                     // All ROAD_ADDRESS update types just calls update for road station
-                    updateCount += u.getAsemmaLotjuIds().stream()
+                    updateCount += message.getAsemmaLotjuIds().stream()
                         .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
-                    if (u.getAsemmaLotjuIds().isEmpty()) {
-                        log.warn("method=updateWeatherMetadataFromJms message had no station id's {}", ToStringHelper.toStringFull(u));
+                    if (message.getAsemmaLotjuIds().isEmpty()) {
+                        log.warn("method=updateWeatherMetadataFromJms message had no station id's {}", ToStringHelper.toStringFull(message));
                     }
                     break;
 
@@ -84,7 +84,7 @@ public class WeatherMetadataUpdateMessageHandler {
                     // no handle as won't affect us.
                     break;
                 default:
-                    throw new IllegalArgumentException("Unknown EntityType " + type);
+                    log.error(String.format("method=updateWeatherMetadataFromJms Unknown EntityType %s", type));
                 }
             }
         }

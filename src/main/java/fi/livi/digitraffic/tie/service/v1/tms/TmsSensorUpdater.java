@@ -50,7 +50,7 @@ public class TmsSensorUpdater extends AbstractRoadStationSensorUpdater {
                 lotjuTmsStationMetadataClientWrapper.getAllLamLaskennallinenAnturis();
 
         boolean updated = updateAllRoadStationSensors(allLamLaskennallinenAnturis);
-        log.info("Update TMS RoadStationSensors end");
+        log.info("method=updateTmsSensors end");
         return updated;
     }
 
@@ -86,7 +86,7 @@ public class TmsSensorUpdater extends AbstractRoadStationSensorUpdater {
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
         final int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.TMS_STATION, notToObsoleteLotjuIds);
 
-        final Collection<LamLaskennallinenAnturiVO> invalid = CollectionUtils.subtract(allLamLaskennallinenAnturis, toUpdate);
+        final Collection<?> invalid = CollectionUtils.subtract(allLamLaskennallinenAnturis, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
         for (LamLaskennallinenAnturiVO anturi : toUpdate) {
@@ -98,10 +98,8 @@ public class TmsSensorUpdater extends AbstractRoadStationSensorUpdater {
             }
         }
 
-        log.info("method=updateAllRoadStationSensors roadStationSensors obsoletedCount={} roadStationType={}", obsoleted, RoadStationType.TMS_STATION);
-        log.info("method=updateAllRoadStationSensors roadStationSensors updatedCount={} roadStationType={}", updated, RoadStationType.TMS_STATION);
-        log.info("method=updateAllRoadStationSensors roadStationSensors insertedCount={} roadStationType={}", inserted, RoadStationType.TMS_STATION);
-
+        log.info("method=updateAllRoadStationSensors roadStationSensors obsoletedCount={} updatedCount={} insertedCount={} roadStationType={} ",
+                 obsoleted, updated, inserted, RoadStationType.TMS_STATION);
         if (!invalid.isEmpty()) {
             log.warn("method=updateAllRoadStationSensors roadStationSensors invalidCount={} roadStationType={}", invalid.size(), RoadStationType.TMS_STATION);
         }
@@ -109,7 +107,7 @@ public class TmsSensorUpdater extends AbstractRoadStationSensorUpdater {
         return obsoleted > 0 || inserted > 0 || updated > 0;
     }
 
-    private static boolean validate(LamLaskennallinenAnturiVO anturi) {
+    private static boolean validate(final LamLaskennallinenAnturiVO anturi) {
         return anturi.getId() != null && anturi.getVanhaId() != null;
     }
 }

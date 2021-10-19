@@ -17,6 +17,6 @@ public class TmsStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
     protected void doExecute(JobExecutionContext context) {
         final int tmsCount = tmsStationUpdater.updateTmsStationsStatuses();
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
-        log.info("Updated={} TMS stations statuses", tmsCount);
+        log.info("method=doExecute updateCount={} TMS stations statuses", tmsCount);
     }
 }
