@@ -218,7 +218,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
     /**
      * Updates Camera Station but not presets
-     * @param kamera kamera to update from
+     * @param kamera to update from
      * @return true if camera station was changed
      */
     @Transactional

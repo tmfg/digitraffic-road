@@ -44,6 +44,9 @@ public class WeatherMetadataUpdateMessageHandler {
             final EntityType type = message.getEntityType();
             final MetadataUpdatedMessageDto.UpdateType updateType = message.getUpdateType();
 
+            // Skip messages that are older than 24 hours as metadata update job is running every 12 hours
+            // so this could also be 12 h but for safety margin lets keep it in 24h. This could happen in case
+            // of JMS connection problems for over 24 hours.
             if ( message.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
                 switch (type) {
                 case WEATHER_STATION:

@@ -86,10 +86,10 @@ public class TmsStationSensorConstantUpdater {
                 return true;
             }
         } else {
-            final List<LamAnturiVakioArvoVO> anturiVakioArvo = lotjuTmsStationMetadataClientWrapper.getAnturiVakioArvos(lamAnturiVakioArvoLotjuId);
-            if ( anturiVakioArvo.isEmpty() ) {
+            final List<LamAnturiVakioArvoVO> anturiVakioArvos = lotjuTmsStationMetadataClientWrapper.getAnturiVakioArvos(lamAnturiVakioArvoLotjuId);
+            if ( anturiVakioArvos.isEmpty() ) {
                 log.warn("method=updateTmsStationsSensorConstantValue sensor constant value with SensorConstant lotjuId={} not found", lamAnturiVakioArvoLotjuId);
-            } else if (tmsStationSensorConstantService.updateSingleSensorConstantValues(anturiVakioArvo))  {
+            } else if (tmsStationSensorConstantService.updateSingleSensorConstantValues(anturiVakioArvos))  {
                 dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
                 return true;
             }

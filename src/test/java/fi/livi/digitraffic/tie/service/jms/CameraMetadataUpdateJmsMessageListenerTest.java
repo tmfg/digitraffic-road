@@ -195,22 +195,6 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     }
 
     @Test
-    public void cameraMetadataInsertPresetMessages() {
-        List<CameraPreset> presets = createAndSaveCameraPresets(2);
-        final CameraPreset ps1 = presets.get(0);
-        final CameraPreset ps2 = presets.get(1);
-
-        sendMessage(getPresetUpdateMessageXml(UpdateType.DELETE, presets.get(0).getLotjuId()));
-        TestUtils.entityManagerFlushAndClear(entityManager);
-
-        final CameraPreset preset1 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps1.getLotjuId());
-        final CameraPreset preset2 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps2.getLotjuId());
-
-        assertFalse(preset1.isPublishable());
-        assertTrue(preset2.isPublishable());
-    }
-
-    @Test
     public void cameraMetadataUpdateDeletePresetMessages() {
         List<CameraPreset> presets = createAndSaveCameraPresets(2);
         final CameraPreset ps1 = presets.get(0);
