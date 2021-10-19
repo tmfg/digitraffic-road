@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.amazonaws.services.s3.model.S3Object;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
@@ -47,7 +49,8 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateServic
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.ImageUpdateInfo;
 
-// TODO not test driven?
+// TODO Test is not driven because it's name is not ending to Test.java
+// TODO Testcontainers S3 library generates over 32 chars long version_id -> make version_id column longer in db
 public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3 {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateHandlerTestWithS3.class);
@@ -66,6 +69,12 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
 
     @Autowired
     private CameraPresetHistoryDataService cameraPresetHistoryDataService;
+
+    @BeforeEach
+    public void initData() {
+        cameraPresetService.save(TestUtils.generateDummyPreset());
+        cameraPresetService.save(TestUtils.generateDummyPreset());
+    }
 
     @Test
     public void versionHistoryAndPresetPublicityForTwoPresets() throws IOException {
