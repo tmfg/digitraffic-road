@@ -49,29 +49,33 @@ public class CameraMetadataUpdateMessageHandler {
             // so this could also be 12 h but for safety margin lets keep it in 24h. This could happen in case
             // of JMS connection problems for over 24 hours.
             if ( message.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
-                switch (type) {
-                case CAMERA:
-                    if (cameraStationUpdater.updateCameraStation(message.getLotjuId(), updateType)) {
-                        updateCount++;
+                try {
+                    switch (type) {
+                    case CAMERA:
+                        if (cameraStationUpdater.updateCameraStation(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        break;
+                    case PRESET:
+                        if (cameraStationUpdater.updateCameraPreset(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        break;
+                    case ROAD_ADDRESS:
+                        // Even in case of delete of the address the update type for station is UPDATE
+                        updateCount += message.getAsemmaLotjuIds().stream()
+                            .filter(asemaId -> cameraStationUpdater.updateCameraStation(asemaId, UPDATE)).count();
+                        break;
+                    case MASTER_STORAGE:
+                    case VIDEO_SERVER:
+                    case CAMERA_CONFIGURATION:
+                        // no handle
+                        break;
+                    default:
+                        log.error(String.format("method=updateCameraMetadataFromJms Unknown EntityType %s", type));
                     }
-                    break;
-                case PRESET:
-                    if (cameraStationUpdater.updateCameraPreset(message.getLotjuId(), updateType)) {
-                        updateCount++;
-                    }
-                    break;
-                case ROAD_ADDRESS:
-                    // Even in case of delete of the address the update type for station is UPDATE
-                    updateCount += message.getAsemmaLotjuIds().stream()
-                        .filter(asemaId -> cameraStationUpdater.updateCameraStation(asemaId, UPDATE)).count();
-                    break;
-                case MASTER_STORAGE:
-                case VIDEO_SERVER:
-                case CAMERA_CONFIGURATION:
-                    // no handle
-                    break;
-                default:
-                    log.error(String.format("method=updateCameraMetadataFromJms Unknown EntityType %s", type));
+                } catch (final Exception e) {
+                    log.error(String.format("method=updateCameraMetadataFromJms Error with %s", ToStringHelper.toStringFull(message)), e);
                 }
             }
         }

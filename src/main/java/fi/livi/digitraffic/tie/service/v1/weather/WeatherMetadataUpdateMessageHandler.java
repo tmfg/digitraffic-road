@@ -48,46 +48,50 @@ public class WeatherMetadataUpdateMessageHandler {
             // so this could also be 12 h but for safety margin lets keep it in 24h. This could happen in case
             // of JMS connection problems for over 24 hours.
             if ( message.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
-                switch (type) {
-                case WEATHER_STATION:
-                    if (weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), updateType)) {
-                        updateCount++;
-                    }
-                    break;
-                case WEATHER_STATION_COMPUTATIONAL_SENSOR:
-                    if (updateType.isDelete()) {
-                        weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), UPDATE);
-                    } else if (weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), updateType)) {
-                        updateCount++;
-                    }
-                    break;
-                case WEATHER_COMPUTATIONAL_SENSOR:
-                    if (weatherStationSensorUpdater.updateWeatherSensor(message.getLotjuId(), updateType)) {
-                        updateCount++;
-                    }
-                    // Even when updateType would be delete, this means we also have to update the station
-                    updateCount += message.getAsemmaLotjuIds().stream()
-                        .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
-                    break;
-                case ROAD_ADDRESS:
-                    // All ROAD_ADDRESS update types just calls update for road station
-                    updateCount += message.getAsemmaLotjuIds().stream()
-                        .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
-                    if (message.getAsemmaLotjuIds().isEmpty()) {
-                        log.warn("method=updateWeatherMetadataFromJms message had no station id's {}", ToStringHelper.toStringFull(message));
-                    }
-                    break;
+                try {
+                    switch (type) {
+                    case WEATHER_STATION:
+                        if (weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        break;
+                    case WEATHER_STATION_COMPUTATIONAL_SENSOR:
+                        if (updateType.isDelete()) {
+                            weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), UPDATE);
+                        } else if (weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        break;
+                    case WEATHER_COMPUTATIONAL_SENSOR:
+                        if (weatherStationSensorUpdater.updateWeatherSensor(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        // Even when updateType would be delete, this means we also have to update the station
+                        updateCount += message.getAsemmaLotjuIds().stream()
+                            .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
+                        break;
+                    case ROAD_ADDRESS:
+                        // All ROAD_ADDRESS update types just calls update for road station
+                        updateCount += message.getAsemmaLotjuIds().stream()
+                            .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
+                        if (message.getAsemmaLotjuIds().isEmpty()) {
+                            log.warn("method=updateWeatherMetadataFromJms message had no station id's {}", ToStringHelper.toStringFull(message));
+                        }
+                        break;
 
-                case WEATHER_SENSOR:
-                case WEATHER_SENSOR_TYPE:
-                case SENSOR_MESSAGE:
-                case PREPROSESSING:
-                case VALUE_EQUIVALENCE:
-                case WEATHER_COMPUTATIONAL_SENSOR_FORMULA:
-                    // no handle as won't affect us.
-                    break;
-                default:
-                    log.error(String.format("method=updateWeatherMetadataFromJms Unknown EntityType %s", type));
+                    case WEATHER_SENSOR:
+                    case WEATHER_SENSOR_TYPE:
+                    case SENSOR_MESSAGE:
+                    case PREPROSESSING:
+                    case VALUE_EQUIVALENCE:
+                    case WEATHER_COMPUTATIONAL_SENSOR_FORMULA:
+                        // no handle as won't affect us.
+                        break;
+                    default:
+                        log.error(String.format("method=updateWeatherMetadataFromJms Unknown EntityType %s", type));
+                    }
+                } catch (final Exception e) {
+                    log.error(String.format("method=updateWeatherMetadataFromJms Error with %s", ToStringHelper.toStringFull(message)), e);
                 }
             }
         }

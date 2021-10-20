@@ -55,42 +55,46 @@ public class TmsMetadataUpdateMessageHandler {
             // so this could also be 12 h but for safety margin lets keep it in 24h. This could happen in case
             // of JMS connection problems for over 24 hours.
             if ( message.getUpdateTime().plus(1, ChronoUnit.DAYS).isAfter(Instant.now()) ) {
-                switch (type) {
-                case TMS_STATION:
-                    if ( tmsStationUpdater.updateTmsStationAndSensors(message.getLotjuId(), updateType) ) {
-                        updateCount++;
+                try {
+                    switch (type) {
+                    case TMS_STATION:
+                        if (tmsStationUpdater.updateTmsStationAndSensors(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        break;
+                    case TMS_COMPUTATIONAL_SENSOR:
+                        // Contains also id's of the stations affected
+                        if (tmsSensorUpdater.updateTmsSensor(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        // Even when updateType would be delete, this means always update for station
+                        updateCount += message.getAsemmaLotjuIds().stream()
+                            .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
+                        break;
+                    case TMS_SENSOR_CONSTANT:
+                        if (tmsStationSensorConstantUpdater.updateTmsStationsSensorConstant(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        break;
+                    case TMS_SENSOR_CONSTANT_VALUE:
+                        if (tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(message.getLotjuId(), updateType)) {
+                            updateCount++;
+                        }
+                        break;
+                    case ROAD_ADDRESS:
+                        // Always update
+                        updateCount += message.getAsemmaLotjuIds().stream()
+                            .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
+                        break;
+                    case TMS_SENSOR:
+                        // no handle as TMS_SENSOR update won't affect us.
+                        // Only computational sensors matters
+                        break;
+                    default:
+                        log.error(String.format("method=updateTmsMetadataFromJms Unknown EntityType %s", type));
                     }
-                    break;
-                case TMS_COMPUTATIONAL_SENSOR:
-                    // Contains also id's of the stations affected
-                    if ( tmsSensorUpdater.updateTmsSensor(message.getLotjuId(), updateType) ) {
-                        updateCount++;
-                    }
-                    // Even when updateType would be delete, this means always update for station
-                    updateCount += message.getAsemmaLotjuIds().stream()
-                        .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
-                    break;
-                case TMS_SENSOR_CONSTANT:
-                    if ( tmsStationSensorConstantUpdater.updateTmsStationsSensorConstant(message.getLotjuId(), updateType) ) {
-                        updateCount++;
-                    }
-                    break;
-                case TMS_SENSOR_CONSTANT_VALUE:
-                    if ( tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(message.getLotjuId(), updateType) ) {
-                        updateCount++;
-                    }
-                    break;
-                case ROAD_ADDRESS:
-                    // Always update
-                    updateCount += message.getAsemmaLotjuIds().stream()
-                        .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
-                    break;
-                case TMS_SENSOR:
-                    // no handle as TMS_SENSOR update won't affect us.
-                    // Only computational sensors matters
-                    break;
-                default:
-                    log.error(String.format("method=updateTmsMetadataFromJms Unknown EntityType %s", type));
+                } catch (final Exception e) {
+                    log.error(String.format("method=updateTmsMetadataFromJms Error with %s", ToStringHelper.toStringFull(message)), e);
                 }
             }
         }
