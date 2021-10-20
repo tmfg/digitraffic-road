@@ -85,8 +85,8 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
     }
 
     private static final long ROAD_STATION_LOTJU_ID = 1L;
-    private static final Pair<Long, Long> ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_1 = Pair.of(117L,5054L); // OHITUKSET_60MIN_KIINTEA_SUUNTA1
-    private static final Pair<Long, Long> ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_2 = Pair.of(118L,5055L); // OHITUKSET_60MIN_KIINTEA_SUUNTA2
+    private static final Pair<Long, Long> ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1 = Pair.of(117L,5054L); // OHITUKSET_60MIN_KIINTEA_SUUNTA1
+    private static final Pair<Long, Long> ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2 = Pair.of(118L,5055L); // OHITUKSET_60MIN_KIINTEA_SUUNTA2
     private static final String SENSOR_CONSTANT_NAME_1 = "VVAPAAS1";
     private static final String SENSOR_CONSTANT_NAME_2 = "VVAPAAS2";
 
@@ -105,7 +105,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         assertNull(getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID));
 
         when(lotjuTmsStationMetadataClient.getLamAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(createLamAsema(ROAD_STATION_LOTJU_ID));
-        final List<LamLaskennallinenAnturiVO> anturit = createAnturiListWith(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_1);
+        final List<LamLaskennallinenAnturiVO> anturit = createAnturiListWith(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1);
         when(lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(anturit);
 
         // 2. Send insert message
@@ -113,12 +113,15 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Check that new station and sensor are in place
-        final RoadStation after = getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID);
-        assertEquals(ROAD_STATION_LOTJU_ID, after.getLotjuId());
-        assertTrue(after.isPublishable());
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.TMS_STATION);
-        AssertHelper.assertCollectionSize(1, sensors.get(after.getId()));
-        assertEquals(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_1.getRight(), sensors.get(after.getId()).get(0).longValue());
+        final RoadStation rsAfterInsert = getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID);
+        assertEquals(ROAD_STATION_LOTJU_ID, rsAfterInsert.getLotjuId());
+        assertTrue(rsAfterInsert.isPublishable());
+        final Map<Long, List<Long>> rsSensorsNaturalIdsAfterInsert =
+            stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rsAfterInsert.getId(), RoadStationType.TMS_STATION);
+        final List<Long> stationsSensors = rsSensorsNaturalIdsAfterInsert.get(rsAfterInsert.getId());
+        AssertHelper.assertCollectionSize(1, stationsSensors);
+        final long addedSensorNaturalId = stationsSensors.get(0).longValue();
+        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), addedSensorNaturalId);
     }
 
     @Test
@@ -128,27 +131,31 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final LamAsemaVO lam = createLamAsema(ROAD_STATION_LOTJU_ID);
         assertEquals(UpdateStatus.INSERTED, tmsStationService.updateOrInsertTmsStation(lam));
         final TmsStation rws = tmsStationService.findTmsStationByLotjuId(ROAD_STATION_LOTJU_ID);
-        // Add sensor 1 for station and check it's saved in db
+        // Add sensor 1 for station
         roadStationSensorService.updateSensorsOfRoadStation(rws.getRoadStationId(),
             RoadStationType.TMS_STATION,
-            Collections.singletonList(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_1.getLeft()));
+            Collections.singletonList(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getLeft()));
 
         // 2. send update message (name change and sensor 1 removed and sensor 2 added)
         lam.setNimiEn("Changed name");
         when(lotjuTmsStationMetadataClient.getLamAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(lam);
-        final List<LamLaskennallinenAnturiVO> anturit = createAnturiListWith(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_2);
+        final List<LamLaskennallinenAnturiVO> anturit = createAnturiListWith(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2);
         when(lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(anturit);
 
         tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(createMessage(TMS_STATION, UpdateType.UPDATE, 1, Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Check that update is done
-        final RoadStation after = getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID);
-        assertEquals(lam.getNimiEn(), after.getNameEn());
+        final RoadStation rsAfterUpdate = getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID);
+        assertEquals(lam.getNimiEn(), rsAfterUpdate.getNameEn());
 
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.TMS_STATION);
-        AssertHelper.assertCollectionSize(1, sensors.get(after.getId()));
-        assertEquals(ALLOWED_SENSOR_LOTJU_ID_TO_NATURAL_ID_2.getRight(), sensors.get(after.getId()).get(0).longValue());
+        // Roadstations sensors mapped by road stations' ids
+        final Map<Long, List<Long>> rsSensorsNaturalIdsAfterUpdate =
+            stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rsAfterUpdate.getId(), RoadStationType.TMS_STATION);
+        final List<Long> stationsSensors = rsSensorsNaturalIdsAfterUpdate.get(rsAfterUpdate.getId());
+        AssertHelper.assertCollectionSize(1, stationsSensors);
+        final long addedSensorNaturalId = stationsSensors.get(0).longValue();
+        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2.getRight(), addedSensorNaturalId);
     }
 
     @Test
@@ -159,7 +166,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         TestUtils.entityManagerFlushAndClear(entityManager);
         assertTrue(getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID).isPublishable());
 
-        // 2. Sen detete message
+        // 2. Send delete message
         tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(createMessage(TMS_STATION, UpdateType.DELETE, 1, Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
@@ -193,9 +200,10 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         assertTrue(allSensors.stream().filter(s -> s.getLotjuId().equals(NEW_LOTJU_ID)).findFirst().isPresent());
         // And it is added to road station
         final long tmsId = getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID).getId();
-        final Map<Long, List<Long>> sensors = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(tmsId, RoadStationType.TMS_STATION);
-        AssertHelper.assertCollectionSize(1, sensors.get(tmsId));
-        assertEquals(NEW_LOTJU_ID, sensors.get(tmsId).get(0).longValue());
+        final Map<Long, List<Long>> rsSensorsNaturalIdsAfterUpdate = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(tmsId, RoadStationType.TMS_STATION);
+        final List<Long> roadStationsSensors = rsSensorsNaturalIdsAfterUpdate.get(tmsId);
+        AssertHelper.assertCollectionSize(1, roadStationsSensors);
+        assertEquals(NEW_LOTJU_ID, roadStationsSensors.get(0).longValue());
     }
 
 
@@ -420,7 +428,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         assertEquals(UpdateStatus.INSERTED, tmsStationService.updateOrInsertTmsStation(lam));
         final TieosoiteVO to = lam.getTieosoite();
 
-        // 2. Sen road address insert message
+        // 2. Send road address insert message
         to.setUrakkaAlue(RandomStringUtils.randomAlphanumeric(32));
         to.setId(to.getId()+1);
         to.setTienumero(to.getTienumero()+1);
