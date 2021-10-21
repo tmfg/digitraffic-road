@@ -265,6 +265,7 @@
             <version>1.1</version>
         </dependency>
 
+        <!-- Update also in dbroad/schemaspy/get-deps-and-run-schemaspy.sh -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
