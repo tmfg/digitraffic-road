@@ -280,7 +280,7 @@ public class RoadStationSensorService {
     @Transactional
     public boolean obsoleteSensor(final long lotjuId, final RoadStationType roadStationType) {
         final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(roadStationType, lotjuId);
-        return sensor.obsolete();
+        return sensor.makeObsolete();
     }
 
     private static boolean updateRoadStationSensorAttributes(final LamLaskennallinenAnturiVO from, final RoadStationSensor to) {

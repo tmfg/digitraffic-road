@@ -29,7 +29,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
 
         // Can insert obsolete stations
         if ( CollectionStatus.isPermanentlyDeletedKeruunTila(kamera.getKeruunTila())) {
-            to.obsolete();
+            to.makeObsolete();
         } else {
             to.unobsolete();
         }

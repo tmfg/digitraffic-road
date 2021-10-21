@@ -74,7 +74,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         // DPO-567 and DPO-681: Obsolete all presets before upgrading. Preset's LotjuIds and directions might change once in a while
         // so we want to get rid of ghosts and overlapping presetIds.
         final Set<Long> obsoleteDbIds =
-            presets.values().stream().filter(CameraPreset::obsolete).map(CameraPreset::getId).collect(Collectors.toSet());
+            presets.values().stream().filter(CameraPreset::makeObsolete).map(CameraPreset::getId).collect(Collectors.toSet());
         entityManager.flush();
 
         for (EsiasentoVO esiasento : esiasentos) {
@@ -170,7 +170,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         if (isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
             Objects.equals(isPublic(esiasentoFrom), false)) {
-            to.obsolete();
+            to.makeObsolete();
         } else {
             to.unobsolete();
         }

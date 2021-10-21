@@ -169,7 +169,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     public boolean obsoleteStationWithLotjuId(final long lotjuId) {
         final TmsStation station = tmsStationRepository.findByLotjuId(lotjuId);
         if (station != null) {
-            return station.obsolete();
+            return station.makeObsolete();
         }
         return false;
     }

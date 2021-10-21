@@ -121,9 +121,11 @@ public class TmsStation {
     }
 
     /**
-     * @return true if state changed
+     * Makes station obsolete if it's not already
+     *
+     * @return true is state was changed
      */
-    public boolean obsolete() {
+    public boolean makeObsolete() {
         if (roadStation == null) {
             log.error("Cannot obsolete TmsStation (" + getId() + ", lotjuId " + getLotjuId() + ") with null roadstation");
             if (getObsoleteDate() == null) {
@@ -131,7 +133,7 @@ public class TmsStation {
                 return true;
             }
         } else {
-            final boolean changed = roadStation.obsolete();
+            final boolean changed = roadStation.makeObsolete();
             final LocalDate prevValue = getObsoleteDate();
             setObsoleteDate(roadStation.getObsoleteDate());
             return changed || !prevValue.equals(getObsoleteDate());

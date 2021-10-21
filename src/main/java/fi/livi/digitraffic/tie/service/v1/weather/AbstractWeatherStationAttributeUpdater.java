@@ -19,7 +19,7 @@ public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoa
 
         // Can insert obsolete stations
         if ( CollectionStatus.isPermanentlyDeletedKeruunTila(ta.getKeruunTila())) {
-            to.obsolete();
+            to.makeObsolete();
         } else {
             to.unobsolete();
         }

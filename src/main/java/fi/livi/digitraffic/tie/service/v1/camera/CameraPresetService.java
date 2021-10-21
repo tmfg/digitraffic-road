@@ -132,7 +132,7 @@ public class CameraPresetService {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                                         isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
-
+            log.info("Save history with presetId={} versionId={} versionIdLenght={}", cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getVersionId().length());
             cameraPresetHistoryRepository.save(history);
         }
         // Preset can be public when camera is secret. If camera is secret then public presets are not returned by the api.
@@ -156,14 +156,14 @@ public class CameraPresetService {
     @Transactional
     public boolean obsoleteCameraStationWithLotjuId(final long lotjuId) {
         final List<CameraPreset> presets = cameraPresetRepository.findByRoadStation_LotjuId(lotjuId);
-        return presets.stream().filter(CameraPreset::obsolete).count() > 0;
+        return presets.stream().filter(CameraPreset::makeObsolete).count() > 0;
     }
 
     @Transactional
     public boolean obsoleteCameraPresetWithLotjuId(final long presetLotjuId) {
         final CameraPreset cp = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(presetLotjuId);
         if (cp != null) {
-            return cp.obsolete();
+            return cp.makeObsolete();
         }
         return false;
     }

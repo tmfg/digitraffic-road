@@ -19,7 +19,7 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
 
         // Can insert obsolete stations
         if ( CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()) ) {
-            to.obsolete();
+            to.makeObsolete();
         } else {
             to.unobsolete();
         }

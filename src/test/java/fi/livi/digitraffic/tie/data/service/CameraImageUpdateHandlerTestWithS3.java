@@ -208,6 +208,7 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
     private void checkVersionedS3ObjectAndHistory(final String presetId, final ZonedDateTime lastModified,
                                                   final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex,
                                                   CameraPresetHistory history) {
+        log.info("checkVersionedS3ObjectAndHistory presetId={} history presetId={} versionId={}", presetId, history.getPresetId(), history.getVersionId());
         // Check history data
         final boolean shouldBePublic = cameraPublicity && presetPublicity;
         assertEquals(shouldBePublic, history.getPublishable());
@@ -221,9 +222,12 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
         // S3 image data should be equal with written dat. Hidden images also has real data, no noise image.
         assertBytes(readImageForIndex(imageDataIndex), image);
 
-        // S3 Object last modified should be equals with history
-        final S3Object imageObject = readWeathercamS3ObjectVersion(history.getPresetId() + ".jpg", history.getVersionId());
-        assertLastModified(historyLastModified, imageObject);
+        // S3 History object last modified should be equals with history
+        final S3Object historyImageObject = readWeathercamS3ObjectVersion(CameraImageS3Writer.getVersionedKey(presetId), history.getVersionId());
+        assertLastModified(historyLastModified, historyImageObject);
+        // Latest image should be same as latest in history
+        final S3Object latestImageObject = readWeathercamS3Object(presetId + ".jpg");
+        assertLastModified(historyLastModified, latestImageObject);
     }
 
     private void handleKuva(final CameraPreset cp, final ZonedDateTime lastModified, final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex) {

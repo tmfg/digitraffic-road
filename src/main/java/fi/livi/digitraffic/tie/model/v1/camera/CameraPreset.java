@@ -246,9 +246,11 @@ public class CameraPreset {
     }
 
     /**
-     * @return true if state changed
+     * Makes preset obsolete if it's not already
+     *
+     * @return true is state was changed
      */
-    public boolean obsolete() {
+    public boolean makeObsolete() {
         if (obsoleteDate == null) {
             setObsoleteDate(LocalDate.now());
             return true;

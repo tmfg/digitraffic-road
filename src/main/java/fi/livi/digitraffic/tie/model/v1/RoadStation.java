@@ -232,7 +232,7 @@ public class RoadStation {
      *
      * @return true is state was changed (station was not obsolete before)
      */
-    public boolean obsolete() {
+    public boolean makeObsolete() {
         if (obsoleteDate == null) {
             setObsoleteDate(LocalDate.now());
             return true;
