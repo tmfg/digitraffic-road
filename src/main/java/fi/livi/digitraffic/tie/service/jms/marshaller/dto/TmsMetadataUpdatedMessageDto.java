@@ -7,7 +7,7 @@ import java.util.Set;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
-public class TmsMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
+public final class TmsMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
 
     public enum EntityType {
         TMS_STATION("LAM_ASEMA"),

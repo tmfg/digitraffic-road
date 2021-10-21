@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.weather;
 
+import static fi.livi.digitraffic.tie.TestUtils.getRandomLotjuId;
 import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType.PREPROSESSING;
 import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType.SENSOR_MESSAGE;
 import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType.VALUE_EQUIVALENCE;
@@ -29,6 +30,10 @@ import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdated
 import fi.livi.digitraffic.tie.service.v1.AbstractMetadataUpdateMessageHandlerTest;
 
 public class WeatherMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateMessageHandlerTest {
+
+    public static final long STATION_LOTJU_ID1 = 10L;
+    public static final long STATION_LOTJU_ID2 = 20L;
+    public static final long SENSOR_LOTJU_ID = 1L;
 
     @Autowired
     private WeatherMetadataUpdateMessageHandler weatherMetadataUpdateMessageHandler;
@@ -84,45 +89,45 @@ public class WeatherMetadataUpdateMessageHandlerTest extends AbstractMetadataUpd
 
     private void verifyMessageWontTriggersUpdate(final UpdateType updateType,
                                                  final EntityType entityType) {
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(entityType, updateType));
+        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(getRandomLotjuId(), entityType, updateType));
         verifyNoInteractions(weatherStationUpdater);
         verifyNoInteractions(weatherStationSensorUpdater);
     }
 
     private void verifyWeatherStationMessageTriggersUpdate(final UpdateType updateType) {
-        when(weatherStationUpdater.updateWeatherStationAndSensors(1L, updateType)).thenReturn(true);
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(EntityType.WEATHER_STATION, updateType));
-        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(1L), eq(updateType));
+        when(weatherStationUpdater.updateWeatherStationAndSensors(STATION_LOTJU_ID1, updateType)).thenReturn(true);
+        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(STATION_LOTJU_ID1, EntityType.WEATHER_STATION, updateType));
+        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID1), eq(updateType));
     }
 
     private void verifyWeatherStationComputationalSensorMessagesTriggersUpdate(final UpdateType updateType) {
-        when(weatherStationUpdater.updateWeatherStationAndSensors(1L, updateType)).thenReturn(true);
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(EntityType.WEATHER_STATION, updateType));
-        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(1L), eq(updateType));
+        when(weatherStationUpdater.updateWeatherStationAndSensors(STATION_LOTJU_ID1, updateType)).thenReturn(true);
+        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(STATION_LOTJU_ID1, EntityType.WEATHER_STATION, updateType));
+        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID1), eq(updateType));
     }
 
     private void verifyWeatherComputationalSensorMessagesTriggersUpdate(final UpdateType updateType) {
-        when(weatherStationSensorUpdater.updateWeatherSensor(1L, updateType)).thenReturn(true);
-        when(weatherStationUpdater.updateWeatherStationAndSensors(10L, UpdateType.UPDATE)).thenReturn(true);
-        when(weatherStationUpdater.updateWeatherStationAndSensors(20L, UpdateType.UPDATE)).thenReturn(true);
+        when(weatherStationSensorUpdater.updateWeatherSensor(SENSOR_LOTJU_ID, updateType)).thenReturn(true);
+        when(weatherStationUpdater.updateWeatherStationAndSensors(STATION_LOTJU_ID1, UpdateType.UPDATE)).thenReturn(true);
+        when(weatherStationUpdater.updateWeatherStationAndSensors(STATION_LOTJU_ID2, UpdateType.UPDATE)).thenReturn(true);
 
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(EntityType.WEATHER_COMPUTATIONAL_SENSOR, updateType));
+        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(SENSOR_LOTJU_ID, EntityType.WEATHER_COMPUTATIONAL_SENSOR, updateType));
 
-        verify(weatherStationSensorUpdater, times(1)).updateWeatherSensor(eq(1L), eq(updateType));
-        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(10L), eq(UpdateType.UPDATE));
-        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(20L), eq(UpdateType.UPDATE));
+        verify(weatherStationSensorUpdater, times(1)).updateWeatherSensor(eq(SENSOR_LOTJU_ID), eq(updateType));
+        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID1), eq(UpdateType.UPDATE));
+        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID2), eq(UpdateType.UPDATE));
     }
 
     private void verifyRoadAddressMessageTriggersUpdate(final UpdateType updateType) {
-        when(weatherStationUpdater.updateWeatherStationAndSensors(10L, updateType)).thenReturn(true);
-        when(weatherStationUpdater.updateWeatherStationAndSensors(20L, updateType)).thenReturn(true);
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(EntityType.ROAD_ADDRESS, updateType));
-        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(10L), eq(UpdateType.UPDATE));
-        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(20L), eq(UpdateType.UPDATE));
+        when(weatherStationUpdater.updateWeatherStationAndSensors(STATION_LOTJU_ID1, updateType)).thenReturn(true);
+        when(weatherStationUpdater.updateWeatherStationAndSensors(STATION_LOTJU_ID2, updateType)).thenReturn(true);
+        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(getRandomLotjuId(), EntityType.ROAD_ADDRESS, updateType));
+        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID1), eq(UpdateType.UPDATE));
+        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID2), eq(UpdateType.UPDATE));
     }
 
-    private List<WeatherMetadataUpdatedMessageDto> createMessage(final EntityType entityType, final UpdateType updateType) {
+    private List<WeatherMetadataUpdatedMessageDto> createMessage(final long entityLotjuId, final EntityType entityType, final UpdateType updateType) {
         return Collections.singletonList(
-            new WeatherMetadataUpdatedMessageDto(1L, Set.of(10L, 20L), updateType, Instant.now(), entityType));
+            new WeatherMetadataUpdatedMessageDto(entityLotjuId, Set.of(STATION_LOTJU_ID1, STATION_LOTJU_ID2), updateType, Instant.now(), entityType));
     }
 }

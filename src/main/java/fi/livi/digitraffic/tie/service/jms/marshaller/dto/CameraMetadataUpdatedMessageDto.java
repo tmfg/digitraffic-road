@@ -7,7 +7,7 @@ import java.util.Set;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
-public class CameraMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
+public final class CameraMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
 
     public enum EntityType {
         CAMERA("KAMERA"),

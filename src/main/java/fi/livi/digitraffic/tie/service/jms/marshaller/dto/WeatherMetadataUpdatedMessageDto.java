@@ -8,7 +8,7 @@ import java.util.Set;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
-public class WeatherMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
+public final class WeatherMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto {
 
     public enum EntityType {
         WEATHER_STATION("TIESAA_ASEMA"),
