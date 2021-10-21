@@ -41,13 +41,13 @@ public class MetadataUpdatedMessageDto {
     }
 
     private final Long lotjuId;
-    private final Set<Long> asemmaLotjuIds;
+    private final Set<Long> asemaLotjuIds;
     private final UpdateType updateType;
     private final Instant updateTime;
 
-    public MetadataUpdatedMessageDto(final Long lotjuId, final Set<Long> asemmaLotjuIds, final UpdateType updateType, final Instant updateTime) {
+    public MetadataUpdatedMessageDto(final Long lotjuId, final Set<Long> asemaLotjuIds, final UpdateType updateType, final Instant updateTime) {
         this.lotjuId = lotjuId;
-        this.asemmaLotjuIds = asemmaLotjuIds;
+        this.asemaLotjuIds = asemaLotjuIds;
         this.updateType = updateType;
         this.updateTime = updateTime;
     }
@@ -56,8 +56,8 @@ public class MetadataUpdatedMessageDto {
         return lotjuId;
     }
 
-    public Set<Long> getAsemmaLotjuIds() {
-        return asemmaLotjuIds;
+    public Set<Long> getAsemaLotjuIds() {
+        return asemaLotjuIds;
     }
 
     public UpdateType getUpdateType() {

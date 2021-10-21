@@ -39,8 +39,8 @@ public class WeatherMetadataUpdatedMessageDto extends MetadataUpdatedMessageDto 
 
     private final EntityType entityType;
 
-    public WeatherMetadataUpdatedMessageDto(final Long lotjuId, final Set<Long> asemmaLotjuIds, final UpdateType updateType, final Instant updateTime, final EntityType entityType) {
-        super(lotjuId, asemmaLotjuIds, updateType, updateTime);
+    public WeatherMetadataUpdatedMessageDto(final Long lotjuId, final Set<Long> asemaLotjuIds, final UpdateType updateType, final Instant updateTime, final EntityType entityType) {
+        super(lotjuId, asemaLotjuIds, updateType, updateTime);
         this.entityType = entityType;
     }
 

@@ -67,14 +67,14 @@ public class WeatherMetadataUpdateMessageHandler {
                             updateCount++;
                         }
                         // Even when updateType would be delete, this means we also have to update the station
-                        updateCount += message.getAsemmaLotjuIds().stream()
+                        updateCount += message.getAsemaLotjuIds().stream()
                             .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
                         break;
                     case ROAD_ADDRESS:
                         // All ROAD_ADDRESS update types just calls update for road station
-                        updateCount += message.getAsemmaLotjuIds().stream()
+                        updateCount += message.getAsemaLotjuIds().stream()
                             .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
-                        if (message.getAsemmaLotjuIds().isEmpty()) {
+                        if (message.getAsemaLotjuIds().isEmpty()) {
                             log.warn("method=updateWeatherMetadataFromJms message had no station id's {}", ToStringHelper.toStringFull(message));
                         }
                         break;

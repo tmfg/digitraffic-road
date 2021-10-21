@@ -63,7 +63,7 @@ public class CameraMetadataUpdateMessageHandler {
                         break;
                     case ROAD_ADDRESS:
                         // Even in case of delete of the address the update type for station is UPDATE
-                        updateCount += message.getAsemmaLotjuIds().stream()
+                        updateCount += message.getAsemaLotjuIds().stream()
                             .filter(asemaId -> cameraStationUpdater.updateCameraStation(asemaId, UPDATE)).count();
                         break;
                     case MASTER_STORAGE:

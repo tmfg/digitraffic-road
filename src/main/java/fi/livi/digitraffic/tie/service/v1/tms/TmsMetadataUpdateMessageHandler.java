@@ -68,7 +68,7 @@ public class TmsMetadataUpdateMessageHandler {
                             updateCount++;
                         }
                         // Even when updateType would be delete, this means always update for station
-                        updateCount += message.getAsemmaLotjuIds().stream()
+                        updateCount += message.getAsemaLotjuIds().stream()
                             .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
                         break;
                     case TMS_SENSOR_CONSTANT:
@@ -83,7 +83,7 @@ public class TmsMetadataUpdateMessageHandler {
                         break;
                     case ROAD_ADDRESS:
                         // Always update
-                        updateCount += message.getAsemmaLotjuIds().stream()
+                        updateCount += message.getAsemaLotjuIds().stream()
                             .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
                         break;
                     case TMS_SENSOR:
