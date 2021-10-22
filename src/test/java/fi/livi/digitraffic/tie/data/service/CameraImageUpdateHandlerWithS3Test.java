@@ -49,11 +49,9 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateServic
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.ImageUpdateInfo;
 
-// TODO Test is not driven because it's name is not ending to Test.java
-// TODO Testcontainers S3 library generates over 32 chars long version_id -> make version_id column longer in db
-public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3 {
+public class CameraImageUpdateHandlerWithS3Test extends AbstractCameraTestWithS3 {
 
-    private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateHandlerTestWithS3.class);
+    private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateHandlerWithS3Test.class);
 
     @MockBean
     private CameraImageReader cameraImageReader;
@@ -206,8 +204,8 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
     }
 
     private void checkVersionedS3ObjectAndHistory(final String presetId, final ZonedDateTime lastModified,
-                                                  final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex,
-                                                  CameraPresetHistory history) {
+                                                  final boolean cameraPublicity, final boolean presetPublicity, final int imageDataIndex,
+                                                  final CameraPresetHistory history) {
         log.info("checkVersionedS3ObjectAndHistory presetId={} history presetId={} versionId={}", presetId, history.getPresetId(), history.getVersionId());
         // Check history data
         final boolean shouldBePublic = cameraPublicity && presetPublicity;
@@ -225,9 +223,6 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
         // S3 History object last modified should be equals with history
         final S3Object historyImageObject = readWeathercamS3ObjectVersion(CameraImageS3Writer.getVersionedKey(presetId), history.getVersionId());
         assertLastModified(historyLastModified, historyImageObject);
-        // Latest image should be same as latest in history
-        final S3Object latestImageObject = readWeathercamS3Object(presetId + ".jpg");
-        assertLastModified(historyLastModified, latestImageObject);
     }
 
     private void handleKuva(final CameraPreset cp, final ZonedDateTime lastModified, final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex) {
