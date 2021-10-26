@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.amazonaws.services.s3.model.S3Object;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
@@ -47,10 +49,9 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateServic
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 import fi.livi.digitraffic.tie.service.v1.camera.ImageUpdateInfo;
 
-// TODO not test driven?
-public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3 {
+public class CameraImageUpdateHandlerWithS3Test extends AbstractCameraTestWithS3 {
 
-    private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateHandlerTestWithS3.class);
+    private static final Logger log = LoggerFactory.getLogger(CameraImageUpdateHandlerWithS3Test.class);
 
     @MockBean
     private CameraImageReader cameraImageReader;
@@ -66,6 +67,12 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
 
     @Autowired
     private CameraPresetHistoryDataService cameraPresetHistoryDataService;
+
+    @BeforeEach
+    public void initData() {
+        cameraPresetService.save(TestUtils.generateDummyPreset());
+        cameraPresetService.save(TestUtils.generateDummyPreset());
+    }
 
     @Test
     public void versionHistoryAndPresetPublicityForTwoPresets() throws IOException {
@@ -197,8 +204,9 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
     }
 
     private void checkVersionedS3ObjectAndHistory(final String presetId, final ZonedDateTime lastModified,
-                                                  final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex,
-                                                  CameraPresetHistory history) {
+                                                  final boolean cameraPublicity, final boolean presetPublicity, final int imageDataIndex,
+                                                  final CameraPresetHistory history) {
+        log.info("checkVersionedS3ObjectAndHistory presetId={} history presetId={} versionId={}", presetId, history.getPresetId(), history.getVersionId());
         // Check history data
         final boolean shouldBePublic = cameraPublicity && presetPublicity;
         assertEquals(shouldBePublic, history.getPublishable());
@@ -212,9 +220,9 @@ public class CameraImageUpdateHandlerTestWithS3 extends AbstractCameraTestWithS3
         // S3 image data should be equal with written dat. Hidden images also has real data, no noise image.
         assertBytes(readImageForIndex(imageDataIndex), image);
 
-        // S3 Object last modified should be equals with history
-        final S3Object imageObject = readWeathercamS3ObjectVersion(history.getPresetId() + ".jpg", history.getVersionId());
-        assertLastModified(historyLastModified, imageObject);
+        // S3 History object last modified should be equals with history
+        final S3Object historyImageObject = readWeathercamS3ObjectVersion(CameraImageS3Writer.getVersionedKey(presetId), history.getVersionId());
+        assertLastModified(historyLastModified, historyImageObject);
     }
 
     private void handleKuva(final CameraPreset cp, final ZonedDateTime lastModified, final boolean cameraPublicity, final boolean presetPublicity, int imageDataIndex) {

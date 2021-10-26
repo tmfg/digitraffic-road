@@ -19,11 +19,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.support.GenericApplicationContext;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryFeatureCollection;
@@ -33,7 +31,7 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
-public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
+public class V3RegionGeometryDataServiceTest extends AbstractRestWebTestWithRegionGeometryMock {
     private static final Logger log = getLogger(V3RegionGeometryDataServiceTest.class);
 
     @Autowired
@@ -46,12 +44,6 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTest {
     private GenericApplicationContext applicationContext;
 
     private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
-
-    @MockBean
-    protected RegionGeometryGitClient regionGeometryGitClientMock;
-
-    @SpyBean
-    protected V3RegionGeometryDataService v3RegionGeometryDataServiceSpy;
 
     @BeforeEach
     public void init() {

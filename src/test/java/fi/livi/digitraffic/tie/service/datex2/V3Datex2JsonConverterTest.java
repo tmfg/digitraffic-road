@@ -26,14 +26,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.ItineraryRoadLeg;
@@ -50,10 +48,8 @@ import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
-import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryGitClient;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
+public class V3Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeometryMock {
     private static final Logger log = getLogger(V3Datex2JsonConverterTest.class);
 
     public static final String MAX_DURATION = "PT8H";
@@ -67,12 +63,6 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
     protected ObjectMapper objectMapper;
     private ObjectWriter writerForImsGeoJsonFeature;
     private ObjectReader readerForGeometry;
-
-    @MockBean
-    protected RegionGeometryGitClient regionGeometryGitClientMock;
-
-    @SpyBean
-    protected V3RegionGeometryDataService v3RegionGeometryDataServiceSpy;
 
     @BeforeEach
     public void init() {

@@ -170,7 +170,12 @@ public class RoadStationSensor {
         this.obsoleteDate = obsoleteDate;
     }
 
-    public boolean obsolete() {
+    /**
+     * Makes sensor obsolete if it's not already
+     *
+     * @return true is state was changed
+     */
+    public boolean makeObsolete() {
         if (obsoleteDate == null) {
             obsoleteDate = LocalDate.now();
             return true;
@@ -332,5 +337,9 @@ public class RoadStationSensor {
 
     public Integer getDirection() {
         return direction;
+    }
+
+    public boolean isPublishable() {
+        return publishable;
     }
 }

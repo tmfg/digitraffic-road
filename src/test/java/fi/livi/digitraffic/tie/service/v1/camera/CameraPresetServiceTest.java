@@ -32,8 +32,8 @@ public class CameraPresetServiceTest extends AbstractServiceTest {
         final CameraPreset ps3 = generateDummyPreset();
         ps2.setLotjuId(ps1.getLotjuId());
         ps3.setLotjuId(ps1.getLotjuId());
-        ps1.obsolete();
-        ps3.obsolete();
+        ps1.makeObsolete();
+        ps3.makeObsolete();
         cameraPresetService.save(ps1);
         cameraPresetService.save(ps2);
         cameraPresetService.save(ps3);

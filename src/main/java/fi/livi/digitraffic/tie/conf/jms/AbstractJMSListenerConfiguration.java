@@ -38,6 +38,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     private final Logger log;
     private QueueConnection connection;
     private JMSMessageListener<K> messageListener;
+    private JMSParameters jmsParameters;
 
     public AbstractJMSListenerConfiguration(final QueueConnectionFactory connectionFactory,
                                             final ClusteredLocker clusteredLocker,
@@ -48,7 +49,13 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         log.info("Init JMS configuration connectionUrls={}", connectionFactory.getConnectionURLs());
     }
 
-    public abstract JMSParameters getJmsParameters();
+    protected final void setJmsParameters(final JMSParameters jmsParameters) {
+        this.jmsParameters = jmsParameters;
+    }
+
+    protected final JMSParameters getJmsParameters() {
+        return jmsParameters;
+    }
 
     protected abstract JMSMessageListener<K> createJMSMessageListener() throws JAXBException;
 
@@ -164,7 +171,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             final Connection sonicCon = (Connection) queueConnection;
             final ConnectionMetaData meta = queueConnection.getMetaData();
 
-            log.info("JMS Connection created with ConnectionFactory: {}, Sonic version: {} {}", connectionFactory.toString(), meta.getJMSProviderName(), meta.getProviderVersion());
+            log.info("JMS Connection created with ConnectionFactory: {}, Sonic version: {} {}", connectionFactory, meta.getJMSProviderName(), meta.getProviderVersion());
             // Reguire at least Sonic 8.6
             if (meta.getProviderMajorVersion() < 8 || (meta.getProviderMajorVersion() == 8 && meta.getProviderMinorVersion() < 6)) {
                 throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
@@ -172,11 +179,11 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
             createSessionAndConsumer(jmsParameters.getJmsQueueKeys(), queueConnection);
 
-            log.info("Connection initialized: {}", connectionFactory.toString());
+            log.info("Connection initialized: {}", connectionFactory);
 
             return queueConnection;
         } catch (Exception e) {
-            log.error("Connection initialization failed for " + connectionFactory.toString(), e);
+            log.error("Connection initialization failed for " + connectionFactory, e);
             closeConnectionQuietly();
             throw e;
         }

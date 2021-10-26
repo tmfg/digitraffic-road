@@ -74,7 +74,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         // DPO-567 and DPO-681: Obsolete all presets before upgrading. Preset's LotjuIds and directions might change once in a while
         // so we want to get rid of ghosts and overlapping presetIds.
         final Set<Long> obsoleteDbIds =
-            presets.values().stream().filter(CameraPreset::obsolete).map(CameraPreset::getId).collect(Collectors.toSet());
+            presets.values().stream().filter(CameraPreset::makeObsolete).map(CameraPreset::getId).collect(Collectors.toSet());
         entityManager.flush();
 
         for (EsiasentoVO esiasento : esiasentos) {
@@ -95,7 +95,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
                 if ( updateCameraPresetAtributes(kamera, esiasento, cameraPreset) ||
                     hash != HashCodeBuilder.reflectionHashCode(cameraPreset) ) {
-                    log.info("Updated CameraPreset:\n{} -> \n{}", before, cameraPreset.toString());
+                    log.info("Updated CameraPreset:\n{} -> \n{}", before, cameraPreset);
                     updated++;
                     cameraPresetService.save(cameraPreset);
                 }
@@ -134,6 +134,12 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
         return Pair.of(updated, inserted);
     }
 
+    @Override
+    @Transactional
+    public boolean obsoleteStationWithLotjuId(final long lotjuId) {
+        return cameraPresetService.obsoleteCameraStationWithLotjuId(lotjuId);
+    }
+
     private boolean updateCameraPresetAtributes(final KameraVO kameraFrom, final EsiasentoVO esiasentoFrom,
                                                 final CameraPreset to) {
 
@@ -164,7 +170,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
         if (isPermanentlyDeletedKeruunTila(kameraFrom.getKeruunTila()) ||
             Objects.equals(isPublic(esiasentoFrom), false)) {
-            to.obsolete();
+            to.makeObsolete();
         } else {
             to.unobsolete();
         }
@@ -212,7 +218,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
     /**
      * Updates Camera Station but not presets
-     * @param kamera
+     * @param kamera to update from
      * @return true if camera station was changed
      */
     @Transactional
@@ -227,8 +233,8 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
     /**
      * Updates one preset from kamera and esiasento
-     * @param esiasento
-     * @param kamera
+     * @param esiasento to update from
+     * @param kamera to update from
      * @return true if preset was changed
      */
     @Transactional

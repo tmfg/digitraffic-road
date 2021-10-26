@@ -29,8 +29,10 @@
                         <xs:enumeration value="ANTURISANOMA" />
                         <xs:enumeration value="ESIPROSESSOINTI" />
                         <xs:enumeration value="TIESAA_LASKENNALLINENANTURI" />
+                        <xs:enumeration value="TIESAA_ASEMA_LASKENNALLINENANTURI" />
                         <xs:enumeration value="ARVOVASTAAVUUS" />
                         <xs:enumeration value="TIEOSOITE" />
+                        <xs:enumeration value="TIESAA_LASKENNALLINENANTURI_KAAVA" />
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>

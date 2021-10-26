@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1.tms;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,22 +33,46 @@ public class TmsStationSensorConstantService {
     }
 
     @Transactional
+    public boolean updateSensorConstant(final LamAnturiVakioVO anturiVakio) {
+        return tmsSensorConstantDao.updateSensorConstants(Collections.singletonList(anturiVakio)) > 0;
+    }
+
+    @Transactional
     public boolean updateSensorConstants(final List<LamAnturiVakioVO> allLamAnturiVakios) {
         final List<Long> ids = allLamAnturiVakios.stream().map(LamAnturiVakioVO::getId).collect(Collectors.toList());
-        final int obsoleted = tmsSensorConstantDao.obsoleteSensorConstants(ids);
+        final int obsoleted = tmsSensorConstantDao.obsoleteSensorConstantsExcludingIds(ids);
         final int upsert = tmsSensorConstantDao.updateSensorConstants(allLamAnturiVakios);
-        log.info("updateSensorConstants upsert={}, obsoleted={}", upsert, obsoleted);
+        log.info("updateSensorConstants upsertCount={}, obsoleteCount={}", upsert, obsoleted);
         return obsoleted > 0 || upsert > 0;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean obsoleteSensorConstantWithLotjuId(final long lotjuId) {
+        return tmsSensorConstantDao.obsoleteSensorConstantWithLotjuId(lotjuId) > 0;
+    }
+
+    @Transactional
+    public boolean updateSingleSensorConstantValues(final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos) {
+        lamAnturiVakioArvos.forEach(v -> tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantValueLotjuId(v.getAnturiVakioId()));
+        final int upsert = tmsSensorConstantDao.updateSensorConstantValues(lamAnturiVakioArvos);
+        log.info("method=updateSingleSensorConstantValues upsert={}", upsert);
+        return upsert > 0;
     }
 
     @Transactional
     public boolean updateSensorConstantValues(final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos) {
         final List<Long> ids = allLamAnturiVakioArvos.stream().map(LamAnturiVakioArvoVO::getId).collect(Collectors.toList());
-        final int obsoleted = tmsSensorConstantDao.obsoleteSensorConstantValues(ids);
+        final int obsoleted = tmsSensorConstantDao.obsoleteSensorConstantValuesExcludingIds(ids);
         final int upsert = tmsSensorConstantDao.updateSensorConstantValues(allLamAnturiVakioArvos);
-        log.info("updateSensorConstantValues upsert={}, obsoleted={}", upsert, obsoleted);
+        log.info("method=updateSensorConstantValues upsert={}, obsoleteCount={}", upsert, obsoleted);
         return obsoleted > 0 || upsert > 0;
     }
+
+    @Transactional(readOnly = true)
+    public boolean obsoleteSensorConstantValueWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId) {
+        return tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantValueLotjuId(sensorConstantValueLotjuId) > 0;
+    }
+
 
     @Transactional(readOnly = true)
     public ZonedDateTime getLatestMeasurementTime() {

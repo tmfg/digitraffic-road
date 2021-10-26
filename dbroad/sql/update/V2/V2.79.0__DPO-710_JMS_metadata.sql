@@ -1,0 +1,1 @@
+ALTER TABLE camera_preset_history ALTER COLUMN version_id TYPE CHARACTER VARYING(64);

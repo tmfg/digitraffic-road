@@ -15,8 +15,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClientWrapper;
 
@@ -28,14 +30,17 @@ public class TmsStationsSensorsUpdater {
     private final RoadStationSensorService roadStationSensorService;
     private final TmsStationService tmsStationService;
     private final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper;
+    private DataStatusService dataStatusService;
 
     @Autowired
     public TmsStationsSensorsUpdater(final RoadStationSensorService roadStationSensorService,
                                      final TmsStationService tmsStationService,
-                                     final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper) {
+                                     final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper,
+                                     final DataStatusService dataStatusService) {
         this.roadStationSensorService = roadStationSensorService;
         this.tmsStationService = tmsStationService;
         this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
+        this.dataStatusService = dataStatusService;
     }
 
     /**
@@ -69,7 +74,9 @@ public class TmsStationsSensorsUpdater {
 
         // Update sensors of road stations
         final boolean updateStaticDataStatus = updateSensorsOfTmsStations(stationAnturisPairs);
-
+        if (updateStaticDataStatus) {
+            dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
+        }
         log.info("Update TMS Stations Sensors end");
         return updateStaticDataStatus;
     }
@@ -84,9 +91,10 @@ public class TmsStationsSensorsUpdater {
             final List<LamLaskennallinenAnturiVO> anturis = pair.getRight();
             try {
                 final List<Long> sensorslotjuIds = anturis.stream().map(LamLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-                final Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfRoadStation(tms.getRoadStationId(),
-                    RoadStationType.TMS_STATION,
-                    sensorslotjuIds);
+                final Pair<Integer, Integer> deletedInserted =
+                    roadStationSensorService.updateSensorsOfRoadStation(tms.getRoadStationId(),
+                                                                        RoadStationType.TMS_STATION,
+                                                                        sensorslotjuIds);
                 countRemoved += deletedInserted.getLeft();
                 countAdded += deletedInserted.getRight();
             } catch (final Exception e) {

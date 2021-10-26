@@ -21,11 +21,13 @@ public class JMSConfiguration {
     @ConditionalOnProperty("jms.connectionUrls")
     @Bean(name = "sonjaJMSConnectionFactory")
     public QueueConnectionFactory queueConnectionFactoryForJMS(@Value("${jms.connectionUrls}")
-                                                               final String jmsConnectionUrls) throws JMSException {
-        return createQueueConnectionFactory(jmsConnectionUrls);
+                                                               final String jmsConnectionUrls,
+                                                               final @Value("${jms.userId}") String jmsUserId,
+                                                               final @Value("${jms.password}") String jmsPassword) throws JMSException {
+        return createQueueConnectionFactory(jmsConnectionUrls, jmsUserId, jmsPassword);
     }
 
-    public static QueueConnectionFactory createQueueConnectionFactory(final String jmsConnectionUrls) throws JMSException {
+    public static QueueConnectionFactory createQueueConnectionFactory(final String jmsConnectionUrls, final String jmsUserId, final String jmsPassword) throws JMSException {
         QueueConnectionFactory connectionFactory = new QueueConnectionFactory();
         connectionFactory.setSequential(true);
         connectionFactory.setFaultTolerant(true);
@@ -38,7 +40,9 @@ public class JMSConfiguration {
         // Maximum total time to try connection to different brokers
         connectionFactory.setInitialConnectTimeout(60);
         connectionFactory.setConnectionURLs(jmsConnectionUrls);
-        log.info("Create JMS QueueConnectionFactory {}", connectionFactory.toString());
+        connectionFactory.setDefaultUser(jmsUserId);
+        connectionFactory.setDefaultPassword(jmsPassword);
+        log.info("Create JMS QueueConnectionFactory {}", connectionFactory);
         return connectionFactory;
     }
 }

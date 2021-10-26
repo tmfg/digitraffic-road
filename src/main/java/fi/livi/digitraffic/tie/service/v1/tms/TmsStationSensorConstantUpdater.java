@@ -13,6 +13,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
@@ -36,6 +37,25 @@ public class TmsStationSensorConstantUpdater {
         this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
     }
 
+    public boolean updateTmsStationsSensorConstant(final long anturilotjuId,
+                                                   final MetadataUpdatedMessageDto.UpdateType updateType) {
+        if (updateType.isDelete()) {
+            if (tmsStationSensorConstantService.obsoleteSensorConstantWithLotjuId(anturilotjuId)) {
+                dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA);
+                return true;
+            }
+        } else {
+            final LamAnturiVakioVO anturiVakio = lotjuTmsStationMetadataClientWrapper.getLamAnturiVakio(anturilotjuId);
+            if (anturiVakio == null) {
+                log.warn("method=updateTmsStationsSensorConstant TMS stationg sensor constant with lotjuId={} not found", anturilotjuId);
+            } else if (tmsStationSensorConstantService.updateSensorConstant(anturiVakio)) {
+                dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA);
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Updates all available sensorConstants of tms road stations
      */
@@ -57,6 +77,24 @@ public class TmsStationSensorConstantUpdater {
 
         log.info("method=updateTmsStationsSensorConstants tms count={} tookMs={}", tmsLotjuIds.size(), start.getTime());
         return updated;
+    }
+
+    public boolean updateTmsStationsSensorConstantValue(final long lamAnturiVakioArvoLotjuId, final MetadataUpdatedMessageDto.UpdateType updateType) {
+        if (updateType.isDelete()) {
+            if ( tmsStationSensorConstantService.obsoleteSensorConstantValueWithSensorConstantValueLotjuId(lamAnturiVakioArvoLotjuId) ) {
+                dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
+                return true;
+            }
+        } else {
+            final List<LamAnturiVakioArvoVO> anturiVakioArvos = lotjuTmsStationMetadataClientWrapper.getAnturiVakioArvos(lamAnturiVakioArvoLotjuId);
+            if ( anturiVakioArvos.isEmpty() ) {
+                log.warn("method=updateTmsStationsSensorConstantValue sensor constant value with SensorConstant lotjuId={} not found", lamAnturiVakioArvoLotjuId);
+            } else if (tmsStationSensorConstantService.updateSingleSensorConstantValues(anturiVakioArvos))  {
+                dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

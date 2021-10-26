@@ -23,6 +23,7 @@ public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 
         if (versionId != null) {
             gor.setVersionId(versionId);
         }
+        System.out.println("readWeathercamS3ObjectVersion key=" + key + " versionId=" + versionId);
         return amazonS3.getObject(gor);
     }
 
@@ -30,8 +31,8 @@ public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 
         return readWeathercamS3DataVersion(key, null);
     }
 
-    protected byte[] readWeathercamS3DataVersion(final String key, final String versionId) {
-        final S3Object version = getS3ObjectVersionVersion(key, versionId);
+    protected byte[] readWeathercamS3DataVersion(final String versionedKey, final String versionId) {
+        final S3Object version = getS3ObjectVersionVersion(versionedKey, versionId);
         try {
             return version.getObjectContent().readAllBytes();
         } catch (IOException e) {
@@ -39,7 +40,7 @@ public abstract class AbstractCameraTestWithS3 extends AbstractDaemonTestWithS3 
         }
     }
 
-    protected S3Object getS3ObjectVersionVersion(final String key, final String versionId) {
-        return readWeathercamS3ObjectVersion(key, versionId);
+    protected S3Object getS3ObjectVersionVersion(final String versionedKey, final String versionId) {
+        return readWeathercamS3ObjectVersion(versionedKey, versionId);
     }
 }

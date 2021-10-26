@@ -100,7 +100,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(RoadStationType roadStationType) {
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(final RoadStationType roadStationType) {
         final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
         return all.stream().collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
     }
@@ -210,7 +210,9 @@ public class RoadStationSensorService {
                                 0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType.name(),
                                                                                          roadStationId,
                                                                                          sensorslotjuIds);
-
+        if (deleted > 0 || inserted > 0) {
+            log.info("method=updateSensorsOfRoadStation removeCount={} and insertCount={}", deleted, inserted);
+        }
         return Pair.of(deleted, inserted);
     }
 
@@ -273,6 +275,12 @@ public class RoadStationSensorService {
         update.where(cb.and(predicates.toArray(new Predicate[0])));
 
         return this.entityManager.createQuery(update).executeUpdate();
+    }
+
+    @Transactional
+    public boolean obsoleteSensor(final long lotjuId, final RoadStationType roadStationType) {
+        final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(roadStationType, lotjuId);
+        return sensor.makeObsolete();
     }
 
     private static boolean updateRoadStationSensorAttributes(final LamLaskennallinenAnturiVO from, final RoadStationSensor to) {

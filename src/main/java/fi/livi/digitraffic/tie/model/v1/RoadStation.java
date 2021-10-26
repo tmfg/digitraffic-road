@@ -28,8 +28,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.converter.RoadStationTypeIntegerConverter;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import fi.livi.digitraffic.tie.model.RoadStationType;
@@ -226,10 +226,18 @@ public class RoadStation {
     public boolean isObsolete() {
         return obsoleteDate != null;
     }
-    public void obsolete() {
+
+    /**
+     * Makes station obsolete if it's not already
+     *
+     * @return true is state was changed (station was not obsolete before)
+     */
+    public boolean makeObsolete() {
         if (obsoleteDate == null) {
             setObsoleteDate(LocalDate.now());
+            return true;
         }
+        return false;
     }
 
     public void unobsolete() {

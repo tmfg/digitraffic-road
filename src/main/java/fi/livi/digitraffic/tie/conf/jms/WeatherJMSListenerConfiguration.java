@@ -22,7 +22,6 @@ import progress.message.jclient.QueueConnectionFactory;
 public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfiguration<TiesaaProtos.TiesaaMittatieto> {
     private static final Logger log = LoggerFactory.getLogger(WeatherJMSListenerConfiguration.class);
 
-    private final JMSParameters jmsParameters;
     private final SensorDataUpdateService sensorDataUpdateService;
 
     @Autowired
@@ -36,15 +35,11 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
               log);
         this.sensorDataUpdateService = sensorDataUpdateService;
 
-        jmsParameters = new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
-                                          WeatherJMSListenerConfiguration.class.getSimpleName(),
-                                          ClusteredLocker.generateInstanceId());
+        setJmsParameters(new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
+                                           WeatherJMSListenerConfiguration.class.getSimpleName(),
+                                           ClusteredLocker.generateInstanceId()));
     }
 
-    @Override
-    public JMSParameters getJmsParameters() {
-        return jmsParameters;
-    }
 
     @Override
     public JMSMessageListener<TiesaaProtos.TiesaaMittatieto> createJMSMessageListener() {
@@ -52,7 +47,7 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
         final WeatherMessageMarshaller messageMarshaller = new WeatherMessageMarshaller();
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
-                                        isQueueTopic(jmsParameters.getJmsQueueKeys()),
+                                        isQueueTopic(getJmsParameters().getJmsQueueKeys()),
                                         log);
     }
 }

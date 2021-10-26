@@ -124,15 +124,15 @@ public class CameraPresetService {
     }
 
     @Transactional
-    public void updateCameraPresetAndHistory(final long cameraPresetLotjuId, final boolean isImagePublic, final boolean isPresetPublic,
-                                             final ImageUpdateInfo updateInfo) {
+    public void updateCameraPresetAndHistoryWithLotjuId(final long cameraPresetLotjuId, final boolean isImagePublic, final boolean isPresetPublic,
+                                                        final ImageUpdateInfo updateInfo) {
         final CameraPreset cameraPreset = findCameraPresetByLotjuId(cameraPresetLotjuId);
         // Update version data only if write has succeeded
         if (updateInfo.isSuccess()) {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                                         isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
-
+            log.info("Save history with presetId={} versionId={} versionIdLenght={}", cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getVersionId().length());
             cameraPresetHistoryRepository.save(history);
         }
         // Preset can be public when camera is secret. If camera is secret then public presets are not returned by the api.
@@ -149,7 +149,22 @@ public class CameraPresetService {
     }
 
     @Transactional(readOnly = true)
-    public CameraPreset findCameraPresetByPresetId(String presetId) {
+    public CameraPreset findCameraPresetByPresetId(final String presetId) {
         return cameraPresetRepository.findByPresetId(presetId);
+    }
+
+    @Transactional
+    public boolean obsoleteCameraStationWithLotjuId(final long lotjuId) {
+        final List<CameraPreset> presets = cameraPresetRepository.findByRoadStation_LotjuId(lotjuId);
+        return presets.stream().filter(CameraPreset::makeObsolete).count() > 0;
+    }
+
+    @Transactional
+    public boolean obsoleteCameraPresetWithLotjuId(final long presetLotjuId) {
+        final CameraPreset cp = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(presetLotjuId);
+        if (cp != null) {
+            return cp.makeObsolete();
+        }
+        return false;
     }
 }

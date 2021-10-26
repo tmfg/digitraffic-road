@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
@@ -35,7 +33,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
@@ -51,11 +49,9 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryGitClient;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
+public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegionGeometryMock {
     private static final Logger log = getLogger(V3TrafficMessagesControllerTest.class);
 
     @Autowired
@@ -73,12 +69,6 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTest {
 
     @Autowired
     private TrafficMessageTestHelper trafficMessageTestHelper;
-
-    @MockBean
-    protected RegionGeometryGitClient regionGeometryGitClientMock;
-
-    @SpyBean
-    protected V3RegionGeometryDataService v3RegionGeometryDataServiceSpy;
 
     @BeforeEach
     public void init() {

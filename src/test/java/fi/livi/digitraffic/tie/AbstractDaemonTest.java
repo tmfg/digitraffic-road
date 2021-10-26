@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-// "road.datasource.hikari.maximum-pool-size=6",
 @TestPropertySource(properties = {
     "app.type=daemon",
     "spring.main.web-application-type=none",

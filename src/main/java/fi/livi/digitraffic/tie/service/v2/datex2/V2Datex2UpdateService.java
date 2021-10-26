@@ -82,7 +82,7 @@ public class V2Datex2UpdateService {
             final List<Datex2MessageDto> models = createModels(imsMessage, now);
             return updateTrafficDatex2Messages(models);
         }).sum();
-        log.info("method=updateTrafficDatex2ImsMessages updated={} Datex2ImsMessages", newAndUpdated);
+        log.info("method=updateTrafficDatex2ImsMessages updateCount={} Datex2ImsMessages", newAndUpdated);
         return newAndUpdated;
     }
 

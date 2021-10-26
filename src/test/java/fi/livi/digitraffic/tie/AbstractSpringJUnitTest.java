@@ -10,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
 
-
-
 /**
  To keep created context count as low as possible take in account that configuration
  parameters below affects used context cache key for the context caching.

@@ -19,10 +19,9 @@ import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.tms.inQueue")
 @Configuration
-public class    TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguration<LAMRealtimeProtos.Lam> {
+public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguration<LAMRealtimeProtos.Lam> {
     private static final Logger log = LoggerFactory.getLogger(TmsJMSListenerConfiguration.class);
 
-    private final JMSParameters jmsParameters;
     private final SensorDataUpdateService sensorDataUpdateService;
 
     @Autowired
@@ -34,17 +33,12 @@ public class    TmsJMSListenerConfiguration extends AbstractJMSListenerConfigura
                                        final ClusteredLocker clusteredLocker) {
 
         super(connectionFactory,
-            clusteredLocker,
+              clusteredLocker,
               log);
         this.sensorDataUpdateService = sensorDataUpdateService;
-        jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
-                                          TmsJMSListenerConfiguration.class.getSimpleName(),
-                                          ClusteredLocker.generateInstanceId());
-    }
-
-    @Override
-    public JMSParameters getJmsParameters() {
-        return jmsParameters;
+        setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
+                                           TmsJMSListenerConfiguration.class.getSimpleName(),
+                                           ClusteredLocker.generateInstanceId()));
     }
 
     @Override
@@ -53,7 +47,7 @@ public class    TmsJMSListenerConfiguration extends AbstractJMSListenerConfigura
         final TmsMessageMarshaller messageMarshaller = new TmsMessageMarshaller();
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
-                                        isQueueTopic(jmsParameters.getJmsQueueKeys()),
+                                        isQueueTopic(getJmsParameters().getJmsQueueKeys()),
                                         log);
     }
 }

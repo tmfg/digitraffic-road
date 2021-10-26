@@ -149,7 +149,7 @@ public class JMSMessageListener<K> implements MessageListener {
                 messageDrainedCounter.addAndGet(counter);
                 final int updated = dataUpdater.updateData(targetList);
                 dbRowsUpdatedCounter.addAndGet(updated);
-                log.info("JMS messages updated counter={} updated={} tookMs={}", counter, updated, start.getTime());
+                log.info("JMS messages updated counter={} updateCount={} tookMs={}", counter, updated, start.getTime());
             }
         } else {
             log.info("drainQueueInternal: Shutdown called");

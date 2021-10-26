@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -48,10 +49,20 @@ public class LotjuTmsStationMetadataClientWrapper {
         return lotjuTmsStationMetadataClient.getLamAsemas();
     }
 
+    public LamAsemaVO getLamAsema(final long tmsStationLotjuId) {
+        return lotjuTmsStationMetadataClient.getLamAsema(tmsStationLotjuId);
+    }
+
+    public LamLaskennallinenAnturiVO getLamLaskennallinenAnturi(final long lotjuId) {
+        return lotjuTmsStationMetadataClient.getLamLaskennallinenAnturi(lotjuId);
+    }
     public List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
         return lotjuTmsStationMetadataClient.getAllLamLaskennallinenAnturis();
     }
 
+    public List<LamLaskennallinenAnturiVO> getLamAsemanLaskennallisetAnturit(final long tmsLotjuId) {
+        return lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(tmsLotjuId);
+    }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 800000, maxErroExcecutionTime = 1000000)
     public Map<Long, List<LamLaskennallinenAnturiVO>> getLamLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
@@ -62,7 +73,7 @@ public class LotjuTmsStationMetadataClientWrapper {
 
         final StopWatch start = StopWatch.createStarted();
         for (final Long tmsLotjuId : tmsLotjuIds) {
-            completionService.submit(() -> Pair.of(tmsLotjuId, lotjuTmsStationMetadataClient.getTiesaaLaskennallinenAnturis(tmsLotjuId)));
+            completionService.submit(() -> Pair.of(tmsLotjuId, lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(tmsLotjuId)));
         }
 
         int countAnturis = 0;
@@ -89,6 +100,11 @@ public class LotjuTmsStationMetadataClientWrapper {
                  countAnturis, lamAnturisMappedByTmsLotjuId.size(), start.getTime());
         return lamAnturisMappedByTmsLotjuId;
     }
+
+    public LamAnturiVakioVO getLamAnturiVakio(final long anturiVakiolotjuId) {
+        return lotjuTmsStationMetadataClient.getLamAnturiVakio(anturiVakiolotjuId);
+    }
+
 
     @PerformanceMonitor(maxWarnExcecutionTime = 150000, maxErroExcecutionTime = 200000)
     public List<LamAnturiVakioVO> getAllLamAnturiVakios(final Collection<Long> tmsLotjuIds) {
@@ -124,6 +140,38 @@ public class LotjuTmsStationMetadataClientWrapper {
         return allAnturiVakios;
     }
 
+    public List<LamAnturiVakioArvoVO> getAnturiVakioArvos(final long anturiVakioArvoLotjuId) {
+        final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos = new ArrayList<>();
+
+        final ExecutorService executor = Executors.newFixedThreadPool(5);
+        final CompletionService<LamAnturiVakioArvoVO> completionService = new ExecutorCompletionService<>(executor);
+
+        final StopWatch start = StopWatch.createStarted();
+        IntStream.range(1,13).forEach(month ->
+            completionService.submit(() -> lotjuTmsStationMetadataClient.getAnturiVakioArvot(anturiVakioArvoLotjuId, month, 1)));
+        log.info("method=getAnturiVakioArvos for 12 months");
+
+        // It's necessary to wait all executors to complete.
+        IntStream.range(1,13).forEach(month -> {
+            try {
+                final LamAnturiVakioArvoVO values = completionService.take().get();
+                lamAnturiVakioArvos.add(values);
+                log.debug("method=getAnturiVakioArvos {}/12", lamAnturiVakioArvos.size());
+            } catch (final InterruptedException | ExecutionException e) {
+                log.error("method=getAnturiVakioArvos Error while fetching LamAnturiVakioArvo", e);
+                executor.shutdownNow();
+                throw new RuntimeException(e);
+            }
+        });
+        executor.shutdown();
+
+        final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
+
+        log.info("method=getAnturiVakioArvos fetchedCount={} for 12 months distincLamAnturiVakiosCount={} tookMs={}",
+                 lamAnturiVakioArvos.size(), distincLamAnturiVakios.size(), start.getTime());
+        return distincLamAnturiVakios;
+    }
+
     @PerformanceMonitor(maxWarnExcecutionTime = 120000, maxErroExcecutionTime = 200000)
     public List<LamAnturiVakioArvoVO> getAllLamAnturiVakioArvos() {
 
@@ -132,7 +180,6 @@ public class LotjuTmsStationMetadataClientWrapper {
         final ExecutorService executor = Executors.newFixedThreadPool(5);
         final CompletionService<List<LamAnturiVakioArvoVO>> completionService = new ExecutorCompletionService<>(executor);
 
-
         final StopWatch start = StopWatch.createStarted();
         int monthCounter = 0;
         while (monthCounter < 12) {
@@ -140,34 +187,49 @@ public class LotjuTmsStationMetadataClientWrapper {
             final int month = monthCounter;
             completionService.submit(() -> lotjuTmsStationMetadataClient.getAllAnturiVakioArvos(month, 1));
         }
-        log.info("Fetch LamAnturiVakioArvos for {} months", monthCounter);
+        log.info("method=getAllLamAnturiVakioArvos Fetch LamAnturiVakioArvos for {} months", monthCounter);
 
-        int countLamAnturiVakioArvos = 0;
         // It's necessary to wait all executors to complete.
         for (int i = 0; i < monthCounter; i++) {
             try {
                 final List<LamAnturiVakioArvoVO> values = completionService.take().get();
-                countLamAnturiVakioArvos += values.size();
                 lamAnturiVakioArvos.addAll(values);
-                log.debug("Got {} LamAnturiVakioArvos, {}/{}", values.size(), i+1, monthCounter);
+                log.debug("method=getAllLamAnturiVakioArvos Got {} LamAnturiVakioArvos, {}/{}", values.size(), i+1, monthCounter);
             } catch (final InterruptedException | ExecutionException e) {
-                log.error("Error while fetching LamAnturiVakioArvos", e);
+                log.error("method=getAllLamAnturiVakioArvos Error while fetching LamAnturiVakioArvos", e);
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
         }
         executor.shutdown();
 
-        List<LamAnturiVakioArvoVO> distincLamAnturiVakios = lamAnturiVakioArvos.parallelStream()
+        final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
+
+        log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
+                 lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getTime());
+        return distincLamAnturiVakios;
+    }
+
+    /**
+     * When LamAnturiVakioArvos are fetched for every month there is distinct values.
+     *
+     * For example
+     * If A is valid on 1.1.–30.6. it will be returned for months 1–6
+     * and if B is valid on 1.7.–31.12. it  will be returned for months 7–12.
+     * So the result for months 1-12 will be
+     * [A, A, A, A, A, A, B, B, B, B, B, B] and after filterDistinct -function
+     * it will be reduced to [A, B]
+     *
+     * Returns distinct LamAnturiVakioArvos
+     * @param lamAnturiVakioArvos values to reduce
+     * @return distinct LamAnturiVakioArvo values
+     */
+    private List<LamAnturiVakioArvoVO> filterDistinctLamAnturiVakioArvos(final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos) {
+        return lamAnturiVakioArvos.parallelStream()
             .map(LamAnturiVakioArvoWrapper::new)
             .distinct()
             .map(LamAnturiVakioArvoWrapper::unWrap)
             .collect(Collectors.toList());
-
-        log.debug("Distinct lamAnturiVakioArvos {} was before {}", distincLamAnturiVakios.size(), lamAnturiVakioArvos.size());
-        log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
-                 countLamAnturiVakioArvos, monthCounter, distincLamAnturiVakios.size(), start.getTime());
-        return distincLamAnturiVakios;
     }
 
     private class LamAnturiVakioArvoWrapper {

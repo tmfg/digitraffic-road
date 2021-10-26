@@ -12,12 +12,10 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import fi.livi.digitraffic.tie.dto.v1.StationSensors;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 
 public interface RoadStationSensorRepository extends JpaRepository<RoadStationSensor, Long> {
-    String TMS_STATION_TYPE = "TMS_STATION";
-    String WEATHER_STATION_TYPE  ="WEATHER_STATION";
 
     @Query("SELECT s\n" +
            "FROM RoadStationSensor s\n" +
@@ -63,7 +61,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
             "  and sensor.road_station_type = :stationType\n" +
             "GROUP BY rs_sensors.road_station_id\n" +
             "order by rs_sensors.road_station_id", nativeQuery = true)
-    List<StationSensors> getStationPublishableSensorsByStationIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String
+    List<StationSensors> getRoadStationPublishableSensorsNaturalIdsByStationIdAndType(@Param("id") final long roadStationId, @Param("stationType") final String
         stationType);
 
 

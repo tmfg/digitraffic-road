@@ -121,18 +121,24 @@ public class TmsStation {
     }
 
     /**
-     * @return true if state changed
+     * Makes station obsolete if it's not already
+     *
+     * @return true is state was changed
      */
-    public void obsolete() {
+    public boolean makeObsolete() {
         if (roadStation == null) {
             log.error("Cannot obsolete TmsStation (" + getId() + ", lotjuId " + getLotjuId() + ") with null roadstation");
             if (getObsoleteDate() == null) {
                 setObsoleteDate(LocalDate.now());
+                return true;
             }
         } else {
-            roadStation.obsolete();
+            final boolean changed = roadStation.makeObsolete();
+            final LocalDate prevValue = getObsoleteDate();
             setObsoleteDate(roadStation.getObsoleteDate());
+            return changed || !prevValue.equals(getObsoleteDate());
         }
+        return false;
     }
 
     public String getDirection1Municipality() {
