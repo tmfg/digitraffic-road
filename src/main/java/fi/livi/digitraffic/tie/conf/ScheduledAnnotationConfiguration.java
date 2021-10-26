@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -15,5 +17,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
     havingValue = "true",
     matchIfMissing = true)
 public class ScheduledAnnotationConfiguration {
-    // empty, just to init @EnableScheduling annotation
+    private static final Logger log = LoggerFactory.getLogger(ScheduledAnnotationConfiguration.class);
+
+    public ScheduledAnnotationConfiguration() {
+        // empty, just to init @EnableScheduling annotation
+        log.info("Scheduled annotation enabled");
+    }
 }

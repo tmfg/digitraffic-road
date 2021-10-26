@@ -26,13 +26,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.ItineraryRoadLeg;
@@ -49,9 +48,8 @@ import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
+public class V3Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeometryMock {
     private static final Logger log = getLogger(V3Datex2JsonConverterTest.class);
 
     public static final String MAX_DURATION = "PT8H";
@@ -66,21 +64,18 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
     private ObjectWriter writerForImsGeoJsonFeature;
     private ObjectReader readerForGeometry;
 
-    @SpyBean
-    private V3RegionGeometryDataService v3RegionGeometryDataService;
-
     @BeforeEach
     public void init() {
         writerForImsGeoJsonFeature = objectMapper.writerFor(ImsGeoJsonFeature.class);
         readerForGeometry = objectMapper.readerFor(Geometry.class);
-        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
-        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
-        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
-        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
-        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(73), any())).thenReturn(createNewRegionGeometry(73));
-        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
-        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(419), any())).thenReturn(createNewRegionGeometry(419));
-        when(v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
+        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
+        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
+        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
+        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
+        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(73), any())).thenReturn(createNewRegionGeometry(73));
+        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
+        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(419), any())).thenReturn(createNewRegionGeometry(419));
+        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
     }
 
     @Test
@@ -251,6 +246,14 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTest {
                 assertNotNull(rwp.restrictions.get(0).restriction.description);
                 assertEquals(Restriction.Type.DETOUR_USING_ROADWAYS, rwp.restrictions.get(1).type);
                 assertNotNull(rwp.restrictions.get(1).restriction.description);
+            }
+            if (version.version >= 2.14) {
+                // restriction timeAndDuration && INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE added
+                final Restriction r3 = rwp.restrictions.get(2);
+                assertNotNull(r3.restriction.description);
+                assertNotNull(r3.restriction.name);
+                assertEquals(Restriction.Type.INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE, r3.type);
+                assertNotNull(r3.restriction.timeAndDuration);
             }
             if (version.version > 2.10) {
                 assertEquals(Worktype.Type.LIGHTING, rwp.worktypes.get(0).type);

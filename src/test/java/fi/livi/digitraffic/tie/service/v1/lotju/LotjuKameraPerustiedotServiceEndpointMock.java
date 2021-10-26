@@ -15,8 +15,8 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.HaeKaikkiKameratRe
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraKokoonpanoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotEndpoint;
-import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotEndpointImplService;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotException;
+import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotV7;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.VideopalvelinVO;
 
@@ -36,7 +36,7 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     private LotjuKameraPerustiedotServiceEndpointMock(final String metadataServerAddressCamera, final ResourceLoader resourceLoader,
                                                       final Jaxb2Marshaller jaxb2Marshaller) {
         super(resourceLoader, metadataServerAddressCamera, KameraPerustiedotEndpoint.class,
-              KameraPerustiedotEndpointImplService.SERVICE, jaxb2Marshaller, LOTJU_KAMERA_RESOURCE_PATH);
+              KameraPerustiedotV7.SERVICE, jaxb2Marshaller, LOTJU_KAMERA_RESOURCE_PATH);
     }
 
     @Override

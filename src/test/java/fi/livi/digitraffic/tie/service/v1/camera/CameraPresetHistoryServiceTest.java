@@ -3,7 +3,13 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowWithoutMillisAtUtc;
 import static fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.MAX_IDS_SIZE;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -11,6 +17,7 @@ import static org.mockito.Mockito.verify;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +34,8 @@ import javax.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -37,9 +46,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.transaction.TestTransaction;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithoutLocalStack;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
@@ -55,7 +64,7 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
 
-public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLocalStack {
+public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     private static final Logger log = LoggerFactory.getLogger(CameraPresetHistoryServiceTest.class);
 
@@ -87,8 +96,19 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
     private String s3WeathercamRegion;
 
     @BeforeEach
-    public void cleanHistory() {
+    public void initData() {
         cameraPresetHistoryRepository.deleteAll();
+        TestUtils.generateDummyCameraStations(4,2)
+            .forEach(camera -> camera.forEach(preset -> entityManager.persist(preset)));
+        entityManager.flush();
+    }
+
+    @AfterEach
+    public void clearData() {
+        final StopWatch sw = StopWatch.createStarted();
+        TestUtils.commitAndEndTransactionAndStartNew();
+        TestUtils.truncateCameraData(entityManager);
+        TestUtils.commitAndEndTransactionAndStartNew(); // make sure db is cleaned
     }
 
     @Test
@@ -137,16 +157,14 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
 
     @Test
     public void illegalIdParameter() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Arrays.asList("C12345", "C1234"), null);
-        });
+        assertThrows(IllegalArgumentException.class, () ->
+            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(Arrays.asList("C12345", "C1234"), null));
     }
 
     @Test
     public void tooLongListOfIdParameters() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE + 1), null);
-        });
+        assertThrows(IllegalArgumentException.class, () ->
+            cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(generateCameraIds(MAX_IDS_SIZE + 1), null));
     }
 
     @Test
@@ -259,17 +277,17 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
     @Test
     public void findCameraOrPresetHistoryPresencesNullId() {
         final List<String> presetIds = generateHistoryForPublicPresets(5, 1);
-        CameraPresetHistory secret = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetIds.get(0)).get(0);
+        final CameraPresetHistory secret = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetIds.get(0)).get(0);
         secret.setPublishable(false);
         entityManager.flush();
 
-        CameraHistoryPresencesDto allCameraPresences =
+        final CameraHistoryPresencesDto allCameraPresences =
             cameraPresetHistoryDataService.findCameraOrPresetHistoryPresences(null, null, null);
-        List<PresetHistoryPresenceDto> allPresetPresences =
+        final List<PresetHistoryPresenceDto> allPresetPresences =
             allCameraPresences.cameraHistoryPresences.stream().flatMap(c -> c.presetHistoryPresences.stream()).collect(Collectors.toList());
 
         // Secret can't be found
-        Optional<PresetHistoryPresenceDto> secretPresence =
+        final Optional<PresetHistoryPresenceDto> secretPresence =
             allPresetPresences.stream().filter(h -> h.getPresetId().equals(secret.getPresetId())).findFirst();
         assertTrue(secretPresence.isPresent());
         assertFalse(secretPresence.get().isHistoryPresent());
@@ -474,8 +492,8 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
         final List<CameraPresetHistory> allBefore = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp1.getPresetId());
 
         // Must end transaction to save different timestamps to db
-        endTransactionAndStartNew();
-        sleep(1000);
+        TestUtils.commitAndEndTransactionAndStartNew();
+        sleep(10);
 
         // Generate 3 changes in the history
         IntStream.range(1,4).forEach(i -> {
@@ -487,10 +505,10 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
             changeTimes.add(h.getLastModified());
             cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs1);
             // Must end transaction to save different timestamps to db
-            endTransactionAndStartNew();
+            TestUtils.commitAndEndTransactionAndStartNew();
             sleep(1000);
         });
-        flushAndClearSession();
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         final List<CameraPresetHistory> allAfter = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp1.getPresetId());
 
@@ -505,7 +523,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
                 cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn, Collections.singletonList(cp1.getPresetId()))
                     .changes;
             final CameraHistoryChangesDto changesBeforeDto =
-                cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn.minusSeconds(1), Collections.singletonList(cp1.getPresetId()));
+                cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(changedOn.minus(600, ChronoUnit.MILLIS), Collections.singletonList(cp1.getPresetId()));
             final List<PresetHistoryChangeDto> changesBefore = changesBeforeDto.changes;
 
 
@@ -543,7 +561,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
 
     @Test
     public void presetNotPublicInPast() {
-        final CameraPreset preset = cameraPresetService.save(generateDummyPreset());
+        final CameraPreset preset = cameraPresetService.save(TestUtils.generateDummyPreset());
         final ZonedDateTime T1 = getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
         final ZonedDateTime T2 = T1.plusHours(1);
         final ZonedDateTime T3 = T1.plusHours(2);
@@ -568,7 +586,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
         // Set camera to public from the T1. Preset history at T2 should remain secret. Others should be public.
         final RoadStation rs = preset.getRoadStation();
         rs.updatePublicity(true, T1);
-        flushAndClearSession();
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
 
@@ -591,7 +609,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
         final List<CameraPresetHistory> allBeforeDelete = cameraPresetHistoryRepository.findAll();
         log.info("allBeforeDeleteSize {}, presetCount {}, historySize {}", allBeforeDelete.size(), presetCount, historySize);
         assertEquals(historySize*presetCount, allBeforeDelete.size());
-        flushAndClearSession();
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         // after delete there should be left only newer than 24 hours -> 25 left/preset
         cameraPresetHistoryUpdateService.deleteOlderThanHoursHistory(24);
@@ -671,16 +689,5 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTestWithoutLoc
 
     private static List<String> generateCameraIds(final int count) {
         return IntStream.range(0, count).mapToObj(i -> String.format("C%s", StringUtils.leftPad(String.valueOf(i), 5, "0"))).collect(Collectors.toList());
-    }
-
-    private void endTransactionAndStartNew() {
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
-        TestTransaction.start();
-    }
-
-    private void flushAndClearSession() {
-        entityManager.flush();
-        entityManager.clear();
     }
 }

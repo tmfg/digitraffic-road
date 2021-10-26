@@ -1,4 +1,4 @@
-<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2017/05/02">
+<ns2:HaeKaikkiTiesaaAsematResponse xmlns:ns2="http://ws.livi.fi/wsdl/LOTJU/tiesaa/2019/09/27">
     <ns2:tiesaaAsema>
         <id>33</id>
         <kuvaus>GPRS</kuvaus>

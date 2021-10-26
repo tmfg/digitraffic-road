@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.converter.feature;
 
-import static fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository.TMS_STATION_TYPE;
-
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -15,12 +13,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.converter.StationSensorConverter;
+import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationProperties;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
@@ -28,12 +27,12 @@ import fi.livi.digitraffic.tie.model.v1.TmsStation;
 public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataToFeatureConverter {
     private static final Logger log = LoggerFactory.getLogger( TmsStationMetadata2FeatureConverter.class);
 
-    private final StationSensorConverter stationSensorConverter;
+    private final StationSensorConverterService stationSensorConverterService;
 
     @Autowired
-    private TmsStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter, final StationSensorConverter stationSensorConverter) {
+    private TmsStationMetadata2FeatureConverter(final CoordinateConverter coordinateConverter, final StationSensorConverterService stationSensorConverterService) {
         super(coordinateConverter);
-        this.stationSensorConverter = stationSensorConverter;
+        this.stationSensorConverterService = stationSensorConverterService;
     }
 
     private enum FreeFlowSpeed {
@@ -46,7 +45,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
                                                final ZonedDateTime lastUpdated,
                                                final ZonedDateTime dataLastCheckedTime) {
 
-        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createPublishableSensorMap(TMS_STATION_TYPE);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(RoadStationType.TMS_STATION);
         final Map<Long, Pair<Double, Double>> rsNaturalIdToFreeFlosSpeedsMap =
             freeFlowSpeeds.stream()
                 .collect(Collectors.toMap(TmsFreeFlowSpeedDto::getRoadStationNaturalId,
@@ -79,7 +78,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
 
 
     public TmsStationFeature convert(final TmsStation tms, final Double freeFlowSpeed1, final Double freeFlowSpeed2) {
-        final Map<Long, List<Long>> sensorMap = stationSensorConverter.createPublishableSensorMap(tms.getRoadStationId(), TMS_STATION_TYPE);
+        final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(tms.getRoadStationId(), RoadStationType.TMS_STATION);
         return convert(sensorMap, tms, freeFlowSpeed1, freeFlowSpeed2);
     }
 

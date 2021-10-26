@@ -103,12 +103,32 @@ public class VariableSignUpdateService {
         final StopWatch sw = StopWatch.createStarted();
 
         try {
-            v2DeviceDataRepository.saveAll(data.getLiikennemerkit().stream()
+            final List<DeviceData> newData = data.getLiikennemerkit().stream()
                 .map(this::convertData)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+
+//            findDuplicates(newData);
+
+            v2DeviceDataRepository.saveAll(newData);
         } finally {
             log.info("updateDeviceDataCount={} tookMs={}", data.getLiikennemerkit().size(), sw.getTime());
         }
+    }
+
+    private void findDuplicates(final List<DeviceData> dataList) {
+        final List<List<DeviceData>> duplicates = dataList.stream()
+            .collect(Collectors.groupingBy(DeviceData::getDeviceId))
+            .entrySet().stream()
+                .filter(e -> e.getValue().size() > 1)
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+
+        duplicates.forEach(duplicateList -> {
+            final String list = duplicateList.stream()
+                .map(dd -> String.format("%s %s %s %s", dd.getDeviceId(), dd.getDisplayValue(), dd.getEffectDate(), dd.getCreatedDate()))
+                .collect(Collectors.joining("\n"));
+            log.info("method=findDuplicates duplicates " + list);
+        });
     }
 
     private DeviceData convertData(final LiikennemerkinTila lt) {

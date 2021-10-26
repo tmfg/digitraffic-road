@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,7 @@ import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClientWrapper;
 
 @ConditionalOnNotWebApplication
@@ -34,7 +34,7 @@ public class CameraStationUpdater {
     private final CameraStationUpdateService cameraStationUpdateService;
     private final CameraPresetService cameraPresetService;
     private final RoadStationService roadStationService;
-    private final CameraMetadataUpdateLock lock;
+    private final ClusteredLocker.ClusteredLock lock;
 
     @Autowired
     public CameraStationUpdater(final LotjuCameraStationMetadataClientWrapper lotjuCameraStationMetadataClientWrapper,
@@ -46,32 +46,9 @@ public class CameraStationUpdater {
         this.cameraStationUpdateService = cameraStationUpdateService;
         this.cameraPresetService = cameraPresetService;
         this.roadStationService = roadStationService;
-        this.lock = new CameraMetadataUpdateLock(clusteredLocker);
+        this.lock = clusteredLocker.createClusteredLock(this.getClass().getSimpleName(), 10000);
     }
 
-    private class CameraMetadataUpdateLock {
-        private final String lockName = CameraMetadataUpdateLock.class.getSimpleName();
-        private final StopWatch stopWatch;
-        private final ClusteredLocker clusteredLocker;
-
-
-        public CameraMetadataUpdateLock(final ClusteredLocker clusteredLocker) {
-            this.clusteredLocker = clusteredLocker;
-            stopWatch = new StopWatch();
-        }
-
-        protected void lock() {
-            clusteredLocker.lock(lockName, 10000);
-            stopWatch.start();
-        }
-
-        protected void unlock() {
-            final long time = stopWatch.getTime();
-            stopWatch.reset();
-            clusteredLocker.unlock(lockName);
-            log.debug("method=unlock lockedTimeMs={}", time);
-        }
-    }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 450000)
     public boolean updateCameras() {
@@ -169,18 +146,19 @@ public class CameraStationUpdater {
     }
 
     @PerformanceMonitor()
-    public boolean updateCameraStationFromJms(final long cameraLotjuId) {
-        log.info("method=updateCameraStationFromJms start lotjuId={}", cameraLotjuId);
-        return updateCameraStation(cameraLotjuId);
-    }
-
-    private boolean updateCameraStation(final long cameraLotjuId) {
-        final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(cameraLotjuId);
-        if (kamera == null) {
-            log.warn("method=updateCameraStation No Camera with lotjuId={} found", cameraLotjuId);
-            return false;
+    public boolean updateCameraStation(final long cameraLotjuId,
+                                       final MetadataUpdatedMessageDto.UpdateType updateType) {
+        log.info("method=updateCameraStationFromJms start lotjuId={} type={}", cameraLotjuId, updateType);
+        if (updateType.isDelete()) {
+            return cameraStationUpdateService.obsoleteStationWithLotjuId(cameraLotjuId);
+        } else {
+            final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(cameraLotjuId);
+            if (kamera == null) {
+                log.warn("method=updateCameraStation No Camera with lotjuId={} found", cameraLotjuId);
+                return false;
+            }
+            return updateCameraStation(kamera);
         }
-        return updateCameraStation(kamera);
     }
 
     private boolean updateCameraStation(final KameraVO kamera) {
@@ -206,12 +184,18 @@ public class CameraStationUpdater {
     }
 
     @PerformanceMonitor()
-    public boolean updateCameraPresetFromJms(final long presetLotjuId) {
-        log.info("method=updateCameraPresetFromJms start lotjuId={}", presetLotjuId);
+    public boolean updateCameraPreset(final long presetLotjuId,
+                                      final MetadataUpdatedMessageDto.UpdateType updateType) {
+        log.info("method=updateCameraPreset start lotjuId={} type={}", presetLotjuId, updateType);
+
+        if (updateType.isDelete()) {
+            return cameraPresetService.obsoleteCameraPresetWithLotjuId(presetLotjuId);
+        }
+
         final EsiasentoVO esiasento = lotjuCameraStationMetadataClientWrapper.getEsiasento(presetLotjuId);
 
         if (esiasento == null) {
-            log.warn("No CameraPreset with lotjuId={} found", presetLotjuId);
+            log.warn("method=updateCameraPreset No CameraPreset with lotjuId={} found", presetLotjuId);
             return false;
         }
 
@@ -222,18 +206,17 @@ public class CameraStationUpdater {
         }
 
         // Otherwise update only the given preset
-        lock.lock();
-        try {
-            log.debug("method=updateCameraPreset got the lock lotjuId={}", presetLotjuId);
-            final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(esiasento.getKameraId());
-            if (validate(kamera)) {
+        log.debug("method=updateCameraPreset got the lock lotjuId={}", presetLotjuId);
+        final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(esiasento.getKameraId());
+        if (validate(kamera)) {
+            lock.lock();
+            try {
                 return cameraStationUpdateService.updatePreset(esiasento, kamera);
-            } else {
-                return false;
+            } finally {
+                lock.unlock();
             }
-
-        } finally {
-            lock.unlock();
+        } else {
+            return false;
         }
     }
 

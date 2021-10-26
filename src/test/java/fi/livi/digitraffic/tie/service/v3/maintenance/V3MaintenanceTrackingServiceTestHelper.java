@@ -26,6 +26,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringSubstitutor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -37,7 +39,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
 import fi.livi.digitraffic.tie.external.harja.Havainnot;
@@ -52,24 +53,21 @@ import fi.livi.digitraffic.tie.external.harja.entities.OrganisaatioSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ViivageometriasijaintiSchema;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingData;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingUpdateService;
 
 @Service
 public class V3MaintenanceTrackingServiceTestHelper {
+    private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingServiceTestHelper.class);
 
-    private final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
     private final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService;
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
-    private final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository;
     private final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
     private final ObjectReader jsonReaderForKirjaus;
     private final ObjectWriter jsonWriterForKirjaus;
-    private final ObjectReader jsonReaderForHavainto;
     private final ObjectWriter jsonWriterForHavainto;
     private final EntityManager entityManager;
     private final ResourceLoader resourceLoader;
@@ -114,27 +112,22 @@ public class V3MaintenanceTrackingServiceTestHelper {
 
     @Autowired
     public V3MaintenanceTrackingServiceTestHelper(final ObjectMapper objectMapper,
-                                                  final V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService,
                                                   final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService,
                                                   final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
-                                                  final V2MaintenanceTrackingDataRepository v2MaintenanceTrackingDataRepository,
                                                   final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository,
                                                   final EntityManager entityManager,
                                                   final ResourceLoader resourceLoader,
                                                   @Value("${workmachine.tracking.distinct.linestring.observationgap.km}")
                                                       final double maxLineStringGapInKilometers) {
 
-        this.v2MaintenanceTrackingUpdateService = v2MaintenanceTrackingUpdateService;
         this.v3MaintenanceTrackingUpdateService = v3MaintenanceTrackingUpdateService;
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
         this.jsonWriterForKirjaus = objectMapper.writerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.jsonReaderForKirjaus = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
-        this.jsonReaderForHavainto = objectMapper.readerFor(Havainto.class);
         this.genericJsonReader = objectMapper.reader();
         this.genericJsonWriter = objectMapper.writer();
         this.jsonReaderForTrackingsArray = objectMapper.readerForArrayOf(TyokoneenseurannanKirjausRequestSchema.class);
-        this.v2MaintenanceTrackingDataRepository = v2MaintenanceTrackingDataRepository;
         this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
         this.entityManager = entityManager;
         this.resourceLoader = resourceLoader;
@@ -143,7 +136,6 @@ public class V3MaintenanceTrackingServiceTestHelper {
 
     public void clearDb() {
         v2MaintenanceTrackingRepository.deleteAllInBatch();
-        v2MaintenanceTrackingDataRepository.deleteAllInBatch();
         v3MaintenanceTrackingObservationDataRepository.deleteAllInBatch();
     }
 
@@ -169,17 +161,13 @@ public class V3MaintenanceTrackingServiceTestHelper {
         assertEquals(expectedTasks, actualTasks);
     }
 
-    private void saveTrackingDataAsPlainText(final String trackingJson) {
-        final MaintenanceTrackingData Tracking = new MaintenanceTrackingData(trackingJson);
-        v2MaintenanceTrackingDataRepository.save(Tracking);
-    }
-
     /**
      * Generates work machines with running harja ids [1, 2,...count]
      * @param count Count of generated work machines
      * @return Created workmachines
      */
     public static List<Tyokone> createWorkMachines(final int count) {
+        log.info("Create {} workmachines", count);
         return IntStream.range(1, count+1).mapToObj(V3MaintenanceTrackingServiceTestHelper::createWorkmachine).collect(toList());
     }
 
@@ -226,18 +214,18 @@ public class V3MaintenanceTrackingServiceTestHelper {
     /**
      * Creates WorkMachineTracking with a LineString observation
      * @param observationTime Time of observation (start and end is same)
-     * @param observationCount how many observations (LineString lenght) to generate for every machine.
+     * @param pointsPerObservation how many points (LineString lenght) to generate for every machine.
      * @param jobId Harja job id
      * @param workMachines Machines
      * @param tasks Performed tasks
      * @return Created tracking
      */
     public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithLineString(final ZonedDateTime observationTime,
-                                                                                                 final int observationCount,
+                                                                                                 final int pointsPerObservation,
                                                                                                  final int jobId,
                                                                                                  final List<Tyokone> workMachines,
                                                                                                  final SuoritettavatTehtavat...tasks) {
-        return createMaintenanceTracking(observationTime, observationCount, jobId, 1, workMachines, true, tasks);
+        return createMaintenanceTracking(observationTime, pointsPerObservation, jobId, 1, workMachines, true, tasks);
     }
 
     /**
@@ -287,7 +275,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     /**
      * Creates WorkMachineTracking with multiple a Point observations
      * @param observationTime Time of first observation. Every observation time after that is increased with one minute.
-     * @param observationCount how many observations (Point observations) to generate for every machine.
+     * @param pointsCount how many observations (Point observations) to generate for every machine.
      * @param ordinal n th generation of observation (Aftert 1st the 2nd will continue lineary after 1st coordinates)
      * @param jobId Harja job id
      * @param workMachines Machines
@@ -295,23 +283,23 @@ public class V3MaintenanceTrackingServiceTestHelper {
      * @return Created tracking
      */
     public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithPoints(final ZonedDateTime observationTime,
-                                                                                             final int observationCount,
+                                                                                             final int pointsCount,
                                                                                              final int ordinal,
                                                                                              final int jobId,
                                                                                              final List<Tyokone> workMachines,
                                                                                              final SuoritettavatTehtavat...tasks) {
-        return createMaintenanceTracking(observationTime, observationCount, ordinal, jobId, workMachines, false, tasks);
+        return createMaintenanceTracking(observationTime, pointsCount, ordinal, jobId, workMachines, false, tasks);
     }
 
     /**
      *
      * @param observationTime Time of observation
-     * @param observationCount how many observations to generate/workmachine. Every observation time is increased with one minute.
+     * @param pointsCount how many points to generate/workmachine. Every observation time is increased with one minute.
      * @param workMachines jobId and work machine pairs to generate data for
      * @return Created tracking
      */
     private static TyokoneenseurannanKirjausRequestSchema createMaintenanceTracking(final ZonedDateTime observationTime,
-                                                                                    final int observationCount,
+                                                                                    final int pointsCount,
                                                                                     final int observationOrdinal,
                                                                                     final int jobId,
                                                                                     final List<Tyokone> workMachines,
@@ -320,7 +308,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
         final OtsikkoSchema otsikko = createOtsikko(observationTime);
         final List<Havainnot> havainnot =
             workMachines.stream().map(workMachine ->
-                createHavainnot(observationTime, workMachine, jobId, observationCount, observationOrdinal, Arrays.stream(tasks).collect(toList()), lineString))
+                createHavainnot(observationTime, workMachine, jobId, pointsCount, observationOrdinal, Arrays.stream(tasks).collect(toList()), lineString))
                 .flatMap(Collection::stream)
                 .collect(toList());
 
@@ -332,15 +320,15 @@ public class V3MaintenanceTrackingServiceTestHelper {
      * Else returns {observationCount} point observations
      */
     private static List<Havainnot> createHavainnot(final ZonedDateTime observationTime, final Tyokone workMachine, final int jobId,
-                                                   final int observationCount, final int ordinal, final List<SuoritettavatTehtavat> tasks, final boolean lineString) {
+                                                   final int pointsCount, final int ordinal, final List<SuoritettavatTehtavat> tasks, final boolean lineString) {
 
         // This sets speed < 50 km/h and distance between points < 0,5 km
-        final double coordinateFactor = 300;
-        final int additionToCoordinates = (ordinal-1) * observationCount;
+        final double coordinateFactor = 100;
+        final int additionToCoordinates = (ordinal-1) * pointsCount;
         if (lineString) {
 
-            // LineString observation with {observationCount} points
-            List<List<Object>> coordinates = IntStream.range(0, observationCount)
+            // LineString observation with {pointsCount} points
+            List<List<Object>> coordinates = IntStream.range(0, pointsCount)
                 .mapToObj(i -> Arrays.<Object>asList(RANGE_X_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor,
                                                 RANGE_Y_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor)).collect(toList());
 
@@ -357,7 +345,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
                         .withSuunta(90.0)));
         } else {
             // {observationCount} amount of point observations
-            return IntStream.range(0, observationCount).mapToObj(i ->
+            return IntStream.range(0, pointsCount).mapToObj(i ->
                 new Havainnot().withHavainto(
                     new Havainto()
                         .withHavaintoaika(observationTime.plusMinutes(i))
@@ -400,30 +388,14 @@ public class V3MaintenanceTrackingServiceTestHelper {
 
     }
 
-    public MaintenanceTrackingData saveTrackingAsJson(final String trackingJSon) throws JsonProcessingException {
-        final TyokoneenseurannanKirjausRequestSchema tracking = jsonReaderForKirjaus.readValue(trackingJSon);
-        return v2MaintenanceTrackingUpdateService.saveMaintenanceTrackingData(tracking);
-    }
-
-    public int handleUnhandledWorkMachineTrackings() {
-        return v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-    }
-
     public int handleUnhandledWorkMachineObservations(final int maxToHandle) {
-        return v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(maxToHandle);
-    }
-
-    public void flushAndClearSession() {
-        entityManager.flush();
-        entityManager.clear();
+        final int handled = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(maxToHandle);
+        log.info("Handled {} unhandled MaintenanceTrackingObservationDatas", handled);
+        return handled;
     }
 
     private String readResourceContent(final String resourcePattern) throws IOException {
         return FileUtils.readFileToString(resourceLoader.getResource(resourcePattern).getFile(), UTF_8);
-    }
-
-    public MaintenanceTrackingData saveTrackingData(final TyokoneenseurannanKirjausRequestSchema seuranta) throws JsonProcessingException {
-        return saveTrackingAsJson(jsonWriterForKirjaus.writeValueAsString(seuranta));
     }
 
     String UPSERT_MAINTENANCE_TRACKING_OBSERVATION_DATA_SQL =
@@ -458,7 +430,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
         for(final Havainnot havainnot : seuranta.getHavainnot()) {
             final Havainto h = havainnot.getHavainto();
             final String json = jsonWriterForHavainto.writeValueAsString(h);
-            Map<String, Object> valuesMap = new HashMap();
+            Map<String, Object> valuesMap = new HashMap<>();
             valuesMap.put("observationTime", h.getHavaintoaika().toInstant().toString());
             valuesMap.put("sendingTime", sendingTime.toString());
             valuesMap.put("json", json);
@@ -497,11 +469,6 @@ public class V3MaintenanceTrackingServiceTestHelper {
         return MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[enumIndex].name());
     }
 
-    public void saveTrackingFromResourceToDb(final String path) throws IOException {
-        final String ls1 = getFormatedTrackingJson(path);
-        saveTrackingAsJson(ls1);
-    }
-
     public void saveTrackingFromResourceToDbAsObservations(final String path) throws IOException {
         final String json = getFormatedTrackingJson(path);
         final TyokoneenseurannanKirjausRequestSchema tracking = jsonReaderForKirjaus.readValue(json);
@@ -521,9 +488,11 @@ public class V3MaintenanceTrackingServiceTestHelper {
         return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
     }
 
-    public void initializeForInternalTesting(final String fileName) throws IOException {
-        final String json =
-            getFormatedTrackingJson("classpath:harja/internal-testing/" + fileName);
-        saveTrackingAsJson(json);
+    public static ZonedDateTime getStartTimeOneHourInPast() {
+        return DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
+    }
+
+    public static ZonedDateTime getStartTimeOneDayInPast() {
+        return DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusDays(1);
     }
 }

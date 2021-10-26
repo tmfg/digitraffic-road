@@ -42,7 +42,7 @@ public class MetricWriterConfiguration {
         LoggableMetric.of(CONNECTIONS_ACTIVE).withTag(TAG_POOL)
     );
 
-    private static volatile Map<MetricKey, Double> metricMap = new HashMap<>();
+    private static final Map<MetricKey, Double> metricMap = new HashMap<>();
 
     private static class MetricKey {
         public final String metric;

@@ -4,18 +4,22 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
-import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakio;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioArvot;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioArvotResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakio;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakioResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiAnturiVakioArvot;
@@ -24,8 +28,12 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMAsemat;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMAsematResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMLaskennallisetAnturit;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMAsema;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMAsemaResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMAsemanLaskennallisetAnturit;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMAsemanLaskennallisetAnturitResponse;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMLaskennallinenAnturi;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMLaskennallinenAnturiResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
@@ -48,7 +56,8 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamAsemaVO> getLamAsemas() {
+    @NotTransactionalServiceMethod
+    public List<LamAsemaVO> getLamAsemas() {
         final HaeKaikkiLAMAsemat request = new HaeKaikkiLAMAsemat();
 
         log.info("Fetching LamAsemas");
@@ -60,7 +69,32 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamLaskennallinenAnturiVO> getTiesaaLaskennallinenAnturis(final Long lamAsemaLotjuId) {
+    @NotTransactionalServiceMethod
+    public LamAsemaVO getLamAsema(final long id) {
+        final HaeLAMAsema request = new HaeLAMAsema();
+        request.setId(id);
+
+        log.info("method=getLamAsema id={}", id);
+        final JAXBElement<HaeLAMAsemaResponse> response = (JAXBElement<HaeLAMAsemaResponse>)
+            marshalSendAndReceive(objectFactory.createHaeLAMAsema(request));
+        return response.getValue().getAsema();
+    }
+
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
+    public LamLaskennallinenAnturiVO getLamLaskennallinenAnturi(final long lotjuId) {
+        final HaeLAMLaskennallinenAnturi request = new HaeLAMLaskennallinenAnturi();
+        request.setId(lotjuId);
+        final JAXBElement<HaeLAMLaskennallinenAnturiResponse> response = (JAXBElement<HaeLAMLaskennallinenAnturiResponse>)
+            marshalSendAndReceive(objectFactory.createHaeLAMLaskennallinenAnturi(request));
+        return response.getValue().getLamlaskennallinenanturi();
+    }
+
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
+    public List<LamLaskennallinenAnturiVO> getLamAsemanLaskennallisetAnturit(final long lamAsemaLotjuId) {
 
         final HaeLAMAsemanLaskennallisetAnturit request = new HaeLAMAsemanLaskennallisetAnturit();
         request.setId(lamAsemaLotjuId);
@@ -71,7 +105,8 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
+    @NotTransactionalServiceMethod
+    public List<LamLaskennallinenAnturiVO> getAllLamLaskennallinenAnturis() {
         final HaeKaikkiLAMLaskennallisetAnturit request = new HaeKaikkiLAMLaskennallisetAnturit();
         log.info("Fetching LAMLaskennallisetAnturis");
         final JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse> response = (JAXBElement<HaeKaikkiLAMLaskennallisetAnturitResponse>)
@@ -82,7 +117,21 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamAnturiVakioVO> getAsemanAnturiVakios(final Long lotjuId) {
+    @NotTransactionalServiceMethod
+    public LamAnturiVakioVO getLamAnturiVakio(final long anturiVakiolotjuId) {
+        final HaeAnturiVakio haeAnturiVakioRequest = new HaeAnturiVakio();
+        haeAnturiVakioRequest.setAnturiVakioId(anturiVakiolotjuId);
+
+        final JAXBElement<HaeAnturiVakioResponse> haeAsemanAnturiVakioResponse =
+            (JAXBElement< HaeAnturiVakioResponse>)
+                marshalSendAndReceive(objectFactory.createHaeAnturiVakio(haeAnturiVakioRequest));
+        return haeAsemanAnturiVakioResponse.getValue().getLamanturivakio();
+    }
+
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
+    public List<LamAnturiVakioVO> getAsemanAnturiVakios(final Long lotjuId) {
         final HaeAsemanAnturiVakio haeAsemanAnturiVakioRequest =
             new HaeAsemanAnturiVakio();
         haeAsemanAnturiVakioRequest.setAsemaId(lotjuId);
@@ -95,7 +144,8 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    List<LamAnturiVakioArvoVO> getAllAnturiVakioArvos(final int month, final int dayOfMonth) {
+    @NotTransactionalServiceMethod
+    public List<LamAnturiVakioArvoVO> getAllAnturiVakioArvos(final int month, final int dayOfMonth) {
         final HaeKaikkiAnturiVakioArvot haeKaikkiAnturiVakioArvotRequest =
             new HaeKaikkiAnturiVakioArvot();
         haeKaikkiAnturiVakioArvotRequest.setKuukausi(month);
@@ -107,4 +157,19 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         return haeKaikkiAnturiVakioArvotResponse.getValue().getLamanturivakiot();
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
+    public LamAnturiVakioArvoVO getAnturiVakioArvot(final long anturiVakioLotjuId, final int month, final int dayOfMonth) {
+        final HaeAnturiVakioArvot haeAnturiVakioArvot =
+            new HaeAnturiVakioArvot();
+        haeAnturiVakioArvot.setAnturiVakioId(anturiVakioLotjuId);
+        haeAnturiVakioArvot.setKuukausi(month);
+        haeAnturiVakioArvot.setPaiva(dayOfMonth);
+
+        final JAXBElement<HaeAnturiVakioArvotResponse> haeAnturiVakioArvoResponse =
+            (JAXBElement<HaeAnturiVakioArvotResponse>)
+                marshalSendAndReceive(objectFactory.createHaeAnturiVakioArvot(haeAnturiVakioArvot));
+        return haeAnturiVakioArvoResponse.getValue().getLamanturivakio();
+    }
 }

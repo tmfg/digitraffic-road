@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class ForecastSectionClient {
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public List<ForecastSectionCoordinatesDto> getForecastSectionV1Metadata() {
         final LinkedHashMap<String, Object> response = restTemplate.getForObject(baseUrl + URL_ROADS_V1_PART, LinkedHashMap.class);
-        return response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
+        return response == null ? Collections.emptyList() : response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))

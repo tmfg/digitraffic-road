@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMAsematRes
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiLAMLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeLAMAsemanLaskennallisetAnturitResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LAMMetatiedotEndpoint;
-import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LAMMetatiedotEndpointImplService;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LAMMetatiedotV7;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
@@ -42,7 +42,7 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
     private LotjuLAMMetatiedotServiceEndpointMock(final String tmsMetadataServerAddress, final ResourceLoader resourceLoader,
                                                   final Jaxb2Marshaller jaxb2Marshaller) {
         super(resourceLoader, tmsMetadataServerAddress, LAMMetatiedotEndpoint.class,
-              LAMMetatiedotEndpointImplService.SERVICE, jaxb2Marshaller, LOTJU_LAM_RESOURCE_PATH);
+              LAMMetatiedotV7.SERVICE, jaxb2Marshaller, LOTJU_LAM_RESOURCE_PATH);
     }
 
     @Override
@@ -163,5 +163,10 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
             return response.getLamanturivakiot();
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<LamAnturiVakioArvoVO> haeVuodenKaikkiAnturiVakioArvot() {
+        throw new NotImplementedException("List<LamAnturiVakioArvoVO> haeVuodenKaikkiAnturiVakioArvot()");
     }
 }

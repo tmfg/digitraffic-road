@@ -1,6 +1,14 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static fi.livi.digitraffic.tie.TestUtils.PRESET_PRESENTATION_NAME;
+import static fi.livi.digitraffic.tie.TestUtils.createEsiasentos;
+import static fi.livi.digitraffic.tie.TestUtils.createKamera;
+import static fi.livi.digitraffic.tie.TestUtils.createKameraJulkisuus;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -13,6 +21,9 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,28 +32,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.service.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataMessageHandler;
+import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
+import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto.EntityType;
+import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataUpdateMessageHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 
 public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataUpdateJmsMessageListenerTest.class);
 
     @Autowired
-    private CameraMetadataMessageHandler cameraMetadataMessageHandler;
+    private CameraMetadataUpdateMessageHandler cameraMetadataUpdateMessageHandler;
 
     @Autowired
     @Qualifier("kameraMetadataChangeJaxb2Marshaller")
@@ -51,11 +62,8 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     @Autowired
     private CameraPresetService cameraPresetService;
 
-    @MockBean
-    private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
-
-    @SpyBean
-    private CameraImageUpdateHandler cameraImageUpdateHandler;
+    @Autowired
+    private CameraPresetRepository cameraPresetRepository;
 
     private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
     private JMSMessageListener<CameraMetadataUpdatedMessageDto> cameraMetadataJmsMessageListener;
@@ -63,7 +71,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     @BeforeEach
     public void initListener() {
         // Create listener
-        this.dataUpdater = (data) -> cameraMetadataMessageHandler.updateCameraMetadata(data);
+        this.dataUpdater = (data) -> cameraMetadataUpdateMessageHandler.updateCameraMetadataFromJms(data);
         cameraMetadataJmsMessageListener = new JMSMessageListener<>(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller), dataUpdater, false, log);
     }
 
@@ -81,7 +89,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         // First camera with 1 preset
         when(lotjuCameraStationMetadataClient.getKamera(kamera_T1.getId())).thenReturn(kamera_T1);
         when(lotjuCameraStationMetadataClient.getEsiasentos(kamera_T1.getId())).thenReturn(Collections.singletonList(esiasentos_T1.get(0)));
-        sendMessage(getCameraAddMessage(kamera_T1.getId()));
+        sendMessage(getCameraUpdateMessageXml(UpdateType.INSERT, kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
@@ -102,7 +110,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         esiasento_T1_1.setNimiEsitys("Foo Bar");
         when(lotjuCameraStationMetadataClient.getKamera(kamera_T1.getId())).thenReturn(kamera_T1);
         when(lotjuCameraStationMetadataClient.getEsiasento(esiasento_T1_1.getId())).thenReturn(esiasento_T1_1);
-        sendMessage(getPresetUpdateMessage(esiasento_T1_1.getId()));
+        sendMessage(getPresetUpdateMessageXml(UpdateType.UPDATE, esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
@@ -122,7 +130,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         when(lotjuCameraStationMetadataClient.getKamera(kamera_T1.getId())).thenReturn(kamera_T1);
         when(lotjuCameraStationMetadataClient.getEsiasento(esiasento_T1_2.getId())).thenReturn(esiasento_T1_2);
         when(lotjuCameraStationMetadataClient.getEsiasentos(kamera_T1.getId())).thenReturn(esiasentos_T1);
-        sendMessage(getPresetAddMessage(esiasento_T1_2.getId()));
+        sendMessage(getPresetUpdateMessageXml(UpdateType.INSERT, esiasento_T1_2.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_2.getId()));
@@ -149,7 +157,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         // Update camera to secret
         kamera_T1.setJulkisuus(createKameraJulkisuus(Instant.now(), JulkisuusTaso.VALIAIKAISESTI_SALAINEN));
         when(lotjuCameraStationMetadataClient.getKamera(kamera_T1.getId())).thenReturn(kamera_T1);
-        sendMessage(getCameraUpdateMessage(kamera_T1.getId()));
+        sendMessage(getCameraUpdateMessageXml(UpdateType.UPDATE, kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
@@ -168,7 +176,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         kamera_T1.setJulkisuus(createKameraJulkisuus(Instant.now(), JulkisuusTaso.JULKINEN));
         kamera_T1.getTieosoite().setUrakkaAlue("Foo");
         when(lotjuCameraStationMetadataClient.getKamera(kamera_T1.getId())).thenReturn(kamera_T1);
-        sendMessage(getTieosoiteUpdateMessageXml(Tyyppi.PAIVITYS, kamera_T1.getId(), kamera_T1.getId()));
+        sendMessage(getRoadAddressUpdateMessageXml(UpdateType.UPDATE, kamera_T1.getId(), kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
@@ -186,6 +194,38 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         }
     }
 
+    @Test
+    public void cameraMetadataUpdateDeletePresetMessages() {
+        List<CameraPreset> presets = createAndSaveCameraPresets(2);
+        final CameraPreset ps1 = presets.get(0);
+        final CameraPreset ps2 = presets.get(1);
+
+        sendMessage(getPresetUpdateMessageXml(UpdateType.DELETE, presets.get(0).getLotjuId()));
+        TestUtils.entityManagerFlushAndClear(entityManager);
+
+        final CameraPreset preset1 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps1.getLotjuId());
+        final CameraPreset preset2 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps2.getLotjuId());
+
+        assertFalse(preset1.isPublishable());
+        assertTrue(preset2.isPublishable());
+    }
+
+    @Test
+    public void cameraMetadataUpdateDeleteCameraMessages() {
+        List<CameraPreset> presets = createAndSaveCameraPresets(2);
+        final CameraPreset ps1 = presets.get(0);
+        final CameraPreset ps2 = presets.get(1);
+
+        sendMessage(getCameraUpdateMessageXml(UpdateType.DELETE, ps1.getCameraLotjuId()));
+        TestUtils.entityManagerFlushAndClear(entityManager);
+
+        final CameraPreset preset1 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps1.getLotjuId());
+        final CameraPreset preset2 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps2.getLotjuId());
+
+        assertFalse(preset1.isPublishable());
+        assertFalse(preset2.isPublishable());
+    }
+
     private enum Tyyppi {
         PAIVITYS,
         LISAYS,
@@ -201,46 +241,50 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         TIEOSOITE
     }
 
-    private static String getUpdateMessageXml(final Tyyppi tyyppi, final Entiteetti entiteetti, final long lotjuId) {
-        return String.format(
-            "<metatietomuutos tyyppi=\"%s\" aika=\"2019-10-21T11:00:00\" entiteetti=\"%s\" id=\"%d\">\n" +
-            "    <asemat />\n" +
-            "</metatietomuutos>",
-            tyyppi.name(), entiteetti.name(), lotjuId);
+    private List<CameraPreset> createAndSaveCameraPresets(final int count) {
+        final AtomicReference<RoadStation> rs = new AtomicReference<>();
+        return IntStream.range(0, count).mapToObj(i -> {
+            final CameraPreset ps = TestUtils.generateDummyPreset();
+            // Every preset for same station has same roadstation
+            if (rs.get() == null) {
+                rs.set(ps.getRoadStation());
+            }
+            ps.setCameraLotjuId(rs.get().getLotjuId());
+            ps.setRoadStation(rs.get());
+            cameraPresetService.save(ps);
+            return ps;
+        }).collect(Collectors.toList());
     }
 
-    private static String getTieosoiteUpdateMessageXml(final Tyyppi tyyppi, final long...lotjuIds) {
+    private static String getUpdateMessageXml(final UpdateType tyyppi, final EntityType entiteetti, final long lotjuId) {
+
+        return String.format(
+            "<metatietomuutos tyyppi=\"%s\" aika=\"%s\" entiteetti=\"%s\" id=\"%d\">\n" +
+            "    <asemat />\n" +
+            "</metatietomuutos>",
+            tyyppi.getExternalValue(), Instant.now(), entiteetti.getExternalValue(), lotjuId);
+    }
+
+    private static String getRoadAddressUpdateMessageXml(final UpdateType tyyppi, final long...lotjuIds) {
         StringBuilder ids = new StringBuilder();
         for(long lotjuId : lotjuIds) {
             ids.append("        <id>").append(lotjuId).append("</id>\n");
         }
         return String.format(
-            "<metatietomuutos tyyppi=\"%s\" aika=\"2019-10-21T11:00:00\" entiteetti=\"TIEOSOITE\" id=\"-1\">\n" +
+            "<metatietomuutos tyyppi=\"%s\" aika=\"%s\" entiteetti=\"TIEOSOITE\" id=\"-1\">\n" +
             "    <asemat>\n" +
             "%s" +
             "    </asemat>\n" +
             "</metatietomuutos>",
-            tyyppi.name(), ids.toString());
+            tyyppi.getExternalValue(), Instant.now(), ids);
     }
 
-    private static String getCameraUpdateMessage(final long lotjuId) {
-        return getUpdateMessageXml(Tyyppi.PAIVITYS, Entiteetti.KAMERA, lotjuId);
+    private static String getCameraUpdateMessageXml(final UpdateType updateType, final long lotjuId) {
+        return getUpdateMessageXml(updateType, EntityType.CAMERA, lotjuId);
     }
 
-    private static String getCameraAddMessage(final long lotjuId) {
-        return getUpdateMessageXml(Tyyppi.LISAYS, Entiteetti.KAMERA, lotjuId);
-    }
-
-    private static String getPresetUpdateMessage(final long lotjuId) {
-        return getUpdateMessageXml(Tyyppi.PAIVITYS, Entiteetti.ESIASENTO, lotjuId);
-    }
-
-    private static String getPresetAddMessage(final long lotjuId) {
-        return getUpdateMessageXml(Tyyppi.LISAYS, Entiteetti.ESIASENTO, lotjuId);
-    }
-
-    private static String getRoadAddressUpdateMessage(final long lotjuId) {
-        return getUpdateMessageXml(Tyyppi.PAIVITYS, Entiteetti.TIEOSOITE, lotjuId);
+    private static String getPresetUpdateMessageXml(final UpdateType updateType, final long lotjuId) {
+        return getUpdateMessageXml(updateType, EntityType.PRESET, lotjuId);
     }
 
     private void sendMessage(final String message) {

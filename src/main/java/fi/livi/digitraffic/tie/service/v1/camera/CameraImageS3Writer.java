@@ -1,10 +1,9 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
 import java.io.ByteArrayInputStream;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -32,11 +31,8 @@ public class CameraImageS3Writer {
     public final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
 
     // Tue, 03 Sep 2019 13:56:36 GMT
-    public final static SimpleDateFormat LAST_MODIFIED_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
-
-    static {
-        LAST_MODIFIED_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
+    public static final String LAST_MODIFIED_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+    public static final DateTimeFormatter LAST_MODIFIED_FORMATTER = DateTimeFormatter.ofPattern(LAST_MODIFIED_FORMAT).withZone(ZoneId.of("GMT"));
 
     CameraImageS3Writer(final AmazonS3 weathercamS3Client, final WeathercamS3Properties weathercamS3Properties) {
         this.amazonS3Client = weathercamS3Client;
@@ -136,7 +132,7 @@ public class CameraImageS3Writer {
     }
 
     public static String getInLastModifiedHeaderFormat(final Instant instant) {
-        return LAST_MODIFIED_FORMAT.format(Date.from(instant));
+        return LAST_MODIFIED_FORMATTER.format(instant);
     }
 
     private static String resolvePresetIdFromKey(final String key) {

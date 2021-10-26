@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,15 +10,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -28,17 +24,12 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggerContextVO;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@Import({ JacksonAutoConfiguration.class })
-@ExtendWith(SpringExtension.class)
-public class LoggerMessageKeyValuePairJsonProviderTest {
+public class LoggerMessageKeyValuePairJsonProviderTest  {
     private static final Logger log = LoggerFactory.getLogger(LoggerMessageKeyValuePairJsonProviderTest.class);
 
     final LoggerMessageKeyValuePairJsonProvider provider = new LoggerMessageKeyValuePairJsonProvider();
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private JsonFactory factory;
 
@@ -238,7 +229,7 @@ public class LoggerMessageKeyValuePairJsonProviderTest {
         provider.writeTo(jsonGenerator, createEvent(formattedMessage));
         jsonGenerator.writeEndObject();
         jsonGenerator.close();
-        final String result = new String(out.toByteArray(), StandardCharsets.UTF_8);
+        final String result = out.toString(StandardCharsets.UTF_8);
         log.info("Result: {}", result);
         return result;
     }

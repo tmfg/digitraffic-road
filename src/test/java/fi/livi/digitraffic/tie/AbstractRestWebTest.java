@@ -13,14 +13,12 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-@TestPropertySource(properties = { "testcontainers.disabled=true" })
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     protected final MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON;
 
@@ -32,7 +30,7 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     protected static final ResultMatcher ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER = MockMvcResultMatchers.content().string(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_MATCHER);
 
     @Autowired
-    private WebApplicationContext wac;
+    protected WebApplicationContext wac;
 
     @Autowired
     protected GenericApplicationContext applicationContext;

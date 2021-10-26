@@ -20,7 +20,7 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @EntityGraph(attributePaths = { "road", "startRoadSection", "endRoadSection", "forecastSectionCoordinateLists" },
                  type = EntityGraph.EntityGraphType.LOAD)
-    List<ForecastSection> findDistinctByVersionIsOrderByNaturalIdAsc(final int version);
+    List<ForecastSection> findDistinctByVersionIsAndObsoleteDateIsNullOrderByNaturalIdAsc(final int version);
 
     @Modifying
     @Query(value = "DELETE FROM forecast_section_coordinate_list WHERE forecast_section_id IN " +

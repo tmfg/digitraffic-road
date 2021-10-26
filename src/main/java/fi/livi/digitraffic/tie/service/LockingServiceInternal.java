@@ -16,12 +16,12 @@ public class LockingServiceInternal {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    boolean tryLock(final String lockName, final int expirationSeconds, final long instanceId) {
+    public boolean tryLock(final String lockName, final int expirationSeconds, final long instanceId) {
         return lockingDao.acquireLock(lockName, instanceId, expirationSeconds);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void unlock(final String lockName, final long instanceId) {
+    public void unlock(final String lockName, final long instanceId) {
         lockingDao.releaseLock(lockName, instanceId);
     }
 }

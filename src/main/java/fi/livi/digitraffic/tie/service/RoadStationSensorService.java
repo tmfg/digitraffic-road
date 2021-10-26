@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -101,7 +100,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(RoadStationType roadStationType) {
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(final RoadStationType roadStationType) {
         final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
         return all.stream().collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
     }
@@ -198,9 +197,9 @@ public class RoadStationSensorService {
      * @return Pair of deleted and inserted count of sensors for given weather station
      */
     @Transactional
-    public Pair<Integer, Integer> updateSensorsOfWeatherStations(final long roadStationId,
-                                                                 final RoadStationType roadStationType,
-                                                                 final List<Long> sensorslotjuIds) {
+    public Pair<Integer, Integer> updateSensorsOfRoadStation(final long roadStationId,
+                                                             final RoadStationType roadStationType,
+                                                             final List<Long> sensorslotjuIds) {
 
         final int deleted = sensorslotjuIds.isEmpty() ?
                                 roadStationSensorRepository.deleteRoadStationsSensors(roadStationId) :
@@ -211,7 +210,9 @@ public class RoadStationSensorService {
                                 0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType.name(),
                                                                                          roadStationId,
                                                                                          sensorslotjuIds);
-
+        if (deleted > 0 || inserted > 0) {
+            log.info("method=updateSensorsOfRoadStation removeCount={} and insertCount={}", deleted, inserted);
+        }
         return Pair.of(deleted, inserted);
     }
 
@@ -228,7 +229,7 @@ public class RoadStationSensorService {
             }
             return UpdateStatus.NOT_UPDATED;
         } else {
-            RoadStationSensor newSensor = new RoadStationSensor();
+            final RoadStationSensor newSensor = new RoadStationSensor();
             updateRoadStationSensorAttributes(anturi, newSensor);
             save(newSensor);
             log.info("Created new {}", newSensor);
@@ -249,7 +250,7 @@ public class RoadStationSensorService {
             }
             return UpdateStatus.NOT_UPDATED;
         } else {
-            RoadStationSensor newSensor = new RoadStationSensor();
+            final RoadStationSensor newSensor = new RoadStationSensor();
             updateRoadStationSensorAttributes(anturi, newSensor);
             save(newSensor);
             log.info("Created new {}", newSensor);
@@ -262,17 +263,24 @@ public class RoadStationSensorService {
         final CriteriaBuilder cb = createCriteriaBuilder();
         final CriteriaUpdate<RoadStationSensor> update = cb.createCriteriaUpdate(RoadStationSensor.class);
         final Root<RoadStationSensor> root = update.from(RoadStationSensor.class);
-        EntityType<RoadStationSensor> rootModel = root.getModel();
+        final EntityType<RoadStationSensor> rootModel = root.getModel();
         update.set("obsoleteDate", LocalDate.now());
 
-        List<Predicate> predicates = new ArrayList<>();
+        final List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
+        predicates.add( cb.isNull(root.get("obsoleteDate")));
         for (List<Long> ids : Iterables.partition(sensorsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
         update.where(cb.and(predicates.toArray(new Predicate[0])));
 
         return this.entityManager.createQuery(update).executeUpdate();
+    }
+
+    @Transactional
+    public boolean obsoleteSensor(final long lotjuId, final RoadStationType roadStationType) {
+        final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(roadStationType, lotjuId);
+        return sensor.makeObsolete();
     }
 
     private static boolean updateRoadStationSensorAttributes(final LamLaskennallinenAnturiVO from, final RoadStationSensor to) {

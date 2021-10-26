@@ -18,14 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraDataService;
 
 public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest {
-
-    @Autowired
-    private CameraDataService cameraDataService;
 
     @Autowired
     private DataStatusService dataStatusService;
@@ -35,10 +33,11 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
     private final Instant updateTime = Instant.now().with(ChronoField.MILLI_OF_SECOND, 0);
 
     @BeforeEach
-    public  void initData() {
-        cameraId =
-                cameraDataService.findPublishableCameraStationsData(false).getCameraStations().stream()
-                        .filter(s -> s.getCameraPresets().size() > 0).findFirst().orElseThrow().getId();
+    public void initData() {
+        final CameraPreset preset = TestUtils.generateDummyCameraStations(1, 1).get(0).get(0);
+        entityManager.persist(preset);
+
+        cameraId = preset.getCameraId();
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_IMAGE_UPDATED, updateTime);
     }
 
@@ -62,7 +61,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
 
     @Test
     public void testCameraDataRestApiById() throws Exception {
-        mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + CAMERA_DATA_PATH + "/" + cameraId)) // C08520
+        mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + CAMERA_DATA_PATH + "/" + cameraId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.equalTo(updateTime.toString())))

@@ -33,11 +33,11 @@ import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(WeatherDataHistoryControllerTest.class);
 
+    @MockBean
+    protected RoadStationRepository roadStationRepositoryMock;
+
     @Autowired
     private SensorValueHistoryRepository repository;
-
-    @MockBean
-    protected RoadStationRepository roadStationRepository;
 
     private ResultActions getJson(final String url) throws Exception {
         // Beta API
@@ -54,7 +54,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
 
     @BeforeEach
     public void roadStationMock() {
-        when(roadStationRepository.findByRoadStationId(anyLong())).thenAnswer(
+        when(roadStationRepositoryMock.findByRoadStationId(anyLong())).thenAnswer(
             (Answer) invocationOnMock -> {
                 Object[] args = invocationOnMock.getArguments();
 

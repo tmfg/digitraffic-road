@@ -14,8 +14,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.ws.client.support.destination.DestinationProvider;
@@ -38,8 +37,6 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
 
 public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobTest {
-
-    private static final Logger log = LoggerFactory.getLogger(RoadStationStatusesUpdateJobTest.class);
 
     @Autowired
     private RoadStationService roadStationService;

@@ -1,10 +1,9 @@
 package fi.livi.digitraffic.tie.controller.handler;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 public class ErrorResponse {
-
-    public final Timestamp timestamp;
+    public final Instant timestamp;
 
     public final int status;
 
@@ -14,8 +13,8 @@ public class ErrorResponse {
 
     public final String path;
 
-    public ErrorResponse(Timestamp timestamp, final int status, final String error, final String message, final String path) {
-        this.timestamp = timestamp;
+    public ErrorResponse(final int status, final String error, final String message, final String path) {
+        this.timestamp = Instant.now();
         this.status = status;
         this.error = error;
         this.message = message;

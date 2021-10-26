@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -40,12 +39,11 @@ public class CameraImageUpdateHandler {
     private final ResourceLoader resourceLoader;
 
     public static final int RETRY_COUNT = 3;
+    private static final String NOISE_IMG = "img/noise.jpg";
 
-    private final static Map<Class<? extends Throwable>, Boolean> retryableExceptions = new HashMap<>() {{
-        put(CameraImageReadFailureException.class, true);
-        put(CameraImageWriteFailureException.class, true);
-    }};
-    private final static String NOISE_IMG = "img/noise.jpg";
+    private static final Map<Class<? extends Throwable>, Boolean> retryableExceptions = Map.of(
+        CameraImageReadFailureException.class, true,
+        CameraImageWriteFailureException.class, true);
 
     @Autowired
     CameraImageUpdateHandler(
@@ -86,7 +84,7 @@ public class CameraImageUpdateHandler {
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageKey, isResultPublic);
 
-            cameraPresetService.updateCameraPresetAndHistory(kuva.getEsiasentoId(), isResultPublic, kuva.getJulkinen(), transferInfo);
+            cameraPresetService.updateCameraPresetAndHistoryWithLotjuId(kuva.getEsiasentoId(), isResultPublic, kuva.getJulkinen(), transferInfo);
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +
@@ -124,15 +122,13 @@ public class CameraImageUpdateHandler {
             byte[] image = readKuva(kuva.getKuvaId(), info);
             try {
                 image = ImageManipulationService.removeJpgExifMetadata(image);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // Let's use original
                 log.warn("Failed to remove Exif metadata from image with presetId={}, using original image. Error message: {}", presetId, e.getMessage());
             }
             writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
-        } catch (final CameraImageReadFailureException e) {
-            // read attempts exhausted
-        } catch (final CameraImageWriteFailureException e) {
-            // write attempts exhausted
+        } catch (final CameraImageReadFailureException|CameraImageWriteFailureException e) {
+            // read/write attempts exhausted
         }
         return info;
     }

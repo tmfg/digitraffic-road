@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.controller.TmsState;
-import fi.livi.digitraffic.tie.converter.exception.NonPublicRoadStationException;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.v1.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
@@ -81,14 +80,14 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeature getTmsStationByRoadStationId(final Long roadStationId) throws NonPublicRoadStationException {
+    public TmsStationFeature getTmsStationByRoadStationId(final Long roadStationId) {
         final TmsStation station = tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(roadStationId);
 
         return convert(roadStationId, station);
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeature getTmsStationByLamId(final Long lamId) throws NonPublicRoadStationException {
+    public TmsStationFeature getTmsStationByLamId(final Long lamId) {
         return convert(lamId, tmsStationRepository.findByRoadStationIsPublicIsTrueAndNaturalId(lamId));
     }
 
@@ -150,7 +149,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
             if ( updateTmsStationAttributes(lam, existingTms) ||
                 hash != HashCodeBuilder.reflectionHashCode(existingTms) ) {
-                log.info("Updated:\n{} ->\n{}", before, ToStringHelper.toStringFull(existingTms));
+                log.info("method=updateOrInsertTmsStation Updated:\n{} ->\n{}", before, ToStringHelper.toStringFull(existingTms));
                 return UpdateStatus.UPDATED;
             }
             return UpdateStatus.NOT_UPDATED;
@@ -160,9 +159,19 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             updateTmsStationAttributes(lam, newTms);
             tmsStationRepository.save(newTms);
 
-            log.info("Created new {}", newTms);
+            log.info("method=updateOrInsertTmsStation Created new {}", newTms);
             return UpdateStatus.INSERTED;
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean obsoleteStationWithLotjuId(final long lotjuId) {
+        final TmsStation station = tmsStationRepository.findByLotjuId(lotjuId);
+        if (station != null) {
+            return station.makeObsolete();
+        }
+        return false;
     }
 
     private List<TmsStation> findPublishableStations(final Integer roadNumber, final TmsState tmsState) {
@@ -220,7 +229,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             hash != HashCodeBuilder.reflectionHashCode(to);
     }
 
-    private TmsStation findTmsStationByLotjuId(final Long lotjuId) {
+    @Transactional
+    public TmsStation findTmsStationByLotjuId(final Long lotjuId) {
         return tmsStationRepository.findByLotjuId(lotjuId);
     }
 
@@ -228,7 +238,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         return roadStationVanhaId == null ? null : roadStationVanhaId - 23000L;
     }
 
-    private TmsStationFeature convert(final Long id, final TmsStation station) throws NonPublicRoadStationException {
+    private TmsStationFeature convert(final Long id, final TmsStation station) {
         if(station == null) {
             throw new ObjectNotFoundException(TmsStation.class, id);
         }

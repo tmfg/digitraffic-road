@@ -81,7 +81,8 @@ public class DataController {
         this.datex2DataService = datex2DataService;
     }
 
-    @ApiOperation("Current free flow speeds")
+    @ApiOperation("Current free flow speeds. This API is deprecated, use tms-sensor-constants and values VVAPAAS1 & VVAPAAS2.")
+    @Deprecated
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
     public FreeFlowSpeedRootDataObjectDto freeFlowSpeeds(
@@ -91,7 +92,8 @@ public class DataController {
         return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(lastUpdated);
     }
 
-    @ApiOperation("Current free flow speeds of TMS station (Traffic Measurement System / LAM)")
+    @ApiOperation("Current free flow speeds of TMS station (Traffic Measurement System / LAM). This API is deprecated, use tms-sensor-constants and values VVAPAAS1 & VVAPAAS2.")
+    @Deprecated
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/tms/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
     public FreeFlowSpeedRootDataObjectDto freeFlowSpeedsOfTmsById(

@@ -21,7 +21,6 @@ import progress.message.jclient.QueueConnectionFactory;
 @Configuration
 public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfiguration<KuvaProtos.Kuva> {
     private static final Logger log = LoggerFactory.getLogger(CameraJMSListenerConfiguration.class);
-    private final JMSParameters jmsParameters;
     private final CameraImageUpdateManager cameraImageUpdateManager;
 
     @Autowired
@@ -34,14 +33,9 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
               log);
         this.cameraImageUpdateManager = cameraImageUpdateManager;
 
-        jmsParameters = new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
-                                          CameraJMSListenerConfiguration.class.getSimpleName(),
-                                          ClusteredLocker.generateInstanceId());
-    }
-
-    @Override
-    public JMSParameters getJmsParameters() {
-        return jmsParameters;
+        setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
+                                           CameraJMSListenerConfiguration.class.getSimpleName(),
+                                           ClusteredLocker.generateInstanceId()));
     }
 
     @Override
@@ -57,7 +51,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
         final KuvaMessageMarshaller kuvaMarshaller = new KuvaMessageMarshaller();
 
         return new JMSMessageListener<>(kuvaMarshaller, handleData,
-                                        isQueueTopic(jmsParameters.getJmsQueueKeys()),
+                                        isQueueTopic(getJmsParameters().getJmsQueueKeys()),
                                         log);
     }
 }

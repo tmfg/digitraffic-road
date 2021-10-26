@@ -1,7 +1,11 @@
 package fi.livi.digitraffic.tie.scheduler;
 
 import static fi.livi.digitraffic.tie.controller.TmsState.ACTIVE;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +27,7 @@ import fi.livi.digitraffic.tie.model.VehicleClass;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorUpdater;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationsSensorsUpdater;
@@ -33,7 +37,7 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
     private static final Logger log = LoggerFactory.getLogger(TmsStationMetadataUpdateJobTest.class);
 
     @Autowired
-    private TmsStationSensorUpdater tmsStationSensorUpdater;
+    private TmsSensorUpdater tmsSensorUpdater;
 
     @Autowired
     private TmsStationsSensorsUpdater tmsStationsSensorsUpdater;
@@ -77,7 +81,7 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
         lotjuLAMMetatiedotServiceMock.initStateAndService();
 
         // Update TMS stations to initial state (3 non obsolete stations and 1 obsolete)
-        tmsStationSensorUpdater.updateRoadStationSensors();
+        tmsSensorUpdater.updateTmsSensors();
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
 //        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
@@ -93,7 +97,7 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
 
         // Now change lotju metadata and update tms stations (2 non obsolete stations and 2 obsolete)
         lotjuLAMMetatiedotServiceMock.setStateAfterChange(true);
-        tmsStationSensorUpdater.updateRoadStationSensors();
+        tmsSensorUpdater.updateTmsSensors();
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
 //        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();

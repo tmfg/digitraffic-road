@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.service;
 
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -31,11 +33,12 @@ public class ClusteredLocker {
 
     public void lock(final String lockName, final int expirationSeconds, final long overrideInstanceId) {
         final StopWatch start = StopWatch.createStarted();
+        final CountDownLatch latch = new CountDownLatch(1);
         while (!tryLock(lockName, expirationSeconds, overrideInstanceId)) {
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                log.error("method=lock Error sleep interrupted", e);
+                latch.await(100, TimeUnit.MILLISECONDS);
+            } catch (final InterruptedException e) {
+                log.error("method=lock Error await interrupted", e);
                 throw new RuntimeException(e);
             }
         }
@@ -100,7 +103,48 @@ public class ClusteredLocker {
     /**
      * Generates unique id
      */
-    public synchronized static long generateInstanceId() {
+    public static long generateInstanceId() {
         return UUID.randomUUID().getMostSignificantBits();
+    }
+
+    /**
+     * Creates ClusteredLock that can be used simple by calling lock() and unlock()
+     *
+     * @param lockName name for the lock
+     * @param expirationSeconds expiration time in seconds
+     * @return the lock
+     */
+    public ClusteredLock createClusteredLock(final String lockName, final int expirationSeconds) {
+        return new ClusteredLock(this, lockName, expirationSeconds);
+    }
+
+    public class ClusteredLock {
+        private final String lockName;
+        private final ClusteredLocker clusteredLocker;
+        private final int expirationSeconds;
+
+        public ClusteredLock(final ClusteredLocker clusteredLocker, final String lockName, final int expirationSeconds) {
+            this.clusteredLocker = clusteredLocker;
+            this.lockName = lockName;
+            this.expirationSeconds = expirationSeconds;
+        }
+
+        /**
+         * Acquires the lock.
+         *
+         * If the lock is not available then the current thread will sleep
+         * until the lock has been acquired.
+         */
+        public void lock() {
+            clusteredLocker.lock(lockName, expirationSeconds);
+        }
+
+        /**
+         * Releases the lock.
+         */
+        public void unlock() {
+            clusteredLocker.unlock(lockName);
+        }
+
     }
 }

@@ -6,7 +6,7 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorUpdater;
+import fi.livi.digitraffic.tie.service.v1.tms.TmsSensorUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationsSensorsUpdater;
 
@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsStationsSensorsUpdater;
 public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
 
     @Autowired
-    private TmsStationSensorUpdater tmsStationSensorUpdater;
+    private TmsSensorUpdater tmsSensorUpdater;
 
     @Autowired
     private TmsStationUpdater tmsStationUpdater;
@@ -26,7 +26,7 @@ public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
     protected void doExecute(JobExecutionContext context) throws Exception {
 
         final StopWatch sensorsWatch = StopWatch.createStarted();
-        final boolean sensorsUpdated = tmsStationSensorUpdater.updateRoadStationSensors();
+        final boolean sensorsUpdated = tmsSensorUpdater.updateTmsSensors();
         if (sensorsUpdated) {
             dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
         }
@@ -34,19 +34,16 @@ public class TmsStationMetadataUpdateJob extends SimpleUpdateJob {
         sensorsWatch.stop();
 
         final StopWatch stationsWatch = StopWatch.createStarted();
-        final boolean stationsUpdated = tmsStationUpdater.updateTmsStations();
+        tmsStationUpdater.updateTmsStations();
         stationsWatch.stop();
 
         final StopWatch stationsSensorsWatch = StopWatch.createStarted();
-        final boolean updatedTmsStationsSensors = tmsStationsSensorsUpdater.updateTmsStationsSensors();
+        tmsStationsSensorsUpdater.updateTmsStationsSensors();
         stationsSensorsWatch.stop();
 
-        if (stationsUpdated || updatedTmsStationsSensors) {
-            dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
-        }
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
 
-        log.info("UpdateRoadStationSensors took: sensorsTimeMs={} ms, updateTmsStations took: stationsTimeMs={} ms, updateTmsStationsSensors took: stationsSensorsTimeMs={} ms",
-                sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensorsWatch.getTime());
+        log.info("method=doExecute UpdateRoadStationSensors took: sensorsTimeMs={} ms, updateTmsStations took: stationsTimeMs={} ms, updateTmsStationsSensors took: stationsSensorsTimeMs={} ms",
+                 sensorsWatch.getTime(), stationsWatch.getTime(), stationsSensorsWatch.getTime());
     }
 }

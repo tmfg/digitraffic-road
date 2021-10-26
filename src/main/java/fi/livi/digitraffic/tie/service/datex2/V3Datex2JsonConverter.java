@@ -77,7 +77,7 @@ public class V3Datex2JsonConverter {
             feature.getProperties().setSituationType(situationType);
             feature.getProperties().setTrafficAnnouncementType(trafficAnnouncementType);
         } else if (!feature.getProperties().getSituationType().equals(situationType)) {
-            log.error("Datex2 import-time SituationType: {} not equal to type in JSON: {}, sourceJson: {}", situationType, feature.getProperties().getSituationType(), imsJson);
+            log.error("method=convertToFeatureJsonObjectV3 Datex2 situationId={} SituationType: {} not equal to type in JSON: {}, sourceJson: {}", feature.getProperties().situationId, situationType, feature.getProperties().getSituationType(), imsJson);
         }
         checkIsInvalidAnnouncementGeojsonV3(feature);
         checkDurationViolationsV3(feature);

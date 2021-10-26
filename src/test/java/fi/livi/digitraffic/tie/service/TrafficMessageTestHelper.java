@@ -1,26 +1,38 @@
 package fi.livi.digitraffic.tie.service;
 
+import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.AbstractTest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
+import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @Service
-public class TrafficMessageTestHelper extends AbstractTest {
+public class TrafficMessageTestHelper {
     private static final Logger log = getLogger(TrafficMessageTestHelper.class);
 
     public final static String GUID_WITH_JSON = "GUID50001238";
@@ -45,7 +57,8 @@ public class TrafficMessageTestHelper extends AbstractTest {
         V0_2_9(2.09, 209),
         V0_2_10(2.10, 210),
         V0_2_12(2.12, 212),
-        V0_2_13(2.13, 213);
+        V0_2_13(2.13, 213),
+        V0_2_14(2.14, 214);
 
         public double version;
         public int intVersion;
@@ -68,6 +81,18 @@ public class TrafficMessageTestHelper extends AbstractTest {
     public static final String SITUATION_VERSION_PLACEHOLDER = "SITUATION_VERSION";
 
     @Autowired
+    protected JdbcTemplate jdbcTemplate;
+    @PersistenceContext
+    protected EntityManager entityManager;
+    @Autowired
+    protected GenericApplicationContext applicationContext;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private V2Datex2UpdateService v2Datex2UpdateService;
+    private V2Datex2DataService v2Datex2DataService;
+
+    @Autowired
     private Datex2Repository datex2Repository;
     @Autowired
     @Qualifier("imsJaxb2Marshaller")
@@ -77,6 +102,27 @@ public class TrafficMessageTestHelper extends AbstractTest {
     public void cleanDb() {
         datex2Repository.deleteAll();
     }
+
+    public V2Datex2UpdateService getV2Datex2UpdateService() {
+        if (v2Datex2UpdateService == null) {
+            v2Datex2UpdateService = applicationContext.getAutowireCapableBeanFactory().createBean(V2Datex2UpdateService .class);
+        }
+        return v2Datex2UpdateService;
+    }
+
+    public V2Datex2DataService getV2Datex2DataService() {
+        if (v2Datex2DataService == null) {
+            final V3RegionGeometryDataService v3RegionGeometryDataService =
+                applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryDataService.class);
+            v2Datex2DataService = new V2Datex2DataService(
+                applicationContext.getBean(Datex2Repository.class),
+                applicationContext.getBean(Datex2XmlStringToObjectMarshaller.class),
+                new V2Datex2JsonConverter(objectMapper, v3RegionGeometryDataService),
+                applicationContext.getBean(DataStatusService.class));
+        }
+        return v2Datex2DataService;
+    }
+
 
     public static String getSituationIdForSituationType(final SituationType situationType) {
         switch (situationType) {

@@ -47,7 +47,7 @@ public class WeatherStationsSensorsUpdater {
      */
     @PerformanceMonitor(maxErroExcecutionTime = 900000, maxWarnExcecutionTime = 600000)
     public boolean updateWeatherStationsSensors() {
-        log.info("Update WeatherStations RoadStationSensors start");
+        log.info("method=updateWeatherStationsSensors Update WeatherStations RoadStationSensors start");
 
         // Update sensors of road stations
         // Get current WeatherStations
@@ -65,12 +65,12 @@ public class WeatherStationsSensorsUpdater {
             stationAnturisPair.add(Pair.of(weatherStation, anturis));
         });
 
-        log.info("RoadStation not found for rsNotFoundCount={} TiesaaLaskennallinenAnturis", currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.size());
+        log.info("method=updateWeatherStationsSensors RoadStation not found for rsNotFoundCount={} TiesaaLaskennallinenAnturis", currentWeatherStationLotjuIdToTiesaaLaskennallinenAnturiMap.size());
 
         // Update sensors of road stations
         final boolean updateStaticDataStatus = updateSensorsOfWeatherStations(stationAnturisPair);
 
-        log.info("Update WeatherStations RoadStationSensors end");
+        log.info("method=updateWeatherStationsSensors Update WeatherStations RoadStationSensors end");
         return updateStaticDataStatus;
     }
 
@@ -84,15 +84,15 @@ public class WeatherStationsSensorsUpdater {
             WeatherStation ws = pair.getKey();
             final List<TiesaaLaskennallinenAnturiVO> anturis = pair.getRight();
             final List<Long> sensorslotjuIds = anturis.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfWeatherStations(ws.getRoadStationId(),
+            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfRoadStation(ws.getRoadStationId(),
                                                                                                              RoadStationType.WEATHER_STATION,
                                                                                                              sensorslotjuIds);
             countRemoved += deletedInserted.getLeft();
             countAdded += deletedInserted.getRight();
         }
 
-        log.info("Sensor removed from road stations countRemoved={}", countRemoved);
-        log.info("Sensor added to road stations countAdded={}", countAdded);
+        log.info("method=updateSensorsOfWeatherStations Sensor removed from road stations countRemoved={}", countRemoved);
+        log.info("method=updateSensorsOfWeatherStations Sensor added to road stations countAdded={}", countAdded);
 
         return countRemoved > 0 || countAdded > 0;
     }

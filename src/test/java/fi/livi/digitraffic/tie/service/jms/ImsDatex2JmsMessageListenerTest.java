@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.jms;
 
+import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
+import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.DateHelper.withoutNanos;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
@@ -39,8 +41,10 @@ import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnounc
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1.ImsMessage;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
+import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
+import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 
 public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(ImsDatex2JmsMessageListenerTest.class);
@@ -60,6 +64,9 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     public void cleanDb() {
         datex2Repository.deleteAll();
     }
+
+    @Autowired
+    private TrafficMessageTestHelper trafficMessageTestHelper;
 
     @Test
     public void datex2ReceiveImsMessagesAllVersions() throws IOException {
@@ -152,7 +159,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     }
 
     private JMSMessageListener<ExternalIMSMessage> createImsJmsMessageListener() {
-        final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> dataUpdater = (data) ->  getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(data);
+        final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> dataUpdater = (data) ->  trafficMessageTestHelper.getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(data);
         return new JMSMessageListener<>(new ImsMessageMarshaller(jaxb2MarshallerimsJaxb2Marshaller), dataUpdater, false, log);
     }
 
@@ -171,5 +178,9 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         final StringResult result = new StringResult();
         imsJaxb2Marshaller.marshal(imsMessage, result);
         return result.toString();
+    }
+
+    private V2Datex2DataService getV2Datex2DataService() {
+        return trafficMessageTestHelper.getV2Datex2DataService();
     }
 }

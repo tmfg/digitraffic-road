@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
+import static fi.livi.digitraffic.tie.TestUtils.getRandom;
+import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUS_JA_SOHJONPOISTO;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
@@ -19,6 +21,7 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createWorkMachines;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createWorkmachine;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getEndTime;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneHourInPast;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskWithIndex;
@@ -41,8 +44,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,21 +57,15 @@ import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingProperties;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 
-@Import({ V2MaintenanceTrackingUpdateService.class, JacksonAutoConfiguration.class,
-          V3MaintenanceTrackingServiceTestHelper.class, V2MaintenanceTrackingDataService.class })
 public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
     final static Pair<Double, Double> BOUNDING_BOX_X_RANGE = Pair.of(20.0, 30.0);
     final static Pair<Double, Double> BOUNDING_BOX_Y_RANGE = Pair.of(64.0, 66.0);
     final static Pair<Double, Double> BOUNDING_BOX_CENTER = Pair.of(25.0, 65.0);
-
-    @Autowired
-    private V2MaintenanceTrackingUpdateService v2MaintenanceTrackingUpdateService;
 
     @Autowired
     private V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
@@ -85,7 +80,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void findCombinedTrackingsWithMultipleWorkMachines() throws JsonProcessingException {
-        final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final TyokoneenseurannanKirjausRequestSchema seuranta1 =
@@ -94,9 +89,9 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             createMaintenanceTrackingWithPoints(start.plusMinutes(10), 10, 2,1, workMachines, ASFALTOINTI);
         final ZonedDateTime end = getEndTime(seuranta2);
 
-        testHelper.saveTrackingData(seuranta1);
-        testHelper.saveTrackingData(seuranta2);
-        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        testHelper.saveTrackingDataAsObservations(seuranta1);
+        testHelper.saveTrackingDataAsObservations(seuranta2);
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(start, end, PAVING).getFeatures();
         assertCollectionSize(machineCount, features);
@@ -117,34 +112,35 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void findCombinedMultipleTrackings() {
-        final int machineCount = 1;//getRandomId(2, 10);
+        final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
 
-
-        // Generate 5 trackings for each machine
+        // Generate 5 messages with 10 observations/machine in each
         final ZonedDateTime endTime = IntStream.range(0, 5).mapToObj(i -> {
             final ZonedDateTime start = startTime.plusMinutes(i*10);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
                 createMaintenanceTrackingWithPoints(start, 10, i + 1, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
             try {
-                testHelper.saveTrackingData(seuranta);
+                testHelper.saveTrackingDataAsObservations(seuranta);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
             return getEndTime(seuranta);
         }).max(ChronoZonedDateTime::compareTo).orElseThrow();
-
-        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-        assertEquals(5, handled);
+        final int expectedObservationCount = 5 * machineCount * 10; // 5 messages, 10 observations/machine in each
+        final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
+        assertEquals(expectedObservationCount, handled);
 
         final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, endTime).getFeatures();
         assertCollectionSize(machineCount, latestFeatures);
         assertAllHasOnlyPointGeometries(latestFeatures);
 
+        // All messages are combined as one/machine
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, endTime).getFeatures();
         assertCollectionSize(machineCount, features);
 
+        // Check features properties
         features.forEach(t -> {
             // 10 observations for each
             final MaintenanceTrackingProperties properties = t.getProperties();
@@ -161,21 +157,21 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final int machineCount = getRandomId(2, 10);
         // Work machines with harja id 1,2,...(machineCount+1)
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
 
-        // Generate 5 different tracking with different tasks for each machine
+        // Generate 5 different messages with different tasks for each machine
         // Each machine successive trackings will bombine next tracking first point as previous tracking last point
         IntStream.range(0, 5).forEach(idx -> {
             final ZonedDateTime start = startTime.plusMinutes(idx*10);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
                 createMaintenanceTrackingWithPoints(start, 10, 1, workMachines, SuoritettavatTehtavat.values()[idx]);
             try {
-                testHelper.saveTrackingData(seuranta);
+                testHelper.saveTrackingDataAsObservations(seuranta);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
-        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // Without task parameter all should be found
         List<MaintenanceTrackingFeature> allFeatures =
@@ -202,14 +198,14 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     public void findTrackingWithDifferentJobsForSameMachine() throws JsonProcessingException {
         // Work machines with harja id 1
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
         // tracking with job 1
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // tracking with job 2
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as they have different jobs
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(10+10)).getFeatures();
@@ -224,15 +220,15 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Test
     public void findSeparateTrackingsWhenTransitionInBetweenTasks() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
         // tracking with job 1
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 1, workMachines));
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10+10), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as they have different jobs
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+10)).getFeatures();
@@ -246,63 +242,62 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void findSeparateTrackingsWhenTrackingTimeOverlaps() throws JsonProcessingException {
-        final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+    public void observationsTimesCrossesBetweenMessagesThenTrackingsAreCombined() throws JsonProcessingException {
+        // M1 = Message 1, P1=Point 1. Then observation times are:
+        // M1(P1) < M2(P1) < M1(P2) < M2(P2) < M1(P3) < M2(P3) ...
+        final List<Tyokone> workMachines = createWorkMachines(getRandom(1,5));
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
         // tracking with startime T1 and end time T1+9
-        testHelper.saveTrackingData(
+        // 10 observations / machine
+        testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        // tracking with startime T1+1 and end time T1+10
-        testHelper.saveTrackingData(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(1), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        // tracking with startime T1+30s and end time T1+9m+30s
+        // 10 observations / machine, each time between first observations points times
+        testHelper.saveTrackingDataAsObservations(
+            createMaintenanceTrackingWithPoints(startTime.plusSeconds(30), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+        testHelper.handleUnhandledWorkMachineObservations(1000);
 
-        // 2 tracking should be made as firs ones end time is after second one's start time.
+        // 2 tracking should be made as first one's end time is after second one's start time.
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(1+9)).getFeatures();
-        assertCollectionSize(2, features);
-
-        // Only the latest one should be found
-        final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(1+9)).getFeatures();
-        assertCollectionSize(1, latestFeatures);
-        assertEquals(startTime.plusMinutes(1+9), latestFeatures.get(0).getProperties().getTime());
-        assertAllHasOnlyPointGeometries(latestFeatures);
+        assertCollectionSize(workMachines.size(), features);
     }
 
     @Test
     public void findTrackingDataJsonsByTrackingId() throws IOException {
-        final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
-        // Create 2 tracking data that are combined as one tracking
-        testHelper.saveTrackingData(
+        final List<Tyokone> workMachines = createWorkMachines(getRandom(1,5));
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        // Create 2 messages that are combined as one tracking
+        // 10 observations
+        testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        testHelper.saveTrackingData(
+        // 10 observations
+        testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-
+        testHelper.handleUnhandledWorkMachineObservations(1000);
+        final int expectedObservationCountPerMachine = 10 + 10;
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(20)).getFeatures();
-        assertCollectionSize(1, features);
+        assertCollectionSize(workMachines.size(), features);
 
         final List<JsonNode> jsons = v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(features.get(0).getProperties().id);
-        assertCollectionSize(2, jsons);
+        assertCollectionSize(expectedObservationCountPerMachine, jsons);
     }
 
-    // TODO fix
     @Test
     public void findWithMultipleTasks() throws JsonProcessingException {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
         final ZonedDateTime endTime = startTime.plusMinutes(9);
-        // Generate 5 trackings for each machine
-        testHelper.saveTrackingData(createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines,
+        // Generate 3 observations for each machine
+        testHelper.saveTrackingDataAsObservations(createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines,
             AURAUS_JA_SOHJONPOISTO, PAALLYSTEIDEN_JUOTOSTYOT)); // PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING
-        testHelper.saveTrackingData(createMaintenanceTrackingWithLineString(startTime, 10, 2, workMachines,
+        testHelper.saveTrackingDataAsObservations(createMaintenanceTrackingWithLineString(startTime, 10, 2, workMachines,
             ASFALTOINTI)); // PAVING
-        testHelper.saveTrackingData(createMaintenanceTrackingWithLineString(startTime, 10, 3, workMachines,
+        testHelper.saveTrackingDataAsObservations(createMaintenanceTrackingWithLineString(startTime, 10, 3, workMachines,
             AURAUS_JA_SOHJONPOISTO, PAALLYSTEIDEN_PAIKKAUS)); // PLOUGHING_AND_SLUSH_REMOVAL, PATCHING
-
-        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
-        assertEquals(3, handled);
+        final int expectedHavaintoCount = machineCount * 3;
+        final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
+        assertEquals(expectedHavaintoCount, handled);
 
         // First two should be returned
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, endTime, CRACK_FILLING, PAVING).getFeatures();
@@ -330,16 +325,16 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Test
     public void findMaintenanceTrackingWithLinestringCrossingWithBoundingBox() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()-0.5, BOUNDING_BOX_Y_RANGE.getRight() + 0.5);
 
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             V3MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
-        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
@@ -365,17 +360,17 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Test
     public void findMaintenanceTrackingWithLinestringNotCrossingWithBoundingBox() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getRight() + 0.1,
                                                                      BOUNDING_BOX_Y_RANGE.getLeft() - 10,
                                                                      BOUNDING_BOX_Y_RANGE.getRight() + 10);
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             V3MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
-        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
@@ -394,7 +389,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Test
     public void findMaintenanceTrackingWithPointInsideBoundingBox() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = singletonList(
             asList(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_CENTER.getRight())
@@ -402,10 +397,10 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             V3MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
-        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
@@ -428,7 +423,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Test
     public void findMaintenanceTrackingWithPointOutsideBoundingBox() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = singletonList(
             asList(BOUNDING_BOX_X_RANGE.getRight() + 0.1, BOUNDING_BOX_CENTER.getRight())
@@ -436,10 +431,10 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             V3MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
-        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
@@ -452,16 +447,16 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Test
     public void getById() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc();
+        final ZonedDateTime startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getRight());
 
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
-        testHelper.saveTrackingData(
+        testHelper.saveTrackingDataAsObservations(
             V3MaintenanceTrackingServiceTestHelper.createMaintenanceTracking(startTime, 1, workMachine, fromETRS89, AURAUS_JA_SOHJONPOISTO));
 
-        final int handled = v2MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingData(100);
+        final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result1 = v2MaintenanceTrackingDataService.findMaintenanceTrackings(

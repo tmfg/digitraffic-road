@@ -16,9 +16,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.jupiter.api.Test;
 
-import fi.livi.digitraffic.tie.AbstractSpringJUnitTest;
+import fi.livi.digitraffic.tie.AbstractTest;
 
-public class DateHelperTest extends AbstractSpringJUnitTest {
+public class DateHelperTest extends AbstractTest {
 
     private static final String DATE_STRING_OFFSET_2 = "2016-01-22T10:00:01+02:00";
     private static final String DATE_STRING_Z = "2016-01-22T08:00:01Z";

@@ -127,10 +127,10 @@ public class SensorDataUpdateService {
 
     @Scheduled(fixedRate = 20000)
     @Transactional
-    protected void persistLamSensorValues() {
+    public void persistLamSensorValues() {
         final TimestampCache timestampCache = new TimestampCache();
 
-        List<SensorValueUpdateParameterDto> updates = lamValueBuffer.getValues().stream()
+        final List<SensorValueUpdateParameterDto> updates = lamValueBuffer.getValues().stream()
             .map(wrapper -> new SensorValueUpdateParameterDto(wrapper, timestampCache))
             .collect(Collectors.toList());
 
@@ -141,10 +141,10 @@ public class SensorDataUpdateService {
 
     @Scheduled(fixedRate = 30000)
     @Transactional
-    protected void persistWeatherSensorValues() {
+    public void persistWeatherSensorValues() {
         final TimestampCache timestampCache = new TimestampCache();
 
-        List<SensorValueUpdateParameterDto> updates = weatherValueBuffer.getValues().stream()
+        final List<SensorValueUpdateParameterDto> updates = weatherValueBuffer.getValues().stream()
             .map(wrapper -> new SensorValueUpdateParameterDto(timestampCache, wrapper))
             .collect(Collectors.toList());
 

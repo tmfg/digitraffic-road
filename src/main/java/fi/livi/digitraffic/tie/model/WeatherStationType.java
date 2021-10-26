@@ -5,6 +5,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaTyyppi;
 public enum WeatherStationType {
 
     ROSA("ROSA"),
+    RWS_200("RWS_200"),
     E_18("E18"),
     FINAVIA_V("FINAVIA_V"),
     FINAVIA_B("FINAVIA_B"),

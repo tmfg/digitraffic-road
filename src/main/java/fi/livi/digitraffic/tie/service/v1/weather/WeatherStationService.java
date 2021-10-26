@@ -73,13 +73,13 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     }
 
     @Transactional(readOnly = true)
-    public WeatherStation findWeatherStationByLotjuId(Long tsaLotjuId) {
+    public WeatherStation findWeatherStationByLotjuId(final long tsaLotjuId) {
         return weatherStationRepository.findByLotjuId(tsaLotjuId);
     }
 
     @Transactional
-    public UpdateStatus updateOrInsertWeatherStation(TiesaaAsemaVO tiesaaAsema) {
-        WeatherStation rws = findWeatherStationByLotjuId(tiesaaAsema.getId());
+    public UpdateStatus updateOrInsertWeatherStation(final TiesaaAsemaVO tiesaaAsema) {
+        final WeatherStation rws = findWeatherStationByLotjuId(tiesaaAsema.getId());
 
         try {
             if (rws != null) {
@@ -88,22 +88,32 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
 
                 if (updateWeatherStationAttributes(tiesaaAsema, rws) ||
                     hash != HashCodeBuilder.reflectionHashCode(rws)) {
-                    log.info("Updated: \n{} -> \n{}", before, ToStringHelper.toStringFull(rws));
+                    log.info("method=updateOrInsertWeatherStation \n{} -> \n{}", before, ToStringHelper.toStringFull(rws));
                     return UpdateStatus.UPDATED;
                 }
                 return UpdateStatus.NOT_UPDATED;
             } else {
-                rws = new WeatherStation();
-                rws.setRoadStation(RoadStation.createWeatherStation());
-                updateWeatherStationAttributes(tiesaaAsema, rws);
-                weatherStationRepository.save(rws);
-                log.info("Created new {}", rws);
+                final WeatherStation newRws = new WeatherStation();
+                newRws.setRoadStation(RoadStation.createWeatherStation());
+                updateWeatherStationAttributes(tiesaaAsema, newRws);
+                weatherStationRepository.save(newRws);
+                log.info("method=updateOrInsertWeatherStation Created new {}", newRws);
                 return UpdateStatus.INSERTED;
             }
         } finally {
             // Needed for tests to work :(
             weatherStationRepository.flush();
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean obsoleteStationWithLotjuId(final long lotjuId) {
+        final WeatherStation station = weatherStationRepository.findByLotjuId(lotjuId);
+        if (station != null) {
+            return station.makeObsolete();
+        }
+        return false;
     }
 
     private static boolean updateWeatherStationAttributes(final TiesaaAsemaVO from,
