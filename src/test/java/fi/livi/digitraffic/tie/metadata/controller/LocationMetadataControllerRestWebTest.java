@@ -20,7 +20,7 @@ public class LocationMetadataControllerRestWebTest extends AbstractRestWebTest {
     public void locationsApi() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + LOCATIONS_PATH))
                 .andExpect(status().isOk()) //
-                .andExpect(content().contentType(CONTENT_TYPE_UTF8)) //
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
@@ -37,7 +37,7 @@ public class LocationMetadataControllerRestWebTest extends AbstractRestWebTest {
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + LOCATIONS_PATH)
                 .param("lastUpdated", "true"))
                 .andExpect(status().isOk()) //
-                .andExpect(content().contentType(CONTENT_TYPE_UTF8)) //
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features").doesNotExist())

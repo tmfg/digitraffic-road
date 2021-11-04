@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -56,7 +57,7 @@ public class CameraHistoryControllerTest extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_V2_BASE_PATH + API_DATA_PART_PATH + CAMERA_HISTORY_PATH + url);
 
-        get.contentType(CONTENT_TYPE_UTF8);
+        get.contentType(MediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
 //        log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;

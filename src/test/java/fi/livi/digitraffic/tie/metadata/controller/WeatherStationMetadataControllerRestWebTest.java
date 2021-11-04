@@ -58,7 +58,7 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
     public void testWeatherStationMetadataRestApi() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + WEATHER_STATIONS_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(CONTENT_TYPE_UTF8))
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
@@ -88,7 +88,7 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
     public void testWeatherStationSensorsMetadataRestApi() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + WEATHER_STATIONS_AVAILABLE_SENSORS_PATH))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(CONTENT_TYPE_UTF8))
+            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
             .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
             .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))

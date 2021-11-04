@@ -138,7 +138,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
             try {
                 // By default many client's sends long list of accepted types or */* etc.
                 // If specific path is asked, then check if json is in accepted formats return json otherwise xml.
-                final String path = ((ServletWebRequest) webRequest).getRequest().getServletPath();
+                final String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
                 if (path.contains(ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH) ||
                     path.contains(ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH) ||
                     path.contains(ApiPaths.ROADWORKS_DATEX2_PATH)) {

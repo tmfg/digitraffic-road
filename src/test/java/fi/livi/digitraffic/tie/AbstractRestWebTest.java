@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.controller.DtMediaType;
 
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
 
-    protected final MediaType CONTENT_TYPE_UTF8 = DtMediaType.APPLICATION_JSON;
+    protected final MediaType DT_JSON_CONTENT_TYPE = DtMediaType.APPLICATION_JSON;
 
     private HttpMessageConverter<?> mappingJackson2HttpMessageConverter;
 

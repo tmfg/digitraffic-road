@@ -20,7 +20,7 @@ public class RoadStationSensorMetadataControllerRestWebTest extends AbstractRest
     public void testRoadStationSensorMetadataApi() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + WEATHER_STATIONS_AVAILABLE_SENSORS_PATH))
                 .andExpect(status().isOk()) //
-                .andExpect(content().contentType(CONTENT_TYPE_UTF8)) //
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE)) //
                 .andExpect(jsonPath("$", notNullValue())) //
                 .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
                 .andExpect(jsonPath("$.roadStationSensors[0].nameOld", isA(String.class)))

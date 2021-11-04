@@ -52,7 +52,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
 
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + CAMERA_STATIONS_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(CONTENT_TYPE_UTF8))
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", Matchers.isA(String.class)))
