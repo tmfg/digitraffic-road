@@ -26,16 +26,12 @@ import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
-import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
-
-    @Autowired
-    private DataStatusService dataStatusService;
 
     @BeforeEach
     public void initData() {
@@ -62,7 +58,7 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
     public void testWeatherStationMetadataRestApi() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + WEATHER_STATIONS_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(content().contentType(CONTENT_TYPE_UTF8))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))

@@ -20,7 +20,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
+    // TODO -> UTF-8
     protected final MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON;
+    protected final MediaType CONTENT_TYPE_UTF8 = MediaType.APPLICATION_JSON_UTF8;
 
     private HttpMessageConverter<?> mappingJackson2HttpMessageConverter;
 

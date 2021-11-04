@@ -56,7 +56,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + TMS_STATIONS_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(content().contentType(CONTENT_TYPE_UTF8))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.features[0].id", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))

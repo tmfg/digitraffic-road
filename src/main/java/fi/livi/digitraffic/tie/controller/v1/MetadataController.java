@@ -14,9 +14,9 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_ROAD_STAT
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_TMS_NUMBER_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_AVAILABLE_SENSORS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_PATH;
-import static fi.livi.digitraffic.tie.controller.MediaTypes.MEDIA_TYPE_APPLICATION_GEO_JSON;
-import static fi.livi.digitraffic.tie.controller.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
-import static fi.livi.digitraffic.tie.controller.MediaTypes.MEDIA_TYPE_APPLICATION_VND_GEO_JSON;
+import static fi.livi.digitraffic.tie.controller.MediaTypeValues.APPLICATION_GEO_JSON;
+import static fi.livi.digitraffic.tie.controller.MediaTypeValues.APPLICATION_JSON;
+import static fi.livi.digitraffic.tie.controller.MediaTypeValues.APPLICATION_VND_GEO_JSON;
 import static fi.livi.digitraffic.tie.service.v1.location.LocationService.LATEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -88,9 +88,9 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON,
-                                                                                       MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                       MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH, produces = { APPLICATION_JSON,
+                                                                                       APPLICATION_GEO_JSON,
+                                                                                       APPLICATION_VND_GEO_JSON })
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationFeatureCollection tmsStations(
                 @ApiParam("If parameter is given result will only contain update status.")
@@ -106,9 +106,9 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces = { MEDIA_TYPE_APPLICATION_JSON,
-                                                                                                                MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                                                MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON,
+                                                                                                                APPLICATION_GEO_JSON,
+                                                                                                                APPLICATION_VND_GEO_JSON })
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationFeature tmsStationsByTmsNumber(
         @PathVariable("number") final Long tmsNumber) {
@@ -116,9 +116,9 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = { MEDIA_TYPE_APPLICATION_JSON,
-                                                                                                                 MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                                                 MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON,
+                                                                                                                 APPLICATION_GEO_JSON,
+                                                                                                                 APPLICATION_VND_GEO_JSON })
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 404, message = "Road number not found") })
     public TmsStationFeatureCollection tmsStationsByRoadNumber(
@@ -133,9 +133,9 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
-    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = { MEDIA_TYPE_APPLICATION_JSON,
-                                                                                                                 MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                                                 MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = { APPLICATION_JSON,
+                                                                                                                 APPLICATION_GEO_JSON,
+                                                                                                                 APPLICATION_VND_GEO_JSON })
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(code = 404, message = "Road Station not found") })
     public TmsStationFeature tmsStationsByRoadStationId(
@@ -155,9 +155,9 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of weather camera presets")
-    @RequestMapping(method = RequestMethod.GET, path = CAMERA_STATIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON,
-                                                                                          MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                          MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = CAMERA_STATIONS_PATH, produces = { APPLICATION_JSON,
+                                                                                          APPLICATION_GEO_JSON,
+                                                                                          APPLICATION_VND_GEO_JSON })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections") })
     public CameraStationFeatureCollection cameraStations(
                     @ApiParam("If parameter is given result will only contain update status.")
@@ -167,9 +167,9 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of weather stations")
-    @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON,
-                                                                                           MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                           MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_PATH, produces = { APPLICATION_JSON,
+                                                                                           APPLICATION_GEO_JSON,
+                                                                                           APPLICATION_VND_GEO_JSON })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Feature Collections") })
     public WeatherStationFeatureCollection weatherStations(
             @ApiParam("If parameter is given result will only contain update status.")
@@ -206,9 +206,9 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of locations")
-    @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = { MEDIA_TYPE_APPLICATION_JSON,
-                                                                                    MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                    MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = { APPLICATION_JSON,
+                                                                                    APPLICATION_GEO_JSON,
+                                                                                    APPLICATION_VND_GEO_JSON })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations") })
     public LocationFeatureCollection locations (
             @ApiParam("If parameter is given use this version.")
@@ -237,9 +237,9 @@ public class MetadataController {
     }
 
     @ApiOperation("The static information of one location")
-    @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = { MEDIA_TYPE_APPLICATION_JSON,
-                                                                                              MEDIA_TYPE_APPLICATION_GEO_JSON,
-                                                                                              MEDIA_TYPE_APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = { APPLICATION_JSON,
+                                                                                              APPLICATION_GEO_JSON,
+                                                                                              APPLICATION_VND_GEO_JSON })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location") })
     public LocationFeatureCollection locationsById(
             @ApiParam("If parameter is given use this version.")
