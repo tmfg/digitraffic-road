@@ -15,11 +15,11 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
@@ -66,7 +66,7 @@ public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest
             mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + WEATHER_DATA_PATH));
         System.out.println(result.andReturn().getResponse().getContentAsString());
             result.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations[0]", Matchers.notNullValue()))
@@ -85,7 +85,7 @@ public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest
     public void testWeatherDataRestApiById() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + WEATHER_DATA_PATH + "/" + weatherStationNaturalId))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations[0]", Matchers.notNullValue()))

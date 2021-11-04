@@ -68,7 +68,7 @@ public class ForecastMetadataControllerRestWebTest extends AbstractRestWebTest {
 
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + FORECAST_SECTIONS_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(content().contentType(CONTENT_TYPE_UTF8))
                 .andExpect(jsonPath("$.forecastSections.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.forecastSections.features", hasSize(2)))
                 .andExpect(jsonPath("$.forecastSections.features[0].geometry.type", is("LineString")))

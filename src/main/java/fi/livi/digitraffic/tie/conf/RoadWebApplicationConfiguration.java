@@ -3,9 +3,10 @@ package fi.livi.digitraffic.tie.conf;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import javax.servlet.Filter;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RegExUtils;
@@ -38,9 +39,8 @@ import org.springframework.web.servlet.resource.TransformedResource;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2D2LogicalModelHttpMessageConverter;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 import fi.livi.digitraffic.tie.controller.ApiPaths;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.converter.Datex2MessagetypeParameterStringToEnumConverter;
-
-import javax.servlet.Filter;
 
 @ConditionalOnWebApplication
 @Configuration
@@ -97,7 +97,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
 
     /**
      * Enables bean validation for controller parameters
-     * @return
+     * @return MethodValidationPostProcessor
      */
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
@@ -114,7 +114,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     /**
      * This redirects requests from root / to /swagger-ui/index.html.
      * After that nginx redirects /swagger-ui.html to /api/v1/metadata/documentation/swagger-ui.html
-     * @param registry
+     * @param registry current ViewControllerRegistry to modify
      */
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
@@ -123,8 +123,8 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
 
     @Override
     public void configureContentNegotiation(final ContentNegotiationConfigurer configurer) {
-        configurer.strategies(Arrays.asList(new CustomHeaderContentNegotiationStrategy()));
-        configurer.defaultContentType(MediaType.APPLICATION_JSON);
+        configurer.strategies(List.of(new CustomHeaderContentNegotiationStrategy()));
+        configurer.defaultContentType(DtMediaType.APPLICATION_JSON);
     }
 
     private class CustomHeaderContentNegotiationStrategy implements ContentNegotiationStrategy {
@@ -143,8 +143,8 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                     path.contains(ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH) ||
                     path.contains(ApiPaths.ROADWORKS_DATEX2_PATH)) {
                     return containsJson(fromHeaders) ?
-                                Collections.singletonList(MediaType.APPLICATION_JSON) :
-                                Collections.singletonList(MediaType.APPLICATION_XML);
+                                Collections.singletonList(DtMediaType.APPLICATION_JSON) :
+                                Collections.singletonList(DtMediaType.APPLICATION_XML);
                 }
             } catch (final Error e) {
                 log.error("method=resolveMediaTypes", e);
@@ -154,9 +154,8 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         }
 
         boolean containsJson(final List<MediaType> mediaTypes ) {
-            final boolean value = mediaTypes.stream().filter(mediaType -> mediaType.getType().equals(MediaType.APPLICATION_JSON.getType()) &&
-                mediaType.getSubtype().equals(MediaType.APPLICATION_JSON.getSubtype())).findAny().isPresent();
-            return value;
+            return mediaTypes.stream().filter(mediaType -> mediaType.getType().equals(DtMediaType.APPLICATION_JSON.getType()) &&
+                   mediaType.getSubtype().equals(DtMediaType.APPLICATION_JSON.getSubtype())).findAny().isPresent();
         }
     }
 }

@@ -80,7 +80,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
     public void testTmsStationSensorsMetadataRestApi() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + TMS_STATIONS_AVAILABLE_SENSORS_PATH))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(CONTENT_TYPE))
+            .andExpect(content().contentType(CONTENT_TYPE_UTF8))
             .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
             .andExpect(jsonPath("$.roadStationSensors[0].name", isA(String.class)))
             .andExpect(jsonPath("$.roadStationSensors[0].description", isA(String.class)))

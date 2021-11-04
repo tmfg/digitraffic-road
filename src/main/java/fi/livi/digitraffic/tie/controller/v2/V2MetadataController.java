@@ -4,11 +4,10 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DESCRIPTIONS;
-import static fi.livi.digitraffic.tie.controller.MediaTypeValues.APPLICATION_GEO_JSON;
-import static fi.livi.digitraffic.tie.controller.MediaTypeValues.APPLICATION_JSON;
-import static fi.livi.digitraffic.tie.controller.MediaTypeValues.APPLICATION_VND_GEO_JSON;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
@@ -47,9 +46,9 @@ public class V2MetadataController {
         this.v2VariableSignDataService = v2VariableSignDataService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { APPLICATION_JSON,
-                                                                                            APPLICATION_GEO_JSON,
-                                                                                            APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { APPLICATION_JSON_VALUE,
+                                                                                            APPLICATION_GEO_JSON_VALUE,
+                                                                                            APPLICATION_VND_GEO_JSON_VALUE })
     @ApiOperation("The static information of weather forecast sections V2")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
@@ -63,9 +62,9 @@ public class V2MetadataController {
             null,null, naturalIds);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = { APPLICATION_JSON,
-                                                                                                              APPLICATION_GEO_JSON,
-                                                                                                              APPLICATION_VND_GEO_JSON })
+    @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = { APPLICATION_JSON_VALUE,
+                                                                                                              APPLICATION_GEO_JSON_VALUE,
+                                                                                                              APPLICATION_VND_GEO_JSON_VALUE })
     @ApiOperation("The static information of weather forecast sections V2 by road number")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
@@ -75,9 +74,9 @@ public class V2MetadataController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = {
-        APPLICATION_JSON,
-        APPLICATION_GEO_JSON,
-        APPLICATION_VND_GEO_JSON })
+        APPLICATION_JSON_VALUE,
+        APPLICATION_GEO_JSON_VALUE,
+        APPLICATION_VND_GEO_JSON_VALUE })
     @ApiOperation("The static information of weather forecast sections V2 by bounding box")
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(

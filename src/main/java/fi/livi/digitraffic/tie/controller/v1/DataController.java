@@ -11,8 +11,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_SENSOR_CONSTANTS;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEIGHT_RESTRICTIONS_DATEX2_PATH;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
