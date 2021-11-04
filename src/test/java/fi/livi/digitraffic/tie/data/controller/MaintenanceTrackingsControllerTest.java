@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -42,6 +41,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
@@ -67,7 +67,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             String.format(Locale.US, "?from=%s&to=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), to.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-        get.contentType(MediaType.APPLICATION_JSON);
+        get.contentType(DtMediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
         log.info("Response:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
@@ -80,7 +80,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
                                          from.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-        get.contentType(MediaType.APPLICATION_JSON);
+        get.contentType(DtMediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
         log.info("Response:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;

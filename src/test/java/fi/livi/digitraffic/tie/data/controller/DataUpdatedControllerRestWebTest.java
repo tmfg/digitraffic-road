@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
@@ -74,10 +75,10 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
                         assertNotNull(contentType, "Content type not set");
 
                         MatcherAssert.assertThat(MediaType.valueOf(contentType), Matchers.anyOf(
-                            Matchers.is(MediaType.APPLICATION_JSON),
-                            Matchers.is(MediaType.APPLICATION_XML)));
+                            Matchers.is(DtMediaType.APPLICATION_JSON),
+                            Matchers.is(DtMediaType.APPLICATION_XML)));
 
-                        if (Matchers.is(MediaType.APPLICATION_JSON).matches(MediaType.valueOf(contentType))) {
+                        if (Matchers.is(DtMediaType.APPLICATION_JSON).matches(MediaType.valueOf(contentType))) {
                             jsonPath("$.dataUpdatedTime", Matchers.notNullValue()).match(mvcResult);
                         }
                     })

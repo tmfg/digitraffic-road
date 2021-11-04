@@ -19,10 +19,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import fi.livi.digitraffic.tie.controller.DtMediaType;
+
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
-    // TODO -> UTF-8
-    protected final MediaType CONTENT_TYPE = MediaType.APPLICATION_JSON;
-    protected final MediaType CONTENT_TYPE_UTF8 = MediaType.APPLICATION_JSON_UTF8;
+
+    protected final MediaType CONTENT_TYPE_UTF8 = DtMediaType.APPLICATION_JSON;
 
     private HttpMessageConverter<?> mappingJackson2HttpMessageConverter;
 
@@ -42,8 +43,8 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     @Autowired
     void setConverters(final HttpMessageConverter<?>[] converters) {
 
-        this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream().filter(
-                hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().get();
+        this.mappingJackson2HttpMessageConverter = Arrays.stream(converters).filter(
+                hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().orElseThrow();
 
         assertNotNull(this.mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
     }
