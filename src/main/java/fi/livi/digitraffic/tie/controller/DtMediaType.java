@@ -9,7 +9,7 @@ public class DtMediaType {
 
     private static final String UTF_8_VALUE_SUFFIX = ";charset=UTF-8";
 
-    /* Set also charset=UTF-8 as mobile applications wont always work without it. */
+    /* Set also charset=UTF-8 as mobile applications won't always work without it. */
     public static final String APPLICATION_VND_GEO_JSON_VALUE = "application/vnd.geo+json" + UTF_8_VALUE_SUFFIX;
     public static final String APPLICATION_GEO_JSON_VALUE = "application/geo+json" + UTF_8_VALUE_SUFFIX;
     @SuppressWarnings("deprecation")
