@@ -4,15 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.dao.LockingRepository.LockInfo;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
@@ -40,14 +37,12 @@ public class ClusteredLockerTest extends AbstractServiceTest {
     private static final int LOCK_COUNT = 3;
     private static final int THREAD_COUNT = 2;
 
-    private static final int LOCKING_TIME_EXTRA = 20; // how long it takes after obtaining lock to get timestamp?
-
     @Autowired
     private ClusteredLocker clusteredLocker;
 
     @Test
     public void testGenerate() {
-        Set<Long> ids = new HashSet<>();
+        final Set<Long> ids = new HashSet<>();
         IntStream.range(0,20).forEach(i -> {
             long id = ClusteredLocker.generateInstanceId();
             assertFalse(ids.contains(id));
@@ -58,40 +53,34 @@ public class ClusteredLockerTest extends AbstractServiceTest {
     @Test
     public void multipleInstancesLockingNotOverlapping() {
 
-        final List<Long> lockStarts = new CopyOnWriteArrayList<>();
-        final List<Long> lockerInstanceIds  = new CopyOnWriteArrayList<>();
+        final TreeSet<LockInfo> lockInfos = createLockInfoSet();
 
         final Collection<Future<?>> futures = new ArrayList<>();
 
         final ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
         for (int i = 1; i <= THREAD_COUNT; i++) {
-            futures.add(executor.submit(new TryLocker(LOCK, clusteredLocker, lockStarts, lockerInstanceIds)));
+            futures.add(executor.submit(new TryLocker(LOCK, clusteredLocker, lockInfos)));
         }
 
         while (futures.stream().anyMatch(f -> !f.isDone())) {
             sleep(100);
         }
 
-        assertEquals(lockStarts.size(), THREAD_COUNT * LOCK_COUNT);
+        assertEquals(lockInfos.size(), THREAD_COUNT * LOCK_COUNT);
 
-        Long prevStart = null;
-        for (Long start: lockStarts) {
-            if (prevStart != null) {
-                log.info("START={} DIFF={} s", start, (double)(start-prevStart)/1000.0);
+        LockInfo prev = null;
+        for (final LockInfo next: lockInfos) {
+            if (prev != null) {
                 // Check that locks won't overlap
-                assertNoOverlapWithExpiration(start, prevStart);
+                log.info("CHECK {} <= {}, instance {} vs {}", prev.getLockExpires(),  next.getLockLocked(), prev.getInstanceId(), next.getInstanceId());
+                assertNoOverlapWithExpiration(prev, next);
+                // Check that same instance won't get lock consecutively
+                assertFalse(prev.getInstanceId().equals(next.getInstanceId()), "Same instance got lock consecutively");
             } else {
-                log.info("START={}", start);
+                log.info("START={}", next);
             }
-            prevStart = start;
+            prev = next;
         }
-
-        checkSameInstanceNotConsecutively(lockerInstanceIds);
-    }
-
-    private Future<Boolean> tryLock(final String lockName, final int expirationSeconds,
-                                    final ExecutorService executorService) {
-        return executorService.submit(() -> clusteredLocker.tryLock(lockName, expirationSeconds));
     }
 
     @Test
@@ -137,6 +126,41 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         }
     }
 
+    @Test
+    public void waitLockNotOverlapping() {
+        final TreeSet<LockInfo> lockInfos = createLockInfoSet();
+
+        final Collection<Future<?>> futures = new ArrayList<>();
+        final ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
+        for (int i = 1; i <= THREAD_COUNT; i++) {
+            futures.add(executor.submit(new WaitLocker(LOCK, clusteredLocker, lockInfos)));
+        }
+
+        while (futures.stream().anyMatch(f -> !f.isDone())) {
+            sleep(100);
+        }
+
+        assertEquals(lockInfos.size(), THREAD_COUNT * LOCK_COUNT);
+
+        LockInfo prev = null;
+        for (final LockInfo next: lockInfos) {
+            if (prev != null) {
+                final long prevStart = prev.getLockLocked().toEpochMilli();
+                final long nextStart = next.getLockLocked().toEpochMilli();
+                assertTrue(nextStart >= prevStart,
+                           String.format("start %s should be ge than previous %s", next.getLockLocked(), prev.getLockLocked()));
+                // WaitLocker sleeps 200 ms before releasing the lock. LockService tries to lock every 100 ms, so max start time gap around 300 ms
+                assertTrue(nextStart-prevStart >= 200, String.format("Between lock starts should be > 200 ms but was %d", nextStart-prevStart));
+                assertTrue(nextStart-prevStart <= 700, String.format("Between lock starts should be < 700 ms but was %d", nextStart-prevStart));
+                // Check that same instance won't get lock consecutively
+                assertFalse(prev.getInstanceId().equals(next.getInstanceId()), "Same instance got lock consecutively");
+            } else {
+                log.info("START={}", next);
+            }
+            prev = next;
+        }
+    }
+
     private void waitCompletion(final Future<Boolean> future) {
         while(!future.isDone()) {
             try {
@@ -147,85 +171,35 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         }
     }
 
-    @Test
-    public void waitLockNotOverlapping() {
-        final List<Long> lockStarts = new CopyOnWriteArrayList<>();
-        final List<Long> lockerInstanceIds  = new CopyOnWriteArrayList<>();
-
-
-        final Collection<Future<?>> futures = new ArrayList<>();
-        final ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
-        for (int i = 1; i <= THREAD_COUNT; i++) {
-            futures.add(executor.submit(new WaitLocker(LOCK, clusteredLocker, lockStarts, lockerInstanceIds)));
-        }
-
-        while (futures.stream().anyMatch(f -> !f.isDone())) {
-            sleep(100);
-        }
-
-        assertEquals(lockStarts.size(), THREAD_COUNT * LOCK_COUNT);
-
-        Long prev = null;
-        for (Long start: lockStarts) {
-            if (prev != null) {
-                log.info("START={} previous DIFF={} s", start, (double)(start-prev)/1000.0);
-                assertTrue(start >= prev,
-                    String.format("start %s should be ge than previous %s",
-                        DateHelper.toZonedDateTimeAtUtc(start),
-                        DateHelper.toZonedDateTimeAtUtc(prev)));
-                // WaitLocker sleeps 200 ms before releasing the lock. LockService tries to lock every 100 ms, so max start time gap around 300 ms
-                assertTrue(start-prev >= 200, String.format("Between lock starts should be > 200 ms but was %d", start-prev));
-                assertTrue(start-prev <= 350, String.format("Between lock starts should be < 650 ms but was %d", start-prev));
-            } else {
-                log.info("START={}", start);
-            }
-            prev = start;
-        }
-
-        checkSameInstanceNotConsecutively(lockerInstanceIds);
-
+    private TreeSet<LockInfo> createLockInfoSet() {
+        return new TreeSet<>(Comparator.comparing(LockInfo::getLockLocked));
     }
 
-    private void checkSameInstanceNotConsecutively(final List<Long> lockerInstanceIds) {
-        // Check that same instance won't get lock consecutively
-        Long prevInstance = null;
-        for (Long instance: lockerInstanceIds) {
-            if (prevInstance != null) {
-                assertTrue(!instance.equals(prevInstance), "Same instance got lock consecutively");
-            }
-            prevInstance = instance;
-        }
+    private void assertNoOverlapWithExpiration(final LockInfo prev, final LockInfo next) {
+        assertTrue(prev.getLockExpires().toEpochMilli() <= next.getLockLocked().toEpochMilli(),
+            "Pevious expiration should be before next locking time " + prev.getLockExpires() + " vs " + next.getLockLocked());
     }
 
-    private void assertNoOverlapWithExpiration(final Long start, final Long prevStart) {
-        final ZonedDateTime startZdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(start), ZoneOffset.UTC);
-        final long startLimit = prevStart + LOCK_EXPIRATION_S * 1000 - LOCKING_TIME_EXTRA;
-        assertTrue(start >= startLimit,
-            String.format("start %s should be ge than %s", startZdt,  ZonedDateTime.ofInstant(Instant.ofEpochMilli(startLimit), ZoneOffset.UTC)));
-
-        final long endLimit = prevStart + LOCK_EXPIRATION_S * 1000 + LOCK_EXPIRATION_DELTA_MS;
-        assertTrue(start <= endLimit,
-            String.format("Start %s should be le than %s", startZdt, ZonedDateTime.ofInstant(Instant.ofEpochMilli(endLimit), ZoneOffset.UTC)));
+    private Future<Boolean> tryLock(final String lockName, final int expirationSeconds,
+                                    final ExecutorService executorService) {
+        return executorService.submit(() -> clusteredLocker.tryLock(lockName, expirationSeconds));
     }
 
     private class TryLocker implements Runnable {
         private final String lock;
         private final ClusteredLocker clusteredLocker;
-        private List<Long> lockStarts;
-        private List<Long> lockInstanceIds;
+        private final TreeSet<LockInfo> lockInfos;
 
         /**
          * Acquires given lock LOCK_COUNT times
-         * @param lock
-         * @param clusteredLocker
-         * @param lockStarts
-         * @param lockInstanceIds
+         * @param lock name of the lock
+         * @param clusteredLocker the locker
+         * @param lockInfos collection where to add infos for acquired locks
          */
-        TryLocker(final String lock, final ClusteredLocker clusteredLocker, final List<Long> lockStarts, final List<Long> lockInstanceIds) {
+        TryLocker(final String lock, final ClusteredLocker clusteredLocker, final TreeSet<LockInfo> lockInfos) {
             this.lock = lock;
             this.clusteredLocker = clusteredLocker;
-            this.lockStarts = lockStarts;
-            this.lockInstanceIds = lockInstanceIds;
+            this.lockInfos = lockInfos;
         }
 
         @Override
@@ -233,16 +207,11 @@ public class ClusteredLockerTest extends AbstractServiceTest {
             int counter = 0;
             while (counter < LOCK_COUNT) {
                 final boolean locked = clusteredLocker.tryLock(lock, LOCK_EXPIRATION_S);
-                synchronized(LOCK) {
-                    final long timestamp = System.currentTimeMillis();
-                    if (locked) {
-                        log.info("Acquired Lock=[{}] for instanceId=[{}] at {}", lock, clusteredLocker.getThreadId(), Instant.ofEpochMilli(timestamp));
-                        lockStarts.add(timestamp);
-                        lockInstanceIds.add(clusteredLocker.getThreadId());
-                        counter++;
-                    }
-                }
                 if (locked) {
+                    final LockInfo info = clusteredLocker.getLockInfo(LOCK);
+                    lockInfos.add(info);
+                    log.info("Acquired Lock {} from {} to {} for instanceId {}", info.getLockName(), info.getLockLocked(), info.getLockExpires(), info.getInstanceId() );
+                    counter++;
                     // Sleep little more than expiration time so another thread should get the lock
                     sleep(LOCK_EXPIRATION_S * 1000 + LOCK_EXPIRATION_DELTA_MS);
                 }
@@ -253,22 +222,19 @@ public class ClusteredLockerTest extends AbstractServiceTest {
     private class WaitLocker implements Runnable {
         private final String lock;
         private final ClusteredLocker clusteredLocker;
-        private List<Long> lockStarts;
-        private List<Long> lockInstanceIds;
+        private final TreeSet<LockInfo> lockInfos;
 
         /**
          * Acquires given lock LOCK_COUNT times
-         * @param lock
-         * @param clusteredLocker
-         * @param lockStarts
-         * @param lockInstanceIds
+         * @param lock name of the lock
+         * @param clusteredLocker the locker
+         * @param lockInfos collection where to add infos for acquired locks
          */
         WaitLocker(final String lock, final ClusteredLocker clusteredLocker,
-                   final List<Long> lockStarts, final List<Long> lockInstanceIds) {
+                   final TreeSet<LockInfo> lockInfos) {
             this.lock = lock;
             this.clusteredLocker = clusteredLocker;
-            this.lockStarts = lockStarts;
-            this.lockInstanceIds = lockInstanceIds;
+            this.lockInfos = lockInfos;
         }
 
         @Override
@@ -276,11 +242,9 @@ public class ClusteredLockerTest extends AbstractServiceTest {
             int counter = 0;
             while (counter < LOCK_COUNT) {
                 clusteredLocker.lock(lock, LOCK_EXPIRATION_S);
-
-                final long timestamp = System.currentTimeMillis();
-                log.info("Acquired Lock=[{}] for instanceId=[{}] at {}", lock, clusteredLocker.getThreadId(), ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC));
-                lockStarts.add(timestamp);
-                lockInstanceIds.add(clusteredLocker.getThreadId());
+                final LockInfo info = clusteredLocker.getLockInfo(LOCK);
+                lockInfos.add(info);
+                log.info("Acquired Lock {} from {} to {} for instanceId {}", info.getLockName(), info.getLockLocked(), info.getLockExpires(), info.getInstanceId() );
                 counter++;
 
                 // Sleep little and then release the lock for next thread

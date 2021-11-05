@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class LockingDao {
@@ -34,7 +33,7 @@ public class LockingDao {
         "  AND LT.instance_id = :instanceId";
 
     private static final String SELECT =
-        "SELECT LOCK_NAME\n" +
+        "SELECT LT.LOCK_NAME\n" +
         "FROM LOCKING_TABLE LT\n" +
         "WHERE LT.LOCK_NAME = :lockName\n" +
         "  AND LT.instance_id = :instanceId\n" +
