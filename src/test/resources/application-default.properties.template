@@ -9,6 +9,13 @@ road.datasource.username=road
 road.datasource.password=road
 road.datasource.hikari.maximum-pool-size=6
 
+# daemon or web
+app.type=web
+
+# Web application type. Should be none for daemon process and servlet for web application
+spring.main.web-application-type=servlet
+
+
 mqtt.server.url=tcp://address:port
 mqtt.server.username=
 mqtt.server.password=
@@ -19,9 +26,9 @@ mqtt.server.keepAlive=
 # Lotju SOAP APIs. If health is empty then health check is not performed.
 metadata.server.addresses=http://localhost:8899
 metadata.server.path.health=/healthcheck
-metadata.server.path.tms=/LOTJU/LAMMetatiedot/v5
+metadata.server.path.tms=/LOTJU/LAMMetatiedot/v7
 metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
-metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v4
+metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v6
 metadata.server.path.image = /LOTJU/KameraKuvavarasto
 metadata.server.health.ttlInSeconds = 10
 metadata.server.image.ttlInSeconds = 10
@@ -32,19 +39,22 @@ metadata.server.health.value=ok
 metadata.tmc.url = https://tie-test.digitraffic.fi/tmc/noncertified/
 
 # Job schedules in ms or by cron in UTC
-# Cron: http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html
+# Cron: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html
 # To disable job, just comment it out.
 # Fields: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
 # Only one of Day-of-Month and Day-of-Week can be set at the time (?=no value set)
 
-# Every 3 min
-dt.job.Datex2TrafficAlertMessageUpdateJob.schedule =           0 0/3 * * * ?
 # Every 5 min
-dt.job.ForecastSectionWeatherUpdateJob.schedule =              0 0/5 * * * ?
+dt.job.ForecastSectionV1DataUpdateJob.schedule =               0 0/5 * * * ?
+dt.job.ForecastSectionV2DataUpdateJob.schedule =               0 0/5 * * * ?
 # Every 1 h
 dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
+dt.job.WeatherHistoryUpdateJob.schedule =                      0 3 * ? * * *
 dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 0 0/1 * * ?
 dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
+dt.job.CameraHistoryDeleteJob.schedule =                       0 0 0/1 * * ?
+dt.job.WeatherHistoryUpdateJob.schedule =                      0 0 0/1 * * ?
+dt.job.RegionGeometryUpdateJob.schedule =                      0 0 0/1 * * ?
 # Every 12 h
 dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
 dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?
@@ -52,17 +62,15 @@ dt.job.WeatherStationMetadataUpdateJob.schedule =              0 0 3/12 * * ?
 # Every 24 h
 dt.job.TmsStationSensorConstantsMetadataUpdateJob.schedule =   0 0 3 * * ?
 dt.job.LocationMetadataUpdateJob.schedule =                    0 0 3 * * ?
-dt.job.ForecastSectionCoordinatesMetadataUpdateJob.schedule =  0 0 3 * * ?
+dt.job.ForecastSectionV1MetadataUpdateJob.schedule =           0 0 3 * * ?
+dt.job.ForecastSectionV2MetadataUpdateJob.schedule =           0 0 3 * * ?
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=https://weathercam-test.digitraffic.fi/
 
-# Binary Kuva.proto url. Port 62859 is hard coded in AbstractSftpTest
-camera-image-download.url = http://localhost:62859/kamerakuva/
-
 # AWS settings
-dt.amazon.s3.weathercam.region = eu-west-1
 dt.amazon.s3.weathercam.bucketName = weathercam-road-test
+dt.amazon.s3.weathercam.region = eu-west-1
 dt.amazon.s3.weathercam.userAccessKey = dummy
 dt.amazon.s3.weathercam.userSecretKey = dummy
 
@@ -85,27 +93,27 @@ jms.test.password=
 
 # JMS topics
 # Comment out to disable (Only daemon should have these enabled)
-#jms.weather.inQueue=topic://LOTJU.TiesaaKeruu.Tietovirta.BIN.OutTopic
+#jms.weather.inQueue=topic://Digitraffic.TiesaaKeruu.Tietovirta.BIN.InTopic
 #jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
-#jms.camera.inQueue=topic://LOTJU.KameraKeruu.Tietovirta.BIN.OutTopic
+#jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.BIN.InTopic
 #jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
 #jms.camera.meta.inQueue=queue://Digitraffic.KameraMeta.Muutos.InQ
 
 # Services enabled/disabled
 
-# daemon or web
-app.type=web
-
-# Web application type. Should be none for daemon process and servlet for web application
-spring.main.web-application-type=servlet
-
-# Is metadata updates on. Should be true only for daemon process.
+# Is Quartz scheduler enabled. Should be true only for daemon process.
 dt.job.scheduler.enabled=false
 
 # if set to false no messages are sent to mqtt.  Should be true for daemon process
 mqtt.enabled=false
 # Is TMS messages available. Should be true for daemon process
 mqtt.tms.enabled=false
+# Is TMS messages available. Should be true for daemon process
+mqtt.tms.enabled=false
+# Is WEATHER messages available
+mqtt.weather.enabled=false
+# Is maintenane tracking messages available
+mqtt.maintenance.tracking.enabled=false
 
 # Developer life improvements
 logging.level.root=WARN
