@@ -116,7 +116,8 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                 }
-                    activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(), getSituationIdForSituationType(situationType), start, end);
+                activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(),
+                                                   getSituationIdForSituationType(situationType), start, end);
             }
         }
     }
@@ -156,7 +157,36 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
     }
 
     @Test
-    public void findBySituationIdLatest() throws IOException {
+    public void invalidJsonMultiLineStringGeometryIsFixed() throws IOException {
+        // Message guid GUID50390596 that has MultiLineString with valid LineString and invalid LineString with two equal points
+        trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithInvalidMultiLineStringGeometry.xml");
+        final TrafficAnnouncementFeature feature = v3Datex2DataService.findBySituationIdJson("GUID50390596", false, true).getFeatures().get(0);
+        // Result geometry should only have one linestring and the invalid LineString should have be removed
+        assertEquals("LineString", feature.getGeometry().getType().toString());
+        assertTrue(feature.getGeometry().getCoordinates().size() > 2);
+    }
+
+    @Test
+    public void invalidJsonMultiLineStringGeometryIsFixed2() throws IOException {
+        // MultiLineString with single lineString and equal points
+        trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithInvalidMultiLineStringGeometry2.xml");
+        final TrafficAnnouncementFeature feature = v3Datex2DataService.findBySituationIdJson("GUID50390964", false, true).getFeatures().get(0);
+        // Result geometry should only have one linestring and the invalid LineString should have be removed
+        assertEquals("Point", feature.getGeometry().getType().toString());
+        assertTrue(feature.getGeometry().getCoordinates().size() > 1);
+    }
+
+    @Test
+    public void invalidJsonMultiPolygonGeometryIsFixed() throws IOException {
+        trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithInvalidMultiPolygonGeometry.xml");
+        final TrafficAnnouncementFeature feature = v3Datex2DataService.findBySituationIdJson("GUID50379978", false, true).getFeatures().get(0);
+        // Result geometry should only have one linestring and the invalid LineString should have be removed
+        assertEquals("Polygon", feature.getGeometry().getType().toString());
+        assertEquals(2, feature.getGeometry().getCoordinates().size());
+    }
+
+    @Test
+    public void findBySituationIdLatest() {
         trafficMessageTestHelper.cleanDb();
         final ImsXmlVersion imsXmlVersion = ImsXmlVersion.getLatestVersion();
         final int count = getRandom(5, 15);
@@ -169,7 +199,8 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
             System.out.println(latestStart.get());
             final ZonedDateTime end = latestStart.get().plusHours(1);
             try {
-                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(), latestStart.get(), end);
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
+                                                                              latestStart.get(), end);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -195,7 +226,6 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
         assertEquals(1, latestJson.getFeatures().size());
         assertEquals(1, getSituationPublication(latestDatex).getSituations().size());
     }
-
 
     private void checkFindBySituationId(final String situationId) {
         final D2LogicalModel d2 = v3Datex2DataService.findBySituationId(situationId, false);
@@ -232,7 +262,6 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
         final Instant situationStart = situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime();
         final Instant situationEnd = situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallEndTime();
         final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.get(0).timeAndDuration;
-
 
         assertEquals(getVersionTime(start, imsJsonVersion.intVersion).toInstant(), situationVersionTime);
         assertEquals(getVersionTime(start, imsJsonVersion.intVersion).toInstant(), jsonProperties.releaseTime.toInstant());

@@ -1,0 +1,1 @@
+ALTER TABLE datex2 ADD COLUMN IF NOT EXISTS original_json_message TEXT;

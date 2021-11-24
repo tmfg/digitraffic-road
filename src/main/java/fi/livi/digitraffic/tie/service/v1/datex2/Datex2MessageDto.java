@@ -14,6 +14,7 @@ public class Datex2MessageDto {
     public final SituationType situationType;
     public final TrafficAnnouncementType trafficAnnouncementType;
     public final String situationId;
+    public final String originalJsonMessage;
 
     public Datex2MessageDto(final D2LogicalModel model,
                             final SituationType situationType,
@@ -29,5 +30,24 @@ public class Datex2MessageDto {
         this.importTime = importTime;
         this.model = model;
         this.situationId = situationId;
+        this.originalJsonMessage = null;
+    }
+
+    public Datex2MessageDto(final D2LogicalModel model,
+                            final SituationType situationType,
+                            final TrafficAnnouncementType trafficAnnouncementType,
+                            final String message,
+                            final String jsonMessage,
+                            final ZonedDateTime importTime,
+                            final String situationId,
+                            final String originalJsonMessage) {
+        this.situationType = situationType;
+        this.trafficAnnouncementType = trafficAnnouncementType;
+        this.message = message;
+        this.jsonMessage = jsonMessage;
+        this.importTime = importTime;
+        this.model = model;
+        this.situationId = situationId;
+        this.originalJsonMessage = originalJsonMessage;
     }
 }

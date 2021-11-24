@@ -13,12 +13,17 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
@@ -34,6 +39,7 @@ import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.LoggerHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
@@ -148,9 +154,9 @@ public class V2Datex2UpdateService {
     }
 
     private Datex2MessageDto convertToDatex2MessageDto(final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType,
-                                                      final Situation situation, final String jsonValue,
-                                                      final ZonedDateTime importTime,
-                                                      final D2LogicalModel sourceD2, final SituationPublication sourceSituationPublication) {
+                                                       final Situation situation, final String jsonValue,
+                                                       final ZonedDateTime importTime,
+                                                       final D2LogicalModel sourceD2, final SituationPublication sourceSituationPublication) {
         final D2LogicalModel d2 = new D2LogicalModel();
         final SituationPublication newSp = new SituationPublication();
 
@@ -164,7 +170,40 @@ public class V2Datex2UpdateService {
         d2.setPayloadPublication(newSp);
 
         final String messageValue = datex2XmlStringToObjectMarshaller.convertToString(d2);
-        return new Datex2MessageDto(d2, situationType, trafficAnnouncementType, messageValue, jsonValue, importTime, situation.getId());
+
+        final String fixedJson = createJsonWithValidGeometryIfInvalid(jsonValue);
+        if ( fixedJson == null ) {
+            return new Datex2MessageDto(d2, situationType, trafficAnnouncementType, messageValue, jsonValue, importTime, situation.getId());
+        } else {
+            log.warn("method=convertToDatex2MessageDto Json's geometry was not valid and was fixed for situationId={}", situation.getId());
+            return new Datex2MessageDto(d2, situationType, trafficAnnouncementType, messageValue, fixedJson, importTime, situation.getId(), jsonValue);
+        }
+    }
+
+    /**
+     * Fixes GeoJSON feature's geometry if it's invalid.
+     *
+     * @param geoJsonFeature
+     * @return Json String with valid geometry. Returns null, if geometry was already valid.
+     */
+
+    private String createJsonWithValidGeometryIfInvalid(final String geoJsonFeature) {
+        final JsonNode geometryNode = imsJsonConverter.parseGeometryNodeFromFeatureJson(geoJsonFeature);
+        if (geometryNode.isEmpty()) {
+            return null;
+        }
+        try {
+            final Geometry geometry = PostgisGeometryHelper.parseGeometryFromJson(geometryNode.toPrettyString());
+            if (!geometry.isValid()) {
+                final Geometry fixedGeometry = PostgisGeometryHelper.fixGeometry(geometry);
+                final String fixedGeoJsonGeometry = PostgisGeometryHelper.toGeoJson(fixedGeometry);
+                return imsJsonConverter.replaceFeatureJsonGeometry(geoJsonFeature, fixedGeoJsonGeometry);
+            }
+            return null;
+        } catch (final ParseException | JsonProcessingException e) {
+            log.error(String.format("method=createJsonWithValidGeometryIfInvalid Failed to fix feature json: %s", geoJsonFeature), e);
+        }
+        return null;
     }
 
     /* COPIED */
@@ -189,6 +228,8 @@ public class V2Datex2UpdateService {
                 Objects.requireNonNullElseGet(message.importTime, () -> latestVersionTime != null ? latestVersionTime : ZonedDateTime.now()));
             datex2.setMessage(message.message);
             datex2.setJsonMessage(message.jsonMessage);
+            // This is normally null and has value only if geometry has been fixed
+            datex2.setOriginalJsonMessage(message.originalJsonMessage);
             parseAndAppendPayloadPublicationData(d2.getPayloadPublication(), datex2);
             datex2Repository.save(datex2);
             dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_DATA);

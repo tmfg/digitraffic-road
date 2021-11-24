@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imsMessage xmlns="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_1.xsd">
+    <messageId>50003469</messageId>
+    <date>2021-11-10T13:44:15.00+00:00</date>
+    <messageSubject>LIIKENNETIEDOTE 13.12.2019 14:43:18</messageSubject>
+    <messageText></messageText>
+    <shortMessageText></shortMessageText>
+    <messageContent>
+        <d2Message><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0"><exchange><supplierIdentification><country>fi</country><nationalIdentifier>FTA</nationalIdentifier></supplierIdentification></exchange><payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><publicationTime>2021-11-18T16:24:20.696Z</publicationTime><publicationCreator><country>fi</country><nationalIdentifier>FTA</nationalIdentifier></publicationCreator><situation id="GUID50390964" version="1"><headerInformation><confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality><informationStatus>real</informationStatus></headerInformation><situationRecord xsi:type="Accident" id="GUID5039188401" version="1"><situationRecordCreationTime>2021-11-18T16:24:20.696Z</situationRecordCreationTime><situationRecordVersionTime>2021-11-18T16:27:23.386Z</situationRecordVersionTime><situationRecordFirstSupplierVersionTime>2021-11-18T16:24:20.696Z</situationRecordFirstSupplierVersionTime><probabilityOfOccurrence>certain</probabilityOfOccurrence><severity>low</severity><validity><validityStatus>definedByValidityTimeSpec</validityStatus><validityTimeSpecification><overallStartTime>2021-11-18T16:23:05.315Z</overallStartTime></validityTimeSpecification></validity><generalPublicComment><comment><values><value lang="fi">Tie 51, eli Länsiväylä, Espoo. Ensitiedote liikenneonnettomuudesta.
+
+Tie 51, eli Länsiväylä, Espoo.
+Tarkempi paikka: Välillä Hanasaaren liittymä - Otaniemi, Kehä I:n liittymä.
+
+
+Ajankohta: 18.11.2021 klo 18:23.
+
+Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+Fintraffic Tieliikennekeskus Helsinki
+Puh: 02002100
+Sähköposti: helsinki.liikennekeskus@fintraffic.fi</value></values></comment></generalPublicComment><groupOfLocations xsi:type="Linear"><alertCLinear xsi:type="AlertCMethod2Linear"><alertCLocationCountryCode>6</alertCLocationCountryCode><alertCLocationTableNumber>17</alertCLocationTableNumber><alertCLocationTableVersion>1_11_42</alertCLocationTableVersion><alertCDirection><alertCDirectionCoded>unknown</alertCDirectionCoded></alertCDirection><alertCMethod2PrimaryPointLocation><alertCLocation><specificLocation>2846</specificLocation></alertCLocation></alertCMethod2PrimaryPointLocation><alertCMethod2SecondaryPointLocation><alertCLocation><specificLocation>2847</specificLocation></alertCLocation></alertCMethod2SecondaryPointLocation></alertCLinear></groupOfLocations><accidentType>other</accidentType></situationRecord><situationRecord xsi:type="GeneralObstruction" id="GUID5039188402" version="1"><situationRecordCreationTime>2021-11-18T16:24:20.696Z</situationRecordCreationTime><situationRecordVersionTime>2021-11-18T16:27:23.386Z</situationRecordVersionTime><situationRecordFirstSupplierVersionTime>2021-11-18T16:24:20.696Z</situationRecordFirstSupplierVersionTime><probabilityOfOccurrence>certain</probabilityOfOccurrence><severity>low</severity><validity><validityStatus>definedByValidityTimeSpec</validityStatus><validityTimeSpecification><overallStartTime>2021-11-18T16:23:05.315Z</overallStartTime></validityTimeSpecification></validity><groupOfLocations xsi:type="Point"/><obstructionType>unprotectedAccidentArea</obstructionType></situationRecord></situation></payloadPublication></d2LogicalModel>
+]]>
+        </d2Message>
+        <jMessage><![CDATA[
+{
+  "geometry" : {
+    "type" : "MultiLineString",
+    "coordinates" : [ [ [ 24.913058, 60.164489 ], [ 24.913058, 60.164489 ] ] ]
+  },
+  "type" : "Feature",
+  "properties" : {
+    "situationId" : "GUID50390964",
+    "version" : 1,
+    "situationType" : "traffic announcement",
+    "trafficAnnouncementType" : "preliminary accident report",
+    "releaseTime" : "2021-11-18T16:24:20.696Z",
+    "announcements" : [ {
+      "language" : "fi",
+      "title" : "Tie 51, eli Länsiväylä, Espoo. Ensitiedote liikenneonnettomuudesta. ",
+      "location" : {
+        "countryCode" : 6,
+        "locationTableNumber" : 17,
+        "locationTableVersion" : "1_11_42",
+        "description" : "Tie 51, eli Länsiväylä, Espoo.\nTarkempi paikka: Välillä Hanasaaren liittymä - Otaniemi, Kehä I:n liittymä."
+      },
+      "locationDetails" : {
+        "roadAddressLocation" : {
+          "primaryPoint" : {
+            "municipality" : "Espoo",
+            "province" : "Uusimaa",
+            "country" : "Suomi",
+            "roadAddress" : {
+              "road" : 51,
+              "roadSection" : 2,
+              "distance" : 4284
+            },
+            "roadName" : "Länsiväylä",
+            "alertCLocation" : {
+              "locationCode" : 2846,
+              "name" : "Hanasaaren liittymä"
+            }
+          },
+          "secondaryPoint" : {
+            "municipality" : "Espoo",
+            "province" : "Uusimaa",
+            "country" : "Suomi",
+            "roadAddress" : {
+              "road" : 51,
+              "roadSection" : 3,
+              "distance" : 0
+            },
+            "roadName" : "Länsiväylä",
+            "alertCLocation" : {
+              "locationCode" : 2847,
+              "name" : "Otaniemi, Kehä I:n liittymä"
+            }
+          },
+          "direction" : "unknown"
+        }
+      },
+      "features" : [ ],
+      "timeAndDuration" : {
+        "startTime" : "2021-11-18T16:23:05.315Z"
+      },
+      "additionalInformation" : "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+      "sender" : "Fintraffic Tieliikennekeskus Helsinki"
+    } ],
+    "contact" : {
+      "phone" : "02002100",
+      "email" : "helsinki.liikennekeskus@fintraffic.fi"
+    }
+  }
+}
+]]>
+        </jMessage>
+    </messageContent>
+</imsMessage>

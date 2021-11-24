@@ -57,6 +57,9 @@ public class Datex2 {
 
     private String jsonMessage;
 
+    /** If geometry is not valid the original jsonMessage will be saved here and fixed version to jsonMessage-field */
+    private String originalJsonMessage;
+
     public Datex2() {
         // For JPA
     }
@@ -139,5 +142,9 @@ public class Datex2 {
 
     public void setTrafficAnnouncementType(TrafficAnnouncementType trafficAnnouncementType) {
         this.trafficAnnouncementType = trafficAnnouncementType;
+    }
+
+    public void setOriginalJsonMessage(final String originalJsonMessage) {
+        this.originalJsonMessage = originalJsonMessage;
     }
 }
