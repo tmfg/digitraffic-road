@@ -315,6 +315,13 @@
             <version>5.6.1.Final</version>
         </dependency>
 
+        <!-- json column type -->
+        <dependency>
+            <groupId>com.vladmihalcea</groupId>
+            <artifactId>hibernate-types-55</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+
         <!-- Library to transform GeoJSON <-> jts Geometry.
              Version must follow jts version coming rom hibernate-spatial-->
         <dependency>

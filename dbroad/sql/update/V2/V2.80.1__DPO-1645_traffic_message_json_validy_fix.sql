@@ -18,6 +18,8 @@ with fixed_data AS (
            -- > fix only non area locations as areas are fetched from area_location- table
            AND d.json_message::json -> 'properties' -> 'announcements' -> 0 -> 'locationDetails' -> 'areaLocation' is null
            AND ST_IsValid(ST_GeomFromGeoJSON((json_message::json -> 'geometry')::text)) = false
+           -- skip messages having null geometry
+           AND (json_message::json -> 'geometry')::text <> 'null'
        ) valid_d
 )
 UPDATE datex2 tgt

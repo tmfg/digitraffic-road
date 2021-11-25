@@ -30,7 +30,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateValues;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
 
@@ -69,22 +69,22 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
         final String weightRestriction1 = readResourceContent("classpath:lotju/weight_restrictions/wr1.xml");
 
         datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
-            incident1, "", SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT)));
+            incident1, null, SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT)));
         datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
-            incident2, "", SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.ACCIDENT_REPORT)));
+            incident2, null, SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.ACCIDENT_REPORT)));
         datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
-            incident3, "", SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.ACCIDENT_REPORT)));
+            incident3, null, SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.ACCIDENT_REPORT)));
         datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
-            roadwork1, "", SituationType.ROAD_WORK, null)));
+            roadwork1, null, SituationType.ROAD_WORK, null)));
         datex2UpdateService.updateDatex2Data(Collections.singletonList(createDatex2MessageDto(
-            weightRestriction1, "", SituationType.WEIGHT_RESTRICTION, null)));
+            weightRestriction1, null, SituationType.WEIGHT_RESTRICTION, null)));
     }
 
-    private Datex2MessageDto createDatex2MessageDto(final String datexMessage, final String jsonMessage, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType) {
+    private Datex2UpdateValues createDatex2MessageDto(final String datexMessage, final String jsonMessage, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType) {
         final D2LogicalModel d2LogicalModel =
             datex2XmlStringToObjectMarshaller.convertToObject(datexMessage);
         final SituationPublication s = Datex2Helper.getSituationPublication(d2LogicalModel);
-        return new Datex2MessageDto(d2LogicalModel,
+        return new Datex2UpdateValues(d2LogicalModel,
                              situationType,
                              trafficAnnouncementType,
                              datexMessage,
