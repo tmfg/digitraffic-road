@@ -279,6 +279,7 @@ public class V2DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 
+    @Deprecated
     @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.json", produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
@@ -293,6 +294,7 @@ public class V2DataController {
         return v2Datex2DataService.findActiveJson(inactiveHours, datex2MessageType);
     }
 
+    @Deprecated
     @ApiOperation(value = "Active Datex2 messages for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.xml", produces = { APPLICATION_XML_VALUE })
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
@@ -307,6 +309,7 @@ public class V2DataController {
         return v2Datex2DataService.findActive(inactiveHours, datex2MessageType);
     }
 
+    @Deprecated
     @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
@@ -321,6 +324,7 @@ public class V2DataController {
         return v2Datex2DataService.findAllBySituationIdJson(situationId, datex2MessageType);
     }
 
+    @Deprecated
     @ApiOperation(value = "Datex2 messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.xml", produces = { APPLICATION_XML_VALUE })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),

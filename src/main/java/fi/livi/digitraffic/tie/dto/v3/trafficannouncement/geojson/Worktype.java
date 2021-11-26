@@ -62,10 +62,11 @@ public class Worktype extends JsonAdditionalProperties {
         TREE_AND_VEGETATION_CUTTING("tree and vegetation cutting"),
         GRASS_CUTTING("grass cutting"),
         MAINTENANCE("maintenance"),
+        CULVERT_REPLACEMENT("culvert replacement"),
         OTHER("other");
 
         private final String value;
-        private final static Map<String, Type> CONSTANTS = new HashMap<String, Type>();
+        private final static Map<String, Type> CONSTANTS = new HashMap<>();
 
         static {
             for (Type c: values()) {

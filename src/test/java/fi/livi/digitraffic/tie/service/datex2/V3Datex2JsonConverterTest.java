@@ -241,12 +241,11 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeom
             assertNotNull(rwp.workingHours.get(0).startTime);
             assertNotNull(rwp.workingHours.get(0).endTime);
 
-            if (version.version >= 2.13) {
-                assertNotNull(rwp.restrictionsLiftable, "restrictionsLiftable should exist");
-                assertNotNull(rwp.restrictions.get(0).restriction.description);
-                assertEquals(Restriction.Type.DETOUR_USING_ROADWAYS, rwp.restrictions.get(1).type);
-                assertNotNull(rwp.restrictions.get(1).restriction.description);
+            if (version.version >= 2.15) {
+                assertEquals(Worktype.Type.CULVERT_REPLACEMENT, rwp.worktypes.get(1).type);
+                assertEquals("Rummun vaihtotyö", rwp.worktypes.get(1).description);
             }
+
             if (version.version >= 2.14) {
                 // restriction timeAndDuration && INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE added
                 final Restriction r3 = rwp.restrictions.get(2);
@@ -255,6 +254,14 @@ public class V3Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeom
                 assertEquals(Restriction.Type.INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE, r3.type);
                 assertNotNull(r3.restriction.timeAndDuration);
             }
+
+            if (version.version >= 2.13) {
+                assertNotNull(rwp.restrictionsLiftable, "restrictionsLiftable should exist");
+                assertNotNull(rwp.restrictions.get(0).restriction.description);
+                assertEquals(Restriction.Type.DETOUR_USING_ROADWAYS, rwp.restrictions.get(1).type);
+                assertNotNull(rwp.restrictions.get(1).restriction.description);
+            }
+
             if (version.version > 2.10) {
                 assertEquals(Worktype.Type.LIGHTING, rwp.worktypes.get(0).type);
                 assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
