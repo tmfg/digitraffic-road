@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "javaType": "fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties",
-    "$id": "https://raw.githubusercontent.com/tmfg/metadata/master/schema/JSONMessage_0_2_4.json",
+    "$id": "https://raw.githubusercontent.com/tmfg/metadata/master/schema/JSONMessage_0_2_5.json",
     "type": "object",
     "title": "TrafficSituation announcement.",
     "description": "Structural representation of a traffic situation containing its key elements and all the language versions of announcements sent by Finnish Transportation Agency.",
@@ -93,9 +93,15 @@
                     "type": "array",
                     "title": "Features schema.",
                     "items": {
-                        "type": "string",
-                        "title": "Feature schema.",
-                        "description": "Feature describes characteristics and qualities of the situation."
+                        "$ref": "#/definitions/feature"
+                    }
+                },
+                "roadWorkPhases": {
+                    "type": "array",
+                    "title": "Road maintenance phases",
+                    "description": "Contains the phases of this road work",
+                    "items": {
+                        "$ref": "#/definitions/road-work-phase"
                     }
                 },
                 "comment": {
@@ -326,6 +332,104 @@
             "required": [
                 "roadAddress",
                 "alertCLocation"
+            ]
+        },
+        "feature": {
+            "type": "object",
+            "title": "Feature schema.",
+            "description": "Feature describes characteristics and qualities of the situation.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "Feature name",
+                    "description": "Feature name, e.g. black ice on road, or speed limit"
+                },
+                "quantity": {
+                    "type": "number",
+                    "title": "Feature quantity",
+                    "description": "Feature quantity, e.g. 30 in {speed limit, 30, km/h}"
+                },
+                "unit": {
+                    "type": "string",
+                    "title": "Unit of the feature quantity",
+                    "description": "Unit of the feature quantity, e.g. km/h in {speed limit, 30, km/h}"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "dependencies": {
+                "unit": [
+                    "quantity"
+                ]
+            }
+        },
+        "road-work-phase": {
+            "type": "object",
+            "title": "Road work phase",
+            "description": "A single phase in a larger road work",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/location"
+                },
+                "locationDetails": {
+                    "$ref": "#/definitions/location-details"
+                },
+                "features": {
+                    "type": "array",
+                    "title": "Features schema.",
+                    "items": {
+                        "$ref": "#/definitions/feature"
+                    }
+                },
+                "workingHours": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "weekday": {
+                                "type": "string",
+                                "enum": [
+                                    "ma",
+                                    "ti",
+                                    "ke",
+                                    "to",
+                                    "pe",
+                                    "la",
+                                    "su"
+                                ]
+                            },
+                            "startTime": {
+                                "type": "string",
+                                "title": "StartTime",
+                                "description": "Road work start time using ISO 8601 local time"
+                            },
+                            "endTime": {
+                                "type": "string",
+                                "title": "EndTime",
+                                "description": "Road work end time using ISO 8601 local time"
+                            }
+                        },
+                        "required": [
+                            "weekday",
+                            "startTime",
+                            "endTime"
+                        ]
+                    }
+                },
+                "comment": {
+                    "type": "string",
+                    "description": "Free comment"
+                },
+                "timeAndDuration": {
+                    "$ref": "#/definitions/time-and-duration"
+                }
+            },
+            "required": [
+                "id"
             ]
         },
         "time-and-duration": {
