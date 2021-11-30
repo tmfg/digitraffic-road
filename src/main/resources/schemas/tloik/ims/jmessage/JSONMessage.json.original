@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/tmfg/metadata/master/schema/JSONMessage_0_2_5.json",
+    "$id": "https://raw.githubusercontent.com/tmfg/metadata/master/schema/JSONMessage_0_2_6.json",
     "type": "object",
     "title": "TrafficSituation announcement.",
     "description": "Structural representation of a traffic situation containing its key elements and all the language versions of announcements sent by Finnish Transportation Agency.",
@@ -102,6 +102,36 @@
                     "items": {
                         "$ref": "#/definitions/road-work-phase"
                     }
+                },
+                "lastActiveItinerarySegment": {
+                    "type": "object",
+                    "title": "Last active special transport itinerary segment",
+                    "description": "The itinerary segment of this special transport that is or was last active.",
+                    "properties": {
+                        "startTime": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "Start time of the segment.",
+                            "description": "The time when the transport may start this segment."
+                        },
+                        "endTime": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "end time of the segment.",
+                            "description": "Time by which the transport has finished this segment."
+                        },
+                        "legs": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/itinerary-leg"
+                            }
+                        }
+                    },
+                    "required": [
+                        "startTime",
+                        "endTime",
+                        "legs"
+                    ]
                 },
                 "comment": {
                     "type": "string",
@@ -276,9 +306,7 @@
                     "description": "Location in road address (road number + number of the road section + distance from the beginning of the road section.",
                     "properties": {
                         "road": {
-                            "type": "integer",
-                            "title": "Road schema.",
-                            "description": "Number of the road."
+                            "$ref": "#/definitions/road-number"
                         },
                         "roadSection": {
                             "type": "integer",
@@ -298,9 +326,7 @@
                     ]
                 },
                 "roadName": {
-                    "type": "string",
-                    "title": "RoadName schema.",
-                    "description": "Name of the road where the accident happened."
+                    "$ref": "#/definitions/road-name"
                 },
                 "alertCLocation": {
                     "type": "object",
@@ -332,6 +358,14 @@
                 "roadAddress",
                 "alertCLocation"
             ]
+        },
+        "road-number": {
+            "type": "integer",
+            "description": "Number of the road."
+        },
+        "road-name": {
+            "type": "string",
+            "description": "Name of the road."
         },
         "feature": {
             "type": "object",
@@ -477,6 +511,43 @@
             "required": [
                 "startTime"
             ]
+        },
+        "itinerary-leg": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "roadLeg": {
+                    "$ref": "#/definitions/itinerary-road-leg"
+                },
+                "streetName": {
+                    "type": "string",
+                    "title": "Name of the street",
+                    "description": "Name of the street"
+                }
+            },
+            "maxProperties": 1,
+            "minProperties": 1
+        },
+        "itinerary-road-leg": {
+            "type": "object",
+            "properties": {
+                "roadNumber": {
+                    "$ref": "#/definitions/road-number"
+                },
+                "roadName": {
+                    "$ref": "#/definitions/road-name"
+                },
+                "startArea": {
+                    "type": "string",
+                    "title": "Description of the leg start",
+                    "description": "Description of the place on the road, where this leg starts."
+                },
+                "endArea": {
+                    "type": "string",
+                    "title": "Description of the leg end",
+                    "description": "Description of the place on the road, where this leg ends."
+                }
+            }
         }
     }
 }
