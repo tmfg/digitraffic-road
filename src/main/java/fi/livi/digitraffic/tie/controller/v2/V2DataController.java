@@ -8,6 +8,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static fi.livi.digitraffic.tie.controller.v1.DataController.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_X;
 import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_X_TXT;
@@ -16,8 +18,6 @@ import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_Y_TXT
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;

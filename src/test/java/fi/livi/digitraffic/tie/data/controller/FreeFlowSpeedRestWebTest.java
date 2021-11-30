@@ -15,12 +15,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -74,7 +74,7 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
 
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + FREE_FLOW_SPEEDS_PATH))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
             .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue()))
             .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))
@@ -89,7 +89,7 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
     public void testFreeFlowSpeedDataRestApiByTmsId() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + FREE_FLOW_SPEEDS_PATH + "/tms/" + tmsId))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))

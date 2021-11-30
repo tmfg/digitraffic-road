@@ -21,8 +21,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.controller.v1.MetadataController;
 import fi.livi.digitraffic.tie.service.RoadApiInfoGetter;
@@ -84,7 +84,7 @@ public class SwaggerConfiguration {
             .host(host)
             .protocols(Set.of(scheme))
             .groupName(groupName)
-            .produces(new HashSet<>(Collections.singletonList(MediaType.APPLICATION_JSON_VALUE)))
+            .produces(new HashSet<>(Collections.singletonList(DtMediaType.APPLICATION_JSON_VALUE)))
             .apiInfo(roadApiInfoGetter.getApiInfo())
             .select()
             .paths(apiPaths)

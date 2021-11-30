@@ -15,10 +15,10 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -45,7 +45,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
     public void testCameraDataRestApi() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + CAMERA_DATA_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.equalTo(updateTime.toString())))
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))
@@ -63,7 +63,7 @@ public class CameraStationDataControllerRestWebTest extends AbstractRestWebTest 
     public void testCameraDataRestApiById() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + CAMERA_DATA_PATH + "/" + cameraId))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.equalTo(updateTime.toString())))
                 .andExpect(jsonPath("$.cameraStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.cameraStations[0].id", Matchers.startsWith("C")))

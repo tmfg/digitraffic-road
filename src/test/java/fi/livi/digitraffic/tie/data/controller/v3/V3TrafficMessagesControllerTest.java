@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -25,8 +24,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.xml.transform.StringSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -241,11 +243,13 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
         return API_V3_BASE_PATH + API_DATA_PART_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + params;
     }
 
-    private static String getUrlWithSituationId(final boolean json, final String situationId) {
-        return API_V3_BASE_PATH + API_DATA_PART_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "/" + situationId;
-    }
-
     private String getResponse(final String url) throws Exception {
-        return mockMvc.perform(get(url)).andReturn().getResponse().getContentAsString();
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
+        if (url.contains("datex2")) {
+            get.contentType(MediaType.APPLICATION_XML);
+        } else {
+            get.contentType(MediaType.APPLICATION_JSON);
+        }
+        return mockMvc.perform(get).andReturn().getResponse().getContentAsString();
     }
 }

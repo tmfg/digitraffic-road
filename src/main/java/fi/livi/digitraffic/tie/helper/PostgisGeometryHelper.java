@@ -12,6 +12,11 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.geojson.GeoJsonReader;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 
@@ -21,6 +26,13 @@ public class PostgisGeometryHelper {
     public static final int SRID = 4326; // = WGS84 http://www.epsg-registry.org/
     public static final GeometryFactory GF = new GeometryFactory(PRECISION_MODEL, SRID);
     private static double EARTH_RADIUS_KM = 6371;
+
+    private static final GeoJsonWriter geoJsonWriter = new GeoJsonWriter();
+    private static final GeoJsonReader geoJsonReader = new GeoJsonReader(GF);
+
+    static {
+        geoJsonWriter.setEncodeCRS(false);
+    }
 
     public static Coordinate createCoordinateWithZ(final double x, final double y, final Double z) {
         // PostGIS PointZ can't have null Z-coordinate
@@ -117,5 +129,30 @@ public class PostgisGeometryHelper {
 
     public static Geometry union(final List<Geometry> geometryCollection) {
         return GF.buildGeometry(geometryCollection).union();
+    }
+
+    public static Geometry parseGeometryFromJson(final String geometryJson) throws ParseException {
+            return geoJsonReader.read(geometryJson);
+    }
+
+    public static Geometry fixGeometry(final Geometry geometry) {
+        // This fixes some issues but not all (ie. if there is linestring with two identical points)
+        final Geometry g = DouglasPeuckerSimplifier.simplify(geometry, 0.00005);
+        if (!g.isValid()) {
+            // First try keeping collapsed geometries
+            final GeometryFixer fixer = new GeometryFixer(g);
+            fixer.setKeepCollapsed(true);
+            final Geometry fixed = fixer.getResult();
+            if ( fixed.getGeometryType().equals(Geometry.TYPENAME_GEOMETRYCOLLECTION) ) {
+                // GeometryCollection is not supported
+                return GeometryFixer.fix(g); // This should not produce collection as collapsed are not reserved
+            }
+            return fixed;
+        }
+        return g;
+    }
+
+    public static String toGeoJson(final Geometry geometry) {
+        return geoJsonWriter.write(geometry);
     }
 }

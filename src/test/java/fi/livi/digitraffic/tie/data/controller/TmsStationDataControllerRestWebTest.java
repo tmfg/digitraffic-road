@@ -15,10 +15,10 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
@@ -62,7 +62,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
     public void testTmsDataRestApi() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + TMS_DATA_PATH))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))
@@ -75,7 +75,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
     public void testTmsDataRestApiById() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + TMS_DATA_PATH + "/" + tmsNaturalId))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))

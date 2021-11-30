@@ -10,7 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;import org.springframework.http.MediaType;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -24,9 +25,7 @@ public class VariableSignControllerTest extends AbstractRestWebTest {
 
     private ResultActions getJson(final String basePath, final String url) throws Exception {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get( basePath + url);
-
         get.contentType(MediaType.APPLICATION_JSON);
-
         return mockMvc.perform(get);
     }
 

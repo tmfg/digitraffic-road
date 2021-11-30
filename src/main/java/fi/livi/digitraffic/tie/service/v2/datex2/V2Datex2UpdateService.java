@@ -13,12 +13,17 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
@@ -34,6 +39,7 @@ import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.LoggerHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
@@ -47,7 +53,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.datex2.ImsJsonConverter;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2MessageDto;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateValues;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 @ConditionalOnNotWebApplication
@@ -79,7 +85,7 @@ public class V2Datex2UpdateService {
                 log.debug("method=updateTrafficDatex2ImsMessages imsMessage d2Message datex2: {}",
                           LoggerHelper.objectToStringLoggerSafe(imsMessage.getMessageContent().getD2Message()));
             }
-            final List<Datex2MessageDto> models = createModels(imsMessage, now);
+            final List<Datex2UpdateValues> models = createModels(imsMessage, now);
             return updateTrafficDatex2Messages(models);
         }).sum();
         log.info("method=updateTrafficDatex2ImsMessages updateCount={} Datex2ImsMessages", newAndUpdated);
@@ -87,7 +93,7 @@ public class V2Datex2UpdateService {
     }
 
     @Transactional
-    public int updateTrafficDatex2Messages(final List<Datex2MessageDto> imsMessages) {
+    public int updateTrafficDatex2Messages(final List<Datex2UpdateValues> imsMessages) {
         return (int)imsMessages.stream()
             .filter(imsMessage -> isNewOrUpdatedSituation(imsMessage.model, imsMessage.situationType))
             .filter(this::updateDatex2Data)
@@ -95,11 +101,11 @@ public class V2Datex2UpdateService {
     }
 
     @Transactional
-    public int updateDatex2Data(final List<Datex2MessageDto> data) {
+    public int updateDatex2Data(final List<Datex2UpdateValues> data) {
         return (int) data.stream().filter(this::updateDatex2Data).count();
     }
 
-    private List<Datex2MessageDto> createModels(final ExternalIMSMessage imsMessage, final ZonedDateTime importTime) {
+    private List<Datex2UpdateValues> createModels(final ExternalIMSMessage imsMessage, final ZonedDateTime importTime) {
         final D2LogicalModel d2 = datex2XmlStringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
         final String jMessage = imsMessage.getMessageContent().getJMessage();
         final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
@@ -147,10 +153,10 @@ public class V2Datex2UpdateService {
         return datex2Repository.findDatex2SituationLatestVersionTime(situationId, situationType.name());
     }
 
-    private Datex2MessageDto convertToDatex2MessageDto(final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType,
-                                                      final Situation situation, final String jsonValue,
-                                                      final ZonedDateTime importTime,
-                                                      final D2LogicalModel sourceD2, final SituationPublication sourceSituationPublication) {
+    private Datex2UpdateValues convertToDatex2MessageDto(final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType,
+                                                         final Situation situation, final String jsonValue,
+                                                         final ZonedDateTime importTime,
+                                                         final D2LogicalModel sourceD2, final SituationPublication sourceSituationPublication) {
         final D2LogicalModel d2 = new D2LogicalModel();
         final SituationPublication newSp = new SituationPublication();
 
@@ -164,7 +170,40 @@ public class V2Datex2UpdateService {
         d2.setPayloadPublication(newSp);
 
         final String messageValue = datex2XmlStringToObjectMarshaller.convertToString(d2);
-        return new Datex2MessageDto(d2, situationType, trafficAnnouncementType, messageValue, jsonValue, importTime, situation.getId());
+
+        final String fixedJson = createJsonWithValidGeometryIfInvalid(jsonValue);
+        if ( fixedJson == null ) {
+            return new Datex2UpdateValues(d2, situationType, trafficAnnouncementType, messageValue, jsonValue, importTime, situation.getId());
+        } else {
+            log.warn("method=convertToDatex2MessageDto Json's geometry was not valid and was fixed for situationId={}", situation.getId());
+            return new Datex2UpdateValues(d2, situationType, trafficAnnouncementType, messageValue, fixedJson, importTime, situation.getId(), jsonValue);
+        }
+    }
+
+    /**
+     * Fixes GeoJSON feature's geometry if it's invalid.
+     *
+     * @param geoJsonFeature GeoJson Feature with geometry to check/fix
+     * @return Json String with valid geometry. Returns null, if geometry was already valid.
+     */
+
+    private String createJsonWithValidGeometryIfInvalid(final String geoJsonFeature) {
+        final JsonNode geometryNode = imsJsonConverter.parseGeometryNodeFromFeatureJson(geoJsonFeature);
+        if (geometryNode.isEmpty()) {
+            return null;
+        }
+        try {
+            final Geometry geometry = PostgisGeometryHelper.parseGeometryFromJson(geometryNode.toPrettyString());
+            if (!geometry.isValid()) {
+                final Geometry fixedGeometry = PostgisGeometryHelper.fixGeometry(geometry);
+                final String fixedGeoJsonGeometry = PostgisGeometryHelper.toGeoJson(fixedGeometry);
+                return imsJsonConverter.replaceFeatureJsonGeometry(geoJsonFeature, fixedGeoJsonGeometry);
+            }
+            return null;
+        } catch (final ParseException | JsonProcessingException e) {
+            log.error(String.format("method=createJsonWithValidGeometryIfInvalid Failed to fix feature json: %s", geoJsonFeature), e);
+        }
+        return null;
     }
 
     /* COPIED */
@@ -175,7 +214,7 @@ public class V2Datex2UpdateService {
      * @return true if message was new or updated otherwise false
      */
     @Transactional
-    public boolean updateDatex2Data(final Datex2MessageDto message) {
+    public boolean updateDatex2Data(final Datex2UpdateValues message) {
 
         Datex2Helper.checkD2HasOnlyOneSituation(message.model);
 
@@ -189,6 +228,8 @@ public class V2Datex2UpdateService {
                 Objects.requireNonNullElseGet(message.importTime, () -> latestVersionTime != null ? latestVersionTime : ZonedDateTime.now()));
             datex2.setMessage(message.message);
             datex2.setJsonMessage(message.jsonMessage);
+            // This is normally null and has value only if geometry has been fixed
+            datex2.setOriginalJsonMessage(message.originalJsonMessage);
             parseAndAppendPayloadPublicationData(d2.getPayloadPublication(), datex2);
             datex2Repository.save(datex2);
             dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_DATA);

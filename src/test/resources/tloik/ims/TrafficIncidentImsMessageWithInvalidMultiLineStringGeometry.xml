@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imsMessage xmlns="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_1.xsd">
+    <messageId>50003469</messageId>
+    <date>2021-11-10T13:44:15.00+00:00</date>
+    <messageSubject>LIIKENNETIEDOTE 13.12.2019 14:43:18</messageSubject>
+    <messageText></messageText>
+    <shortMessageText></shortMessageText>
+    <messageContent>
+        <d2Message><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0"><exchange><supplierIdentification><country>fi</country><nationalIdentifier>FTA</nationalIdentifier></supplierIdentification></exchange><payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><publicationTime>2021-11-10T13:44:14.805Z</publicationTime><publicationCreator><country>fi</country><nationalIdentifier>FTA</nationalIdentifier></publicationCreator><situation id="GUID50390596" version="1"><headerInformation><confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality><informationStatus>real</informationStatus></headerInformation><situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5039151501" version="1"><situationRecordCreationTime>2021-11-10T13:44:14.805Z</situationRecordCreationTime><situationRecordVersionTime>2021-11-10T13:47:06.342Z</situationRecordVersionTime><situationRecordFirstSupplierVersionTime>2021-11-10T13:44:14.805Z</situationRecordFirstSupplierVersionTime><probabilityOfOccurrence>certain</probabilityOfOccurrence><validity><validityStatus>active</validityStatus><validityTimeSpecification><overallStartTime>2021-11-10T13:44:14.807Z</overallStartTime></validityTimeSpecification></validity><generalPublicComment><comment><values><value lang="fi">Tie 7300, Kauhava. Painorajoitus.
+
+Tie 7300 välillä Oravais - Isotalo, Kauhava.
+Tarkempi paikka: Välillä Välitalo - Huhtamäen silta. Haittaa molempiin suuntiin.
+
+Ajoneuvon suurin sallittu massa: 12 t.
+
+Ajankohta: 10.11.2021 alkaen toistaiseksi.
+
+Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+</value></values></comment></generalPublicComment><groupOfLocations xsi:type="Linear"><alertCLinear xsi:type="AlertCMethod2Linear"><alertCLocationCountryCode>6</alertCLocationCountryCode><alertCLocationTableNumber>17</alertCLocationTableNumber><alertCLocationTableVersion>1_11_42</alertCLocationTableVersion><alertCDirection><alertCDirectionCoded>both</alertCDirectionCoded></alertCDirection><alertCMethod2PrimaryPointLocation><alertCLocation><specificLocation>22226</specificLocation></alertCLocation></alertCMethod2PrimaryPointLocation><alertCMethod2SecondaryPointLocation><alertCLocation><specificLocation>22227</specificLocation></alertCLocation></alertCMethod2SecondaryPointLocation></alertCLinear></groupOfLocations><complianceOption>mandatory</complianceOption><forVehiclesWithCharacteristicsOf><grossWeightCharacteristic><comparisonOperator>greaterThan</comparisonOperator><grossVehicleWeight>12.0</grossVehicleWeight></grossWeightCharacteristic></forVehiclesWithCharacteristicsOf><roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType></situationRecord><situationRecord xsi:type="GeneralObstruction" id="GUID5039151502" version="1"><situationRecordCreationTime>2021-11-10T13:44:14.805Z</situationRecordCreationTime><situationRecordVersionTime>2021-11-10T13:47:06.342Z</situationRecordVersionTime><situationRecordFirstSupplierVersionTime>2021-11-10T13:44:14.805Z</situationRecordFirstSupplierVersionTime><probabilityOfOccurrence>certain</probabilityOfOccurrence><validity><validityStatus>active</validityStatus><validityTimeSpecification><overallStartTime>2021-11-10T13:44:14.807Z</overallStartTime></validityTimeSpecification></validity><groupOfLocations xsi:type="Point"/><obstructionType>severeFrostDamagedRoadway</obstructionType></situationRecord></situation></payloadPublication></d2LogicalModel>]]>
+        </d2Message>
+        <jMessage><![CDATA[
+{
+  "geometry" : {
+    "type" : "MultiLineString",
+    "coordinates" : [ [ [ 22.625357, 63.241086 ], [ 22.62597, 63.241248 ], [ 22.62624, 63.241315 ], [ 22.626974, 63.241552 ], [ 22.627484, 63.241911 ], [ 22.627955, 63.242266 ], [ 22.628425, 63.242592 ], [ 22.628839, 63.242857 ], [ 22.628996, 63.242914 ], [ 22.629323, 63.243026 ], [ 22.629685, 63.243101 ], [ 22.630459, 63.243188 ], [ 22.631522, 63.243272 ], [ 22.632326, 63.24336 ], [ 22.633111, 63.243509 ], [ 22.633753, 63.243716 ], [ 22.634302, 63.243974 ], [ 22.635017, 63.244198 ], [ 22.635666, 63.244341 ], [ 22.636665, 63.24447 ], [ 22.637495, 63.244617 ], [ 22.63823, 63.244764 ], [ 22.638863, 63.244977 ], [ 22.63954, 63.245257 ], [ 22.640254, 63.245451 ], [ 22.641273, 63.245624 ], [ 22.64209, 63.245749 ], [ 22.642947, 63.245845 ], [ 22.643615, 63.245962 ], [ 22.643887, 63.246044 ], [ 22.644464, 63.246209 ], [ 22.645182, 63.246422 ], [ 22.645588, 63.246537 ], [ 22.647204, 63.247034 ], [ 22.648078, 63.247263 ], [ 22.649199, 63.247576 ], [ 22.649587, 63.247808 ], [ 22.649877, 63.248063 ], [ 22.650081, 63.24823 ], [ 22.650263, 63.24839 ], [ 22.65043, 63.248528 ], [ 22.650545, 63.248632 ], [ 22.650694, 63.248768 ], [ 22.651002, 63.249041 ], [ 22.651088, 63.249118 ], [ 22.651527, 63.249493 ], [ 22.651954, 63.249872 ], [ 22.652137, 63.250021 ], [ 22.652849, 63.250642 ], [ 22.653426, 63.251164 ], [ 22.653451, 63.251183 ], [ 22.653651, 63.251329 ], [ 22.653924, 63.251488 ], [ 22.654337, 63.251684 ], [ 22.655216, 63.252038 ], [ 22.655986, 63.252335 ], [ 22.656718, 63.252608 ], [ 22.657504, 63.252928 ], [ 22.657933, 63.253155 ], [ 22.658211, 63.253363 ], [ 22.658621, 63.253771 ], [ 22.658984, 63.254142 ], [ 22.65938, 63.254551 ], [ 22.660218, 63.255406 ], [ 22.660911, 63.25612 ], [ 22.661086, 63.256306 ], [ 22.661744, 63.256975 ], [ 22.662339, 63.257592 ], [ 22.662578, 63.257843 ], [ 22.662896, 63.258165 ], [ 22.663281, 63.258551 ], [ 22.663507, 63.258788 ], [ 22.663827, 63.259108 ], [ 22.664324, 63.259567 ], [ 22.664511, 63.259704 ], [ 22.664899, 63.259956 ], [ 22.665986, 63.260674 ], [ 22.667148, 63.261437 ], [ 22.668191, 63.262126 ], [ 22.668622, 63.262347 ], [ 22.668998, 63.262504 ], [ 22.669223, 63.262623 ], [ 22.669388, 63.262731 ], [ 22.669498, 63.262846 ], [ 22.669629, 63.263057 ], [ 22.669644, 63.26323 ], [ 22.669551, 63.263582 ], [ 22.669438, 63.263953 ], [ 22.669424, 63.264132 ], [ 22.669449, 63.264214 ], [ 22.66951, 63.264308 ], [ 22.669653, 63.264444 ], [ 22.669999, 63.264682 ], [ 22.67038, 63.264878 ], [ 22.670761, 63.264999 ], [ 22.671029, 63.265031 ], [ 22.671619, 63.265099 ], [ 22.672108, 63.26517 ], [ 22.672678, 63.265343 ], [ 22.672976, 63.265431 ], [ 22.673442, 63.265536 ], [ 22.674353, 63.265708 ], [ 22.674525, 63.26575 ], [ 22.67479, 63.265823 ], [ 22.674987, 63.265878 ], [ 22.675619, 63.266093 ], [ 22.677345, 63.266778 ], [ 22.677748, 63.266955 ], [ 22.678079, 63.267092 ], [ 22.678394, 63.267224 ], [ 22.678574, 63.267302 ], [ 22.679232, 63.267587 ], [ 22.679352, 63.267651 ], [ 22.679433, 63.267695 ], [ 22.679853, 63.267883 ], [ 22.680178, 63.268014 ], [ 22.680815, 63.268286 ], [ 22.68098, 63.268354 ], [ 22.681321, 63.268489 ], [ 22.682219, 63.268844 ], [ 22.682459, 63.268944 ], [ 22.682931, 63.269132 ], [ 22.683278, 63.26927 ], [ 22.684377, 63.26968 ], [ 22.684642, 63.269779 ], [ 22.685647, 63.270156 ], [ 22.686744, 63.270543 ], [ 22.687649, 63.270837 ], [ 22.689055, 63.27126 ], [ 22.690348, 63.271664 ], [ 22.691407, 63.272011 ], [ 22.69198, 63.272204 ], [ 22.692755, 63.272512 ], [ 22.69309, 63.272652 ], [ 22.693662, 63.272893 ], [ 22.694518, 63.273284 ], [ 22.695253, 63.273548 ], [ 22.696179, 63.273832 ], [ 22.697379, 63.274134 ], [ 22.697801, 63.27422 ], [ 22.698366, 63.274336 ], [ 22.699393, 63.274525 ], [ 22.699918, 63.274602 ], [ 22.700278, 63.274611 ], [ 22.700496, 63.274594 ], [ 22.701205, 63.274524 ], [ 22.701465, 63.274488 ], [ 22.702713, 63.274322 ], [ 22.704281, 63.27408 ], [ 22.70525, 63.273819 ], [ 22.705332, 63.273796 ], [ 22.706317, 63.273526 ], [ 22.707538, 63.273209 ], [ 22.708503, 63.272967 ], [ 22.708605, 63.272939 ], [ 22.709059, 63.272814 ], [ 22.709403, 63.272722 ], [ 22.709845, 63.272605 ], [ 22.710106, 63.272549 ], [ 22.710432, 63.272496 ], [ 22.710853, 63.272456 ], [ 22.711132, 63.272422 ], [ 22.711405, 63.272403 ], [ 22.712246, 63.272345 ], [ 22.713036, 63.272275 ], [ 22.713438, 63.27223 ], [ 22.713698, 63.272205 ], [ 22.714216, 63.272139 ], [ 22.714887, 63.27206 ], [ 22.71561, 63.271981 ], [ 22.716231, 63.271914 ], [ 22.716752, 63.271869 ], [ 22.716799, 63.271867 ], [ 22.717031, 63.271861 ], [ 22.717171, 63.271857 ], [ 22.71741, 63.271851 ], [ 22.718005, 63.271874 ], [ 22.718539, 63.27193 ], [ 22.718864, 63.27198 ], [ 22.719167, 63.272038 ], [ 22.719714, 63.2722 ], [ 22.720155, 63.272355 ], [ 22.720662, 63.272568 ], [ 22.721086, 63.27273 ], [ 22.721622, 63.272946 ], [ 22.722118, 63.273173 ], [ 22.722584, 63.273451 ], [ 22.723017, 63.273719 ], [ 22.723411, 63.273952 ], [ 22.723664, 63.274093 ], [ 22.723763, 63.274148 ] ], [ [ 22.723763, 63.274148 ], [ 22.723763, 63.274148 ] ] ]
+  },
+  "type" : "Feature",
+  "properties" : {
+    "situationId" : "GUID50390596",
+    "version" : 1,
+    "situationType" : "weight restriction",
+    "releaseTime" : "2021-11-10T13:44:14.805Z",
+    "announcements" : [ {
+      "language" : "fi",
+      "title" : "Tie 7300, Kauhava. Painorajoitus. ",
+      "location" : {
+        "countryCode" : 6,
+        "locationTableNumber" : 17,
+        "locationTableVersion" : "1_11_42",
+        "description" : "Tie 7300 välillä Oravais - Isotalo, Kauhava.\nTarkempi paikka: Välillä Välitalo - Huhtamäen silta."
+      },
+      "locationDetails" : {
+        "roadAddressLocation" : {
+          "primaryPoint" : {
+            "municipality" : "Kauhava",
+            "province" : "Etelä-Pohjanmaa",
+            "country" : "Suomi",
+            "roadAddress" : {
+              "road" : 7300,
+              "roadSection" : 5,
+              "distance" : 3
+            },
+            "alertCLocation" : {
+              "locationCode" : 22226,
+              "name" : "Välitalo"
+            }
+          },
+          "secondaryPoint" : {
+            "municipality" : "Kauhava",
+            "province" : "Etelä-Pohjanmaa",
+            "country" : "Suomi",
+            "roadAddress" : {
+              "road" : 7300,
+              "roadSection" : 6,
+              "distance" : 0
+            },
+            "alertCLocation" : {
+              "locationCode" : 22227,
+              "name" : "Huhtamäen silta"
+            }
+          },
+          "direction" : "both"
+        }
+      },
+      "features" : [ {
+        "name" : "Ajoneuvon suurin sallittu massa",
+        "quantity" : 12.0,
+        "unit" : "t"
+      } ],
+      "timeAndDuration" : {
+        "startTime" : "2021-11-10T13:44:14.807Z"
+      },
+      "additionalInformation" : "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+      "sender" : "Fintraffic Tieliikennekeskus Oulu"
+    } ],
+    "contact" : {
+      "phone" : "02002100",
+      "email" : "oulu.liikennekeskus@fintraffic.fi"
+    }
+  }
+}
+]]>
+        </jMessage>
+    </messageContent>
+</imsMessage>

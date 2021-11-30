@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.controller.handler;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -33,6 +31,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.google.common.collect.Iterables;
 
+import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.helper.LoggerHelper;
 import fi.livi.digitraffic.tie.service.BadRequestException;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -203,7 +202,7 @@ public class DefaultExceptionHandler {
 
     private ResponseEntity<ErrorResponse> getErrorResponseEntity(final HttpStatus httpStatus, final String errorMsg, final ServletWebRequest request) {
         final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(DtMediaType.APPLICATION_JSON);
 
         final ErrorResponse response = new ErrorResponse(httpStatus.value(), httpStatus.getReasonPhrase(), errorMsg, request.getRequest().getRequestURI());
 

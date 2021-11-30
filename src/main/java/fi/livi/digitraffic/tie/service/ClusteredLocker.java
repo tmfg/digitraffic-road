@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.dao.LockingRepository;
+
 @Component
 public class ClusteredLocker {
 
@@ -36,6 +38,7 @@ public class ClusteredLocker {
         final CountDownLatch latch = new CountDownLatch(1);
         while (!tryLock(lockName, expirationSeconds, overrideInstanceId)) {
             try {
+                //noinspection ResultOfMethodCallIgnored
                 latch.await(100, TimeUnit.MILLISECONDS);
             } catch (final InterruptedException e) {
                 log.error("method=lock Error await interrupted", e);
@@ -116,6 +119,10 @@ public class ClusteredLocker {
      */
     public ClusteredLock createClusteredLock(final String lockName, final int expirationSeconds) {
         return new ClusteredLock(this, lockName, expirationSeconds);
+    }
+
+    public LockingRepository.LockInfo getLockInfo(final String lock) {
+        return lockingServiceInternal.getLockInfo(lock);
     }
 
     public class ClusteredLock {

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
@@ -156,5 +157,22 @@ public class ImsJsonConverter {
     private boolean isFeature(final JsonNode root) {
         final JsonNode type = root.get("type");
         return type != null && StringUtils.equals(type.asText(), "Feature");
+    }
+
+    public JsonNode parseGeometryNodeFromFeatureJson(final String featureJson) {
+        try {
+            final JsonNode featureNode = genericJsonReader.readTree(featureJson);
+            return featureNode.get("geometry");
+        } catch (final JsonProcessingException e) {
+            log.error(String.format("method=parseGeometryFromFeatureJson Failed to read geometry of featureJson : %s", featureJson), e);
+        }
+        return null;
+    }
+
+    public String replaceFeatureJsonGeometry(final String featureJson, final String replacementGeometryJson) throws JsonProcessingException {
+        final ObjectNode featureNode = (ObjectNode) genericJsonReader.readTree(featureJson);
+        final JsonNode replacementGeometryNode = genericJsonReader.readTree(replacementGeometryJson);
+        featureNode.set("geometry", replacementGeometryNode);
+        return featureNode.toPrettyString();
     }
 }

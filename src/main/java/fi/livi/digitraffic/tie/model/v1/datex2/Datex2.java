@@ -18,7 +18,12 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
+
+@TypeDef(name = "json", typeClass = JsonType.class)
 @Entity
 @DynamicUpdate
 @Table(name = "DATEX2")
@@ -55,7 +60,14 @@ public class Datex2 {
     @OneToMany(mappedBy = "datex2", cascade = CascadeType.ALL)
     private List<Datex2Situation> situations;
 
+    @Type(type = "json")
+    @Column(columnDefinition = "json")
     private String jsonMessage;
+
+    /** If geometry is not valid the original jsonMessage will be saved here and fixed version to jsonMessage-field */
+    @Type(type = "json")
+    @Column(columnDefinition = "json")
+    private String originalJsonMessage;
 
     public Datex2() {
         // For JPA
@@ -139,5 +151,9 @@ public class Datex2 {
 
     public void setTrafficAnnouncementType(TrafficAnnouncementType trafficAnnouncementType) {
         this.trafficAnnouncementType = trafficAnnouncementType;
+    }
+
+    public void setOriginalJsonMessage(final String originalJsonMessage) {
+        this.originalJsonMessage = originalJsonMessage;
     }
 }

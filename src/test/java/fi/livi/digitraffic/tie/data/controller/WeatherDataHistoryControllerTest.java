@@ -44,9 +44,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_BETA_BASE_PATH + WEATHER_HISTORY_DATA_PATH + url);
         // Actual API
         //final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(API_V2_BASE_PATH + API_DATA_PART_PATH + WEATHER_HISTORY_DATA_PATH + url);
-
         get.contentType(MediaType.APPLICATION_JSON);
-
         ResultActions result = mockMvc.perform(get);
         log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
