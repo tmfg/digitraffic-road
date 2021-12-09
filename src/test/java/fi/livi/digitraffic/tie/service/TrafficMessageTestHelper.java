@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
@@ -125,18 +124,18 @@ public class TrafficMessageTestHelper {
     }
 
 
-    public static String getSituationIdForSituationType(final SituationType situationType) {
-        switch (situationType) {
-        case TRAFFIC_ANNOUNCEMENT:
+    public static String getSituationIdForSituationType(final String situationTypeName) {
+        switch (situationTypeName) {
+        case "TRAFFIC_ANNOUNCEMENT":
             return "GUID10000001";
-        case EXEMPTED_TRANSPORT:
+        case "EXEMPTED_TRANSPORT":
             return "GUID10000002";
-        case WEIGHT_RESTRICTION:
+        case "WEIGHT_RESTRICTION":
             return "GUID10000003";
-        case ROAD_WORK:
+        case "ROAD_WORK":
             return "GUID10000004";
         }
-        throw new IllegalStateException("Unknown SituationType " + situationType);
+        throw new IllegalStateException("Unknown SituationType " + situationTypeName);
     }
 
     public void initImsDataFromFile(final String file, final ImsJsonVersion jsonVersion, final ZonedDateTime startTime,
@@ -166,42 +165,42 @@ public class TrafficMessageTestHelper {
         return xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
     }
 
-    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final String situationTypeName,
                                                      final ImsJsonVersion jsonVersion)
         throws IOException {
-        initDataFromStaticImsResourceContent(xmlVersion, situationType, jsonVersion, ZonedDateTime.now().minusHours(1), null);
+        initDataFromStaticImsResourceContent(xmlVersion, situationTypeName, jsonVersion, ZonedDateTime.now().minusHours(1), null);
     }
 
-    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final String situationTypeName,
                                                      final ImsJsonVersion jsonVersion,
                                                      final ZonedDateTime startTime, final ZonedDateTime endTime) throws IOException {
-        initDataFromStaticImsResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime, false);
+        initDataFromStaticImsResourceContent(xmlVersion, situationTypeName, jsonVersion, startTime, endTime, false);
     }
 
-    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType,
+    public void initDataFromStaticImsResourceContent(final ImsXmlVersion xmlVersion, final String situationTypeName,
                                                      final ImsJsonVersion jsonVersion,
                                                      final ZonedDateTime startTime, final ZonedDateTime endTime,
                                                      final boolean lifeCycleCanceled) throws IOException {
-        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion, startTime, endTime, lifeCycleCanceled);
+        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationTypeName, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 
-    public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion, final SituationType situationType, final ImsJsonVersion jsonVersion,
+    public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion, final String situationTypeName, final ImsJsonVersion jsonVersion,
                                                        final ZonedDateTime startTime, final ZonedDateTime endTime, final boolean lifeCycleCanceled) throws IOException {
         final String xmlImsMessageTemplate = readImsMessageResourceContent(xmlVersion);
-        final String json = readStaticImsJmessageResourceContent(jsonVersion, situationType, startTime, endTime, lifeCycleCanceled);
-        final String d2 = readStaticD2MessageResourceContent(situationType, startTime, endTime, jsonVersion.intVersion, lifeCycleCanceled);
+        final String json = readStaticImsJmessageResourceContent(jsonVersion, situationTypeName, startTime, endTime, lifeCycleCanceled);
+        final String d2 = readStaticD2MessageResourceContent(situationTypeName, startTime, endTime, jsonVersion.intVersion, lifeCycleCanceled);
         return xmlImsMessageTemplate.replace(D2_MESSAGE_PLACEHOLDER, d2).replace(JSON_MESSAGE_PLACEHOLDER, json);
     }
 
-    public static String readStaticImsJmessageResourceContent(final ImsJsonVersion jsonVersion, final SituationType situationType,
+    public static String readStaticImsJmessageResourceContent(final ImsJsonVersion jsonVersion, final String situationTypeName,
                                                               final ZonedDateTime startTime, final ZonedDateTime endTime,
                                                               final boolean lifeCycleCanceled) throws IOException {
         final String path =
             "classpath:tloik/ims/versions/" +
             getJsonVersionString(jsonVersion) + "/"+
-            situationType + ".json";
+            situationTypeName + ".json";
         return readStaticImsJmessageResourceContent(path, jsonVersion, startTime, endTime, lifeCycleCanceled);
     }
 
@@ -213,10 +212,10 @@ public class TrafficMessageTestHelper {
 
     }
 
-    public static String readStaticD2MessageResourceContent(final SituationType situationType, final ZonedDateTime startTime,
+    public static String readStaticD2MessageResourceContent(final String situationTypeName, final ZonedDateTime startTime,
                                                             final ZonedDateTime endTime, int situationVersion,
                                                             final boolean lifeCycleCanceled) throws IOException {
-        final String path = "classpath:tloik/ims/versions/d2Message_" + situationType + ".xml";
+        final String path = "classpath:tloik/ims/versions/d2Message_" + situationTypeName + ".xml";
         log.info("Reading D2Message resource: {}", path);
         final String content = readResourceContent(path);
         return replaceDatex2Placeholders(content, startTime, endTime, situationVersion, lifeCycleCanceled);

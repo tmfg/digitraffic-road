@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.datex2;
 
 import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
-import static fi.livi.digitraffic.tie.service.datex2.V3Datex2JsonConverterTest.WORK_PHASE_ID;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -25,6 +24,10 @@ import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Worktype;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 
 public class ImsJsonMessageTestFactory {
+
+    public static final String MAX_DURATION = "PT8H";
+    public static final String MIN_DURATION = "PT6H";
+    public static final String WORK_PHASE_ID = "WP1";
 
     public static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature createTrafficAnnouncementJsonMessage(
         final TrafficAnnouncementProperties.SituationType situationType,
@@ -103,8 +106,8 @@ public class ImsJsonMessageTestFactory {
         return new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TimeAndDuration(
             releaseTime, releaseTime.plusHours(2),
             new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.EstimatedDuration().withInformal("Yli 6 tuntia")
-                .withMaximum(V3Datex2JsonConverterTest.MAX_DURATION)
-                .withMinimum(V3Datex2JsonConverterTest.MIN_DURATION));
+                .withMaximum(MAX_DURATION)
+                .withMinimum(MIN_DURATION));
     }
 
     private static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.LocationDetails createLocationDetails(final boolean areaLocation) {

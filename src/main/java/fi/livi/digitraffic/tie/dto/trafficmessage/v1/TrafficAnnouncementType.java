@@ -1,11 +1,13 @@
-package fi.livi.digitraffic.tie.model.v1.datex2;
+package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 
+import io.swagger.annotations.ApiModel;
+
+@ApiModel(description = "Traffic Announcement type", value = "TrafficAnnouncementType_V1")
 public enum TrafficAnnouncementType {
 
     GENERAL("general"),
@@ -33,14 +35,9 @@ public enum TrafficAnnouncementType {
         return this.value;
     }
 
-    @JsonValue
-    public String value() {
-        return this.value;
-    }
-
     @JsonCreator
     public static TrafficAnnouncementType fromValue(final String value) {
-        final TrafficAnnouncementType constant = CONSTANTS.get(value.toUpperCase());
+        TrafficAnnouncementType constant = CONSTANTS.get(value.toUpperCase());
         if (constant == null) {
             throw new IllegalArgumentException(value);
         } else {

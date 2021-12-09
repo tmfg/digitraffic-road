@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -73,12 +72,12 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         final JMSMessageListener<ExternalIMSMessage> jmsMessageListener = createImsJmsMessageListener();
 
         // Only V0_2_12 version is received at the moment
-        for (final ImsJsonVersion imsJsonVersion : Arrays.asList(ImsJsonVersion.V0_2_12)) {
+        for (final ImsJsonVersion imsJsonVersion : List.of(ImsJsonVersion.V0_2_12)) {
             for(final SituationType type : SituationType.values()) {
                 cleanDb();
                 log.info("Run datex2ReceiveImsMessagesAllVersions with imsJsonVersion={}", imsJsonVersion);
                 sendJmsMessage(ImsXmlVersion.V1_2_1, type, imsJsonVersion, jmsMessageListener);
-                checkActiveSituations(getSituationIdForSituationType(type));
+                checkActiveSituations(getSituationIdForSituationType(type.name()));
             }
         }
     }
@@ -165,8 +164,8 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
     private void sendJmsMessage(final ImsXmlVersion xmlVersion, final SituationType situationType, final ImsJsonVersion jsonVersion,
                                 final JMSMessageListener<ExternalIMSMessage> messageListener) throws IOException {
-        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType, jsonVersion,
-                                                                                                 ZonedDateTime.now().minusHours(1), null, false);
+        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType.name(), jsonVersion,
+                                                                   ZonedDateTime.now().minusHours(1), null, false);
         createAndSendJmsMessage(xmlImsMessage, messageListener);
     }
 

@@ -1,10 +1,9 @@
-package fi.livi.digitraffic.tie.data.controller.v3;
+package fi.livi.digitraffic.tie.controller.trafficmessage;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
-import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGES_DATEX2;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGES_SIMPLE;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGES_V1;
+import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
@@ -46,21 +45,20 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuration;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TimeAndDuration;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 
-public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegionGeometryMock {
-    private static final Logger log = getLogger(V3TrafficMessagesControllerTest.class);
+public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegionGeometryMock {
+    private static final Logger log = getLogger(TrafficMessagesControllerV1Test.class);
 
     @Autowired
     protected Datex2DataService datex2DataService;
@@ -108,9 +106,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
                     assertTimesFormatMatches(json);
-                    assertTimesFormatMatches(json);
                     assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()), start, end, imsJsonVersion);
-                    assertTraficAnouncmentTypeLowerCase(json, situationType);
+                    assertTraficAnouncmentTypeUpperCase(json, situationType);
                 }
             }
         }
@@ -137,7 +134,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     assertTimesFormatMatches(xml);
                     assertTimesFormatMatches(json);
                     assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()), start, end, imsJsonVersion);
-                    assertTraficAnouncmentTypeLowerCase(json, situationType);
+                    assertTraficAnouncmentTypeUpperCase(json, situationType);
                 }
             }
         }
@@ -221,7 +218,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
         final String commentXml = situation.getSituationRecords().get(0).getGeneralPublicComments().get(0).getComment().getValues().getValues().stream()
             .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
 
-        assertEquals(situationType, jsonProperties.getSituationType());
+        assertEquals(situationType.name(), jsonProperties.getSituationType().name());
         if (situationType == TRAFFIC_ANNOUNCEMENT) {
             assertTrue(Sets.newHashSet(TrafficAnnouncementType.values()).contains(jsonProperties.getTrafficAnnouncementType()));
         }
@@ -246,10 +243,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
         }
     }
 
-    private static String getUrlWithType(final boolean json, final int inactiveHours, final SituationType...messageType) {
-        final String[] types = V3Datex2DataService.typesAsStrings(messageType);
-        final String params = String.join(",", types);
-        return API_V3_BASE_PATH + API_DATA_PART_PATH + (json ? TRAFFIC_MESSAGES_SIMPLE_PATH : TRAFFIC_MESSAGES_DATEX2_PATH) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + params;
+    private static String getUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
+        return TRAFFIC_MESSAGES_V1 + (json ? TRAFFIC_MESSAGES_SIMPLE : TRAFFIC_MESSAGES_DATEX2) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
     }
 
     private String getResponse(final String url) throws Exception {
@@ -262,16 +257,16 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
         return mockMvc.perform(get).andReturn().getResponse().getContentAsString();
     }
 
-    private void assertTraficAnouncmentTypeLowerCase(final String json, final SituationType situationType) {
+    private void assertTraficAnouncmentTypeUpperCase(final String json, final SituationType situationType) {
         if (situationType.equals(TRAFFIC_ANNOUNCEMENT)) {
             final String trafficAnnouncementType =
                 StringUtils.substringBefore(
                     StringUtils.substringAfter(
                         StringUtils.substringAfter(
                             StringUtils.substringAfter(json, "trafficAnnouncementType"), ":"), "\""), "\"");
-            final Set<String> values = Arrays.stream(TrafficAnnouncementType.values()).map(TrafficAnnouncementType::value).collect(Collectors.toSet());
+            final Set<String> values = Arrays.stream(TrafficAnnouncementType.values()).map(Enum::name).collect(Collectors.toSet());
             assertTrue(values.contains(trafficAnnouncementType));
-            assertTrue(StringUtils.isAllLowerCase(trafficAnnouncementType.replace(" ", "")));
+            assertTrue(StringUtils.isAllUpperCase(trafficAnnouncementType.replace("_", "")));
         }
     }
 }

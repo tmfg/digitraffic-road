@@ -11,7 +11,7 @@
         "situationId": "GUID10000001",
         "version": SITUATION_VERSION,
         "situationType": "traffic announcement",
-        "trafficAnnouncementType": "general",
+        "trafficAnnouncementType": "preliminary accident report",
         "releaseTime": "SITUATION_VERSION_DATE_TIME",
         "announcements": [
             {
