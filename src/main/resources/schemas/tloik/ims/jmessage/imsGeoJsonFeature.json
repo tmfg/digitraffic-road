@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "javaType" : "fi.livi.digitraffic.tie.external.tloik.ims.jmessage.v0_2_14.ImsGeoJsonFeature",
+    "javaType" : "fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature",
     "$id": "https://geojson.org/schema/Feature.json",
     "title": "GeoJSON Feature",
     "type": "object",
@@ -20,7 +20,7 @@
                     "id": "urn:JSONMessage",
                     "type": "object",
                     "additionalProperties": true,
-                    "$ref": "JSONMessage_0_2_14.json"
+                    "$ref": "JSONMessage.json"
         },
         "geometry": {
             "oneOf": [
