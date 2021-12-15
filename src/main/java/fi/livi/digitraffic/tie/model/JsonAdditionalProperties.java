@@ -24,15 +24,23 @@ public abstract class JsonAdditionalProperties {
     private final Map<Class<?>, Set<String>> ignoreClassToPropertiesMap = Stream.of(new Object[][] {
         { fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadWorkPhase.class,
           newHashSet("features") },
+        { fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadWorkPhase.class,
+          newHashSet("features") },
         { fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementProperties.class,
           newHashSet("situationType", "trafficAnnouncementType", "locationToDisplay") },
         { fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties.class,
+          newHashSet("locationToDisplay") },
+        { fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties.class,
           newHashSet("locationToDisplay") },
         { fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncement.class,
           newHashSet("lastActiveItinerarySegment", "roadWorkPhases", "earlyClosing") },
         { fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Contact.class,
           newHashSet("fax") },
+        { fi.livi.digitraffic.tie.dto.trafficmessage.v1.Contact.class,
+          newHashSet("fax") },
         { fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class,
+          newHashSet("bbox") },
+        { fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature.class,
           newHashSet("bbox") },
 
     }).collect(Collectors.toMap(data -> (Class<?>)data[0], data -> (Set<String>)data[1]));

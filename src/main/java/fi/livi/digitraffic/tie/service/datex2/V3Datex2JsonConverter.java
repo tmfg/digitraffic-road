@@ -201,11 +201,7 @@ public class V3Datex2JsonConverter {
                         ((ObjectNode) roadWorkPhase).set("worktypes", worktypes);
                     }
                     if (fixWorktypesToCamelCase) {
-                        final ArrayNode workTypes = (ArrayNode) roadWorkPhase.get("worktypes");
-                        if (workTypes != null && workTypes.size() > 0) {
-                            ((ObjectNode) roadWorkPhase).set("workTypes", workTypes);
-                            ((ObjectNode) roadWorkPhase).remove("worktypes");
-                        }
+                        fixWorktypesToCamelCase(roadWorkPhase);
                     }
                 }
             }
@@ -227,6 +223,16 @@ public class V3Datex2JsonConverter {
             }
         }
         return objectMapper.writer().writeValueAsString(root);
+    }
+
+    private void fixWorktypesToCamelCase(final JsonNode roadWorkPhase) {
+        final ArrayNode workTypes = (ArrayNode) roadWorkPhase.get("worktypes");
+        if (workTypes != null) {
+            if (!workTypes.isEmpty()) {
+                ((ObjectNode) roadWorkPhase).set("workTypes", workTypes);
+            }
+            ((ObjectNode) roadWorkPhase).remove("worktypes");
+        }
     }
 
     protected ArrayNode readAnnouncementsFromTheImsJson(final JsonNode root) {
