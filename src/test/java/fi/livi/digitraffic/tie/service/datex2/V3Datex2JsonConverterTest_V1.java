@@ -76,7 +76,7 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
 
     @Test
     public void convertImsSimpleJsonVersionToGeoJsonFeatureObject_V1() throws IOException {
-        for(ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
+        for (final ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
             for (final SituationType st : SituationType.values()) {
                 final String json = readStaticImsJmessageResourceContent(jsonVersion, st.name(), ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
                 log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
@@ -217,8 +217,8 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
         }
     }
 
-    private void assertEarlyClosing(TrafficAnnouncement announcement,
-                                    ImsJsonVersion version, SituationType st) {
+    private void assertEarlyClosing(final TrafficAnnouncement announcement,
+                                    final ImsJsonVersion version, final SituationType st) {
         if (st == SituationType.ROAD_WORK && version.version >= 2.08) {
             assertNotNull(announcement.earlyClosing);
         } else {
@@ -296,7 +296,7 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
         }
     }
 
-    private void assertType(final TrafficAnnouncementProperties props, SituationType st) {
+    private void assertType(final TrafficAnnouncementProperties props, final SituationType st) {
         assertEquals(st.name(), props.getSituationType().name());
         if (st.name().equals(SituationType.TRAFFIC_ANNOUNCEMENT.name())) {
             assertNotNull(props.getTrafficAnnouncementType());
@@ -304,7 +304,7 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
     }
 
     private void assertContacts(final TrafficAnnouncementProperties props,
-                                  final ImsJsonVersion version) {
+                                final ImsJsonVersion version) {
         assertNotNull(props.contact.email);
         assertNotNull(props.contact.phone);
     }
