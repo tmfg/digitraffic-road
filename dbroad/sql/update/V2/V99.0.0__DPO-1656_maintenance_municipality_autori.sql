@@ -1,0 +1,1 @@
+ALTER TABLE maintenance_tracking ADD COLUMN IF NOT EXISTS municipality_domain TEXT;
