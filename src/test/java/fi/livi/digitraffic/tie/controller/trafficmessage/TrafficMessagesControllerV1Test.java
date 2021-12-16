@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
-import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_DATEX2;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_SIMPLE;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_DATEX2_V1;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_SIMPLE_V1;
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
@@ -243,7 +243,7 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     }
 
     private static String getUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
-        return (json ? API_TRAFFIC_MESSAGES_V1_SIMPLE : API_TRAFFIC_MESSAGES_V1_DATEX2) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
+        return (json ? API_TRAFFIC_MESSAGES_SIMPLE_V1 : API_TRAFFIC_MESSAGES_DATEX2_V1) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
     }
 
     private String getResponse(final String url) throws Exception {
