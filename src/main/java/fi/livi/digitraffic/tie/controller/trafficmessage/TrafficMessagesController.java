@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_LATEST_AREA_GEOMETRIES;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_LATEST_DATEX2;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_LATEST_SIMPLE;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_AREA_GEOMETRIES;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_DATEX2;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_SIMPLE;
@@ -50,7 +53,8 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Active traffic messages as Datex2")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_V1_DATEX2 })
+                    path = { API_TRAFFIC_MESSAGES_V1_DATEX2,
+                             API_TRAFFIC_MESSAGES_LATEST_DATEX2 })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
         @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
@@ -65,7 +69,8 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Traffic messages history by situation as Datex2")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_V1_DATEX2 + "/{situationId}" })
+                    path = { API_TRAFFIC_MESSAGES_V1_DATEX2 + "/{situationId}",
+                             API_TRAFFIC_MESSAGES_LATEST_DATEX2 + "/{situationId}"})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public D2LogicalModel trafficMessageDatex2BySituationId(
@@ -80,7 +85,8 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Active traffic messages as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_V1_SIMPLE })
+                    path = { API_TRAFFIC_MESSAGES_V1_SIMPLE,
+                             API_TRAFFIC_MESSAGES_LATEST_SIMPLE })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
         @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
@@ -99,7 +105,8 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_V1_SIMPLE + "/{situationId}" })
+                    path = { API_TRAFFIC_MESSAGES_V1_SIMPLE + "/{situationId}",
+                             API_TRAFFIC_MESSAGES_LATEST_SIMPLE + "/{situationId}"})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public TrafficAnnouncementFeatureCollection trafficMessageSimpleBySituationId(
@@ -118,7 +125,8 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Traffic messages geometries for regions")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_V1_AREA_GEOMETRIES })
+                    path = { API_TRAFFIC_MESSAGES_V1_AREA_GEOMETRIES,
+                             API_TRAFFIC_MESSAGES_LATEST_AREA_GEOMETRIES })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public RegionGeometryFeatureCollection areaLocationRegions(
