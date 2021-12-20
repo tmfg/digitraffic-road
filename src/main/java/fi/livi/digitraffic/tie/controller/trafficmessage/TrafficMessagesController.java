@@ -1,11 +1,11 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_AREA_GEOMETRIES_BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_AREA_GEOMETRIES_LATEST;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_AREA_GEOMETRIES_V1;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_DATEX2_BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_DATEX2_LATEST;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_DATEX2_V1;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_SIMPLE_BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_SIMPLE_LATEST;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_SIMPLE_V1;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGES_TAG;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
@@ -36,7 +36,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = TRAFFIC_MESSAGES_TAG)
+@Api(tags = TRAFFIC_MESSAGES_TAG + " (BETA)")
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -53,7 +53,7 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Active traffic messages as Datex2")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_DATEX2_V1,
+                    path = { API_TRAFFIC_MESSAGES_DATEX2_BETA,
                              API_TRAFFIC_MESSAGES_DATEX2_LATEST })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
@@ -69,7 +69,7 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Traffic messages history by situation as Datex2")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_DATEX2_V1 + "/{situationId}",
+                    path = { API_TRAFFIC_MESSAGES_DATEX2_BETA + "/{situationId}",
                              API_TRAFFIC_MESSAGES_DATEX2_LATEST + "/{situationId}"})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
@@ -85,7 +85,7 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Active traffic messages as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_SIMPLE_V1,
+                    path = { API_TRAFFIC_MESSAGES_SIMPLE_BETA,
                              API_TRAFFIC_MESSAGES_SIMPLE_LATEST })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
@@ -105,7 +105,7 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_SIMPLE_V1 + "/{situationId}",
+                    path = { API_TRAFFIC_MESSAGES_SIMPLE_BETA + "/{situationId}",
                              API_TRAFFIC_MESSAGES_SIMPLE_LATEST + "/{situationId}"})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
@@ -125,7 +125,7 @@ public class TrafficMessagesController {
 
     @ApiOperation(value = "Traffic messages geometries for regions")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGES_AREA_GEOMETRIES_V1,
+                    path = { API_TRAFFIC_MESSAGES_AREA_GEOMETRIES_BETA,
                              API_TRAFFIC_MESSAGES_AREA_GEOMETRIES_LATEST })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })

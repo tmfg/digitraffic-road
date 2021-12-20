@@ -56,7 +56,7 @@ public class SwaggerConfiguration {
 
     @Bean
     public Docket roadApi() {
-        return getDocket("road-api", getProductionApiPaths());
+        return getDocket("road-api", getApiPaths());
     }
 
     @Bean
@@ -66,7 +66,7 @@ public class SwaggerConfiguration {
 
     @Bean
     public Docket oldMetadataApi() {
-        return getDocket("metadata-api", getProductionApiPaths());
+        return getDocket("metadata-api", getApiPaths());
     }
 
     @Bean
@@ -99,15 +99,20 @@ public class SwaggerConfiguration {
 
     /**
      * Declares api paths to document by Swagger
-     * @return api paths
+     * @return Predicate for api paths to include in Swagger doc
      */
-    private static Predicate<String> getProductionApiPaths() {
+    private static Predicate<String> getApiPaths() {
         // All starting with API_BASE but not containing beta
         return regex(ApiConstants.API + "/(?!beta).*");
     }
 
+    /**
+     * This will be removed when {@link fi.livi.digitraffic.tie.controller.beta.BetaController} is removed.
+     * @return Predicate for api paths to include in beta Swagger doc
+     */
+    @Deprecated(forRemoval = true)
     private static Predicate<String> getBetaApiPaths() {
         // All containing beta
-        return regex(ApiConstants.API_BETA + ".*");
+        return regex(".*" + ApiConstants.BETA + ".*");
     }
 }
