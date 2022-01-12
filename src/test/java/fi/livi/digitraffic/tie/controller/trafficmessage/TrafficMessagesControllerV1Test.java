@@ -53,7 +53,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperti
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 
 public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegionGeometryMock {

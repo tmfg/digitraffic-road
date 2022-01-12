@@ -8,7 +8,7 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
-import static fi.livi.digitraffic.tie.service.datex2.Datex2Helper.getSituationPublication;
+import static fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper.getSituationPublication;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

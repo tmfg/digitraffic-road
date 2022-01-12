@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.datex2;
+package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.MultiPolygon;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;

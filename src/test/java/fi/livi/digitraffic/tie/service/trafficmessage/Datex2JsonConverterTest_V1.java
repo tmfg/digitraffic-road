@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.datex2;
+package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.MultiPolygon;
@@ -49,11 +49,11 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionGeometryMock {
-    private static final Logger log = getLogger(V3Datex2JsonConverterTest_V1.class);
+public class Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionGeometryMock {
+    private static final Logger log = getLogger(Datex2JsonConverterTest_V1.class);
 
     @Autowired
-    private V3Datex2JsonConverter v3Datex2JsonConverter;
+    private Datex2JsonConverterV1 datex2JsonConverterV1;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -81,7 +81,7 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
                 final String json = readStaticImsJmessageResourceContent(jsonVersion, st.name(), ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
                 log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
                 final TrafficAnnouncementFeature ta =
-                    v3Datex2JsonConverter.convertToFeatureJsonObject_V1(json, st, GENERAL, true);
+                    datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, st, GENERAL, true);
                 validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(st, jsonVersion, ta);
                 log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
             }
@@ -97,7 +97,7 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
             ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
-            v3Datex2JsonConverter.convertToFeatureJsonObject_V1(json, situationType, GENERAL, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, situationType, GENERAL, true);
         // _WITH_MULTIPLE_ANOUNCEMENTS.json contains five areas in 1. anouncement and one area in 2. anouncement.
         // Should be merged to MultiPolygon
         assertGeometry(ta.getGeometry(), MultiPolygon);
@@ -113,7 +113,7 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
             ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
-            v3Datex2JsonConverter.convertToFeatureJsonObject_V1(json, situationType, GENERAL, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, situationType, GENERAL, false);
         // _WITH_MULTIPLE_ANOUNCEMENTS.json contains five areas in 1. anouncement and one area in 2. anouncement.
         // Should be merged to MultiPolygon
         assertNull(ta.getGeometry());
@@ -131,10 +131,10 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
         final String imsJson = writerForImsGeoJsonFeature.writeValueAsString(ims);
         // Convert to feature with includeAreaGeometry -parameter true -> should have the geometry
         final TrafficAnnouncementFeature resultWithGeometry =
-            v3Datex2JsonConverter.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, true);
         // Convert to feature with includeAreaGeometry -parameter false -> should not have the area geometry
         final TrafficAnnouncementFeature resultWithoutGeometry =
-            v3Datex2JsonConverter.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, false);
 
         assertNotNull(resultWithGeometry.getGeometry());
         assertNull(resultWithoutGeometry.getGeometry());
@@ -152,10 +152,10 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
         final String imsJson = writerForImsGeoJsonFeature.writeValueAsString(ims);
         // Convert to feature with includeAreaGeometry -parameter true -> should have the geometry
         final TrafficAnnouncementFeature resultWithGeometry =
-            v3Datex2JsonConverter.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, true);
         // Convert to feature with includeAreaGeometry -parameter false -> should still have the geometry as it's not an area geometry
         final TrafficAnnouncementFeature resultWithoutGeometry =
-            v3Datex2JsonConverter.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, false);
 
         assertNotNull(resultWithGeometry.getGeometry());
         assertNotNull(resultWithoutGeometry.getGeometry());
@@ -171,6 +171,7 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
         assertContacts(props, version);
         assertEarlyClosing(announcement, version, st);
         assertType(props, st);
+        assertPropertiesTimes(props);
 
         switch (st) {
             case TRAFFIC_ANNOUNCEMENT:
@@ -215,6 +216,11 @@ public class V3Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionG
             default:
                 throw new IllegalArgumentException("Unknown SituationType " + st);
         }
+    }
+
+    private void assertPropertiesTimes(final TrafficAnnouncementProperties props) {
+        assertNotNull(props.releaseTime);
+        assertNotNull(props.versionTime);
     }
 
     private void assertEarlyClosing(final TrafficAnnouncement announcement,

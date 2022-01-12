@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.datex2;
+package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -69,10 +69,8 @@ public class Datex2Helper {
 
     private static boolean contains(final String[] values, final String...matchTo) {
         return Arrays.stream(values)
-            .filter(text -> Arrays.stream(matchTo)
-                                .filter(match -> StringUtils.contains(text, match))
-                                .findFirst().isPresent())
-            .findFirst().isPresent();
+            .anyMatch(text -> Arrays.stream(matchTo)
+                                .anyMatch(match -> StringUtils.contains(text, match)));
     }
 
     public static TrafficAnnouncementType resolveTrafficAnnouncementTypeFromText(final String text) {

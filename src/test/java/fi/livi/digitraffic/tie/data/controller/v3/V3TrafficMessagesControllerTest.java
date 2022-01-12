@@ -55,7 +55,7 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 
@@ -214,6 +214,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
         final Instant versionTime = getVersionTime(start, imsJsonVersion).toInstant();
         assertEquals(versionTime, situation.getSituationRecords().get(0).getSituationRecordVersionTime());
         assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
+        assertEquals(versionTime, jsonProperties.versionTime.toInstant());
 
         assertEquals(end.toInstant(), situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallEndTime());
         assertEquals(end.toInstant(), jsonTimeAndDuration.endTime.toInstant());

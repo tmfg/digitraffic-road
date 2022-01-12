@@ -102,12 +102,12 @@ public class SwaggerConfiguration {
      * @return api paths
      */
     private static Predicate<String> getProductionApiPaths() {
-        // All starting with API_BASE but not containing beta
-        return regex(ApiConstants.API + "/(?!beta).*");
+        // All starting with API but not containing BETA
+        return regex("^(" + ApiConstants.API + ")+((?!" + ApiConstants.BETA + ").)*$");
     }
 
     private static Predicate<String> getBetaApiPaths() {
-        // All containing beta
-        return regex(ApiConstants.API_BETA + ".*");
+        // All containing BETA
+        return regex(".*" + ApiConstants.BETA + ".*");
     }
 }
