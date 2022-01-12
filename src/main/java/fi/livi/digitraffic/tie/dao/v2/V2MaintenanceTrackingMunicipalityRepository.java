@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 
 @Repository
-public interface V2MaintenanceTrackingRepository extends JpaRepository<MaintenanceTracking, Long> {
+public interface V2MaintenanceTrackingMunicipalityRepository extends JpaRepository<MaintenanceTracking, Long> {
 
     String DTO_SELECT_FIELDS_WITHOUT_LINE_STRING =
         "SELECT tracking.id\n" +
@@ -45,7 +45,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         DTO_SELECT_FIELDS_WITHOUT_LINE_STRING +
         DTO_TABLES;
 
-    String AND_NOT_MUNICIPALITY_SQL = "AND tracking.municipality_domain IS NULL\n";
+    String AND_MUNICIPALITY_SQL = "AND tracking.municipality_domain IS NULL\n";
 
     /**
      * EntityGraph causes HHH000104: firstResult/maxResults specified with collection fetch; applying in memory! warnings
@@ -63,7 +63,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @Query(value = DTO_LINESTRING_SQL +
                    "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +
                    "  AND (ST_INTERSECTS(:area, tracking.last_point) = true OR ST_INTERSECTS(:area, tracking.line_string) = true)\n" +
-                   AND_NOT_MUNICIPALITY_SQL +
+        AND_MUNICIPALITY_SQL +
                    "GROUP BY tracking.id\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
@@ -79,7 +79,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "    WHERE t.maintenance_tracking_id = tracking.id\n" +
                    "      AND t.task IN (:tasks)" +
                    "  )\n" +
-                   AND_NOT_MUNICIPALITY_SQL +
+        AND_MUNICIPALITY_SQL +
                    "GROUP BY tracking.id\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
@@ -94,7 +94,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "      AND ST_INTERSECTS(:area, t.last_point) = true\n" +
                    "    GROUP BY t.work_machine_id\n" +
                    ")\n" +
-                   AND_NOT_MUNICIPALITY_SQL +
+        AND_MUNICIPALITY_SQL +
                    "GROUP BY tracking.id\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
@@ -115,7 +115,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "    WHERE t.maintenance_tracking_id = tracking.id\n" +
                    "      AND t.task IN (:tasks)" +
                    "  )\n" +
-                   AND_NOT_MUNICIPALITY_SQL +
+        AND_MUNICIPALITY_SQL +
                    "GROUP BY tracking.id\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
@@ -126,4 +126,13 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "GROUP BY tracking.id\n",
            nativeQuery = true)
     MaintenanceTrackingDto getDto(long id);
+
+    @Query(value =
+        "select distinct municipality_domain\n" +
+        "from maintenance_tracking\n" +
+        "where municipality_domain is not null\n" +
+        "order by municipality_domain;",
+        nativeQuery = true)
+    List<String> findMunicipalityDomains();
+
 }

@@ -60,9 +60,17 @@ public class MaintenanceTracking {
     @Column
     private LineString lineString;
 
+    @Column
     private BigDecimal direction;
 
+    @Column
     private boolean finished;
+
+    @Column
+    private String municipalityDomain;
+
+    @Column
+    private String municipalityMessageOriginalId;
 
     @Column(insertable = false, updatable = false) // auto generated
     private ZonedDateTime created;
@@ -172,6 +180,14 @@ public class MaintenanceTracking {
 
     public MaintenanceTrackingWorkMachine getWorkMachine() {
         return workMachine;
+    }
+
+    public String getMunicipalityDomain() {
+        return municipalityDomain;
+    }
+
+    public String getMunicipalityMessageOriginalId() {
+        return municipalityMessageOriginalId;
     }
 
     public void setFinished() {

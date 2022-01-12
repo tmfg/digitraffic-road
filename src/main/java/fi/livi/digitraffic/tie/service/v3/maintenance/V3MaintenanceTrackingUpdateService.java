@@ -227,7 +227,7 @@ public class V3MaintenanceTrackingUpdateService {
             final StopWatch start = StopWatch.createStarted();
             final MaintenanceTracking tracking =
                 v2MaintenanceTrackingRepository
-                .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(
+                .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseAndMunicipalityDomainIsNullOrderByModifiedDescIdDesc(
                     harjaWorkMachineIdContractId.getLeft(),
                     harjaWorkMachineIdContractId.getRight());
             cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, tracking);
