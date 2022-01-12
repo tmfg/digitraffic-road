@@ -28,7 +28,7 @@ import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateValues;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;

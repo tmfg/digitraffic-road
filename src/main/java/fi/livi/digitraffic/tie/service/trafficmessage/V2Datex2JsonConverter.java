@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.datex2;
+package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import java.util.Collection;
 import java.util.Collections;

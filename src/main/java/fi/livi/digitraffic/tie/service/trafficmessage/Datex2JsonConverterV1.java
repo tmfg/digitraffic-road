@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.datex2;
+package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,8 +38,8 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
  */
 @ConditionalOnWebApplication
 @Component
-public class V3Datex2JsonConverter {
-    private static final Logger log = LoggerFactory.getLogger(V3Datex2JsonConverter.class);
+public class Datex2JsonConverterV1 {
+    private static final Logger log = LoggerFactory.getLogger(Datex2JsonConverterV1.class);
 
     protected final ObjectReader featureJsonReaderV2;
     protected final ObjectReader featureJsonReaderV3;
@@ -52,7 +52,7 @@ public class V3Datex2JsonConverter {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    public V3Datex2JsonConverter(final ObjectMapper objectMapper,
+    public Datex2JsonConverterV1(final ObjectMapper objectMapper,
                                  final V3RegionGeometryDataService v3RegionGeometryDataService) {
         this.objectMapper = objectMapper;
 
@@ -165,12 +165,32 @@ public class V3Datex2JsonConverter {
 
     private String convertImsJsonToV3And_V1Compatible(final String imsJson, final boolean fixWorktypesToCamelCase) throws JsonProcessingException {
         final JsonNode root = genericJsonReader.readTree(imsJson);
-        final JsonNode announcements = readAnnouncementsFromTheImsJson(root);
-        // if announcements is found json might be V0_2_4 and features must be converted to V0_2_6 and V0_2_8 format
-        if ( announcements == null || announcements.isEmpty() ) {
-            return imsJson;
-        }
 
+        // append versionTime if missing
+        final JsonNode properties = readPropertiesFromTheImsJson(root);
+        fixVersionTime(properties);
+
+        final JsonNode announcements = readAnnouncementsFromTheImsJsonProperties(properties);
+        // if announcements is found json might be V0_2_4 and features must be converted to V0_2_6 and V0_2_8 format
+        fixAnnouncements(announcements, fixWorktypesToCamelCase);
+
+        // Return fixed json
+        return objectMapper.writer().writeValueAsString(root);
+    }
+
+    private void fixVersionTime(final JsonNode properties) {
+        if (properties == null) {
+            return;
+        }
+        if (!properties.has("versionTime")) {
+            ((ObjectNode)properties).set("versionTime", properties.get("releaseTime"));
+        }
+    }
+
+    private void fixAnnouncements(final JsonNode announcements, final boolean fixWorktypesToCamelCase) {
+        if (announcements == null || announcements.isEmpty()) {
+            return;
+        }
         for (final JsonNode announcement : announcements) {
 
             final ArrayNode roadWorkPhases = (ArrayNode) announcement.get("roadWorkPhases");
@@ -222,7 +242,6 @@ public class V3Datex2JsonConverter {
                 }
             }
         }
-        return objectMapper.writer().writeValueAsString(root);
     }
 
     private void fixWorktypesToCamelCase(final JsonNode roadWorkPhase) {
@@ -235,13 +254,17 @@ public class V3Datex2JsonConverter {
         }
     }
 
-    protected ArrayNode readAnnouncementsFromTheImsJson(final JsonNode root) {
-        final JsonNode properties = root.get("properties");
+    protected ArrayNode readAnnouncementsFromTheImsJsonProperties(final JsonNode properties) {
         if (properties == null) {
             return null;
         }
         return (ArrayNode)properties.get("announcements");
     }
+
+    protected JsonNode readPropertiesFromTheImsJson(final JsonNode root) {
+        return root.get("properties");
+    }
+
 
     private void checkDurationViolationsV3(final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature feature) {
         final List<ConstraintViolation<fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration>> violations =

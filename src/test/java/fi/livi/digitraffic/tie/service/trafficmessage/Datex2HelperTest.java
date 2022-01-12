@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.datex2;
+package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -88,9 +88,7 @@ public class Datex2HelperTest extends AbstractServiceTest {
     public void getSituationPublicationUnsuportedExeption() {
         final D2LogicalModel d2 = new D2LogicalModel().withPayloadPublication(new GenericPublication());
 
-        assertThrows(IllegalArgumentException.class, () -> {
-                Datex2Helper.getSituationPublication(d2);
-            });
+        assertThrows(IllegalArgumentException.class, () -> Datex2Helper.getSituationPublication(d2));
     }
 
     @Test

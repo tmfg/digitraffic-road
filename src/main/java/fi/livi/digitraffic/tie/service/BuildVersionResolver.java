@@ -45,9 +45,7 @@ public class BuildVersionResolver {
     }
 
     public String getAppFullVersion() {
-        final String version = String.format("%s#%s@%s", getAppVersion(), getAppBuildRevision(), getAppBuildTime());
-        log.info("Application version: {}", version);
-        return version;
+        return String.format("%s#%s@%s", getAppVersion(), getAppBuildRevision(), getAppBuildTime());
     }
 
     private String readProperty(final String property) {
