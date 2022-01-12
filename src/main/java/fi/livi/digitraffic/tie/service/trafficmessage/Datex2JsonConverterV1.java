@@ -179,10 +179,7 @@ public class Datex2JsonConverterV1 {
     }
 
     private void fixVersionTime(final JsonNode properties) {
-        if (properties == null) {
-            return;
-        }
-        if (!properties.has("versionTime")) {
+        if (properties != null && !properties.has("versionTime")) {
             ((ObjectNode)properties).set("versionTime", properties.get("releaseTime"));
         }
     }
