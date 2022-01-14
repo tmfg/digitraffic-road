@@ -4,9 +4,11 @@ import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
@@ -23,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.DomainDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
@@ -54,6 +57,8 @@ public class V2MaintenanceTrackingDataService {
     private final ObjectMapper objectMapper;
     private static ObjectReader geometryReader;
 
+    public final static String HARJA_DOMAIN = "harja";
+
     @Autowired
     public V2MaintenanceTrackingDataService(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
                                             final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository,
@@ -70,7 +75,8 @@ public class V2MaintenanceTrackingDataService {
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final Instant endTimefrom, final Instant endTimeto,
                                                                                      final double xMin, final double yMin,
                                                                                      final double xMax, final double yMax,
-                                                                                     final List<MaintenanceTrackingTask> taskIds) {
+                                                                                     final List<MaintenanceTrackingTask> taskIds,
+                                                                                     final List<String> domains) {
         final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA));
         final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA_CHECKED));
 
@@ -78,8 +84,8 @@ public class V2MaintenanceTrackingDataService {
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
-                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area) :
-                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertTasksToStringArray(taskIds));
+                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, getSafeDomainList(domains)) :
+                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertTasksToStringArray(taskIds), getSafeDomainList(domains));
         log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
 
@@ -91,7 +97,8 @@ public class V2MaintenanceTrackingDataService {
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeTo,
                                                                          final double xMin, final double yMin,
                                                                          final double xMax, final double yMax,
-                                                                         final List<MaintenanceTrackingTask> taskIds) {
+                                                                         final List<MaintenanceTrackingTask> taskIds,
+                                                                         final List<String> domains) {
         final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA));
         final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA_CHECKED));
 
@@ -99,8 +106,8 @@ public class V2MaintenanceTrackingDataService {
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
-                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area) :
-                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, convertTasksToStringArray(taskIds));
+                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, getSafeDomainList(domains)) :
+                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, convertTasksToStringArray(taskIds), getSafeDomainList(domains));
 
         log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
                  xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), start.getTime());
@@ -111,6 +118,10 @@ public class V2MaintenanceTrackingDataService {
                  xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), startConvert.getTime());
 
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
+    }
+
+    private List<String> getSafeDomainList(final List<String> domains) {
+        return CollectionUtils.isEmpty(domains) ? Collections.singletonList(HARJA_DOMAIN) : domains;
     }
 
     private List<String> convertTasksToStringArray(final List<MaintenanceTrackingTask> taskIds) {
@@ -132,6 +143,11 @@ public class V2MaintenanceTrackingDataService {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<DomainDto> findDomains() {
+        return v2MaintenanceTrackingRepository.findDomains();
     }
 
     private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {

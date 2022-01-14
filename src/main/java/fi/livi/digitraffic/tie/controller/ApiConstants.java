@@ -26,13 +26,18 @@ public final class ApiConstants {
 
     /* Maintenance trackings */
     public static final String MAINTENANCE_TRACKINGS_TAG = "Maintenance trackings";
-    public static final String MAINTENANCE_TRACKINGS_BETA_TAG = "Maintenance trackings BETA";
+    public static final String MAINTENANCE_TRACKINGS_BETA_TAG = "Maintenance trackings (BETA)";
 
-    private static final String API_MAINTENANCE_TRACKINGS = API + "/maintenance-trackings";
-    private static final String API_MAINTENANCE_TRACKINGS_V1 = API_MAINTENANCE_TRACKINGS + V1;
-    public static final String API_MAINTENANCE_TRACKINGS_BETA = API_MAINTENANCE_TRACKINGS + BETA;
-    public static final String API_MAINTENANCE_TRACKINGS_BETA_LATEST = API_MAINTENANCE_TRACKINGS_BETA + "latest";
-    public static final String API_MAINTENANCE_TRACKINGS_BETA_TASKS  = API_MAINTENANCE_TRACKINGS_BETA + "/tasks";
+    private static final String API_MAINTENANCE = API + "/maintenance";
+    private static final String API_MAINTENANCE_V1 = API_MAINTENANCE + V1;
+    private static final String API_MAINTENANCE_BETA = API_MAINTENANCE + BETA;
+    private static final String API_MAINTENANCE_V1_TRACKING = API_MAINTENANCE_V1 + "/tracking";
+    private static final String API_MAINTENANCE_BETA_TRACKING = API_MAINTENANCE_BETA + "/tracking";
+
+    public static final String API_MAINTENANCE_BETA_TRACKING_ROUTES = API_MAINTENANCE_BETA_TRACKING + "/routes";
+    public static final String API_MAINTENANCE_BETA_TRACKING_ROUTES_LATEST = API_MAINTENANCE_BETA_TRACKING_ROUTES + "/latest";
+    public static final String API_MAINTENANCE_BETA_TRACKING_TASKS = API_MAINTENANCE_BETA_TRACKING + "/tasks";
+    public static final String API_MAINTENANCE_BETA_TRACKING_DOMAINS = API_MAINTENANCE_BETA_TRACKING + "/domains";
 
     private ApiConstants() {}
 }

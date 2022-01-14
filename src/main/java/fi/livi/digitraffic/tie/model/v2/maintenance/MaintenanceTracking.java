@@ -66,11 +66,11 @@ public class MaintenanceTracking {
     @Column
     private boolean finished;
 
-    @Column
-    private String municipalityDomain;
+    @Column(insertable = false) // Currently set only in lambda implementation
+    private String domain;
 
-    @Column
-    private String municipalityMessageOriginalId;
+    @Column(insertable = false) // Currently set only in lambda implementation
+    private String messageOriginalId;
 
     @Column(insertable = false, updatable = false) // auto generated
     private ZonedDateTime created;
@@ -182,12 +182,12 @@ public class MaintenanceTracking {
         return workMachine;
     }
 
-    public String getMunicipalityDomain() {
-        return municipalityDomain;
+    public String getDomain() {
+        return domain;
     }
 
-    public String getMunicipalityMessageOriginalId() {
-        return municipalityMessageOriginalId;
+    public String getMessageOriginalId() {
+        return messageOriginalId;
     }
 
     public void setFinished() {

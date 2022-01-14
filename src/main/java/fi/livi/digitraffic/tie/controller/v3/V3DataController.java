@@ -375,7 +375,7 @@ public class V3DataController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-    @ApiParam(value = "Return trackings which have completed after the given time. Default is -1h from now and maximum -24h.")
+    @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     final ZonedDateTime from,
@@ -411,7 +411,7 @@ public class V3DataController {
         validateTimeBetweenFromAndToMaxHours(from, null, 24);
         Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
 
-        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
 
     @ApiOperation(value = "Road maintenance tracking data")
@@ -419,12 +419,12 @@ public class V3DataController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return trackings which have completed after the given time. Default is 24h in past and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from,
 
-        @ApiParam(value = "Return trackings which have completed before the given time. Default is now and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return trackings which have completed before the given time (inclusive). Default is now and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to,
@@ -460,7 +460,7 @@ public class V3DataController {
         validateTimeBetweenFromAndToMaxHours(from, to, 24);
         Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
 
     @ApiOperation(value = "Road maintenance tracking data with tracking id")

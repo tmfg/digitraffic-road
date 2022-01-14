@@ -26,43 +26,44 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
+import fi.livi.digitraffic.tie.dto.v2.maintenance.DomainDto;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingTaskDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingMunicipalityDataService;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = ApiConstants.MAINTENANCE_TRACKINGS_TAG)
+@Api(tags = ApiConstants.MAINTENANCE_TRACKINGS_BETA_TAG)
 @RestController
 @Validated
 @ConditionalOnWebApplication
 public class MaintenanceTrackingController {
-    private final V2MaintenanceTrackingMunicipalityDataService v2MaintenanceTrackingMunicipalityDataService;
+    private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
 
     public static final String RANGE_X_TXT = "Values between 19.0 and 32.0.";
     public static final String RANGE_Y_TXT = "Values between 59.0 and 72.0.";
     public static final String RANGE_X = "range[19.0, 32.0]";
     public static final String RANGE_Y = "range[59.0, 72.0]";
 
-    public MaintenanceTrackingController(final V2MaintenanceTrackingMunicipalityDataService v2MaintenanceTrackingMunicipalityDataService) {
-        this.v2MaintenanceTrackingMunicipalityDataService = v2MaintenanceTrackingMunicipalityDataService;
+    public MaintenanceTrackingController(final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService) {
+        this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
     }
 
     @ApiOperation(value = "Road maintenance tracking data latest points")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_TRACKINGS_BETA_LATEST, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
+    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking latest routes"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-    @ApiParam(value = "Return trackings which have completed after the given time. Default is -1h from now and maximum -24h.")
+    @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    final ZonedDateTime from,
+    final ZonedDateTime endFrom,
 
     @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
     @RequestParam(defaultValue = "19.0", required = false)
@@ -90,28 +91,32 @@ public class MaintenanceTrackingController {
 
     @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
     @RequestParam(value = "taskId", required = false)
-    final List<MaintenanceTrackingTask> taskIds) {
+    final List<MaintenanceTrackingTask> taskIds,
 
-        validateTimeBetweenFromAndToMaxHours(from, null, 24);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
+    @ApiParam(value = "Data domains. If not given default \"harja\" will be used returned and not any municipality data.")
+    @RequestParam(value = "domain", required = false, defaultValue = "harja")
+    final List<String> domains) {
 
-        return v2MaintenanceTrackingMunicipalityDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+        validateTimeBetweenFromAndToMaxHours(endFrom, null, 24);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, null, 1);
+
+        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
     @ApiOperation(value = "Road maintenance tracking data")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_TRACKINGS_BETA, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
+    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_ROUTES, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return trackings which have completed after the given time. Default is 24h in past and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime from,
+        final ZonedDateTime endFrom,
 
-        @ApiParam(value = "Return trackings which have completed before the given time. Default is now and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return trackings which have completed before the given time (inclusive). Default is now and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime to,
+        final ZonedDateTime endTo,
 
         @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
         @RequestParam(defaultValue = "19.0", required = false)
@@ -139,29 +144,40 @@ public class MaintenanceTrackingController {
 
         @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
         @RequestParam(value = "taskId", required = false)
-        final List<MaintenanceTrackingTask> taskIds) {
+        final List<MaintenanceTrackingTask> taskIds,
 
-        validateTimeBetweenFromAndToMaxHours(from, to, 24);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
+        @ApiParam(value = "Municipality data domains. If not given, Harja data will be returned and not any municipality data.")
+        @RequestParam(value = "domain", required = false, defaultValue = "harja")
+        final List<String> domains) {
 
-        return v2MaintenanceTrackingMunicipalityDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+        validateTimeBetweenFromAndToMaxHours(endFrom, endTo, 24);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endTo, 24);
+
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data with tracking id")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_TRACKINGS_BETA + "/{id}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
+    @ApiOperation(value = "Road maintenance tracking route with tracking id")
+    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_ROUTES + "/{id}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
     public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
-        return v2MaintenanceTrackingMunicipalityDataService.getMaintenanceTrackingById(id);
+        return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
     @ApiOperation(value = "Road maintenance tracking tasks")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_TRACKINGS_BETA_TASKS, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_TASKS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
     public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
         return Stream.of(MaintenanceTrackingTask.values())
             .sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
             .map(t -> new MaintenanceTrackingTaskDto(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn()))
             .collect(Collectors.toList());
+    }
+
+    @ApiOperation(value = "Road maintenance tracking domains")
+    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_DOMAINS, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
+    public List<DomainDto> getMaintenanceTrackingDomains() {
+        return v2MaintenanceTrackingDataService.findDomains();
     }
 
     public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(ZonedDateTime from, ZonedDateTime to, final int defaultHoursOfHistory) {

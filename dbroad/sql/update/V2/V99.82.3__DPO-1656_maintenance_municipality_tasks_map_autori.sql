@@ -1,4 +1,4 @@
-INSERT INTO maintenance_tracking_municipality_task_mapping (name, original_id, info, ignore, domain)
+INSERT INTO maintenance_tracking_domain_task_mapping (name, original_id, info, ignore, domain)
 VALUES ('PLOUGHING_AND_SLUSH_REMOVAL', '909fd029-465a-44a2-83d4-622925cd663b', 'Auraus ja sohjonpoisto', false, 'autori-oulu'),
        ('LEVELLING_OF_ROAD_SURFACE', '2b99658d-b120-454d-b37c-592f9672ee71', 'Polanteen poisto ja pinnan tasaus', false, 'autori-oulu'),
        ('TRANSFER_OF_SNOW', '70e71884-eb8e-4bcd-be52-4d1fea935434', 'Lumensiirto', false, 'autori-oulu'),

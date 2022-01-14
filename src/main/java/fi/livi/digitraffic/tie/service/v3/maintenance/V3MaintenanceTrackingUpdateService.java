@@ -227,7 +227,7 @@ public class V3MaintenanceTrackingUpdateService {
             final StopWatch start = StopWatch.createStarted();
             final MaintenanceTracking tracking =
                 v2MaintenanceTrackingRepository
-                .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseAndMunicipalityDomainIsNullOrderByModifiedDescIdDesc(
+                .findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(
                     harjaWorkMachineIdContractId.getLeft(),
                     harjaWorkMachineIdContractId.getRight());
             cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, tracking);
@@ -340,7 +340,7 @@ public class V3MaintenanceTrackingUpdateService {
             .map(tehtava -> {
                 final MaintenanceTrackingTask task = MaintenanceTrackingTask.getByharjaEnumName(tehtava.name());
                 if (task == UNKNOWN) {
-                    log.error("method=getMaintenanceTrackingTasksFromHarjaTasks Failed to convert SuoritettavatTehtavat {} to WorkMachineTask", tehtava.toString());
+                    log.error("method=getMaintenanceTrackingTasksFromHarjaTasks Failed to convert SuoritettavatTehtavat {} to WorkMachineTask", tehtava);
                 }
                 return task;
             })
@@ -450,7 +450,7 @@ public class V3MaintenanceTrackingUpdateService {
                 log.error("Failed to convert havainto to json", e);
             }
             log.warn("method=splitLineStringsWithGaps Distance between points: {}The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
-                     sb.toString(), distinctLineStringObservationGapKm, kirjausOtsikkoJson, havaintoJson);
+                     sb, distinctLineStringObservationGapKm, kirjausOtsikkoJson, havaintoJson);
         }
 
         if (!tmpCoordinates.isEmpty()) {
