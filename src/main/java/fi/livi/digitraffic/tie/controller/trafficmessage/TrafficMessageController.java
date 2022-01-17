@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_AREA_GEOMETRIES;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_DATEX2;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_SIMPLE;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGES_TAG;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TAG;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
@@ -33,17 +33,17 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = TRAFFIC_MESSAGES_TAG)
+@Api(tags = TRAFFIC_MESSAGE_TAG)
 @RestController
 @Validated
 @ConditionalOnWebApplication
-public class TrafficMessagesController {
+public class TrafficMessageController {
 
     private final V3RegionGeometryDataService v3RegionGeometryDataService;
     private final V1TrafficMessageDataService v1TrafficMessageDataService;
 
-    public TrafficMessagesController(final V3RegionGeometryDataService v3RegionGeometryDataService,
-                                     final V1TrafficMessageDataService v1TrafficMessageDataService) {
+    public TrafficMessageController(final V3RegionGeometryDataService v3RegionGeometryDataService,
+                                    final V1TrafficMessageDataService v1TrafficMessageDataService) {
         this.v3RegionGeometryDataService = v3RegionGeometryDataService;
         this.v1TrafficMessageDataService = v1TrafficMessageDataService;
     }

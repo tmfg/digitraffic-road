@@ -8,21 +8,19 @@ public final class ApiConstants {
     public static final String BETA = "/beta";
 
     /* Traffic messages */
-    private static final String API_TRAFFIC_MESSAGES = API + "/traffic-messages";
-    private static final String API_TRAFFIC_MESSAGES_BETA = API_TRAFFIC_MESSAGES + BETA;
-    private static final String API_TRAFFIC_MESSAGES_V1 = API_TRAFFIC_MESSAGES + V1;
-    private static final String API_TRAFFIC_MESSAGES_V2 = API_TRAFFIC_MESSAGES + V2; // Just for example for now
+    public static final String TRAFFIC_MESSAGE_TAG = "Traffic messages (BETA)";
+    private static final String API_TRAFFIC_MESSAGE = API + "/traffic-message";
+    private static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
+    private static final String API_TRAFFIC_MESSAGE_V1 = API_TRAFFIC_MESSAGE + V1;
 
-    private static final String TRAFFIC_MESSAGES_DATEX2 = "/datex2";
-    private static final String TRAFFIC_MESSAGES_SIMPLE = "/simple";
-    private static final String TRAFFIC_MESSAGES_AREA_GEOMETRIES = "/area-geometries";
-
-    public static final String TRAFFIC_MESSAGES_TAG = "Traffic messages (BETA)";
-    public static final String API_TRAFFIC_MESSAGES_V1_DATEX2 = API_TRAFFIC_MESSAGES_BETA + TRAFFIC_MESSAGES_DATEX2;
-    public static final String API_TRAFFIC_MESSAGES_V2_DATEX2 = API_TRAFFIC_MESSAGES_V2 + TRAFFIC_MESSAGES_DATEX2; // Just for example for now
-    public static final String API_TRAFFIC_MESSAGES_V1_SIMPLE = API_TRAFFIC_MESSAGES_BETA + TRAFFIC_MESSAGES_SIMPLE;
-    public static final String API_TRAFFIC_MESSAGES_V2_SIMPLE = API_TRAFFIC_MESSAGES_V2 + TRAFFIC_MESSAGES_SIMPLE; // Just for example for now
-    public static final String API_TRAFFIC_MESSAGES_V1_AREA_GEOMETRIES = API_TRAFFIC_MESSAGES_BETA + TRAFFIC_MESSAGES_AREA_GEOMETRIES;
+    private static final String MESSAGES = "/messages";
+    public static final String API_TRAFFIC_MESSAGE_V1_MESSAGES = API_TRAFFIC_MESSAGE_BETA + MESSAGES;
+    private static final String DATEX2 = "/datex2";
+    private static final String SIMPLE = "/simple";
+    private static final String AREA_GEOMETRIES = "/area-geometries";
+    public static final String API_TRAFFIC_MESSAGES_V1_DATEX2 = API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2;
+    public static final String API_TRAFFIC_MESSAGES_V1_SIMPLE = API_TRAFFIC_MESSAGE_V1_MESSAGES + SIMPLE;
+    public static final String API_TRAFFIC_MESSAGES_V1_AREA_GEOMETRIES = API_TRAFFIC_MESSAGE_BETA + AREA_GEOMETRIES;
 
     private ApiConstants() {}
 }
