@@ -132,15 +132,16 @@ public class CameraPresetService {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                                         isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
-            log.info("Save history with presetId={} versionId={} versionIdLenght={}", cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getVersionId().length());
+            log.info("method=updateCameraPresetAndHistoryWithLotjuId Save history with presetId={} s3VersionId={} versionIdLenght={}",
+                     cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getVersionId().length());
             cameraPresetHistoryRepository.save(history);
         }
         // Preset can be public when camera is secret. If camera is secret then public presets are not returned by the api.
         if (cameraPreset.isPublic() != isPresetPublic) {
             cameraPreset.setPublic(isPresetPublic);
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
-            log.info("method=updateCameraPreset cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
-                cameraPreset.getPresetId(), !isPresetPublic, isPresetPublic, updateInfo.getLastUpdated());
+            log.info("method=updateCameraPresetAndHistoryWithLotjuId cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
+                     cameraPreset.getPresetId(), !isPresetPublic, isPresetPublic, updateInfo.getLastUpdated());
         } else if (updateInfo.isSuccess()) {
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
         }
@@ -156,7 +157,7 @@ public class CameraPresetService {
     @Transactional
     public boolean obsoleteCameraStationWithLotjuId(final long lotjuId) {
         final List<CameraPreset> presets = cameraPresetRepository.findByRoadStation_LotjuId(lotjuId);
-        return presets.stream().filter(CameraPreset::makeObsolete).count() > 0;
+        return presets.stream().anyMatch(CameraPreset::makeObsolete);
     }
 
     @Transactional
