@@ -157,7 +157,7 @@ public class CameraPresetService {
     @Transactional
     public boolean obsoleteCameraStationWithLotjuId(final long lotjuId) {
         final List<CameraPreset> presets = cameraPresetRepository.findByRoadStation_LotjuId(lotjuId);
-        return presets.stream().anyMatch(CameraPreset::makeObsolete);
+        return presets.stream().filter(CameraPreset::makeObsolete).count() > 0;
     }
 
     @Transactional
