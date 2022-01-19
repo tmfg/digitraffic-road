@@ -41,7 +41,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
@@ -59,7 +59,7 @@ import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 
-public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegionGeometryMock {
+public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     private static final Logger log = getLogger(V3TrafficMessagesControllerTest.class);
 
     @Autowired
@@ -80,12 +80,12 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
 
     @BeforeEach
     public void init() {
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
     }
 
     /**

@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Area;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.ItineraryRoadLeg;
@@ -49,7 +49,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionGeometryMock {
+public class Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     private static final Logger log = getLogger(Datex2JsonConverterTest_V1.class);
 
     @Autowired
@@ -64,14 +64,14 @@ public class Datex2JsonConverterTest_V1 extends AbstractRestWebTestWithRegionGeo
     public void init() {
         writerForImsGeoJsonFeature = objectMapper.writerFor(ImsGeoJsonFeature.class);
         readerForGeometry = objectMapper.readerFor(Geometry.class);
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(73), any())).thenReturn(createNewRegionGeometry(73));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(419), any())).thenReturn(createNewRegionGeometry(419));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(73), any())).thenReturn(createNewRegionGeometry(73));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(419), any())).thenReturn(createNewRegionGeometry(419));
+        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
     }
 
     @Test
