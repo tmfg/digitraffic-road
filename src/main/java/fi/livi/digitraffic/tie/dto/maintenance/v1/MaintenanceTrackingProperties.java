@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.dto.v2.maintenance;
+package fi.livi.digitraffic.tie.dto.maintenance.v1;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "MaintenanceTrackingProperties", description = "Maintenance tracking properties")
+@ApiModel(description = "Maintenance tracking properties", value = "MaintenanceTrackingProperties_V1")
 public class MaintenanceTrackingProperties extends Properties {
 
     @ApiModelProperty(value = "Id for the tracking", required = true)

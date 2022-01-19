@@ -26,11 +26,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.DomainDto;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingTaskDto;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.DomainDto;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 import io.swagger.annotations.Api;

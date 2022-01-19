@@ -49,11 +49,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingProperties;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingProperties;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;

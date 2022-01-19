@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.dto.v2.maintenance.DomainDto;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.DomainDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 

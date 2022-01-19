@@ -41,7 +41,7 @@ import fi.livi.digitraffic.tie.conf.MaintenanceTrackingMqttConfiguration;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
