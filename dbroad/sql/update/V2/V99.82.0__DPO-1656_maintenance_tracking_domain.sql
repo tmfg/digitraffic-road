@@ -49,6 +49,7 @@ ALTER TABLE maintenance_tracking
 DROP INDEX IF EXISTS maintenance_tracking_end_time_id_i; -- replace this with new index
 DROP INDEX IF EXISTS maintenance_tracking_domain_end_time_i;
 CREATE INDEX maintenance_tracking_domain_end_time_i on maintenance_tracking (domain, end_time, id);
+DROP INDEX IF EXISTS maintenance_tracking_contract_fki;
 CREATE INDEX maintenance_tracking_contract_fki ON maintenance_tracking (domain, contract);
 
 --drop table maintenance_tracking_task_value_map;
@@ -87,7 +88,7 @@ CREATE TABLE IF NOT EXISTS maintenance_tracking_domain_task_mapping
 
 -- Automatic update of modified-field
 DROP TRIGGER IF EXISTS maintenance_tracking_task_value_map_modified_trigger on maintenance_tracking_domain_task_mapping;
-CREATE TRIGGER maintenance_tracking_task_value_map_modified_trigger BEFORE UPDATE ON maintenance_tracking_task_value FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER maintenance_tracking_task_value_map_modified_trigger BEFORE UPDATE ON maintenance_tracking_domain_task_mapping FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
 
 DROP INDEX IF EXISTS maintenance_tracking_task_value_map_i;

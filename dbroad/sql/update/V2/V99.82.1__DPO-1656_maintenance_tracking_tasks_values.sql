@@ -37,4 +37,5 @@ VALUES
     ('SPOT_SANDING', 'PISTEHIEKOITUS', 'Pistehiekoitus', 'Punktsandning', 'Spot sanding'),
     ('SPREADING_OF_CRUSH', 'SORASTUS', 'Sorastus', 'Grusning', 'Spreading of crush'),
     ('TRANSFER_OF_SNOW', 'LUMENSIIRTO', 'Lumensiirto', 'Bortforsling av snömassor', 'Transfer of snow'),
-    ('UNKNOWN', 'TUNTEMATON', 'Tuntematon', 'Obekant', 'Unknown');
+    ('UNKNOWN', 'TUNTEMATON', 'Tuntematon', 'Obekant', 'Unknown')
+    on conflict (name) do nothing;

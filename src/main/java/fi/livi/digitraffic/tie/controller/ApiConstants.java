@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.controller;
 public final class ApiConstants {
 
     public static final String API = "/api";
-    private static final String V1 = "/v1";
-    private static final String V2 = "/v2"; // Just for example for now
+    public static final String V1 = "/v1";
+    public static final String V2 = "/v2"; // Just for example for now
     public static final String BETA = "/beta";
 
     /* Traffic messages */
@@ -25,19 +25,9 @@ public final class ApiConstants {
     public static final String API_TRAFFIC_MESSAGES_V1_AREA_GEOMETRIES = API_TRAFFIC_MESSAGES_BETA + TRAFFIC_MESSAGES_AREA_GEOMETRIES;
 
     /* Maintenance trackings */
-    public static final String MAINTENANCE_TRACKINGS_TAG = "Maintenance trackings";
-    public static final String MAINTENANCE_TRACKINGS_BETA_TAG = "Maintenance trackings (BETA)";
-
-    private static final String API_MAINTENANCE = API + "/maintenance";
-    private static final String API_MAINTENANCE_V1 = API_MAINTENANCE + V1;
-    private static final String API_MAINTENANCE_BETA = API_MAINTENANCE + BETA;
-    private static final String API_MAINTENANCE_V1_TRACKING = API_MAINTENANCE_V1 + "/tracking";
-    private static final String API_MAINTENANCE_BETA_TRACKING = API_MAINTENANCE_BETA + "/tracking";
-
-    public static final String API_MAINTENANCE_BETA_TRACKING_ROUTES = API_MAINTENANCE_BETA_TRACKING + "/routes";
-    public static final String API_MAINTENANCE_BETA_TRACKING_ROUTES_LATEST = API_MAINTENANCE_BETA_TRACKING_ROUTES + "/latest";
-    public static final String API_MAINTENANCE_BETA_TRACKING_TASKS = API_MAINTENANCE_BETA_TRACKING + "/tasks";
-    public static final String API_MAINTENANCE_BETA_TRACKING_DOMAINS = API_MAINTENANCE_BETA_TRACKING + "/domains";
+    public static final String MAINTENANCE_TAG = "Maintenance";
+    public static final String MAINTENANCE_BETA_TAG = "Maintenance (BETA)";
+    public static final String API_MAINTENANCE = API + "/maintenance";
 
     private ApiConstants() {}
 }

@@ -65,4 +65,5 @@ VALUES
   ('OTHER', '0b4ff718-f902-4d25-ac7c-e84ae159904c', 'Tuntityö', false, 'autori-kuopio'),
   ('PLOUGHING_AND_SLUSH_REMOVAL', 'da826914-0ab5-4ebc-99a7-9eb76c4458d9', 'Harjaus ja sohjonpoisto', false, 'autori-kuopio'),
   ('OTHER', 'ed56f404-8af5-449a-9ede-bdfe9f8a460d', 'Kiskojen hionta', false, 'autori-kuopio'),
-  ('OTHER', 'f69f1c33-a277-463b-aa52-f098df4f031a', 'Kiskouran puhdistus', false, 'autori-kuopio');
+  ('OTHER', 'f69f1c33-a277-463b-aa52-f098df4f031a', 'Kiskouran puhdistus', false, 'autori-kuopio')
+ON CONFLICT (domain, original_id) DO NOTHING;

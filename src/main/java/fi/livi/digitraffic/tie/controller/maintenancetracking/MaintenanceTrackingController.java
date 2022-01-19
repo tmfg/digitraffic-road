@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.controller.maintenancetracking;
 
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_MAINTENANCE;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -39,12 +42,35 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = ApiConstants.MAINTENANCE_TRACKINGS_BETA_TAG)
+@Api(tags = ApiConstants.MAINTENANCE_BETA_TAG)
 @RestController
 @Validated
 @ConditionalOnWebApplication
 public class MaintenanceTrackingController {
     private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
+
+    /**
+     * API paths:
+     * /api/maintenance/v/tracking/routes
+     * /api/maintenance/v/tracking/routes/{id}
+     * /api/maintenance/v/tracking/routes/latests
+     * /api/maintenance/v/tracking/tasks
+     * /api/maintenance/v/tracking/domains
+     */
+
+    private static final String API_MAINTENANCE_V1 = API_MAINTENANCE + V1;
+    private static final String API_MAINTENANCE_BETA = API_MAINTENANCE + BETA;
+
+    private static final String TRACKING = "/tracking";
+
+    private static final String API_MAINTENANCE_V1_TRACKING = API_MAINTENANCE_V1 + TRACKING;
+    private static final String API_MAINTENANCE_BETA_TRACKING = API_MAINTENANCE_BETA + TRACKING;
+
+    public static final String API_MAINTENANCE_BETA_TRACKING_ROUTES = API_MAINTENANCE_BETA_TRACKING + "/routes";
+    public static final String API_MAINTENANCE_BETA_TRACKING_ROUTES_LATEST = API_MAINTENANCE_BETA_TRACKING_ROUTES + "/latest";
+    public static final String API_MAINTENANCE_BETA_TRACKING_TASKS = API_MAINTENANCE_BETA_TRACKING + "/tasks";
+    public static final String API_MAINTENANCE_BETA_TRACKING_DOMAINS = API_MAINTENANCE_BETA_TRACKING + "/domains";
+
 
     public static final String RANGE_X_TXT = "Values between 19.0 and 32.0.";
     public static final String RANGE_Y_TXT = "Values between 59.0 and 72.0.";
@@ -56,7 +82,7 @@ public class MaintenanceTrackingController {
     }
 
     @ApiOperation(value = "Road maintenance tracking data latest points")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_BETA_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking latest routes"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
@@ -104,7 +130,7 @@ public class MaintenanceTrackingController {
     }
 
     @ApiOperation(value = "Road maintenance tracking data")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_ROUTES, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_BETA_TRACKING_ROUTES, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
@@ -157,14 +183,14 @@ public class MaintenanceTrackingController {
     }
 
     @ApiOperation(value = "Road maintenance tracking route with tracking id")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_ROUTES + "/{id}", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_BETA_TRACKING_ROUTES + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
     public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
         return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
     @ApiOperation(value = "Road maintenance tracking tasks")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_TASKS, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_BETA_TRACKING_TASKS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
     public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
         return Stream.of(MaintenanceTrackingTask.values())
@@ -174,7 +200,7 @@ public class MaintenanceTrackingController {
     }
 
     @ApiOperation(value = "Road maintenance tracking domains")
-    @RequestMapping(method = RequestMethod.GET, path = ApiConstants.API_MAINTENANCE_BETA_TRACKING_DOMAINS, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_BETA_TRACKING_DOMAINS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
     public List<DomainDto> getMaintenanceTrackingDomains() {
         return v2MaintenanceTrackingDataService.findDomains();

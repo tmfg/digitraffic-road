@@ -23,4 +23,5 @@ VALUES ('PLOUGHING_AND_SLUSH_REMOVAL', '909fd029-465a-44a2-83d4-622925cd663b', '
        ('DITCHING', '3f889d23-2807-46ba-8376-932416179c78', 'Ojitus', false, 'autori-oulu'),
        ('OTHER', '4e80d904-4ae5-440e-bcf2-bb9131f26e34', 'Roskankeräys', false, 'autori-oulu'),
        ('BRUSHING', 'c4000714-be2e-4414-a932-737f96734a01', 'Viherkaistojen harjaus', false, 'autori-oulu'),
-       ('OTHER', '399c37f9-4085-4750-b394-531ffe080bc9', 'Nurmikon leikkaus', false, 'autori-oulu');
+       ('OTHER', '399c37f9-4085-4750-b394-531ffe080bc9', 'Nurmikon leikkaus', false, 'autori-oulu')
+ ON CONFLICT (domain, original_id) DO NOTHING;
