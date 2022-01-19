@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -49,8 +48,6 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 @Service
 public class V3RegionGeometryDataService {
     private static final Logger log = LoggerFactory.getLogger(V3RegionGeometryDataService.class);
-//    private final GeoJsonWriter geoJsonWriter = new GeoJsonWriter();
-//    private final ObjectReader geometryReader;
 
     private final static GeoJsonWriter geoJsonWriter;
     private final static ObjectReader geometryReader;
@@ -73,9 +70,6 @@ public class V3RegionGeometryDataService {
                                        final ObjectMapper objectMapper) {
         this.regionGeometryRepository = regionGeometryRepository;
         this.dataStatusService = dataStatusService;
-//        geometryReader = objectMapper.readerFor(Geometry.class);
-        // Don't add crs to geometries as it's always EPSG:4326
-//        geoJsonWriter.setEncodeCRS(false);
     }
 
     // Update Every hour
@@ -178,7 +172,6 @@ public class V3RegionGeometryDataService {
         return convertToGeojson(union);
     }
 
-    @NotTransactionalServiceMethod
     public static List<RegionGeometryFeature> convertToDtoList(final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode, final boolean includeGeometry) {
         return regionsInDescOrderMappedByLocationCode.values().stream()
             .flatMap(Collection::stream)

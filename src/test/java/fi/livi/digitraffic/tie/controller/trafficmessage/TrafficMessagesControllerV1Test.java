@@ -3,12 +3,12 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
-import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
+import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createRegionGeometryFeatureCollection;
+import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createRegionsInDescOrderMappedByLocationCode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,20 +84,15 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @BeforeEach
     public void init() {
-        final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode = new HashMap<>();
-        regionsInDescOrderMappedByLocationCode.put(0, Collections.singletonList(createNewRegionGeometry(0)));
-        regionsInDescOrderMappedByLocationCode.put(3, Collections.singletonList(createNewRegionGeometry(3)));
-        regionsInDescOrderMappedByLocationCode.put(7, Collections.singletonList(createNewRegionGeometry(7)));
-        regionsInDescOrderMappedByLocationCode.put(14, Collections.singletonList(createNewRegionGeometry(14)));
-        regionsInDescOrderMappedByLocationCode.put(408, Collections.singletonList(createNewRegionGeometry(408)));
-        regionsInDescOrderMappedByLocationCode.put(5898, Collections.singletonList(createNewRegionGeometry(5898)));
+        final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode =
+            createRegionsInDescOrderMappedByLocationCode(0, 3, 7, 14, 408, 5898);
 
-        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(regionsInDescOrderMappedByLocationCode.get(0).get(0));
-        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(regionsInDescOrderMappedByLocationCode.get(3).get(0));
-        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(regionsInDescOrderMappedByLocationCode.get(7).get(0));
-        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(regionsInDescOrderMappedByLocationCode.get(14).get(0));
-        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(regionsInDescOrderMappedByLocationCode.get(408).get(0));
-        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(regionsInDescOrderMappedByLocationCode.get(5898).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(0).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(3).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(7).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(14).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(408).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(5898).get(0));
 
         final RegionGeometryFeatureCollection featureCollectionWithGeometry =
             createRegionGeometryFeatureCollection(V3RegionGeometryDataService.convertToDtoList(regionsInDescOrderMappedByLocationCode, true));
@@ -113,10 +107,6 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
             featureCollectionWithGeometry.getFeatures().stream().filter(f -> f.getProperties().locationCode.equals(3)).findFirst().orElseThrow();
         when(v3RegionGeometryDataServicMock.findAreaLocationRegions(eq(false), eq(true), isNull(), eq(3)))
             .thenReturn(createRegionGeometryFeatureCollection(Collections.singletonList(feature3)));
-    }
-
-    private RegionGeometryFeatureCollection createRegionGeometryFeatureCollection(final List<RegionGeometryFeature> regionGeometryFeatures) {
-        return new RegionGeometryFeatureCollection(ZonedDateTime.now(), ZonedDateTime.now(), regionGeometryFeatures);
     }
 
     /**
