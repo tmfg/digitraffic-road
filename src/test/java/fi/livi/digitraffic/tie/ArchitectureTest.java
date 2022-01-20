@@ -26,13 +26,16 @@ public class ArchitectureTest extends AbstractTest {
     public ArchitectureTest() {
         final StopWatch timer = StopWatch.createStarted();
         importedClasses = new ClassFileImporter()
-            .withImportOption(location ->
-                location.contains("/target/classes/") &&
+            .withImportOption(location -> {
+                System.out.println(location);
+                return location.contains("/target/classes/") &&
                 location.contains("fi/livi/digitraffic") &&
                 // Skip generated classes
                 !location.contains("fi/livi/digitraffic/tie/datex2") &&
-                !location.contains("fi/livi/digitraffic/tie/external"))
-            .importPackages("fi.livi.digitraffic");
+                !location.contains("fi/livi/digitraffic/tie/external");
+            })
+            .importPath("target/classes/fi/livi/digitraffic/tie/");
+//            .importPackages("fi.livi.digitraffic");
 
         log.info("Reading classes took {} s", timer.getTime()/1000.0);
     }
