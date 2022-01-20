@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +21,22 @@ import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 public class ArchitectureTest extends AbstractTest {
     private static final Logger log = LoggerFactory.getLogger(ArchitectureTest.class);
 
+    private final JavaClasses importedClasses;
 
-    private final JavaClasses importedClasses = new ClassFileImporter()
-        .withImportOption(location -> {
-            log.warn(location.toString());
-            return true;
-        })
-        .importPackages("fi.livi.digitraffic");
+    public ArchitectureTest() {
+        final StopWatch timer = StopWatch.createStarted();
+        importedClasses = new ClassFileImporter()
+            .withImportOption(location ->
+                location.contains("/target/classes/") &&
+                location.contains("fi/livi/digitraffic") &&
+                // Skip generated classes
+                !location.contains("fi/livi/digitraffic/tie/datex2") &&
+                !location.contains("fi/livi/digitraffic/tie/external"))
+            .importPackages("fi.livi.digitraffic");
+
+        // timer1 5686 vs 2741 timer2
+        log.info("Reading classes took {} s", timer.getTime()/1000.0);
+    }
 
     @Test
     public void publicServiceMethodMustBeTransactional() {
