@@ -34,7 +34,6 @@ public class ArchitectureTest extends AbstractTest {
                 !location.contains("fi/livi/digitraffic/tie/external"))
             .importPackages("fi.livi.digitraffic");
 
-        // timer1 5686 vs 2741 timer2
         log.info("Reading classes took {} s", timer.getTime()/1000.0);
     }
 
