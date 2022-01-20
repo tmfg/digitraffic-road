@@ -89,6 +89,6 @@ DROP TRIGGER IF EXISTS maintenance_tracking_domain_task_mapping_modified_trigger
 CREATE TRIGGER maintenance_tracking_domain_task_mapping_modified_trigger BEFORE UPDATE ON maintenance_tracking_domain_task_mapping FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
 
-DROP INDEX IF EXISTS maintenance_tracking_task_value_map_i;
-CREATE INDEX maintenance_tracking_task_value_map_i
+DROP INDEX IF EXISTS maintenance_tracking_domain_task_mapping_domain_original_id_i;
+CREATE INDEX maintenance_tracking_domain_task_mapping_domain_original_id_i
   ON maintenance_tracking_domain_task_mapping USING BTREE (domain asc, original_id asc);
