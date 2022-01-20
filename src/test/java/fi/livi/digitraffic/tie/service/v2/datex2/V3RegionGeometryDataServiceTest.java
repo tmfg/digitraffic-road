@@ -21,17 +21,17 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitMock;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProperties;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.region.RegionGeometryProperties;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
-public class V3RegionGeometryDataServiceTest extends AbstractRestWebTestWithRegionGeometryMock {
+public class V3RegionGeometryDataServiceTest extends AbstractRestWebTestWithRegionGeometryGitMock {
     private static final Logger log = getLogger(V3RegionGeometryDataServiceTest.class);
 
     @Autowired
@@ -52,6 +52,7 @@ public class V3RegionGeometryDataServiceTest extends AbstractRestWebTestWithRegi
         v3RegionGeometryTestHelper = new V3RegionGeometryTestHelper(regionGeometryGitClientMock, v3RegionGeometryUpdateService, dataStatusService);
 
         regionGeometryRepository.deleteAll();
+
     }
 
     @Test
