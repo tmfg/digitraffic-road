@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.controller.maintenancetracking;
+package fi.livi.digitraffic.tie.controller.maintenance;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_MAINTENANCE;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
