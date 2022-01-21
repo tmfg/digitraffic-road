@@ -37,9 +37,12 @@ public class MaintenanceTrackingProperties extends Properties {
     @ApiModelProperty(value = "Direction of the last observation")
     public BigDecimal direction;
 
+    @ApiModelProperty(value = "Source and owner of the data")
+    public String source;
+
     public MaintenanceTrackingProperties(final long id, final long workMachineId,
                                          final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                                         final Set<MaintenanceTrackingTask> tasks, BigDecimal direction) {
+                                         final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction, final String source) {
         this.id = id;
         this.workMachineId = workMachineId;
         this.sendingTime = sendingTime;
@@ -47,5 +50,6 @@ public class MaintenanceTrackingProperties extends Properties {
         this.startTime = startTime;
         this.endTime = endTime;
         this.direction = direction;
+        this.source = source;
     }
 }

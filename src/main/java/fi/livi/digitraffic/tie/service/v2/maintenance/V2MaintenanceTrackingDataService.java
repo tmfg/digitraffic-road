@@ -166,7 +166,8 @@ public class V2MaintenanceTrackingDataService {
                 toZonedDateTimeAtUtc(tracking.getSendingTime()),
                 toZonedDateTimeAtUtc(tracking.getStartTime()),
                 toZonedDateTimeAtUtc(tracking.getEndTime()),
-                tracking.getTasks(), tracking.getDirection());
+                tracking.getTasks(), tracking.getDirection(),
+                tracking.getSource());
         return new MaintenanceTrackingFeature(geometry, properties);
     }
 
