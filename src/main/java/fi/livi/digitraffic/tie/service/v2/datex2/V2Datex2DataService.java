@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.datex2.V2Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 @ConditionalOnWebApplication

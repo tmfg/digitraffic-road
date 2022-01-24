@@ -1,6 +1,12 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -9,6 +15,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 
@@ -38,14 +46,28 @@ public class RegionGeometryTestHelper {
         return createNewRegionGeometry(1, Instant.parse("2020-01-01T00:00:00Z"), RandomStringUtils.randomAlphanumeric(32));
     }
 
-    public static RegionGeometry createNewRegionGeometry(int locationCode) {
+    public static RegionGeometry createNewRegionGeometry(final int locationCode) {
         return createNewRegionGeometry(locationCode, Instant.parse("2020-01-01T00:00:00Z"), RandomStringUtils.randomAlphanumeric(32));
     }
-    public static RegionGeometry createNewRegionGeometry(int locationCode, final Instant effectiveDate, final String commitId) {
+    public static RegionGeometry createNewRegionGeometry(final int locationCode, final Instant effectiveDate, final String commitId) {
         return createNewRegionGeometry(locationCode, effectiveDate, commitId, AreaType.MUNICIPALITY);
     }
 
-    public static RegionGeometry createNewRegionGeometry(int locationCode, final Instant effectiveDate, final String commitId, final AreaType type) {
+    public static final Map<Integer, List<RegionGeometry>> createRegionsInDescOrderMappedByLocationCode(int...locationCodes) {
+        final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode = new HashMap<>();
+        Arrays.stream(locationCodes).forEach(locationCode -> regionsInDescOrderMappedByLocationCode.put(locationCode, createRegionGeometrySingletonCollection(locationCode)));
+        return regionsInDescOrderMappedByLocationCode;
+    }
+
+    public static List<RegionGeometry> createRegionGeometrySingletonCollection(final int locationCode) {
+        return Collections.singletonList(createNewRegionGeometry(locationCode));
+    }
+
+    public static RegionGeometryFeatureCollection createRegionGeometryFeatureCollection(final List<RegionGeometryFeature> regionGeometryFeatures) {
+        return new RegionGeometryFeatureCollection(ZonedDateTime.now(), ZonedDateTime.now(), regionGeometryFeatures);
+    }
+
+    public static RegionGeometry createNewRegionGeometry(final int locationCode, final Instant effectiveDate, final String commitId, final AreaType type) {
         try {
             final Geometry geometry = GEOJSON_READER.read(getGeneratedGeoJsonPolygon(locationCode));
             return new RegionGeometry(

@@ -13,15 +13,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.service.v1.VariableSignUpdateService;
 import fi.livi.digitraffic.tie.external.tloik.variablesigns.Metatiedot;
 import fi.livi.digitraffic.tie.external.tloik.variablesigns.Tilatiedot;
+import fi.livi.digitraffic.tie.service.v1.VariableSignUpdateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import springfox.documentation.annotations.ApiIgnore;
 
-@Api(tags = "variable speed limits")
+@ApiIgnore
+@Api(tags = "Variable speed limits")
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_VARIABLE_SIGN_UPDATE_PART_PATH)

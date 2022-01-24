@@ -4,21 +4,24 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
+import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -35,7 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
@@ -49,11 +52,11 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 
-public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegionGeometryMock {
+public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     private static final Logger log = getLogger(V3TrafficMessagesControllerTest.class);
 
     @Autowired
@@ -74,12 +77,12 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
 
     @BeforeEach
     public void init() {
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(3));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(7));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(14));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(408));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(5898));
     }
 
     /**
@@ -93,7 +96,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 0, situationType));
@@ -102,7 +105,9 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
                     assertTimesFormatMatches(json);
-                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType), start, end, imsJsonVersion);
+                    assertTimesFormatMatches(json);
+                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()), start, end, imsJsonVersion);
+                    assertTraficAnouncmentTypeLowerCase(json, situationType);
                 }
             }
         }
@@ -119,7 +124,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 2, situationType));
@@ -128,7 +133,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
                     assertTimesFormatMatches(json);
-                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType), start, end, imsJsonVersion);
+                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()), start, end, imsJsonVersion);
+                    assertTraficAnouncmentTypeLowerCase(json, situationType);
                 }
             }
         }
@@ -145,7 +151,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
                     final String xml = getResponse(getUrlWithType(false, 0, situationType));
@@ -205,6 +211,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
         final Instant versionTime = getVersionTime(start, imsJsonVersion).toInstant();
         assertEquals(versionTime, situation.getSituationRecords().get(0).getSituationRecordVersionTime());
         assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
+        assertEquals(versionTime, jsonProperties.versionTime.toInstant());
 
         assertEquals(end.toInstant(), situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallEndTime());
         assertEquals(end.toInstant(), jsonTimeAndDuration.endTime.toInstant());
@@ -213,8 +220,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
             .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
 
         assertEquals(situationType, jsonProperties.getSituationType());
-        if (situationType == SituationType.TRAFFIC_ANNOUNCEMENT) {
-            assertEquals(TrafficAnnouncementType.GENERAL, jsonProperties.getTrafficAnnouncementType());
+        if (situationType == TRAFFIC_ANNOUNCEMENT) {
+            assertTrue(Sets.newHashSet(TrafficAnnouncementType.values()).contains(jsonProperties.getTrafficAnnouncementType()));
         }
 
         final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
@@ -251,5 +258,18 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
             get.contentType(MediaType.APPLICATION_JSON);
         }
         return mockMvc.perform(get).andReturn().getResponse().getContentAsString();
+    }
+
+    private void assertTraficAnouncmentTypeLowerCase(final String json, final SituationType situationType) {
+        if (situationType.equals(TRAFFIC_ANNOUNCEMENT)) {
+            final String trafficAnnouncementType =
+                StringUtils.substringBefore(
+                    StringUtils.substringAfter(
+                        StringUtils.substringAfter(
+                            StringUtils.substringAfter(json, "trafficAnnouncementType"), ":"), "\""), "\"");
+            final Set<String> values = Arrays.stream(TrafficAnnouncementType.values()).map(TrafficAnnouncementType::value).collect(Collectors.toSet());
+            assertTrue(values.contains(trafficAnnouncementType));
+            assertTrue(StringUtils.isAllLowerCase(trafficAnnouncementType.replace(" ", "")));
+        }
     }
 }

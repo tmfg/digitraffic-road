@@ -20,6 +20,7 @@ public enum TrafficAnnouncementType {
     static {
         for (TrafficAnnouncementType c : values()) {
             CONSTANTS.put(c.value.toUpperCase(), c);
+            CONSTANTS.put(c.name(), c); // Enum name
         }
     }
 
@@ -39,7 +40,7 @@ public enum TrafficAnnouncementType {
 
     @JsonCreator
     public static TrafficAnnouncementType fromValue(final String value) {
-        TrafficAnnouncementType constant = CONSTANTS.get(value.toUpperCase());
+        final TrafficAnnouncementType constant = CONSTANTS.get(value.toUpperCase());
         if (constant == null) {
             throw new IllegalArgumentException(value);
         } else {

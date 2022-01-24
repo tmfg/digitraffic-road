@@ -1,5 +1,10 @@
 package fi.livi.digitraffic.tie.controller;
 
+/**
+ * These will be removed eventually.
+ * @see ApiConstants
+ */
+@Deprecated()
 public final class ApiPaths {
     public static final String API_V1_BASE_PATH = "/api/v1";
     public static final String API_V2_BASE_PATH = "/api/v2";

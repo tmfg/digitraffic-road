@@ -2,19 +2,17 @@ package fi.livi.digitraffic.tie.service.v3.datex2;
 
 import static fi.livi.digitraffic.tie.TestUtils.getRandom;
 import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.values;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_ACTIVE_ANDPASSIVE_RECORD;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_JSON;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
-import static fi.livi.digitraffic.tie.service.datex2.Datex2Helper.getSituationPublication;
+import static fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper.getSituationPublication;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -24,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
+import org.apache.commons.compress.utils.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
@@ -47,7 +46,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeometryMock {
+public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     private static final Logger log = getLogger(V3Datex2DataServiceTest.class);
 
     @Autowired
@@ -62,12 +61,12 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
     @BeforeEach
     public void init() {
         trafficMessageTestHelper.cleanDb();
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(3));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(7));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(14));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(408));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(5898));
     }
 
     @Test
@@ -75,14 +74,14 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
 
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                for (final SituationType situationType : SituationType.values()) {
+                for (final SituationType situationType : values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
-                    activeIncidentsDatex2AndJsonEquals(situationType, imsJsonVersion, getSituationIdForSituationType(situationType), start, end);
+                    activeIncidentsDatex2AndJsonEquals(situationType, imsJsonVersion, getSituationIdForSituationType(situationType.name()), start, end);
                 }
             }
         }
@@ -93,12 +92,12 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
         // One active incident per version
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                for (final SituationType situationType : SituationType.values()) {
+                for (final SituationType situationType : values()) {
                     trafficMessageTestHelper.cleanDb();
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion);
                     log.info("checkFindBySituationId with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                         imsXmlVersion, imsJsonVersion, situationType);
-                    checkFindBySituationId(getSituationIdForSituationType(situationType));
+                    checkFindBySituationId(getSituationIdForSituationType(situationType.name()));
                 }
             }
         }
@@ -108,16 +107,16 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
     public void findActiveTrafficMessagesDatex2AndJsonEqualsForEveryVersionOfImsAndJsonWhenMultipleVersionsIn() throws IOException {
         trafficMessageTestHelper.cleanDb();
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
-            for (final SituationType situationType : SituationType.values()) {
+            for (final SituationType situationType : values()) {
                 final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                 final ZonedDateTime end = start.plusHours(2);
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                              imsXmlVersion, imsJsonVersion, situationType);
                 }
                 activeIncidentsDatex2AndJsonEquals(situationType, ImsJsonVersion.getLatestVersion(),
-                                                   getSituationIdForSituationType(situationType), start, end);
+                                                   getSituationIdForSituationType(situationType.name()), start, end);
             }
         }
     }
@@ -140,7 +139,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
     @Test
     public void findActiveTrafficAnnouncementCanceledIsNotReturned() throws IOException {
         trafficMessageTestHelper.initDataFromStaticImsResourceContent(
-            ImsXmlVersion.V1_2_1, TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
+            ImsXmlVersion.V1_2_1, TRAFFIC_ANNOUNCEMENT.name(), ImsJsonVersion.getLatestVersion(),
             ZonedDateTime.now().minusDays(1), ZonedDateTime.now().plusDays(1), true);
         // Not found, as both must exist
         assertActiveMessageFound(GUID_WITH_JSON, false, false);
@@ -199,13 +198,13 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
             System.out.println(latestStart.get());
             final ZonedDateTime end = latestStart.get().plusHours(1);
             try {
-                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, TRAFFIC_ANNOUNCEMENT, ImsJsonVersion.getLatestVersion(),
+                trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, TRAFFIC_ANNOUNCEMENT.name(), ImsJsonVersion.getLatestVersion(),
                                                                               latestStart.get(), end);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-        final String situationId = getSituationIdForSituationType(TRAFFIC_ANNOUNCEMENT);
+        final String situationId = getSituationIdForSituationType(TRAFFIC_ANNOUNCEMENT.name());
 
         // Make sure all versions are saved
         assertEquals(count, v3Datex2DataService.findBySituationIdJson(situationId, false, false).getFeatures().size());
@@ -278,7 +277,7 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
 
         assertEquals(situationType, jsonProperties.getSituationType());
         if (situationType == TRAFFIC_ANNOUNCEMENT) {
-            assertEquals(TrafficAnnouncementType.GENERAL, jsonProperties.getTrafficAnnouncementType());
+            assertTrue(Sets.newHashSet(TrafficAnnouncementType.values()).contains(jsonProperties.getTrafficAnnouncementType()));
         }
 
         final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);

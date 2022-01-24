@@ -53,7 +53,7 @@ public class V3Datex2DataInternalTest extends AbstractServiceTest {
                         final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                         final ZonedDateTime end = start.plusHours(2);
                         try {
-                            trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType, imsJsonVersion, start, end);
+                            trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

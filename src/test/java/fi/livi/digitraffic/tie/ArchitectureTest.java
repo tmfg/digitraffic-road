@@ -17,7 +17,9 @@ import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
  */
 public class ArchitectureTest extends AbstractTest {
 
-    private final JavaClasses importedClasses = new ClassFileImporter().importPackages("fi.livi.digitraffic");
+    private final JavaClasses importedClasses = new ClassFileImporter()
+        .withImportOption(location -> !location.contains("Test.") && !location.contains("test-classes"))
+        .importPackages("fi.livi.digitraffic");
 
     @Test
     public void publicServiceMethodMustBeTransactional() {

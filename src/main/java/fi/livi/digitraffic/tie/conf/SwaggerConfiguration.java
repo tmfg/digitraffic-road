@@ -1,11 +1,5 @@
 package fi.livi.digitraffic.tie.conf;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static springfox.documentation.builders.PathSelectors.regex;
 
 import java.net.URI;
@@ -22,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.controller.v1.MetadataController;
@@ -60,13 +55,23 @@ public class SwaggerConfiguration {
     }
 
     @Bean
-    public Docket metadataApi() {
-        return getDocket("metadata-api", getMetadataApiPaths());
+    public Docket roadApi() {
+        return getDocket("road-api", getProductionApiPaths());
     }
 
     @Bean
     public Docket betaApi() {
-        return getDocket("metadata-api-beta", regex(API_BETA_BASE_PATH + "/*.*"));
+        return getDocket("road-beta", getBetaApiPaths());
+    }
+
+    @Bean
+    public Docket oldMetadataApi() {
+        return getDocket("metadata-api", getProductionApiPaths());
+    }
+
+    @Bean
+    public Docket oldBetaApi() {
+        return getDocket("metadata-api-beta", getBetaApiPaths());
     }
 
     @Bean
@@ -79,7 +84,7 @@ public class SwaggerConfiguration {
             .build();
     }
 
-    private Docket getDocket(final String groupName, Predicate<String> apiPaths) {
+    private Docket getDocket(final String groupName, final Predicate<String> apiPaths) {
         return new Docket(DocumentationType.SWAGGER_2)
             .host(host)
             .protocols(Set.of(scheme))
@@ -96,12 +101,13 @@ public class SwaggerConfiguration {
      * Declares api paths to document by Swagger
      * @return api paths
      */
-    private static Predicate<String> getMetadataApiPaths() {
-        return regex(API_V1_BASE_PATH + API_METADATA_PART_PATH + "/*.*").or(
-               regex(API_V1_BASE_PATH + API_DATA_PART_PATH + "/*.*")).or(
-               regex(API_V2_BASE_PATH + API_METADATA_PART_PATH + "/*.*")).or(
-               regex(API_V2_BASE_PATH + API_DATA_PART_PATH + "/*.*")).or(
-               regex(API_V3_BASE_PATH + API_METADATA_PART_PATH + "/*.*")).or(
-               regex(API_V3_BASE_PATH + API_DATA_PART_PATH + "/*.*"));
+    private static Predicate<String> getProductionApiPaths() {
+        // All starting with API but not containing BETA
+        return regex("^(" + ApiConstants.API + ")+((?!" + ApiConstants.BETA + ").)*$");
+    }
+
+    private static Predicate<String> getBetaApiPaths() {
+        // All containing BETA
+        return regex(".*" + ApiConstants.BETA + ".*");
     }
 }
