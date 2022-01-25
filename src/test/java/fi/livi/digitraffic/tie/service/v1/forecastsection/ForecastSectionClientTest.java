@@ -42,12 +42,30 @@ public class ForecastSectionClientTest extends AbstractServiceTest {
         final ForecastSectionV2Dto forecastSectionV2Metadata = forecastSectionClient.getForecastSectionV2Metadata();
 
         assertNotNull(forecastSectionV2Metadata);
+        assertNotNull(forecastSectionV2Metadata.getFeatures());
+        assertNotNull(forecastSectionV2Metadata.getFeatures().get(0));
+        assertNotNull(forecastSectionV2Metadata.getFeatures().get(0).getGeometry());
+        assertNotNull(forecastSectionV2Metadata.getFeatures().get(0).getProperties().getId());
+        assertNotNull(forecastSectionV2Metadata.getFeatures().get(0).getProperties().getRoadNumber());
     }
 
     @Test
     @Disabled("For manual integration testing")
-    public void getRoadConditionsSucceeds() {
+    public void getRoadConditionsV1Succeeds() {
         ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
+
+        assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0));
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0));
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0).time);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0).weatherSymbol);
+    }
+
+    @Test
+    @Disabled("For manual integration testing")
+    public void getRoadConditionsV2Succeeds() {
+        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V2.getVersion());
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
         assertNotNull(roadConditions.forecastSectionWeatherList.get(0));
