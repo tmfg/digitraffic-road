@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
+import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTest {
@@ -48,11 +49,14 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTest {
         forecastSectionMetadataUpdaterMockRealMethods =
             new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
+        final List<ForecastSection> all = forecastSectionRepository.findAll();
+        if (!all.isEmpty()) {
+            forecastSectionRepository.deleteById(all.get(0).getId());
+        }
     }
 
     @Test
-    public void updateForecastSectionV1MetadataSucceeds() throws IOException {
-
+    public void updateForecastSectionV1MetadataSucceeds() {
         forecastSectionTestHelper.serverExpectMetadata(server, 1);
 
         forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionV1Metadata();
