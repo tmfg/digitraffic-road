@@ -2,7 +2,7 @@
     "messageTimestamp": "2018-12-18T15:32:06+02:00",
     "roadConditions": [
         {
-            "roadId": "00009_231_000_0",
+            "roadId": "00001_001_000_0",
             "observation":{
                 "Time": "2018-12-18T15:19:00+02:00",
                 "daylight": false,
@@ -80,7 +80,7 @@
                 }]
         },
         {
-            "roadId": "00009_303_000_0",
+            "roadId": "00001_006_000_0",
             "observation":{
                 "Time": "2018-12-18T15:22:00+02:00",
                 "daylight": false,
@@ -158,7 +158,7 @@
                 }]
         },
         {
-            "roadId": "00009_311_000_0",
+            "roadId": "00001_012_000_0",
             "observation":{
                 "Time": "2018-12-18T15:22:00+02:00",
                 "daylight": false,

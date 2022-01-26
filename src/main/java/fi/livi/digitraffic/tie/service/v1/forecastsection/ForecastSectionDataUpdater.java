@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionWeatherPK
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 
+@ConditionalOnNotWebApplication
 @Service
 public class ForecastSectionDataUpdater {
     private static final Logger log = LoggerFactory.getLogger(ForecastSectionDataUpdater.class);
