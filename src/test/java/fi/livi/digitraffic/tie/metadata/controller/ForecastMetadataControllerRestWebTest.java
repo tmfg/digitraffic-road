@@ -17,15 +17,15 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.RestTemplateGzipService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionClient;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionTestHelper;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionV1MetadataUpdater;
@@ -42,15 +42,16 @@ public class ForecastMetadataControllerRestWebTest extends AbstractRestWebTest {
     private RestTemplate restTemplate;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private ForecastSectionTestHelper forecastSectionTestHelper;
+    private ConfigurableListableBeanFactory beanFactory;
 
     @BeforeEach
     public void initData() throws IOException {
         forecastSectionRepository.deleteAll();
-        final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient();// new ForecastSectionClient(restTemplate, objectMapper, null, null, null, null);
+        final RestTemplateGzipService restTemplateGzipService = beanFactory.createBean(RestTemplateGzipService.class);
+        beanFactory.registerSingleton(restTemplateGzipService.getClass().getCanonicalName(), restTemplateGzipService);
+        final ForecastSectionTestHelper forecastSectionTestHelper = beanFactory.createBean(ForecastSectionTestHelper.class);
+
+        final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient();
 
         final ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater =
             new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);

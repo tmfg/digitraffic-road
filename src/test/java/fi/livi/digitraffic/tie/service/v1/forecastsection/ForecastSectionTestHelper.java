@@ -7,42 +7,47 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.tie.service.RestTemplateGzipService;
+
+@ConditionalOnNotWebApplication
 @Component
 public class ForecastSectionTestHelper {
     private static final Logger log = LoggerFactory.getLogger(ForecastSectionTestHelper.class);
 
-    @Value("${roadConditions.baseUrl}")
-    private String baseUrl;
+    private final String baseUrl;
+    private final String suid;
+    private final String user;
+    private final String pass;
+    private final RestTemplateGzipService restTemplateGzipService;
+    private final ObjectMapper objectMapper;
 
-    @Value("${roadConditions.suid}")
-    private String suid;
-
-    @Value("${roadConditions.user}")
-    private String user;
-
-    @Value("${roadConditions.pass}")
-    private String pass;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    public ForecastSectionTestHelper(final RestTemplateGzipService restTemplateGzipService,
+                                     final ObjectMapper objectMapper,
+                                     @Value("${roadConditions.baseUrl}") final String baseUrl,
+                                     @Value("${roadConditions.suid}") final String suid,
+                                     @Value("${roadConditions.user}") final String user,
+                                     @Value("${roadConditions.pass}") final String pass) {
+        this.restTemplateGzipService = restTemplateGzipService;
+        this.objectMapper = objectMapper;
+        this.baseUrl = baseUrl;
+        this.suid = suid;
+        this.user = user;
+        this.pass = pass;
+    }
 
     public ForecastSectionClient createForecastSectionClient() {
-        return new ForecastSectionClient(restTemplate, objectMapper, baseUrl, suid, user, pass);
+        return new ForecastSectionClient(restTemplateGzipService, objectMapper, baseUrl, suid, user, pass);
     }
 
     public void serverExpectMetadata(final MockRestServiceServer server, final int version) {
