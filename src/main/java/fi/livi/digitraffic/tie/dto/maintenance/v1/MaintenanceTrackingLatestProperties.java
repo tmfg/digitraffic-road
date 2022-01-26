@@ -24,12 +24,21 @@ public class MaintenanceTrackingLatestProperties extends Properties {
     @ApiModelProperty(value = "Direction of the last observation")
     private BigDecimal direction;
 
+    @ApiModelProperty(value = "Domain of the data")
+    public String domain;
+
+    @ApiModelProperty(value = "Source and owner of the data")
+    public String source;
+
     public MaintenanceTrackingLatestProperties(final long id, final ZonedDateTime time,
-                                               final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
+                                               final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
+                                               final String domain, final String source) {
         this.id = id;
         this.time = time;
         this.tasks = tasks;
         this.direction = direction;
+        this.domain = domain;
+        this.source = source;
     }
 
     public long getId() {

@@ -28,6 +28,8 @@ public interface MaintenanceTrackingDto {
 
     Long getWorkMachineId();
 
+    String getDomain();
+
     String getSource();
 
     default Set<MaintenanceTrackingTask> getTasks() {

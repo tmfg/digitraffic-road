@@ -28,6 +28,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "     , tracking.direction\n" +
         "     , tracking.work_machine_id AS workMachineId\n" +
         "     , STRING_AGG(tasks.task, ',') AS tasksAsString\n" +
+        "     , tracking.domain\n" +
         "     , COALESCE(contract.source, domain.source) AS source\n";
 
     String DTO_SELECT_FIELDS_WITH_LINE_STRING =

@@ -66,7 +66,7 @@ public class MaintenanceTracking {
     @Column
     private boolean finished;
 
-    @Column(insertable = false) // Currently set only in lambda implementation
+    @Column
     private String domain;
 
     @Column(insertable = false) // Currently set only in lambda implementation
@@ -102,14 +102,16 @@ public class MaintenanceTracking {
 
     public MaintenanceTracking(final V3MaintenanceTrackingObservationData maintenanceTrackingObservationData, final MaintenanceTrackingWorkMachine workMachine,
                                final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                               final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
-        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, lineString, tasks, direction);
+                               final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
+                               final String domain) {
+        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, lineString, tasks, direction, domain);
         this.maintenanceTrackingObservationDatas.add(maintenanceTrackingObservationData);
     }
 
     private MaintenanceTracking(final MaintenanceTrackingWorkMachine workMachine,
                                 final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                                final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
+                                final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
+                                final String domain) {
         this.workMachine = workMachine;
         this.sendingSystem = sendingSystem;
         this.sendingTime = sendingTime;
@@ -119,6 +121,7 @@ public class MaintenanceTracking {
         this.lineString = lineString;
         this.tasks.addAll(tasks);
         this.direction = direction;
+        this.domain = domain;
     }
 
 

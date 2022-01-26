@@ -201,7 +201,7 @@ public class MaintenanceTrackingController {
 
     @ApiOperation(value = "Road maintenance tracking domains")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_BETA_TRACKING_DOMAINS, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
+    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking domains"))
     public List<DomainDto> getMaintenanceTrackingDomains() {
         return v2MaintenanceTrackingDataService.findDomains();
     }

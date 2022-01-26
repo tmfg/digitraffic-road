@@ -167,6 +167,7 @@ public class V2MaintenanceTrackingDataService {
                 toZonedDateTimeAtUtc(tracking.getStartTime()),
                 toZonedDateTimeAtUtc(tracking.getEndTime()),
                 tracking.getTasks(), tracking.getDirection(),
+                tracking.getDomain(),
                 tracking.getSource());
         return new MaintenanceTrackingFeature(geometry, properties);
     }
@@ -176,7 +177,9 @@ public class V2MaintenanceTrackingDataService {
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
                                                     toZonedDateTimeAtUtc(tracking.getEndTime()),
-                                                    tracking.getTasks(), tracking.getDirection());
+                                                    tracking.getTasks(), tracking.getDirection(),
+                                                    tracking.getDomain(),
+                                                    tracking.getSource());
         return new MaintenanceTrackingLatestFeature(geometry, properties);
     }
 
@@ -185,7 +188,9 @@ public class V2MaintenanceTrackingDataService {
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
                 toZonedDateTimeAtUtc(tracking.getEndTime()),
-                tracking.getTasks(), tracking.getDirection());
+                tracking.getTasks(), tracking.getDirection(),
+                tracking.getDomain(),
+                null);
         return new MaintenanceTrackingLatestFeature(geometry, properties);
     }
 
