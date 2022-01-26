@@ -6,12 +6,12 @@ DROP SEQUENCE IF EXISTS seq_maintenance_tracking_data;
 CREATE TABLE IF NOT EXISTS maintenance_tracking_domain
 (
   name                    TEXT NOT NULL, -- Name of the domain ie. autori-oulu
-  copyright               TEXT, -- Copyright text for the domain
+  source                  TEXT, -- Source information the domain
   created                 TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
   modified                TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
   CONSTRAINT maintenance_tracking_domain_pkey PRIMARY KEY (name)
 );
-INSERT into maintenance_tracking_domain(name) values ('harja') on conflict (name) do nothing;
+INSERT into maintenance_tracking_domain(name, source) values ('harja', 'Harja / Väylävirasto') on conflict (name) do nothing;
 
 -- Automatic update of modified-field
 DROP TRIGGER IF EXISTS maintenance_tracking_domain_modified_trigger on maintenance_tracking_domain;
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS maintenance_tracking_domain_contract
   domain                  TEXT NOT NULL references maintenance_tracking_domain(name),
   contract                TEXT NOT NULL, -- external id of contract
   name                    TEXT NOT NULL, -- external name of the contract
-  copyright               TEXT, -- Copyright for the contract, will be used to override domain
+  source                  TEXT, -- Source information the contract, will be used to override domain
   start_date              TIMESTAMP(0) WITH TIME ZONE,
   end_date                TIMESTAMP(0) WITH TIME ZONE,
   data_last_updated       TIMESTAMP(3) WITH TIME ZONE, -- Latest time when data for contract has been updated
