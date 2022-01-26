@@ -50,6 +50,10 @@ public class RestTemplateGzipService {
                     final GZIPInputStream gZipIs = new GZIPInputStream(responseBodyIs)) {
                     final ObjectReader reader = objectMapper.readerFor(returnType);
                     return reader.readValue(gZipIs, returnType);
+
+                } catch (final Exception e) {
+                    log.error("method=getForGzippedObject" + (methodToLog != null ?  " / " + methodToLog : "") + " failed", e);
+                    throw e;
                 } finally {
                     log.info("method={} for type {} tookMs={} url: {}",
                              methodToLog != null ? methodToLog : "getForGzippedObject",  returnType.getName(),
