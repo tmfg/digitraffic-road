@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,6 @@ public class ForecastMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @BeforeEach
     public void initData() throws IOException {
-        forecastSectionRepository.deleteAll();
         final RestTemplateGzipService restTemplateGzipService = beanFactory.createBean(RestTemplateGzipService.class);
         beanFactory.registerSingleton(restTemplateGzipService.getClass().getCanonicalName(), restTemplateGzipService);
         final ForecastSectionTestHelper forecastSectionTestHelper = beanFactory.createBean(ForecastSectionTestHelper.class);
@@ -62,6 +62,15 @@ public class ForecastMetadataControllerRestWebTest extends AbstractRestWebTest {
         forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
         TestTransaction.flagForCommit();
         TestTransaction.end();
+    }
+
+    @AfterEach
+    public void after() {
+        if (!TestTransaction.isActive()) {
+            TestTransaction.start();
+        }
+        forecastSectionRepository.deleteAllInBatch();
+        TestTransaction.flagForCommit();
     }
 
     @Test
