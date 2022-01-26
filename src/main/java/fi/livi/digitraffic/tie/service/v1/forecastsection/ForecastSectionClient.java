@@ -100,6 +100,8 @@ public class ForecastSectionClient {
         final Map<String, String> values = new HashMap<>();
         if (!loggerSafe) {
             values.putAll(keyValues);
+        } else {
+            values.put(KEY_BASE_URL, keyValues.get(KEY_BASE_URL));
         }
         values.put(KEY_DATA_AND_VERSION, getUrlDataPart(version, metadata));
         final StringSubstitutor ss = new StringSubstitutor(values, "{","}");
