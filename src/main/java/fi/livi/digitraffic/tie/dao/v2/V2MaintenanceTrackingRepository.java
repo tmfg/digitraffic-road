@@ -39,7 +39,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "INNER JOIN maintenance_tracking_work_machine machine ON tracking.work_machine_id = machine.id\n" +
         "INNER JOIN maintenance_tracking_task tasks ON tracking.id = tasks.maintenance_tracking_id\n" +
         "LEFT OUTER JOIN maintenance_tracking_domain_contract contract on (tracking.domain = contract.domain AND tracking.contract = contract.contract)\n" +
-        "LEFT OUTER JOIN maintenance_tracking_domain domain on tracking.name\n";
+        "LEFT OUTER JOIN maintenance_tracking_domain domain on tracking.domain = domain.name\n";
 
     String DTO_LINESTRING_SQL =
         DTO_SELECT_FIELDS_WITH_LINE_STRING +
@@ -66,7 +66,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +
                    "  AND (ST_INTERSECTS(:area, tracking.last_point) = true OR ST_INTERSECTS(:area, tracking.line_string) = true)\n" +
                    "  AND tracking.domain in (:domains) \n" +
-                   "GROUP BY tracking.id, contract.source\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
     List<MaintenanceTrackingDto> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
@@ -83,7 +83,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "      AND t.task IN (:tasks)" +
                    "  )\n" +
                    "  AND tracking.domain in (:domains) \n" +
-                   "GROUP BY tracking.id, contract.source\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
     List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
@@ -99,7 +99,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "    GROUP BY t.work_machine_id\n" +
                    ")\n" +
                    "  AND tracking.domain in (:domains) \n" +
-                   "GROUP BY tracking.id, contract.source\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
     List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
@@ -121,7 +121,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "      AND t.task IN (:tasks)" +
                    "  )\n" +
                    "  AND tracking.domain in (:domains) \n" +
-                   "GROUP BY tracking.id, contract.source\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
     List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
@@ -129,7 +129,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
 
     @Query(value = DTO_LINESTRING_SQL +
                    "WHERE tracking.id = :id\n" +
-                   "GROUP BY tracking.id, contract.source\n",
+                   "GROUP BY tracking.id, contract.source, domain.source",
            nativeQuery = true)
     MaintenanceTrackingDto getDto(long id);
 
