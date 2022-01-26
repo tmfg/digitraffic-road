@@ -2,11 +2,10 @@ package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
@@ -48,9 +45,6 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     private RestTemplate restTemplate;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private ForecastSectionTestHelper forecastSectionTestHelper;
 
     @Autowired
@@ -66,6 +60,11 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
             new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository,
                                                  v2ForecastSectionMetadataDao,dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
+    }
+
+    @AfterEach
+    public void after() {
+        forecastSectionRepository.deleteAllInBatch();
     }
 
     @Test
@@ -111,7 +110,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void findForecastSectionsByRoadNumberSucceeds() throws IOException {
+    public void findForecastSectionsByRoadNumberSucceeds() {
 
         forecastSectionTestHelper.serverExpectMetadata(server, 2);
 
@@ -144,7 +143,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void findForecastSectionsByNaturalIdSucceeds() throws IOException {
+    public void findForecastSectionsByNaturalIdSucceeds() {
 
         forecastSectionTestHelper.serverExpectMetadata(server, 2);
 
@@ -153,7 +152,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
         final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null,
                                                                                                                                    null, null,
                                                                                                                                    null, null,
-                                                                                                                                   Arrays.asList("00009_216_03050_0_0"));
+                                                                                                                                   List.of("00009_216_03050_0_0"));
 
         assertEquals(1, featureCollection.getFeatures().size());
         assertEquals("00009_216_03050_0_0", featureCollection.getFeatures().get(0).getProperties().getNaturalId());

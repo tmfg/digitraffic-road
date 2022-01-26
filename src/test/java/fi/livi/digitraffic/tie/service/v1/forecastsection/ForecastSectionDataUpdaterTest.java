@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,11 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
             new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
     }
 
+    @AfterEach
+    public void after() {
+        forecastSectionRepository.deleteAllInBatch();
+    }
+
     @Test
     public void updateForecastSectionV1DataSucceeds() {
         forecastSectionTestHelper.serverExpectMetadata(server, 1);
@@ -93,9 +99,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void updateForecastSectionV2DataSucceeds() throws IOException {
-
-        forecastSectionRepository.deleteAllInBatch();
+    public void updateForecastSectionV2DataSucceeds() {
         forecastSectionTestHelper.serverExpectMetadata(server, 2);
         forecastSectionTestHelper.serverExpectData(server, 2);
 

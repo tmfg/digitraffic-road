@@ -51,7 +51,7 @@ public class ForecastSectionClientIntegrationTest extends AbstractServiceTest {
 
     @Test
     public void getRoadConditionsV2Succeeds() {
-        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V2.getVersion());
+        final ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V2.getVersion());
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
         assertNotNull(roadConditions.forecastSectionWeatherList.get(0));
@@ -63,7 +63,7 @@ public class ForecastSectionClientIntegrationTest extends AbstractServiceTest {
 
     @Test
     public void getRoadConditionsV1Succeeds() {
-        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
+        final   ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
         assertNotNull(roadConditions.forecastSectionWeatherList.get(0));

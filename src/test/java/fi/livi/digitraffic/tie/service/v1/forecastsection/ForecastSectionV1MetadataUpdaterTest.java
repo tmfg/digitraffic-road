@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.service.v1.forecastsection;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTest {
@@ -49,10 +48,11 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTest {
         forecastSectionMetadataUpdaterMockRealMethods =
             new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
-        final List<ForecastSection> all = forecastSectionRepository.findAll();
-        if (!all.isEmpty()) {
-            forecastSectionRepository.deleteById(all.get(0).getId());
-        }
+    }
+
+    @AfterEach
+    public void after() {
+        forecastSectionRepository.deleteAllInBatch();
     }
 
     @Test
@@ -69,7 +69,7 @@ public class ForecastSectionV1MetadataUpdaterTest extends AbstractDaemonTest {
         assertEquals(10, collection.getFeatures().size());
         assertEquals("00001_001_000_0", collection.getFeatures().get(0).getProperties().getNaturalId());
         assertEquals(10, collection.getFeatures().get(0).getGeometry().getCoordinates().size());
-        assertEquals(Double.parseDouble("24.944"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0).doubleValue(), 0.01);
-        assertEquals(Double.parseDouble("60.167"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(1).doubleValue(), 0.01);
+        assertEquals(Double.parseDouble("24.944"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0), 0.01);
+        assertEquals(Double.parseDouble("60.167"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(1), 0.01);
     }
 }
