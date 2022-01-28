@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS maintenance_tracking_domain_contract
   contract                TEXT NOT NULL, -- external id of contract
   name                    TEXT NOT NULL, -- external name of the contract
   source                  TEXT, -- Source information the contract, will be used to override domain
-  start_date              TIMESTAMP(0) WITH TIME ZONE,
-  end_date                TIMESTAMP(0) WITH TIME ZONE,
+  start_date              TIMESTAMP(3) WITH TIME ZONE,
+  end_date                TIMESTAMP(3) WITH TIME ZONE,
   data_last_updated       TIMESTAMP(3) WITH TIME ZONE, -- Latest time when data for contract has been updated
   created                 TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
   modified                TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
