@@ -13,18 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.service.RestTemplateGzipService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.ForecastSectionV2Dto;
 
 // Tests on this class are disabled so import won't affect test performance
-@Import(ForecastSectionClient.class)
-public class ForecastSectionClientTest extends AbstractServiceTest {
+@Disabled("For manual integration testing")
+@Import({ ForecastSectionClient.class, RestTemplateGzipService.class })
+public class ForecastSectionClientIntegrationTest extends AbstractServiceTest {
 
     @Autowired
     private ForecastSectionClient forecastSectionClient;
 
     @Test
-    @Disabled("For manual integration testing")
     public void getForecastSectionV1MetadataSucceeds() {
         List<ForecastSectionCoordinatesDto> forecastSectionCoordinates = forecastSectionClient.getForecastSectionV1Metadata();
 
@@ -37,17 +38,32 @@ public class ForecastSectionClientTest extends AbstractServiceTest {
     }
 
     @Test
-    @Disabled("For manual integration testing")
     public void getForecastSectionV2MetadataSucceeds() {
         final ForecastSectionV2Dto forecastSectionV2Metadata = forecastSectionClient.getForecastSectionV2Metadata();
 
         assertNotNull(forecastSectionV2Metadata);
+        assertNotNull(forecastSectionV2Metadata.getFeatures());
+        assertNotNull(forecastSectionV2Metadata.getFeatures().get(0));
+        assertNotNull(forecastSectionV2Metadata.getFeatures().get(0).getGeometry());
+        assertNotNull(forecastSectionV2Metadata.getFeatures().get(0).getProperties().getId());
+        assertNotNull(forecastSectionV2Metadata.getFeatures().get(0).getProperties().getRoadNumber());
     }
 
     @Test
-    @Disabled("For manual integration testing")
-    public void getRoadConditionsSucceeds() {
-        ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
+    public void getRoadConditionsV2Succeeds() {
+        final ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V2.getVersion());
+
+        assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0));
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0));
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0).time);
+        assertNotNull(roadConditions.forecastSectionWeatherList.get(0).forecast.get(0).weatherSymbol);
+    }
+
+    @Test
+    public void getRoadConditionsV1Succeeds() {
+        final   ForecastSectionDataDto roadConditions = forecastSectionClient.getRoadConditions(ForecastSectionApiVersion.V1.getVersion());
 
         assertTrue(roadConditions.forecastSectionWeatherList.size() > 250);
         assertNotNull(roadConditions.forecastSectionWeatherList.get(0));
