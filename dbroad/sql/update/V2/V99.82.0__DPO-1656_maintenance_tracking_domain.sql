@@ -45,7 +45,8 @@ ALTER TABLE maintenance_tracking
     references maintenance_tracking_domain_contract (domain, contract),
   ADD COLUMN IF NOT EXISTS message_original_id TEXT,
   ALTER COLUMN start_time TYPE TIMESTAMP(3) WITH TIME ZONE,
-  ALTER COLUMN end_time TYPE TIMESTAMP(3) WITH TIME ZONE;
+  ALTER COLUMN end_time TYPE TIMESTAMP(3) WITH TIME ZONE,
+  ALTER COLUMN sending_time TYPE TIMESTAMP(3) WITH TIME ZONE;
 
 -- indexes for fetching data
 DROP INDEX IF EXISTS maintenance_tracking_end_time_id_i; -- replace this with new index
