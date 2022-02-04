@@ -251,6 +251,7 @@ public class WazeFeedServiceTestHelper {
                 SituationType.TRAFFIC_ANNOUNCEMENT,
                 this.trafficAnnouncementType,
                 null,
+                null,
                 List.of(announcement),
                 null
             );

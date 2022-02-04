@@ -23,10 +23,10 @@ public interface WazeDatex2Repository extends JpaRepository<Datex2, Long> {
         "select distinct on (d2.id) d2.*\n" +
         "from datex2 d2\n" +
         "join situation s on s.datex2_id = d2.id\n" +
-        "join datex2_situation_record dsr on s.datex2_id = dsr.datex2_situation_id\n" +
+        "join datex2_situation_record dsr on s.id = dsr.datex2_situation_id\n" +
         "where d2.situation_type = 'TRAFFIC_ANNOUNCEMENT'\n" +
         "  and (d2.traffic_announcement_type = 'ACCIDENT_REPORT' or d2.traffic_announcement_type = 'GENERAL')\n" +
-        "  and dsr.validy_status = 'ACTIVE'" +
+        "  and dsr.validy_status = 'ACTIVE'\n" +
         "  and d2.json_message is not null\n" +
         "  and exists(\n" +
         "        select null\n" +

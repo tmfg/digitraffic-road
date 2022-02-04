@@ -26,18 +26,18 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.service.datex2.V3Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2JsonConverterV1;
 
 @ConditionalOnWebApplication
 @Component
 public class WazeDatex2JsonConverter {
     private static final Logger logger = LoggerFactory.getLogger(WazeDatex2JsonConverter.class);
 
-    private final V3Datex2JsonConverter v3Datex2JsonConverter;
+    private final Datex2JsonConverterV1 datex2JsonConverterV1;
 
     @Autowired
-    public WazeDatex2JsonConverter(final V3Datex2JsonConverter v3Datex2JsonConverter) {
-        this.v3Datex2JsonConverter = v3Datex2JsonConverter;
+    public WazeDatex2JsonConverter(final Datex2JsonConverterV1 datex2JsonConverterV1) {
+        this.datex2JsonConverterV1 = datex2JsonConverterV1;
     }
 
     public Optional<WazeFeedAnnouncementDto> convertToWazeFeedAnnouncementDto(final Datex2 datex2) {
@@ -45,7 +45,7 @@ public class WazeDatex2JsonConverter {
         final String jsonMessage = datex2.getJsonMessage();
 
         try {
-            feature = v3Datex2JsonConverter.convertToFeatureJsonObjectV3(
+            feature = datex2JsonConverterV1.convertToFeatureJsonObjectV3(
                 jsonMessage,
                 SituationType.TRAFFIC_ANNOUNCEMENT,
                 TrafficAnnouncementType.ACCIDENT_REPORT,

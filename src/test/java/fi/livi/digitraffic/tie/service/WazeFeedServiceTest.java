@@ -144,6 +144,10 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         geometry.addLineString(List.of(List.of(25.180874, 61.569262), List.of(25.180826, 61.569394)));
 
         wazeFeedServiceTestHelper.insertAccident("GUID1234", RoadAddressLocation.Direction.BOTH, 130, geometry);
+
+        final List<WazeFeedAnnouncementDto> announcements = wazeFeedService.findActive();
+        assertEquals(announcements.size(), 1);
+
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive().get(0);
 
         assertEquals("25.180874 61.569262 25.180826 61.569394 25.180826 61.569394 25.180874 61.569262", announcement.polyline);
