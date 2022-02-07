@@ -4,7 +4,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
@@ -32,7 +31,7 @@ public class WazeFeedController {
 
     @ApiOperation(value = "Traffic incident announcements for Waze")
     @RequestMapping(method = RequestMethod.GET, path = ApiPaths.WAZE_INCIDENT_PATH, produces = { APPLICATION_JSON_VALUE })
-    public List<WazeFeedAnnouncementDto> wazeFeedAnnouncement() {
+    public WazeFeedAnnouncementDto wazeFeedAnnouncement() {
         return wazeFeedService.findActive();
     }
 }

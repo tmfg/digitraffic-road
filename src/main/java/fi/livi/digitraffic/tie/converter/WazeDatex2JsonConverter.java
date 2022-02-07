@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fi.livi.digitraffic.tie.dto.WazeFeedAnnouncementDto;
+import fi.livi.digitraffic.tie.dto.WazeFeedIncidentsDto;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
@@ -40,7 +40,7 @@ public class WazeDatex2JsonConverter {
         this.datex2JsonConverterV1 = datex2JsonConverterV1;
     }
 
-    public Optional<WazeFeedAnnouncementDto> convertToWazeFeedAnnouncementDto(final Datex2 datex2) {
+    public Optional<WazeFeedIncidentsDto> convertToWazeFeedAnnouncementDto(final Datex2 datex2) {
         final TrafficAnnouncementFeature feature;
         final String jsonMessage = datex2.getJsonMessage();
 
@@ -58,7 +58,7 @@ public class WazeDatex2JsonConverter {
         }
 
         final TrafficAnnouncementProperties properties = feature.getProperties();
-        final Optional<WazeFeedAnnouncementDto.Type> maybeType = Optional.ofNullable(properties.getTrafficAnnouncementType()).flatMap(this::convertToWazeType);
+        final Optional<WazeFeedIncidentsDto.Type> maybeType = Optional.ofNullable(properties.getTrafficAnnouncementType()).flatMap(this::convertToWazeType);
 
         final TrafficAnnouncement announcement = properties.announcements.get(0);
         final Optional<Geometry<?>> maybeGeometry = Optional.ofNullable(feature.getGeometry());
@@ -72,7 +72,7 @@ public class WazeDatex2JsonConverter {
 
         final Optional<String> maybeDescription = createDescription(announcement);
 
-        final WazeFeedAnnouncementDto.Direction direction = maybeGeometry.flatMap(geometry ->
+        final WazeFeedIncidentsDto.Direction direction = maybeGeometry.flatMap(geometry ->
             convertDirection(announcement.locationDetails.roadAddressLocation.direction, geometry))
             .orElse(null);
 
@@ -82,19 +82,19 @@ public class WazeDatex2JsonConverter {
             maybeStreet.flatMap(street ->
                 maybeDescription.flatMap(description ->
                     maybeType.map(type ->
-                        new WazeFeedAnnouncementDto(id, street, description, direction, polyline, type)))));
+                        new WazeFeedIncidentsDto(id, street, description, direction, polyline, type)))));
     }
 
-    private Optional<WazeFeedAnnouncementDto.Type> convertToWazeType(final TrafficAnnouncementType trafficAnnouncementType) {
+    private Optional<WazeFeedIncidentsDto.Type> convertToWazeType(final TrafficAnnouncementType trafficAnnouncementType) {
         if (trafficAnnouncementType == null) {
             return Optional.empty();
         }
 
         switch (trafficAnnouncementType) {
         case ACCIDENT_REPORT:
-            return Optional.of(WazeFeedAnnouncementDto.Type.ACCIDENT);
+            return Optional.of(WazeFeedIncidentsDto.Type.ACCIDENT);
         case GENERAL:
-            return Optional.of(WazeFeedAnnouncementDto.Type.HAZARD);
+            return Optional.of(WazeFeedIncidentsDto.Type.HAZARD);
         default:
             return Optional.empty();
         }
@@ -116,19 +116,19 @@ public class WazeDatex2JsonConverter {
         return address;
     }
 
-    private Optional<WazeFeedAnnouncementDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, Geometry<?> geometry) {
+    private Optional<WazeFeedIncidentsDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, Geometry<?> geometry) {
         if (direction == null || geometry == null || geometry instanceof Point) {
             return Optional.empty();
         }
 
         switch (direction) {
         case BOTH:
-            return Optional.of(WazeFeedAnnouncementDto.Direction.BOTH_DIRECTIONS);
+            return Optional.of(WazeFeedIncidentsDto.Direction.BOTH_DIRECTIONS);
         case UNKNOWN:
         case POS:
         case NEG:
         default:
-            return Optional.of(WazeFeedAnnouncementDto.Direction.ONE_DIRECTION);
+            return Optional.of(WazeFeedIncidentsDto.Direction.ONE_DIRECTION);
         }
     }
 
@@ -142,7 +142,7 @@ public class WazeDatex2JsonConverter {
             .map(s -> s.length() > 40 ? s.substring(0, 37) + "..." : s);
     }
 
-    public static Optional<String> formatPolyline(final Geometry<?> geometry, final WazeFeedAnnouncementDto.Direction direction) {
+    public static Optional<String> formatPolyline(final Geometry<?> geometry, final WazeFeedIncidentsDto.Direction direction) {
         if (geometry instanceof Point) {
             final Point point = (Point) geometry;
             return Optional.of(formatPolylineFromPoint(point));
@@ -155,10 +155,10 @@ public class WazeDatex2JsonConverter {
         return Optional.empty();
     }
 
-    private static String formatPolylineFromMultiLineString(final MultiLineString multiLineString, final WazeFeedAnnouncementDto.Direction direction) {
+    private static String formatPolylineFromMultiLineString(final MultiLineString multiLineString, final WazeFeedIncidentsDto.Direction direction) {
         final List<List<Double>> path = multiLineString.getCoordinates().stream().flatMap(Collection::stream).collect(Collectors.toList());
 
-        if (direction == WazeFeedAnnouncementDto.Direction.BOTH_DIRECTIONS) {
+        if (direction == WazeFeedIncidentsDto.Direction.BOTH_DIRECTIONS) {
             final List<List<Double>> copy = new ArrayList<>(path);
             Collections.reverse(copy);
             path.addAll(copy);
