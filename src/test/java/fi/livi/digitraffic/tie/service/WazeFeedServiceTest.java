@@ -58,13 +58,13 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     public void announcementIsProperlyFormatted() {
         final String situationId = "GUID12345";
         final ZonedDateTime startTime = ZonedDateTime.parse("2021-07-28T13:09:47.470Z");
-        final Integer street = 24;
+        final Integer streetNumber = 24;
         final String municipality = "Espoo";
         final String roadName = "Puolarmetsänkatu";
         final List<String> featureList =
             List.of("Onnettomuus", "Onnettomuuspaikan pelastus- ja raivaustyöt käynnissä", "Tie on suljettu liikenteeltä");
 
-        final WazeFeedServiceTestHelper.AnnouncementAddress announcementAddress = new WazeFeedServiceTestHelper.AnnouncementAddress(municipality, roadName, street);
+        final WazeFeedServiceTestHelper.AnnouncementAddress announcementAddress = new WazeFeedServiceTestHelper.AnnouncementAddress(municipality, roadName, streetNumber);
         final WazeFeedServiceTestHelper.AnnouncementParams params =
             new WazeFeedServiceTestHelper.AnnouncementParams(situationId, announcementAddress, startTime,
                 TrafficAnnouncementType.ACCIDENT_REPORT, RoadAddressLocation.Direction.BOTH, featureList);
@@ -80,7 +80,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final WazeFeedIncidentDto incident = incidents.get(0);
 
         assertEquals(situationId, incident.id);
-        assertEquals(String.format("%s - %s, %s", street, roadName, municipality), incident.location.street);
+        assertEquals(String.format("%s - %s, %s", streetNumber, roadName, municipality), incident.location.street);
         assertEquals(WazeFeedIncidentDto.Type.ACCIDENT, incident.type);
         assertEquals(description.substring(0, 37) + "...", incident.description);
         assertTrue(incident.description.length() <= 40);
