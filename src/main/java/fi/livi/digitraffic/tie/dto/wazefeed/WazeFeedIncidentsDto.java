@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.dto;
+package fi.livi.digitraffic.tie.dto.wazefeed;
 
 import java.io.Serializable;
 

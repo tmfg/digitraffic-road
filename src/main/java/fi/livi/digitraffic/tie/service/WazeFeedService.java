@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
 import fi.livi.digitraffic.tie.dao.WazeDatex2Repository;
-import fi.livi.digitraffic.tie.dto.WazeFeedAnnouncementDto;
-import fi.livi.digitraffic.tie.dto.WazeFeedIncidentsDto;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentsDto;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 
 @ConditionalOnWebApplication

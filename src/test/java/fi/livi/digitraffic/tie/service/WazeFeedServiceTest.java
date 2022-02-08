@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
-import fi.livi.digitraffic.tie.dto.WazeFeedAnnouncementDto;
-import fi.livi.digitraffic.tie.dto.WazeFeedIncidentsDto;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentsDto;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
