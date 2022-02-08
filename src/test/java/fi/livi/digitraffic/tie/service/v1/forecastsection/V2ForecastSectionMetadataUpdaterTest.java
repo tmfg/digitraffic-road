@@ -1,24 +1,17 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
-import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
@@ -51,8 +44,11 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     @Autowired
     private RestTemplate restTemplate;
 
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private ForecastSectionClient forecastSectionClientMockRealMethods;
+    @Autowired
+    private ForecastSectionTestHelper forecastSectionTestHelper;
+
+    @Autowired
+    private ForecastSectionClient forecastSectionClient;
 
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
     private V2ForecastSectionMetadataUpdater forecastSectionMetadataUpdaterMockRealMethods;
@@ -60,19 +56,20 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
     @BeforeEach
     public void before() {
-        forecastSectionClientMockRealMethods = new ForecastSectionClient(restTemplate, null);
         forecastSectionMetadataUpdaterMockRealMethods =
-            new V2ForecastSectionMetadataUpdater(forecastSectionClientMockRealMethods, forecastSectionRepository,
+            new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository,
                                                  v2ForecastSectionMetadataDao,dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
     }
 
+    @AfterEach
+    public void after() {
+        forecastSectionRepository.deleteAllInBatch();
+    }
+
     @Test
-    public void updateForecastSectionV2MetadataSucceeds() throws IOException {
-        server.expect(requestTo("/nullroadsV2.php"))
-            .andExpect(method(HttpMethod.GET))
-            .andRespond(
-                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
+    public void updateForecastSectionV2MetadataSucceeds() {
+        forecastSectionTestHelper.serverExpectMetadata(server, 2);
 
         final Instant updated = forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
         final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA).toInstant();
@@ -113,12 +110,9 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void findForecastSectionsByRoadNumberSucceeds() throws IOException {
+    public void findForecastSectionsByRoadNumberSucceeds() {
 
-        server.expect(requestTo("/nullroadsV2.php"))
-            .andExpect(method(HttpMethod.GET))
-            .andRespond(
-                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
+        forecastSectionTestHelper.serverExpectMetadata(server, 2);
 
         forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
 
@@ -149,19 +143,16 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void findForecastSectionsByNaturalIdSucceeds() throws IOException {
+    public void findForecastSectionsByNaturalIdSucceeds() {
 
-        server.expect(requestTo("/nullroadsV2.php"))
-            .andExpect(method(HttpMethod.GET))
-            .andRespond(
-                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
+        forecastSectionTestHelper.serverExpectMetadata(server, 2);
 
         forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
 
         final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null,
                                                                                                                                    null, null,
                                                                                                                                    null, null,
-                                                                                                                                   Arrays.asList("00009_216_03050_0_0"));
+                                                                                                                                   List.of("00009_216_03050_0_0"));
 
         assertEquals(1, featureCollection.getFeatures().size());
         assertEquals("00009_216_03050_0_0", featureCollection.getFeatures().get(0).getProperties().getNaturalId());

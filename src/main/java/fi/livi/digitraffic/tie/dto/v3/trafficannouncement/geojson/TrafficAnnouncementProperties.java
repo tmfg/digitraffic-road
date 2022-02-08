@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
     "trafficAnnouncementType",
     "version",
     "releaseTime",
+    "versionTime",
     "locationToDisplay",
     "announcements",
     "contact"
@@ -44,6 +45,9 @@ public class TrafficAnnouncementProperties extends Properties {
     @ApiModelProperty(value = "Annoucement release time", required = true)
     public final ZonedDateTime releaseTime;
 
+    @ApiModelProperty(value = "Annoucement version time", required = true)
+    public final ZonedDateTime versionTime;
+
     @ApiModelProperty(value = "Contains announcement's different language versions available.", required = true)
     @NotNull
     public final List<TrafficAnnouncement> announcements;
@@ -52,13 +56,14 @@ public class TrafficAnnouncementProperties extends Properties {
     public final Contact contact;
 
     public TrafficAnnouncementProperties(final String situationId, final Integer version, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType, final ZonedDateTime releaseTime,
-                                         final List<TrafficAnnouncement> announcements, final Contact contact) {
+                                         final ZonedDateTime versionTime, final List<TrafficAnnouncement> announcements, final Contact contact) {
         super();
         this.situationId = situationId;
         this.version = version;
         this.situationType = situationType;
         this.trafficAnnouncementType = trafficAnnouncementType;
         this.releaseTime = releaseTime;
+        this.versionTime = versionTime;
         this.announcements = announcements;
         this.contact = contact;
     }

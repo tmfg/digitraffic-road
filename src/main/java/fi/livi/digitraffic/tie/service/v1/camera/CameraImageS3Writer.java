@@ -86,9 +86,11 @@ public class CameraImageS3Writer {
             final ObjectMetadata metadata = createS3Metadata(timestampEpochMillis, versionedImageData.length);
 
             // Put versions image
-            final PutObjectResult result = amazonS3Client.putObject(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey, new ByteArrayInputStream(versionedImageData), metadata);
+            final PutObjectResult result = amazonS3Client.putObject(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey,
+                                                                    new ByteArrayInputStream(versionedImageData), metadata);
             if (log.isDebugEnabled()) {
-                log.debug("method=writeVersionedImage s3Key={} lastModified: {} versionId={}", versionedKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER), result.getVersionId());
+                log.debug("method=writeVersionedImage s3Key={} lastModified: {} s3VersionId={}",
+                          versionedKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER), result.getVersionId());
             }
             return result.getVersionId();
         } catch (final Exception e) {

@@ -51,8 +51,8 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationRecordCommentI18n;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
-import fi.livi.digitraffic.tie.service.datex2.ImsJsonConverter;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
+import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2UpdateValues;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 

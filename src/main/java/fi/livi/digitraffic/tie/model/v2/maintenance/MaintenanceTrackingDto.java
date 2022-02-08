@@ -28,6 +28,10 @@ public interface MaintenanceTrackingDto {
 
     Long getWorkMachineId();
 
+    String getDomain();
+
+    String getSource();
+
     default Set<MaintenanceTrackingTask> getTasks() {
         return Arrays.stream(getTasksAsString().split(",")).map(s -> MaintenanceTrackingTask.valueOf(s)).collect(Collectors.toSet());
     }
