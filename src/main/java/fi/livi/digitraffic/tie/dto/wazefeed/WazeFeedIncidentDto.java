@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class WazeFeedIncidentsDto implements Serializable {
+public class WazeFeedIncidentDto implements Serializable {
     public final String reference = "FINTRAFFIC";
 
     public final String id;
@@ -12,7 +12,7 @@ public class WazeFeedIncidentsDto implements Serializable {
     public final Type type;
     public final WazeFeedLocationDto location;
 
-    public WazeFeedIncidentsDto(String id, String street, String description, WazeFeedLocationDto.Direction direction, String polyline, Type type) {
+    public WazeFeedIncidentDto(String id, String street, String description, WazeFeedLocationDto.Direction direction, String polyline, Type type) {
         this.id = id;
         this.location = new WazeFeedLocationDto(street, polyline, direction);
         this.description = description;

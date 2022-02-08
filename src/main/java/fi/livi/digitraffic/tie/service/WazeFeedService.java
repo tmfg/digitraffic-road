@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
 import fi.livi.digitraffic.tie.dao.WazeDatex2Repository;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
-import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentsDto;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 
 @ConditionalOnWebApplication
@@ -33,7 +33,7 @@ public class WazeFeedService {
     public WazeFeedAnnouncementDto findActive() {
         final List<Datex2> activeIncidents = wazeRepository.findAllActive();
 
-        final List<WazeFeedIncidentsDto> incidents = activeIncidents.stream()
+        final List<WazeFeedIncidentDto> incidents = activeIncidents.stream()
             .map(this.wazeDatex2JsonConverter::convertToWazeFeedAnnouncementDto)
             .flatMap(Optional::stream)
             .collect(Collectors.toList());

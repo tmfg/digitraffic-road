@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Import;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
-import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentsDto;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
@@ -49,7 +49,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         wazeFeedServiceTestHelper.insertAccident();
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
 
         assertEquals(1, incidents.size());
     }
@@ -74,14 +74,14 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final String description = featureList.stream().map(x -> x + ".").collect(Collectors.joining(" "));
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(1, incidents.size());
 
-        final WazeFeedIncidentsDto incident = incidents.get(0);
+        final WazeFeedIncidentDto incident = incidents.get(0);
 
         assertEquals(situationId, incident.id);
         assertEquals(String.format("%s - %s, %s", street, roadName, municipality), incident.location.street);
-        assertEquals(WazeFeedIncidentsDto.Type.ACCIDENT, incident.type);
+        assertEquals(WazeFeedIncidentDto.Type.ACCIDENT, incident.type);
         assertEquals(description.substring(0, 37) + "...", incident.description);
         assertTrue(incident.description.length() <= 40);
         assertEquals("FINTRAFFIC", incident.reference);
@@ -94,10 +94,10 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         wazeFeedServiceTestHelper.insertAccident("GUID1234", RoadAddressLocation.Direction.BOTH, 130, point);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(1, incidents.size());
 
-        final WazeFeedIncidentsDto incident = incidents.get(0);
+        final WazeFeedIncidentDto incident = incidents.get(0);
         assertEquals("25.182835 61.575153", incident.location.polyline);
         assertNull(incident.location.direction);
     }
@@ -121,7 +121,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         wazeFeedServiceTestHelper.insertAccident("GUID1236", RoadAddressLocation.Direction.UNKNOWN, 131);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(3, incidents.size());
 
         incidents.forEach(x -> assertEquals(WazeFeedLocationDto.Direction.ONE_DIRECTION, x.location.direction));
@@ -141,7 +141,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         // expect the multipolygon version to be filtered out
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(1, incidents.size());
     }
 
@@ -153,10 +153,10 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         wazeFeedServiceTestHelper.insertAccident("GUID1234", RoadAddressLocation.Direction.BOTH, 130, geometry);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(incidents.size(), 1);
 
-        final WazeFeedIncidentsDto incident = incidents.get(0);
+        final WazeFeedIncidentDto incident = incidents.get(0);
 
         assertEquals("25.180874 61.569262 25.180826 61.569394 25.180826 61.569394 25.180874 61.569262", incident.location.polyline);
         assertEquals(WazeFeedLocationDto.Direction.BOTH_DIRECTIONS, incident.location.direction);
@@ -165,7 +165,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     @Test
     public void noIncidents() {
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
 
         assertEquals(incidents.size(), 0);
     }
@@ -323,7 +323,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         announcementParams.forEach(wazeFeedServiceTestHelper::insertAccident);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(5, incidents.size());
     }
 
@@ -341,7 +341,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         wazeFeedServiceTestHelper.insertAccident(params.situationId, params.situationId, params, TrafficAnnouncementType.GENERAL);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
+        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(0, incidents.size());
     }
 }

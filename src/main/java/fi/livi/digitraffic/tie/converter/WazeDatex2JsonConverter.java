@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentsDto;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
@@ -41,7 +41,7 @@ public class WazeDatex2JsonConverter {
         this.datex2JsonConverterV1 = datex2JsonConverterV1;
     }
 
-    public Optional<WazeFeedIncidentsDto> convertToWazeFeedAnnouncementDto(final Datex2 datex2) {
+    public Optional<WazeFeedIncidentDto> convertToWazeFeedAnnouncementDto(final Datex2 datex2) {
         final TrafficAnnouncementFeature feature;
         final String jsonMessage = datex2.getJsonMessage();
 
@@ -59,7 +59,7 @@ public class WazeDatex2JsonConverter {
         }
 
         final TrafficAnnouncementProperties properties = feature.getProperties();
-        final Optional<WazeFeedIncidentsDto.Type> maybeType = Optional.ofNullable(properties.getTrafficAnnouncementType()).flatMap(this::convertToWazeType);
+        final Optional<WazeFeedIncidentDto.Type> maybeType = Optional.ofNullable(properties.getTrafficAnnouncementType()).flatMap(this::convertToWazeType);
 
         final TrafficAnnouncement announcement = properties.announcements.get(0);
         final Optional<Geometry<?>> maybeGeometry = Optional.ofNullable(feature.getGeometry());
@@ -83,19 +83,19 @@ public class WazeDatex2JsonConverter {
             maybeStreet.flatMap(street ->
                 maybeDescription.flatMap(description ->
                     maybeType.map(type ->
-                        new WazeFeedIncidentsDto(id, street, description, direction, polyline, type)))));
+                        new WazeFeedIncidentDto(id, street, description, direction, polyline, type)))));
     }
 
-    private Optional<WazeFeedIncidentsDto.Type> convertToWazeType(final TrafficAnnouncementType trafficAnnouncementType) {
+    private Optional<WazeFeedIncidentDto.Type> convertToWazeType(final TrafficAnnouncementType trafficAnnouncementType) {
         if (trafficAnnouncementType == null) {
             return Optional.empty();
         }
 
         switch (trafficAnnouncementType) {
         case ACCIDENT_REPORT:
-            return Optional.of(WazeFeedIncidentsDto.Type.ACCIDENT);
+            return Optional.of(WazeFeedIncidentDto.Type.ACCIDENT);
         case GENERAL:
-            return Optional.of(WazeFeedIncidentsDto.Type.HAZARD);
+            return Optional.of(WazeFeedIncidentDto.Type.HAZARD);
         default:
             return Optional.empty();
         }
