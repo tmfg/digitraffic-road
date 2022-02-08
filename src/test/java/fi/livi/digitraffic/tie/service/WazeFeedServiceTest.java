@@ -21,6 +21,7 @@ import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentsDto;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiPoint;
@@ -79,7 +80,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final WazeFeedIncidentsDto incident = incidents.get(0);
 
         assertEquals(situationId, incident.id);
-        assertEquals(String.format("%s - %s, %s", street, roadName, municipality), incident.street);
+        assertEquals(String.format("%s - %s, %s", street, roadName, municipality), incident.location.street);
         assertEquals(WazeFeedIncidentsDto.Type.ACCIDENT, incident.type);
         assertEquals(description.substring(0, 37) + "...", incident.description);
         assertTrue(incident.description.length() <= 40);
@@ -97,8 +98,8 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertEquals(1, incidents.size());
 
         final WazeFeedIncidentsDto incident = incidents.get(0);
-        assertEquals("25.182835 61.575153", incident.polyline);
-        assertNull(incident.direction);
+        assertEquals("25.182835 61.575153", incident.location.polyline);
+        assertNull(incident.location.direction);
     }
 
     @Test
@@ -123,7 +124,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final List<WazeFeedIncidentsDto> incidents = announcement.incidents;
         assertEquals(3, incidents.size());
 
-        incidents.forEach(x -> assertEquals(WazeFeedIncidentsDto.Direction.ONE_DIRECTION, x.direction));
+        incidents.forEach(x -> assertEquals(WazeFeedLocationDto.Direction.ONE_DIRECTION, x.location.direction));
     }
 
     @Test
@@ -157,8 +158,8 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         final WazeFeedIncidentsDto incident = incidents.get(0);
 
-        assertEquals("25.180874 61.569262 25.180826 61.569394 25.180826 61.569394 25.180874 61.569262", incident.polyline);
-        assertEquals(WazeFeedIncidentsDto.Direction.BOTH_DIRECTIONS, incident.direction);
+        assertEquals("25.180874 61.569262 25.180826 61.569394 25.180826 61.569394 25.180874 61.569262", incident.location.polyline);
+        assertEquals(WazeFeedLocationDto.Direction.BOTH_DIRECTIONS, incident.location.direction);
     }
 
     @Test
@@ -183,8 +184,8 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         coords.add(List.of(25.180826, 61.569394));
         geometry2.addLineString(coords);
 
-        final Optional<String> maybePolyline1 = WazeDatex2JsonConverter.formatPolyline(geometry1, WazeFeedIncidentsDto.Direction.ONE_DIRECTION);
-        final Optional<String> maybePolyline2 = WazeDatex2JsonConverter.formatPolyline(geometry2, WazeFeedIncidentsDto.Direction.ONE_DIRECTION);
+        final Optional<String> maybePolyline1 = WazeDatex2JsonConverter.formatPolyline(geometry1, WazeFeedLocationDto.Direction.ONE_DIRECTION);
+        final Optional<String> maybePolyline2 = WazeDatex2JsonConverter.formatPolyline(geometry2, WazeFeedLocationDto.Direction.ONE_DIRECTION);
 
         assertEquals("25.180874 61.569262 25.180826 61.569394", maybePolyline1.orElse(null));
         assertEquals("25.182835 61.575153 25.183062 61.575386 25.18328 61.575587 25.180874 61.569262 25.180826 61.569394", maybePolyline2.orElse(null));
@@ -208,7 +209,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         geometry.addLineString(coords1);
         geometry.addLineString(coords2);
 
-        final Optional<String> maybePolyline = WazeDatex2JsonConverter.formatPolyline(geometry, WazeFeedIncidentsDto.Direction.BOTH_DIRECTIONS);
+        final Optional<String> maybePolyline = WazeDatex2JsonConverter.formatPolyline(geometry, WazeFeedLocationDto.Direction.BOTH_DIRECTIONS);
         assertTrue(maybePolyline.isPresent());
 
         final String polyline = maybePolyline.get();
@@ -233,7 +234,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         geometry.addLineString(coords1);
         geometry.addLineString(coords2);
 
-        final Optional<String> maybePolyline = WazeDatex2JsonConverter.formatPolyline(geometry, WazeFeedIncidentsDto.Direction.ONE_DIRECTION);
+        final Optional<String> maybePolyline = WazeDatex2JsonConverter.formatPolyline(geometry, WazeFeedLocationDto.Direction.ONE_DIRECTION);
         assertTrue(maybePolyline.isPresent());
 
         final String polyline = maybePolyline.get();

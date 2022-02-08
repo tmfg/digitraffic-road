@@ -3,37 +3,20 @@ package fi.livi.digitraffic.tie.dto.wazefeed;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class WazeFeedIncidentsDto implements Serializable {
     public final String reference = "FINTRAFFIC";
 
     public final String id;
-    public final String street;
     public final String description;
-    public final String polyline;
     public final Type type;
+    public final WazeFeedLocationDto location;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public final Direction direction;
-
-    public WazeFeedIncidentsDto(String id, String street, String description, Direction direction, String polyline, Type type) {
+    public WazeFeedIncidentsDto(String id, String street, String description, WazeFeedLocationDto.Direction direction, String polyline, Type type) {
         this.id = id;
-        this.street = street;
+        this.location = new WazeFeedLocationDto(street, polyline, direction);
         this.description = description;
-        this.direction = direction;
-        this.polyline = polyline;
         this.type = type;
-    }
-
-    public enum Direction {
-        BOTH_DIRECTIONS,
-        ONE_DIRECTION;
-
-        @JsonCreator
-        public static Direction fromValue(final String value) {
-            return Direction.valueOf(value.toUpperCase());
-        }
     }
 
     public enum Type {
