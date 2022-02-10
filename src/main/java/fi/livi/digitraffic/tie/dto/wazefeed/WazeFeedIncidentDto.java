@@ -12,7 +12,8 @@ public class WazeFeedIncidentDto implements Serializable {
     public final Type type;
     public final WazeFeedLocationDto location;
 
-    public WazeFeedIncidentDto(String id, String street, String description, WazeFeedLocationDto.Direction direction, String polyline, Type type) {
+    public WazeFeedIncidentDto(final String id, final String street, final String description, final WazeFeedLocationDto.Direction direction,
+                               final String polyline, final Type type) {
         this.id = id;
         this.location = new WazeFeedLocationDto(street, polyline, direction);
         this.description = description;

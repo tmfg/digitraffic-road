@@ -10,7 +10,7 @@ public class WazeFeedLocationDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public final Direction direction;
 
-    public WazeFeedLocationDto(String street, String polyline, Direction direction) {
+    public WazeFeedLocationDto(final String street, final String polyline, final Direction direction) {
         this.street = street;
         this.polyline = polyline;
         this.direction = direction;
