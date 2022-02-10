@@ -52,14 +52,14 @@ public class WazeFeedServiceTestHelper {
         datex2Repository.deleteAll();
     }
 
-    public void insertAccident() {
+    public void insertSituation() {
         final String situationId = "GUID1234";
         final Integer street = 130;
-        insertAccident(situationId, RoadAddressLocation.Direction.BOTH, street);
+        insertSituation(situationId, RoadAddressLocation.Direction.BOTH, street);
     }
 
-    public void insertAccident(final String situationId, final RoadAddressLocation.Direction direction,
-                               final Integer street) {
+    public void insertSituation(final String situationId, final RoadAddressLocation.Direction direction,
+                                final Integer street) {
         final MultiLineString geometry = new MultiLineString();
         final List<List<Double>> coordinates = new ArrayList<>();
 
@@ -68,13 +68,13 @@ public class WazeFeedServiceTestHelper {
 
         geometry.addLineString(coordinates);
 
-        insertAccident(situationId, direction, street, geometry);
+        insertSituation(situationId, direction, street, geometry);
     }
 
-    public void insertAccident(final String situationId, final RoadAddressLocation.Direction direction,
-                               final Integer street, final Geometry<?> geometry) {
+    public void insertSituation(final String situationId, final RoadAddressLocation.Direction direction,
+                                final Integer street, final Geometry<?> geometry) {
 
-        final AnnouncementParams params = new AnnouncementParams(
+        final SituationParams params = new SituationParams(
             situationId,
             new AnnouncementAddress("municipality", "roadName", street),
             ZonedDateTime.now(),
@@ -84,14 +84,15 @@ public class WazeFeedServiceTestHelper {
             geometry
         );
 
-        insertAccident(params);
+        insertSituation(params);
     }
 
-    public void insertAccident(final AnnouncementParams params) {
-        insertAccident(params.situationId, params.situationId, params, params.trafficAnnouncementType);
+    public void insertSituation(final SituationParams params) {
+        insertSituation(params.situationId, params.situationId, params, params.trafficAnnouncementType);
     }
 
-    public void insertAccident(final String situationId, final String situationRecordId, final AnnouncementParams params, final TrafficAnnouncementType datex2TrafficAnnouncementType) {
+    public void insertSituation(final String situationId, final String situationRecordId, final SituationParams params,
+                                final TrafficAnnouncementType datex2TrafficAnnouncementType) {
         final Datex2 datex2 = new Datex2(SituationType.TRAFFIC_ANNOUNCEMENT, datex2TrafficAnnouncementType);
         final Datex2Situation situation = new Datex2Situation();
         final Datex2SituationRecord situationRecord = new Datex2SituationRecord();
@@ -122,11 +123,11 @@ public class WazeFeedServiceTestHelper {
         return String.format(situationIdTemplate, this.situationCounter);
     }
 
-    public String paramsToJson(final AnnouncementParams params) {
+    public String paramsToJson(final SituationParams params) {
         return params.toJson(this.genericJsonWriter);
     }
 
-    public static class AnnouncementParams {
+    public static class SituationParams {
         String situationId;
         List<String> features;
         Geometry<?> geometry;
@@ -136,7 +137,7 @@ public class WazeFeedServiceTestHelper {
         final ZonedDateTime startTime;
         final RoadAddressLocation.Direction direction;
 
-        public AnnouncementParams() {
+        public SituationParams() {
             this(
                 null,
                 new AnnouncementAddress(),
@@ -147,17 +148,17 @@ public class WazeFeedServiceTestHelper {
             );
         }
 
-        public AnnouncementParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
-                                  final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
-                                  final List<String> features) {
+        public SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
+                               final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
+                               final List<String> features) {
             this(situationId, announcementAddress, startTime, trafficAnnouncementType, direction, features, null);
 
             this.geometry = createDummyGeometry();
         }
 
-        public AnnouncementParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
-                                  final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
-                                  final List<String> features, Geometry<?> geometry) {
+        public SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
+                               final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
+                               final List<String> features, Geometry<?> geometry) {
             this.situationId = situationId;
             this.announcementAddress = announcementAddress;
             this.startTime = startTime;
