@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public class WazeFeedIncidentDto implements Serializable {
-    public final String reference = "FINTRAFFIC";
+    public static final String reference = "FINTRAFFIC";
 
     public final String id;
     public final String description;
