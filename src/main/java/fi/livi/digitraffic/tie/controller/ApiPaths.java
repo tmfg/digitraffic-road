@@ -46,8 +46,6 @@ public final class ApiPaths {
 
     public static final String CAMERA_HISTORY_PATH = "/camera-history";
 
-    public static final String WAZE_INCIDENT_PATH = "/waze/v1/incidents";
-
     // traffic-messages / datex2
     public static final String TRAFFIC_MESSAGES_PATH = "/traffic-messages";
     public static final String TRAFFIC_MESSAGES_SIMPLE_PATH = TRAFFIC_MESSAGES_PATH + "/simple";

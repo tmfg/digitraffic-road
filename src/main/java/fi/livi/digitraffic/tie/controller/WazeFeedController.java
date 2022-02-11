@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.controller;
 
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_WAZEFEED;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,11 +18,14 @@ import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @Validated
-@RequestMapping(ApiPaths.API_INTEGRATIONS_BASE_PATH)
 @ApiIgnore
 @ConditionalOnWebApplication
 @ConditionalOnProperty(prefix="dt.waze", name="enabled", havingValue="true")
 public class WazeFeedController {
+    private static final String API_WAZE_V1 = API_WAZEFEED + V1;
+    private static final String FEED = "/feed";
+    private static final String API_WAZE_V1_FEED = API_WAZE_V1 + FEED;
+
     private final WazeFeedService wazeFeedService;
 
     public WazeFeedController(final WazeFeedService wazeFeedService) {
@@ -28,7 +33,7 @@ public class WazeFeedController {
     }
 
     @ApiOperation(value = "Traffic incident announcements for Waze")
-    @RequestMapping(method = RequestMethod.GET, path = ApiPaths.WAZE_INCIDENT_PATH, produces = { APPLICATION_JSON_VALUE })
+    @RequestMapping(method = RequestMethod.GET, path = API_WAZE_V1_FEED, produces = { APPLICATION_JSON_VALUE })
     public WazeFeedAnnouncementDto wazeFeedAnnouncement() {
         return wazeFeedService.findActive();
     }
