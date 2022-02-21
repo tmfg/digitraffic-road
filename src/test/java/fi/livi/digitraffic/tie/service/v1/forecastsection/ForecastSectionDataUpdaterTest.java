@@ -1,22 +1,17 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
-import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
@@ -31,8 +26,10 @@ import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetad
 
 public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
 
+    @Autowired
     private ForecastSectionClient forecastSectionClient;
 
+    @Autowired
     private ForecastSectionDataUpdater forecastSectionDataUpdater;
 
     @Autowired
@@ -55,31 +52,29 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
     @Autowired
     private DataStatusService dataStatusService;
 
+    @Autowired
+    private ForecastSectionTestHelper forecastSectionTestHelper;
+
     @BeforeEach
     public void before() throws IOException {
-        forecastSectionClient = new ForecastSectionClient(restTemplate, null);
-        forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
         server = MockRestServiceServer.createServer(restTemplate);
         forecastSectionMetadataUpdaterV2 =
             new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository, v2ForecastSectionMetadataDao, dataStatusService);
         forecastSectionMetadataUpdaterV1 =
             new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
+    }
 
+    @AfterEach
+    public void after() {
+        forecastSectionRepository.deleteAllInBatch();
     }
 
     @Test
-    public void updateForecastSectionV1DataSucceeds() throws IOException {
-        server.expect(requestTo("/nullroads.php"))
-            .andExpect(method(HttpMethod.GET))
-            .andRespond(MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV1_min.json"), MediaType.APPLICATION_JSON));
-
-        server.expect(requestTo("/nullroadConditionsV1-json.php"))
-            .andExpect(method(HttpMethod.GET))
-            .andRespond(
-                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadConditionsV1_slim.json"), MediaType.APPLICATION_JSON));
+    public void updateForecastSectionV1DataSucceeds() {
+        forecastSectionTestHelper.serverExpectMetadata(server, 1);
+        forecastSectionTestHelper.serverExpectData(server, 1);
 
         forecastSectionMetadataUpdaterV1.updateForecastSectionV1Metadata();
-
 
         final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V1);
 
@@ -94,7 +89,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
                                                                                                             null);
 
         assertEquals(3, data.weatherData.size());
-        assertEquals("00009_303_000_0", data.weatherData.get(0).naturalId);
+        assertEquals("00001_001_000_0", data.weatherData.get(0).naturalId);
         assertEquals(5, data.weatherData.get(0).roadConditions.size());
         assertEquals("0h", data.weatherData.get(0).roadConditions.get(0).getForecastName());
         assertEquals("2h", data.weatherData.get(0).roadConditions.get(1).getForecastName());
@@ -104,19 +99,9 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void updateForecastSectionV2DataSucceeds() throws IOException {
-
-        forecastSectionRepository.deleteAllInBatch();
-
-        server.expect(requestTo("/nullroadsV2.php"))
-            .andExpect(method(HttpMethod.GET))
-            .andRespond(
-                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadsV2_slim.json"), MediaType.APPLICATION_JSON));
-
-        server.expect(requestTo("/nullroadConditionsV2-json.php"))
-            .andExpect(method(HttpMethod.GET))
-            .andRespond(
-                MockRestResponseCreators.withSuccess(readResourceContent("classpath:forecastsection/roadConditionsV2.json"), MediaType.APPLICATION_JSON));
+    public void updateForecastSectionV2DataSucceeds() {
+        forecastSectionTestHelper.serverExpectMetadata(server, 2);
+        forecastSectionTestHelper.serverExpectData(server, 2);
 
         final Instant metadataUpdated = forecastSectionMetadataUpdaterV2.updateForecastSectionsV2Metadata();
 

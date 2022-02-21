@@ -60,9 +60,17 @@ public class MaintenanceTracking {
     @Column
     private LineString lineString;
 
+    @Column
     private BigDecimal direction;
 
+    @Column
     private boolean finished;
+
+    @Column
+    private String domain;
+
+    @Column(insertable = false) // Currently set only in lambda implementation
+    private String messageOriginalId;
 
     @Column(insertable = false, updatable = false) // auto generated
     private ZonedDateTime created;
@@ -94,14 +102,16 @@ public class MaintenanceTracking {
 
     public MaintenanceTracking(final V3MaintenanceTrackingObservationData maintenanceTrackingObservationData, final MaintenanceTrackingWorkMachine workMachine,
                                final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                               final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
-        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, lineString, tasks, direction);
+                               final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
+                               final String domain) {
+        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, lineString, tasks, direction, domain);
         this.maintenanceTrackingObservationDatas.add(maintenanceTrackingObservationData);
     }
 
     private MaintenanceTracking(final MaintenanceTrackingWorkMachine workMachine,
                                 final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                                final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction) {
+                                final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
+                                final String domain) {
         this.workMachine = workMachine;
         this.sendingSystem = sendingSystem;
         this.sendingTime = sendingTime;
@@ -111,6 +121,7 @@ public class MaintenanceTracking {
         this.lineString = lineString;
         this.tasks.addAll(tasks);
         this.direction = direction;
+        this.domain = domain;
     }
 
 
@@ -172,6 +183,14 @@ public class MaintenanceTracking {
 
     public MaintenanceTrackingWorkMachine getWorkMachine() {
         return workMachine;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public String getMessageOriginalId() {
+        return messageOriginalId;
     }
 
     public void setFinished() {

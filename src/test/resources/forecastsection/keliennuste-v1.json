@@ -1,0 +1,239 @@
+{
+    "messageTimestamp": "2018-12-18T15:32:06+02:00",
+    "roadConditions": [
+        {
+            "roadId": "00001_001_000_0",
+            "observation":{
+                "Time": "2018-12-18T15:19:00+02:00",
+                "daylight": false,
+                "overallRoadCondition": 2,
+                "reliability": 0,
+                "roadTemperature": "-2.5",
+                "temperature": "-2.7",
+                "weatherSymbol": "n412",
+                "windDirection": 98,
+                "windSpeed": 0.4,
+                "conditionReason": {
+                    "precipitationCondition": 6
+                }
+            },
+            "forecast": [
+                {
+                    "forecastName": "2h",
+                    "Time": "2018-12-18T17:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-2",
+                    "temperature": "-3",
+                    "weatherSymbol": "n412",
+                    "windDirection": 98,
+                    "windSpeed": 0,
+                    "conditionReason": {
+                        "precipitationCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "4h",
+                    "Time": "2018-12-18T19:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-3",
+                    "temperature": "-3",
+                    "weatherSymbol": "n412",
+                    "windDirection": 113,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "6h",
+                    "Time": "2018-12-18T21:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-3",
+                    "temperature": "-3",
+                    "weatherSymbol": "n412",
+                    "windDirection": 118,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "12h",
+                    "Time": "2018-12-19T03:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-5",
+                    "temperature": "-4",
+                    "weatherSymbol": "n400",
+                    "windDirection": 116,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                }]
+        },
+        {
+            "roadId": "00001_006_000_0",
+            "observation":{
+                "Time": "2018-12-18T15:22:00+02:00",
+                "daylight": false,
+                "overallRoadCondition": 2,
+                "reliability": 0,
+                "roadTemperature": "-3.2",
+                "temperature": "-3.8",
+                "weatherSymbol": "n411",
+                "windDirection": 97,
+                "windSpeed": 0.2,
+                "conditionReason": {
+                    "roadCondition": 6
+                }
+            },
+            "forecast": [
+                {
+                    "forecastName": "2h",
+                    "Time": "2018-12-18T17:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-3",
+                    "temperature": "-4",
+                    "weatherSymbol": "n411",
+                    "windDirection": 97,
+                    "windSpeed": 0,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "4h",
+                    "Time": "2018-12-18T19:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-4",
+                    "temperature": "-4",
+                    "weatherSymbol": "n412",
+                    "windDirection": 115,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "6h",
+                    "Time": "2018-12-18T21:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-5",
+                    "temperature": "-4",
+                    "weatherSymbol": "n412",
+                    "windDirection": 118,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "12h",
+                    "Time": "2018-12-19T03:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-5",
+                    "temperature": "-5",
+                    "weatherSymbol": "n400",
+                    "windDirection": 126,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                }]
+        },
+        {
+            "roadId": "00001_012_000_0",
+            "observation":{
+                "Time": "2018-12-18T15:22:00+02:00",
+                "daylight": false,
+                "overallRoadCondition": 2,
+                "reliability": 0,
+                "roadTemperature": "-5",
+                "temperature": "-5.4",
+                "weatherSymbol": "n412",
+                "windDirection": 133,
+                "windSpeed": 0.9,
+                "conditionReason": {
+                    "roadCondition": 6
+                }
+            },
+            "forecast": [
+                {
+                    "forecastName": "2h",
+                    "Time": "2018-12-18T17:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-5",
+                    "temperature": "-5",
+                    "weatherSymbol": "n412",
+                    "windDirection": 133,
+                    "windSpeed": 1,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "4h",
+                    "Time": "2018-12-18T19:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-5",
+                    "temperature": "-5",
+                    "weatherSymbol": "n422",
+                    "windDirection": 111,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "6h",
+                    "Time": "2018-12-18T21:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-5",
+                    "temperature": "-5",
+                    "weatherSymbol": "n422",
+                    "windDirection": 114,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                },
+                {
+                    "forecastName": "12h",
+                    "Time": "2018-12-19T03:00:00+02:00",
+                    "daylight": false,
+                    "overallRoadCondition": 2,
+                    "reliability": 1,
+                    "roadTemperature": "-6",
+                    "temperature": "-5",
+                    "weatherSymbol": "n412",
+                    "windDirection": 122,
+                    "windSpeed": 2,
+                    "conditionReason": {
+                        "roadCondition": 6
+                    }
+                }]
+        }
+    ]
+}

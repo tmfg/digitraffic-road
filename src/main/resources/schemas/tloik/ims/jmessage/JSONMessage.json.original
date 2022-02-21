@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/tmfg/metadata/JSONMessage_0.2.15/schema/JSONMessage.json",
+    "$id": "https://raw.githubusercontent.com/tmfg/metadata/JSONMessage_0.2.16/schema/JSONMessage.json",
     "type": "object",
     "title": "TrafficSituation announcement.",
     "description": "Structural representation of a traffic situation containing its key elements and all the language versions of announcements sent by Finnish Transportation Agency.",
@@ -39,6 +39,11 @@
             "format": "date-time",
             "description": "Annoucement release time."
         },
+        "versionTime": {
+            "type": "string",
+            "format": "date-time",
+            "descripion": "Release time of this version of the announcement."
+        },
         "announcements": {
             "type": "array",
             "title": "Announcements schema.",
@@ -69,6 +74,7 @@
         "version",
         "situationType",
         "releaseTime",
+        "versionTime",
         "announcements"
     ],
     "definitions": {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.ForecastSection
 import reactor.util.Logger;
 import reactor.util.Loggers;
 
+@ConditionalOnNotWebApplication
 @Service
 public class V2ForecastSectionMetadataUpdater {
     private final static Logger log = Loggers.getLogger(V2ForecastSectionMetadataUpdater.class);

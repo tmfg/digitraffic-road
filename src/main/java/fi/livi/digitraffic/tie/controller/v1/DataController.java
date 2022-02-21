@@ -82,7 +82,7 @@ public class DataController {
     }
 
     @ApiOperation("Current free flow speeds. This API is deprecated, use tms-sensor-constants and values VVAPAAS1 & VVAPAAS2.")
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
     public FreeFlowSpeedRootDataObjectDto freeFlowSpeeds(
@@ -93,7 +93,7 @@ public class DataController {
     }
 
     @ApiOperation("Current free flow speeds of TMS station (Traffic Measurement System / LAM). This API is deprecated, use tms-sensor-constants and values VVAPAAS1 & VVAPAAS2.")
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/tms/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of free flow speeds"))
     public FreeFlowSpeedRootDataObjectDto freeFlowSpeedsOfTmsById(
@@ -214,7 +214,7 @@ public class DataController {
         return datex2DataService.findTrafficDisorders(situationId, year, month);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @ApiOperation(value = "Active roadwork Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of roadworks"))
@@ -226,7 +226,7 @@ public class DataController {
         return datex2DataService.findActiveRoadworks(inactiveHours);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @ApiOperation(value = "Roadwork Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
@@ -237,7 +237,7 @@ public class DataController {
         return datex2DataService.getAllRoadworksBySituationId(situationId);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @ApiOperation(value = "Roadwork Datex2 messages history")
     @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
@@ -256,7 +256,7 @@ public class DataController {
         return datex2DataService.findRoadworks(situationId, year, month);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @ApiOperation(value = "Active weight restrictions Datex2 messages")
     @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"))
@@ -268,7 +268,7 @@ public class DataController {
         return datex2DataService.findActiveWeightRestrictions(inactiveHours);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @ApiOperation(value = "Weight restrictions Datex2 messages by situation id")
     @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"),
@@ -279,7 +279,7 @@ public class DataController {
         return datex2DataService.getAllWeightRestrictionsBySituationId(situationId);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @ApiOperation(value = "Weight restriction Datex2 messages history")
     @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of weight restrictions"),

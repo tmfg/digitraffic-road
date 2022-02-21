@@ -1,16 +1,16 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
-import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_DATEX2;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGES_V1_SIMPLE;
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
-import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
+import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createRegionGeometryFeatureCollection;
+import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createRegionsInDescOrderMappedByLocationCode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryMock;
+import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
@@ -51,12 +54,16 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.datex2.Datex2Helper;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
+import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegionGeometryMock {
+public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     private static final Logger log = getLogger(TrafficMessagesControllerV1Test.class);
 
     @Autowired
@@ -77,12 +84,29 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @BeforeEach
     public void init() {
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(0), any())).thenReturn(createNewRegionGeometry(0));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(3), any())).thenReturn(createNewRegionGeometry(3));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(7), any())).thenReturn(createNewRegionGeometry(7));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(14), any())).thenReturn(createNewRegionGeometry(14));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(408), any())).thenReturn(createNewRegionGeometry(408));
-        when(v3RegionGeometryDataServiceSpy.getAreaLocationRegionEffectiveOn(eq(5898), any())).thenReturn(createNewRegionGeometry(5898));
+        final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode =
+            createRegionsInDescOrderMappedByLocationCode(0, 3, 7, 14, 408, 5898);
+
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(0).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(3).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(7).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(14).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(408).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(5898).get(0));
+
+        final RegionGeometryFeatureCollection featureCollectionWithGeometry =
+            createRegionGeometryFeatureCollection(V3RegionGeometryDataService.convertToDtoList(regionsInDescOrderMappedByLocationCode, true));
+        final RegionGeometryFeatureCollection featureCollectionWithoutGeometry =
+            createRegionGeometryFeatureCollection(V3RegionGeometryDataService.convertToDtoList(regionsInDescOrderMappedByLocationCode, false));
+
+        when(v3RegionGeometryDataServicMock.findAreaLocationRegions(eq(false), eq(true), isNull(), isNull())).thenReturn(featureCollectionWithGeometry);
+        when(v3RegionGeometryDataServicMock.findAreaLocationRegions(eq(false), eq(false), isNull(), isNull())).thenReturn(featureCollectionWithoutGeometry);
+
+        // Map return value for locationCode 3
+        final RegionGeometryFeature feature3 =
+            featureCollectionWithGeometry.getFeatures().stream().filter(f -> f.getProperties().locationCode.equals(3)).findFirst().orElseThrow();
+        when(v3RegionGeometryDataServicMock.findAreaLocationRegions(eq(false), eq(true), isNull(), eq(3)))
+            .thenReturn(createRegionGeometryFeatureCollection(Collections.singletonList(feature3)));
     }
 
     /**
@@ -99,8 +123,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 0, situationType));
-                    final String json = getResponse(getUrlWithType(true, 0, situationType));
+                    final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType));
+                    final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -126,8 +150,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 2, situationType));
-                    final String json = getResponse(getUrlWithType(true, 2, situationType));
+                    final String xml = getResponse(getTrafficMessageUrlWithType(false, 2, situationType));
+                    final String json = getResponse(getTrafficMessageUrlWithType(true, 2, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -153,8 +177,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
-                    final String xml = getResponse(getUrlWithType(false, 0, situationType));
-                    final String json = getResponse(getUrlWithType(true, 0, situationType));
+                    final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType));
+                    final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatches(xml);
@@ -164,6 +188,31 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                 }
             }
         }
+    }
+
+    @Test
+    public void getRegionGeometry() throws Exception {
+        final String json = getResponse(getRegionGeometryUrl(true));
+        final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
+        assertEquals(6, result.getFeatures().size());
+        result.getFeatures().forEach(f -> assertNotNull(f.getGeometry()));
+    }
+
+    @Test
+    public void getRegionGeometryWithoutGeometry() throws Exception {
+        final String json = getResponse(getRegionGeometryUrl(false));
+        final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
+        assertEquals(6, result.getFeatures().size());
+        result.getFeatures().forEach(f -> assertNull(f.getGeometry()));
+    }
+
+    @Test
+    public void getRegionGeometryWithId() throws Exception {
+        final String json = getResponse(getRegionGeometryUrl(true, 3));
+        final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
+        assertEquals(1, result.getFeatures().size());
+        assertNotNull(result.getFeatures().get(0).getGeometry());
+        assertEquals(3, result.getFeatures().get(0).getProperties().locationCode);
     }
 
     private void assertEmptyD2Situations(String xml) {
@@ -179,6 +228,11 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     private TrafficAnnouncementFeatureCollection parseSimpleJson(final String simpleJson) throws JsonProcessingException {
         final ObjectReader r = objectMapper.readerFor(TrafficAnnouncementFeatureCollection.class);
         return r.readValue(simpleJson);
+    }
+
+    private RegionGeometryFeatureCollection parseRegionGeometryFeatureCollectionJson(final String regionGeometryFeatureCollection) throws JsonProcessingException {
+        final ObjectReader r = objectMapper.readerFor(RegionGeometryFeatureCollection.class);
+        return r.readValue(regionGeometryFeatureCollection);
     }
 
     private D2LogicalModel parseD2LogicalModel(final String d2xml) {
@@ -242,8 +296,19 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
         }
     }
 
-    private static String getUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
-        return (json ? API_TRAFFIC_MESSAGES_V1_SIMPLE : API_TRAFFIC_MESSAGES_V1_DATEX2) + "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
+    private static String getTrafficMessageUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA_MESSAGES + (json ?  "" : TrafficMessageController.DATEX2) +
+               "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
+    }
+
+    private static String getRegionGeometryUrl(final boolean includeGeometry) {
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA + TrafficMessageController.AREA_GEOMETRIES +
+            "?lastUpdated=false&includeGeometry=" + includeGeometry;
+    }
+
+    private static String getRegionGeometryUrl(final boolean includeGeometry, int regionId) {
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA + TrafficMessageController.AREA_GEOMETRIES + "/" + regionId +
+            "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
     private String getResponse(final String url) throws Exception {

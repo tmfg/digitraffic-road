@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.datex2.V3Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2JsonConverterV1;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 
 @ConditionalOnWebApplication
@@ -34,17 +34,17 @@ public class V1TrafficMessageDataService {
     private static final Logger log = LoggerFactory.getLogger(V1TrafficMessageDataService.class);
 
     private final Datex2Repository datex2Repository;
-    private final V3Datex2JsonConverter v3Datex2JsonConverter;
+    private final Datex2JsonConverterV1 datex2JsonConverterV1;
     private final DataStatusService dataStatusService;
     private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     public V1TrafficMessageDataService(final Datex2Repository datex2Repository,
-                                       final V3Datex2JsonConverter v3Datex2JsonConverter,
+                                       final Datex2JsonConverterV1 datex2JsonConverterV1,
                                        final DataStatusService dataStatusService,
                                        final V2Datex2DataService v2Datex2DataService) {
         this.datex2Repository = datex2Repository;
-        this.v3Datex2JsonConverter = v3Datex2JsonConverter;
+        this.datex2JsonConverterV1 = datex2JsonConverterV1;
         this.dataStatusService = dataStatusService;
         this.v2Datex2DataService = v2Datex2DataService;
     }
@@ -105,7 +105,7 @@ public class V1TrafficMessageDataService {
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .map(d2 -> {
                 try {
-                    return v3Datex2JsonConverter.convertToFeatureJsonObject_V1(d2.getJsonMessage(),
+                    return datex2JsonConverterV1.convertToFeatureJsonObject_V1(d2.getJsonMessage(),
                                                                                d2.getSituationType(),
                                                                                d2.getTrafficAnnouncementType(),
                                                                                includeAreaGeometry);

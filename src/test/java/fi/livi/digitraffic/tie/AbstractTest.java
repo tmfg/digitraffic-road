@@ -7,7 +7,11 @@ import org.springframework.test.context.TestPropertySource;
     "testcontainers.disabled=true",
     "spring.cloud.config.enabled=false",
     "logging.level.org.springframework.test.context.transaction.TransactionContext=WARN",
-    "logging.level.com.tngtech.archunit=INFO"
+    "logging.level.com.tngtech.archunit=INFO",
+    "roadConditions.baseUrl=https://roadConditions/",
+    "roadConditions.suid=suid",
+    "roadConditions.user=user",
+    "roadConditions.pass=pass"
 })
 public abstract class AbstractTest {
 
