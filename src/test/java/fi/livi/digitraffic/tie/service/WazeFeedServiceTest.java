@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static fi.livi.digitraffic.tie.service.WazeFeedServiceTestHelper.readDatex2MessageFromFile;
+
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
+import fi.livi.digitraffic.tie.helper.WazeDatex2MessageConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiPoint;
@@ -38,6 +41,9 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
     @Autowired
     private WazeFeedServiceTestHelper wazeFeedServiceTestHelper;
+
+    @Autowired
+    private WazeDatex2MessageConverter wazeDatex2MessageConverter;
 
     @AfterEach
     public void cleanup() {
@@ -164,6 +170,18 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
 
         assertEquals(incidents.size(), 0);
+    }
+
+    @Test
+    public void datex2MessageConversion() throws IOException {
+        final String situationId = "GUID10004";
+        final String datex2MessageA = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementAndSpeedManagement.xml");
+        final String datex2MessageB = readDatex2MessageFromFile("TrafficSituationEquipmentOrSystemFault.xml");
+        final String datex2MessageC = readDatex2MessageFromFile("TrafficSituationVehicleObstructionAndRoadOrCarriagewayOrLaneManagement.xml");
+
+        assertEquals("Lanes deviated. Temporary speed limit of 50 km/h.", wazeDatex2MessageConverter.export(situationId, datex2MessageA));
+        assertEquals("Traffic light sets out of service.", wazeDatex2MessageConverter.export(situationId, datex2MessageB));
+        assertEquals("Vehicle obstruction: vehicle on fire. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2MessageC));
     }
 
     @Test

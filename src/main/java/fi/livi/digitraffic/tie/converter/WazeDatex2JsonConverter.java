@@ -15,12 +15,14 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
+import fi.livi.digitraffic.tie.helper.WazeDatex2MessageConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
@@ -36,9 +38,12 @@ public class WazeDatex2JsonConverter {
 
     private final Datex2JsonConverterV1 datex2JsonConverterV1;
 
+    private final WazeDatex2MessageConverter wazeDatex2MessageConverter;
+
     @Autowired
-    public WazeDatex2JsonConverter(final Datex2JsonConverterV1 datex2JsonConverterV1) {
+    public WazeDatex2JsonConverter(final Datex2JsonConverterV1 datex2JsonConverterV1, final WazeDatex2MessageConverter wazeDatex2MessageConverter) {
         this.datex2JsonConverterV1 = datex2JsonConverterV1;
+        this.wazeDatex2MessageConverter = wazeDatex2MessageConverter;
     }
 
     public Optional<WazeFeedIncidentDto> convertToWazeFeedAnnouncementDto(final Datex2 datex2) {
@@ -59,6 +64,7 @@ public class WazeDatex2JsonConverter {
         }
 
         final TrafficAnnouncementProperties properties = feature.getProperties();
+        final String situationId = properties.situationId;
         final Optional<WazeFeedIncidentDto.Type> maybeType = Optional.ofNullable(properties.getTrafficAnnouncementType()).flatMap(this::convertToWazeType);
 
         final TrafficAnnouncement announcement = properties.announcements.get(0);
@@ -68,10 +74,10 @@ public class WazeDatex2JsonConverter {
         final Optional<String> maybeStreet = getRoadAddress(announcement);
 
         if (maybeStreet.isEmpty()) {
-            logger.info("method=getRoadAddress TrafficAnnouncement missing road address in situation {}", properties.situationId);
+            logger.info("method=getRoadAddress TrafficAnnouncement {} missing road address in situation {}", situationId, properties.situationId);
         }
 
-        final Optional<String> maybeDescription = createDescription(announcement);
+        final String description = wazeDatex2MessageConverter.export(situationId, datex2.getMessage());
 
         final WazeFeedLocationDto.Direction direction = maybeGeometry.flatMap(geometry ->
             convertDirection(announcement.locationDetails.roadAddressLocation.direction, geometry))
@@ -81,9 +87,12 @@ public class WazeDatex2JsonConverter {
 
         return maybePolyline.flatMap(polyline ->
             maybeStreet.flatMap(street ->
-                maybeDescription.flatMap(description ->
-                    maybeType.map(type ->
-                        new WazeFeedIncidentDto(id, street, description, direction, polyline, type)))));
+                maybeType.map(type ->
+                    new WazeFeedIncidentDto(id, street, description, direction, polyline, type))));
+    }
+
+    public static String convertSituationRecordToString(final D2LogicalModel d2LogicalModel) {
+        return "Lanes deviated. Temporary speed limit of 50 km/h.";
     }
 
     private Optional<WazeFeedIncidentDto.Type> convertToWazeType(final TrafficAnnouncementType trafficAnnouncementType) {
@@ -131,16 +140,6 @@ public class WazeDatex2JsonConverter {
         default:
             return Optional.of(WazeFeedLocationDto.Direction.ONE_DIRECTION);
         }
-    }
-
-    private Optional<String> createDescription(final TrafficAnnouncement announcement) {
-        final String description = announcement.features.stream()
-            .map(x -> String.format("%s.", x.name))
-            .collect(Collectors.joining(" "));
-
-        return Optional.of(description)
-            .filter(s -> !s.isEmpty())
-            .map(s -> s.length() > 40 ? s.substring(0, 37) + "..." : s);
     }
 
     public static Optional<String> formatPolyline(final Geometry<?> geometry, final WazeFeedLocationDto.Direction direction) {
