@@ -61,17 +61,13 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final Integer streetNumber = 24;
         final String municipality = "Espoo";
         final String roadName = "Puolarmetsänkatu";
-        final List<String> featureList =
-            List.of("Onnettomuus", "Onnettomuuspaikan pelastus- ja raivaustyöt käynnissä", "Tie on suljettu liikenteeltä");
 
         final WazeFeedServiceTestHelper.AnnouncementAddress announcementAddress = new WazeFeedServiceTestHelper.AnnouncementAddress(municipality, roadName, streetNumber);
         final WazeFeedServiceTestHelper.SituationParams params =
             new WazeFeedServiceTestHelper.SituationParams(situationId, announcementAddress, startTime,
-                TrafficAnnouncementType.ACCIDENT_REPORT, RoadAddressLocation.Direction.BOTH, featureList);
+                TrafficAnnouncementType.ACCIDENT_REPORT, RoadAddressLocation.Direction.BOTH);
 
-        wazeFeedServiceTestHelper.insertSituation(params);
-
-        final String description = featureList.stream().map(x -> x + ".").collect(Collectors.joining(" "));
+        wazeFeedServiceTestHelper.insertSituation(params, "");
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
@@ -82,7 +78,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertEquals(situationId, incident.id);
         assertEquals(String.format("%s - %s, %s", streetNumber, roadName, municipality), incident.location.street);
         assertEquals(WazeFeedIncidentDto.Type.ACCIDENT, incident.type);
-        assertEquals(description.substring(0, 37) + "...", incident.description);
+        assertEquals("", incident.description);
         assertTrue(incident.description.length() <= 40);
         assertEquals("FINTRAFFIC", incident.reference);
     }
@@ -243,7 +239,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
     @Test
     public void checkForNullValues() {
-        final List<String> featureList = List.of("Onnettomuus");
         final ZonedDateTime startTime = ZonedDateTime.parse("2021-07-28T13:09:47.470Z");
 
         // Create multiple invalid announcements
@@ -263,8 +258,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
                 new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", 1),
                 startTime,
                 null,
-                RoadAddressLocation.Direction.BOTH,
-                featureList
+                RoadAddressLocation.Direction.BOTH
             ),
             // Filtered out
             new WazeFeedServiceTestHelper.SituationParams(
@@ -273,7 +267,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
                 startTime,
                 TrafficAnnouncementType.GENERAL,
                 RoadAddressLocation.Direction.BOTH,
-                featureList,
                 null
             ),
 
@@ -283,40 +276,35 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
                 new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", 1),
                 startTime,
                 TrafficAnnouncementType.GENERAL,
-                null,
-                featureList
+                null
             ),
             new WazeFeedServiceTestHelper.SituationParams(
                 wazeFeedServiceTestHelper.nextSituationRecord(),
                 new WazeFeedServiceTestHelper.AnnouncementAddress(null, "roadName", 1),
                 startTime,
                 TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH,
-                featureList
+                RoadAddressLocation.Direction.BOTH
             ),
             new WazeFeedServiceTestHelper.SituationParams(
                 wazeFeedServiceTestHelper.nextSituationRecord(),
                 new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", null, 1),
                 startTime,
                 TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH,
-                featureList
+                RoadAddressLocation.Direction.BOTH
             ),
             new WazeFeedServiceTestHelper.SituationParams(
                 wazeFeedServiceTestHelper.nextSituationRecord(),
                 new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", null),
                 startTime,
                 TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH,
-                featureList
+                RoadAddressLocation.Direction.BOTH
             ),
             new WazeFeedServiceTestHelper.SituationParams(
                 wazeFeedServiceTestHelper.nextSituationRecord(),
                 new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", 1),
                 null,
                 TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH,
-                featureList
+                RoadAddressLocation.Direction.BOTH
             )
         );
 
@@ -338,7 +326,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         // datex2 announcement type column having incorrect announcement type, but real preliminary accident report type still in json format
         params.situationId = wazeFeedServiceTestHelper.nextSituationRecord();
-        wazeFeedServiceTestHelper.insertSituation(params.situationId, params.situationId, params, TrafficAnnouncementType.GENERAL);
+        wazeFeedServiceTestHelper.insertSituation(params.situationId, params.situationId, "", params, TrafficAnnouncementType.GENERAL);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;

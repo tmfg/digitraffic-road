@@ -1,9 +1,11 @@
 package fi.livi.digitraffic.tie.service;
 
+import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
+
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -80,7 +82,6 @@ public class WazeFeedServiceTestHelper {
             ZonedDateTime.now(),
             TrafficAnnouncementType.ACCIDENT_REPORT,
             direction,
-            List.of("Onnettomuus"),
             geometry
         );
 
@@ -88,10 +89,14 @@ public class WazeFeedServiceTestHelper {
     }
 
     public void insertSituation(final SituationParams params) {
-        insertSituation(params.situationId, params.situationId, params, params.trafficAnnouncementType);
+        insertSituation(params, "");
     }
 
-    public void insertSituation(final String situationId, final String situationRecordId, final SituationParams params,
+    public void insertSituation(final SituationParams params, final String datex2Message) {
+        insertSituation(params.situationId, params.situationId, datex2Message, params, params.trafficAnnouncementType);
+    }
+
+    public void insertSituation(final String situationId, final String situationRecordId, final String datex2Message, final SituationParams params,
                                 final TrafficAnnouncementType datex2TrafficAnnouncementType) {
         final Datex2 datex2 = new Datex2(SituationType.TRAFFIC_ANNOUNCEMENT, datex2TrafficAnnouncementType);
         final Datex2Situation situation = new Datex2Situation();
@@ -112,7 +117,7 @@ public class WazeFeedServiceTestHelper {
 
         datex2.setImportTime(dateTimeNow);
         datex2.setJsonMessage(paramsToJson(params));
-        datex2.setMessage("");
+        datex2.setMessage(datex2Message);
         datex2.setSituations(List.of(situation));
         datex2Repository.save(datex2);
     }
@@ -127,9 +132,12 @@ public class WazeFeedServiceTestHelper {
         return params.toJson(this.genericJsonWriter);
     }
 
+    public static String readDatex2MessageFromFile(final String file) throws IOException {
+        return readResourceContent("classpath:wazefeed/" + file);
+    }
+
     public static class SituationParams {
         String situationId;
-        List<String> features;
         Geometry<?> geometry;
         TrafficAnnouncementType trafficAnnouncementType;
 
@@ -143,28 +151,25 @@ public class WazeFeedServiceTestHelper {
                 new AnnouncementAddress(),
                 ZonedDateTime.now(),
                 TrafficAnnouncementType.ACCIDENT_REPORT,
-                RoadAddressLocation.Direction.UNKNOWN,
-                List.of("Onnettomuus")
+                RoadAddressLocation.Direction.UNKNOWN
             );
         }
 
         public SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
-                               final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
-                               final List<String> features) {
-            this(situationId, announcementAddress, startTime, trafficAnnouncementType, direction, features, null);
+                               final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction) {
+            this(situationId, announcementAddress, startTime, trafficAnnouncementType, direction, null);
 
             this.geometry = createDummyGeometry();
         }
 
         public SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
                                final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
-                               final List<String> features, Geometry<?> geometry) {
+                               final Geometry<?> geometry) {
             this.situationId = situationId;
             this.announcementAddress = announcementAddress;
             this.startTime = startTime;
             this.trafficAnnouncementType = trafficAnnouncementType;
             this.direction = direction;
-            this.features = features;
             this.geometry = geometry;
         }
 
@@ -204,19 +209,7 @@ public class WazeFeedServiceTestHelper {
             return json;
         }
 
-        private List<Feature> convertToFeatures(final List<String> features) {
-            if (features == null) {
-                return null;
-            }
-
-            return features.stream()
-                .map(x -> new Feature(x, null, null, null))
-                .collect(Collectors.toList());
-        }
-
         private TrafficAnnouncementProperties createTrafficAnnouncementProperties() {
-            final List<Feature> ftrs = convertToFeatures(this.features);
-
             final RoadPoint roadPoint = new RoadPoint();
             roadPoint.municipality = this.announcementAddress.municipality;
             roadPoint.roadName = this.announcementAddress.roadName;
@@ -236,7 +229,7 @@ public class WazeFeedServiceTestHelper {
                 null,
                 null,
                 new LocationDetails(null, roadAddressLocation),
-                ftrs,
+                List.of(new Feature("Onnettomuus", null, null, null)),
                 new ArrayList<>(),
                 null,
                 null,
