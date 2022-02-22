@@ -8,6 +8,7 @@ import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.oxm.UnmarshallingFailureException;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
@@ -53,7 +54,15 @@ public class WazeDatex2MessageConverter {
     }
 
     public String export(final String situationId, final String datex2Message) {
-        final D2LogicalModel d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2Message);
+        final D2LogicalModel d2LogicalModel;
+
+        try {
+            d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2Message);
+        } catch (UnmarshallingFailureException e) {
+            logger.warn("method=export situation {} did not have a proper datex2 message", situationId, e);
+            return "";
+        }
+
         final StringJoiner sj = new StringJoiner(". ", "", ".");
 
         final SituationPublication situationPublication = (SituationPublication) d2LogicalModel.getPayloadPublication();
