@@ -44,23 +44,23 @@ public class WazeFeedServiceTestHelper {
     private Integer situationCounter = 1000;
 
     @Autowired
-    public WazeFeedServiceTestHelper(final ObjectMapper objectMapper, final Datex2Repository datex2Repository) {
+    WazeFeedServiceTestHelper(final ObjectMapper objectMapper, final Datex2Repository datex2Repository) {
         this.datex2Repository = datex2Repository;
 
         this.genericJsonWriter = objectMapper.writer();
     }
 
-    public void cleanup() {
+    void cleanup() {
         datex2Repository.deleteAll();
     }
 
-    public void insertSituation() {
+    void insertSituation() {
         final String situationId = "GUID1234";
         final Integer street = 130;
         insertSituation(situationId, RoadAddressLocation.Direction.BOTH, street);
     }
 
-    public void insertSituation(final String situationId, final RoadAddressLocation.Direction direction,
+    void insertSituation(final String situationId, final RoadAddressLocation.Direction direction,
                                 final Integer street) {
         final MultiLineString geometry = new MultiLineString();
         final List<List<Double>> coordinates = new ArrayList<>();
@@ -73,7 +73,7 @@ public class WazeFeedServiceTestHelper {
         insertSituation(situationId, direction, street, geometry);
     }
 
-    public void insertSituation(final String situationId, final RoadAddressLocation.Direction direction,
+    void insertSituation(final String situationId, final RoadAddressLocation.Direction direction,
                                 final Integer street, final Geometry<?> geometry) {
 
         final SituationParams params = new SituationParams(
@@ -88,15 +88,15 @@ public class WazeFeedServiceTestHelper {
         insertSituation(params);
     }
 
-    public void insertSituation(final SituationParams params) {
+    void insertSituation(final SituationParams params) {
         insertSituation(params, "");
     }
 
-    public void insertSituation(final SituationParams params, final String datex2Message) {
+    void insertSituation(final SituationParams params, final String datex2Message) {
         insertSituation(params.situationId, params.situationId, datex2Message, params, params.trafficAnnouncementType);
     }
 
-    public void insertSituation(final String situationId, final String situationRecordId, final String datex2Message, final SituationParams params,
+    void insertSituation(final String situationId, final String situationRecordId, final String datex2Message, final SituationParams params,
                                 final TrafficAnnouncementType datex2TrafficAnnouncementType) {
         final Datex2 datex2 = new Datex2(SituationType.TRAFFIC_ANNOUNCEMENT, datex2TrafficAnnouncementType);
         final Datex2Situation situation = new Datex2Situation();
@@ -122,21 +122,21 @@ public class WazeFeedServiceTestHelper {
         datex2Repository.save(datex2);
     }
 
-    public String nextSituationRecord() {
+    String nextSituationRecord() {
         final String situationIdTemplate = "GUID%s";
         this.situationCounter++;
         return String.format(situationIdTemplate, this.situationCounter);
     }
 
-    public String paramsToJson(final SituationParams params) {
+    String paramsToJson(final SituationParams params) {
         return params.toJson(this.genericJsonWriter);
     }
 
-    public static String readDatex2MessageFromFile(final String file) throws IOException {
+    static String readDatex2MessageFromFile(final String file) throws IOException {
         return readResourceContent("classpath:wazefeed/" + file);
     }
 
-    public static class SituationParams {
+    static class SituationParams {
         String situationId;
         Geometry<?> geometry;
         TrafficAnnouncementType trafficAnnouncementType;
@@ -145,7 +145,7 @@ public class WazeFeedServiceTestHelper {
         final ZonedDateTime startTime;
         final RoadAddressLocation.Direction direction;
 
-        public SituationParams() {
+        SituationParams() {
             this(
                 null,
                 new AnnouncementAddress(),
@@ -155,14 +155,14 @@ public class WazeFeedServiceTestHelper {
             );
         }
 
-        public SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
+        SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
                                final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction) {
             this(situationId, announcementAddress, startTime, trafficAnnouncementType, direction, null);
 
             this.geometry = createDummyGeometry();
         }
 
-        public SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
+        SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
                                final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
                                final Geometry<?> geometry) {
             this.situationId = situationId;
@@ -193,7 +193,7 @@ public class WazeFeedServiceTestHelper {
             return geometry;
         }
 
-        public String toJson(final ObjectWriter genericJsonWriter) {
+        String toJson(final ObjectWriter genericJsonWriter) {
             final TrafficAnnouncementProperties properties = createTrafficAnnouncementProperties();
             final TrafficAnnouncementFeature feature = new TrafficAnnouncementFeature(this.geometry, properties);
 
@@ -252,16 +252,16 @@ public class WazeFeedServiceTestHelper {
         }
     }
 
-    public static class AnnouncementAddress {
+    static class AnnouncementAddress {
         final String municipality;
         final String roadName;
         final Integer street;
 
-        public AnnouncementAddress() {
+        AnnouncementAddress() {
             this("Espoo", "Puolarmetsänkatu", 123);
         }
 
-        public AnnouncementAddress(final String municipality, final String roadName, final Integer street) {
+        AnnouncementAddress(final String municipality, final String roadName, final Integer street) {
             this.municipality = municipality;
             this.roadName = roadName;
             this.street = street;

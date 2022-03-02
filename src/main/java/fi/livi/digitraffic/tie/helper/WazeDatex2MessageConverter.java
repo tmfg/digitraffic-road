@@ -72,7 +72,7 @@ public class WazeDatex2MessageConverter {
         }
 
         final List<Situation> situations = situationPublication.getSituations();
-        if (situations.size() == 0) {
+        if (situations.isEmpty()) {
             logger.info("method=export situation {} did not have any situation records", situationId);
             return "";
         }
@@ -303,7 +303,7 @@ public class WazeDatex2MessageConverter {
         }
 
         // TODO pitäiskö tässä olla tuo situation_id?
-        logger.warn("method=accept unknown class {} in SITUATION_ID", situationRecord.getClass().getSimpleName());
+        logger.error("method=accept unknown class {} in SITUATION_ID", situationRecord.getClass().getSimpleName());
         return Optional.empty();
     }
 }

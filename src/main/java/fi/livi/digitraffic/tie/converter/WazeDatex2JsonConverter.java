@@ -74,7 +74,7 @@ public class WazeDatex2JsonConverter {
         final Optional<String> maybeStreet = getRoadAddress(announcement);
 
         if (maybeStreet.isEmpty()) {
-            logger.info("method=getRoadAddress TrafficAnnouncement {} missing road address in situation {}", situationId, properties.situationId);
+            logger.info("method=getRoadAddress TrafficAnnouncement {} missing road address.", situationId);
         }
 
         final String description = wazeDatex2MessageConverter.export(situationId, datex2.getMessage());
