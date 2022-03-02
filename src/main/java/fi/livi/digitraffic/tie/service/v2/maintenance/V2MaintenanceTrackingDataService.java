@@ -162,6 +162,7 @@ public class V2MaintenanceTrackingDataService {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, false);
         final MaintenanceTrackingProperties properties =
             new MaintenanceTrackingProperties(tracking.getId(),
+                tracking.getPreviousId(),
                 tracking.getWorkMachineId(),
                 toZonedDateTimeAtUtc(tracking.getSendingTime()),
                 toZonedDateTimeAtUtc(tracking.getStartTime()),

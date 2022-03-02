@@ -17,6 +17,9 @@ public class MaintenanceTrackingProperties extends Properties {
     @ApiModelProperty(value = "Id for the tracking", required = true)
     public final long id;
 
+    @ApiModelProperty(value = "Id for the previous tracking if known")
+    public final Long previousId;
+
     // "Value is not allowe to share to public"
     @JsonIgnore()
     // @ApiModelProperty(value = "Id for work machine for tracking", required = true)
@@ -43,11 +46,12 @@ public class MaintenanceTrackingProperties extends Properties {
     @ApiModelProperty(value = "Source and owner of the data")
     public String source;
 
-    public MaintenanceTrackingProperties(final long id, final long workMachineId,
+    public MaintenanceTrackingProperties(final long id, final Long previousId, final long workMachineId,
                                          final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
                                          final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
                                          final String domain, final String source) {
         this.id = id;
+        this.previousId = previousId;
         this.workMachineId = workMachineId;
         this.sendingTime = sendingTime;
         this.tasks = tasks;

@@ -12,6 +12,8 @@ public interface MaintenanceTrackingDto {
 
     Long getId();
 
+    Long getPreviousId();
+
     Instant getSendingTime();
 
     Instant getStartTime();

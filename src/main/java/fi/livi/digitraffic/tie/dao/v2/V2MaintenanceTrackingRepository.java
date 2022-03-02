@@ -21,6 +21,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
 
     String DTO_SELECT_FIELDS_WITHOUT_LINE_STRING =
         "SELECT tracking.id\n" +
+        "     , tracking.previous_tracking_id AS previousId\n" +
         "     , tracking.sending_time AS sendingTime\n" +
         "     , tracking.start_time AS startTime\n" +
         "     , tracking.end_time AS endTime\n" +
