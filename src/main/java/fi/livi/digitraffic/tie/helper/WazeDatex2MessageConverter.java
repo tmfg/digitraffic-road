@@ -87,26 +87,26 @@ public class WazeDatex2MessageConverter {
         return sj.toString();
     }
 
-    private String visitAbnormalTraffic(final AbnormalTraffic abnormalTraffic) {
+    private String accept(final AbnormalTraffic abnormalTraffic) {
         return null;
     }
 
-    private String visitAccident(final Accident accident) {
+    private String accept(final Accident accident) {
         return null;
     }
-    private String visitAnimalPresenceObstruction(final AnimalPresenceObstruction animalPresenceObstruction) {
+    private String accept(final AnimalPresenceObstruction animalPresenceObstruction) {
         return null;
     }
-    private String visitAuthorityOperation(final AuthorityOperation authorityOperation) {
+    private String accept(final AuthorityOperation authorityOperation) {
         return null;
     }
-    private String visitDisturbanceActivity(final DisturbanceActivity disturbanceActivity) {
+    private String accept(final DisturbanceActivity disturbanceActivity) {
         return null;
     }
-    private String visitEnviromentalObstruction(final EnvironmentalObstruction environmentalObstruction) {
+    private String accept(final EnvironmentalObstruction environmentalObstruction) {
         return null;
     }
-    private String visitEquipmentOrSystemFault(final EquipmentOrSystemFault equipmentOrSystemFault) {
+    private String accept(final EquipmentOrSystemFault equipmentOrSystemFault) {
         final StringBuilder sb = new StringBuilder();
 
         final EquipmentOrSystemTypeEnum equipmentOrSystemType = equipmentOrSystemFault.getFaultyEquipmentOrSystemType();
@@ -143,28 +143,28 @@ public class WazeDatex2MessageConverter {
 
         return sb.toString();
     }
-    private String visitGeneralNetworkManagement(final GeneralNetworkManagement generalNetworkManagement) {
+    private String accept(final GeneralNetworkManagement generalNetworkManagement) {
         return null;
     }
-    private String visitGeneralObstruction(final GeneralObstruction generalObstruction) {
+    private String accept(final GeneralObstruction generalObstruction) {
         return null;
     }
-    private String visitInfrastructureDamageObstruction(final InfrastructureDamageObstruction infrastructureDamageObstruction) {
+    private String accept(final InfrastructureDamageObstruction infrastructureDamageObstruction) {
         return null;
     }
-    private String visitNonWeatherRelatedRoadConditions(final NonWeatherRelatedRoadConditions nonWeatherRelatedRoadConditions) {
+    private String accept(final NonWeatherRelatedRoadConditions nonWeatherRelatedRoadConditions) {
         return null;
     }
-    private String visitPoorEnvironmentConditions(final PoorEnvironmentConditions poorEnvironmentConditions) {
+    private String accept(final PoorEnvironmentConditions poorEnvironmentConditions) {
         return null;
     }
-    private String visitPublicEvent(final PublicEvent publicEvent) {
+    private String accept(final PublicEvent publicEvent) {
         return null;
     }
-    private String visitReroutingManagement(final ReroutingManagement reroutingManagement) {
+    private String accept(final ReroutingManagement reroutingManagement) {
         return null;
     }
-    private String visitRoadOrCarriagewayOrLaneManagement(final RoadOrCarriagewayOrLaneManagement roadOrCarriagewayOrLaneManagement) {
+    private String accept(final RoadOrCarriagewayOrLaneManagement roadOrCarriagewayOrLaneManagement) {
         final StringBuilder sb = new StringBuilder();
         final RoadOrCarriagewayOrLaneManagementTypeEnum managementType = roadOrCarriagewayOrLaneManagement.getRoadOrCarriagewayOrLaneManagementType();
 
@@ -203,7 +203,7 @@ public class WazeDatex2MessageConverter {
 
         return sb.toString();
     }
-    private String visitSpeedManagement(final SpeedManagement speedManagement) {
+    private String accept(final SpeedManagement speedManagement) {
         final StringBuilder sb = new StringBuilder();
 
         final int tempSpeedLimit = Math.round(speedManagement.getTemporarySpeedLimit());
@@ -213,10 +213,10 @@ public class WazeDatex2MessageConverter {
 
         return sb.toString();
     }
-    private String visitTransitInformation(final TransitInformation transitInformation) {
+    private String accept(final TransitInformation transitInformation) {
         return null;
     }
-    private String visitVehicleObstruction(final VehicleObstruction vehicleObstruction) {
+    private String accept(final VehicleObstruction vehicleObstruction) {
         final StringBuilder sb = new StringBuilder("Vehicle obstruction: ");
 
         final VehicleObstructionTypeEnum obstructionType = vehicleObstruction.getVehicleObstructionType();
@@ -257,49 +257,49 @@ public class WazeDatex2MessageConverter {
 
         return sb.toString();
     }
-    private String visitWeatherRelatedRoadConditions(final WeatherRelatedRoadConditions weatherRelatedRoadConditions) {
+    private String accept(final WeatherRelatedRoadConditions weatherRelatedRoadConditions) {
         return null;
     }
 
     private Optional<String> accept(final SituationRecord situationRecord) {
         if (situationRecord instanceof AbnormalTraffic) {
-            return Optional.ofNullable(visitAbnormalTraffic((AbnormalTraffic) situationRecord));
+            return Optional.of(accept((AbnormalTraffic) situationRecord));
         } else if (situationRecord instanceof Accident) {
-            return Optional.ofNullable(visitAccident((Accident) situationRecord));
+            return Optional.of(accept((Accident) situationRecord));
         } else if (situationRecord instanceof AnimalPresenceObstruction) {
-            return Optional.ofNullable(visitAnimalPresenceObstruction((AnimalPresenceObstruction) situationRecord));
+            return Optional.of(accept((AnimalPresenceObstruction) situationRecord));
         } else if (situationRecord instanceof AuthorityOperation) {
-            return Optional.ofNullable(visitAuthorityOperation((AuthorityOperation) situationRecord));
+            return Optional.of(accept((AuthorityOperation) situationRecord));
         } else if (situationRecord instanceof DisturbanceActivity) {
-            return Optional.ofNullable(visitDisturbanceActivity((DisturbanceActivity) situationRecord));
+            return Optional.of(accept((DisturbanceActivity) situationRecord));
         } else if (situationRecord instanceof EnvironmentalObstruction) {
-            return Optional.ofNullable(visitEnviromentalObstruction((EnvironmentalObstruction) situationRecord));
+            return Optional.of(accept((EnvironmentalObstruction) situationRecord));
         } else if (situationRecord instanceof EquipmentOrSystemFault) {
-            return Optional.ofNullable(visitEquipmentOrSystemFault((EquipmentOrSystemFault) situationRecord));
+            return Optional.of(accept((EquipmentOrSystemFault) situationRecord));
         } else if (situationRecord instanceof GeneralNetworkManagement) {
-            return Optional.ofNullable(visitGeneralNetworkManagement((GeneralNetworkManagement) situationRecord));
+            return Optional.of(accept((GeneralNetworkManagement) situationRecord));
         } else if (situationRecord instanceof GeneralObstruction) {
-            return Optional.ofNullable(visitGeneralObstruction((GeneralObstruction) situationRecord));
+            return Optional.of(accept((GeneralObstruction) situationRecord));
         } else if (situationRecord instanceof InfrastructureDamageObstruction) {
-            return Optional.ofNullable(visitInfrastructureDamageObstruction((InfrastructureDamageObstruction) situationRecord));
+            return Optional.of(accept((InfrastructureDamageObstruction) situationRecord));
         } else if (situationRecord instanceof NonWeatherRelatedRoadConditions) {
-            return Optional.ofNullable(visitNonWeatherRelatedRoadConditions((NonWeatherRelatedRoadConditions) situationRecord));
+            return Optional.of(accept((NonWeatherRelatedRoadConditions) situationRecord));
         } else if (situationRecord instanceof PoorEnvironmentConditions) {
-            return Optional.ofNullable(visitPoorEnvironmentConditions((PoorEnvironmentConditions) situationRecord));
+            return Optional.of(accept((PoorEnvironmentConditions) situationRecord));
         } else if (situationRecord instanceof PublicEvent) {
-            return Optional.ofNullable(visitPublicEvent((PublicEvent) situationRecord));
+            return Optional.of(accept((PublicEvent) situationRecord));
         } else if (situationRecord instanceof ReroutingManagement) {
-            return Optional.ofNullable(visitReroutingManagement((ReroutingManagement) situationRecord));
+            return Optional.of(accept((ReroutingManagement) situationRecord));
         } else if (situationRecord instanceof RoadOrCarriagewayOrLaneManagement) {
-            return Optional.ofNullable(visitRoadOrCarriagewayOrLaneManagement((RoadOrCarriagewayOrLaneManagement) situationRecord));
+            return Optional.of(accept((RoadOrCarriagewayOrLaneManagement) situationRecord));
         } else if (situationRecord instanceof SpeedManagement) {
-            return Optional.ofNullable(visitSpeedManagement((SpeedManagement) situationRecord));
+            return Optional.of(accept((SpeedManagement) situationRecord));
         } else if (situationRecord instanceof TransitInformation) {
-            return Optional.ofNullable(visitTransitInformation((TransitInformation) situationRecord));
+            return Optional.of(accept((TransitInformation) situationRecord));
         } else if (situationRecord instanceof VehicleObstruction) {
-            return Optional.ofNullable(visitVehicleObstruction((VehicleObstruction) situationRecord));
+            return Optional.of(accept((VehicleObstruction) situationRecord));
         } else if (situationRecord instanceof WeatherRelatedRoadConditions) {
-            return Optional.ofNullable(visitWeatherRelatedRoadConditions((WeatherRelatedRoadConditions) situationRecord));
+            return Optional.of(accept((WeatherRelatedRoadConditions) situationRecord));
         }
 
         // TODO pitäiskö tässä olla tuo situation_id?
