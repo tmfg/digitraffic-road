@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <publicationTime>2022-02-05T11:54:14.174Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50393967" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="EquipmentOrSystemFault" id="GUID5039489601" version="1">
+                <situationRecordCreationTime>2022-02-05T11:56:39.434Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-02-05T11:56:39.426Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-02-05T11:54:14.174Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-02-05T11:54:14.174Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Sepänkatu, Salo. Liikennetiedote.
+
+                                Sepänkatu, Salo.
+                                Tarkempi paikka: Ohikulkutie.
+
+                                Liikennevalot.
+                                Poissa käytöstä.
+
+                                Ajankohta: 05.02.2022 klo 13:54 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Turku
+                                Puh: 02002100
+                                Sähköposti: turku.liikennekeskus@fintraffic.fi
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Point">
+                    <alertCPoint xsi:type="AlertCMethod2Point">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.42</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>41414</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                    </alertCPoint>
+                </groupOfLocations>
+                <equipmentOrSystemFaultType>outOfService</equipmentOrSystemFaultType>
+                <faultyEquipmentOrSystemType>trafficLightSets</faultyEquipmentOrSystemType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

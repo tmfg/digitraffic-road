@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <publicationTime>2022-02-15T12:15:46.916Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50394151" version="61">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5039508001" version="61">
+                <situationRecordCreationTime>2022-02-09T04:38:30.323Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-02-15T12:17:40.180Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-02-15T12:15:46.916Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-02-15T12:16:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 816, Hailuoto, Oulu. Liikennetiedote. Tilanne muuttunut.
+
+                                Tie 816 välillä Kempele - Hailuoto.
+                                Tarkempi paikka: Välillä Riutunkari-Hailuodon lautta, Oulu - Huikun lauttalaituri, Hailuoto.
+
+                                Jäätie suljettu.
+
+                                Ajankohta: 15.02.2022 klo 14:16 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Oulu
+                                Puh: 02002100
+                                Sähköposti: oulu.liikennekeskus@fintraffic.fi
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.42</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>9991</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>9993</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>other</roadOrCarriagewayOrLaneManagementType>
+                <roadOrCarriagewayOrLaneManagementExtension>
+                    <roadOrCarriagewayOrLaneManagementType>iceRoadClosed</roadOrCarriagewayOrLaneManagementType>
+                </roadOrCarriagewayOrLaneManagementExtension>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

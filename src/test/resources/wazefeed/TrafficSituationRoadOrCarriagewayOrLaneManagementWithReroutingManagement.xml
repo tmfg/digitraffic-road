@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <publicationTime>2021-09-06T03:05:43.643Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50387666" version="8">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5038853901" version="8">
+                <situationRecordCreationTime>2021-09-06T03:05:43.643Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2021-09-06T03:06:26.535Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2021-09-06T03:05:43.643Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2021-09-06T03:00:00.000Z</overallStartTime>
+                        <overallEndTime>2021-09-12T20:59:00.000Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 431, Joutsa. Liikennetiedote.
+
+                                Tie 431 välillä Hirvensalmi - Leivonmäki, Joutsa.
+                                Tarkempi paikka: Paikasta Levälahti 200 m, suuntaan Hirvenlahdentien pohjoinen liittymä.
+
+                                Tie on suljettu liikenteeltä.
+                                Paikalla on kiertotieopastus.
+                                Ajoneuvon suurin sallittu massa: 66 t.
+
+                                Lisätieto: Siltatyö alkaa 6.9.2021 ja päättyy 1.10.2021.
+
+
+                                Ajankohta: 06.09.2021 klo 06:00.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Tampere
+                                Puh: 02002100
+                                Sähköposti: tampere.liikennekeskus@fintraffic.fi
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1_11_40</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>8936</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>192</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>8934</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>4965</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="ReroutingManagement" id="GUID5038853902" version="8">
+                <situationRecordCreationTime>2021-09-06T03:05:43.643Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2021-09-06T03:06:26.535Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2021-09-06T03:05:43.643Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2021-09-06T03:00:00.000Z</overallStartTime>
+                        <overallEndTime>2021-09-12T20:59:00.000Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <forVehiclesWithCharacteristicsOf>
+                    <grossWeightCharacteristic>
+                        <comparisonOperator>lessThanOrEqualTo</comparisonOperator>
+                        <grossVehicleWeight>66.0</grossVehicleWeight>
+                    </grossWeightCharacteristic>
+                </forVehiclesWithCharacteristicsOf>
+                <reroutingManagementType>followDiversionSigns</reroutingManagementType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

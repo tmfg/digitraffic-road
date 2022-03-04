@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <publicationTime>2022-02-07T13:11:57.229Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50394068" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="VehicleObstruction" id="GUID5039499701" version="1">
+                <situationRecordCreationTime>2022-02-07T13:14:02.114Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-02-07T13:14:02.063Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-02-07T13:11:57.229Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-02-07T13:11:57.229Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 7, eli Porvoonväylä, Helsinki, Sipoo. Liikennetiedote.
+
+                                Tie 7, eli Porvoonväylä.
+                                Tarkempi paikka: Välillä Massbyn liittymä, Sipoo - Östersundomin liittymä, Helsinki. Haittaa ajosuunnassa Helsinki.
+
+                                Palava ajoneuvo tiellä.
+                                Ajokaista suljettu liikenteeltä.
+
+                                Ajankohta: 07.02.2022 klo 15:11 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Helsinki
+                                Puh: 02002100
+                                Sähköposti: helsinki.liikennekeskus@fintraffic.fi
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.42</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>negative</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1559</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1558</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <vehicleObstructionType>vehicleOnFire</vehicleObstructionType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5039499702" version="1">
+                <situationRecordCreationTime>2022-02-07T13:14:02.114Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-02-07T13:14:02.063Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-02-07T13:11:57.229Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-02-07T13:11:57.229Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
