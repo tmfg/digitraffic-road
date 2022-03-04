@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -171,7 +172,6 @@ public class WazeDatex2JsonConverter {
     }
 
     private static String formatPolylineFromPoint(final Point point) {
-        return String.format("%f %f", point.getLongitude(), point.getLatitude());
+        return String.format(Locale.US,"%f %f", point.getLongitude(), point.getLatitude());
     }
-
 }
