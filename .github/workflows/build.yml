@@ -1,0 +1,35 @@
+name: Build
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v2.5.0
+        with:
+          java-version: 11
+          distribution: temurin
+          cache: maven
+      - name: Compile
+        run: mvn install -T1.5C git-commit-id:revision install -e -U -DskipTests=true
+      - name: Create Docker network
+        run: docker network create dnet1
+      - name: Setup database
+        working-directory: dbroad
+        run: docker-compose rm db && docker-compose build && docker-compose up -d
+      - name: Get database IP
+        run: echo "db_addr=$(docker inspect dbroad_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
+      - name: Prepare test run
+        run: cp src/test/resources/application-default.properties.template target/test-classes/application-ci.properties
+      - name: Run tests
+        run: |
+          mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -e -U -Dmaven.gitcommitid.skip=true -Dspring.jdbc.getParameterType.ignore=true -Dspring.profiles.active=ci -Dquartz.enabled=false -road.datasource.url=jdbc:postgresql://${{ env.db_addr }}:5432/road
+      - name: Publish test results
+        uses: dorny/test-reporter@0d00bb14cb0cc2c9b8985df6e81dd333188224e1
+        if: success() || failure()
+        with:
+          name: jUnit tests
+          path: "target/surefire-reports/*.xml"
+          reporter: java-junit
