@@ -139,10 +139,6 @@ public class WazeDatex2MessageConverter {
                 return null;
             });
 
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown AbnormalTraffic in situation {}", situationId));
-
         return result;
     }
 
@@ -173,10 +169,6 @@ public class WazeDatex2MessageConverter {
                 }
                 return null;
             });
-
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown Accident in situation {}", situationId));
 
         return result;
     }
@@ -228,10 +220,6 @@ public class WazeDatex2MessageConverter {
             .flatMap(x ->
                 equipmentOrSystemType.map(y -> y + " " + x));
 
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown EquipmentOrSystemFault in situation {}", situationId));
-
         return result;
 
     }
@@ -265,10 +253,6 @@ public class WazeDatex2MessageConverter {
                 return null;
             });
 
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown GeneralObstruction in situation {}", situationId));
-
         return result;
     }
     private Optional<String> accept(final String situationId, final InfrastructureDamageObstruction infrastructureDamageObstruction) {
@@ -296,10 +280,6 @@ public class WazeDatex2MessageConverter {
                 }
                 return null;
             });
-
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown ReroutingManagement in situation {}", situationId));
 
         return result;
     }
@@ -344,10 +324,6 @@ public class WazeDatex2MessageConverter {
                     return null;
                 }));
 
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown RoadOrCarriagewayOrLaneManegement in situation {}", situationId));
-
         return result;
     }
 
@@ -355,10 +331,6 @@ public class WazeDatex2MessageConverter {
         final Optional<String> result = Optional.ofNullable(speedManagement.getTemporarySpeedLimit())
             .map(Math::round)
             .map(x -> x > 0 ? String.format("Temporary speed limit of %d km/h", x) : null);
-
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown SpeedManagement in situation {}", situationId));
 
         return result;
     }
@@ -392,10 +364,6 @@ public class WazeDatex2MessageConverter {
                 return null;
             })
             .map(x -> "Vehicle obstruction: " + x);
-
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown VehicleObstruction in situation {}", situationId));
 
         // skip obstructingVehicle and numberOfObstructions
 
@@ -443,55 +411,79 @@ public class WazeDatex2MessageConverter {
                 return null;
             });
 
-        result.ifPresentOrElse(
-            (x) -> {},
-            () -> logger.warn("method=accept unknown WeatherRelatedConditions in situation {}", situationId));
-
         return result;
     }
 
     private Optional<String> accept(final String situationId, final SituationRecord situationRecord) {
+        final Optional<String> result;
+        final String situationRecordType;
+
         if (situationRecord instanceof AbnormalTraffic) {
-            return accept(situationId, (AbnormalTraffic) situationRecord);
+            result = accept(situationId, (AbnormalTraffic) situationRecord);
+            situationRecordType = "AbnormalTraffic";
         } else if (situationRecord instanceof Accident) {
-            return accept(situationId, (Accident) situationRecord);
+            result = accept(situationId, (Accident) situationRecord);
+            situationRecordType = "Accident";
         } else if (situationRecord instanceof AnimalPresenceObstruction) {
-            return accept(situationId, (AnimalPresenceObstruction) situationRecord);
+            result = accept(situationId, (AnimalPresenceObstruction) situationRecord);
+            situationRecordType = "AnimalPresenceObstruction";
         } else if (situationRecord instanceof AuthorityOperation) {
-            return accept(situationId, (AuthorityOperation) situationRecord);
+            result = accept(situationId, (AuthorityOperation) situationRecord);
+            situationRecordType = "AuthorityOperation";
         } else if (situationRecord instanceof DisturbanceActivity) {
-            return accept(situationId, (DisturbanceActivity) situationRecord);
+            result = accept(situationId, (DisturbanceActivity) situationRecord);
+            situationRecordType = "DisturbanceActivity";
         } else if (situationRecord instanceof EnvironmentalObstruction) {
-            return accept(situationId, (EnvironmentalObstruction) situationRecord);
+            result = accept(situationId, (EnvironmentalObstruction) situationRecord);
+            situationRecordType = "EnvironmentalObstruction";
         } else if (situationRecord instanceof EquipmentOrSystemFault) {
-            return accept(situationId, (EquipmentOrSystemFault) situationRecord);
+            result = accept(situationId, (EquipmentOrSystemFault) situationRecord);
+            situationRecordType = "EquipmentOrSystemFault";
         } else if (situationRecord instanceof GeneralNetworkManagement) {
-            return accept(situationId, (GeneralNetworkManagement) situationRecord);
+            result = accept(situationId, (GeneralNetworkManagement) situationRecord);
+            situationRecordType = "GeneralNetworkManagement";
         } else if (situationRecord instanceof GeneralObstruction) {
-            return accept(situationId, (GeneralObstruction) situationRecord);
+            result = accept(situationId, (GeneralObstruction) situationRecord);
+            situationRecordType = "GeneralObstruction";
         } else if (situationRecord instanceof InfrastructureDamageObstruction) {
-            return accept(situationId, (InfrastructureDamageObstruction) situationRecord);
+            result = accept(situationId, (InfrastructureDamageObstruction) situationRecord);
+            situationRecordType = "InfrastructureDamageObstruction";
         } else if (situationRecord instanceof NonWeatherRelatedRoadConditions) {
-            return accept(situationId, (NonWeatherRelatedRoadConditions) situationRecord);
+            result = accept(situationId, (NonWeatherRelatedRoadConditions) situationRecord);
+            situationRecordType = "NonWeatherRelatedRoadConditions";
         } else if (situationRecord instanceof PoorEnvironmentConditions) {
-            return accept(situationId, (PoorEnvironmentConditions) situationRecord);
+            result = accept(situationId, (PoorEnvironmentConditions) situationRecord);
+            situationRecordType = "PoorEnvironmentConditions";
         } else if (situationRecord instanceof PublicEvent) {
-            return accept(situationId, (PublicEvent) situationRecord);
+            result = accept(situationId, (PublicEvent) situationRecord);
+            situationRecordType = "PublicEvent";
         } else if (situationRecord instanceof ReroutingManagement) {
-            return accept(situationId, (ReroutingManagement) situationRecord);
+            result = accept(situationId, (ReroutingManagement) situationRecord);
+            situationRecordType = "ReroutingManagement";
         } else if (situationRecord instanceof RoadOrCarriagewayOrLaneManagement) {
-            return accept(situationId, (RoadOrCarriagewayOrLaneManagement) situationRecord);
+            result = accept(situationId, (RoadOrCarriagewayOrLaneManagement) situationRecord);
+            situationRecordType = "RoadOrCarriagewayOrLaneManagement";
         } else if (situationRecord instanceof SpeedManagement) {
-            return accept(situationId, (SpeedManagement) situationRecord);
+            result = accept(situationId, (SpeedManagement) situationRecord);
+            situationRecordType = "SpeedManagement";
         } else if (situationRecord instanceof TransitInformation) {
-            return accept(situationId, (TransitInformation) situationRecord);
+            result = accept(situationId, (TransitInformation) situationRecord);
+            situationRecordType = "TransitInformation";
         } else if (situationRecord instanceof VehicleObstruction) {
-            return accept(situationId, (VehicleObstruction) situationRecord);
+            result = accept(situationId, (VehicleObstruction) situationRecord);
+            situationRecordType = "VehicleObstruction";
         } else if (situationRecord instanceof WeatherRelatedRoadConditions) {
-            return accept(situationId, (WeatherRelatedRoadConditions) situationRecord);
+            result = accept(situationId, (WeatherRelatedRoadConditions) situationRecord);
+            situationRecordType = "WeatherRelatedRoadConditions";
+        } else {
+            logger.error("method=accept unknown class {} in {}", situationRecord.getClass().getSimpleName(), situationId);
+            return Optional.empty();
         }
 
-        logger.error("method=accept unknown class {} in {}", situationRecord.getClass().getSimpleName(), situationId);
-        return Optional.empty();
+        if (result.isEmpty()) {
+            logger.error("method=accept unknown {} record in situation {}", situationRecordType, situationId);
+        }
+
+        return result;
     }
 }
