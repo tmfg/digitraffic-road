@@ -7,7 +7,7 @@ public final class ApiConstants {
     /** API versions */
     public static final String V1 = "/v1";
     public static final String BETA = "/beta";
-    public static final String INTEGRATIONS = API + "/integrations";
+    public static final String INTEGRATION = API + "/integration";
 
     /**
      * API data types
@@ -24,7 +24,7 @@ public final class ApiConstants {
     public static final String API_MAINTENANCE = API + "/maintenance";
 
     /* Waze feed */
-    public static final String API_WAZEFEED = INTEGRATIONS + "/waze";
-    
+    public static final String API_WAZEFEED = INTEGRATION + "/waze";
+
     private ApiConstants() {}
 }
