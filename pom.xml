@@ -27,7 +27,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.release>11</maven.compiler.release>
-        <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
+        <ch.qos.logback.version>1.2.10</ch.qos.logback.version>
         <net.logstash.logback.version>6.3</net.logstash.logback.version>
         <jackson.dataformat.version>2.11.4</jackson.dataformat.version>
         <com.google.protobuf.version>3.19.3</com.google.protobuf.version>
@@ -269,7 +269,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.1</version>
+            <version>42.3.3</version>
         </dependency>
 
         <dependency>

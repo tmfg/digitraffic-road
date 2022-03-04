@@ -297,7 +297,7 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     }
 
     private static String getTrafficMessageUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA_MESSAGES + (json ?  TrafficMessageController.SIMPLE : TrafficMessageController.DATEX2) +
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA_MESSAGES + (json ?  "" : TrafficMessageController.DATEX2) +
                "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
     }
 

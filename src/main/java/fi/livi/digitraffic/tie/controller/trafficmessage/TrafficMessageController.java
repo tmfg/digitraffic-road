@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGE;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_BETA_TAG;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TAG;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
@@ -61,8 +60,7 @@ public class TrafficMessageController {
     public static final String API_TRAFFIC_MESSAGE_BETA_MESSAGES = API_TRAFFIC_MESSAGE_BETA + MESSAGES;
     public static final String API_TRAFFIC_MESSAGE_V1_MESSAGES = API_TRAFFIC_MESSAGE_V1 + MESSAGES;
 
-    public static final String DATEX2 = "/datex2";
-    public static final String SIMPLE = "/simple";
+    public static final String DATEX2 = ".datex2";
 
 
     public TrafficMessageController(final V3RegionGeometryDataService v3RegionGeometryDataService,
@@ -95,7 +93,8 @@ public class TrafficMessageController {
         @ApiParam(value = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam(value = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned", defaultValue = "true")
+        @ApiParam(value = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned",
+                  defaultValue = "true")
         @RequestParam(defaultValue = "true")
         final boolean latest) {
         return v1TrafficMessageDataService.findBySituationId(situationId, latest);
@@ -103,7 +102,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Active traffic messages as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA_MESSAGES + SIMPLE })
+                    path = { API_TRAFFIC_MESSAGE_BETA_MESSAGES })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
         @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
@@ -122,7 +121,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA_MESSAGES + "/{situationId}" + SIMPLE })
+                    path = { API_TRAFFIC_MESSAGE_BETA_MESSAGES + "/{situationId}" })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public TrafficAnnouncementFeatureCollection trafficMessageSimpleBySituationId(
@@ -176,6 +175,7 @@ public class TrafficMessageController {
         @ApiParam(value = "Location code id", required = true)
         @PathVariable
         final Integer locationCode) {
-        return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, includeGeometry, effectiveDate != null ? effectiveDate.toInstant() : null, locationCode);
+        return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, includeGeometry, effectiveDate != null ?
+                                                                                                 effectiveDate.toInstant() : null, locationCode);
     }
 }

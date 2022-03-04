@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS nw2_annotation;

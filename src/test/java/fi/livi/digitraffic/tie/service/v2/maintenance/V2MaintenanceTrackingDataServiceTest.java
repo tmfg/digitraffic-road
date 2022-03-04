@@ -49,11 +49,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingProperties;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingProperties;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
@@ -118,7 +118,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         // Generate 5 messages with 10 observations/machine in each
         final ZonedDateTime endTime = IntStream.range(0, 5).mapToObj(i -> {
-            final ZonedDateTime start = startTime.plusMinutes(i*10);
+            final ZonedDateTime start = startTime.plusMinutes(i* 10L);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
                 createMaintenanceTrackingWithPoints(start, 10, i + 1, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
             try {
@@ -162,7 +162,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // Generate 5 different messages with different tasks for each machine
         // Each machine successive trackings will bombine next tracking first point as previous tracking last point
         IntStream.range(0, 5).forEach(idx -> {
-            final ZonedDateTime start = startTime.plusMinutes(idx*10);
+            final ZonedDateTime start = startTime.plusMinutes(idx*10L);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
                 createMaintenanceTrackingWithPoints(start, 10, 1, workMachines, SuoritettavatTehtavat.values()[idx]);
             try {
@@ -186,7 +186,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         // Find with tasks
         IntStream.range(0, 5).forEach(idx -> {
-            final ZonedDateTime endTime = startTime.plusMinutes(idx*10+10); // 10 observations end time is 10 min after first
+            final ZonedDateTime endTime = startTime.plusMinutes(idx*10L+10L); // 10 observations end time is 10 min after first
             final List<MaintenanceTrackingFeature> features =
                 findMaintenanceTrackings(startTime, endTime, getTaskWithIndex(idx)).getFeatures();
             assertCollectionSize(machineCount, features);
@@ -340,7 +340,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
-            Collections.emptyList());
+            Collections.emptyList(),
+            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -376,7 +377,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
-            Collections.emptyList());
+            Collections.emptyList(),
+            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -406,7 +408,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
-            Collections.emptyList());
+            Collections.emptyList(),
+            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -440,7 +443,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
-            Collections.emptyList());
+            Collections.emptyList(),
+            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -462,7 +466,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final MaintenanceTrackingFeatureCollection result1 = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
-            Collections.emptyList());
+            Collections.emptyList(),
+            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
         final MaintenanceTrackingFeature feature1 = result1.getFeatures().get(0);
 
         final MaintenanceTrackingFeature feature2 =
@@ -477,7 +482,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
-            asList(tasks));
+            asList(tasks),
+            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
     }
 
     private MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
@@ -485,7 +491,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
-            asList(tasks));
+            asList(tasks),
+            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
     }
 
     private void assertAllHasOnlyPointGeometries(final List<MaintenanceTrackingLatestFeature> features) {
