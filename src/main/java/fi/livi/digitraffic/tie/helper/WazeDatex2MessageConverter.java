@@ -16,6 +16,8 @@ import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.WORK
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum.LEVEL_CROSSING;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum.TRAFFIC_LIGHT_SETS;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum.VARIABLE_MESSAGE_SIGNS;
+import static fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_CLOSED;
+import static fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_OPEN;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.CRANE_OPERATING;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.OBJECT_ON_THE_ROAD;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.OBSTRUCTION_ON_THE_ROAD;
@@ -24,9 +26,45 @@ import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SEVERE_FROST_DA
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SHED_LOAD;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SPILLAGE_OCCURRING_FROM_MOVING_VEHICLE;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.UNPROTECTED_ACCIDENT_AREA;
+import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.FOLLOW_DIVERSION_SIGNS;
+import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.FOLLOW_LOCAL_DIVERSION;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.CARRIAGEWAY_CLOSURES;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.CONTRAFLOW;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.INTERMITTENT_SHORT_TERM_CLOSURES;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.LANES_DEVIATED;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.LANE_CLOSURES;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.NARROW_LANES;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.NEW_ROADWORKS_LAYOUT;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.ROAD_CLOSED;
+import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.SINGLE_ALTERNATE_LINE_TRAFFIC;
 import static fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum.TRAFFIC_BUILDING_UP;
 import static fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum.TRAFFIC_EASING;
 import static fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum.TRAFFIC_STABLE;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.ABNORMAL_LOAD;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.BROKEN_DOWN_HEAVY_LORRY;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.BROKEN_DOWN_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.DAMAGED_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.MILITARY_CONVOY;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.SLOW_MOVING_MAINTENANCE_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.VEHICLE_ON_FIRE;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.VEHICLE_ON_WRONG_CARRIAGEWAY;
+import static fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum.VEHICLE_STUCK;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.BLACK_ICE;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.FREEZING_OF_WET_ROADS;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.FREEZING_PAVEMENTS;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.FREEZING_RAIN;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.FRESH_SNOW;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.ICE;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.ICE_BUILD_UP;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.ICY_PATCHES;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.NORMAL_WINTER_CONDITIONS_FOR_PEDESTRIANS;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.PACKED_SNOW;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.SLUSH_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.SNOW_ON_PAVEMENT;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.SNOW_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.SURFACE_WATER;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.WET_AND_ICY_ROAD;
+import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.WET_ICY_PAVEMENT;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,11 +84,15 @@ import fi.livi.digitraffic.tie.datex2.AccidentTypeEnum;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum;
 import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum;
+import fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum;
 import fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum;
+import fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum;
 
@@ -88,6 +130,11 @@ public class WazeDatex2MessageConverter {
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
     private final Map<ObstructionTypeEnum, String> obstructionTypeMap = new HashMap<>();
+    private final Map<ReroutingManagementTypeEnum, String> reroutingManagementTypeMap = new HashMap<>();
+    private final Map<ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum, String> extendedRoadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
+    private final Map<RoadOrCarriagewayOrLaneManagementTypeEnum, String> roadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
+    private final Map<VehicleObstructionTypeEnum, String> vehicleObstructionTypeMap = new HashMap<>();
+    private final Map<WeatherRelatedRoadConditionTypeEnum, String> weatherRelatedRoadConditionTypeMap = new HashMap<>();
 
     @Autowired
     public WazeDatex2MessageConverter(final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller) {
@@ -120,7 +167,6 @@ public class WazeDatex2MessageConverter {
         equipmentOrSystemFaultTypeMap.put(WORKING_INTERMITTENTLY, "working intermittently");
         equipmentOrSystemFaultTypeMap.put(WORKING_INCORRECTLY, "working incorrectly");
 
-
         obstructionTypeMap.put(CRANE_OPERATING, "Crane operating");
         obstructionTypeMap.put(OBJECT_ON_THE_ROAD, "Object on the road");
         obstructionTypeMap.put(OBSTRUCTION_ON_THE_ROAD, "Obstruction on the road");
@@ -129,6 +175,49 @@ public class WazeDatex2MessageConverter {
         obstructionTypeMap.put(SHED_LOAD, "Shed load");
         obstructionTypeMap.put(SPILLAGE_OCCURRING_FROM_MOVING_VEHICLE, "Spillage occurring from moving vehicle");
         obstructionTypeMap.put(UNPROTECTED_ACCIDENT_AREA, "Unprotected accident area");
+
+        reroutingManagementTypeMap.put(FOLLOW_DIVERSION_SIGNS, "Follow diversion signs");
+        reroutingManagementTypeMap.put(FOLLOW_LOCAL_DIVERSION, "Follow local diversion");
+
+        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_OPEN, "Ice road open");
+        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_CLOSED, "Ice road closed");
+
+        roadOrCarriagewayOrLaneManagementTypeMap.put(LANE_CLOSURES, "Lane closures");
+        roadOrCarriagewayOrLaneManagementTypeMap.put(NARROW_LANES, "Narrow lanes");
+        roadOrCarriagewayOrLaneManagementTypeMap.put(CONTRAFLOW, "Contraflow");
+        roadOrCarriagewayOrLaneManagementTypeMap.put(SINGLE_ALTERNATE_LINE_TRAFFIC, "Single alternate line traffic");
+        roadOrCarriagewayOrLaneManagementTypeMap.put(INTERMITTENT_SHORT_TERM_CLOSURES, "Intermittent short term closures");
+        roadOrCarriagewayOrLaneManagementTypeMap.put(NEW_ROADWORKS_LAYOUT, "New roadworks layout");
+        roadOrCarriagewayOrLaneManagementTypeMap.put(LANES_DEVIATED, "Lanes deviated");
+        roadOrCarriagewayOrLaneManagementTypeMap.put(ROAD_CLOSED, "Road closed");
+        roadOrCarriagewayOrLaneManagementTypeMap.put(CARRIAGEWAY_CLOSURES, "Carriageway closures");
+
+        vehicleObstructionTypeMap.put(VEHICLE_ON_WRONG_CARRIAGEWAY, "vehicle on wrong carriageway");
+        vehicleObstructionTypeMap.put(ABNORMAL_LOAD, "abnormal load");
+        vehicleObstructionTypeMap.put(VEHICLE_ON_FIRE, "vehicle on fire");
+        vehicleObstructionTypeMap.put(VEHICLE_STUCK, "vehicle stuck");
+        vehicleObstructionTypeMap.put(BROKEN_DOWN_VEHICLE, "broken down vehicle");
+        vehicleObstructionTypeMap.put(BROKEN_DOWN_HEAVY_LORRY, "broken down heavy lorry");
+        vehicleObstructionTypeMap.put(DAMAGED_VEHICLE, "damaged vehicle");
+        vehicleObstructionTypeMap.put(MILITARY_CONVOY, "military convoy");
+        vehicleObstructionTypeMap.put(SLOW_MOVING_MAINTENANCE_VEHICLE, "slow moving maintenance vehicle");
+
+        weatherRelatedRoadConditionTypeMap.put(BLACK_ICE, "Black ice");
+        weatherRelatedRoadConditionTypeMap.put(FREEZING_OF_WET_ROADS, "Freezing of wet roads");
+        weatherRelatedRoadConditionTypeMap.put(FREEZING_PAVEMENTS, "Freezing pavements");
+        weatherRelatedRoadConditionTypeMap.put(FREEZING_RAIN, "Freezing rain");
+        weatherRelatedRoadConditionTypeMap.put(FRESH_SNOW, "Fresh snow");
+        weatherRelatedRoadConditionTypeMap.put(ICE, "Ice");
+        weatherRelatedRoadConditionTypeMap.put(ICE_BUILD_UP, "Ice build up");
+        weatherRelatedRoadConditionTypeMap.put(ICY_PATCHES, "Icy patches");
+        weatherRelatedRoadConditionTypeMap.put(NORMAL_WINTER_CONDITIONS_FOR_PEDESTRIANS, "Normal winter conditions for pedestrians");
+        weatherRelatedRoadConditionTypeMap.put(PACKED_SNOW, "Packed snow");
+        weatherRelatedRoadConditionTypeMap.put(SLUSH_ON_ROAD, "Slush on road");
+        weatherRelatedRoadConditionTypeMap.put(SNOW_ON_PAVEMENT, "Snow on pavement");
+        weatherRelatedRoadConditionTypeMap.put(SNOW_ON_THE_ROAD, "Snow on the road");
+        weatherRelatedRoadConditionTypeMap.put(SURFACE_WATER, "Surface water");
+        weatherRelatedRoadConditionTypeMap.put(WET_AND_ICY_ROAD, "Wet and icy road");
+        weatherRelatedRoadConditionTypeMap.put(WET_ICY_PAVEMENT, "Wet icy pavement");
     }
 
     public String export(final String situationId, final String datex2Message) {
@@ -230,15 +319,7 @@ public class WazeDatex2MessageConverter {
         return reroutingManagement.getReroutingManagementTypes()
             .stream()
             .findFirst()
-            .map(x -> {
-                switch (x) {
-                case FOLLOW_DIVERSION_SIGNS:
-                    return "Follow diversion signs";
-                case FOLLOW_LOCAL_DIVERSION:
-                    return "Follow local diversion";
-                }
-                return null;
-            });
+            .map(x -> reroutingManagementTypeMap.getOrDefault(x, null));
     }
 
     private Optional<String> accept(final RoadOrCarriagewayOrLaneManagement roadOrCarriagewayOrLaneManagement) {
@@ -247,39 +328,9 @@ public class WazeDatex2MessageConverter {
 
         return optionalManagementExtension
             .map(RoadOrCarriagewayOrLaneManagementExtensionType::getRoadOrCarriagewayOrLaneManagementType)
-            .map(x -> {
-                switch (x) {
-                case ICE_ROAD_OPEN:
-                    return "Ice road open";
-                case ICE_ROAD_CLOSED:
-                    return "Ice road closed";
-                }
-                return null;
-            })
+            .map(x -> extendedRoadOrCarriagewayOrLaneManagementTypeMap.getOrDefault(x, null))
             .or(() -> optionalManagementType
-                .map((x) -> {
-                    switch (x) {
-                    case LANE_CLOSURES:
-                        return "Lane closures";
-                    case NARROW_LANES:
-                        return "Narrow lanes";
-                    case CONTRAFLOW:
-                        return "Contraflow";
-                    case SINGLE_ALTERNATE_LINE_TRAFFIC:
-                        return "Single alternate line traffic";
-                    case INTERMITTENT_SHORT_TERM_CLOSURES:
-                        return "Intermittent short term closures";
-                    case NEW_ROADWORKS_LAYOUT:
-                        return "New roadworks layout";
-                    case LANES_DEVIATED:
-                        return "Lanes deviated";
-                    case ROAD_CLOSED:
-                        return "Road closed";
-                    case CARRIAGEWAY_CLOSURES:
-                        return "Carriageway closures";
-                    }
-                    return null;
-                }));
+                .map((x) -> roadOrCarriagewayOrLaneManagementTypeMap.getOrDefault(x, null)));
     }
 
     private Optional<String> accept(final SpeedManagement speedManagement) {
@@ -294,75 +345,15 @@ public class WazeDatex2MessageConverter {
     private Optional<String> accept(final VehicleObstruction vehicleObstruction) {
 
         // skip obstructingVehicle and numberOfObstructions
-
         return Optional.ofNullable(vehicleObstruction.getVehicleObstructionType())
-            .map(x -> {
-                switch (x) {
-                case VEHICLE_ON_WRONG_CARRIAGEWAY:
-                    return "vehicle on wrong carriageway";
-                case ABNORMAL_LOAD:
-                    return "abnormal load";
-                case VEHICLE_ON_FIRE:
-                    return "vehicle on fire";
-                case VEHICLE_STUCK:
-                    return "vehicle stuck";
-                case BROKEN_DOWN_VEHICLE:
-                    return "broken down vehicle";
-                case BROKEN_DOWN_HEAVY_LORRY:
-                    return "broken down heavy lorry";
-                case DAMAGED_VEHICLE:
-                    return "damaged vehicle";
-                case MILITARY_CONVOY:
-                    return "military convoy";
-                case SLOW_MOVING_MAINTENANCE_VEHICLE:
-                    return "slow moving maintenance vehicle";
-                }
-
-                return null;
-            })
+            .map(x -> vehicleObstructionTypeMap.getOrDefault(x, null))
             .map(x -> "Vehicle obstruction: " + x);
     }
     private Optional<String> accept(final WeatherRelatedRoadConditions weatherRelatedRoadConditions) {
         return weatherRelatedRoadConditions.getWeatherRelatedRoadConditionTypes()
             .stream()
             .findFirst()
-            .map(x -> {
-                switch (x) {
-                case BLACK_ICE:
-                    return "Black ice";
-                case FREEZING_OF_WET_ROADS:
-                    return "Freezing of wet roads";
-                case FREEZING_PAVEMENTS:
-                    return "Freezing pavements";
-                case FREEZING_RAIN:
-                    return "Freezing rain";
-                case FRESH_SNOW:
-                    return "Fresh snow";
-                case ICE:
-                    return "Ice";
-                case ICE_BUILD_UP:
-                    return "Ice build up";
-                case ICY_PATCHES:
-                    return "Icy patches";
-                case NORMAL_WINTER_CONDITIONS_FOR_PEDESTRIANS:
-                    return "Normal winter conditions for pedestrians";
-                case PACKED_SNOW:
-                    return "Packed snow";
-                case SLUSH_ON_ROAD:
-                    return "Slush on road";
-                case SNOW_ON_PAVEMENT:
-                    return "Snow on pavement";
-                case SNOW_ON_THE_ROAD:
-                    return "Snow on the road";
-                case SURFACE_WATER:
-                    return "Surface water";
-                case WET_AND_ICY_ROAD:
-                    return "Wet and icy road";
-                case WET_ICY_PAVEMENT:
-                    return "Wet icy pavement";
-                }
-                return null;
-            });
+            .map(x -> weatherRelatedRoadConditionTypeMap.getOrDefault(x, null));
     }
 
     private Optional<String> accept(final String situationId, final SituationRecord situationRecord) {
