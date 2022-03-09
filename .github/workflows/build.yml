@@ -6,6 +6,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Checkout dependencies
+        uses: actions/checkout@v3
+        with:
+          repository: git@github.com:tmfg/digitraffic-build-dependencies.git
+          ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
+      - name: Setup dependencies
+        run: digitraffic-build-dependencies/install.sh
       - name: Setup Java
         uses: actions/setup-java@v2.5.0
         with:
