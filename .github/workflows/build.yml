@@ -9,7 +9,7 @@ jobs:
       - name: Checkout dependencies
         uses: actions/checkout@v3
         with:
-          repository: git@github.com:tmfg/digitraffic-build-dependencies.git
+          repository: tmfg/digitraffic-build-dependencies
           ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
       - name: Setup dependencies
         run: digitraffic-build-dependencies/install.sh
