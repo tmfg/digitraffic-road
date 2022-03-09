@@ -11,6 +11,7 @@ jobs:
         with:
           repository: tmfg/digitraffic-build-dependencies
           ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
+          path: digitraffic-build-dependencies
       - name: Setup dependencies
         run: digitraffic-build-dependencies/install.sh
       - name: Setup Java
