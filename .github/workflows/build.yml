@@ -13,7 +13,7 @@ jobs:
           ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
           path: digitraffic-build-dependencies
       - name: Setup dependencies
-        run: ls -lha digitraffic-build-dependencies && cp -R digitraffic-build-dependencies/repository ~/.m2/ && ls -lha ~/.m2/repository/
+        run: ls -lha digitraffic-build-dependencies/repository && cp -R digitraffic-build-dependencies/ ~/.m2/ && ls -lha ~/.m2/
       - name: Setup Java
         uses: actions/setup-java@v2.5.0
         with:
