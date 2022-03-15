@@ -63,7 +63,6 @@ import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataS
 @Service
 public class V3MaintenanceTrackingUpdateService {
 
-    public static final String DOMAIN = "harja";
     private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingUpdateService.class);
     private final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
     private final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository;
@@ -198,7 +197,7 @@ public class V3MaintenanceTrackingUpdateService {
                     final MaintenanceTracking created =
                         new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
                             harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
-                            performedTasks, direction, DOMAIN);
+                            performedTasks, direction, V2MaintenanceTrackingRepository.HARJA_DOMAIN);
                     v2MaintenanceTrackingRepository.save(created);
                     sendToMqtt(created, geometry, direction, harjaObservationTime);
                     cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, created);

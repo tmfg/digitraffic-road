@@ -39,6 +39,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 /**
  * This service returns Harja tracking data for public use
@@ -56,8 +57,6 @@ public class V2MaintenanceTrackingDataService {
 
     private final ObjectMapper objectMapper;
     private static ObjectReader geometryReader;
-
-    public final static String HARJA_DOMAIN = "harja";
 
     @Autowired
     public V2MaintenanceTrackingDataService(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
@@ -121,7 +120,16 @@ public class V2MaintenanceTrackingDataService {
     }
 
     private List<String> getSafeDomainList(final List<String> domains) {
-        return CollectionUtils.isEmpty(domains) ? Collections.singletonList(HARJA_DOMAIN) : domains;
+        if (CollectionUtils.isEmpty(domains)) {
+            return Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN);
+        } else if (domains.contains(V2MaintenanceTrackingRepository.ALL_DOMAINS) ||
+            (domains.contains(V2MaintenanceTrackingRepository.MUNICIPALITY_DOMAINS) &&
+             domains.contains(V2MaintenanceTrackingRepository.HARJA_DOMAIN)) ) {
+            return findDomainsWithoutGenerics().stream().map(DomainDto::getName).collect(Collectors.toList());
+        } else if (domains.contains(V2MaintenanceTrackingRepository.MUNICIPALITY_DOMAINS)) {
+            return findDomainsWithoutHarja().stream().map(DomainDto::getName).collect(Collectors.toList());
+        }
+        return CollectionUtils.isEmpty(domains) ? Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN) : domains;
     }
 
     private List<String> convertTasksToStringArray(final List<MaintenanceTrackingTask> taskIds) {
@@ -129,9 +137,12 @@ public class V2MaintenanceTrackingDataService {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeature getMaintenanceTrackingById(final long id) {
+    public MaintenanceTrackingFeature getMaintenanceTrackingById(final long id) throws ObjectNotFoundException {
         final MaintenanceTrackingDto tracking = v2MaintenanceTrackingRepository.getDto(id);
-        return convertToTrackingFeature(tracking);
+        if (tracking != null) {
+            return convertToTrackingFeature(tracking);
+        }
+        throw new ObjectNotFoundException("MaintenanceTracking", id);
     }
 
     @Transactional(readOnly = true)
@@ -148,6 +159,20 @@ public class V2MaintenanceTrackingDataService {
     @Transactional(readOnly = true)
     public List<DomainDto> findDomains() {
         return v2MaintenanceTrackingRepository.findDomains();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DomainDto> findDomainsWithoutGenerics() {
+        return findDomains().stream()
+            .filter(domainDto -> !V2MaintenanceTrackingRepository.GENERIC_DOMAINS.contains(domainDto.getName()))
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<DomainDto> findDomainsWithoutHarja() {
+        return findDomainsWithoutGenerics().stream()
+            .filter(domainDto -> !V2MaintenanceTrackingRepository.HARJA_DOMAIN.contains(domainDto.getName()))
+            .collect(Collectors.toList());
     }
 
     private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {

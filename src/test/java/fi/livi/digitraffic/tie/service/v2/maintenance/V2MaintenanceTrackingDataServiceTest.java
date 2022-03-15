@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
+import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
 import static fi.livi.digitraffic.tie.TestUtils.getRandom;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
@@ -8,6 +9,7 @@ import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALL
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;
+import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.BRUSHING;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.CRACK_FILLING;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PAVING;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PLOUGHING_AND_SLUSH_REMOVAL;
@@ -29,9 +31,12 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.util.Collections;
@@ -41,6 +46,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +55,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
@@ -59,6 +66,8 @@ import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 
 public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
@@ -66,6 +75,9 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     final static Pair<Double, Double> BOUNDING_BOX_X_RANGE = Pair.of(20.0, 30.0);
     final static Pair<Double, Double> BOUNDING_BOX_Y_RANGE = Pair.of(64.0, 66.0);
     final static Pair<Double, Double> BOUNDING_BOX_CENTER = Pair.of(25.0, 65.0);
+
+    private final String DOMAIN_WITH_SOURCE = "domain-with-source";
+    private final String DOMAIN_WITHOUT_SOURCE = "domain-without-source";
 
     @Autowired
     private V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
@@ -76,6 +88,15 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @BeforeEach
     public void init() {
         testHelper.clearDb();
+        entityManager.createNativeQuery("delete from maintenance_tracking_domain where name in ('" + DOMAIN_WITH_SOURCE + "', '" + DOMAIN_WITHOUT_SOURCE + "')").executeUpdate();
+        commitAndEndTransactionAndStartNew();
+    }
+
+    @AfterEach
+    public void cleand() {
+        testHelper.clearDb();
+        entityManager.createNativeQuery("delete from maintenance_tracking_domain where name in ('" + DOMAIN_WITH_SOURCE + "', '" + DOMAIN_WITHOUT_SOURCE + "')").executeUpdate();
+        commitAndEndTransactionAndStartNew();
     }
 
     @Test
@@ -341,7 +362,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -378,7 +399,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -409,7 +430,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -444,7 +465,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -467,7 +488,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
         final MaintenanceTrackingFeature feature1 = result1.getFeatures().get(0);
 
         final MaintenanceTrackingFeature feature2 =
@@ -477,13 +498,34 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertEquals(feature1.getProperties().id, feature2.getProperties().id);
     }
 
+    @Test
+    public void getByIdWithAndWitoutDomainSource() {
+        // Create trackings for domains with and witout soure
+        final MaintenanceTrackingWorkMachine wm1 = testHelper.createAndSaveWorkMachine();
+        final MaintenanceTrackingWorkMachine wm2 = testHelper.createAndSaveWorkMachine();
+        insertDomain(DOMAIN_WITH_SOURCE, "Foo/Bar");
+        insertDomain(DOMAIN_WITHOUT_SOURCE, null);
+        commitAndEndTransactionAndStartNew();
+        final long trackingId1 = insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
+        final long trackingId2 = insertTrackingForDomain(DOMAIN_WITHOUT_SOURCE, wm2.getId());
+        entityManager.flush();
+        commitAndEndTransactionAndStartNew();
+
+        // Tracking for domain with source should be found
+        assertNotNull(v2MaintenanceTrackingDataService.getMaintenanceTrackingById(trackingId1));
+        assertThrows(ObjectNotFoundException.class, () -> {
+            // Tracking for domain without source should not be found
+            v2MaintenanceTrackingDataService.getMaintenanceTrackingById(trackingId2);
+        });
+    }
+
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
                                                                               final MaintenanceTrackingTask...tasks) {
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
-            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
     }
 
     private MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
@@ -492,10 +534,39 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
-            Collections.singletonList(V2MaintenanceTrackingDataService.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
     }
 
     private void assertAllHasOnlyPointGeometries(final List<MaintenanceTrackingLatestFeature> features) {
         features.forEach(f -> assertEquals(Point, f.getGeometry().getType()));
+    }
+
+    private long insertTrackingForDomain(final String domain, final long workMachineId) {
+        entityManager.flush();
+        entityManager.createNativeQuery(
+                "INSERT INTO maintenance_tracking(id, domain, last_point, work_machine_id, sending_system, sending_time, start_time, end_time, finished)\n" +
+                         "VALUES (nextval('SEQ_MAINTENANCE_TRACKING'), '" + domain + "', ST_PointFromText('POINT(-71.064544 42.28787 0)', 4326), " +
+                                  workMachineId + ", 'dummy', now(), now(), now(), true)" )
+            .executeUpdate();
+        final long id = ((BigInteger) entityManager.createNativeQuery(
+            "select id " +
+                "from road.public.maintenance_tracking " +
+                "where domain = '" + domain + "' " +
+                "order by id desc " +
+                "limit 1").getSingleResult()).longValue();
+        entityManager.createNativeQuery(
+                "INSERT INTO road.public.maintenance_tracking_task(maintenance_tracking_id, task)\n" +
+                    "VALUES (" + id + ", '" + BRUSHING.name() + "')")
+            .executeUpdate();
+        return id;
+    }
+
+    private void insertDomain(final String domain, final String source) {
+        entityManager.flush();
+        final String sourceSql = source != null ? "'" + source + "'" : "null";
+        entityManager.createNativeQuery(
+                "insert into maintenance_tracking_domain(name, source)\n" +
+                    "VALUES ('" + domain + "', " + sourceSql + ")")
+            .executeUpdate();
     }
 }

@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.QueryHint;
 
@@ -18,6 +20,12 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 
 @Repository
 public interface V2MaintenanceTrackingRepository extends JpaRepository<MaintenanceTracking, Long> {
+
+    String ALL_DOMAINS = "all";
+    String MUNICIPALITY_DOMAINS = "municipalities";
+    String HARJA_DOMAIN = "state-roads";
+    Set<String> GENERIC_DOMAINS = new HashSet<>(List.of(ALL_DOMAINS, MUNICIPALITY_DOMAINS));
+
 
     String DTO_SELECT_FIELDS_WITHOUT_LINE_STRING =
         "SELECT tracking.id\n" +
@@ -68,6 +76,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +
                    "  AND (ST_INTERSECTS(:area, tracking.last_point) = true OR ST_INTERSECTS(:area, tracking.line_string) = true)\n" +
                    "  AND tracking.domain in (:domains) \n" +
+                   "  AND domain.source is not null\n" +
                    "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
@@ -85,6 +94,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "      AND t.task IN (:tasks)" +
                    "  )\n" +
                    "  AND tracking.domain in (:domains) \n" +
+                   "  AND domain.source is not null\n" +
                    "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
@@ -101,6 +111,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "    GROUP BY t.work_machine_id\n" +
                    ")\n" +
                    "  AND tracking.domain in (:domains) \n" +
+                   "  AND domain.source is not null\n" +
                    "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
@@ -123,6 +134,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "      AND t.task IN (:tasks)" +
                    "  )\n" +
                    "  AND tracking.domain in (:domains) \n" +
+                   "  AND domain.source is not null\n" +
                    "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
@@ -131,14 +143,22 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
 
     @Query(value = DTO_LINESTRING_SQL +
                    "WHERE tracking.id = :id\n" +
+                   "  AND domain.source is not null\n" +
                    "GROUP BY tracking.id, contract.source, domain.source",
            nativeQuery = true)
     MaintenanceTrackingDto getDto(long id);
 
     @Query(value =
         "select name\n" +
+        "     , source\n" +
+        "     , case when name = '" + HARJA_DOMAIN + "' then 0 else ROW_NUMBER() OVER (ORDER BY name) end AS rnum\n" +
         "from maintenance_tracking_domain\n" +
-        "order by name;",
+        "where source is not null\n" +
+        "UNION\n" +
+        "SELECT '" + ALL_DOMAINS + "', 'All domains', -2\n" +
+        "UNION\n" +
+        "SELECT '" + MUNICIPALITY_DOMAINS + "', 'All municipality domains', -1\n" +
+        "order by rnum",
         nativeQuery = true)
     List<DomainDto> findDomains();
 

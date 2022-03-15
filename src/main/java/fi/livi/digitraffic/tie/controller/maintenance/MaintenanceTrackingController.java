@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
+import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.DomainDto;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
@@ -119,8 +120,8 @@ public class MaintenanceTrackingController {
     @RequestParam(value = "taskId", required = false)
     final List<MaintenanceTrackingTask> taskIds,
 
-    @ApiParam(value = "Data domains. If not given default \"harja\" will be used returned and not any municipality data.")
-    @RequestParam(value = "domain", required = false, defaultValue = "harja")
+    @ApiParam(value = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.HARJA_DOMAIN + "\" will be used.")
+    @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.HARJA_DOMAIN)
     final List<String> domains) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24);
@@ -172,8 +173,8 @@ public class MaintenanceTrackingController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds,
 
-        @ApiParam(value = "Municipality data domains. If not given, Harja data will be returned and not any municipality data.")
-        @RequestParam(value = "domain", required = false, defaultValue = "harja")
+        @ApiParam(value = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.HARJA_DOMAIN + "\" will be used.")
+        @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.HARJA_DOMAIN)
         final List<String> domains) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, endTo, 24);
