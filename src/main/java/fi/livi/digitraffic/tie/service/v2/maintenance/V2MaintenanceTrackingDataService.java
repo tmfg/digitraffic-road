@@ -83,8 +83,8 @@ public class V2MaintenanceTrackingDataService {
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
-                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, getSafeDomainList(domains)) :
-                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertTasksToStringArray(taskIds), getSafeDomainList(domains));
+                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertToRealDomainNames(domains)) :
+                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertTasksToStringArray(taskIds), convertToRealDomainNames(domains));
         log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
 
@@ -105,8 +105,8 @@ public class V2MaintenanceTrackingDataService {
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
-                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, getSafeDomainList(domains)) :
-                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, convertTasksToStringArray(taskIds), getSafeDomainList(domains));
+                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, convertToRealDomainNames(domains)) :
+                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, convertTasksToStringArray(taskIds), convertToRealDomainNames(domains));
 
         log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
                  xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), start.getTime());
@@ -119,17 +119,44 @@ public class V2MaintenanceTrackingDataService {
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
     }
 
-    private List<String> getSafeDomainList(final List<String> domains) {
-        if (CollectionUtils.isEmpty(domains)) {
-            return Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN);
-        } else if (domains.contains(V2MaintenanceTrackingRepository.ALL_DOMAINS) ||
-            (domains.contains(V2MaintenanceTrackingRepository.MUNICIPALITY_DOMAINS) &&
-             domains.contains(V2MaintenanceTrackingRepository.HARJA_DOMAIN)) ) {
-            return findDomainsWithoutGenerics().stream().map(DomainDto::getName).collect(Collectors.toList());
-        } else if (domains.contains(V2MaintenanceTrackingRepository.MUNICIPALITY_DOMAINS)) {
-            return findDomainsWithoutHarja().stream().map(DomainDto::getName).collect(Collectors.toList());
+    /**
+     * Converts given domain name parameters to real domain names in db.
+     * Rules for parameters:
+     * - null or empty => defaults to state-roads
+     * - generic all domains OR generic all municipalities + state-roads => all possible domains available
+     * - generic all municipalities => all municipality domains available
+     * - other => parameter as it is
+     *
+     * @param domainNameParameters parameters to convert to real domain names
+     * @return Actual real domain names
+     */
+    private List<String> convertToRealDomainNames(final List<String> domainNameParameters) {
+        if (CollectionUtils.isEmpty(domainNameParameters)) {
+            // Without parameter default to STATE_ROADS_DOMAIN
+            return Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
+        } else if (domainNameParameters.contains(V2MaintenanceTrackingRepository.GENERIC_ALL_DOMAINS) ||
+            (domainNameParameters.contains(V2MaintenanceTrackingRepository.GENERIC_MUNICIPALITY_DOMAINS) &&
+             domainNameParameters.contains(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)) ) {
+            return getRealDomainNames();
+        } else if (domainNameParameters.contains(V2MaintenanceTrackingRepository.GENERIC_MUNICIPALITY_DOMAINS)) {
+            return getRealDomainNamesWithoutStateRoadsDomain();
         }
-        return CollectionUtils.isEmpty(domains) ? Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN) : domains;
+        return domainNameParameters;
+    }
+
+    private List<String> getRealDomainNames() {
+        return v2MaintenanceTrackingRepository.getRealDomainNames();
+    }
+
+    private List<String> getRealDomainNamesWithoutStateRoadsDomain() {
+        final List<String> all = getRealDomainNames();
+        all.remove(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
+        return all;
+    }
+
+    @Transactional(readOnly = true)
+    public List<DomainDto> getDomainsWithGenerics() {
+        return v2MaintenanceTrackingRepository.getDomainsWithGenerics();
     }
 
     private List<String> convertTasksToStringArray(final List<MaintenanceTrackingTask> taskIds) {
@@ -154,25 +181,6 @@ public class V2MaintenanceTrackingDataService {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<DomainDto> findDomains() {
-        return v2MaintenanceTrackingRepository.findDomains();
-    }
-
-    @Transactional(readOnly = true)
-    public List<DomainDto> findDomainsWithoutGenerics() {
-        return findDomains().stream()
-            .filter(domainDto -> !V2MaintenanceTrackingRepository.GENERIC_DOMAINS.contains(domainDto.getName()))
-            .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<DomainDto> findDomainsWithoutHarja() {
-        return findDomainsWithoutGenerics().stream()
-            .filter(domainDto -> !V2MaintenanceTrackingRepository.HARJA_DOMAIN.contains(domainDto.getName()))
-            .collect(Collectors.toList());
     }
 
     private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {

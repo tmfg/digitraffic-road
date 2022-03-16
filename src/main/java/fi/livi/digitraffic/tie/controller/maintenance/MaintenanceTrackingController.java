@@ -120,8 +120,8 @@ public class MaintenanceTrackingController {
     @RequestParam(value = "taskId", required = false)
     final List<MaintenanceTrackingTask> taskIds,
 
-    @ApiParam(value = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.HARJA_DOMAIN + "\" will be used.")
-    @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.HARJA_DOMAIN)
+    @ApiParam(value = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
+    @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
     final List<String> domains) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24);
@@ -173,8 +173,8 @@ public class MaintenanceTrackingController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds,
 
-        @ApiParam(value = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.HARJA_DOMAIN + "\" will be used.")
-        @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.HARJA_DOMAIN)
+        @ApiParam(value = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
+        @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
         final List<String> domains) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, endTo, 24);
@@ -204,7 +204,7 @@ public class MaintenanceTrackingController {
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_BETA_TRACKING_DOMAINS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking domains"))
     public List<DomainDto> getMaintenanceTrackingDomains() {
-        return v2MaintenanceTrackingDataService.findDomains();
+        return v2MaintenanceTrackingDataService.getDomainsWithGenerics();
     }
 
     public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(ZonedDateTime from, ZonedDateTime to, final int defaultHoursOfHistory) {

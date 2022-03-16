@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.QueryHint;
 
@@ -21,11 +19,9 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 @Repository
 public interface V2MaintenanceTrackingRepository extends JpaRepository<MaintenanceTracking, Long> {
 
-    String ALL_DOMAINS = "all";
-    String MUNICIPALITY_DOMAINS = "municipalities";
-    String HARJA_DOMAIN = "state-roads";
-    Set<String> GENERIC_DOMAINS = new HashSet<>(List.of(ALL_DOMAINS, MUNICIPALITY_DOMAINS));
-
+    String STATE_ROADS_DOMAIN = "state-roads";
+    String GENERIC_ALL_DOMAINS = "all";
+    String GENERIC_MUNICIPALITY_DOMAINS = "municipalities";
 
     String DTO_SELECT_FIELDS_WITHOUT_LINE_STRING =
         "SELECT tracking.id\n" +
@@ -151,15 +147,23 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @Query(value =
         "select name\n" +
         "     , source\n" +
-        "     , case when name = '" + HARJA_DOMAIN + "' then 0 else ROW_NUMBER() OVER (ORDER BY name) end AS rnum\n" +
+        "     , case when name = '" + STATE_ROADS_DOMAIN + "' then 0 else ROW_NUMBER() OVER (ORDER BY name) end AS rnum\n" +
         "from maintenance_tracking_domain\n" +
         "where source is not null\n" +
         "UNION\n" +
-        "SELECT '" + ALL_DOMAINS + "', 'All domains', -2\n" +
+        "SELECT '" + GENERIC_ALL_DOMAINS + "', 'All domains', -2\n" +
         "UNION\n" +
-        "SELECT '" + MUNICIPALITY_DOMAINS + "', 'All municipality domains', -1\n" +
+        "SELECT '" + GENERIC_MUNICIPALITY_DOMAINS + "', 'All municipality domains', -1\n" +
         "order by rnum",
         nativeQuery = true)
-    List<DomainDto> findDomains();
+    List<DomainDto> getDomainsWithGenerics();
+
+    @Query(value =
+        "select name\n" +
+        "from maintenance_tracking_domain\n" +
+        "where source is not null\n" +
+        "order by name",
+        nativeQuery = true)
+    List<String> getRealDomainNames();
 
 }

@@ -508,4 +508,22 @@ public class V3MaintenanceTrackingServiceTestHelper {
         v2MaintenanceTrackingWorkMachineRepository.save(wm);
         return wm;
     }
+
+    public void insertDomain(final String domain, final String source) {
+        entityManager.createNativeQuery(
+                "insert into maintenance_tracking_domain(name, source)\n" +
+                "VALUES (:domain, :source)")
+            .setParameter("domain", domain)
+            .setParameter("source", source)
+            .executeUpdate();
+        entityManager.flush();
+    }
+
+    public void deleteDomains(final String...domains) {
+        entityManager.createNativeQuery(
+                "delete from maintenance_tracking_domain where name in (:domains)")
+            .setParameter("domains", Arrays.asList(domains))
+            .executeUpdate();
+        entityManager.flush();
+    }
 }

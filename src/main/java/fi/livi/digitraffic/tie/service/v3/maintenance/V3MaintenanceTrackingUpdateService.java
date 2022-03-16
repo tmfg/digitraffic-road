@@ -197,7 +197,7 @@ public class V3MaintenanceTrackingUpdateService {
                     final MaintenanceTracking created =
                         new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
                             harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
-                            performedTasks, direction, V2MaintenanceTrackingRepository.HARJA_DOMAIN);
+                            performedTasks, direction, V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
                     v2MaintenanceTrackingRepository.save(created);
                     sendToMqtt(created, geometry, direction, harjaObservationTime);
                     cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, created);

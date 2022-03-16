@@ -85,17 +85,11 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Autowired
     private V3MaintenanceTrackingServiceTestHelper testHelper;
 
+    @AfterEach
     @BeforeEach
     public void init() {
         testHelper.clearDb();
-        entityManager.createNativeQuery("delete from maintenance_tracking_domain where name in ('" + DOMAIN_WITH_SOURCE + "', '" + DOMAIN_WITHOUT_SOURCE + "')").executeUpdate();
-        commitAndEndTransactionAndStartNew();
-    }
-
-    @AfterEach
-    public void cleand() {
-        testHelper.clearDb();
-        entityManager.createNativeQuery("delete from maintenance_tracking_domain where name in ('" + DOMAIN_WITH_SOURCE + "', '" + DOMAIN_WITHOUT_SOURCE + "')").executeUpdate();
+        testHelper.deleteDomains(DOMAIN_WITH_SOURCE, DOMAIN_WITHOUT_SOURCE);
         commitAndEndTransactionAndStartNew();
     }
 
@@ -362,7 +356,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -399,7 +393,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -430,7 +424,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -465,7 +459,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -488,7 +482,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
         final MaintenanceTrackingFeature feature1 = result1.getFeatures().get(0);
 
         final MaintenanceTrackingFeature feature2 =
@@ -503,8 +497,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // Create trackings for domains with and witout soure
         final MaintenanceTrackingWorkMachine wm1 = testHelper.createAndSaveWorkMachine();
         final MaintenanceTrackingWorkMachine wm2 = testHelper.createAndSaveWorkMachine();
-        insertDomain(DOMAIN_WITH_SOURCE, "Foo/Bar");
-        insertDomain(DOMAIN_WITHOUT_SOURCE, null);
+        testHelper.insertDomain(DOMAIN_WITH_SOURCE, "Foo/Bar");
+        testHelper.insertDomain(DOMAIN_WITHOUT_SOURCE, null);
         commitAndEndTransactionAndStartNew();
         final long trackingId1 = insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
         final long trackingId2 = insertTrackingForDomain(DOMAIN_WITHOUT_SOURCE, wm2.getId());
@@ -525,7 +519,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
-            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
     }
 
     private MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
@@ -534,7 +528,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
-            Collections.singletonList(V2MaintenanceTrackingRepository.HARJA_DOMAIN));
+            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
     }
 
     private void assertAllHasOnlyPointGeometries(final List<MaintenanceTrackingLatestFeature> features) {
@@ -559,14 +553,5 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
                     "VALUES (" + id + ", '" + BRUSHING.name() + "')")
             .executeUpdate();
         return id;
-    }
-
-    private void insertDomain(final String domain, final String source) {
-        entityManager.flush();
-        final String sourceSql = source != null ? "'" + source + "'" : "null";
-        entityManager.createNativeQuery(
-                "insert into maintenance_tracking_domain(name, source)\n" +
-                    "VALUES ('" + domain + "', " + sourceSql + ")")
-            .executeUpdate();
     }
 }
