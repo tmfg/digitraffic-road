@@ -1,6 +1,9 @@
 package fi.livi.digitraffic.tie;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -16,10 +19,23 @@ import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
  * https://www.archunit.org/userguide/html/000_Index.html
  */
 public class ArchitectureTest extends AbstractTest {
+    private static final Logger log = LoggerFactory.getLogger(ArchitectureTest.class);
 
-    private final JavaClasses importedClasses = new ClassFileImporter()
-        .withImportOption(location -> !location.contains("Test.") && !location.contains("test-classes"))
-        .importPackages("fi.livi.digitraffic");
+    private final JavaClasses importedClasses;
+
+    public ArchitectureTest() {
+        final StopWatch timer = StopWatch.createStarted();
+        importedClasses = new ClassFileImporter()
+            .withImportOption(location ->
+                location.contains("/target/classes/") &&
+                location.contains("fi/livi/digitraffic") &&
+                // Skip generated classes
+                !location.contains("fi/livi/digitraffic/tie/datex2") &&
+                !location.contains("fi/livi/digitraffic/tie/external"))
+            .importPath("target/classes/fi/livi/digitraffic/tie/");
+
+        log.info("Reading classes took {} s", timer.getTime()/1000.0);
+    }
 
     @Test
     public void publicServiceMethodMustBeTransactional() {
@@ -50,7 +66,7 @@ public class ArchitectureTest extends AbstractTest {
             .that()
             .areAnnotatedWith(Component.class)
             .should()
-            .haveSimpleNameNotEndingWith("Service")
+            .haveSimpleNameNotContaining("Service")
             .check(importedClasses);
     }
 

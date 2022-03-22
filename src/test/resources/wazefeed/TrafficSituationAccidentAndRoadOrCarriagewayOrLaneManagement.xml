@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>2022-03-03T13:52:52.435Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50395125" version="6">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="Accident" id="GUID5039605401" version="6">
+                <situationRecordCreationTime>2022-03-03T13:51:18.441Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T13:52:48.945Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T13:52:03.425Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T13:50:51.532Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 101, eli Kehä I, Helsinki. Liikennetiedote onnettomuudesta.
+
+                                Tie 101, eli Kehä I, Helsinki.
+                                Tarkempi paikka: Välillä Konala - Vihdintien liittymä. Haittaa ajosuunnassa itään.
+
+                                Onnettomuus, jossa mukana useita ajoneuvoja.
+                                Ajokaista suljettu liikenteeltä.
+                                Liikenne ruuhkautuu.
+
+                                Ajankohta: 03.03.2022 klo 15:50 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Helsinki
+                                Puh: 02002100
+                                Sähköposti: helsinki.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.42</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>positive</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>5127</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>3578</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <accidentType>multivehicleAccident</accidentType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5039605402" version="6">
+                <situationRecordCreationTime>2022-03-03T13:51:18.441Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T13:52:48.945Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T13:52:03.425Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T13:50:51.532Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="AbnormalTraffic" id="GUID5039605403" version="6">
+                <situationRecordCreationTime>2022-03-03T13:51:18.441Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T13:52:48.945Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T13:52:03.425Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T13:50:51.532Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <trafficTrendType>trafficBuildingUp</trafficTrendType>
+            </situationRecord>
+        </situation>
+        <situation id="GUID50395125" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="Accident" id="GUID5039605401" version="1">
+                <situationRecordCreationTime>2022-03-03T13:51:18.441Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T13:51:18.398Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T13:50:51.532Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T13:50:51.532Z</overallStartTime>
+                        <overallEndTime>2022-03-03T14:21:18.405Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 101, eli Kehä I, Helsinki. Ensitiedote liikenneonnettomuudesta.
+
+                                Tie 101, eli Kehä I, Helsinki.
+                                Tarkempi paikka: Välillä Konala - Vihdintien liittymä. Haittaa ajosuunnassa itään.
+
+
+                                Ajankohta: 03.03.2022 klo 15:50.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Helsinki
+                                Puh: 02002100
+                                Sähköposti: helsinki.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.42</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>positive</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>5127</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>3578</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <accidentType>other</accidentType>
+            </situationRecord>
+            <situationRecord xsi:type="GeneralObstruction" id="GUID5039605402" version="1">
+                <situationRecordCreationTime>2022-03-03T13:51:18.441Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T13:51:18.398Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T13:50:51.532Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T13:50:51.532Z</overallStartTime>
+                        <overallEndTime>2022-03-03T14:21:18.405Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <obstructionType>unprotectedAccidentArea</obstructionType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

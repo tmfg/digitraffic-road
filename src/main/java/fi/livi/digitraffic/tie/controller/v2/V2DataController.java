@@ -43,17 +43,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeature;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingTaskDto;
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
@@ -344,7 +345,7 @@ public class V2DataController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-    @ApiParam(value = "Return trackings which have completed after the given time. Default is -1h from now and maximum -24h.")
+    @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     final ZonedDateTime from,
@@ -377,10 +378,10 @@ public class V2DataController {
     @RequestParam(value = "taskId", required = false)
     final List<MaintenanceTrackingTask> taskIds) {
 
-        validateTimeBetweenFromAndToMaxHours(from, null, 24);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
+        MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, null, 24);
+        Pair<Instant, Instant> fromTo = MaintenanceTrackingController.getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
 
-        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
 
     @ApiOperation(value = "Road maintenance tracking data")
@@ -388,12 +389,12 @@ public class V2DataController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return trackings which have completed after the given time. Default is 24h in past and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from,
 
-        @ApiParam(value = "Return trackings which have completed before the given time. Default is now and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return trackings which have completed before the given time (inclusive). Default is now and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to,
@@ -426,10 +427,10 @@ public class V2DataController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 
-        validateTimeBetweenFromAndToMaxHours(from, to, 24);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
+        MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, to, 24);
+        Pair<Instant, Instant> fromTo = MaintenanceTrackingController.getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds);
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
 
     @ApiOperation(value = "Road maintenance tracking data with tracking id")
@@ -455,26 +456,5 @@ public class V2DataController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance trackings data"))
     public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
         return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(id);
-    }
-
-    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(ZonedDateTime from, ZonedDateTime to, final int defaultHoursOfHistory) {
-        // Make sure newest is also fetched
-        final Instant now = Instant.now();
-        final Instant fromParam = from != null ? from.toInstant() : now.minus(defaultHoursOfHistory, HOURS);
-        // Just to be sure all events near now in future will be fetched
-        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
-        return Pair.of(fromParam, toParam);
-    }
-
-    public static void validateTimeBetweenFromAndToMaxHours(final ZonedDateTime from, final ZonedDateTime to, final int maxDiffHours) {
-        if (from != null && to != null) {
-            if (from.isAfter(to)) {
-                throw new IllegalArgumentException("Time from must be before to");
-            } else if (from.plus(maxDiffHours, HOURS).isBefore(to)) {
-                throw new IllegalArgumentException("Time between from and to -parameters must be less or equal to " + maxDiffHours + " h");
-            }
-        } else if (from != null && from.plus(maxDiffHours, HOURS).isBefore(ZonedDateTime.now())) {
-            throw new IllegalArgumentException("From-parameter must in " + maxDiffHours + " hours when to is not given.");
-        }
     }
 }

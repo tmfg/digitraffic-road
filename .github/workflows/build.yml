@@ -5,7 +5,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - name: Checkout dependencies
+        uses: actions/checkout@v3
+        with:
+          repository: tmfg/digitraffic-build-dependencies
+          ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
+          path: digitraffic-build-dependencies
+      - name: Setup dependencies
+        run: cp -R digitraffic-build-dependencies/ ~/.m2/
       - name: Setup Java
         uses: actions/setup-java@v2.5.0
         with:
@@ -25,7 +33,7 @@ jobs:
         run: cp src/test/resources/application-default.properties.template target/test-classes/application-ci.properties
       - name: Run tests
         run: |
-          mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -e -U -Dmaven.gitcommitid.skip=true -Dspring.jdbc.getParameterType.ignore=true -Dspring.profiles.active=ci -Dquartz.enabled=false -road.datasource.url=jdbc:postgresql://${{ env.db_addr }}:5432/road
+          mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -e -U -Dmaven.gitcommitid.skip=true -Dspring.jdbc.getParameterType.ignore=true -Dspring.profiles.active=ci -Dquartz.enabled=false -Droad.datasource.url=jdbc:postgresql://${{ env.db_addr }}:5432/road
       - name: Publish test results
         uses: dorny/test-reporter@0d00bb14cb0cc2c9b8985df6e81dd333188224e1
         if: success() || failure()

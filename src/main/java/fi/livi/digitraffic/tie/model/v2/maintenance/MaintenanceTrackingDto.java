@@ -12,6 +12,8 @@ public interface MaintenanceTrackingDto {
 
     Long getId();
 
+    Long getPreviousId();
+
     Instant getSendingTime();
 
     Instant getStartTime();
@@ -27,6 +29,10 @@ public interface MaintenanceTrackingDto {
     String getTasksAsString();
 
     Long getWorkMachineId();
+
+    String getDomain();
+
+    String getSource();
 
     default Set<MaintenanceTrackingTask> getTasks() {
         return Arrays.stream(getTasksAsString().split(",")).map(s -> MaintenanceTrackingTask.valueOf(s)).collect(Collectors.toSet());

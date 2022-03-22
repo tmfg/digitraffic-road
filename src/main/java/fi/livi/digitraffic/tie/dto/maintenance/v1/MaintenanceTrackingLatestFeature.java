@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.dto.v2.maintenance;
+package fi.livi.digitraffic.tie.dto.maintenance.v1;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -7,7 +7,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "GeoJSON Feature Object.", value = "MaintenanceTrackingLatestFeature")
+@ApiModel(description = "GeoJSON Feature Object.", value = "MaintenanceTrackingLatestFeature_V1")
 @JsonPropertyOrder({ "type", "properties", "geometry" })
 public class MaintenanceTrackingLatestFeature extends Feature<Geometry<?>, MaintenanceTrackingLatestProperties> {
 

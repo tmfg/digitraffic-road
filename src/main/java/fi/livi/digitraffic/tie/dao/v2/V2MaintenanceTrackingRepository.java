@@ -6,28 +6,35 @@ import java.util.List;
 import javax.persistence.QueryHint;
 
 import org.locationtech.jts.geom.Geometry;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.dto.maintenance.v1.DomainDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 
 @Repository
 public interface V2MaintenanceTrackingRepository extends JpaRepository<MaintenanceTracking, Long> {
 
+    String STATE_ROADS_DOMAIN = "state-roads";
+    String GENERIC_ALL_DOMAINS = "all";
+    String GENERIC_MUNICIPALITY_DOMAINS = "municipalities";
+
     String DTO_SELECT_FIELDS_WITHOUT_LINE_STRING =
         "SELECT tracking.id\n" +
+        "     , tracking.previous_tracking_id AS previousId\n" +
         "     , tracking.sending_time AS sendingTime\n" +
         "     , tracking.start_time AS startTime\n" +
         "     , tracking.end_time AS endTime\n" +
         "     , ST_AsGeoJSON(tracking.last_point) AS lastPointJson\n" +
         "     , tracking.direction\n" +
         "     , tracking.work_machine_id AS workMachineId\n" +
-        "     , STRING_AGG(tasks.task, ',') AS tasksAsString\n";
+        "     , STRING_AGG(tasks.task, ',') AS tasksAsString\n" +
+        "     , tracking.domain\n" +
+        "     , COALESCE(contract.source, domain.source) AS source\n";
 
     String DTO_SELECT_FIELDS_WITH_LINE_STRING =
         DTO_SELECT_FIELDS_WITHOUT_LINE_STRING +
@@ -36,7 +43,9 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     String DTO_TABLES =
         "FROM maintenance_tracking tracking\n" +
         "INNER JOIN maintenance_tracking_work_machine machine ON tracking.work_machine_id = machine.id\n" +
-        "INNER JOIN maintenance_tracking_task tasks ON tracking.id = tasks.maintenance_tracking_id\n";
+        "INNER JOIN maintenance_tracking_task tasks ON tracking.id = tasks.maintenance_tracking_id\n" +
+        "LEFT OUTER JOIN maintenance_tracking_domain_contract contract on (tracking.domain = contract.domain AND tracking.contract = contract.contract)\n" +
+        "LEFT OUTER JOIN maintenance_tracking_domain domain on tracking.domain = domain.name\n";
 
     String DTO_LINESTRING_SQL =
         DTO_SELECT_FIELDS_WITH_LINE_STRING +
@@ -46,20 +55,11 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         DTO_SELECT_FIELDS_WITHOUT_LINE_STRING +
         DTO_TABLES;
 
-
-    @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<MaintenanceTracking> findAllByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdOrderByModifiedAscIdAsc(final long workMachineHarjaId, final long contractHarjaId);
-
     /**
      * EntityGraph causes HHH000104: firstResult/maxResults specified with collection fetch; applying in memory! warnings
      * @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     */
     MaintenanceTracking findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(final long workMachineHarjaId, final long contractHarjaId);
-
-    @Modifying
-    @Query(nativeQuery = true,
-           value = "INSERT INTO maintenance_tracking_data_tracking(data_id, tracking_id) VALUES (:dataId, :trackingId) ON CONFLICT (data_id, tracking_id) DO NOTHING")
-    void addTrackingData(final long dataId, final long trackingId);
 
     @Modifying
     @Query(nativeQuery = true,
@@ -71,10 +71,13 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @Query(value = DTO_LINESTRING_SQL +
                    "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +
                    "  AND (ST_INTERSECTS(:area, tracking.last_point) = true OR ST_INTERSECTS(:area, tracking.line_string) = true)\n" +
-                   "GROUP BY tracking.id\n" +
+                   "  AND tracking.domain in (:domains) \n" +
+                   "  AND domain.source is not null\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
-    List<MaintenanceTrackingDto> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
+    List<MaintenanceTrackingDto> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
+                                                         final List<String> domains);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LINESTRING_SQL +
@@ -86,10 +89,13 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "    WHERE t.maintenance_tracking_id = tracking.id\n" +
                    "      AND t.task IN (:tasks)" +
                    "  )\n" +
-                   "GROUP BY tracking.id\n" +
+                   "  AND tracking.domain in (:domains) \n" +
+                   "  AND domain.source is not null\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
-    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<String> tasks);
+    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
+                                                                 final List<String> tasks, final List<String> domains);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LAST_POINT_SQL +
@@ -100,10 +106,13 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "      AND ST_INTERSECTS(:area, t.last_point) = true\n" +
                    "    GROUP BY t.work_machine_id\n" +
                    ")\n" +
-                   "GROUP BY tracking.id\n" +
+                   "  AND tracking.domain in (:domains) \n" +
+                   "  AND domain.source is not null\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
-    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area);
+    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
+                                                               final List<String> domains);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LAST_POINT_SQL +
@@ -120,14 +129,41 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "    WHERE t.maintenance_tracking_id = tracking.id\n" +
                    "      AND t.task IN (:tasks)" +
                    "  )\n" +
-                   "GROUP BY tracking.id\n" +
+                   "  AND tracking.domain in (:domains) \n" +
+                   "  AND domain.source is not null\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
-    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area, final List<String> tasks);
+    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
+                                                                       final List<String> tasks, final List<String> domains);
 
     @Query(value = DTO_LINESTRING_SQL +
                    "WHERE tracking.id = :id\n" +
-                   "GROUP BY tracking.id\n",
+                   "  AND domain.source is not null\n" +
+                   "GROUP BY tracking.id, contract.source, domain.source",
            nativeQuery = true)
     MaintenanceTrackingDto getDto(long id);
+
+    @Query(value =
+        "select name\n" +
+        "     , source\n" +
+        "     , case when name = '" + STATE_ROADS_DOMAIN + "' then 0 else ROW_NUMBER() OVER (ORDER BY name) end AS rnum\n" +
+        "from maintenance_tracking_domain\n" +
+        "where source is not null\n" +
+        "UNION\n" +
+        "SELECT '" + GENERIC_ALL_DOMAINS + "', 'All domains', -2\n" +
+        "UNION\n" +
+        "SELECT '" + GENERIC_MUNICIPALITY_DOMAINS + "', 'All municipality domains', -1\n" +
+        "order by rnum",
+        nativeQuery = true)
+    List<DomainDto> getDomainsWithGenerics();
+
+    @Query(value =
+        "select name\n" +
+        "from maintenance_tracking_domain\n" +
+        "where source is not null\n" +
+        "order by name",
+        nativeQuery = true)
+    List<String> getRealDomainNames();
+
 }

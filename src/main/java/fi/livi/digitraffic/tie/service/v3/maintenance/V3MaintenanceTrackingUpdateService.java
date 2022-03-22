@@ -41,7 +41,7 @@ import fi.livi.digitraffic.tie.conf.MaintenanceTrackingMqttConfiguration;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
-import fi.livi.digitraffic.tie.dto.v2.maintenance.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
@@ -197,7 +197,7 @@ public class V3MaintenanceTrackingUpdateService {
                     final MaintenanceTracking created =
                         new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
                             harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
-                            performedTasks, direction);
+                            performedTasks, direction, V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
                     v2MaintenanceTrackingRepository.save(created);
                     sendToMqtt(created, geometry, direction, harjaObservationTime);
                     cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, created);
@@ -340,7 +340,7 @@ public class V3MaintenanceTrackingUpdateService {
             .map(tehtava -> {
                 final MaintenanceTrackingTask task = MaintenanceTrackingTask.getByharjaEnumName(tehtava.name());
                 if (task == UNKNOWN) {
-                    log.error("method=getMaintenanceTrackingTasksFromHarjaTasks Failed to convert SuoritettavatTehtavat {} to WorkMachineTask", tehtava.toString());
+                    log.error("method=getMaintenanceTrackingTasksFromHarjaTasks Failed to convert SuoritettavatTehtavat {} to WorkMachineTask", tehtava);
                 }
                 return task;
             })
@@ -450,7 +450,7 @@ public class V3MaintenanceTrackingUpdateService {
                 log.error("Failed to convert havainto to json", e);
             }
             log.warn("method=splitLineStringsWithGaps Distance between points: {}The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
-                     sb.toString(), distinctLineStringObservationGapKm, kirjausOtsikkoJson, havaintoJson);
+                     sb, distinctLineStringObservationGapKm, kirjausOtsikkoJson, havaintoJson);
         }
 
         if (!tmpCoordinates.isEmpty()) {

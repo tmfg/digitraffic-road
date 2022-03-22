@@ -160,6 +160,7 @@ public class V3MetadataController {
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
+    @Deprecated(forRemoval = true)
     @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                 APPLICATION_GEO_JSON_VALUE,
@@ -170,6 +171,7 @@ public class V3MetadataController {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
+    @Deprecated(forRemoval = true)
     @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>2022-03-03T10:22:44.927Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50395101" version="14">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="WeatherRelatedRoadConditions" id="GUID5039603001" version="14">
+                <situationRecordCreationTime>2022-03-03T03:01:53.816Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T10:22:43.875Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T10:22:30.578Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T02:57:53.258Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 101, eli Kehä I, Espoo. Liikennetiedote. Tilanne jatkuu.
+
+                                Tie 101, eli Kehä I, Espoo.
+                                Tarkempi paikka: Kalevalantie. Haittaa ajosuunnassa itään.
+
+                                Vettä tiellä.
+                                Ajokaistoja suljettu liikenteeltä.
+
+                                Ajankohta: 03.03.2022 klo 04:57 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Helsinki
+                                Puh: 02002100
+                                Sähköposti: helsinki.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Point">
+                    <alertCPoint xsi:type="AlertCMethod2Point">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.42</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>positive</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>3569</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                    </alertCPoint>
+                </groupOfLocations>
+                <weatherRelatedRoadConditionType>surfaceWater</weatherRelatedRoadConditionType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5039603002" version="14">
+                <situationRecordCreationTime>2022-03-03T03:01:53.816Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T10:22:43.875Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T10:22:30.578Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T02:57:53.258Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+        </situation>
+        <situation id="GUID50395101" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="WeatherRelatedRoadConditions" id="GUID5039603001" version="1">
+                <situationRecordCreationTime>2022-03-03T03:01:53.816Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T03:01:53.777Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T02:57:53.258Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T02:57:53.258Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 101, eli Kehä I, Espoo. Liikennetiedote.
+
+                                Tie 101, eli Kehä I, Espoo.
+                                Tarkempi paikka: Kalevalantie. Haittaa ajosuunnassa itään.
+
+                                Vettä tiellä.
+                                Ajokaistoja suljettu liikenteeltä.
+
+                                Ajankohta: 03.03.2022 klo 04:57 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Helsinki
+                                Puh: 02002100
+                                Sähköposti: helsinki.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Point">
+                    <alertCPoint xsi:type="AlertCMethod2Point">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.42</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>positive</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>3569</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                    </alertCPoint>
+                </groupOfLocations>
+                <weatherRelatedRoadConditionType>surfaceWater</weatherRelatedRoadConditionType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5039603002" version="1">
+                <situationRecordCreationTime>2022-03-03T03:01:53.816Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-03-03T03:01:53.777Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-03-03T02:57:53.258Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-03-03T02:57:53.258Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
