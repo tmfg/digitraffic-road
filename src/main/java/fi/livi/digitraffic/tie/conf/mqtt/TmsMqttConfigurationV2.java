@@ -51,8 +51,6 @@ public class TmsMqttConfigurationV2 {
 
     @Scheduled(fixedDelayString = "${mqtt.tms.v2.pollingIntervalMs}")
     public void pollAndSendMessages() {
-        LOGGER.info("method=pollAndSendMessages");
-
         if (mqttMessageSender.acquireLock()) {
             try {
                 final List<SensorValueDto> sensorValues =
