@@ -42,7 +42,7 @@ public class MqttMessageSender {
         this.instanceId = ClusteredLocker.generateInstanceId();
     }
 
-    public void sendMqttMessages(final ZonedDateTime lastUpdated, final Collection<MqttDataMessage> messages) {
+    public void sendMqttMessages(final ZonedDateTime lastUpdated, final Collection<MqttDataMessageV2> messages) {
         // Get lock and keep it to prevent sending on multiple nodes
 
         if (acquireLock()) {
@@ -56,7 +56,7 @@ public class MqttMessageSender {
         return clusteredLocker.tryLock(mqttClassName, 60, instanceId);
     }
 
-    private void doSendMqttMessage(final MqttDataMessage message) {
+    private void doSendMqttMessage(final MqttDataMessageV2 message) {
         try {
             log.debug("method=sendMqttMessage {}", message);
             mqttRelay.queueMqttMessage(message.getTopic(), objectMapper.writeValueAsString(message.getData()), statisticsType);
@@ -82,43 +82,18 @@ public class MqttMessageSender {
         return lastError.get();
     }
 
+    private Long getEpochSeconds(final ZonedDateTime time) {
+        return time == null ? null : time.toEpochSecond();
+    }
+
     public void sendStatusMessage(final String statusTopic) {
         try {
-            final StatusMessage message = new StatusMessage(getLastUpdated(), getLastError(), "OK", statisticsType.toString());
+            final MqttStatusMessageV2 message =
+                new MqttStatusMessageV2(getEpochSeconds(getLastUpdated()), getEpochSeconds(getLastError()));
 
             mqttRelay.queueMqttMessage(statusTopic, objectMapper.writeValueAsString(message), STATUS);
         } catch (final Exception e) {
             log.error("method=sendStatus Error sending message", e);
-        }
-    }
-
-    protected class StatusMessage {
-        private final ZonedDateTime lastUpdated;
-        private final ZonedDateTime lastError;
-        private final String status;
-        private final String type;
-
-        public StatusMessage(final ZonedDateTime lastUpdated, final ZonedDateTime lastError, final String status, final String type) {
-            this.lastUpdated = lastUpdated;
-            this.lastError = lastError;
-            this.status = status;
-            this.type = type;
-        }
-
-        public ZonedDateTime getLastUpdated() {
-            return lastUpdated;
-        }
-
-        public ZonedDateTime getLastError() {
-            return lastError;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public String getType() {
-            return type;
         }
     }
 }

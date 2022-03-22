@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.conf.mqtt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.mqtt.MqttDataMessage;
+import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSender;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
@@ -58,7 +58,7 @@ public class WeatherMqttConfigurationV2 {
                     roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(mqttMessageSender.getLastUpdated(), RoadStationType.WEATHER_STATION);
 
                 final ZonedDateTime lastUpdated = sensorValues.stream().map(SensorValueDto::getMeasuredTime).max(ZonedDateTime::compareTo).orElse(mqttMessageSender.getLastUpdated());
-                final List<MqttDataMessage> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
+                final List<MqttDataMessageV2> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
                 mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);
@@ -73,7 +73,7 @@ public class WeatherMqttConfigurationV2 {
         }
     }
 
-    private MqttDataMessage createMqttDataMessage(final SensorValueDto sv) {
-        return MqttDataMessage.createV2(getTopicForMessage(sv.getRoadStationNaturalId(), sv.getSensorNaturalId()), sv);
+    private MqttDataMessageV2 createMqttDataMessage(final SensorValueDto sv) {
+        return MqttDataMessageV2.createV2(getTopicForMessage(sv.getRoadStationNaturalId(), sv.getSensorNaturalId()), sv);
     }
 }
