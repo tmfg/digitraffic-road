@@ -27,8 +27,8 @@ import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.W
 @Component
 public class WeatherMqttConfigurationV2 {
     // weather/{roadStationId}/{sensorId}
-    private static final String WEATHER_TOPIC = "weather-v2/%d/%d";
-    private static final String WEATHER_STATUS_TOPIC = "weather-v2/status";
+    private static final String WEATHER_TOPIC = "weatherV2/%d/%d";
+    private static final String WEATHER_STATUS_TOPIC = "weatherV2/status";
 
     private final RoadStationSensorService roadStationSensorService;
     private final MqttMessageSender mqttMessageSender;
@@ -40,7 +40,6 @@ public class WeatherMqttConfigurationV2 {
                                       final RoadStationSensorService roadStationSensorService,
                                       final ObjectMapper objectMapper,
                                       final ClusteredLocker clusteredLocker) {
-
         this.mqttMessageSender = new MqttMessageSender(LOGGER, mqttRelay, objectMapper, WEATHER, clusteredLocker);
         this.roadStationSensorService = roadStationSensorService;
     }

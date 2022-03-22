@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.T
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,7 +26,6 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TmsMqttConfiguration.class);
 
-    @Autowired
     public TmsMqttConfiguration(final MqttRelayQueue mqttRelay,
                                 final RoadStationSensorService roadStationSensorService,
                                 final ObjectMapper objectMapper,
@@ -35,6 +33,8 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
 
         super(LOGGER, mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION,
             TMS_TOPIC, TMS_STATUS_TOPIC, TMS, clusteredLocker);
+
+        LOGGER.info("constructor");
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
