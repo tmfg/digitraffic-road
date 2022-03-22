@@ -10,7 +10,6 @@ import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,15 +26,14 @@ import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.T
 @Component
 public class TmsMqttConfigurationV2 {
     // v2/tms/{roadStationId}/{sensorId}
-    private static final String TMS_TOPIC = "tms-v2/%d/%d";
-    private static final String TMS_STATUS_TOPIC = "tms-v2/status";
+    private static final String TMS_TOPIC = "tmsV2/%d/%d";
+    private static final String TMS_STATUS_TOPIC = "tmsV2/status";
 
     private final RoadStationSensorService roadStationSensorService;
     private final MqttMessageSender mqttMessageSender;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TmsMqttConfigurationV2.class);
 
-    @Autowired
     public TmsMqttConfigurationV2(final MqttRelayQueue mqttRelay,
                                 final RoadStationSensorService roadStationSensorService,
                                 final ObjectMapper objectMapper,
@@ -43,6 +41,8 @@ public class TmsMqttConfigurationV2 {
 
         this.mqttMessageSender = new MqttMessageSender(LOGGER, mqttRelay, objectMapper, TMS, clusteredLocker);
         this.roadStationSensorService = roadStationSensorService;
+
+        LOGGER.info("constructor");
 
         mqttMessageSender.setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION));
     }
