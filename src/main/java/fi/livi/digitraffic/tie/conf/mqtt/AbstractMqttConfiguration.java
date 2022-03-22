@@ -92,7 +92,7 @@ public abstract class AbstractMqttConfiguration {
         this.mqttClassName = this.getClass().getSimpleName();
         this.instanceId = ClusteredLocker.generateInstanceId();
 
-        // Executor for status messager
+        // Executor for status message
         executor.scheduleAtFixedRate(this::sendStatus, 30, 10, TimeUnit.SECONDS);
     }
 

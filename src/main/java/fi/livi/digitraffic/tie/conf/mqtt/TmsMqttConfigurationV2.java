@@ -1,13 +1,10 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessage;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSender;
-import fi.livi.digitraffic.tie.mqtt.MqttSensorValueMessageV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
@@ -56,6 +53,8 @@ public class TmsMqttConfigurationV2 {
 
     @Scheduled(fixedDelayString = "${mqtt.tms.v2.pollingIntervalMs}")
     public void pollAndSendMessages() {
+        LOGGER.info("method=pollAndSendMessages");
+
         if (mqttMessageSender.acquireLock()) {
             try {
                 final List<SensorValueDto> sensorValues =

@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.conf.mqtt;
 
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.TMS;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -24,18 +25,22 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
     private static final String TMS_TOPIC = "tms/%d/%d";
     private static final String TMS_STATUS_TOPIC = "tms/status";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TmsMqttConfiguration.class);
+
     @Autowired
     public TmsMqttConfiguration(final MqttRelayQueue mqttRelay,
                                 final RoadStationSensorService roadStationSensorService,
                                 final ObjectMapper objectMapper,
                                 final ClusteredLocker clusteredLocker) {
 
-        super(LoggerFactory.getLogger(TmsMqttConfiguration.class), mqttRelay, roadStationSensorService, objectMapper,
-              RoadStationType.TMS_STATION, TMS_TOPIC, TMS_STATUS_TOPIC, TMS, clusteredLocker);
+        super(LOGGER, mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION,
+            TMS_TOPIC, TMS_STATUS_TOPIC, TMS, clusteredLocker);
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
     public void pollAndSendMessages() {
+        LOGGER.info("method=pollAndSendMessages");
+
         try {
             super.pollAndSendMessages();
         } catch(final Exception e) {
