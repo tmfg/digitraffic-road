@@ -26,8 +26,8 @@ import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.T
 @Component
 public class TmsMqttConfigurationV2 {
     // v2/tms/{roadStationId}/{sensorId}
-    private static final String TMS_TOPIC = "tmsV2/%d/%d";
-    private static final String TMS_STATUS_TOPIC = "tmsV2/status";
+    private static final String TMS_TOPIC = "tms-v2/%d/%d";
+    private static final String TMS_STATUS_TOPIC = "tms-v2/status";
 
     private final RoadStationSensorService roadStationSensorService;
     private final MqttMessageSender mqttMessageSender;
@@ -41,8 +41,6 @@ public class TmsMqttConfigurationV2 {
 
         this.mqttMessageSender = new MqttMessageSender(LOGGER, mqttRelay, objectMapper, TMS, clusteredLocker);
         this.roadStationSensorService = roadStationSensorService;
-
-        LOGGER.info("constructor");
 
         mqttMessageSender.setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION));
     }

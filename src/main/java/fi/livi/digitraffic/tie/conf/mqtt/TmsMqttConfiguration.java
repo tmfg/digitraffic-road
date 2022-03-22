@@ -33,8 +33,6 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
 
         super(LOGGER, mqttRelay, roadStationSensorService, objectMapper, RoadStationType.TMS_STATION,
             TMS_TOPIC, TMS_STATUS_TOPIC, TMS, clusteredLocker);
-
-        LOGGER.info("constructor");
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
