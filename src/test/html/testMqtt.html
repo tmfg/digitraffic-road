@@ -29,7 +29,13 @@
             client.onMessageArrived = function(message) {
                 messagesLastMinuteCount++;
 
-                addMessage(JSON.parse(message.payloadString));
+                try {
+                    addMessage(JSON.parse(message.payloadString));
+                } catch (error) {
+                    console.error("parsing failed " + error);
+                    console.info(message);
+                }
+
 
                 updateList();
             };
