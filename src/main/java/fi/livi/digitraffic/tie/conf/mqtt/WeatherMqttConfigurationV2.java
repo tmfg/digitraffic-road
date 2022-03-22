@@ -42,6 +42,8 @@ public class WeatherMqttConfigurationV2 {
                                       final ClusteredLocker clusteredLocker) {
         this.mqttMessageSender = new MqttMessageSender(LOGGER, mqttRelay, objectMapper, WEATHER, clusteredLocker);
         this.roadStationSensorService = roadStationSensorService;
+
+        mqttMessageSender.setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION));
     }
 
     private String getTopicForMessage(final Object...topicParams) {

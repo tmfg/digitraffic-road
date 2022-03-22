@@ -37,8 +37,6 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
 
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
     public void pollAndSendMessages() {
-        LOGGER.info("method=pollAndSendMessages");
-
         try {
             super.pollAndSendMessages();
         } catch(final Exception e) {
