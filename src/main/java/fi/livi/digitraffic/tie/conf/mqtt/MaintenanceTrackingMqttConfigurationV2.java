@@ -5,6 +5,7 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatu
 import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -23,17 +24,22 @@ public class MaintenanceTrackingMqttConfigurationV2 extends AbstractMqttConfigur
     private static final String TOPIC = "maintenance-v2/tracking/%d";
     private static final String STATUS_TOPIC = "maintenance-v2/tracking/status";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaintenanceTrackingMqttConfiguration.class);
+
     @Autowired
     public MaintenanceTrackingMqttConfigurationV2(final MqttRelayQueue mqttRelay,
                                                 final ObjectMapper objectMapper,
                                                 final ClusteredLocker clusteredLocker) {
-        super(LoggerFactory.getLogger(MaintenanceTrackingMqttConfiguration.class),
-            mqttRelay, objectMapper, TOPIC, STATUS_TOPIC, MAINTENANCE_TRACKING, clusteredLocker, false);
+        super(LOGGER, mqttRelay, objectMapper, TOPIC, STATUS_TOPIC, MAINTENANCE_TRACKING, clusteredLocker, false);
         setLastUpdated(ZonedDateTime.now());
     }
 
     public void sendToMqtt(final MaintenanceTrackingLatestFeature feature) {
-        sendMqttMessage(new DataMessage(feature.getProperties().getTime(), getTopic(feature.getProperties().getId()),
-            new MqttMaintenanceTrackingMessageV2(feature)));
+        try {
+            sendMqttMessage(new DataMessage(feature.getProperties().getTime(), getTopic(feature.getProperties().getId()),
+                new MqttMaintenanceTrackingMessageV2(feature)));
+        } catch(final Exception e) {
+            LOGGER.error("error", e);
+        }
     }
 }
