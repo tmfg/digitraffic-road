@@ -61,6 +61,8 @@ public class WeatherMqttConfigurationV2 {
                 final ZonedDateTime lastUpdated = sensorValues.stream().max(Comparator.comparing(SensorValueDto::getMeasuredTime)).map(SensorValueDto::getMeasuredTime).orElse(null);
                 final List<MqttDataMessageV2> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 
+                LOGGER.info(dataMessages.size() + " weather values since " + mqttMessageSender.getLastUpdated());
+
                 mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);
