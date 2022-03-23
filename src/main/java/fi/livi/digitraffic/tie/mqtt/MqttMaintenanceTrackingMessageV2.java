@@ -7,6 +7,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import java.util.Set;
 
 import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
+import static fi.livi.digitraffic.tie.helper.MqttUtil.roundToScale;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MqttMaintenanceTrackingMessageV2 {
@@ -14,16 +15,16 @@ public class MqttMaintenanceTrackingMessageV2 {
     public final String domain;
     public final String source;
     public final Set<MaintenanceTrackingTask> tasks;
-    public final double lat;
-    public final double lon;
+    public final double x;
+    public final double y;
 
     public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingLatestFeature f) {
         this.time = getEpochSeconds(f.getProperties().getTime());
         this.domain = f.getProperties().domain;
         this.source = f.getProperties().source;
         this.tasks = f.getProperties().tasks;
-        this.lat = (double)f.getGeometry().getCoordinates().get(1);
-        this.lon = (double)f.getGeometry().getCoordinates().get(0);
+        this.x = roundToScale((double)f.getGeometry().getCoordinates().get(1), 5);
+        this.y = roundToScale((double)f.getGeometry().getCoordinates().get(0), 5);
     }
 
 }
