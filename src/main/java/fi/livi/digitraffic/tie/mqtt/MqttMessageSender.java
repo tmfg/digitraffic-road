@@ -19,7 +19,7 @@ public class MqttMessageSender {
     private final ObjectMapper objectMapper;
 
     private final ClusteredLocker clusteredLocker;
-    private final String mqttClassName;
+    private final String lockName;
     private final long instanceId;
 
     private final AtomicReference<ZonedDateTime> lastUpdated = new AtomicReference<>();
@@ -38,7 +38,7 @@ public class MqttMessageSender {
         this.statisticsType = statisticsType;
 
         this.clusteredLocker = clusteredLocker;
-        this.mqttClassName = this.getClass().getSimpleName();
+        this.lockName = this.getClass().getSimpleName() + '_' + statisticsType;
         this.instanceId = ClusteredLocker.generateInstanceId();
     }
 
@@ -55,7 +55,7 @@ public class MqttMessageSender {
     }
 
     public boolean acquireLock() {
-        return clusteredLocker.tryLock(mqttClassName, 60, instanceId);
+        return clusteredLocker.tryLock(lockName, 60, instanceId);
     }
 
     private void doSendMqttMessage(final MqttDataMessageV2 message) {

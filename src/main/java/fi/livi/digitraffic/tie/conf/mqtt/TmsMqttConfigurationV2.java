@@ -60,8 +60,6 @@ public class TmsMqttConfigurationV2 {
                 final ZonedDateTime lastUpdated = sensorValues.stream().max(Comparator.comparing(SensorValueDto::getUpdatedTime)).map(SensorValueDto::getUpdatedTime).orElse(null);
                 final List<MqttDataMessageV2> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 
-                LOGGER.info(dataMessages.size() + " tms values " + mqttMessageSender.getLastUpdated() + " to " + lastUpdated);
-
                 mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);
