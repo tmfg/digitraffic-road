@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.STATUS;
 
 public class MqttMessageSender {
@@ -82,10 +83,6 @@ public class MqttMessageSender {
 
     private ZonedDateTime getLastError() {
         return lastError.get();
-    }
-
-    private Long getEpochSeconds(final ZonedDateTime time) {
-        return time == null ? null : time.toEpochSecond();
     }
 
     public void sendStatusMessage(final String statusTopic) {
