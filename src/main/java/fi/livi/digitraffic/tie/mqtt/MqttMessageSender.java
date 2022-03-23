@@ -47,7 +47,9 @@ public class MqttMessageSender {
 
         if (acquireLock()) {
             messages.forEach(this::doSendMqttMessage);
+        }
 
+        if(lastUpdated != null) {
             setLastUpdated(lastUpdated);
         }
     }

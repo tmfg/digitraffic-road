@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,9 +57,11 @@ public class TmsMqttConfigurationV2 {
                 final List<SensorValueDto> sensorValues =
                     roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(mqttMessageSender.getLastUpdated(), RoadStationType.TMS_STATION);
 
-                final ZonedDateTime lastUpdated = sensorValues.stream().map(SensorValueDto::getMeasuredTime).max(ZonedDateTime::compareTo).orElse(mqttMessageSender.getLastUpdated());
+                final ZonedDateTime lastUpdated = sensorValues.stream().max(Comparator.comparing(SensorValueDto::getMeasuredTime)).map(SensorValueDto::getMeasuredTime).orElse(null);
                 final List<MqttDataMessageV2> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
+
                 mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
+
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);
             }
