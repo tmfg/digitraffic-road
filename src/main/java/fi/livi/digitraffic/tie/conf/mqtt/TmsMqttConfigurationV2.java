@@ -26,7 +26,7 @@ import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.T
 @ConditionalOnNotWebApplication
 @Component
 public class TmsMqttConfigurationV2 {
-    // v2/tms/{roadStationId}/{sensorId}
+    // tms-v2/{roadStationId}/{sensorId}
     private static final String TMS_TOPIC = "tms-v2/%d/%d";
     private static final String TMS_STATUS_TOPIC = "tms-v2/status";
 
@@ -61,7 +61,6 @@ public class TmsMqttConfigurationV2 {
                 final List<MqttDataMessageV2> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 
                 mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
-
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);
             }
