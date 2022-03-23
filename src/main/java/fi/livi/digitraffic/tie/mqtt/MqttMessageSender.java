@@ -69,6 +69,8 @@ public class MqttMessageSender {
     }
 
     public void setLastUpdated(final ZonedDateTime lastUpdatedIn) {
+        log.info("setting lastUpdated " + lastUpdatedIn);
+
         lastUpdated.set(Objects.requireNonNullElse(lastUpdatedIn, ZonedDateTime.now()));
     }
 

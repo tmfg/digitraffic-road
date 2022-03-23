@@ -27,7 +27,7 @@ import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.W
 @ConditionalOnNotWebApplication
 @Component
 public class WeatherMqttConfigurationV2 {
-    // weather/{roadStationId}/{sensorId}
+    // weather-v2/{roadStationId}/{sensorId}
     private static final String WEATHER_TOPIC = "weather-v2/%d/%d";
     private static final String WEATHER_STATUS_TOPIC = "weather-v2/status";
 
