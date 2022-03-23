@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
+import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 
 import java.time.Instant;
@@ -256,7 +257,7 @@ public class V2MaintenanceTrackingDataService {
             return PostgisGeometryHelper.convertToGeoJSONGeometry(tracking.getLastPoint());
         } else {
             return PostgisGeometryHelper.convertToGeoJSONGeometry(
-                TopologyPreservingSimplifier.simplify(tracking.getLineString(), 0.00005));
+                TopologyPreservingSimplifier.simplify(tracking.getLineString(), SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE));
         }
     }
 

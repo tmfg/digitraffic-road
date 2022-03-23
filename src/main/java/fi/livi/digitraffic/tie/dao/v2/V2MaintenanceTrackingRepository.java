@@ -20,6 +20,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 public interface V2MaintenanceTrackingRepository extends JpaRepository<MaintenanceTracking, Long> {
 
     double COORDINATE_PRECISION = 0.000001;
+    double SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE = 0.00005;
     String STATE_ROADS_DOMAIN = "state-roads";
     String GENERIC_ALL_DOMAINS = "all";
     String GENERIC_MUNICIPALITY_DOMAINS = "municipalities";
@@ -40,7 +41,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     String DTO_SELECT_FIELDS_WITH_LINE_STRING =
         DTO_SELECT_FIELDS_WITHOUT_LINE_STRING +
         // ST_Snaptogrid will convert linestring with only same locations ie. [ [a,b], [a,b]] to null -> returns only valid linestrings
-        "     , ST_AsGeoJSON(ST_Simplify(ST_Snaptogrid(tracking.line_string, " + COORDINATE_PRECISION + "), 0.00005, true)) AS lineStringJson\n";
+        "     , ST_AsGeoJSON(ST_Simplify(ST_Snaptogrid(tracking.line_string, " + COORDINATE_PRECISION + "), " + SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE + ", true)) AS lineStringJson\n";
 
     String DTO_TABLES =
         "FROM maintenance_tracking tracking\n" +
