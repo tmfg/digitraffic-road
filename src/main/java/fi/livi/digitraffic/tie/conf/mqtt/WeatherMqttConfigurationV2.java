@@ -2,9 +2,10 @@ package fi.livi.digitraffic.tie.conf.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
+import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
-import fi.livi.digitraffic.tie.mqtt.MqttMessageSender;
+import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
@@ -32,7 +33,7 @@ public class WeatherMqttConfigurationV2 {
     private static final String WEATHER_STATUS_TOPIC = "weather-v2/status";
 
     private final RoadStationSensorService roadStationSensorService;
-    private final MqttMessageSender mqttMessageSender;
+    private final MqttMessageSenderV2 mqttMessageSender;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WeatherMqttConfigurationV2.class);
 
@@ -41,14 +42,10 @@ public class WeatherMqttConfigurationV2 {
                                       final RoadStationSensorService roadStationSensorService,
                                       final ObjectMapper objectMapper,
                                       final ClusteredLocker clusteredLocker) {
-        this.mqttMessageSender = new MqttMessageSender(LOGGER, mqttRelay, objectMapper, WEATHER, clusteredLocker);
+        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, WEATHER, clusteredLocker);
         this.roadStationSensorService = roadStationSensorService;
 
         mqttMessageSender.setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION));
-    }
-
-    private String getTopicForMessage(final Object...topicParams) {
-        return String.format(WEATHER_TOPIC, topicParams);
     }
 
     @Scheduled(fixedDelayString = "${mqtt.weather.v2.pollingIntervalMs}")
@@ -78,6 +75,6 @@ public class WeatherMqttConfigurationV2 {
     }
 
     private MqttDataMessageV2 createMqttDataMessage(final SensorValueDto sv) {
-        return MqttDataMessageV2.createV2(getTopicForMessage(sv.getRoadStationNaturalId(), sv.getSensorNaturalId()), sv);
+        return MqttDataMessageV2.createV2(MqttUtil.getTopicForMessage(WEATHER_TOPIC, sv.getRoadStationNaturalId(), sv.getSensorNaturalId()), sv);
     }
 }

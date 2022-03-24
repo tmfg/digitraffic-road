@@ -2,9 +2,10 @@ package fi.livi.digitraffic.tie.conf.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
+import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
-import fi.livi.digitraffic.tie.mqtt.MqttMessageSender;
+import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
@@ -31,7 +32,7 @@ public class TmsMqttConfigurationV2 {
     private static final String TMS_STATUS_TOPIC = "tms-v2/status";
 
     private final RoadStationSensorService roadStationSensorService;
-    private final MqttMessageSender mqttMessageSender;
+    private final MqttMessageSenderV2 mqttMessageSender;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TmsMqttConfigurationV2.class);
 
@@ -40,14 +41,10 @@ public class TmsMqttConfigurationV2 {
                                 final ObjectMapper objectMapper,
                                 final ClusteredLocker clusteredLocker) {
 
-        this.mqttMessageSender = new MqttMessageSender(LOGGER, mqttRelay, objectMapper, TMS, clusteredLocker);
+        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TMS, clusteredLocker);
         this.roadStationSensorService = roadStationSensorService;
 
         mqttMessageSender.setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION));
-    }
-
-    private String getTopicForMessage(final Object...topicParams) {
-        return String.format(TMS_TOPIC, topicParams);
     }
 
     @Scheduled(fixedDelayString = "${mqtt.tms.v2.pollingIntervalMs}")
@@ -75,6 +72,6 @@ public class TmsMqttConfigurationV2 {
     }
 
     private MqttDataMessageV2 createMqttDataMessage(final SensorValueDto sv) {
-        return MqttDataMessageV2.createV2(getTopicForMessage(sv.getRoadStationNaturalId(), sv.getSensorNaturalId()), sv);
+        return MqttDataMessageV2.createV2(MqttUtil.getTopicForMessage(TMS_TOPIC, sv.getRoadStationNaturalId(), sv.getSensorNaturalId()), sv);
     }
 }
