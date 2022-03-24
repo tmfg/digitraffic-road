@@ -44,7 +44,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
             try {
                 return cameraImageUpdateManager.updateCameraData(data);
             } catch (Exception e) {
-                log.error("Error while handling Camera data", e);
+                log.error("method=createJMSMessageListener Error while handling Camera data", e);
                 return 0;
             }
         };

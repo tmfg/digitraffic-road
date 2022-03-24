@@ -68,9 +68,9 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
     @PreDestroy
     public void onShutdown() {
-        log.info("Shutdown...");
+        log.info("method=onShutdown Shutdown...");
         shutdownCalled.set(true);
-        log.info("Closing JMS connection");
+        log.info("method=onShutdown Closing JMS connection");
         closeConnectionQuietly();
     }
 
@@ -84,10 +84,10 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
 
             log.info(
-                "prefix={} MessageListener lock acquired lockedPerMinuteCount={} and not acquired notLockedPerMinuteCount={}" + " times per minute ( instanceId={} )",
+                "method=logMessagesReceived prefix={} MessageListener lock acquired lockedPerMinuteCount={} and not acquired notLockedPerMinuteCount={}" + " times per minute ( instanceId={} )",
                 STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceId());
             log.info(
-                "prefix={} Received messagesReceivedCount={} messages, drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={}" + " db rows per minute. Current in memory queue size queueSize={}.",
+                "method=logMessagesReceived prefix={} Received messagesReceivedCount={} messages, drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={}" + " db rows per minute. Current in memory queue size queueSize={}.",
                 STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.dbRowsUpdated, jmsStats.queueSize);
         } catch(final Exception e) {
             log.error("logging statistics failed", e);
@@ -102,7 +102,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         try {
             getJMSMessageListener().drainQueueScheduled();
         } catch (final Exception e) {
-            log.error("drain exception", e);
+            log.error("method=drainQueueScheduled drain exception", e);
         }
     }
 
@@ -127,7 +127,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             // If acquired lock then start listening otherwise stop listening
             if (lockAcquired && !shutdownCalled.get()) {
                 lockAcquiredCounter.incrementAndGet();
-                log.debug("MessageListener lock acquired for " + jmsParameters.getLockInstanceName() +
+                log.debug("method=connectAndListen MessageListener lock acquired for " + jmsParameters.getLockInstanceName() +
                           " (instanceId: " + ClusteredLocker.getThreadId() + ")");
 
                 // Try to connect if not connected
@@ -139,13 +139,13 @@ public abstract class AbstractJMSListenerConfiguration<K> {
                 connection.start();
             } else {
                 lockNotAcquiredCounter.incrementAndGet();
-                log.debug("MessageListener lock not acquired for {} (instanceId: {}), another " +
+                log.debug("method=connectAndListen MessageListener lock not acquired for {} (instanceId: {}), another " +
                     "instance is holding the lock", jmsParameters.getLockInstanceName(), ClusteredLocker.getThreadId());
                 // Calling stop multiple times is safe
                 closeConnectionQuietly();
             }
         } catch (Exception e) {
-            log.error("Error in connectAndListen", e);
+            log.error("method=connectAndListen Error in connectAndListen", e);
             closeConnectionQuietly();
             clusteredLocker.unlock(jmsParameters.getLockInstanceName());
         }
@@ -160,7 +160,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     protected QueueConnection createConnection(final JMSParameters jmsParameters,
                                                final QueueConnectionFactory connectionFactory) throws JMSException, JAXBException {
 
-        log.info("Create JMS connection with parameters: ConnectionURLs:{} {}", connectionFactory.getConnectionURLs(), jmsParameters);
+        log.info("method=createConnection Create JMS connection with parameters: ConnectionURLs:{} {}", connectionFactory.getConnectionURLs(), jmsParameters);
 
         try {
             final QueueConnection queueConnection = connectionFactory.createQueueConnection(jmsParameters.getJmsUserId(), jmsParameters.getJmsPassword());
@@ -171,7 +171,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             final Connection sonicCon = (Connection) queueConnection;
             final ConnectionMetaData meta = queueConnection.getMetaData();
 
-            log.info("JMS Connection created with ConnectionFactory: {}, Sonic version: {} {}", connectionFactory, meta.getJMSProviderName(), meta.getProviderVersion());
+            log.info("method=createConnection JMS Connection created with ConnectionFactory: {}, Sonic version: {} {}", connectionFactory, meta.getJMSProviderName(), meta.getProviderVersion());
             // Reguire at least Sonic 8.6
             if (meta.getProviderMajorVersion() < 8 || (meta.getProviderMajorVersion() == 8 && meta.getProviderMinorVersion() < 6)) {
                 throw new JMSInitException("Sonic JMS library version is too old. Should bee >= 8.6.0. Was " + meta.getProviderVersion() + ".");
@@ -179,11 +179,11 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
             createSessionAndConsumer(jmsParameters.getJmsQueueKeys(), queueConnection);
 
-            log.info("Connection initialized: {}", connectionFactory);
+            log.info("method=createConnection Connection initialized: {}", connectionFactory);
 
             return queueConnection;
         } catch (Exception e) {
-            log.error("Connection initialization failed for " + connectionFactory, e);
+            log.error("method=createConnection Connection initialization failed for " + connectionFactory, e);
             closeConnectionQuietly();
             throw e;
         }
@@ -212,7 +212,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
                 // also stops the connection
                 connection.close();
             } catch (JMSException e) {
-                log.debug("Closing connection failed", e);
+                log.debug("method=closeConnectionQuietly Closing connection failed", e);
             } finally {
                 connection = null;
             }
@@ -244,7 +244,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
         @Override
         public void onException(final JMSException jsme) {
-            log.error("JMSException: errorCode: " + JMSErrorResolver.resolveErrorMessageByErrorCode(jsme.getErrorCode()) + " for " + jmsParameters.getLockInstanceName(), jsme);
+            log.error("method=onException JMSException: errorCode: " + JMSErrorResolver.resolveErrorMessageByErrorCode(jsme.getErrorCode()) + " for " + jmsParameters.getLockInstanceName(), jsme);
             // Always try to disconnect old connection and then reconnect on next try
             closeConnectionQuietly();
         }

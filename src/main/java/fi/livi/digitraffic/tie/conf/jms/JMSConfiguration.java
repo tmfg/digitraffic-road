@@ -42,7 +42,7 @@ public class JMSConfiguration {
         connectionFactory.setConnectionURLs(jmsConnectionUrls);
         connectionFactory.setDefaultUser(jmsUserId);
         connectionFactory.setDefaultPassword(jmsPassword);
-        log.info("Create JMS QueueConnectionFactory {}", connectionFactory);
+        log.info("method=createQueueConnectionFactory Create JMS QueueConnectionFactory {}", connectionFactory);
         return connectionFactory;
     }
 }
