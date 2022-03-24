@@ -23,8 +23,8 @@ public class MqttMaintenanceTrackingMessageV2 {
         this.domain = f.getProperties().domain;
         this.source = f.getProperties().source;
         this.tasks = f.getProperties().tasks;
-        this.x = roundToScale((double)f.getGeometry().getCoordinates().get(1), 5);
-        this.y = roundToScale((double)f.getGeometry().getCoordinates().get(0), 5);
+        this.x = roundToScale((double)f.getGeometry().getCoordinates().get(1), 6);
+        this.y = roundToScale((double)f.getGeometry().getCoordinates().get(0), 6);
     }
 
 }

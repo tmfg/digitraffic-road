@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.STATUS;
 
-public class MqttMessageSender {
+public class MqttMessageSenderV2 {
     private final Logger log;
     private final MqttRelayQueue mqttRelay;
     private final ObjectMapper objectMapper;
@@ -27,11 +27,11 @@ public class MqttMessageSender {
     private final AtomicReference<ZonedDateTime> lastError = new AtomicReference<>();
     private final MqttRelayQueue.StatisticsType statisticsType;
     
-    public MqttMessageSender(final Logger log,
-                                     final MqttRelayQueue mqttRelay,
-                                     final ObjectMapper objectMapper,
-                                     final MqttRelayQueue.StatisticsType statisticsType,
-                                     final ClusteredLocker clusteredLocker) {
+    public MqttMessageSenderV2(final Logger log,
+                               final MqttRelayQueue mqttRelay,
+                               final ObjectMapper objectMapper,
+                               final MqttRelayQueue.StatisticsType statisticsType,
+                               final ClusteredLocker clusteredLocker) {
 
         this.mqttRelay = mqttRelay;
         this.objectMapper = objectMapper;
