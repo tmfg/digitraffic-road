@@ -231,7 +231,7 @@ public class V2MaintenanceTrackingDataService {
                 toZonedDateTimeAtUtc(tracking.getEndTime()),
                 tracking.getTasks(), tracking.getDirection(),
                 tracking.getDomain(),
-                null);
+                "Harja/Väylävirasto");
         return new MaintenanceTrackingLatestFeature(geometry, properties);
     }
 
