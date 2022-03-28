@@ -170,7 +170,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         nativeQuery = true)
     List<String> getRealDomainNames();
 
-    @Query(value = "select tracking.id, tracking.domain, tracking.end_time, ST_X(last_point) as x, ST_Y(last_point) as y" +
+    @Query(value = "select tracking.id, tracking.domain, tracking.end_time as endTime, ST_X(last_point) as x, ST_Y(last_point) as y" +
         ", STRING_AGG(tasks.task, ',') AS tasksAsString" +
         ", COALESCE(contract.source, domain.source) AS source\n" +
         DTO_TABLES +
