@@ -23,9 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
@@ -35,6 +37,9 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
+
+    @Autowired
+    private DataStatusService dataStatusService;
 
     @BeforeEach
     public void initData() {
@@ -49,6 +54,12 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
         roadStationSensorService.updateSensorsOfRoadStation(ts.getRoadStationId(),
             RoadStationType.TMS_STATION,
             publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
+
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
+
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
     }
 
     @Test

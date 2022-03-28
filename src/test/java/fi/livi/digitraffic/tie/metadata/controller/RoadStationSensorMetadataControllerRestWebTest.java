@@ -10,14 +10,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 
 public class RoadStationSensorMetadataControllerRestWebTest extends AbstractRestWebTest {
 
+    @Autowired
+    private DataStatusService dataStatusService;
+
+    @BeforeEach
+    public void initData() {
+        dataStatusService.updateDataUpdated(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION));
+        dataStatusService.updateDataUpdated(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION));
+    }
+
     @Test
     public void testRoadStationSensorMetadataApi() throws Exception {
+        System.out.println(mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + WEATHER_STATIONS_AVAILABLE_SENSORS_PATH)).andReturn().getResponse().getContentAsString());
         mockMvc.perform(get(API_V1_BASE_PATH + API_METADATA_PART_PATH + WEATHER_STATIONS_AVAILABLE_SENSORS_PATH))
                 .andExpect(status().isOk()) //
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE)) //
