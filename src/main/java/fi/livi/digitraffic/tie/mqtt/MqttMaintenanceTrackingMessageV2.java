@@ -14,7 +14,6 @@ import static fi.livi.digitraffic.tie.helper.MqttUtil.roundToScale;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MqttMaintenanceTrackingMessageV2 {
     public final long time;
-    public final String domain;
     public final String source;
     public final Set<MaintenanceTrackingTask> tasks;
     public final double x;
@@ -22,7 +21,6 @@ public class MqttMaintenanceTrackingMessageV2 {
 
     public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingLatestFeature f) {
         this.time = getEpochSeconds(f.getProperties().getTime());
-        this.domain = f.getProperties().domain;
         this.source = f.getProperties().source;
         this.tasks = f.getProperties().tasks;
         this.x = roundToScale((double)f.getGeometry().getCoordinates().get(0), 6);
@@ -31,11 +29,9 @@ public class MqttMaintenanceTrackingMessageV2 {
 
     public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingForMqttV2 tracking) {
         this.time = tracking.getEndTime().getEpochSecond();
-        this.domain = tracking.getDomain();
         this.source = tracking.getSource();
         this.tasks = tracking.getTasks();
         this.x = roundToScale(tracking.getX(), 6);
         this.y = roundToScale(tracking.getY(), 6);
-
     }
 }

@@ -31,9 +31,9 @@ import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.M
 @ConditionalOnNotWebApplication
 @Component
 public class MaintenanceTrackingMqttConfigurationV2 {
-    // maintenance-v2/tracking/{trackingId}
-    public static final String MAINTENANCE_TRACKING_TOPIC = "maintenance-v2/tracking/%d";
-    private static final String MAINTENANCE_TRACKING_STATUS_TOPIC = "maintenance-v2/tracking/status";
+    // maintenance-v2/trackings/{domain}/{trackingId}
+    public static final String MAINTENANCE_TRACKING_TOPIC = "maintenance-v2/trackings/%s/%d";
+    private static final String MAINTENANCE_TRACKING_STATUS_TOPIC = "maintenance-v2/trackings/status";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MaintenanceTrackingMqttConfigurationV2.class);
 
@@ -53,8 +53,10 @@ public class MaintenanceTrackingMqttConfigurationV2 {
 
     public void sendToMqtt(final MaintenanceTrackingLatestFeature feature) {
         try {
+            final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_TOPIC, feature.getProperties().domain, feature.getProperties().getId());
+
             mqttMessageSender.sendMqttMessages(ZonedDateTime.now(), Collections.singleton(
-                new MqttDataMessageV2(MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_TOPIC, feature.getProperties().getId()), new MqttMaintenanceTrackingMessageV2(feature))));
+                new MqttDataMessageV2(topic, new MqttMaintenanceTrackingMessageV2(feature))));
         } catch(final Exception e) {
             LOGGER.error("error", e);
         }
@@ -81,7 +83,9 @@ public class MaintenanceTrackingMqttConfigurationV2 {
     }
 
     private MqttDataMessageV2 createMqttDataMessage(final MaintenanceTrackingForMqttV2 tracking) {
-        return new MqttDataMessageV2(MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_TOPIC, tracking.getId()), new MqttMaintenanceTrackingMessageV2(tracking));
+        final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_TOPIC, tracking.getDomain(), tracking.getId());
+
+        return new MqttDataMessageV2(topic, new MqttMaintenanceTrackingMessageV2(tracking));
     }
 
     @Scheduled(fixedDelayString = "${mqtt.status.intervalMs}")
