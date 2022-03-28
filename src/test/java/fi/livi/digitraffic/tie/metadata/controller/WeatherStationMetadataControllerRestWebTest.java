@@ -23,15 +23,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
+
+    @Autowired
+    private DataStatusService dataStatusService;
+
 
     @BeforeEach
     public void initData() {
@@ -49,7 +55,8 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
             publishable.stream().map(RoadStationSensor::getLotjuId)
                 .collect(Collectors.toList()));
 
-//        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
+        dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
+        dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA_CHECK);
     }
 
 
