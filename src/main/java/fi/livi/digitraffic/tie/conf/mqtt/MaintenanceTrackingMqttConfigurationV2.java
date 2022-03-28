@@ -69,6 +69,10 @@ public class MaintenanceTrackingMqttConfigurationV2 {
                 final ZonedDateTime endTime = ZonedDateTime.now();
                 final List<MaintenanceTrackingForMqttV2> trackings = v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(mqttMessageSender.getLastUpdated(), endTime);
 
+                LOGGER.info("getting trackings from " + mqttMessageSender.getLastUpdated());
+                LOGGER.info("getting trackings to " + endTime);
+                LOGGER.info("got " + trackings.size());
+
                 if(!trackings.isEmpty()) {
                     final List<MqttDataMessageV2> dataMessages = trackings.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 

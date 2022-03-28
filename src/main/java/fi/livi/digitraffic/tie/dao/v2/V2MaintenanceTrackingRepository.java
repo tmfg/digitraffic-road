@@ -174,7 +174,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         ", STRING_AGG(tasks.task, ',') AS tasksAsString" +
         ", COALESCE(contract.source, domain.source) AS source\n" +
         DTO_TABLES +
-        "WHERE tracking.modified between :from and :to\n" +
+        "WHERE tracking.created between :from and :to\n" +
         "AND tracking.domain != '" + STATE_ROADS_DOMAIN + "'\n" +
         "GROUP BY tracking.id, contract.source, domain.source",
         nativeQuery = true)
