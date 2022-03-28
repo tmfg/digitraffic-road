@@ -81,7 +81,7 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.stationSensors[0]", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.purpose").doesNotHaveJsonPath())
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test
@@ -96,6 +96,6 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
             .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").doesNotHaveJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].lane").doesNotHaveJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].direction").doesNotHaveJsonPath())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 }

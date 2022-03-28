@@ -27,10 +27,19 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
 
     private HttpMessageConverter<?> mappingJackson2HttpMessageConverter;
 
-    protected static final Matcher<String> ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER = Matchers.not(Matchers.matchesRegex("([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][1-9]):([0-6][1-9]):([0-6][1-9])(\\.[0-9]{3})?Z"));
-    protected static final Matcher<String> NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER = Matchers.not(Matchers.matchesRegex("([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][1-9]):([0-6][1-9])(:([0-6][1-9])){0,1}(\\.[0-9]{0,3}){0,1}[+|-]"));
-    protected static final Matcher<String> ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_MATCHER = Matchers.allOf(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER, NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER);
-    protected static final ResultMatcher ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER = MockMvcResultMatchers.content().string(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_MATCHER);
+    private final static String ISO_Z = "([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][0-9]):([0-6][0-9]):([0-6][0-9])(\\.[0-9]{0,3}[0-9]{0,3})?Z";
+    private final static String ISO_OFFSET = "([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][0-9]):([0-6][0-9])(:([0-6][0-9])){0,1}(\\.[0-9]{0,3}[0-9]{0,3}){0,1}[+|-].*";
+
+    protected static final Matcher<String> ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER = Matchers.matchesRegex(ISO_Z);
+    protected static final Matcher<String> ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER = Matchers.matchesRegex("[\\s\\S.]*" + ISO_Z + "[\\s\\S.]*");
+    protected static final Matcher<String> NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER = Matchers.not(Matchers.matchesRegex(ISO_OFFSET));
+    protected static final Matcher<String> NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER = Matchers.not(Matchers.matchesRegex("[\\s\\S.]*" + ISO_OFFSET + "[\\s\\S.]*"));
+    protected static final Matcher<String> ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER =
+        Matchers.allOf(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER, NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER);
+    protected static final Matcher<String> ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER =
+        Matchers.allOf(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER, NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER);
+    protected static final ResultMatcher ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER =
+        MockMvcResultMatchers.content().string(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER);
 
     @Autowired
     protected WebApplicationContext wac;
@@ -55,7 +64,7 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     }
 
     protected void assertTimesFormatMatches(final String content) {
-        assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(content));
-        assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(content));
+        assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(content));
+        assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(content));
     }
 }

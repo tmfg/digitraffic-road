@@ -1,9 +1,6 @@
-package fi.livi.digitraffic.tie.data.controller;
+package fi.livi.digitraffic.tie.controller.maintenance;
 
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_X;
@@ -13,6 +10,7 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneHourInPast;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -37,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -55,6 +55,9 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServi
 public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingsControllerTest.class);
 
+    final static String DOMAIN = "state-roads";
+    final static String SORUCE = "Harja/Väylävirasto";
+
     @Autowired
     private V3MaintenanceTrackingServiceTestHelper testHelper;
 
@@ -63,8 +66,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     private ResultActions getTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
-        final String url = API_V2_BASE_PATH + API_DATA_PART_PATH + MAINTENANCE_TRACKINGS_PATH +
-            String.format(Locale.US, "?from=%s&to=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), to.toString(), xMin, yMin, xMax, yMax, tasksParams);
+        final String url = MaintenanceTrackingController.API_MAINTENANCE_V1_TRACKING_ROUTES +
+            String.format(Locale.US, "?endFrom=%s&endTo=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), to.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
@@ -75,8 +78,8 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
     private ResultActions getLatestTrackingsJson(final Instant from, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
-        final String url = API_V2_BASE_PATH + API_DATA_PART_PATH + MAINTENANCE_TRACKINGS_PATH + "/latest" +
-                           String.format(Locale.US, "?from=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s",
+        final String url = MaintenanceTrackingController.API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST +
+                           String.format(Locale.US, "?endFrom=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s",
                                          from.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
@@ -90,6 +93,45 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     public void initData() {
         testHelper.clearDb();
         TestUtils.entityManagerFlushAndClear(entityManager);
+    }
+
+    @Test
+    public void matchers() {
+        final String DATE_TIME = "2022-01-02T10:31:21";
+        final String DATE_TIME_MILLIS = "2022-01-02T10:31:21.005";
+        final String RANDOM = RandomStringUtils.random(3) + "\n" + RandomStringUtils.random(3);
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
+
+        Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
+        Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "+"));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
+
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
+
+
+         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
+         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
+         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
+         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
+
+         Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
+         Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
+         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+" + RANDOM));
+         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
+         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
+
+         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
+         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
+         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
+         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
     }
 
     @Test
@@ -111,7 +153,14 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(machineCount)))
             .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+            .andExpect(jsonPath("features[*].properties.source", hasItems(equalTo(SORUCE))))
+            .andExpect(jsonPath("features[*].properties.domain", hasItems(equalTo(DOMAIN))))
+            .andExpect(jsonPath("features[*].properties.startTime").exists())
+            .andExpect(jsonPath("features[*].properties.startTime", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
+            .andExpect(jsonPath("features[*].properties.endTime").exists())
+            .andExpect(jsonPath("features[*].properties.endTime", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
+            .andExpect(jsonPath("features[*].properties.created").exists())
+            .andExpect(jsonPath("features[*].properties.created", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)));
     }
 
     @Test
@@ -227,7 +276,14 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount)));
+            .andExpect(jsonPath("features", hasSize(machineCount)))
+            .andExpect(jsonPath("features[*].properties.source", hasItems(equalTo(SORUCE))))
+            .andExpect(jsonPath("features[*].properties.domain", hasItems(equalTo(DOMAIN))))
+            .andExpect(jsonPath("features[*].properties.time").exists())
+            .andExpect(jsonPath("features[*].properties.time", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
+            .andExpect(jsonPath("features[*].properties.created").exists())
+            .andExpect(jsonPath("features[*].properties.created", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)));
+
         IntStream.range(0, machineCount).forEach(i -> {
             try {
                 latestResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("Point")));

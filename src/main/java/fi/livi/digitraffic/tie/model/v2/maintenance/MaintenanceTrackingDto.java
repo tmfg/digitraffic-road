@@ -20,6 +20,8 @@ public interface MaintenanceTrackingDto {
 
     Instant getEndTime();
 
+    Instant getCreated();
+
     String getLineStringJson();
 
     String getLastPointJson();

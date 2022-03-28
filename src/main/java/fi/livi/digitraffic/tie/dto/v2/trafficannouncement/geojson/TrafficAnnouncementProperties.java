@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
@@ -35,7 +37,7 @@ public class TrafficAnnouncementProperties extends Properties {
 
     @ApiModelProperty(value = "Annoucement release time", required = true)
     @NotNull
-    public final ZonedDateTime releaseTime;
+    public final Instant releaseTime;
 
     @ApiModelProperty(value = "Location to display in ETRS-TM35FIN coordinate format.")
     public final LocationToDisplay locationToDisplay;
@@ -56,7 +58,7 @@ public class TrafficAnnouncementProperties extends Properties {
         super();
         this.situationId = situationId;
         this.version = version;
-        this.releaseTime = releaseTime;
+        this.releaseTime = DateHelper.toInstantWithOutMillis(releaseTime);
         this.locationToDisplay = locationToDisplay;
         this.announcements = announcements;
         this.contact = contact;

@@ -252,7 +252,7 @@ public class V3MaintenanceTrackingUpdateService {
                 final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geoJsonGeom = PostgisGeometryHelper.convertToGeoJSONGeometry(lastPoint);
                 feature.setGeometry(geoJsonGeom);
                 feature.getProperties().setDirection(direction);
-                feature.getProperties().setTime(observationTime);
+                feature.getProperties().setTime(observationTime.toInstant());
                 maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
             } catch (final Exception e) {
                 log.error("Error while appending tracking {} to mqtt", tracking.toStringTiny());

@@ -75,7 +75,7 @@ public class V2Datex2JsonConverter {
             final List<TrafficAnnouncement> announcementsWithAreas =
                 feature.getProperties().announcements.stream().filter(a -> a != null && a.containsAreaLocation()).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
-                    feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
+                    feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime,
                         announcementsWithAreas.stream()
                             .map(withArea ->
                                 withArea.locationDetails.areaLocation.areas.stream()

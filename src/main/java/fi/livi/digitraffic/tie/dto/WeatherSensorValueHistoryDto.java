@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.dto;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.bean.CsvDate;
@@ -20,9 +20,9 @@ public class WeatherSensorValueHistoryDto implements SensorValueHistoryDto {
 
     @CsvBindByPosition(position = 3, required = true)
     @CsvDate("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'")
-    private ZonedDateTime measured;
+    private Instant measured;
 
-    public WeatherSensorValueHistoryDto(final long roadStationId, final long sensorId, final double sensorValue, final ZonedDateTime measured) {
+    public WeatherSensorValueHistoryDto(final long roadStationId, final long sensorId, final double sensorValue, final Instant measured) {
         this.roadStationId = roadStationId;
         this.sensorId = sensorId;
         this.sensorValue = sensorValue;
@@ -30,7 +30,7 @@ public class WeatherSensorValueHistoryDto implements SensorValueHistoryDto {
     }
 
     @Override
-    public ZonedDateTime getMeasuredTime() {
+    public Instant getMeasuredTime() {
         return measured;
     }
 
@@ -49,19 +49,19 @@ public class WeatherSensorValueHistoryDto implements SensorValueHistoryDto {
         return sensorValue;
     }
 
-    public void setRoadStationId(long roadStationId) {
+    public void setRoadStationId(final long roadStationId) {
         this.roadStationId = roadStationId;
     }
 
-    public void setSensorId(long sensorId) {
+    public void setSensorId(final long sensorId) {
         this.sensorId = sensorId;
     }
 
-    public void setSensorValue(double sensorValue) {
+    public void setSensorValue(final double sensorValue) {
         this.sensorValue = sensorValue;
     }
 
-    public void setMeasured(ZonedDateTime measured) {
+    public void setMeasured(final Instant measured) {
         this.measured = measured;
     }
 }

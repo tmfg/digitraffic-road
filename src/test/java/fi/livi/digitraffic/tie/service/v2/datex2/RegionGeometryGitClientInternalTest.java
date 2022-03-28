@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.annotation.Rollback;
@@ -13,11 +15,13 @@ import org.springframework.test.annotation.Rollback;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
 public class RegionGeometryGitClientInternalTest extends AbstractDaemonTest {
+    private static final Logger log = LoggerFactory.getLogger(RegionGeometryGitClientInternalTest.class);
 
     @Autowired
     private RegionGeometryGitClient RegionGeometryGitClient;
@@ -51,7 +55,7 @@ public class RegionGeometryGitClientInternalTest extends AbstractDaemonTest {
     public void testClient() {
         final List<RegionGeometry> changes =
             RegionGeometryGitClient.getChangesAfterCommit(null);
-        changes.forEach(System.out::println);
+        changes.forEach(c -> log.info(ToStringHelper.toStringFull(c)));
     }
 
     @Disabled("Just for internal testing to test geometry union success")

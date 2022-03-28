@@ -81,7 +81,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.presets[0].directionCode", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.presets[0].direction", is(in(directions))))
                 .andExpect(jsonPath("$.features[0].properties.purpose", Matchers.isA(String.class)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
 
     }
 }

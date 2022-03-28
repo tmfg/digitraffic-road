@@ -76,6 +76,13 @@ public final class DateHelper {
         return withoutMillis(Instant.ofEpochMilli(epochMillis));
     }
 
+    public static Instant toInstantWithOutMillis(final ZonedDateTime measuredTime) {
+        if (measuredTime == null) {
+            return null;
+        }
+        return withoutMillis(Instant.ofEpochSecond(measuredTime.toEpochSecond()));
+    }
+
     /**
      * Needed because some fields in db are Oracle Date type and Date won't have millis.
      */

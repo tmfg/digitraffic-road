@@ -82,7 +82,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
                             jsonPath("$.dataUpdatedTime", Matchers.notNullValue()).match(mvcResult);
                         }
                     })
-                    .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+                    .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
         }
 
     }

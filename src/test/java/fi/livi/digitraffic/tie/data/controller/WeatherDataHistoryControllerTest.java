@@ -71,7 +71,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", not(hasSize(0))))
             .andExpect(jsonPath("$.[?(@.roadStationId != 20000)]", hasSize(0)))
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test

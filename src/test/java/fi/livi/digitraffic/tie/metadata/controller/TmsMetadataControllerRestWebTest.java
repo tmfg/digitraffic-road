@@ -73,7 +73,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.names.sv", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.en", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.purpose", Matchers.isA(String.class)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test
@@ -88,6 +88,6 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").hasJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].lane").hasJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].direction").hasJsonPath())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 }

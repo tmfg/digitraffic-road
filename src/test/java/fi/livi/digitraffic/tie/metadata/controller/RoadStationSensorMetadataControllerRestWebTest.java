@@ -25,7 +25,7 @@ public class RoadStationSensorMetadataControllerRestWebTest extends AbstractRest
                 .andExpect(jsonPath("$.roadStationSensors[0].id", isA(Integer.class)))
                 .andExpect(jsonPath("$.roadStationSensors[0].nameOld", isA(String.class)))
                 .andExpect(jsonPath("$.roadStationSensors[0].unit", isA(String.class)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
         ;
     }
 }

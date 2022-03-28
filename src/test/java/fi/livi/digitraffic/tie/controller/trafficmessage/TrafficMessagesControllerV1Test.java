@@ -181,8 +181,6 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
-                    assertTimesFormatMatches(xml);
-                    assertTimesFormatMatches(json);
                     assertEmptyD2Situations(xml);
                     assertEmptyJsonSituations(json);
                 }

@@ -82,7 +82,7 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].tmsNumber", Matchers.notNullValue()))
             .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].freeFlowSpeed1", Matchers.equalTo(100.0)))
             .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].freeFlowSpeed2", Matchers.equalTo(80.0)))
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test
@@ -95,6 +95,6 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].id", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].freeFlowSpeed1", Matchers.equalTo(100.0)))
                 .andExpect(jsonPath("$.tmsFreeFlowSpeeds[0].freeFlowSpeed2", Matchers.equalTo(80.0)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 }

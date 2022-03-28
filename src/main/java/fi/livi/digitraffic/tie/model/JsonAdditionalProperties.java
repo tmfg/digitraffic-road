@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.model;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ import fi.livi.digitraffic.tie.helper.LoggerHelper;
  * that is, properties whose names are not listed in the properties keyword.
  *
  */
-public abstract class JsonAdditionalProperties {
+public abstract class JsonAdditionalProperties implements Serializable {
 
     private final Map<Class<?>, Set<String>> ignoreClassToPropertiesMap = Stream.of(new Object[][] {
         { fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadWorkPhase.class,
