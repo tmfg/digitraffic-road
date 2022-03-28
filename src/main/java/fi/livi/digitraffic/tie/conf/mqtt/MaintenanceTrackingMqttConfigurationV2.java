@@ -39,7 +39,6 @@ public class MaintenanceTrackingMqttConfigurationV2 {
 
     private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
     private final MqttMessageSenderV2 mqttMessageSender;
-    private final ObjectReader geometryReader;
 
     @Autowired
     public MaintenanceTrackingMqttConfigurationV2(final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService,
@@ -48,7 +47,6 @@ public class MaintenanceTrackingMqttConfigurationV2 {
                                                   final ClusteredLocker clusteredLocker) {
         this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
         this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, MAINTENANCE_TRACKING, clusteredLocker);
-        this.geometryReader = objectMapper.readerFor(Geometry.class);
 
         mqttMessageSender.setLastUpdated(ZonedDateTime.now());
     }
@@ -68,10 +66,6 @@ public class MaintenanceTrackingMqttConfigurationV2 {
             try {
                 final ZonedDateTime endTime = ZonedDateTime.now();
                 final List<MaintenanceTrackingForMqttV2> trackings = v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(mqttMessageSender.getLastUpdated(), endTime);
-
-                LOGGER.info("getting trackings from " + mqttMessageSender.getLastUpdated());
-                LOGGER.info("getting trackings to " + endTime);
-                LOGGER.info("got " + trackings.size());
 
                 if(!trackings.isEmpty()) {
                     final List<MqttDataMessageV2> dataMessages = trackings.stream().map(this::createMqttDataMessage).collect(Collectors.toList());

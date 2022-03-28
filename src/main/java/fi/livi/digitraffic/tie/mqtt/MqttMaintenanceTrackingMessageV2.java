@@ -25,8 +25,8 @@ public class MqttMaintenanceTrackingMessageV2 {
         this.domain = f.getProperties().domain;
         this.source = f.getProperties().source;
         this.tasks = f.getProperties().tasks;
-        this.x = roundToScale((double)f.getGeometry().getCoordinates().get(1), 6);
-        this.y = roundToScale((double)f.getGeometry().getCoordinates().get(0), 6);
+        this.x = roundToScale((double)f.getGeometry().getCoordinates().get(0), 6);
+        this.y = roundToScale((double)f.getGeometry().getCoordinates().get(1), 6);
     }
 
     public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingForMqttV2 tracking) {
@@ -34,8 +34,8 @@ public class MqttMaintenanceTrackingMessageV2 {
         this.domain = tracking.getDomain();
         this.source = tracking.getSource();
         this.tasks = tracking.getTasks();
-        this.x = tracking.getX();
-        this.y = tracking.getY();
+        this.x = roundToScale(tracking.getX(), 6);
+        this.y = roundToScale(tracking.getY(), 6);
 
     }
 }
