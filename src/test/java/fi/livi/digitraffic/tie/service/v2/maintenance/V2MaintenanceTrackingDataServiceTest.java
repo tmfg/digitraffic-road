@@ -8,6 +8,7 @@ import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAU
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.BRUSHING;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.CRACK_FILLING;
@@ -511,6 +512,11 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             // Tracking for domain without source should not be found
             v2MaintenanceTrackingDataService.getMaintenanceTrackingById(trackingId2);
         });
+    }
+
+    @Test
+    public void findTrackingsForNonStateRoads() {
+        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(ZonedDateTime.now(), ZonedDateTime.now()));
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,

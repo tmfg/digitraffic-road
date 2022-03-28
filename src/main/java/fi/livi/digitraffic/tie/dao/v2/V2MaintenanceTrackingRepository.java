@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.QueryHint;
 
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -169,4 +170,13 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         nativeQuery = true)
     List<String> getRealDomainNames();
 
+    @Query(value = "select tracking.id, tracking.domain, tracking.end_time, ST_X(last_point) as x, ST_Y(last_point) as y" +
+        ", STRING_AGG(tasks.task, ',') AS tasksAsString" +
+        ", COALESCE(contract.source, domain.source) AS source\n" +
+        DTO_TABLES +
+        "WHERE tracking.modified between :from and :to\n" +
+        "AND tracking.domain != '" + STATE_ROADS_DOMAIN + "'\n" +
+        "GROUP BY tracking.id, contract.source, domain.source",
+        nativeQuery = true)
+    List<MaintenanceTrackingForMqttV2> findTrackingsForNonStateRoads(final ZonedDateTime from, final ZonedDateTime to);
 }

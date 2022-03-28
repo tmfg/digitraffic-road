@@ -242,27 +242,26 @@ public class V3MaintenanceTrackingUpdateService {
     }
 
     private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
-        if (maintenanceTrackingMqttConfiguration != null || maintenanceTrackingMqttConfigurationV2 != null) {
-            if (tracking != null) {
-                try {
-                    final MaintenanceTrackingLatestFeature feature =
-                        V2MaintenanceTrackingDataService.convertToTrackingLatestFeature(tracking);
-                    final Point lastPoint = resolveLastPoint(geometry);
-                    final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geoJsonGeom = PostgisGeometryHelper.convertToGeoJSONGeometry(lastPoint);
-                    feature.setGeometry(geoJsonGeom);
-                    feature.getProperties().setDirection(direction);
-                    feature.getProperties().setTime(observationTime);
+        if ((maintenanceTrackingMqttConfiguration != null || maintenanceTrackingMqttConfigurationV2 != null)
+            && tracking != null) {
+            try {
+                final MaintenanceTrackingLatestFeature feature =
+                    V2MaintenanceTrackingDataService.convertToTrackingLatestFeature(tracking);
+                final Point lastPoint = resolveLastPoint(geometry);
+                final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geoJsonGeom = PostgisGeometryHelper.convertToGeoJSONGeometry(lastPoint);
+                feature.setGeometry(geoJsonGeom);
+                feature.getProperties().setDirection(direction);
+                feature.getProperties().setTime(observationTime);
 
-                    if (maintenanceTrackingMqttConfiguration != null) {
-                        maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
-                    }
-
-                    if (maintenanceTrackingMqttConfigurationV2 != null) {
-                        maintenanceTrackingMqttConfigurationV2.sendToMqtt(feature);
-                    }
-                } catch (final Exception e) {
-                    log.error("Error while appending tracking {} to mqtt", tracking.toStringTiny());
+                if (maintenanceTrackingMqttConfiguration != null) {
+                    maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
                 }
+
+                if (maintenanceTrackingMqttConfigurationV2 != null) {
+                    maintenanceTrackingMqttConfigurationV2.sendToMqtt(feature);
+                }
+            } catch (final Exception e) {
+                log.error("Error while appending tracking {} to mqtt", tracking.toStringTiny());
             }
         }
     }

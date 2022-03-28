@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.mqtt;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 
 import java.util.Set;
@@ -27,4 +29,13 @@ public class MqttMaintenanceTrackingMessageV2 {
         this.y = roundToScale((double)f.getGeometry().getCoordinates().get(0), 6);
     }
 
+    public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingForMqttV2 tracking) {
+        this.time = tracking.getEndTime().getEpochSecond();
+        this.domain = tracking.getDomain();
+        this.source = tracking.getSource();
+        this.tasks = tracking.getTasks();
+        this.x = tracking.getX();
+        this.y = tracking.getY();
+
+    }
 }

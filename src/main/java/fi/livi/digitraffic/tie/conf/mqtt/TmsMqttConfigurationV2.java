@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.TMS;
@@ -54,17 +55,21 @@ public class TmsMqttConfigurationV2 {
                 final List<SensorValueDto> sensorValues =
                     roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(mqttMessageSender.getLastUpdated(), RoadStationType.TMS_STATION);
 
-                final ZonedDateTime lastUpdated = sensorValues.stream().max(Comparator.comparing(SensorValueDto::getUpdatedTime)).map(SensorValueDto::getUpdatedTime).orElse(null);
-                final List<MqttDataMessageV2> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
+                if(!sensorValues.isEmpty()) {
+                    final ZonedDateTime lastUpdated = sensorValues.stream().max(Comparator.comparing(SensorValueDto::getUpdatedTime)).map(SensorValueDto::getUpdatedTime).get();
+                    final List<MqttDataMessageV2> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 
-                mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
+                    mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
+                }
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);
             }
+        } else {
+            mqttMessageSender.setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION));
         }
     }
 
-    @Scheduled(fixedDelayString = "30000")
+    @Scheduled(fixedDelayString = "${mqtt.status.intervalMs}")
     public void sendStatusMessage() {
         if (mqttMessageSender.acquireLock()) {
             mqttMessageSender.sendStatusMessage(TMS_STATUS_TOPIC);

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
@@ -50,9 +51,7 @@ public class MqttMessageSenderV2 {
             messages.forEach(this::doSendMqttMessage);
         }
 
-        if(lastUpdated != null) {
-            setLastUpdated(lastUpdated);
-        }
+        setLastUpdated(lastUpdated);
     }
 
     public boolean acquireLock() {
