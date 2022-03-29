@@ -449,7 +449,7 @@ public class V3MaintenanceTrackingUpdateService {
             } catch (JsonProcessingException e) {
                 log.error("Failed to convert havainto to json", e);
             }
-            log.warn("method=splitLineStringsWithGaps Distance between points: {}The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
+            log.warn("method=splitLineStringsWithGaps Distance between points: {} The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
                      sb, distinctLineStringObservationGapKm, kirjausOtsikkoJson, havaintoJson);
         }
 

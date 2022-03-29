@@ -46,7 +46,7 @@ public class ImsJsonConverter {
         try {
             root = genericJsonReader.readTree(imsJson);
         } catch (final JsonProcessingException e) {
-            log.error(String.format("method=parseFeatureJsonsFromImsJson Failed to read Json tree of imsJson: %s", imsJson), e);
+            log.error("method=parseFeatureJsonsFromImsJson Failed to read Json tree of imsJson: {} error: {}", imsJson, e.getMessage());
             return Collections.emptyMap();
         }
 
@@ -121,7 +121,7 @@ public class ImsJsonConverter {
         final SituationType resolvedType = Datex2Helper.resolveSituationTypeFromText(featureNode.toString());
         try {
             final String situationInfo =
-                StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"), featureNode.toString().indexOf("situationId") + 26);
+                StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"), featureNode.toString().indexOf("situationId") + 27);
             log.error("method=resolveSituationTypeFromTextWithError No situationType property for feature json. Resolved type from text {} for {}", resolvedType, situationInfo);
         } catch (final Exception e) {
             log.error("method=resolveSituationTypeFromTextWithError No situation id found from json: {}", featureNode);
@@ -154,7 +154,7 @@ public class ImsJsonConverter {
         final TrafficAnnouncementType resolvedType = Datex2Helper.resolveTrafficAnnouncementTypeFromText(featureNode.toString());
         try {
             final String situationInfo =
-                StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"), featureNode.toString().indexOf("situationId") + 26);
+                StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"), featureNode.toString().indexOf("situationId") + 27);
             log.error("method=resolveTrafficAnnouncementTypeTypeFromTextWithError No trafficAnnouncementType property for feature json. Resolved type from text {} for {}", resolvedType, situationInfo);
         } catch (final Exception e) {
             log.error("method=resolveTrafficAnnouncementTypeTypeFromTextWithError No situation id found from json: {}", featureNode);

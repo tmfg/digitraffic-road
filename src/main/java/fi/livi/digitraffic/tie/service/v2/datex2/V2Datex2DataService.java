@@ -129,7 +129,7 @@ public class V2Datex2DataService {
                 try {
                     return v2Datex2JsonConverter.convertToFeatureJsonObjectV2(d2.getJsonMessage(), d2.getMessageType());
                 } catch (final Exception e) {
-                    log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV2", e);
+                    log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV2 {}", e.getMessage());
                     return null;
                 }
             })

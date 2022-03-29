@@ -80,44 +80,43 @@ import org.springframework.oxm.UnmarshallingFailureException;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
-import fi.livi.digitraffic.tie.datex2.AccidentTypeEnum;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.Situation;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum;
-import fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
-import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum;
-
 import fi.livi.digitraffic.tie.datex2.AbnormalTraffic;
 import fi.livi.digitraffic.tie.datex2.Accident;
+import fi.livi.digitraffic.tie.datex2.AccidentTypeEnum;
 import fi.livi.digitraffic.tie.datex2.AnimalPresenceObstruction;
 import fi.livi.digitraffic.tie.datex2.AuthorityOperation;
+import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.DisturbanceActivity;
 import fi.livi.digitraffic.tie.datex2.EnvironmentalObstruction;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultExtensionType;
-import fi.livi.digitraffic.tie.datex2.ExtendedEquipmentOrSystemFaultTypeEnum;
-import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementExtensionType;
 import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFault;
+import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultExtensionType;
+import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum;
+import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum;
+import fi.livi.digitraffic.tie.datex2.ExtendedEquipmentOrSystemFaultTypeEnum;
+import fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum;
 import fi.livi.digitraffic.tie.datex2.GeneralNetworkManagement;
 import fi.livi.digitraffic.tie.datex2.GeneralObstruction;
 import fi.livi.digitraffic.tie.datex2.InfrastructureDamageObstruction;
 import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditions;
+import fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.PoorEnvironmentConditions;
 import fi.livi.digitraffic.tie.datex2.PublicEvent;
 import fi.livi.digitraffic.tie.datex2.ReroutingManagement;
+import fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum;
 import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagement;
+import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementExtensionType;
+import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum;
+import fi.livi.digitraffic.tie.datex2.Situation;
+import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.SpeedManagement;
+import fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum;
 import fi.livi.digitraffic.tie.datex2.TransitInformation;
 import fi.livi.digitraffic.tie.datex2.VehicleObstruction;
+import fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditions;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 @Component
 public class WazeDatex2MessageConverter {
@@ -226,7 +225,7 @@ public class WazeDatex2MessageConverter {
         try {
             d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2Message);
         } catch (UnmarshallingFailureException e) {
-            logger.warn("method=export situation {} did not have a proper datex2 message", situationId, e);
+            logger.warn("method=export situation {} did not have a proper datex2 message, error: {}", situationId, e.getMessage());
             return "";
         }
 

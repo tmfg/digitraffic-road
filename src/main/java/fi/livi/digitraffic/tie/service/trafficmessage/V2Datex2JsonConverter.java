@@ -139,7 +139,7 @@ public class V2Datex2JsonConverter {
             final String joinedViolations = violations.stream()
                 .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
                 .collect(Collectors.joining(","));
-            throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
+            throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature, "ignoreClassToPropertiesMap"));
         }
     }
 
