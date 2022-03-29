@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.TestUtils.generateDummyPreset;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_STATIONS_PATH;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;

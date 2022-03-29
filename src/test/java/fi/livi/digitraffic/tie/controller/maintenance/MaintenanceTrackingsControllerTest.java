@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.controller.maintenance;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_X;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
@@ -26,7 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -36,7 +36,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -93,45 +92,6 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     public void initData() {
         testHelper.clearDb();
         TestUtils.entityManagerFlushAndClear(entityManager);
-    }
-
-    @Test
-    public void matchers() {
-        final String DATE_TIME = "2022-01-02T10:31:21";
-        final String DATE_TIME_MILLIS = "2022-01-02T10:31:21.005";
-        final String RANDOM = RandomStringUtils.random(3) + "\n" + RandomStringUtils.random(3);
-        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
-        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
-        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
-        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
-
-        Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
-        Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "+"));
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
-
-        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
-        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
-        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
-        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
-
-
-         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
-         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
-         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
-         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
-
-         Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
-         Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
-         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+" + RANDOM));
-         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
-         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
-
-         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
-         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
-         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
-         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
     }
 
     @Test
