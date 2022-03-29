@@ -55,7 +55,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingsControllerTest.class);
 
     final static String DOMAIN = "state-roads";
-    final static String SORUCE = "Harja/Väylävirasto";
+    final static String SOURCE = "Harja/Väylävirasto";
 
     @Autowired
     private V3MaintenanceTrackingServiceTestHelper testHelper;
@@ -113,7 +113,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(machineCount)))
             .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist())
-            .andExpect(jsonPath("features[*].properties.source", hasItems(equalTo(SORUCE))))
+            .andExpect(jsonPath("features[*].properties.source", hasItems(equalTo(SOURCE))))
             .andExpect(jsonPath("features[*].properties.domain", hasItems(equalTo(DOMAIN))))
             .andExpect(jsonPath("features[*].properties.startTime").exists())
             .andExpect(jsonPath("features[*].properties.startTime", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
@@ -237,7 +237,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(machineCount)))
-            .andExpect(jsonPath("features[*].properties.source", hasItems(equalTo(SORUCE))))
+            .andExpect(jsonPath("features[*].properties.source", hasItems(equalTo(SOURCE))))
             .andExpect(jsonPath("features[*].properties.domain", hasItems(equalTo(DOMAIN))))
             .andExpect(jsonPath("features[*].properties.time").exists())
             .andExpect(jsonPath("features[*].properties.time", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
