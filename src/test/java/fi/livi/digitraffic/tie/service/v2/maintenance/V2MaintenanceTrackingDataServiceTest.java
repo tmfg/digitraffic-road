@@ -516,7 +516,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void findTrackingsForNonStateRoads() {
-        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(ZonedDateTime.now(), ZonedDateTime.now()));
+        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(ZonedDateTime.now()));
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,

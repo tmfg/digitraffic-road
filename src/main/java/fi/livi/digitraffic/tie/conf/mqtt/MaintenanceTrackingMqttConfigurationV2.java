@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,13 +67,13 @@ public class MaintenanceTrackingMqttConfigurationV2 {
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {
             try {
-                final ZonedDateTime endTime = ZonedDateTime.now();
-                final List<MaintenanceTrackingForMqttV2> trackings = v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(mqttMessageSender.getLastUpdated(), endTime);
+                final List<MaintenanceTrackingForMqttV2> trackings = v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(mqttMessageSender.getLastUpdated());
 
                 if(!trackings.isEmpty()) {
+                    final ZonedDateTime lastUpdated = trackings.stream().max(Comparator.comparing(MaintenanceTrackingForMqttV2::getCreatedTime)).get().getCreatedTime();
                     final List<MqttDataMessageV2> dataMessages = trackings.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 
-                    mqttMessageSender.sendMqttMessages(endTime, dataMessages);
+                    mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
                 }
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);

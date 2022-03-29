@@ -186,8 +186,8 @@ public class V2MaintenanceTrackingDataService {
     }
 
     @Transactional(readOnly = true)
-    public List<MaintenanceTrackingForMqttV2> findTrackingsForNonStateRoads(final ZonedDateTime from, final ZonedDateTime to) {
-        return v2MaintenanceTrackingRepository.findTrackingsForNonStateRoads(from, to);
+    public List<MaintenanceTrackingForMqttV2> findTrackingsForNonStateRoads(final ZonedDateTime from) {
+        return v2MaintenanceTrackingRepository.findTrackingsForNonStateRoads(from);
     }
 
     private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {
