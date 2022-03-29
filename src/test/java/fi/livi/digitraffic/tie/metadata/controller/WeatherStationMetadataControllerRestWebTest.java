@@ -57,6 +57,8 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
 
         dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
         dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA_CHECK);
+        dataStatusService.updateDataUpdated(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION));
+        dataStatusService.updateDataUpdated(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION));
     }
 
 
