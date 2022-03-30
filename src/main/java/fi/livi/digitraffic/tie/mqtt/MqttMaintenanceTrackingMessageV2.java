@@ -20,7 +20,7 @@ public class MqttMaintenanceTrackingMessageV2 {
     public final double y;
 
     public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingLatestFeature f) {
-        this.time = getEpochSeconds(f.getProperties().getTime());
+        this.time = f.getProperties().getTime().getEpochSecond();
         this.source = f.getProperties().source;
         this.tasks = f.getProperties().tasks;
         this.x = roundToScale((double)f.getGeometry().getCoordinates().get(0), 6);
