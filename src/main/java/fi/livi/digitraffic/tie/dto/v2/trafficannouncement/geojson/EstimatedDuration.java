@@ -3,13 +3,9 @@ package fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson;
 
 import static fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration.DURATION_REGEXP;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -41,9 +37,6 @@ public class EstimatedDuration extends JsonAdditionalProperties {
     @ApiModelProperty(value = "Informal description e.g. 1 - 3 hours", required = true)
     @NotNull
     public String informal;
-
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<>();
 
     public EstimatedDuration() {
     }

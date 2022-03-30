@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_AVAILABLE_SENSORS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_PATH;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,9 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
@@ -35,6 +38,9 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
+
+    @Autowired
+    private DataStatusService dataStatusService;
 
     @BeforeEach
     public void initData() {
@@ -49,6 +55,12 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
         roadStationSensorService.updateSensorsOfRoadStation(ts.getRoadStationId(),
             RoadStationType.TMS_STATION,
             publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
+
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA_CHECK);
+
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
+        dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
     }
 
     @Test
@@ -73,7 +85,7 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.names.sv", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.names.en", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.purpose", Matchers.isA(String.class)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test
@@ -88,6 +100,6 @@ public class TmsMetadataControllerRestWebTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").hasJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].lane").hasJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].direction").hasJsonPath())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 }

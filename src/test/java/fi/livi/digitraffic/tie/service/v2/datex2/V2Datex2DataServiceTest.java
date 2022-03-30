@@ -148,10 +148,10 @@ public class V2Datex2DataServiceTest extends AbstractRestWebTest {
         final Instant versionTime = getVersionTime(start.atZone(ZoneId.systemDefault()), jsonVersion.intVersion).toInstant();
 
         assertEquals(versionTime, situation.getSituationRecords().get(0).getSituationRecordVersionTime());
-        assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
+        assertEquals(versionTime, jsonProperties.releaseTime);
 
         assertEquals(start, situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime());
-        assertEquals(start, jsonProperties.announcements.get(0).timeAndDuration.startTime.toInstant());
+        assertEquals(start, jsonProperties.announcements.get(0).timeAndDuration.startTime);
 
         final String commentXml = situation.getSituationRecords().get(0).getGeneralPublicComments().get(0).getComment().getValues().getValues().stream()
             .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();

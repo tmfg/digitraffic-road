@@ -32,6 +32,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "     , tracking.sending_time AS sendingTime\n" +
         "     , tracking.start_time AS startTime\n" +
         "     , tracking.end_time AS endTime\n" +
+        "     , tracking.created AS created\n" +
         "     , ST_AsGeoJSON(ST_Snaptogrid(tracking.last_point, " + COORDINATE_PRECISION + ")) AS lastPointJson\n" +
         "     , tracking.direction\n" +
         "     , tracking.work_machine_id AS workMachineId\n" +

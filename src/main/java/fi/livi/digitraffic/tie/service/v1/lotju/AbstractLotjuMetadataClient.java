@@ -4,7 +4,6 @@ import java.net.URI;
 
 import javax.xml.bind.JAXBElement;
 
-import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -14,15 +13,16 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
+
 public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySupport {
+
 
     /**
      *
      * @param marshaller Marshaller for SOAP messages
-     * @param baseUrls ie. https://server1.com,https://server2.com
-     * @param healthPath ie. /health
+     * @param lotjuMetadataProperties properties for metadata fetch
      * @param dataPath ie. /data/service
-     * @param healthTtlSeconds How long is health status valid
      */
     public AbstractLotjuMetadataClient(final Jaxb2Marshaller marshaller, final LotjuMetadataProperties lotjuMetadataProperties, final String dataPath) {
         setWebServiceTemplate(new WebServiceTemplateWithMultiDestinationProviderSupport());
@@ -70,7 +70,7 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
                         // mark host not healthy
                         mdp.setHostNotHealthy(dest);
                         lastException = e;
-                        log.warn(String.format("method=marshalSendAndReceive returned error for dataUrl=%s", dataUri), lastException);
+                        log.warn("method=marshalSendAndReceive returned error for dataUrl={} reason: {}", dataUri, lastException.getMessage());
                     }
                 } while (tryCount < mdp.getDestinationsCount());
                 throw new IllegalStateException(String.format("No host found to return data without error dataUrls=%s", mdp.getDestinationsAsString()),

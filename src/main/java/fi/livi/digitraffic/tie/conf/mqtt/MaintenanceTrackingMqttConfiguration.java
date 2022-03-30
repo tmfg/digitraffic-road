@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
@@ -34,6 +35,6 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
     }
 
     public void sendToMqtt(final MaintenanceTrackingLatestFeature feature) {
-        sendMqttMessage(new DataMessage(feature.getProperties().getTime(), getTopic(feature.getProperties().getId()), feature));
+        sendMqttMessage(new DataMessage(DateHelper.toZonedDateTimeAtUtc(feature.getProperties().getTime()), getTopic(feature.getProperties().getId()), feature));
     }
 }

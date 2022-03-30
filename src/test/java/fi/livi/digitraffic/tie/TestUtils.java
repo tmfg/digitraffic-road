@@ -146,6 +146,9 @@ public class TestUtils {
         rs.setNameFi(name + "_fi");
         rs.setNameEn(name + "_en");
         rs.setNameSv(name + "_sv");
+        rs.setStartDate(ZonedDateTime.now().minusDays(7));
+        rs.setRepairMaintenanceDate(ZonedDateTime.now().minusDays(6));
+        rs.setRepairMaintenanceDate(ZonedDateTime.now().minusDays(5));
 
         RoadAddress ra = generateDummyRoadAddres();
         rs.setRoadAddress(ra);

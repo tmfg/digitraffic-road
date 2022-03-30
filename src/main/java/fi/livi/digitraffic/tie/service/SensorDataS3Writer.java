@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 
@@ -134,7 +133,7 @@ public class SensorDataS3Writer {
                     return new WeatherSensorValueHistoryDto(mapToNaturalId(item),
                         item.getSensorId(),
                         item.getSensorValue(),
-                        item.getMeasuredTime());
+                        item.getMeasuredTime().toInstant());
                 })
              );
 

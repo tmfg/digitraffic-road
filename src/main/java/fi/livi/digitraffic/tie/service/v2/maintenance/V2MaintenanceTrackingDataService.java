@@ -204,9 +204,10 @@ public class V2MaintenanceTrackingDataService {
             new MaintenanceTrackingProperties(tracking.getId(),
                 tracking.getPreviousId(),
                 tracking.getWorkMachineId(),
-                toZonedDateTimeAtUtc(tracking.getSendingTime()),
-                toZonedDateTimeAtUtc(tracking.getStartTime()),
-                toZonedDateTimeAtUtc(tracking.getEndTime()),
+                tracking.getSendingTime(),
+                tracking.getStartTime(),
+                tracking.getEndTime(),
+                tracking.getCreated(),
                 tracking.getTasks(), tracking.getDirection(),
                 tracking.getDomain(),
                 tracking.getSource());
@@ -217,7 +218,8 @@ public class V2MaintenanceTrackingDataService {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, true);
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
-                                                    toZonedDateTimeAtUtc(tracking.getEndTime()),
+                                                    tracking.getEndTime(),
+                                                    tracking.getCreated(),
                                                     tracking.getTasks(), tracking.getDirection(),
                                                     tracking.getDomain(),
                                                     tracking.getSource());
@@ -228,10 +230,11 @@ public class V2MaintenanceTrackingDataService {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, true);
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
-                toZonedDateTimeAtUtc(tracking.getEndTime()),
+                tracking.getEndTime().toInstant(),
+                tracking.getCreated().toInstant(),
                 tracking.getTasks(), tracking.getDirection(),
                 tracking.getDomain(),
-                "Harja/Väylävirasto");
+                "Harja/Väylävirasto"); // Temporally fix, waiting for DPO-1724
         return new MaintenanceTrackingLatestFeature(geometry, properties);
     }
 

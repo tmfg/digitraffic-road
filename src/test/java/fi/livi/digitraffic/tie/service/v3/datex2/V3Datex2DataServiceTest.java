@@ -195,7 +195,6 @@ public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeomet
         final AtomicReference<ZonedDateTime> latestStart = new AtomicReference<>();
         IntStream.range(0, count).forEach(i -> {
             latestStart.set(initialTime.plusHours(i));
-            System.out.println(latestStart.get());
             final ZonedDateTime end = latestStart.get().plusHours(1);
             try {
                 trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, TRAFFIC_ANNOUNCEMENT.name(), ImsJsonVersion.getLatestVersion(),

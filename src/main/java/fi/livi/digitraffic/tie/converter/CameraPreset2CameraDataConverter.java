@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraPresetDataDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraStationDataDto;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 
@@ -65,7 +66,7 @@ public final class CameraPreset2CameraDataConverter extends AbstractMetadataToFe
 
     private CameraPresetDataDto convertPreset(final CameraPreset cp) {
         final CameraPresetDataDto dto = new CameraPresetDataDto();
-        dto.setMeasuredTime(cp.getPictureLastModified());
+        dto.setMeasuredTime(DateHelper.toInstantWithOutMillis(cp.getPictureLastModified()));
         dto.setId(cp.getPresetId());
         dto.setPresentationName(DataValidityHelper.nullifyUnknownValue(cp.getPresetName1()));
         dto.setImageUrl(StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg");

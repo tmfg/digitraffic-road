@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.dto.v1.camera;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.hibernate.annotations.Immutable;
 
@@ -26,13 +26,13 @@ public class CameraPresetDataDto implements MeasuredDataObjectDto {
     @ApiModelProperty(value = "Image url")
     private String imageUrl;
 
-    private ZonedDateTime measuredTime;
+    private Instant measuredTime;
 
-    public ZonedDateTime getMeasuredTime() {
+    public Instant getMeasuredTime() {
         return measuredTime;
     }
 
-    public void setMeasuredTime(ZonedDateTime measuredTime) {
+    public void setMeasuredTime(final Instant measuredTime) {
         this.measuredTime = measuredTime;
     }
     public void setId(final String id) {

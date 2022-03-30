@@ -14,7 +14,13 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 
@@ -22,9 +28,71 @@ public class DateHelperTest extends AbstractTest {
 
     private static final String DATE_STRING_OFFSET_2 = "2016-01-22T10:00:01+02:00";
     private static final String DATE_STRING_Z = "2016-01-22T08:00:01Z";
-    private static final String DATE_STRING_MILLIS_OFFSET_2 = "2016-01-22T10:00:01.500+02:00";
     private static final String DATE_STRING_MILLIS_Z = "2016-01-22T08:00:01.500Z";
     private static final String XML_DATE_STRING_Z = "2016-01-22T08:00:01.000Z";
+
+
+
+    private final static String ISO_DATE_TIME_WITH_Z_REGEX_PATTERN = "([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][0-9]):([0-6][0-9]):([0-6][0-9])(\\.[0-9]{0,3}[0-9]{0,3})?Z";
+    private final static String ISO_DATE_TIME_WITH_OFFSET_REGEX_PATTERN = "([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][0-9]):([0-6][0-9])(:([0-6][0-9])){0,1}(\\.[0-9]{0,3}[0-9]{0,3}){0,1}[+|-].*";
+
+    public static final Matcher<String> ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER = Matchers.matchesRegex(ISO_DATE_TIME_WITH_Z_REGEX_PATTERN);
+    public static final Matcher<String> ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER = Matchers.matchesRegex("[\\s\\S.]*" +
+        ISO_DATE_TIME_WITH_Z_REGEX_PATTERN + "[\\s\\S.]*");
+    public static final Matcher<String> NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER = Matchers.not(Matchers.matchesRegex(
+        ISO_DATE_TIME_WITH_OFFSET_REGEX_PATTERN));
+    public static final Matcher<String> NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER = Matchers.not(Matchers.matchesRegex("[\\s\\S.]*" +
+        ISO_DATE_TIME_WITH_OFFSET_REGEX_PATTERN + "[\\s\\S.]*"));
+    public static final Matcher<String> ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER =
+        Matchers.allOf(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER, NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER);
+    public static final Matcher<String> ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER =
+        Matchers.allOf(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER, NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER);
+    public static final ResultMatcher ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER =
+        MockMvcResultMatchers.content().string(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER);
+
+
+    /**
+     * This is test of test. It checks that ISO_DATE_TIME regex patterns works.
+     */
+    @Test
+    public void isoDateTimeRegexpMatcherMatches() {
+        final String DATE_TIME = "2022-01-02T10:31:21";
+        final String DATE_TIME_MILLIS = "2022-01-02T10:31:21.005";
+        final String RANDOM = RandomStringUtils.random(3) + "\n" + RandomStringUtils.random(3);
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
+
+        Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
+        Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "+"));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
+
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME + "Z"));
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "Z"));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME + "+01:00"));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "+01:00"));
+
+
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
+
+        Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
+        Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+" + RANDOM));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
+
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "Z" + RANDOM));
+        Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "Z" + RANDOM));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME + "+01:00" + RANDOM));
+        Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER.matches(RANDOM + DATE_TIME_MILLIS + "+01:00" + RANDOM));
+    }
+
 
     @Test
     public void getNewest() {

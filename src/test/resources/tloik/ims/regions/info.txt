@@ -1,0 +1,3 @@
+Original geometry simplified with SQL from https://raw.githubusercontent.com/tmfg/metadata/master/geometry/regions/00073_Helsinki.json
+
+select st_asgeojson(st_simplify(st_geomfromgeojson('<geojson>'), 0.01));

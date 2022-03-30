@@ -103,9 +103,9 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     final String json = getResponse(getUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
-                    assertTimesFormatMatches(xml);
-                    assertTimesFormatMatches(json);
-                    assertTimesFormatMatches(json);
+                    assertTimesFormatMatchesIsoDateTimeWithZ(xml);
+                    assertTimesFormatMatchesIsoDateTimeWithZ(json);
+                    assertTimesFormatMatchesIsoDateTimeWithZ(json);
                     assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()), start, end, imsJsonVersion);
                     assertTraficAnouncmentTypeLowerCase(json, situationType);
                 }
@@ -131,8 +131,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     final String json = getResponse(getUrlWithType(true, 2, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
-                    assertTimesFormatMatches(xml);
-                    assertTimesFormatMatches(json);
+                    assertTimesFormatMatchesIsoDateTimeWithZ(xml);
+                    assertTimesFormatMatchesIsoDateTimeWithZ(json);
                     assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()), start, end, imsJsonVersion);
                     assertTraficAnouncmentTypeLowerCase(json, situationType);
                 }
@@ -158,8 +158,6 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
                     final String json = getResponse(getUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
-                    assertTimesFormatMatches(xml);
-                    assertTimesFormatMatches(json);
                     assertEmptyD2Situations(xml);
                     assertEmptyJsonSituations(json);
                 }

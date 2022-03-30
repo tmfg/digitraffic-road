@@ -79,7 +79,7 @@ public class ToStringHelper {
     public static String toStringExcluded(final Object object, final String...excluded) {
         final ReflectionToStringBuilder refBuiler = new ReflectionToStringBuilder(object, JSON_STYLE);
         refBuiler.setExcludeFieldNames(excluded);
-        return object.getClass().getSimpleName() + ": " + refBuiler.toString();
+        return object.getClass().getSimpleName() + ": " + refBuiler;
     }
 
     public static String toStringFull(final Object object, final String...secretFields) {
@@ -88,7 +88,10 @@ public class ToStringHelper {
         }
         final ReflectionToStringBuilder refBuiler = new ReflectionToStringBuilder(object, JSON_STYLE) {
             @Override
-            protected Object getValue(Field field) throws IllegalAccessException {
+            protected Object getValue(final Field field) throws IllegalAccessException {
+                if (field.getName().equals("ignoreClassToPropertiesMap")) {
+                    return "<skipped>";
+                }
                 for (String excludeFieldName : secretFields) {
                     if (field.getName().equals(excludeFieldName)) {
                         return "*****";

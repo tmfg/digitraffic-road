@@ -251,7 +251,7 @@ public class V3MaintenanceTrackingUpdateService {
                 final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geoJsonGeom = PostgisGeometryHelper.convertToGeoJSONGeometry(lastPoint);
                 feature.setGeometry(geoJsonGeom);
                 feature.getProperties().setDirection(direction);
-                feature.getProperties().setTime(observationTime);
+                feature.getProperties().setTime(observationTime.toInstant());
 
                 if (maintenanceTrackingMqttConfiguration != null) {
                     maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
@@ -455,7 +455,7 @@ public class V3MaintenanceTrackingUpdateService {
             } catch (JsonProcessingException e) {
                 log.error("Failed to convert havainto to json", e);
             }
-            log.warn("method=splitLineStringsWithGaps Distance between points: {}The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
+            log.warn("method=splitLineStringsWithGaps Distance between points: {} The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
                      sb, distinctLineStringObservationGapKm, kirjausOtsikkoJson, havaintoJson);
         }
 

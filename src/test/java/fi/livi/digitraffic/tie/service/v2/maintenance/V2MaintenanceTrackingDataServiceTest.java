@@ -118,8 +118,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             // As observations are simplified, we can't know how many points is left in geometry
             assertTrue(t.getGeometry().getCoordinates().size() > 1);
             assertEquals(getTaskSetWithTasks(PAVING), t.getProperties().tasks);
-            assertEquals(start, properties.startTime);
-            assertEquals(end, properties.endTime);
+            assertEquals(start.toInstant(), properties.startTime);
+            assertEquals(end.toInstant(), properties.endTime);
             // {machineCount} unique machines
             assertFalse(workMachineUniqueIds.contains(properties.workMachineId));
             workMachineUniqueIds.add(properties.workMachineId);
@@ -163,8 +163,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             // As observations are simplified, we can't know how many points is left in geometry
             assertTrue(t.getGeometry().getCoordinates().size() > 1);
             assertEquals(getTaskSetWithTasks(PAVING, CRACK_FILLING), properties.tasks);
-            assertEquals(startTime, properties.startTime);
-            assertEquals(endTime, properties.endTime);
+            assertEquals(startTime.toInstant(), properties.startTime);
+            assertEquals(endTime.toInstant(), properties.endTime);
         });
     }
 
@@ -253,7 +253,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // Only the latest one should be found
         final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+10)).getFeatures();
         assertCollectionSize(1, latestFeatures);
-        assertEquals(startTime.plusMinutes(10+10+9), latestFeatures.get(0).getProperties().getTime());
+        assertEquals(startTime.plusMinutes(10+10+9).toInstant(), latestFeatures.get(0).getProperties().getTime());
         assertAllHasOnlyPointGeometries(latestFeatures);
     }
 
@@ -361,8 +361,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
-        assertEquals(startTime, props.startTime);
-        assertEquals(startTime, props.endTime);
+        assertEquals(startTime.toInstant(), props.startTime);
+        assertEquals(startTime.toInstant(), props.endTime);
     }
 
 
@@ -429,8 +429,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
-        assertEquals(startTime, props.startTime);
-        assertEquals(startTime, props.endTime);
+        assertEquals(startTime.toInstant(), props.startTime);
+        assertEquals(startTime.toInstant(), props.endTime);
     }
 
     /**

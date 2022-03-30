@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_AVAILABLE_SENSORS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_PATH;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
@@ -23,15 +24,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 
 public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
+
+    @Autowired
+    private DataStatusService dataStatusService;
+
 
     @BeforeEach
     public void initData() {
@@ -49,7 +56,10 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
             publishable.stream().map(RoadStationSensor::getLotjuId)
                 .collect(Collectors.toList()));
 
-//        dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
+        dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
+        dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA_CHECK);
+        dataStatusService.updateDataUpdated(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION));
+        dataStatusService.updateDataUpdated(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION));
     }
 
 
@@ -81,7 +91,7 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
                 .andExpect(jsonPath("$.features[0].properties.roadAddress.roadNumber", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.stationSensors[0]", isA(Integer.class)))
                 .andExpect(jsonPath("$.features[0].properties.purpose").doesNotHaveJsonPath())
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test
@@ -96,6 +106,6 @@ public class WeatherStationMetadataControllerRestWebTest extends AbstractRestWeb
             .andExpect(jsonPath("$.roadStationSensors[0].vehicleClass").doesNotHaveJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].lane").doesNotHaveJsonPath())
             .andExpect(jsonPath("$.roadStationSensors[0].direction").doesNotHaveJsonPath())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 }
