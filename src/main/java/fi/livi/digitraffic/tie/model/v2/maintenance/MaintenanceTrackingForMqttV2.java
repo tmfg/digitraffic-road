@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.model.v2.maintenance;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,7 +12,7 @@ public interface MaintenanceTrackingForMqttV2 {
 
     String getSource();
 
-    ZonedDateTime getCreatedTime();
+    Instant getCreatedTime();
 
     Instant getEndTime();
 

@@ -20,6 +20,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,10 +72,10 @@ public class MaintenanceTrackingMqttConfigurationV2 {
                 final List<MaintenanceTrackingForMqttV2> trackings = v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(mqttMessageSender.getLastUpdated());
 
                 if(!trackings.isEmpty()) {
-                    final ZonedDateTime lastUpdated = trackings.stream().max(Comparator.comparing(MaintenanceTrackingForMqttV2::getCreatedTime)).get().getCreatedTime();
+                    final Instant lastUpdated = trackings.stream().max(Comparator.comparing(MaintenanceTrackingForMqttV2::getCreatedTime)).get().getCreatedTime();
                     final List<MqttDataMessageV2> dataMessages = trackings.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 
-                    mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
+                    mqttMessageSender.sendMqttMessages(lastUpdated.atZone(ZoneId.of("UTC")), dataMessages);
                 }
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);
