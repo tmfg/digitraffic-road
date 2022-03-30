@@ -84,13 +84,13 @@ public class DateHelperTest extends AbstractTest {
         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MIKROS + ZONE_Z));
         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MIKROS + ZONE_OFFSET));
 
-        // All digits ok as offset check can be looser
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".1" + ZONE_OFFSET)); // 1-digit millis not allowed
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".12" + ZONE_OFFSET)); // 2-digit millis not allowed
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".123" + ZONE_OFFSET)); // 3-digit millis ok
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "4" + ZONE_OFFSET)); // 4-digit micros not allowed
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "45" + ZONE_OFFSET)); // 5-digit micros not allowed
-        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "456" + ZONE_OFFSET)); // 6-digit micros ok
+        // All digits should "match" iso with offset -> make no-matcher to not match as ok (offset checker can be looser to match)
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".1" + ZONE_OFFSET));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".12" + ZONE_OFFSET));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".123" + ZONE_OFFSET));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "4" + ZONE_OFFSET));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "45" + ZONE_OFFSET));
+        Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + "456" + ZONE_OFFSET));
 
         Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ZONE_Z));
         Assertions.assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME_MILLIS + ZONE_Z));
