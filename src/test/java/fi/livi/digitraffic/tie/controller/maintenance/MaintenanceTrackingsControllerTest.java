@@ -6,6 +6,7 @@ import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALL
 import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_X;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y;
+import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithLineString;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createWorkMachines;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneHourInPast;
@@ -101,13 +102,13 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         final int observationCount = 10;
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
 
-        testHelper.saveTrackingDataAsObservations( // end time will be start+9 min
-            createMaintenanceTrackingWithPoints(start, observationCount, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_PAIKKAUS));
+        testHelper.saveTrackingDataAsObservations( // end time will be same as start
+            createMaintenanceTrackingWithLineString(start, observationCount, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_PAIKKAUS));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // First tracking
         expectOkFeatureCollectionWithSize(
-            getTrackingsJson(start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
+            getTrackingsJson(start.toInstant(), start.toInstant(), new HashSet<>(),
                              RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()),
                              machineCount)
             .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist())
@@ -136,23 +137,23 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             createMaintenanceTrackingWithPoints(start.plusMinutes(10), 10, 1, secondHalfMachines, ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
-        // First tracking
+        // First trackings, 10/machine
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
                 start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
-                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), firstHalfMachines.size());
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), firstHalfMachines.size() * 10);
 
-        // Second tracking
+        // Second tracking, 10/machine
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
                 start.plusMinutes(10).toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
-                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), secondHalfMachines.size());
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), secondHalfMachines.size() * 10);
 
         // Both
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
                 start.toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
-                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount);
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount * 10);
     }
 
     @Test
@@ -164,9 +165,9 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         IntStream.range(0, machineCount).forEach(i -> {
             final Tyokone machine = workMachines.get(i);
             try {
-                // end time will be start+9 min
+                // end and start will be the same
                 final TyokoneenseurannanKirjausRequestSchema havainnot =
-                    createMaintenanceTrackingWithPoints(start, 10, 1, Collections.singletonList(machine),
+                    createMaintenanceTrackingWithLineString(start, 10, 1, Collections.singletonList(machine),
                                                         SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]);
                 testHelper.saveTrackingDataAsObservations(havainnot);
             } catch (JsonProcessingException e) {
@@ -178,13 +179,13 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         // find with first task should only find the first tracking for machine 1.
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start.toInstant(), start.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
+                start.toInstant(), start.toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 1);
 
         // Search with second task should return trackings for machine 1. and 2.
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start.toInstant(), start.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
+                start.toInstant(), start.toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 2);
     }
 
@@ -201,9 +202,9 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         // Generate trackings for 50 minutes changing tasks every 10 minutes
         IntStream.range(0, 5).forEach(i -> {
             try {
-                // end time will be start+9 min
+                // end time will be the same as start
                 final TyokoneenseurannanKirjausRequestSchema seuranta =
-                    createMaintenanceTrackingWithPoints(
+                    createMaintenanceTrackingWithLineString(
                         start.plusMinutes(i * 10L), 10, 1, workMachines,
                         SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]);
                 testHelper.saveTrackingDataAsObservations(seuranta);
@@ -291,12 +292,24 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         final List<Tyokone> workMachines = createWorkMachines(1);
         final TyokoneenseurannanKirjausRequestSchema k =
-            createMaintenanceTrackingWithPoints(now, 10, 1, workMachines, ASFALTOINTI);
+            createMaintenanceTrackingWithLineString(now, 10, 1, workMachines, ASFALTOINTI);
         testHelper.saveTrackingDataAsObservations(k);
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
-        final Double maxX = k.getHavainnot().stream().map(h -> h.getHavainto().getSijainti().getKoordinaatit().getX()).max(Double::compareTo).orElseThrow();
-        final Double maxY = k.getHavainnot().stream().map(h -> h.getHavainto().getSijainti().getKoordinaatit().getY()).max(Double::compareTo).orElseThrow();
+        final Double maxX = k.getHavainnot().stream()
+            .map(h -> h.getHavainto().getSijainti().getViivageometria().getCoordinates().stream()
+                    .map(c -> (Double) c.get(0)) // X
+                    .max(Double::compareTo)
+                    .orElseThrow())
+            .max(Double::compareTo)
+            .orElseThrow();
+        final Double maxY = k.getHavainnot().stream()
+            .map(h -> h.getHavainto().getSijainti().getViivageometria().getCoordinates().stream()
+                .map(c -> (Double) c.get(1))// y
+                .max(Double::compareTo)
+                .orElseThrow())
+            .max(Double::compareTo)
+            .orElseThrow();
 
         Point pointWGS84 = CoordinateConverter.convertFromETRS89ToWGS84(new Point(maxX, maxY));
 
@@ -304,12 +317,12 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         // The only tracking should be found when it's inside the bounding box
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
+                now.toInstant(), now.toInstant(), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 1);
         // The only tracking should not be found when it's not inside the bounding box
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
+                now.toInstant(), now.toInstant(), new HashSet<>(),
                 pointWGS84.getLongitude()+0.1, pointWGS84.getLatitude()+0.1, RANGE_X.getRight(), RANGE_Y.getRight()), 0);
     }
 }

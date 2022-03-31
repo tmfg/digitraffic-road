@@ -25,7 +25,6 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getEndTime;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneHourInPast;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
-import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskWithIndex;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -39,10 +38,14 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -64,6 +67,7 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingProperties;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
@@ -99,9 +103,9 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final TyokoneenseurannanKirjausRequestSchema seuranta1 =
-            createMaintenanceTrackingWithPoints(start, 10, 1, 1, workMachines, ASFALTOINTI);
+            createMaintenanceTrackingWithLineString(start, 10, 1, 1, workMachines, ASFALTOINTI);
         final TyokoneenseurannanKirjausRequestSchema seuranta2 =
-            createMaintenanceTrackingWithPoints(start.plusMinutes(10), 10, 2,1, workMachines, ASFALTOINTI);
+            createMaintenanceTrackingWithLineString(start.plusMinutes(5), 10, 2,1, workMachines, ASFALTOINTI);
         final ZonedDateTime end = getEndTime(seuranta2);
 
         testHelper.saveTrackingDataAsObservations(seuranta1);
@@ -109,19 +113,20 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(start, end, PAVING).getFeatures();
-        assertCollectionSize(machineCount, features);
+        // Trackings should be grouped/machine
+        final LinkedHashMap<Long, List<MaintenanceTrackingProperties>> grouped = groupTrackingsByStartId(features);
+        assertEquals(machineCount, grouped.size());
 
         final Set<Long> workMachineUniqueIds = new HashSet<>();
-        features.forEach(t -> {
-            final MaintenanceTrackingProperties properties = t.getProperties();
-            // As observations are simplified, we can't know how many points is left in geometry
-            assertTrue(t.getGeometry().getCoordinates().size() > 1);
-            assertEquals(getTaskSetWithTasks(PAVING), t.getProperties().tasks);
-            assertEquals(start.toInstant(), properties.startTime);
-            assertEquals(end.toInstant(), properties.endTime);
-            // {machineCount} unique machines
-            assertFalse(workMachineUniqueIds.contains(properties.workMachineId));
-            workMachineUniqueIds.add(properties.workMachineId);
+        grouped.forEach((id, properties) -> {
+            // Each group (machine) should have 2 combined trackings
+            assertEquals(2, properties.size());
+            final MaintenanceTrackingProperties first = properties.get(0);
+            final MaintenanceTrackingProperties second = properties.get(1);
+            assertEquals(start.toInstant(), first.startTime);
+            assertEquals(end.toInstant(), second.endTime);
+            assertFalse(workMachineUniqueIds.contains(first.workMachineId));
+            workMachineUniqueIds.add(first.workMachineId);
         });
     }
 
@@ -131,11 +136,11 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final ZonedDateTime startTime = getStartTimeOneHourInPast();
 
-        // Generate 5 messages with 10 observations/machine in each
+        // Generate 5 messages/machine with 10 coordinates in each
         final ZonedDateTime endTime = IntStream.range(0, 5).mapToObj(i -> {
             final ZonedDateTime start = startTime.plusMinutes(i* 10L);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
-                createMaintenanceTrackingWithPoints(start, 10, i + 1, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
+                createMaintenanceTrackingWithLineString(start, 10, i + 1, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta);
             } catch (JsonProcessingException e) {
@@ -143,27 +148,24 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             }
             return getEndTime(seuranta);
         }).max(ChronoZonedDateTime::compareTo).orElseThrow();
-        final int expectedObservationCount = 5 * machineCount * 10; // 5 messages, 10 observations/machine in each
+        final int expectedObservationCount = 5 * machineCount; // 5 messages/machine
         final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(expectedObservationCount, handled);
 
         final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, endTime).getFeatures();
-        assertCollectionSize(machineCount, latestFeatures);
+
+        assertCollectionSize(machineCount, latestFeatures); // One tracking/machine
         assertAllHasOnlyPointGeometries(latestFeatures);
 
-        // All messages are combined as one/machine
+        // All messages are combined by having previous tracking link
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, endTime).getFeatures();
-        assertCollectionSize(machineCount, features);
+        assertCollectionSize(machineCount*5, features); // 5 tracking/machine
 
         // Check features properties
         features.forEach(t -> {
-            // 10 observations for each
-            final MaintenanceTrackingProperties properties = t.getProperties();
             // As observations are simplified, we can't know how many points is left in geometry
+            // But start and end are preserved if they are not same points
             assertTrue(t.getGeometry().getCoordinates().size() > 1);
-            assertEquals(getTaskSetWithTasks(PAVING, CRACK_FILLING), properties.tasks);
-            assertEquals(startTime.toInstant(), properties.startTime);
-            assertEquals(endTime.toInstant(), properties.endTime);
         });
     }
 
@@ -179,7 +181,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         IntStream.range(0, 5).forEach(idx -> {
             final ZonedDateTime start = startTime.plusMinutes(idx*10L);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
-                createMaintenanceTrackingWithPoints(start, 10, 1, workMachines, SuoritettavatTehtavat.values()[idx]);
+                createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, SuoritettavatTehtavat.values()[idx]);
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta);
             } catch (JsonProcessingException e) {
@@ -216,10 +218,10 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final ZonedDateTime startTime = getStartTimeOneHourInPast();
         // tracking with job 1
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // tracking with job 2
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plusMinutes(10), 10, 2, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as they have different jobs
@@ -227,7 +229,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertCollectionSize(2, features);
 
         // 2 tracking should be found as latest as same machine with different job id is handled as different machine
-        final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+10)).getFeatures();
+        final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+11)).getFeatures();
         assertCollectionSize(2, latestFeatures);
         assertAllHasOnlyPointGeometries(latestFeatures);
     }
@@ -238,11 +240,11 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final ZonedDateTime startTime = getStartTimeOneHourInPast();
         // tracking with job 1
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 1, workMachines));
+            createMaintenanceTrackingWithLineString(startTime.plusMinutes(1), 10, 1, workMachines));
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10+10), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plusMinutes(2), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as they have different jobs
@@ -252,12 +254,12 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // Only the latest one should be found
         final List<MaintenanceTrackingLatestFeature> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+10)).getFeatures();
         assertCollectionSize(1, latestFeatures);
-        assertEquals(startTime.plusMinutes(10+10+9).toInstant(), latestFeatures.get(0).getProperties().getTime());
+        assertEquals(startTime.plusMinutes(2).toInstant(), latestFeatures.get(0).getProperties().getTime());
         assertAllHasOnlyPointGeometries(latestFeatures);
     }
 
     @Test
-    public void observationsTimesCrossesBetweenMessagesThenTrackingsAreCombined() throws JsonProcessingException {
+    public void observationsTimesCrossesBetweenMessagesThenTrackingsAreCombinedToGroups() throws JsonProcessingException {
         // M1 = Message 1, P1=Point 1. Then observation times are:
         // M1(P1) < M2(P1) < M1(P2) < M2(P2) < M1(P3) < M2(P3) ...
         final List<Tyokone> workMachines = createWorkMachines(getRandom(1,5));
@@ -274,7 +276,9 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         // 2 tracking should be made as first one's end time is after second one's start time.
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(1+9)).getFeatures();
-        assertCollectionSize(workMachines.size(), features);
+        final LinkedHashMap<Long, List<MaintenanceTrackingProperties>> groupsByStartId = groupTrackingsByStartId(features);
+        // There is as many groups of trackings as there is machines
+        assertEquals(workMachines.size(), groupsByStartId.size());
     }
 
     @Test
@@ -284,17 +288,17 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // Create 2 messages that are combined as one tracking
         // 10 observations
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // 10 observations
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plusMinutes(10), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
         final int expectedObservationCountPerMachine = 10 + 10;
         final List<MaintenanceTrackingFeature> features = findMaintenanceTrackings(startTime, startTime.plusMinutes(20)).getFeatures();
-        assertCollectionSize(workMachines.size(), features);
-
+        assertCollectionSize(workMachines.size() * 2, features);
+        // Observation data count is == tracking count
         final List<JsonNode> jsons = v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(features.get(0).getProperties().id);
-        assertCollectionSize(expectedObservationCountPerMachine, jsons);
+        assertCollectionSize(1, jsons);
     }
 
     @Test
@@ -553,5 +557,27 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
                     "VALUES (" + id + ", '" + BRUSHING.name() + "')")
             .executeUpdate();
         return id;
+    }
+
+    private LinkedHashMap<Long, List<MaintenanceTrackingProperties>> groupTrackingsByStartId(final List<MaintenanceTrackingFeature> trackings) {
+        Map<Long, MaintenanceTrackingProperties> idToTrackingMap =
+            trackings.stream().collect(Collectors.toMap(f -> f.getProperties().id, Feature::getProperties));
+        LinkedHashMap<Long, List<MaintenanceTrackingProperties>> groupsByStartId = new LinkedHashMap<>();
+        trackings.stream()
+            .map(MaintenanceTrackingFeature::getProperties)
+            .forEach(p -> {
+            // This is the first one to handle
+            if (p.previousId == null) {
+                groupsByStartId.put(p.id, new ArrayList<>(Collections.singleton(p)));
+            } else {
+                // Find the first in group and add tracking to it's group
+                MaintenanceTrackingProperties previous = p;
+                while (previous.previousId != null) {
+                    previous = idToTrackingMap.get(previous.previousId);
+                }
+                groupsByStartId.get(previous.id).add(p);
+            }
+        });
+        return groupsByStartId;
     }
 }

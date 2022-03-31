@@ -10,22 +10,29 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getEndTime;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneDayInPast;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -78,23 +85,23 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
     @Test
     public void readUnhandedObservationDataWithMultipleWorkMachinesMatches() throws IOException {
-        final ZonedDateTime now = getStartTimeOneDayInPast();;
+        final ZonedDateTime now = getStartTimeOneDayInPast();
         final int machineCount = getRandomId(2, 10);
         final int observationCount = 10;
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         // Create maintenance tracking message for <machineCount> machines and <observationCount> observations for each machine
-        // and save observations to V3MaintenanceTrackingUpdateServiceTestdb
+        // and save observations to db
         final TyokoneenseurannanKirjausRequestSchema seuranta =
             createMaintenanceTrackingWithPoints(now, 10, 1, workMachines, ASFALTOINTI);
         testHelper.saveTrackingDataAsObservations(seuranta);
 
-        // Check that data can be feched from db
+        // Check that data can be fetched from db
         final List<V3MaintenanceTrackingObservationData> unhandled =
             v3MaintenanceTrackingObservationDataRepository.findUnhandled(100, 0).collect(Collectors.toList());
         assertEquals(observationCount * machineCount, unhandled.size());
 
         // Check that unhanded are in ascending order by observation time
-        final AtomicReference<Instant> prevObservationTime = new AtomicReference(Instant.MIN);
+        final AtomicReference<Instant> prevObservationTime = new AtomicReference<> (Instant.MIN);
         unhandled.forEach(o -> {
             assertEquals(UNHANDLED, o.getStatus());
             final Instant observationTime = o.getObservationTime();
@@ -105,10 +112,8 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
         // Check that all machines has right count of observations
         IntStream.range(0, machineCount)
-            .forEach(i -> {
-                assertEquals(10, unhandled.stream()
-                    .filter(observation -> observation.getHarjaWorkmachineId().equals(workMachines.get(i).getId().longValue())).count());
-            });
+            .forEach(i -> assertEquals(10, unhandled.stream()
+                .filter(observation -> observation.getHarjaWorkmachineId().equals(workMachines.get(i).getId().longValue())).count()));
 
         // Check that saved observations has valid observation json
         seuranta.getHavainnot().forEach(havainto -> {
@@ -131,7 +136,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void handleTrackingWithMultipleWorkMachines() throws JsonProcessingException {
         // Create maintenance tracking message for <machineCount> machines and <observationCount> observations for each machine
         // and save observations to db
-        final ZonedDateTime now = getStartTimeOneDayInPast();;
+        final ZonedDateTime now = getStartTimeOneDayInPast();
         final int machineCount = getRandomId(2, 10);
         final int observationCount = 10;
         final TyokoneenseurannanKirjausRequestSchema seuranta =
@@ -154,30 +159,30 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         datasAfter.forEach(o -> assertEquals(HANDLED, o.getStatus()));
 
         // Check data for each machine is ok
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll(Sort.by("workMachine.harjaId"));
-        assertCollectionSize(machineCount, trackings);
-        trackings.forEach(t -> {
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        final Map<Long, List<MaintenanceTracking>> groups = groupTrackingsByStartId(trackings);
+        assertTrackingGroupsSize(machineCount, trackings);
+        assertEquals(machineCount, groups.size());
+        groups.values().forEach(g -> {
+            final MaintenanceTracking start = g.get(0);
+            final MaintenanceTracking end = g.get(g.size()-1);
             // 10 observations for each
-            assertEquals(10, t.getLineString().getNumPoints());
-            assertEquals(1, t.getTasks().size());
-            assertTrue(t.getTasks().contains(MaintenanceTrackingTask.PAVING));
-            assertEquals(now, t.getStartTime());
-            assertEquals(now.plusMinutes(9), t.getEndTime());
+            assertEquals(10, g.size());
+            assertEquals(1, start.getTasks().size());
+            assertTrue(start.getTasks().contains(MaintenanceTrackingTask.PAVING));
+            assertEquals(now, start.getStartTime());
+            assertEquals(now.plusMinutes(9), end.getEndTime());
         });
 
         // Check all generated work machines exists
-        final List<MaintenanceTrackingWorkMachine> wms =
-            trackings.stream().map(MaintenanceTracking::getWorkMachine).sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
-                .collect(Collectors.toList());
-        // Check all work machines exists
-        IntStream.range(0, machineCount).forEach(i -> assertEquals(i+1, wms.get(i).getHarjaId().intValue()));
+        checkAllWorkMachinesExists(groups, machineCount);
     }
 
     @Test
     public void combineMultipleTrackings() {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         final int observationCountPerTracking = getRandomId(5, 10);
         final int trackingMessagesCount = getRandomId(5, 10);
 
@@ -185,7 +190,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final ZonedDateTime endTime =
             // trackingMessagesCount / machine
             IntStream.range(0,trackingMessagesCount).mapToObj(i -> {
-                final ZonedDateTime start = startTime.plusMinutes(i*observationCountPerTracking);
+                final ZonedDateTime start = startTime.plusMinutes((long) i * observationCountPerTracking);
                 final TyokoneenseurannanKirjausRequestSchema seuranta =
                     createMaintenanceTrackingWithPoints(start, observationCountPerTracking, i+1, 1, workMachines, ASFALTOINTI);
                 try {
@@ -205,23 +210,22 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertEquals(machineCount * trackingMessagesCount * observationCountPerTracking, total);
 
         // All observations should be combined as one tracking / machine
-        final List<MaintenanceTracking> trackings =
-            v2MaintenanceTrackingRepository.findAll(Sort.by("workMachine.harjaId"));
-        assertCollectionSize(machineCount, trackings);
-        trackings.forEach(t -> {
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(machineCount, trackings);
+        final Map<Long, List<MaintenanceTracking>> groups = groupTrackingsByStartId(trackings);
+
+        groups.values().forEach(g -> {
             // 10 observations for each
-            assertEquals(trackingMessagesCount * observationCountPerTracking, t.getLineString().getNumPoints());
-            assertEquals(1, t.getTasks().size());
-            assertTrue(t.getTasks().contains(MaintenanceTrackingTask.PAVING));
-            assertEquals(startTime, t.getStartTime());
-            assertEquals(endTime, t.getEndTime());
+            final MaintenanceTracking start = g.get(0);
+            final MaintenanceTracking end = g.get(g.size()-1);
+            assertEquals(trackingMessagesCount * observationCountPerTracking, g.size());
+            assertEquals(1, start.getTasks().size());
+            assertTrue(start.getTasks().contains(MaintenanceTrackingTask.PAVING));
+            assertEquals(startTime, start.getStartTime());
+            assertEquals(endTime, end.getEndTime());
         });
 
-        final List<MaintenanceTrackingWorkMachine> wms =
-            trackings.stream().map(MaintenanceTracking::getWorkMachine).sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
-                .collect(Collectors.toList());
-        // Check all work machines exists
-        IntStream.range(0, machineCount).forEach(i -> assertEquals(i+1, wms.get(i).getHarjaId().intValue()));
+        checkAllWorkMachinesExists(groups, machineCount);
     }
 
     @Test
@@ -229,7 +233,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final int machineCount = getRandomId(2, 10);
         // Work machines with harja id 1,2,...(machineCount+1)
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         final int trackingsCountPerMachine = 5;
         final int observationCountPerTracking = 10;
 
@@ -237,7 +241,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // Task changes for each tracking
         IntStream.range(0, trackingsCountPerMachine).forEach(idx -> {
             // Each tracking starts minute after previous ending time as observations are generated for every minute starting from start time
-            final ZonedDateTime start = startTime.plusMinutes(idx*observationCountPerTracking);
+            final ZonedDateTime start = startTime.plusMinutes((long) idx *observationCountPerTracking);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
                 createMaintenanceTrackingWithPoints(start, observationCountPerTracking, 1, workMachines, SuoritettavatTehtavat.values()[idx]);
             try {
@@ -255,16 +259,17 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
         // Get trackings for all workmachines
         final Map<Long, List<MaintenanceTracking>> trackingsByHarjaId =
-            v2MaintenanceTrackingRepository.findAll(Sort.by("workMachine.harjaId", "id"))
+            findAllMaintenanceTrackings()
                 .stream()
                 .collect(Collectors.groupingBy(mt -> mt.getWorkMachine().getHarjaId()));
 
-        // Check that every workmachine has
+        // Check that every workmachine has all task generated by range(0, trackingsCountPerMachine) index
         LongStream.range(1, machineCount + 1).forEach(harjaId -> {
             final List<MaintenanceTracking> machineTrackings = trackingsByHarjaId.get(harjaId);
-            IntStream.range(0, trackingsCountPerMachine).forEach(idx -> {
+            IntStream.range(0, trackingsCountPerMachine*observationCountPerTracking).forEach(idx -> {
+                System.out.println(idx/observationCountPerTracking);
                 final MaintenanceTracking t = machineTrackings.get(idx);
-                assertEquals(getTaskSetWithIndex(idx), t.getTasks());
+                assertEquals(getTaskSetWithIndex(idx/observationCountPerTracking), t.getTasks());
             });
         });
     }
@@ -273,7 +278,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void splitTrackingWhenJobChanges() throws JsonProcessingException {
         // Work machines with harja id 1
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // next trackings start minute just after previous ends
@@ -282,17 +287,16 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final int handled = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
         assertEquals(20, handled);
 
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        trackings.sort(Comparator.comparing(o -> o.getWorkMachine().getHarjaUrakkaId()));
-        assertCollectionSize(2, trackings);
-        assertEquals(1L, trackings.get(0).getWorkMachine().getHarjaUrakkaId().longValue());
-        assertEquals(2L, trackings.get(1).getWorkMachine().getHarjaUrakkaId().longValue());
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(2, trackings);
+        assertEquals(1L, getTrackingGroupStart(trackings, 0).getWorkMachine().getHarjaUrakkaId().longValue());
+        assertEquals(2L, getTrackingGroupStart(trackings, 1).getWorkMachine().getHarjaUrakkaId().longValue());
     }
 
     @Test
     public void insideTimeLimitCombinesTrackingsAsOne() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         final int observationCountPerTracking = 10;
         final int jobId = 1;
         // Last point will be startTime + 9 min
@@ -303,15 +307,16 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             createMaintenanceTrackingWithPoints(startTime.plusMinutes((observationCountPerTracking-1) + maxGapInMinutes), observationCountPerTracking, jobId, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
 
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(1, trackings);
-        assertEquals(observationCountPerTracking * 2, trackings.get(0).getLineString().getNumPoints());
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(1, trackings);
+        // Assert every source havainto generates new tracking
+        assertEquals(observationCountPerTracking * 2, trackings.size());
     }
 
     @Test
-    public void timeLimitBreaksTrackingInParts() throws JsonProcessingException {
+    public void timeLimitBreaksTrackingInGroups() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         // Last point will be startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -320,20 +325,17 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10+maxGapInMinutes), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
 
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(2, trackings);
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(2, trackings);
         trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
 
-        final MaintenanceTracking first = trackings.get(0);
-        final MaintenanceTracking second = trackings.get(1);
-        assertNotEquals(first.getEndTime(), second.getStartTime());
-        assertNotEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
+        assertFirstAndSecondGroupDontOverlap(trackings);
     }
 
     @Test
-    public void timeLimitAndTaskChangeBreaksTrackingInParts() throws JsonProcessingException {
+    public void timeLimitAndTaskChangeBreaksTrackingInGroups() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -342,14 +344,11 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10 + maxGapInMinutes), 10, 2, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
         v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
 
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(2, trackings);
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(2, trackings);
         trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
 
-        final MaintenanceTracking first = trackings.get(0);
-        final MaintenanceTracking second = trackings.get(1);
-        assertNotEquals(first.getEndTime(), second.getStartTime());
-        assertNotEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
+        assertFirstAndSecondGroupDontOverlap(trackings);
     }
 
     @Test
@@ -368,20 +367,18 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         testHelper.saveTrackingDataAsObservations(kirjaus);
         v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
 
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(2, trackings);
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+
+        assertEquals(2, countTrackingGroups(trackings));
         trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
 
-        final MaintenanceTracking first = trackings.get(0);
-        final MaintenanceTracking second = trackings.get(1);
-        assertNotEquals(first.getEndTime(), second.getStartTime());
-        assertNotEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
+        assertFirstAndSecondGroupDontOverlap(trackings);
     }
 
     @Test
     public void taskChangeBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfNextTracking() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -390,20 +387,16 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
         v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
 
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(2, trackings);
-        trackings.sort(Comparator.comparing(MaintenanceTracking::getStartTime));
-        final MaintenanceTracking first = trackings.get(0);
-        final MaintenanceTracking second = trackings.get(1);
-
-        assertEquals(first.getEndTime(), second.getStartTime());
-        assertEquals(first.getLineString().getEndPoint(), second.getLineString().getStartPoint());
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(2, trackings);
+        assertFirstAndSecondGroupOverlaps(trackings);
     }
+
 
     @Test
     public void taskChangeToTransitionBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfTransitionTracking() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTimeOneDayInPast();;
+        final ZonedDateTime startTime = getStartTimeOneDayInPast();
         // Last point will be in time startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
@@ -412,17 +405,17 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         testHelper.saveTrackingDataAsObservations(transition);
         v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
 
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(1, trackings);
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(1, trackings);
 
-        final MaintenanceTracking first = trackings.get(0);
+        final MaintenanceTracking endOfTracking = trackings.get(trackings.size()-1);
         final Havainto transitionHavainto = transition.getHavainnot().get(0).getHavainto();
         final KoordinaattisijaintiSchema koordinaatit = transitionHavainto.getSijainti().getKoordinaatit();
         final Point transitionFirstPoint = CoordinateConverter.convertFromETRS89ToWGS84(new Point(koordinaatit.getX(), koordinaatit.getY()));
 
-        assertEquals(first.getEndTime(), transitionHavainto.getHavaintoaika());
-        assertEquals(first.getLineString().getEndPoint().getX(), transitionFirstPoint.getLongitude(), 0.01);
-        assertEquals(first.getLineString().getEndPoint().getY(), transitionFirstPoint.getLatitude(), 0.01);
+        assertEquals(endOfTracking.getEndTime(), transitionHavainto.getHavaintoaika());
+        assertEquals(endOfTracking.getLastPoint().getX(), transitionFirstPoint.getLongitude(), 0.01);
+        assertEquals(endOfTracking.getLastPoint().getY(), transitionFirstPoint.getLatitude(), 0.01);
     }
 
     @Test
@@ -432,22 +425,28 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         log.info("Handled count={}", v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000));
 
         // Jump twice -> should split to three
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(3, trackings);
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(3, trackings);
     }
 
     @Test
     public void lineStringsShouldBeHandledAsOneIfNoDistanceGap() throws IOException {
 
+        // 3 and 4 point long linestrings
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/linestring/linestring-first.json");
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/linestring/linestring-second.json");
 
         log.info("Handled count={}", v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(100));
 
         // Two linestring trackings without long jump between last and first point should be joined
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(1, trackings);
-        assertEquals(7, trackings.get(0).getLineString().getNumPoints());
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(1, trackings);
+        // First tracking has end poind added from second tracking first poing
+        final MaintenanceTracking first = trackings.get(0);
+        final MaintenanceTracking second = trackings.get(1);
+        assertEquals(4, first.getLineString().getNumPoints());
+        assertEquals(4, second.getLineString().getNumPoints());
+        assertEquals(first.getLastPoint(), second.getLineString().getStartPoint());
     }
 
     @Test
@@ -460,10 +459,14 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         log.info("Handled count={}", v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(100));
 
         // 3 LineStrings with single point in each should be combined as one tracking
-        final List<MaintenanceTracking> trackings = v2MaintenanceTrackingRepository.findAll();
-        assertCollectionSize(1, trackings);
+        final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
+        assertTrackingGroupsSize(1, trackings);
         // single points are duplicated (not the starting one) as two same point linestring -> 1 + 2 + 2 = 5 points
-        assertEquals(5, trackings.get(0).getLineString().getNumPoints());
+        assertEquals(2, trackings.get(0).getLineString().getNumPoints());
+        assertEquals(2, trackings.get(1).getLineString().getNumPoints());
+        assertNull(trackings.get(2).getLineString());
+        assertEquals(trackings.get(0).getId(), trackings.get(1).getPreviousTrackingId());
+        assertEquals(trackings.get(1).getId(), trackings.get(2).getPreviousTrackingId());
     }
 
     @Test
@@ -474,11 +477,11 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             createMaintenanceTrackingWithPoints(start10Days, 10, 1, 1, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(start9Days, 10, 1, 1, SuoritettavatTehtavat.ASFALTOINTI));
-        assertCollectionSize(0, v2MaintenanceTrackingRepository.findAll());
+        assertCollectionSize(0, findAllMaintenanceTrackings());
         final int count = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
         // Assert all handled
         assertEquals( 20, count);
-        assertCollectionSize(2, v2MaintenanceTrackingRepository.findAll());
+        assertCollectionSize(20, findAllMaintenanceTrackings());
         assertCollectionSize( 20, v3MaintenanceTrackingObservationDataRepository.findAll());
         final long deleded1 = v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
         assertEquals( 5, deleded1);
@@ -488,6 +491,130 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         assertEquals( 0, deleded3);
         assertCollectionSize( 10, v3MaintenanceTrackingObservationDataRepository.findAll());
         // Handled data is not deleted
-        assertCollectionSize(2, v2MaintenanceTrackingRepository.findAll());
+        assertCollectionSize(20, findAllMaintenanceTrackings());
     }
+
+    private void assertTrackingGroupsSize(final int size, final List<MaintenanceTracking> trackings) {
+        assertEquals(size, countTrackingGroups(trackings));
+    }
+
+    private int countTrackingGroups(final List<MaintenanceTracking> trackings) {
+        final Map<Long, Long> idToPreviousIdMapping =
+            trackings.stream().collect(Collectors.toMap(MaintenanceTracking::getId, mt -> mt.getPreviousTrackingId() != null ? mt.getPreviousTrackingId() : mt.getId()));
+        final Set<Long> startIds = idToPreviousIdMapping.keySet().stream().map(k -> getTrackingStartId(idToPreviousIdMapping, k)).collect(Collectors.toSet());
+        return startIds.size();
+    }
+
+    private Long getTrackingStartId(final Map<Long, Long> idToPreviousIdMapping, long id) {
+        final Long found = idToPreviousIdMapping.get(id);
+        if (found.equals(id)) {
+            return id;
+        }
+        return getTrackingStartId(idToPreviousIdMapping, found);
+    }
+
+
+    /**
+     * Gets start of continuous tracking group with index. Continuous group of trackings means tracking chain
+     * with reference to previous tracking.
+     * @param trackings to find group from
+     * @param groupIndex index of group (chain of trackings) 0, 1,... etc
+     * @return First tracking of the tracking group
+     */
+    private MaintenanceTracking getTrackingGroupStart(final List<MaintenanceTracking> trackings, final int groupIndex) {
+        int currentGroupIndex = 0;
+        for (int i = 0; i < trackings.size(); i++) {
+            final MaintenanceTracking t = trackings.get(i);
+            if (t.getPreviousTrackingId() == null && i > 0) {
+                currentGroupIndex++;
+            }
+            if (currentGroupIndex == groupIndex) {
+                // Return first in the currentGroupIndex
+                return trackings.get(i);
+            }
+        }
+        throw new IllegalArgumentException("End not found");
+    }
+
+    /**
+     * Gets end of continuous tracking group with index. Continuous group of trackings means tracking chain
+     * with reference to previous tracking.
+     * @param trackings to find group from
+     * @param groupIndex index of group (chain of trackings) 0, 1,... etc
+     * @return Latest (end) tracking of the tracking group
+     */
+    private MaintenanceTracking getTrackingGroupEnd(final List<MaintenanceTracking> trackings, final int groupIndex) {
+        int currentGroupIndex = 0;
+        for (int i = 0; i < trackings.size(); i++) {
+            final MaintenanceTracking t = trackings.get(i);
+            if (t.getPreviousTrackingId() == null && i > 0) {
+                currentGroupIndex++;
+            }
+            if (currentGroupIndex > groupIndex) {
+                // The end of previous group is previous tracking
+                return trackings.get(i-1);
+            }
+            // If we are in the right group and last tracking, return it
+            if (currentGroupIndex == groupIndex && i == trackings.size()-1) {
+                return trackings.get(i);
+            }
+        }
+        throw new IllegalArgumentException("End not found");
+    }
+
+
+    private List<MaintenanceTracking> findAllMaintenanceTrackings() {
+        return v2MaintenanceTrackingRepository.findAll(Sort.by("startTime"));
+    }
+
+    private LinkedHashMap<Long, List<MaintenanceTracking>> groupTrackingsByStartId(final List<MaintenanceTracking> trackings) {
+        final Map<Long, MaintenanceTracking> idToTrackingMap =
+            trackings.stream().collect(Collectors.toMap(MaintenanceTracking::getId, Function.identity()));
+        LinkedHashMap<Long, List<MaintenanceTracking>> groupsByStartId = new LinkedHashMap<>();
+        trackings.forEach(t -> {
+            // This is the first one to handle
+            if (t.getPreviousTrackingId() == null) {
+                groupsByStartId.put(t.getId(), new ArrayList<>(Collections.singleton(t)));
+            } else {
+                // Find the first in group and add tracking to it's group
+                MaintenanceTracking previous = t;
+                while (previous.getPreviousTrackingId() != null) {
+                    previous = idToTrackingMap.get(previous.getPreviousTrackingId());
+                }
+                groupsByStartId.get(previous.getId()).add(t);
+            }
+        });
+        return groupsByStartId;
+    }
+
+    private void checkAllWorkMachinesExists(final Map<Long, List<MaintenanceTracking>> groups, final int machineCount) {
+        final List<MaintenanceTrackingWorkMachine> wms =
+            groups.values().stream()
+                .map(list -> list.get(0).getWorkMachine())
+                .sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
+                .collect(Collectors.toList());
+        // Check all work machines exists with harjaIds generated sequential from 1 onwards
+        IntStream.range(0, machineCount).forEach(i -> assertEquals(i+1, wms.get(i).getHarjaId().intValue()));
+    }
+
+    private void assertFirstAndSecondGroupDontOverlap(final List<MaintenanceTracking> trackings) {
+        final LinkedHashMap<Long, List<MaintenanceTracking>> groups = groupTrackingsByStartId(trackings);
+        final Iterator<List<MaintenanceTracking>> iter = groups.values().iterator();
+        final List<MaintenanceTracking> firstGroup = iter.next();
+        final MaintenanceTracking firstGroupEnd = firstGroup.get(firstGroup.size()-1);
+        final MaintenanceTracking secondGroupStart = iter.next().get(0);
+        Assertions.assertNotEquals(firstGroupEnd.getEndTime(), secondGroupStart.getStartTime());
+        Assertions.assertNotEquals(firstGroupEnd.getLastPoint(), secondGroupStart.getLineString() != null ? secondGroupStart.getLineString().getStartPoint() : secondGroupStart.getLastPoint());
+    }
+
+    private void assertFirstAndSecondGroupOverlaps(final List<MaintenanceTracking> trackings) {
+        final LinkedHashMap<Long, List<MaintenanceTracking>> groups = groupTrackingsByStartId(trackings);
+        final Iterator<List<MaintenanceTracking>> iter = groups.values().iterator();
+        final List<MaintenanceTracking> firstGroup = iter.next();
+        final MaintenanceTracking firstGroupEnd = firstGroup.get(firstGroup.size()-1);
+        final MaintenanceTracking secondGroupStart = iter.next().get(0);
+        assertEquals(firstGroupEnd.getEndTime(), secondGroupStart.getStartTime());
+        assertEquals(firstGroupEnd.getLastPoint(), secondGroupStart.getLineString() != null ? secondGroupStart.getLineString().getStartPoint() : secondGroupStart.getLastPoint());
+    }
+
 }

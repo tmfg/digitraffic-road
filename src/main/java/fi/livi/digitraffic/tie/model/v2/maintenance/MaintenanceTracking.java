@@ -43,6 +43,9 @@ public class MaintenanceTracking {
     private Long id;
 
     @Column
+    private Long previousTrackingId;
+
+    @Column
     private String sendingSystem;
 
     @Column
@@ -127,6 +130,14 @@ public class MaintenanceTracking {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getPreviousTrackingId() {
+        return previousTrackingId;
+    }
+
+    public void setPreviousTrackingId(final Long previousTrackingId) {
+        this.previousTrackingId = previousTrackingId;
     }
 
     public String getSendingSystem() {
