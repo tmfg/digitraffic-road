@@ -1,10 +1,8 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
-import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
@@ -35,8 +33,8 @@ import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.M
 @Component
 public class MaintenanceTrackingMqttConfigurationV2 {
     // maintenance-v2/trackings/{domain}/{trackingId}
-    public static final String MAINTENANCE_TRACKING_TOPIC = "maintenance-v2/trackings/%s/%d";
-    private static final String MAINTENANCE_TRACKING_STATUS_TOPIC = "maintenance-v2/trackings/status";
+    public static final String MAINTENANCE_TRACKING_V2_TOPIC = "maintenance-v2/trackings/%s/%d";
+    private static final String MAINTENANCE_TRACKING_V2_STATUS_TOPIC = "maintenance-v2/trackings/status";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MaintenanceTrackingMqttConfigurationV2.class);
 
@@ -56,7 +54,7 @@ public class MaintenanceTrackingMqttConfigurationV2 {
 
     public void sendToMqtt(final MaintenanceTrackingLatestFeature feature) {
         try {
-            final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_TOPIC, feature.getProperties().domain, feature.getProperties().getId());
+            final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_V2_TOPIC, feature.getProperties().domain, feature.getProperties().getId());
 
             mqttMessageSender.sendMqttMessages(ZonedDateTime.now(), Collections.singleton(
                 new MqttDataMessageV2(topic, new MqttMaintenanceTrackingMessageV2(feature))));
@@ -86,7 +84,7 @@ public class MaintenanceTrackingMqttConfigurationV2 {
     }
 
     private MqttDataMessageV2 createMqttDataMessage(final MaintenanceTrackingForMqttV2 tracking) {
-        final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_TOPIC, tracking.getDomain(), tracking.getId());
+        final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_V2_TOPIC, tracking.getDomain(), tracking.getId());
 
         return new MqttDataMessageV2(topic, new MqttMaintenanceTrackingMessageV2(tracking));
     }
@@ -94,7 +92,7 @@ public class MaintenanceTrackingMqttConfigurationV2 {
     @Scheduled(fixedDelayString = "${mqtt.status.intervalMs}")
     public void sendStatusMessage() {
         if (mqttMessageSender.acquireLock()) {
-            mqttMessageSender.sendStatusMessage(MAINTENANCE_TRACKING_STATUS_TOPIC);
+            mqttMessageSender.sendStatusMessage(MAINTENANCE_TRACKING_V2_STATUS_TOPIC);
         }
     }
 }
