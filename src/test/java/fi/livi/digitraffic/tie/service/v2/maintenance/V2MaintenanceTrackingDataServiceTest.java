@@ -358,6 +358,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             startTime.toInstant(), startTime.toInstant(),
+            null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
             Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
@@ -394,7 +395,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant(),
+            startTime.toInstant(), startTime.toInstant(), null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
             Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
@@ -425,7 +426,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant(),
+            startTime.toInstant(), startTime.toInstant(), null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
             Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
@@ -460,7 +461,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant(),
+            startTime.toInstant(), startTime.toInstant(), null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
             Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
@@ -483,7 +484,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertEquals(1, handled);
 
         final MaintenanceTrackingFeatureCollection result1 = v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant(),
+            startTime.toInstant(), startTime.toInstant(), null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
             Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
@@ -520,7 +521,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
                                                                               final MaintenanceTrackingTask...tasks) {
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-            start.toInstant(), end.toInstant(),
+            start.toInstant(), end.toInstant(), null, null,
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
             Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));

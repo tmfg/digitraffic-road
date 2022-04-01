@@ -7,7 +7,6 @@ import javax.persistence.QueryHint;
 
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
@@ -24,6 +23,9 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     String STATE_ROADS_DOMAIN = "state-roads";
     String GENERIC_ALL_DOMAINS = "all";
     String GENERIC_MUNICIPALITY_DOMAINS = "municipalities";
+    String MIN_TIMESTAMP = "1971-01-01T00:00Z";
+    String MAX_TIMESTAMP = "2300-01-01T00:00Z";
+    String POLYGON_OVER_FINLAND = "POLYGON((19.0 59.0, 32.0 59.0, 32.0 72.0, 19.0 72.0, 19.0 59.0))";
 
     String DTO_SELECT_FIELDS_WITHOUT_LINE_STRING =
         "SELECT tracking.id\n" +
@@ -42,7 +44,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     String DTO_SELECT_FIELDS_WITH_LINE_STRING =
         DTO_SELECT_FIELDS_WITHOUT_LINE_STRING +
         // ST_Snaptogrid will convert linestring with only same locations ie. [ [a,b], [a,b]] to null -> returns only valid linestrings
-        "     , ST_AsGeoJSON(ST_Simplify(ST_Snaptogrid(tracking.line_string, " + COORDINATE_PRECISION + "), " + SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE + ", true)) AS lineStringJson\n";
+        "     , ST_AsGeoJSON(ST_Simplify(ST_Snaptogrid(tracking.line_string, " + COORDINATE_PRECISION + "), " + SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE + ", TRUE)) AS lineStringJson\n";
 
     String DTO_TABLES =
         "FROM maintenance_tracking tracking\n" +
@@ -60,63 +62,68 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         DTO_TABLES;
 
     /**
-     * EntityGraph causes HHH000104: firstResult/maxResults specified with collection fetch; applying in memory! warnings
+     * EntityGraph causes HHH000104: firstResult/maxResults specified with collection fetch; applying IN memory! warnings
      * @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     */
     MaintenanceTracking findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(final long workMachineHarjaId, final long contractHarjaId);
 
-    @Modifying
-    @Query(nativeQuery = true,
-           value = "INSERT INTO maintenance_tracking_observation_data_tracking(data_id, tracking_id) VALUES (:dataId, :trackingId) ON CONFLICT (data_id, tracking_id) DO NOTHING")
-    void addTrackingObservationData(final long dataId, final long trackingId);
 
+//    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
+//    @Query(value = DTO_LINESTRING_SQL +
+//                   "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +
+//                   "  AND (ST_INTERSECTS(:area, tracking.last_point) = TRUE OR ST_INTERSECTS(:area, tracking.line_string) = TRUE)\n" +
+//                   "  AND tracking.domain IN (:domains) \n" +
+//                   "  AND domain.source IS NOT NULL\n" +
+//                   "  AND (:createdTimefrom IS NULL OR :createdTimefrom < tracking.created)\n" +
+//                   "  AND (:createdTimeTo IS NULL OR :createdTimeTo > tracking.created)\n" +
+//                   "GROUP BY tracking.id, contract.source, domain.source\n" +
+//                   "ORDER BY tracking.id",
+//           nativeQuery = true)
+//    List<MaintenanceTrackingDto> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to,
+//                                                         final ZonedDateTime createdTimefrom, final ZonedDateTime createdTimeTo,
+//                                                         final Geometry area,
+//                                                         final List<String> domains);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LINESTRING_SQL +
-                   "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +
-                   "  AND (ST_INTERSECTS(:area, tracking.last_point) = true OR ST_INTERSECTS(:area, tracking.line_string) = true)\n" +
-                   "  AND tracking.domain in (:domains) \n" +
-                   "  AND domain.source is not null\n" +
-                   "GROUP BY tracking.id, contract.source, domain.source\n" +
-                   "ORDER BY tracking.id",
-           nativeQuery = true)
-    List<MaintenanceTrackingDto> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
-                                                         final List<String> domains);
-
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
-    @Query(value = DTO_LINESTRING_SQL +
-                   "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +
-                   "  AND (ST_INTERSECTS(:area, tracking.last_point) = true or ST_INTERSECTS(:area, tracking.line_string) = true)\n" +
-                   "  AND EXISTS (\n" +
-                   "    SELECT 1\n" +
-                   "    FROM maintenance_tracking_task t\n" +
-                   "    WHERE t.maintenance_tracking_id = tracking.id\n" +
-                   "      AND t.task IN (:tasks)" +
+                   "WHERE cast(coalesce(cast(:endFrom AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) <= tracking.end_time\n" + // inclusive
+                   "  AND cast(coalesce(cast(:endTo AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP) >= tracking.end_time\n" + // inclusive
+                   "  AND cast(coalesce(cast(:createdTimeFrom AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) < tracking.created \n" + // exclusive
+                   "  AND cast(coalesce(cast(:createdTimeTo AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP) > tracking.created\n" + // exclusive
+                   "  AND (:area IS NULL OR ST_INTERSECTS(:area, tracking.last_point) = TRUE OR ST_INTERSECTS(:area, tracking.line_string) = TRUE)\n" +
+                   "  AND ( coalesce(array_length(cast('{' || :tasks || '}' as varchar[]), 1), 0) = 0 OR \n" +
+                   "    EXISTS (\n" +
+                   "      SELECT 1\n" +
+                   "      FROM maintenance_tracking_task t\n" +
+                   "      WHERE t.maintenance_tracking_id = tracking.id\n" +
+                   "        AND t.task IN (:tasks)\n" +
+                   "    )\n" +
                    "  )\n" +
-                   "  AND tracking.domain in (:domains) \n" +
-                   "  AND domain.source is not null\n" +
+                   "  AND tracking.domain IN (:domains)\n" +
+                   "  AND domain.source IS NOT NULL\n" +
                    "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
-    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
-                                                                 final List<String> tasks, final List<String> domains);
+    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime endFrom, final ZonedDateTime endTo,
+                                                                 final ZonedDateTime createdTimeFrom, final ZonedDateTime createdTimeTo,
+                                                                 final Geometry area, final List<String> tasks, final List<String> domains);
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
-    @Query(value = DTO_LAST_POINT_SQL +
-                   "WHERE tracking.id IN (\n" +
-                   "    SELECT MAX(t.id)\n" + // select latest id per machine
-                   "    FROM maintenance_tracking t\n" +
-                   "    WHERE (t.end_time BETWEEN :from AND :to)\n" +
-                   "      AND ST_INTERSECTS(:area, t.last_point) = true\n" +
-                   "    GROUP BY t.work_machine_id\n" +
-                   ")\n" +
-                   "  AND tracking.domain in (:domains) \n" +
-                   "  AND domain.source is not null\n" +
-                   "GROUP BY tracking.id, contract.source, domain.source\n" +
-                   "ORDER by tracking.id",
-           nativeQuery = true)
-    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
-                                                               final List<String> domains);
+//    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
+//    @Query(value = DTO_LAST_POINT_SQL +
+//                   "WHERE tracking.id IN (\n" +
+//                   "    SELECT MAX(t.id)\n" + // select latest id per machine
+//                   "    FROM maintenance_tracking t\n" +
+//                   "    WHERE (t.end_time BETWEEN :from AND :to)\n" +
+//                   "      AND ST_INTERSECTS(:area, t.last_point) = TRUE\n" +
+//                   "    GROUP BY t.work_machine_id\n" +
+//                   ")\n" +
+//                   "  AND tracking.domain IN (:domains) \n" +
+//                   "  AND domain.source IS NOT NULL\n" +
+//                   "GROUP BY tracking.id, contract.source, domain.source\n" +
+//                   "ORDER by tracking.id",
+//           nativeQuery = true)
+//    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
+//                                                               final List<String> domains);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LAST_POINT_SQL +
@@ -124,17 +131,19 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "    SELECT max(t.id)\n" + // select latest id per machine
                    "    FROM maintenance_tracking t\n" +
                    "    WHERE (t.end_time BETWEEN :from AND :to)\n" +
-                   "      AND ST_INTERSECTS(:area, t.last_point) = true\n" +
+                   "      AND ST_INTERSECTS(:area, t.last_point) = TRUE\n" +
                    "    GROUP BY t.work_machine_id\n" +
-                   ")\n" +
-                   "  AND EXISTS (\n" +
-                   "    SELECT 1\n" +
-                   "    FROM maintenance_tracking_task t\n" +
-                   "    WHERE t.maintenance_tracking_id = tracking.id\n" +
-                   "      AND t.task IN (:tasks)" +
                    "  )\n" +
-                   "  AND tracking.domain in (:domains) \n" +
-                   "  AND domain.source is not null\n" +
+                   "  AND (:tasks IS null OR " +
+                   "    EXISTS (\n" +
+                   "      SELECT 1\n" +
+                   "      FROM maintenance_tracking_task t\n" +
+                   "      WHERE t.maintenance_tracking_id = tracking.id\n" +
+                   "        AND t.task IN (:tasks)" +
+                   "    )\n" +
+                   "  )\n" +
+                   "  AND tracking.domain IN (:domains) \n" +
+                   "  AND domain.source IS NOT NULL\n" +
                    "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER by tracking.id",
            nativeQuery = true)
@@ -143,7 +152,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
 
     @Query(value = DTO_LINESTRING_SQL +
                    "WHERE tracking.id = :id\n" +
-                   "  AND domain.source is not null\n" +
+                   "  AND domain.source IS NOT NULL\n" +
                    "GROUP BY tracking.id, contract.source, domain.source",
            nativeQuery = true)
     MaintenanceTrackingDto getDto(long id);
@@ -153,7 +162,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "     , source\n" +
         "     , case when name = '" + STATE_ROADS_DOMAIN + "' then 0 else ROW_NUMBER() OVER (ORDER BY name) end AS rnum\n" +
         "from maintenance_tracking_domain\n" +
-        "where source is not null\n" +
+        "where source IS NOT NULL\n" +
         "UNION\n" +
         "SELECT '" + GENERIC_ALL_DOMAINS + "', 'All domains', -2\n" +
         "UNION\n" +
@@ -165,7 +174,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @Query(value =
         "select name\n" +
         "from maintenance_tracking_domain\n" +
-        "where source is not null\n" +
+        "where source IS NOT NULL\n" +
         "order by name",
         nativeQuery = true)
     List<String> getRealDomainNames();

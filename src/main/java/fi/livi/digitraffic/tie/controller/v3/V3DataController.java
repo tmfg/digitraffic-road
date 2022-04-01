@@ -56,6 +56,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
@@ -410,7 +411,7 @@ public class V3DataController {
     final List<MaintenanceTrackingTask> taskIds) {
 
         MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, null, 24);
-        final Pair<Instant, Instant> fromTo = MaintenanceTrackingController.getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
+        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
 
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
@@ -459,9 +460,11 @@ public class V3DataController {
         final List<MaintenanceTrackingTask> taskIds) {
 
         MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, to, 24);
-        Pair<Instant, Instant> fromTo = MaintenanceTrackingController.getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            fromTo.getLeft(), fromTo.getRight(), null, null,
+            xMin, yMin, xMax, yMax, taskIds, null);
     }
 
     @ApiOperation(value = "Road maintenance tracking data with tracking id")
@@ -488,4 +491,18 @@ public class V3DataController {
     public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
         return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(id);
     }
+
+    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final ZonedDateTime from, final ZonedDateTime to, final int defaultHoursOfHistory) {
+        return getFromAndToParamsIfNotSetWithHoursOfHistory(DateHelper.toInstant(from), DateHelper.toInstant(to), defaultHoursOfHistory);
+    }
+
+    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(Instant from, Instant to, final int defaultHoursOfHistory) {
+        // Make sure newest is also fetched
+        final Instant now = Instant.now();
+        final Instant fromParam = from != null ? from : now.minus(defaultHoursOfHistory, HOURS);
+        // Just to be sure all events near now in future will be fetched
+        final Instant toParam = to != null ? to : now.plus(1, HOURS);
+        return Pair.of(fromParam, toParam);
+    }
+
 }

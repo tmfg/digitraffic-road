@@ -83,9 +83,15 @@ public class V2MaintenanceTrackingDataService {
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
-                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertToRealDomainNames(domains)) :
-                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertTasksToStringArray(taskIds), convertToRealDomainNames(domains));
+        final List<MaintenanceTrackingDto> found = //taskIds == null || taskIds.isEmpty() ?
+//                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), area, convertToRealDomainNames(domains)) :
+                                                   v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(
+                                                       toZonedDateTimeAtUtc(endTimefrom),
+                                                       toZonedDateTimeAtUtc(endTimeto),
+                                                       area,
+                                                       convertTasksToStringArrayOrNull(taskIds),
+                                                       convertToRealDomainNames(domains));
+
         log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
 
@@ -95,6 +101,7 @@ public class V2MaintenanceTrackingDataService {
 
     @Transactional(readOnly = true)
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeTo,
+                                                                         final Instant createdTimeFrom, final Instant createdTimeTo,
                                                                          final double xMin, final double yMin,
                                                                          final double xMax, final double yMax,
                                                                          final List<MaintenanceTrackingTask> taskIds,
@@ -105,9 +112,12 @@ public class V2MaintenanceTrackingDataService {
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceTrackingDto> found = taskIds == null || taskIds.isEmpty() ?
-                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, convertToRealDomainNames(domains)) :
-                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), area, convertTasksToStringArray(taskIds), convertToRealDomainNames(domains));
+        final List<MaintenanceTrackingDto> found = //taskIds == null || taskIds.isEmpty() ?
+                                                   //v2MaintenanceTrackingRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), toZonedDateTimeAtUtc(createdTimeFrom), toZonedDateTimeAtUtc(createdTimeTo), area, convertToRealDomainNames(domains)) :
+                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(
+                                                       toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo),
+                                                       toZonedDateTimeAtUtc(createdTimeFrom), toZonedDateTimeAtUtc(createdTimeTo),
+                                                       area, convertTasksToStringArrayOrNull(taskIds), convertToRealDomainNames(domains));
 
         log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
                  xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), start.getTime());
@@ -160,7 +170,10 @@ public class V2MaintenanceTrackingDataService {
         return v2MaintenanceTrackingRepository.getDomainsWithGenerics();
     }
 
-    private List<String> convertTasksToStringArray(final List<MaintenanceTrackingTask> taskIds) {
+    private List<String> convertTasksToStringArrayOrNull(final List<MaintenanceTrackingTask> taskIds) {
+        if (taskIds == null || taskIds.isEmpty()) {
+            return Collections.emptyList();
+        }
         return taskIds.stream().map(Enum::name).collect(Collectors.toList());
     }
 

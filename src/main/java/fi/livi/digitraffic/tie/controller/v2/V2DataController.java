@@ -15,6 +15,7 @@ import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_X;
 import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_X_TXT;
 import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_Y;
 import static fi.livi.digitraffic.tie.controller.v3.V3DataController.RANGE_Y_TXT;
+import static fi.livi.digitraffic.tie.controller.v3.V3DataController.getFromAndToParamsIfNotSetWithHoursOfHistory;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
@@ -379,7 +380,7 @@ public class V2DataController {
     final List<MaintenanceTrackingTask> taskIds) {
 
         MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, null, 24);
-        Pair<Instant, Instant> fromTo = MaintenanceTrackingController.getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
 
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
@@ -428,9 +429,11 @@ public class V2DataController {
         final List<MaintenanceTrackingTask> taskIds) {
 
         MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, to, 24);
-        Pair<Instant, Instant> fromTo = MaintenanceTrackingController.getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            fromTo.getLeft(), fromTo.getRight(), null, null,
+            xMin, yMin, xMax, yMax, taskIds, null);
     }
 
     @ApiOperation(value = "Road maintenance tracking data with tracking id")

@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS maintenance_tracking_search ON maintenance_tracking USING btree (end_time, created, domain, work_machine_id);
