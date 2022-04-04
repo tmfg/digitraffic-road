@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
+import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 
 import java.time.Instant;
@@ -8,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.locationtech.jts.geom.Polygon;
@@ -177,10 +179,15 @@ public class V2MaintenanceTrackingDataService {
         return v3MaintenanceTrackingObservationDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
             try {
                 return objectMapper.readTree(j);
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<MaintenanceTrackingForMqttV2> findTrackingsForNonStateRoads(final ZonedDateTime from) {
+        return v2MaintenanceTrackingRepository.findTrackingsForNonStateRoads(from);
     }
 
     private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {
@@ -197,9 +204,10 @@ public class V2MaintenanceTrackingDataService {
             new MaintenanceTrackingProperties(tracking.getId(),
                 tracking.getPreviousId(),
                 tracking.getWorkMachineId(),
-                toZonedDateTimeAtUtc(tracking.getSendingTime()),
-                toZonedDateTimeAtUtc(tracking.getStartTime()),
-                toZonedDateTimeAtUtc(tracking.getEndTime()),
+                tracking.getSendingTime(),
+                tracking.getStartTime(),
+                tracking.getEndTime(),
+                tracking.getCreated(),
                 tracking.getTasks(), tracking.getDirection(),
                 tracking.getDomain(),
                 tracking.getSource());
@@ -210,7 +218,8 @@ public class V2MaintenanceTrackingDataService {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, true);
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
-                                                    toZonedDateTimeAtUtc(tracking.getEndTime()),
+                                                    tracking.getEndTime(),
+                                                    tracking.getCreated(),
                                                     tracking.getTasks(), tracking.getDirection(),
                                                     tracking.getDomain(),
                                                     tracking.getSource());
@@ -221,10 +230,11 @@ public class V2MaintenanceTrackingDataService {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, true);
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
-                toZonedDateTimeAtUtc(tracking.getEndTime()),
+                tracking.getEndTime().toInstant(),
+                tracking.getCreated().toInstant(),
                 tracking.getTasks(), tracking.getDirection(),
                 tracking.getDomain(),
-                null);
+                "Harja/Väylävirasto"); // Temporally fix, waiting for DPO-1724
         return new MaintenanceTrackingLatestFeature(geometry, properties);
     }
 
@@ -256,14 +266,14 @@ public class V2MaintenanceTrackingDataService {
             return PostgisGeometryHelper.convertToGeoJSONGeometry(tracking.getLastPoint());
         } else {
             return PostgisGeometryHelper.convertToGeoJSONGeometry(
-                TopologyPreservingSimplifier.simplify(tracking.getLineString(), 0.00005));
+                TopologyPreservingSimplifier.simplify(tracking.getLineString(), SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE));
         }
     }
 
     private static Geometry<?> readGeometry(final String json) {
         try {
             return geometryReader.readValue(json);
-        } catch (JsonProcessingException e) {
+        } catch (final JsonProcessingException e) {
             log.error(String.format("Error while converting json geometry to GeoJson: %s", json), e);
             return null;
         }

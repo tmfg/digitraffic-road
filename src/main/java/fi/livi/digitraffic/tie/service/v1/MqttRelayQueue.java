@@ -111,11 +111,10 @@ public class MqttRelayQueue {
     @Scheduled(fixedRate = 60000)
     public void logMessageCount() {
         for (final StatisticsType type : StatisticsType.values()) {
-
             final Integer sentMessages = sentStatisticsMap.put(type, 0);
             final Integer sendErrors = sendErrorStatisticsMap.put(type, 0);
 
-            logger.info("method=logMessageCount Mqtt message statistics for type={} send messages={} errors={}", type, sentMessages != null ? sentMessages : 0, sendErrors != null ? sendErrors : 0);
+            logger.info("method=logMessageCount type={} messages={} errors={}", type, sentMessages != null ? sentMessages : 0, sendErrors != null ? sendErrors : 0);
         }
     }
 }

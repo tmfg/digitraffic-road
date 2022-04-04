@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.helper;
 
+import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -137,7 +139,7 @@ public class PostgisGeometryHelper {
 
     public static Geometry fixGeometry(final Geometry geometry) {
         // This fixes some issues but not all (ie. if there is linestring with two identical points)
-        final Geometry g = DouglasPeuckerSimplifier.simplify(geometry, 0.00005);
+        final Geometry g = DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
         if (!g.isValid()) {
             // First try keeping collapsed geometries
             final GeometryFixer fixer = new GeometryFixer(g);

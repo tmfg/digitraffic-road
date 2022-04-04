@@ -75,7 +75,7 @@ public class V2Datex2JsonConverter {
             final List<TrafficAnnouncement> announcementsWithAreas =
                 feature.getProperties().announcements.stream().filter(a -> a != null && a.containsAreaLocation()).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
-                    feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
+                    feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime,
                         announcementsWithAreas.stream()
                             .map(withArea ->
                                 withArea.locationDetails.areaLocation.areas.stream()
@@ -139,7 +139,7 @@ public class V2Datex2JsonConverter {
             final String joinedViolations = violations.stream()
                 .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
                 .collect(Collectors.joining(","));
-            throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
+            throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature, "ignoreClassToPropertiesMap"));
         }
     }
 

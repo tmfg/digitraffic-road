@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfigurationV2;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
@@ -37,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.conf.MaintenanceTrackingMqttConfiguration;
+import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfiguration;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
@@ -70,6 +71,7 @@ public class V3MaintenanceTrackingUpdateService {
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     private final DataStatusService dataStatusService;
     private final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration;
+    private final MaintenanceTrackingMqttConfigurationV2 maintenanceTrackingMqttConfigurationV2;
     private static int distinctObservationGapMinutes;
     private static double distinctLineStringObservationGapKm;
     private final ObjectWriter jsonWriterForHavainto;
@@ -80,12 +82,10 @@ public class V3MaintenanceTrackingUpdateService {
                                               final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository,
                                               final ObjectMapper objectMapper,
                                               final DataStatusService dataStatusService,
-                                              @Autowired(required = false)
-                                              final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration,
-                                              @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
-                                              final int distinctObservationGapMinutes,
-                                              @Value("${workmachine.tracking.distinct.linestring.observationgap.km}")
-                                              final double distinctLineStringObservationGapKm) {
+                                              @Autowired(required = false) final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration,
+                                              @Autowired(required = false) final MaintenanceTrackingMqttConfigurationV2 maintenanceTrackingMqttConfigurationV2,
+                                              @Value("${workmachine.tracking.distinct.observation.gap.minutes}") final int distinctObservationGapMinutes,
+                                              @Value("${workmachine.tracking.distinct.linestring.observationgap.km}") final double distinctLineStringObservationGapKm) {
         this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
         this.v2MaintenanceTrackingWorkMachineRepository = v2MaintenanceTrackingWorkMachineRepository;
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
@@ -93,6 +93,7 @@ public class V3MaintenanceTrackingUpdateService {
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
         this.dataStatusService = dataStatusService;
         this.maintenanceTrackingMqttConfiguration = maintenanceTrackingMqttConfiguration;
+        this.maintenanceTrackingMqttConfigurationV2 = maintenanceTrackingMqttConfigurationV2;
         V3MaintenanceTrackingUpdateService.distinctObservationGapMinutes = distinctObservationGapMinutes;
         V3MaintenanceTrackingUpdateService.distinctLineStringObservationGapKm = distinctLineStringObservationGapKm;
     }
@@ -241,10 +242,8 @@ public class V3MaintenanceTrackingUpdateService {
     }
 
     private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
-        if (maintenanceTrackingMqttConfiguration == null) {
-            return;
-        }
-        if (tracking != null) {
+        if ((maintenanceTrackingMqttConfiguration != null || maintenanceTrackingMqttConfigurationV2 != null)
+            && tracking != null) {
             try {
                 final MaintenanceTrackingLatestFeature feature =
                     V2MaintenanceTrackingDataService.convertToTrackingLatestFeature(tracking);
@@ -252,8 +251,15 @@ public class V3MaintenanceTrackingUpdateService {
                 final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geoJsonGeom = PostgisGeometryHelper.convertToGeoJSONGeometry(lastPoint);
                 feature.setGeometry(geoJsonGeom);
                 feature.getProperties().setDirection(direction);
-                feature.getProperties().setTime(observationTime);
-                maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
+                feature.getProperties().setTime(observationTime.toInstant());
+
+                if (maintenanceTrackingMqttConfiguration != null) {
+                    maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
+                }
+
+                if (maintenanceTrackingMqttConfigurationV2 != null) {
+                    maintenanceTrackingMqttConfigurationV2.sendToMqtt(feature);
+                }
             } catch (final Exception e) {
                 log.error("Error while appending tracking {} to mqtt", tracking.toStringTiny());
             }
@@ -449,7 +455,7 @@ public class V3MaintenanceTrackingUpdateService {
             } catch (JsonProcessingException e) {
                 log.error("Failed to convert havainto to json", e);
             }
-            log.warn("method=splitLineStringsWithGaps Distance between points: {}The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
+            log.warn("method=splitLineStringsWithGaps Distance between points: {} The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
                      sb, distinctLineStringObservationGapKm, kirjausOtsikkoJson, havaintoJson);
         }
 

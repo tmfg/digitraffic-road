@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.data.controller;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_HISTORY_DATA_PATH;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -53,7 +54,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
     @BeforeEach
     public void roadStationMock() {
         when(roadStationRepositoryMock.findByRoadStationId(anyLong())).thenAnswer(
-            (Answer) invocationOnMock -> {
+            (Answer<?>) invocationOnMock -> {
                 Object[] args = invocationOnMock.getArguments();
 
                 return Optional.of((Long)args[0]);
@@ -71,7 +72,7 @@ public class WeatherDataHistoryControllerTest extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", not(hasSize(0))))
             .andExpect(jsonPath("$.[?(@.roadStationId != 20000)]", hasSize(0)))
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test

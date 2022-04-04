@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.controller;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_DATA_PATH;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -67,7 +68,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.tmsStations", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].id", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
         ;
     }
 
@@ -83,7 +84,7 @@ public class TmsStationDataControllerRestWebTest extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].name", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.tmsStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
         ;
     }
 }

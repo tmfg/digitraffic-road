@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.data.controller;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_DATA_PATH;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,7 +16,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.ResultActions;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
@@ -62,10 +62,8 @@ public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest
     @Test
     public void testWeatherDataRestApi() throws Exception {
 
-        final ResultActions result =
-            mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + WEATHER_DATA_PATH));
-        System.out.println(result.andReturn().getResponse().getContentAsString());
-            result.andExpect(status().isOk())
+        mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + WEATHER_DATA_PATH))
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations", Matchers.notNullValue()))
@@ -77,7 +75,7 @@ public class WeatherStationDataControllerRestWebTest extends AbstractRestWebTest
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].id", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].sensorValue", Matchers.notNullValue()))
                 .andExpect(jsonPath("$.weatherStations[0].sensorValues[0].sensorUnit", Matchers.isA(String.class)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER)
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
         ;
     }
 

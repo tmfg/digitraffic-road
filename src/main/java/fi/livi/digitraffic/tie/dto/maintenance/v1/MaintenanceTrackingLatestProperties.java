@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.dto.maintenance.v1;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Set;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
@@ -16,7 +16,10 @@ public class MaintenanceTrackingLatestProperties extends Properties {
     private final long id;
 
     @ApiModelProperty(value = "Time of latest tracking", required = true)
-    private ZonedDateTime time;
+    private Instant time;
+
+    @ApiModelProperty(value = "Creation time of tracking", required = true)
+    public final Instant created;
 
     @ApiModelProperty(value = "Tasks done during maintenance work", required = true)
     public final Set<MaintenanceTrackingTask> tasks;
@@ -30,11 +33,12 @@ public class MaintenanceTrackingLatestProperties extends Properties {
     @ApiModelProperty(value = "Source and owner of the data")
     public String source;
 
-    public MaintenanceTrackingLatestProperties(final long id, final ZonedDateTime time,
+    public MaintenanceTrackingLatestProperties(final long id, final Instant time, final Instant created,
                                                final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
                                                final String domain, final String source) {
         this.id = id;
         this.time = time;
+        this.created = created;
         this.tasks = tasks;
         this.direction = direction;
         this.domain = domain;
@@ -53,11 +57,11 @@ public class MaintenanceTrackingLatestProperties extends Properties {
         return direction;
     }
 
-    public ZonedDateTime getTime() {
+    public Instant getTime() {
         return time;
     }
 
-    public void setTime(final ZonedDateTime time) {
+    public void setTime(final Instant time) {
         this.time = time;
     }
 }

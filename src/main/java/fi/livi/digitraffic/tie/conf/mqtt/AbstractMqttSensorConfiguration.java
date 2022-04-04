@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.conf;
+package fi.livi.digitraffic.tie.conf.mqtt;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,10 +55,12 @@ public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfig
         final List<SensorValueDto> sensorValues =
             roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(getLastUpdated(), roadStationType);
 
-        return sensorValues.stream().map(sv ->
-            new DataMessage(DateHelper.getNewestAtUtc(getLastUpdated(), sv.getUpdatedTime()),
-                            getTopic(sv.getRoadStationNaturalId(), sv.getSensorNaturalId()),
-                            sv))
-            .collect(Collectors.toList());
+        return sensorValues.stream().map(this::createDataMessage).collect(Collectors.toList());
+    }
+
+    private DataMessage createDataMessage(final SensorValueDto sv) {
+        return new DataMessage(DateHelper.getNewestAtUtc(getLastUpdated(), sv.getUpdatedTime()),
+            getTopic(sv.getRoadStationNaturalId(), sv.getSensorNaturalId()),
+            sv);
     }
 }

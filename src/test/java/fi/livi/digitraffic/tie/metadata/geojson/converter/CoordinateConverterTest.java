@@ -4,7 +4,9 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_X_MIN;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y_MAX;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y_MIN;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -130,7 +132,7 @@ public class CoordinateConverterTest {
     private Point convertFromWGS84ToETRS89(double x, double y) {
         final Point from = new Point(x, y);
         final Point to = CoordinateConverter.convertFromWGS84ToETRS89(from);
-        System.out.println("From: " + from + "\nTo:   " + to);
+        log.info("From: " + from + "\nTo:   " + to);
 
         return to;
     }

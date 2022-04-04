@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.service.jms;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.helper.DateHelper.withoutNanos;
+import static fi.livi.digitraffic.tie.helper.DateHelper.withoutMillis;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
@@ -152,8 +152,8 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
             assertTrue(situationComment.contains(announcement.title),
                 String.format("Feature title \"%s\" should exist in situation comment \"%s\"", announcement.title, situationComment));
-            assertEquals(withoutNanos(announcement.timeAndDuration.startTime.toInstant()),
-                         withoutNanos(situationRecord.getValidity().getValidityTimeSpecification().getOverallStartTime()));
+            assertEquals(withoutMillis(announcement.timeAndDuration.startTime),
+                         withoutMillis(situationRecord.getValidity().getValidityTimeSpecification().getOverallStartTime()));
         }
     }
 

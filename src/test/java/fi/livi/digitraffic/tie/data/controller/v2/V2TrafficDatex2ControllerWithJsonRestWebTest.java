@@ -94,8 +94,8 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
         assertTextExistInMessage(incident2_active_estimated_minimum, json);
         assertTextExistInMessage(incident3_active_estimated_minimum, json);
         assertTextExistInMessage(incident3_active_estimated_maximum, json);
-        assertTimesFormatMatches(xml);
-        assertTimesFormatMatches(json);
+        assertTimesFormatMatchesIsoDateTimeWithZ(xml);
+        assertTimesFormatMatchesIsoDateTimeWithZ(json);
     }
 
     @Test

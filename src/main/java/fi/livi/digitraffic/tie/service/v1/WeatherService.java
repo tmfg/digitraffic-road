@@ -2,26 +2,25 @@ package fi.livi.digitraffic.tie.service.v1;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherStationDto;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.SensorValueHistory;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -140,7 +139,7 @@ public class WeatherService {
             .map(obj -> new WeatherSensorValueHistoryDto(mapId,
                 obj.getSensorId(),
                 obj.getSensorValue(),
-                obj.getMeasuredTime()))
+                DateHelper.toInstantWithOutMillis(obj.getMeasuredTime())))
             .collect(Collectors.toList());
     }
 

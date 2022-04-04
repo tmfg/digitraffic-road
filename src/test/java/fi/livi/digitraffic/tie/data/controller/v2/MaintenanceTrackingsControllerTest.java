@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.data.controller;
+package fi.livi.digitraffic.tie.data.controller.v2;
 
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
@@ -6,6 +6,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.MAINTENANCE_TRACKINGS_PATH;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_X;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.RANGE_Y;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
@@ -13,9 +14,7 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneHourInPast;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithTasks;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -104,14 +103,12 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // First tracking
-        getTrackingsJson(
-            start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount)))
-            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_FORMAT_RESULT_MATCHER);
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount)
+                .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist())
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test
@@ -130,28 +127,22 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // First tracking
-        getTrackingsJson(
-            start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(firstHalfMachines.size())));
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), firstHalfMachines.size());
 
         // Second tracking
-        getTrackingsJson(
-            start.plusMinutes(10).toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(secondHalfMachines.size())));
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                start.plusMinutes(10).toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), secondHalfMachines.size());
 
         // Both
-        getTrackingsJson(
-            start.toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount)));
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                start.toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount);
     }
 
     @Test
@@ -175,20 +166,16 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // find with first task should only find the first tracking for machine 1.
-        getTrackingsJson(
-            start.toInstant(), start.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(1)));
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                start.toInstant(), start.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 1);
 
         // Search with second task should return trackings for machine 1. and 2.
-        getTrackingsJson(
-            start.toInstant(), start.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(2)));
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                start.toInstant(), start.plusMinutes(9).toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 2);
     }
 
     private static MaintenanceTrackingTask getTaskByharjaEnumName(final String harjaTaskEnumName) {
@@ -222,12 +209,11 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         log.info("Machine count {}", machineCount);
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
-        final ResultActions latestResult = getLatestTrackingsJson(
-            start.toInstant(), new HashSet<>(),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount)));
+        final ResultActions latestResult =
+            expectOkFeatureCollectionWithSize(
+                getLatestTrackingsJson(
+                    start.toInstant(), new HashSet<>(),
+                    RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount);
         IntStream.range(0, machineCount).forEach(i -> {
             try {
                 latestResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("Point")));
@@ -236,12 +222,11 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
             }
         });
         // When getting all trackings we should all 5 trackings per machine -> result of machineCount*5
-        final ResultActions trackingResult = getTrackingsJson(
-            start.toInstant(), start.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount * 5)));
+        final ResultActions trackingResult =
+            expectOkFeatureCollectionWithSize(
+                getTrackingsJson(
+                    start.toInstant(), start.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
+                    RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount * 5);
          IntStream.range(0, machineCount * 5).forEach(i -> {
              try {
                  trackingResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("LineString")));
@@ -277,12 +262,10 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         log.info("Machine count {}", machineCount);
 
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
-        final ResultActions latestResult = getLatestTrackingsJson(
-            start.toInstant(), new HashSet<>(Collections.singleton(MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[4].name()))),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount)));
+        expectOkFeatureCollectionWithSize(
+            getLatestTrackingsJson(
+                start.toInstant(), new HashSet<>(Collections.singleton(MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[4].name()))),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount);
     }
 
     @Test
@@ -302,18 +285,14 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         log.info(pointWGS84.toString());
         // The only tracking should be found when it's inside the bounding box
-        getTrackingsJson(
-            now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
-            RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(1)));
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 1);
         // The only tracking should not be found when it's not inside the bounding box
-        getTrackingsJson(
-            now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
-            pointWGS84.getLongitude()+0.1, pointWGS84.getLatitude()+0.1, RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(0)));
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                now.toInstant(), now.plusMinutes(4 * 10 + 9).toInstant(), new HashSet<>(),
+                pointWGS84.getLongitude()+0.1, pointWGS84.getLatitude()+0.1, RANGE_X.getRight(), RANGE_Y.getRight()), 0);
     }
 }
