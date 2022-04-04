@@ -1,6 +1,6 @@
-CREATE SEQUENCE permit_id_seq;
+CREATE SEQUENCE IF NOT EXISTS permit_id_seq;
 
-CREATE TABLE permit
+CREATE TABLE IF NOT EXISTS permit
 (
   id             INTEGER DEFAULT NEXTVAL('permit_id_seq') PRIMARY KEY,
   source_id      TEXT                     NOT NULL,
