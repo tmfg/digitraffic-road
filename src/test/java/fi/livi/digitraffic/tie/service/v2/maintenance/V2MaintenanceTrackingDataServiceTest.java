@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.v2.maintenance;
 import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
 import static fi.livi.digitraffic.tie.TestUtils.getRandom;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
+import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUS_JA_SOHJONPOISTO;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
@@ -36,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,8 +70,10 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingProperties;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -89,12 +94,75 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     @Autowired
     private V3MaintenanceTrackingServiceTestHelper testHelper;
 
+    @Autowired
+    private V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
+
     @AfterEach
     @BeforeEach
     public void init() {
         testHelper.clearDb();
         testHelper.deleteDomains(DOMAIN_WITH_SOURCE, DOMAIN_WITHOUT_SOURCE);
         commitAndEndTransactionAndStartNew();
+    }
+
+    @Test
+    public void findTrackingsWithCreationTime() throws JsonProcessingException {
+        final ZonedDateTime start = getStartTimeOneHourInPast();
+        final ZonedDateTime created = start.plusMinutes(30);
+        final List<Tyokone> workMachines1 = createWorkMachines(1);
+        final List<Tyokone> workMachines2 = createWorkMachines(1);
+        // startTime == endTime == start
+        final TyokoneenseurannanKirjausRequestSchema seuranta1 =
+            createMaintenanceTrackingWithLineString(start, 10, 1, 1, workMachines1, ASFALTOINTI);
+        // startTime == endTime == created
+        final TyokoneenseurannanKirjausRequestSchema seuranta2 =
+            createMaintenanceTrackingWithLineString(created, 10, 2,1, workMachines2, ASFALTOINTI);
+
+        testHelper.saveTrackingDataAsObservations(seuranta1);
+        testHelper.saveTrackingDataAsObservations(seuranta2);
+
+        testHelper.handleUnhandledWorkMachineObservations(1000);
+        entityManager.flush();
+        entityManager.clear();
+        entityManager.createNativeQuery("update maintenance_tracking set created = :created where domain=:domain")
+            .setParameter("created", created)
+            .setParameter("domain", STATE_ROADS_DOMAIN)
+            .executeUpdate();
+
+        final List<MaintenanceTracking> all = v2MaintenanceTrackingRepository.findAll(Sort.by("endTime"));
+        assertCollectionSize(2, all);
+
+        final MaintenanceTracking first = all.get(0);
+        final MaintenanceTracking second = all.get(1);
+
+        // start is exlusive -> nothing to return
+        assertCollectionSize(0, findMaintenanceTrackings(
+            null, null,
+            created.toInstant(), created.plusMinutes(1).toInstant()).getFeatures());
+
+        // end is exclusive -> nothing to return
+        assertCollectionSize(0, findMaintenanceTrackings(
+            null, null,
+            created.minusMinutes(1).toInstant(), created.toInstant()).getFeatures());
+
+        // Both are created at the same time -> both are returned
+        assertCollectionSize(2, findMaintenanceTrackings(
+            null, null,
+            created.toInstant().minusSeconds(1), created.plusMinutes(1).toInstant()).getFeatures());
+
+        // Created match both and endTime only first
+        final List<MaintenanceTrackingFeature> firstFound = findMaintenanceTrackings(
+            start.toInstant(), start.toInstant(),
+            created.toInstant().minusSeconds(1), created.plusMinutes(1).toInstant()).getFeatures();
+        assertCollectionSize(1, firstFound);
+        assertEquals(first.getId(), firstFound.get(0).getProperties().id);
+
+        // Created match both and endTime only first
+        final List<MaintenanceTrackingFeature> secondFound = findMaintenanceTrackings(
+            created.toInstant(), created.toInstant(),
+            created.toInstant().minusSeconds(1), created.plusMinutes(1).toInstant()).getFeatures();
+        assertCollectionSize(1, secondFound);
+        assertEquals(second.getId(), secondFound.get(0).getProperties().id);
     }
 
     @Test
@@ -361,7 +429,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
+            Collections.singletonList(STATE_ROADS_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -398,7 +466,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(), null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
+            Collections.singletonList(STATE_ROADS_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -429,7 +497,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(), null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
+            Collections.singletonList(STATE_ROADS_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -464,7 +532,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(), null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
+            Collections.singletonList(STATE_ROADS_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -487,7 +555,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(), null, null,
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
+            Collections.singletonList(STATE_ROADS_DOMAIN));
         final MaintenanceTrackingFeature feature1 = result1.getFeatures().get(0);
 
         final MaintenanceTrackingFeature feature2 =
@@ -518,26 +586,32 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         });
     }
 
-    private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
-                                                                              final MaintenanceTrackingTask...tasks) {
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-            start.toInstant(), end.toInstant(), null, null,
-            RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
-            asList(tasks),
-            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
-    }
-
     private MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
                                                                                       final MaintenanceTrackingTask...tasks) {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
-            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
+            Collections.singletonList(STATE_ROADS_DOMAIN));
     }
 
     private void assertAllHasOnlyPointGeometries(final List<MaintenanceTrackingLatestFeature> features) {
         features.forEach(f -> assertEquals(Point, f.getGeometry().getType()));
+    }
+
+    private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
+                                                                          final MaintenanceTrackingTask...tasks) {
+        return findMaintenanceTrackings(DateHelper.toInstant(start), DateHelper.toInstant(end), null, null, tasks);
+    }
+
+    private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endFrom, final Instant endTo,
+                                                                          final Instant changeFrom, final Instant changeTo,
+                                                                          final MaintenanceTrackingTask...tasks) {
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            endFrom, endTo, changeFrom, changeTo,
+            RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
+            asList(tasks),
+            Collections.singletonList(STATE_ROADS_DOMAIN));
     }
 
     private long insertTrackingForDomain(final String domain, final long workMachineId) {

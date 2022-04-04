@@ -67,29 +67,12 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     */
     MaintenanceTracking findFirstByWorkMachine_HarjaIdAndWorkMachine_HarjaUrakkaIdAndFinishedFalseOrderByModifiedDescIdDesc(final long workMachineHarjaId, final long contractHarjaId);
 
-
-//    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
-//    @Query(value = DTO_LINESTRING_SQL +
-//                   "WHERE (tracking.end_time BETWEEN :from AND :to)\n" +
-//                   "  AND (ST_INTERSECTS(:area, tracking.last_point) = TRUE OR ST_INTERSECTS(:area, tracking.line_string) = TRUE)\n" +
-//                   "  AND tracking.domain IN (:domains) \n" +
-//                   "  AND domain.source IS NOT NULL\n" +
-//                   "  AND (:createdTimefrom IS NULL OR :createdTimefrom < tracking.created)\n" +
-//                   "  AND (:createdTimeTo IS NULL OR :createdTimeTo > tracking.created)\n" +
-//                   "GROUP BY tracking.id, contract.source, domain.source\n" +
-//                   "ORDER BY tracking.id",
-//           nativeQuery = true)
-//    List<MaintenanceTrackingDto> findByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to,
-//                                                         final ZonedDateTime createdTimefrom, final ZonedDateTime createdTimeTo,
-//                                                         final Geometry area,
-//                                                         final List<String> domains);
-
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LINESTRING_SQL +
-                   "WHERE cast(coalesce(cast(:endFrom AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) <= tracking.end_time\n" + // inclusive
-                   "  AND cast(coalesce(cast(:endTo AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP) >= tracking.end_time\n" + // inclusive
-                   "  AND cast(coalesce(cast(:createdTimeFrom AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) < tracking.created \n" + // exclusive
-                   "  AND cast(coalesce(cast(:createdTimeTo AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP) > tracking.created\n" + // exclusive
+                   "WHERE cast(coalesce(cast(:endFromInclusive AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) <= tracking.end_time\n" + // inclusive
+                   "  AND cast(coalesce(cast(:endToInclusive AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP) >= tracking.end_time\n" + // inclusive
+                   "  AND cast(coalesce(cast(:createdFromExclusive AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) < tracking.created \n" + // exclusive
+                   "  AND cast(coalesce(cast(:createdToExclusive AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP) > tracking.created\n" + // exclusive
                    "  AND (:area IS NULL OR ST_INTERSECTS(:area, tracking.last_point) = TRUE OR ST_INTERSECTS(:area, tracking.line_string) = TRUE)\n" +
                    "  AND ( coalesce(array_length(cast('{' || :tasks || '}' as varchar[]), 1), 0) = 0 OR \n" +
                    "    EXISTS (\n" +
@@ -104,26 +87,10 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "GROUP BY tracking.id, contract.source, domain.source\n" +
                    "ORDER BY tracking.id",
            nativeQuery = true)
-    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime endFrom, final ZonedDateTime endTo,
-                                                                 final ZonedDateTime createdTimeFrom, final ZonedDateTime createdTimeTo,
+    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime endFromInclusive, final ZonedDateTime endToInclusive,
+                                                                 final ZonedDateTime createdFromExclusive, final ZonedDateTime createdToExclusive,
                                                                  final Geometry area, final List<String> tasks, final List<String> domains);
 
-//    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
-//    @Query(value = DTO_LAST_POINT_SQL +
-//                   "WHERE tracking.id IN (\n" +
-//                   "    SELECT MAX(t.id)\n" + // select latest id per machine
-//                   "    FROM maintenance_tracking t\n" +
-//                   "    WHERE (t.end_time BETWEEN :from AND :to)\n" +
-//                   "      AND ST_INTERSECTS(:area, t.last_point) = TRUE\n" +
-//                   "    GROUP BY t.work_machine_id\n" +
-//                   ")\n" +
-//                   "  AND tracking.domain IN (:domains) \n" +
-//                   "  AND domain.source IS NOT NULL\n" +
-//                   "GROUP BY tracking.id, contract.source, domain.source\n" +
-//                   "ORDER by tracking.id",
-//           nativeQuery = true)
-//    List<MaintenanceTrackingDto> findLatestByAgeAndBoundingBox(final ZonedDateTime from, final ZonedDateTime to, final Geometry area,
-//                                                               final List<String> domains);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LAST_POINT_SQL +
@@ -134,7 +101,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
                    "      AND ST_INTERSECTS(:area, t.last_point) = TRUE\n" +
                    "    GROUP BY t.work_machine_id\n" +
                    "  )\n" +
-                   "  AND (:tasks IS null OR " +
+                   "  AND ( coalesce(array_length(cast('{' || :tasks || '}' as varchar[]), 1), 0) = 0 OR \n" +
                    "    EXISTS (\n" +
                    "      SELECT 1\n" +
                    "      FROM maintenance_tracking_task t\n" +

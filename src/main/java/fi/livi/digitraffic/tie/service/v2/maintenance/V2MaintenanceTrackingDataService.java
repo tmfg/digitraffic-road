@@ -112,20 +112,18 @@ public class V2MaintenanceTrackingDataService {
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceTrackingDto> found = //taskIds == null || taskIds.isEmpty() ?
-                                                   //v2MaintenanceTrackingRepository.findByAgeAndBoundingBox(toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), toZonedDateTimeAtUtc(createdTimeFrom), toZonedDateTimeAtUtc(createdTimeTo), area, convertToRealDomainNames(domains)) :
-                                                   v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(
+        final List<MaintenanceTrackingDto> found = v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(
                                                        toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo),
                                                        toZonedDateTimeAtUtc(createdTimeFrom), toZonedDateTimeAtUtc(createdTimeTo),
                                                        area, convertTasksToStringArrayOrNull(taskIds), convertToRealDomainNames(domains));
 
-        log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
-                 xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), start.getTime());
+        log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom={} endTimeTo={} createdTimeFrom={} createdTimeTo={} foundCount={} tookMs={}",
+                 xMin, xMax, yMin, yMax, endTimeFrom, endTimeTo, createdTimeFrom, createdTimeTo,  found.size(), start.getTime());
 
         final StopWatch startConvert = StopWatch.createStarted();
         final List<MaintenanceTrackingFeature> features = convertToTrackingFeatures(found);
-        log.info("method=findMaintenanceTrackings-convert with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
-                 xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), startConvert.getTime());
+        log.info("method=findMaintenanceTrackings-convert with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom={} endTimeTo={} createdTimeFrom={} createdTimeTo={} foundCount={} tookMs={}",
+                 xMin, xMax, yMin, yMax, endTimeFrom, endTimeTo, createdTimeFrom, createdTimeTo,  found.size(), startConvert.getTime());
 
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
     }
