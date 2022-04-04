@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.conf;
+package fi.livi.digitraffic.tie.conf.mqtt;
 
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.MAINTENANCE_TRACKING;
 

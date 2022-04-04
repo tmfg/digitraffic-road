@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfigurationV2;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
@@ -37,10 +38,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.conf.MaintenanceTrackingMqttConfiguration;
+import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfiguration;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
@@ -68,6 +70,7 @@ public class V3MaintenanceTrackingUpdateService {
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     private final DataStatusService dataStatusService;
     private final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration;
+    private final MaintenanceTrackingMqttConfigurationV2 maintenanceTrackingMqttConfigurationV2;
     private static int distinctObservationGapMinutes;
     private static double distinctLineStringObservationGapKm;
     private final ObjectWriter jsonWriterForHavainto;
@@ -78,12 +81,10 @@ public class V3MaintenanceTrackingUpdateService {
                                               final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository,
                                               final ObjectMapper objectMapper,
                                               final DataStatusService dataStatusService,
-                                              @Autowired(required = false)
-                                              final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration,
-                                              @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
-                                              final int distinctObservationGapMinutes,
-                                              @Value("${workmachine.tracking.distinct.linestring.observationgap.km}")
-                                              final double distinctLineStringObservationGapKm) {
+                                              @Autowired(required = false) final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration,
+                                              @Autowired(required = false) final MaintenanceTrackingMqttConfigurationV2 maintenanceTrackingMqttConfigurationV2,
+                                              @Value("${workmachine.tracking.distinct.observation.gap.minutes}") final int distinctObservationGapMinutes,
+                                              @Value("${workmachine.tracking.distinct.linestring.observationgap.km}") final double distinctLineStringObservationGapKm) {
         this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
         this.v2MaintenanceTrackingWorkMachineRepository = v2MaintenanceTrackingWorkMachineRepository;
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
@@ -91,6 +92,7 @@ public class V3MaintenanceTrackingUpdateService {
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
         this.dataStatusService = dataStatusService;
         this.maintenanceTrackingMqttConfiguration = maintenanceTrackingMqttConfiguration;
+        this.maintenanceTrackingMqttConfigurationV2 = maintenanceTrackingMqttConfigurationV2;
         V3MaintenanceTrackingUpdateService.distinctObservationGapMinutes = distinctObservationGapMinutes;
         V3MaintenanceTrackingUpdateService.distinctLineStringObservationGapKm = distinctLineStringObservationGapKm;
     }
@@ -231,6 +233,31 @@ public class V3MaintenanceTrackingUpdateService {
 
     private static boolean isLineString(final Geometry geometry) {
         return geometry.getNumPoints() > 1;
+    }
+
+    private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
+        if ((maintenanceTrackingMqttConfiguration != null || maintenanceTrackingMqttConfigurationV2 != null)
+            && tracking != null) {
+            try {
+                final MaintenanceTrackingLatestFeature feature =
+                    V2MaintenanceTrackingDataService.convertToTrackingLatestFeature(tracking);
+                final Point lastPoint = resolveLastPoint(geometry);
+                final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geoJsonGeom = PostgisGeometryHelper.convertToGeoJSONGeometry(lastPoint);
+                feature.setGeometry(geoJsonGeom);
+                feature.getProperties().setDirection(direction);
+                feature.getProperties().setTime(observationTime.toInstant());
+
+                if (maintenanceTrackingMqttConfiguration != null) {
+                    maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
+                }
+
+                if (maintenanceTrackingMqttConfigurationV2 != null) {
+                    maintenanceTrackingMqttConfigurationV2.sendToMqtt(feature);
+                }
+            } catch (final Exception e) {
+                log.error("Error while appending tracking {} to mqtt", tracking.toStringTiny());
+            }
+        }
     }
 
     private static BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.conf;
+package fi.livi.digitraffic.tie.conf.mqtt;
 
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.STATUS;
 
@@ -20,8 +20,6 @@ import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
 public abstract class AbstractMqttConfiguration {
-
-
     protected final Logger log;
     protected final MqttRelayQueue mqttRelay;
     private final ObjectMapper objectMapper;
@@ -94,7 +92,7 @@ public abstract class AbstractMqttConfiguration {
         this.mqttClassName = this.getClass().getSimpleName();
         this.instanceId = ClusteredLocker.generateInstanceId();
 
-        // Executor for status messager
+        // Executor for status message
         executor.scheduleAtFixedRate(this::sendStatus, 30, 10, TimeUnit.SECONDS);
     }
 
@@ -108,11 +106,14 @@ public abstract class AbstractMqttConfiguration {
 
     protected void sendMqttMessages(final Collection<DataMessage> messages) {
         // Get lock and keep it to prevent sending on multiple nodes
-        final boolean lockAcquired = !requireLockForSending || clusteredLocker.tryLock(mqttClassName, 60, instanceId);
 
-        if (lockAcquired) {
+        if (acquireLock()) {
             messages.forEach(this::doSendMqttMessage);
         }
+    }
+
+    protected boolean acquireLock() {
+        return !requireLockForSending || clusteredLocker.tryLock(mqttClassName, 60, instanceId);
     }
 
     private void doSendMqttMessage(final DataMessage message) {
