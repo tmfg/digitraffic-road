@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.locationtech.jts.geom.Polygon;
@@ -178,10 +179,15 @@ public class V2MaintenanceTrackingDataService {
         return v3MaintenanceTrackingObservationDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
             try {
                 return objectMapper.readTree(j);
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<MaintenanceTrackingForMqttV2> findTrackingsForNonStateRoads(final ZonedDateTime from) {
+        return v2MaintenanceTrackingRepository.findTrackingsForNonStateRoads(from);
     }
 
     private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {
@@ -267,7 +273,7 @@ public class V2MaintenanceTrackingDataService {
     private static Geometry<?> readGeometry(final String json) {
         try {
             return geometryReader.readValue(json);
-        } catch (JsonProcessingException e) {
+        } catch (final JsonProcessingException e) {
             log.error(String.format("Error while converting json geometry to GeoJson: %s", json), e);
             return null;
         }
