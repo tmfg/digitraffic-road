@@ -1,15 +1,14 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
-import fi.livi.digitraffic.tie.helper.MqttUtil;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
-import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
-import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
-import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
+import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.MAINTENANCE_TRACKING;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.MAINTENANCE_TRACKING;
+import fi.livi.digitraffic.tie.helper.MqttUtil;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
+import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
+import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
+import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
+import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 
 @ConditionalOnProperty("mqtt.maintenance.tracking.v2.enabled")
 @ConditionalOnNotWebApplication
@@ -52,22 +52,11 @@ public class MaintenanceTrackingMqttConfigurationV2 {
         mqttMessageSender.setLastUpdated(ZonedDateTime.now());
     }
 
-    public void sendToMqtt(final MaintenanceTrackingLatestFeature feature) {
-        try {
-            final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_V2_TOPIC, feature.getProperties().domain, feature.getProperties().getId());
-
-            mqttMessageSender.sendMqttMessages(ZonedDateTime.now(), Collections.singleton(
-                new MqttDataMessageV2(topic, new MqttMaintenanceTrackingMessageV2(feature))));
-        } catch(final Exception e) {
-            LOGGER.error("error", e);
-        }
-    }
-
     @Scheduled(fixedDelayString = "${mqtt.maintenance.tracking.v2.pollingIntervalMs}")
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {
             try {
-                final List<MaintenanceTrackingForMqttV2> trackings = v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(mqttMessageSender.getLastUpdated());
+                final List<MaintenanceTrackingForMqttV2> trackings = v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(mqttMessageSender.getLastUpdated());
 
                 if(!trackings.isEmpty()) {
                     final Instant lastUpdated = trackings.stream().max(Comparator.comparing(MaintenanceTrackingForMqttV2::getCreatedTime)).get().getCreatedTime();

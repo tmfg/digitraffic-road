@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.locationtech.jts.geom.Polygon;
@@ -34,11 +33,13 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatu
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestProperties;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingProperties;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -197,8 +198,15 @@ public class V2MaintenanceTrackingDataService {
     }
 
     @Transactional(readOnly = true)
-    public List<MaintenanceTrackingForMqttV2> findTrackingsForNonStateRoads(final ZonedDateTime from) {
-        return v2MaintenanceTrackingRepository.findTrackingsForNonStateRoads(from);
+    public List<MaintenanceTrackingForMqttV2> findTrackingsForMqttCreatedAfter(final ZonedDateTime from) {
+        return v2MaintenanceTrackingRepository.findTrackingsCreatedAfter(from);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MaintenanceTrackingLatestFeature> findTrackingsLatestPointsCreatedAfter(final Instant from) {
+        return v2MaintenanceTrackingRepository.findTrackingsLatestPointsCreatedAfter(DateHelper.toZonedDateTimeAtUtc(from)).stream()
+            .map(V2MaintenanceTrackingDataService::convertToTrackingLatestFeature)
+            .collect(Collectors.toList());
     }
 
     private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {

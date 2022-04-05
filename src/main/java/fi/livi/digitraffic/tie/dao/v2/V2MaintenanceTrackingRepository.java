@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.QueryHint;
 
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.DomainDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 
 @Repository
 public interface V2MaintenanceTrackingRepository extends JpaRepository<MaintenanceTracking, Long> {
@@ -49,7 +49,6 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
 
     String DTO_TABLES =
         "FROM maintenance_tracking tracking\n" +
-        "INNER JOIN maintenance_tracking_work_machine machine ON tracking.work_machine_id = machine.id\n" +
         "INNER JOIN maintenance_tracking_task tasks ON tracking.id = tasks.maintenance_tracking_id\n" +
         "LEFT OUTER JOIN maintenance_tracking_domain_contract contract on (tracking.domain = contract.domain AND tracking.contract = contract.contract)\n" +
         "LEFT OUTER JOIN maintenance_tracking_domain domain on tracking.domain = domain.name\n";
@@ -147,13 +146,22 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         nativeQuery = true)
     List<String> getRealDomainNames();
 
-    @Query(value = "select tracking.id, tracking.domain, tracking.end_time as endTime, tracking.created as createdTime, ST_X(last_point) as x, ST_Y(last_point) as y" +
+    @Query(value =
+        "select tracking.id, tracking.domain, tracking.end_time as endTime, tracking.created as createdTime, ST_X(last_point) as x, ST_Y(last_point) as y" +
         ", STRING_AGG(tasks.task, ',') AS tasksAsString" +
         ", COALESCE(contract.source, domain.source) AS source\n" +
         DTO_TABLES +
-        "WHERE tracking.created > :from\n" +
-        "AND tracking.domain != '" + STATE_ROADS_DOMAIN + "'\n" +
+        "WHERE tracking.created > :createdFromExclusive\n" +
+        "  AND domain.source IS NOT NULL\n" +
         "GROUP BY tracking.id, contract.source, domain.source",
         nativeQuery = true)
-    List<MaintenanceTrackingForMqttV2> findTrackingsForNonStateRoads(final ZonedDateTime from);
+    List<MaintenanceTrackingForMqttV2> findTrackingsCreatedAfter(final ZonedDateTime createdFromExclusive);
+
+    @Query(value =
+        DTO_LAST_POINT_SQL +
+        "WHERE tracking.created > :createdFromExclusive\n" +
+        "  AND domain.source IS NOT NULL\n" +
+        "GROUP BY tracking.id, contract.source, domain.source",
+        nativeQuery = true)
+    List<MaintenanceTrackingDto> findTrackingsLatestPointsCreatedAfter(final ZonedDateTime createdFromExclusive);
 }

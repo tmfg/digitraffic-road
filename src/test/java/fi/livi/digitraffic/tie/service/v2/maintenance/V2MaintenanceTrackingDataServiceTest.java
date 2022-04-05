@@ -588,22 +588,13 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void findTrackingsForNonStateRoads() {
-        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(ZonedDateTime.now()));
+    public void findTrackingsLatestPointCreatedAfter() {
+        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(ZonedDateTime.now()));
     }
 
     @Test
-    public void findTrackingsForNonStateRoads() {
-        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsForNonStateRoads(ZonedDateTime.now()));
-    }
-
-    private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
-                                                                              final MaintenanceTrackingTask...tasks) {
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-            start.toInstant(), end.toInstant(),
-            RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
-            asList(tasks),
-            Collections.singletonList(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
+    public void findTrackingsLatestPointsCreatedAfter() {
+        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsLatestPointsCreatedAfter(Instant.now()));
     }
 
     private MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
