@@ -41,7 +41,7 @@ public class CameraMetadataUpdateMessageHandler {
         int updateCount = 0;
 
         for (CameraMetadataUpdatedMessageDto message : cameraMetadataUpdates) {
-            log.debug("method=updateCameraMetadataFromJms {}", ToStringHelper.toStringFull(message));
+            log.info("method=updateCameraMetadataFromJms {}", ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
             final UpdateType updateType = message.getUpdateType();
 
