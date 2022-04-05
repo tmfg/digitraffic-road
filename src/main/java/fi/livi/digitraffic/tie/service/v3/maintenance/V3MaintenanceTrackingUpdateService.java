@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfigurationV2;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfiguration;
+import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfigurationV2;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
@@ -261,7 +261,7 @@ public class V3MaintenanceTrackingUpdateService {
                     maintenanceTrackingMqttConfigurationV2.sendToMqtt(feature);
                 }
             } catch (final Exception e) {
-                log.error("Error while appending tracking {} to mqtt", tracking.toStringTiny());
+                log.error(String.format("Error while appending tracking %s to mqtt", tracking.toStringTiny()), e);
             }
         }
     }
