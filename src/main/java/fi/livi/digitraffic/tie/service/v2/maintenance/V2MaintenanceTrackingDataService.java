@@ -250,7 +250,7 @@ public class V2MaintenanceTrackingDataService {
         final MaintenanceTrackingLatestProperties properties =
             new MaintenanceTrackingLatestProperties(tracking.getId(),
                 tracking.getEndTime().toInstant(),
-                tracking.getCreated().toInstant(),
+                tracking.getCreated() != null ? tracking.getCreated().toInstant() : Instant.now(),
                 tracking.getTasks(), tracking.getDirection(),
                 tracking.getDomain(),
                 "Harja/Väylävirasto"); // Temporally fix, waiting for DPO-1724

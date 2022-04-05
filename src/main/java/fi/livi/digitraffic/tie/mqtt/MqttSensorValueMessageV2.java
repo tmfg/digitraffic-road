@@ -9,13 +9,13 @@ import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
 public class MqttSensorValueMessageV2 {
     public final double value;
     public final long time;
-    public final Long windowStart;
-    public final Long windowEnd;
+    public final Long start;
+    public final Long end;
 
     public MqttSensorValueMessageV2(final SensorValueDto sv) {
         this.value = sv.getSensorValue();
         this.time = getEpochSeconds(sv.getUpdatedTime());
-        this.windowStart = getEpochSeconds(sv.getTimeWindowStart());
-        this.windowEnd = getEpochSeconds(sv.getTimeWindowEnd());
+        this.start = getEpochSeconds(sv.getTimeWindowStart());
+        this.end = getEpochSeconds(sv.getTimeWindowEnd());
     }
 }

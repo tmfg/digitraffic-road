@@ -27,6 +27,6 @@ public class MqttDataMessageV2 {
 
     @Override
     public String toString() {
-        return "DataMessage{topic: '" + topic + ", data: " + data + '}';
+        return "MqttDataMessageV2{topic: '" + topic + ", data: " + data + '}';
     }
 }
