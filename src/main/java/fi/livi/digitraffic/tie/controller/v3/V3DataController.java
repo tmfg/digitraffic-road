@@ -496,7 +496,7 @@ public class V3DataController {
         return getFromAndToParamsIfNotSetWithHoursOfHistory(DateHelper.toInstant(from), DateHelper.toInstant(to), defaultHoursOfHistory);
     }
 
-    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(Instant from, Instant to, final int defaultHoursOfHistory) {
+    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final Instant to, final int defaultHoursOfHistory) {
         // Make sure newest is also fetched
         final Instant now = Instant.now();
         final Instant fromParam = from != null ? from : now.minus(defaultHoursOfHistory, HOURS);
