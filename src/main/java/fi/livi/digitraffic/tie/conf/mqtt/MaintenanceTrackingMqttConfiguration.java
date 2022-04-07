@@ -32,7 +32,7 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
     private static final String STATUS_TOPIC = "maintenance/tracking/status";
     private V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
 
-    private Instant latestCreated;
+    private Instant latestCreated = Instant.now();
 
     @Autowired
     public MaintenanceTrackingMqttConfiguration(final MqttRelayQueue mqttRelay,
@@ -76,6 +76,9 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
     }
 
     private void setLatestCreated(final Instant latestCreated) {
+        if (latestCreated == null) {
+            throw new IllegalArgumentException("latestCreated time can't be null");
+        }
         this.latestCreated = latestCreated;
     }
 

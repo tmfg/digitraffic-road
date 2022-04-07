@@ -596,6 +596,29 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         assertEmpty(v2MaintenanceTrackingDataService.findTrackingsLatestPointsCreatedAfter(Instant.now()));
     }
 
+    @Test
+    public void findTrackingsLatestPointsCreatedAfterWithData() {
+        // Create trackings for domains with and witout soure
+        final MaintenanceTrackingWorkMachine wm1 = testHelper.createAndSaveWorkMachine();
+        testHelper.insertDomain(DOMAIN_WITH_SOURCE, "Foo/Bar");
+        commitAndEndTransactionAndStartNew();
+        insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
+        insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
+        entityManager.flush();
+        commitAndEndTransactionAndStartNew();
+
+        final List<MaintenanceTracking> all = v2MaintenanceTrackingRepository.findAll();
+        assertCollectionSize(2, all);
+        final Instant created = all.get(0).getCreated().toInstant();
+
+        // no data as param is exlusive
+        assertCollectionSize(0, v2MaintenanceTrackingDataService.findTrackingsLatestPointsCreatedAfter(created));
+        assertCollectionSize(0, v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(DateHelper.toZonedDateTimeAtUtc(created)));
+        // no data as param is exlusive
+        assertCollectionSize(2, v2MaintenanceTrackingDataService.findTrackingsLatestPointsCreatedAfter(created.minusMillis(1)));
+        assertCollectionSize(2, v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(DateHelper.toZonedDateTimeAtUtc(created.minusMillis(1))));
+    }
+
     private MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
                                                                                       final MaintenanceTrackingTask...tasks) {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(
