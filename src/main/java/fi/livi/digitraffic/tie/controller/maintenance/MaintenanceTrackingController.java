@@ -101,12 +101,12 @@ public class MaintenanceTrackingController {
         this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
     }
 
-    @ApiOperation(value = "Road maintenance tracking data latest points")
+    @ApiOperation(value = "Road maintenance tracking routes latest points")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking latest routes"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-    @ApiParam(value = "Return trackings which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
+    @ApiParam(value = "Return routes which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     final Instant endFrom,
@@ -135,7 +135,7 @@ public class MaintenanceTrackingController {
     @DecimalMax("72.0")
     final double yMax,
 
-    @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
+    @ApiParam(value = "Task ids to include. Any route containing one of the selected tasks will be returned.")
     @RequestParam(value = "taskId", required = false)
     final List<MaintenanceTrackingTask> taskIds,
 
@@ -149,27 +149,27 @@ public class MaintenanceTrackingController {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data")
+    @ApiOperation(value = "Road maintenance tracking routes")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return trackings which have completed onwards from the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return routes which have completed onwards from the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant endFrom,
 
-        @ApiParam(value = "Return trackings which have completed before the given end time (exclusive). Default is now and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return routes which have completed before the given end time (exclusive). Default is now and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant endBefore,
 
-        @ApiParam(value = "Return trackings which have been crated after the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
+        @ApiParam(value = "Return routes which have been created after the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant createdAfter,
 
-        @ApiParam(value = "Return trackings which have been crated before the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
+        @ApiParam(value = "Return routes which have been created before the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant createdBefore,
