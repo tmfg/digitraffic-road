@@ -46,7 +46,7 @@ public class WeatherMetadataJMSListenerConfiguration extends AbstractJMSListener
     @Override
     public JMSMessageListener<WeatherMetadataUpdatedMessageDto> createJMSMessageListener() {
         final JMSMessageListener.JMSDataUpdater<WeatherMetadataUpdatedMessageDto> handleData =
-            weatherMetadataUpdateMessageHandler::updateWeatherMetadataFromJms;
+            weatherMetadataUpdateMessageHandler::updateMetadataFromJms;
         final WeatherMetadataUpdatedMessageMarshaller messageMarshaller =
             new WeatherMetadataUpdatedMessageMarshaller(tiesaaMetadataChangeJaxb2Marshaller);
 

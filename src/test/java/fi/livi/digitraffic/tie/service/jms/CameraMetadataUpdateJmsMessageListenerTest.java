@@ -71,7 +71,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     @BeforeEach
     public void initListener() {
         // Create listener
-        this.dataUpdater = (data) -> cameraMetadataUpdateMessageHandler.updateCameraMetadataFromJms(data);
+        this.dataUpdater = (data) -> cameraMetadataUpdateMessageHandler.updateMetadataFromJms(data);
         cameraMetadataJmsMessageListener = new JMSMessageListener<>(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller), dataUpdater, false, log);
     }
 
