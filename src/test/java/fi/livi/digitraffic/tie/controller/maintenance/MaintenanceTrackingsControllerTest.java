@@ -46,6 +46,7 @@ import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
@@ -67,7 +68,19 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     private ResultActions getTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
         final String url = MaintenanceTrackingController.API_MAINTENANCE_V1_TRACKING_ROUTES +
-            String.format(Locale.US, "?endFrom=%s&endTo=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from.toString(), to.toString(), xMin, yMin, xMax, yMax, tasksParams);
+            String.format(Locale.US, "?endFrom=%s&endBefore=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from, to, xMin, yMin, xMax, yMax, tasksParams);
+        log.info("Get URL: {}", url);
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
+        get.contentType(MediaType.APPLICATION_JSON);
+        final ResultActions result = mockMvc.perform(get);
+        log.info("Response:\n{}", result.andReturn().getResponse().getContentAsString());
+        return result;
+    }
+
+    private ResultActions getTrackingsJsonWithCreatedTime(final Instant createdAfter, final Instant createdBefore, final Set<MaintenanceTrackingTask> tasks) throws Exception {
+        final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
+        final String url = MaintenanceTrackingController.API_MAINTENANCE_V1_TRACKING_ROUTES +
+            String.format(Locale.US, "?createdAfter=%s&createdBefore=%s%s", createdAfter, createdBefore, tasksParams);
         log.info("Get URL: {}", url);
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
@@ -108,7 +121,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
 
         // First tracking
         expectOkFeatureCollectionWithSize(
-            getTrackingsJson(start.toInstant(), start.toInstant(), new HashSet<>(),
+            getTrackingsJson(start.toInstant(), start.toInstant().plusMillis(1), new HashSet<>(),
                              RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()),
                              machineCount)
             .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist())
@@ -130,9 +143,10 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         final List<Tyokone> firstHalfMachines = workMachines.subList(0, machineCount / 2);
         final List<Tyokone> secondHalfMachines = workMachines.subList(machineCount / 2, machineCount);
 
-        testHelper.saveTrackingDataAsObservations( // end time will be start+9 min
+        // Create 10 messages/machine = 10*firstHalfMachines.size
+        testHelper.saveTrackingDataAsObservations( // end time will be start + 9 min
             createMaintenanceTrackingWithPoints(start, 10, 1, firstHalfMachines, ASFALTOINTI, PAALLYSTEIDEN_PAIKKAUS));
-
+        // Create 10 messages/machine = 10*firstHalfMachines.size
         testHelper.saveTrackingDataAsObservations( // end time will be start+10+9 min
             createMaintenanceTrackingWithPoints(start.plusMinutes(10), 10, 1, secondHalfMachines, ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
@@ -140,20 +154,76 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         // First trackings, 10/machine
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start.toInstant(), start.plusMinutes(9).toInstant(), new HashSet<>(),
+                start.toInstant(), start.plusMinutes(9).toInstant().plusMillis(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), firstHalfMachines.size() * 10);
 
         // Second tracking, 10/machine
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start.plusMinutes(10).toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
+                start.plusMinutes(10).toInstant(), start.plusMinutes(10+9).toInstant().plusMillis(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), secondHalfMachines.size() * 10);
 
         // Both
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start.toInstant(), start.plusMinutes(10+9).toInstant(), new HashSet<>(),
+                start.toInstant(), start.plusMinutes(10+9).toInstant().plusMillis(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount * 10);
+    }
+
+    @Test
+    public void findMaintenanceTrackingsExlusiveEnd() throws Exception {
+        final ZonedDateTime start = getStartTimeOneHourInPast();
+        final int machineCount = getRandomId(2, 10);
+        final List<Tyokone> workMachines = createWorkMachines(machineCount);
+
+        // Create message/machine
+        testHelper.saveTrackingDataAsObservations( // end times is same as start time
+            createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, ASFALTOINTI));
+        testHelper.handleUnhandledWorkMachineObservations(1000);
+
+        // Exlusive end parameter same as trackings end time -> not returning anything
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                start.toInstant(), start.toInstant(), new HashSet<>(),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 0);
+
+        // Exlusive end parameter same as trackings end time + 1ms -> returning all
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJson(
+                start.toInstant(), start.toInstant().plusMillis(1), new HashSet<>(),
+                RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount);
+    }
+
+    @Test
+    public void findMaintenanceTrackingsExclusiveCreated() throws Exception {
+        final ZonedDateTime start = getStartTimeOneHourInPast();
+        final int machineCount = getRandomId(2, 10);
+        final List<Tyokone> workMachines = createWorkMachines(machineCount);
+
+        // Create message/machine
+        testHelper.saveTrackingDataAsObservations( // end times is same as start time
+            createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, ASFALTOINTI));
+        testHelper.handleUnhandledWorkMachineObservations(1000);
+        entityManager.flush();
+        entityManager.clear();
+
+        final List<MaintenanceTracking> allTrackings = v2MaintenanceTrackingRepository.findAll();
+        AssertHelper.assertCollectionSize(machineCount, allTrackings);
+        final Instant created = allTrackings.get(0).getCreated().toInstant();
+
+        // Exlusive created parameters same as tracking created time -> not returning anything
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJsonWithCreatedTime(created, created, new HashSet<>()), 0);
+
+        // Exlusive created parameter one same as tracking created time -> not returning anything
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJsonWithCreatedTime(created.minusSeconds(1), created, new HashSet<>()), 0);
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJsonWithCreatedTime(created, created.plusSeconds(1), new HashSet<>()), 0);
+
+        // Exlusive created parameter one same as tracking created time -> returning all
+        expectOkFeatureCollectionWithSize(
+            getTrackingsJsonWithCreatedTime(created.minusSeconds(1), created.plusSeconds(1), new HashSet<>()), machineCount);
     }
 
     @Test
@@ -179,13 +249,13 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         // find with first task should only find the first tracking for machine 1.
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start.toInstant(), start.toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
+                start.toInstant(), start.toInstant().plusMillis(1), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 1);
 
         // Search with second task should return trackings for machine 1. and 2.
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start.toInstant(), start.toInstant(), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
+                start.toInstant(), start.toInstant().plusMillis(1), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 2);
     }
 
@@ -317,12 +387,12 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
         // The only tracking should be found when it's inside the bounding box
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                now.toInstant(), now.toInstant(), new HashSet<>(),
+                now.toInstant(), now.toInstant().plusMillis(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 1);
         // The only tracking should not be found when it's not inside the bounding box
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                now.toInstant(), now.toInstant(), new HashSet<>(),
+                now.toInstant(), now.toInstant().plusMillis(1), new HashSet<>(),
                 pointWGS84.getLongitude()+0.1, pointWGS84.getLatitude()+0.1, RANGE_X.getRight(), RANGE_Y.getRight()), 0);
     }
 }

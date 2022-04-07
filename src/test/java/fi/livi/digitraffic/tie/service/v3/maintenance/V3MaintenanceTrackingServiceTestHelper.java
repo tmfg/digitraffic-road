@@ -530,7 +530,8 @@ public class V3MaintenanceTrackingServiceTestHelper {
     public void insertDomain(final String domain, final String source) {
         entityManager.createNativeQuery(
                 "insert into maintenance_tracking_domain(name, source)\n" +
-                "VALUES (:domain, :source)")
+                         "VALUES (:domain, :source)" +
+                         "on conflict (name) do nothing ")
             .setParameter("domain", domain)
             .setParameter("source", source)
             .executeUpdate();

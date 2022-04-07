@@ -432,7 +432,7 @@ public class V2DataController {
         Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-            fromTo.getLeft(), fromTo.getRight(), null, null,
+            fromTo.getLeft(), fromTo.getRight(),
             xMin, yMin, xMax, yMax, taskIds, null);
     }
 

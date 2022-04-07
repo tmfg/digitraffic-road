@@ -61,7 +61,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         DTO_SELECT_FIELDS_WITHOUT_LINE_STRING +
         DTO_TABLES;
 
-    /**
+    /*
      * EntityGraph causes HHH000104: firstResult/maxResults specified with collection fetch; applying IN memory! warnings
      * @EntityGraph(attributePaths = { "tasks" }, type = EntityGraph.EntityGraphType.LOAD)
     */
@@ -69,26 +69,26 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value = DTO_LINESTRING_SQL +
-                   "WHERE cast(coalesce(cast(:endFromInclusive AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) <= tracking.end_time\n" + // inclusive
-                   "  AND cast(coalesce(cast(:endToInclusive AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP) >= tracking.end_time\n" + // inclusive
-                   "  AND cast(coalesce(cast(:createdFromExclusive AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) < tracking.created \n" + // exclusive
-                   "  AND cast(coalesce(cast(:createdToExclusive AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP) > tracking.created\n" + // exclusive
-                   "  AND (:area IS NULL OR ST_INTERSECTS(:area, tracking.last_point) = TRUE OR ST_INTERSECTS(:area, tracking.line_string) = TRUE)\n" +
-                   "  AND ( coalesce(array_length(cast('{' || :tasks || '}' as varchar[]), 1), 0) = 0 OR \n" +
-                   "    EXISTS (\n" +
-                   "      SELECT 1\n" +
-                   "      FROM maintenance_tracking_task t\n" +
-                   "      WHERE t.maintenance_tracking_id = tracking.id\n" +
-                   "        AND t.task IN (:tasks)\n" +
-                   "    )\n" +
-                   "  )\n" +
-                   "  AND tracking.domain IN (:domains)\n" +
-                   "  AND domain.source IS NOT NULL\n" +
-                   "GROUP BY tracking.id, contract.source, domain.source\n" +
-                   "ORDER BY tracking.id",
+        "WHERE cast(coalesce(cast(:endFrom AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) <= tracking.end_time\n" + // inclusive
+        "  AND tracking.end_time < cast(coalesce(cast(:endBefore AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP)\n" + // exclusive
+        "  AND cast(coalesce(cast(:createdAfter AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) < tracking.created \n" + // exclusive
+        "  AND tracking.created < cast(coalesce(cast(:createdBefore AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP)\n" + // exclusive
+        "  AND (:area IS NULL OR ST_INTERSECTS(:area, tracking.last_point) = TRUE OR ST_INTERSECTS(:area, tracking.line_string) = TRUE)\n" +
+        "  AND ( coalesce(array_length(cast('{' || :tasks || '}' as varchar[]), 1), 0) = 0 OR \n" +
+        "    EXISTS (\n" +
+        "      SELECT 1\n" +
+        "      FROM maintenance_tracking_task t\n" +
+        "      WHERE t.maintenance_tracking_id = tracking.id\n" +
+        "        AND t.task IN (:tasks)\n" +
+        "    )\n" +
+        "  )\n" +
+        "  AND tracking.domain IN (:domains)\n" +
+        "  AND domain.source IS NOT NULL\n" +
+        "GROUP BY tracking.id, contract.source, domain.source\n" +
+        "ORDER BY tracking.id",
            nativeQuery = true)
-    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime endFromInclusive, final ZonedDateTime endToInclusive,
-                                                                 final ZonedDateTime createdFromExclusive, final ZonedDateTime createdToExclusive,
+    List<MaintenanceTrackingDto> findByAgeAndBoundingBoxAndTasks(final ZonedDateTime endFrom, final ZonedDateTime endBefore,
+                                                                 final ZonedDateTime createdAfter, final ZonedDateTime createdBefore,
                                                                  final Geometry area, final List<String> tasks, final List<String> domains);
 
 

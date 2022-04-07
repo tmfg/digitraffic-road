@@ -106,7 +106,7 @@ public class MaintenanceTrackingController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking latest routes"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-    @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is -1h from now and maximum -24h.")
+    @ApiParam(value = "Return trackings which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     final Instant endFrom,
@@ -154,25 +154,25 @@ public class MaintenanceTrackingController {
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return trackings which have completed onwards from the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant endFrom,
 
-        @ApiParam(value = "Return trackings which have completed before the given time (inclusive). Default is now and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return trackings which have completed before the given end time (exclusive). Default is now and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final Instant endTo,
+        final Instant endBefore,
 
         @ApiParam(value = "Return trackings which have been crated after the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final Instant createdFrom,
+        final Instant createdAfter,
 
         @ApiParam(value = "Return trackings which have been crated before the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final Instant createdTo,
+        final Instant createdBefore,
 
         @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
         @RequestParam(defaultValue = "19.0", required = false)
@@ -206,11 +206,11 @@ public class MaintenanceTrackingController {
         @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
         final List<String> domains) {
 
-        validateTimeBetweenFromAndToMaxHours(endFrom, endTo, 24, END_TIME);
-        validateTimeBetweenFromAndToMaxHours(createdFrom, createdTo, 24, CREATED_TIME);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endTo, createdFrom, createdTo, 24);
+        validateTimeBetweenFromAndToMaxHours(endFrom, endBefore, 24, END_TIME);
+        validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
 
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdFrom, createdTo, xMin, yMin, xMax, yMax, taskIds, domains);
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
     @ApiOperation(value = "Road maintenance tracking route with tracking id")
@@ -246,7 +246,7 @@ public class MaintenanceTrackingController {
                                                                                        final int defaultHoursOfHistory) {
         // If created time limit is given, then from and to can be as they are
         if (createdFrom != null || createdTo != null) {
-            Pair.of(from, to);
+            return Pair.of(from, to);
         }
         // Make sure newest is also fetched
         final Instant now = Instant.now();
