@@ -47,7 +47,7 @@ public class TmsMetadataUpdateMessageHandler {
         int updateCount = 0;
 
         for (TmsMetadataUpdatedMessageDto message : tmsMetadataUpdates) {
-            log.debug("method=updateTmsMetadataFromJms {}", ToStringHelper.toStringFull(message));
+            log.info("method=updateTmsMetadataFromJms {}", ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
             final UpdateType updateType = message.getUpdateType();
 
