@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType;
@@ -36,11 +37,11 @@ public class WeatherMetadataUpdateMessageHandler {
 
     // Disable info logging as it can be normally over 1 s. Log only if over default warning level 5 s.
     @PerformanceMonitor(maxInfoExcecutionTime = 100000)
-    public int updateWeatherMetadataFromJms(final List<WeatherMetadataUpdatedMessageDto> weatherMetadataUpdates) {
+    public int updateMetadataFromJms(final List<WeatherMetadataUpdatedMessageDto> weatherMetadataUpdates) {
         int updateCount = 0;
 
         for (WeatherMetadataUpdatedMessageDto message : weatherMetadataUpdates) {
-            log.info("method=updateWeatherMetadataFromJms {}", ToStringHelper.toStringFull(message));
+            log.info("method=updateMetadataFromJms roadStationType={} data: {}", RoadStationType.WEATHER_STATION.name(), ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
             final MetadataUpdatedMessageDto.UpdateType updateType = message.getUpdateType();
 

@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfigurationV2;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,10 +38,10 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfiguration;
+import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfigurationV2;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
@@ -59,7 +58,6 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 
 @Service
 public class V3MaintenanceTrackingUpdateService {
@@ -177,17 +175,14 @@ public class V3MaintenanceTrackingUpdateService {
                     log.debug("method=handleRoute WorkMachine tracking in transition");
                     // Mark found one to finished as the work machine is in transition after that
                     // Append first point of next tracking as the last point of the previous tracking (without the task) if it's inside time limits.
-                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime,  status.isNextInsideLimits())) {
-                        sendToMqtt(previousTracking, firstPoint, direction, harjaObservationTime);
-                    }
+                    updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime,  status.isNextInsideLimits());
+
                 // If previous is finished or tasks has changed or time gap is too long, we create new tracking for the machine
-                } else if (status.is(NEW)) {
+                } else if (status.is(NEW) || status.is(SAME)) {
 
                     // Append first point of next tracking as the last point of the previous tracking (without the task) if it's inside time limits.
-                    // This happens only when task changes for same work machine.
-                    if (updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isNextInsideLimits())) {
-                        sendToMqtt(previousTracking, firstPoint, direction, harjaObservationTime);
-                    }
+                    // This happens only when task changes for same work machine or trakcing is continuation for previous tracking.
+                    updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isNextInsideLimits());
 
                     final MaintenanceTrackingWorkMachine workMachine =
                         getOrCreateWorkMachine(harjaWorkMachineId, harjaContractId, harjaWorkMachine.getTyokonetyyppi());
@@ -199,17 +194,15 @@ public class V3MaintenanceTrackingUpdateService {
                         new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
                             harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
                             performedTasks, direction, V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
-                    v2MaintenanceTrackingRepository.save(created);
-                    sendToMqtt(created, geometry, direction, harjaObservationTime);
-                    cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, created);
-                } else if (status.is(SAME)) {
-                    previousTracking.appendGeometry(geometry, harjaObservationTime, direction);
-                    sendToMqtt(previousTracking, geometry, direction, harjaObservationTime);
 
-                    // previousTracking.addWorkMachineTrackingData(trackingData) does db query for all previous trackintData
-                    // to populate the collection. So let's just insert the new one directly to db.
-                    v2MaintenanceTrackingRepository.addTrackingObservationData(trackingData.getId(), previousTracking.getId());
-                    cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, previousTracking);
+                    // Mark new tracking to follow previous tracking
+                    if (status.is(SAME) && previousTracking  != null) {
+                        created.setPreviousTrackingId(previousTracking.getId());
+                    }
+
+                    v2MaintenanceTrackingRepository.save(created);
+
+                    cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, created);
                 } else {
                     throw new IllegalArgumentException("Unknown status: " + status);
                 }
@@ -239,31 +232,6 @@ public class V3MaintenanceTrackingUpdateService {
 
     private static boolean isLineString(final Geometry geometry) {
         return geometry.getNumPoints() > 1;
-    }
-
-    private void sendToMqtt(final MaintenanceTracking tracking, final Geometry geometry, final BigDecimal direction, final ZonedDateTime observationTime) {
-        if ((maintenanceTrackingMqttConfiguration != null || maintenanceTrackingMqttConfigurationV2 != null)
-            && tracking != null) {
-            try {
-                final MaintenanceTrackingLatestFeature feature =
-                    V2MaintenanceTrackingDataService.convertToTrackingLatestFeature(tracking);
-                final Point lastPoint = resolveLastPoint(geometry);
-                final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geoJsonGeom = PostgisGeometryHelper.convertToGeoJSONGeometry(lastPoint);
-                feature.setGeometry(geoJsonGeom);
-                feature.getProperties().setDirection(direction);
-                feature.getProperties().setTime(observationTime.toInstant());
-
-                if (maintenanceTrackingMqttConfiguration != null) {
-                    maintenanceTrackingMqttConfiguration.sendToMqtt(feature);
-                }
-
-                if (maintenanceTrackingMqttConfigurationV2 != null) {
-                    maintenanceTrackingMqttConfigurationV2.sendToMqtt(feature);
-                }
-            } catch (final Exception e) {
-                log.error("Error while appending tracking {} to mqtt", tracking.toStringTiny());
-            }
-        }
     }
 
     private static BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {

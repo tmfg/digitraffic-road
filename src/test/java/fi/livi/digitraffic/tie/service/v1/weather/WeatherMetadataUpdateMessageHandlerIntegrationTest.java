@@ -99,7 +99,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         when(lotjuWeatherStationMetadataClient.getTiesaaAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(anturit);
 
         // 2. Send insert message
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(entityType, UpdateType.INSERT, ROAD_STATION_LOTJU_ID, Collections.emptySet()));
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(entityType, UpdateType.INSERT, ROAD_STATION_LOTJU_ID, Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Check that new station and sensor are in place
@@ -150,7 +150,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final List<TiesaaLaskennallinenAnturiVO> anturit = createAnturiListWith(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2);
         when(lotjuWeatherStationMetadataClient.getTiesaaAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(anturit);
 
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(entityType, UpdateType.UPDATE, 1, Collections.emptySet()));
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(entityType, UpdateType.UPDATE, 1, Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Check that update is done
@@ -172,7 +172,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         assertTrue(getWeatherStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID).isPublishable());
 
         // 2. Send delete message
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(WEATHER_STATION, UpdateType.DELETE, 1, Collections.emptySet()));
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(WEATHER_STATION, UpdateType.DELETE, 1, Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Assert delete happened
@@ -195,7 +195,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         when(lotjuWeatherStationMetadataClient.getTiesaaAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(tsa);
         when(lotjuWeatherStationMetadataClient.getTiesaaAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID)))
             .thenReturn(createAnturiListWith(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2));
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(WEATHER_STATION_COMPUTATIONAL_SENSOR, UpdateType.DELETE, ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getLeft(), Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
@@ -223,7 +223,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         when(lotjuWeatherStationMetadataClient.getTiesaaAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(tsa);
         when(lotjuWeatherStationMetadataClient.getTiesaaAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(Collections.singletonList(anturi));
 
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(WEATHER_COMPUTATIONAL_SENSOR, UpdateType.INSERT, NEW_LOTJU_ID, Collections.singleton(ROAD_STATION_LOTJU_ID)));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
@@ -253,7 +253,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final String newDesc = "Uusi kuvaus";
         anturi.setKuvausFi(newDesc);
         when(lotjuWeatherStationMetadataClient.getTiesaaLaskennallinenAnturi(eq(anturi.getId()))).thenReturn(anturi);
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(WEATHER_COMPUTATIONAL_SENSOR, UpdateType.UPDATE, anturi.getId(), Collections.emptySet()));
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(WEATHER_COMPUTATIONAL_SENSOR, UpdateType.UPDATE, anturi.getId(), Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
 
@@ -272,7 +272,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
 
         // 2. Send update message
         when(lotjuWeatherStationMetadataClient.getTiesaaLaskennallinenAnturi(eq(anturi.getId()))).thenReturn(anturi);
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(WEATHER_COMPUTATIONAL_SENSOR, UpdateType.DELETE, anturi.getId(), Collections.emptySet()));
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(WEATHER_COMPUTATIONAL_SENSOR, UpdateType.DELETE, anturi.getId(), Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
 
@@ -310,7 +310,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         to.setId(to.getId()+1);
         to.setTienumero(to.getTienumero()+1);
         when(lotjuWeatherStationMetadataClient.getTiesaaAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(tsa);
-        weatherMetadataUpdateMessageHandler.updateWeatherMetadataFromJms(createMessage(ROAD_ADDRESS, updateType, tsa.getId(), Collections.singleton(tsa.getId())));
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(ROAD_ADDRESS, updateType, tsa.getId(), Collections.singleton(tsa.getId())));
 
         // 3. Check that road address is updated
         final RoadStation rs = getWeatherStationRoadStationByLotjuId(tsa.getId());

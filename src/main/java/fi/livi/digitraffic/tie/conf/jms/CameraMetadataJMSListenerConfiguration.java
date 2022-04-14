@@ -45,7 +45,7 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
 
         @Override
         public JMSMessageListener<CameraMetadataUpdatedMessageDto> createJMSMessageListener() {
-            final JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> handleData = cameraMetadataUpdateMessageHandler::updateCameraMetadataFromJms;
+            final JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> handleData = cameraMetadataUpdateMessageHandler::updateMetadataFromJms;
             final CameraMetadataUpdatedMessageMarshaller messageMarshaller = new CameraMetadataUpdatedMessageMarshaller(
                 kameraMetadataChangeJaxb2Marshaller);
 

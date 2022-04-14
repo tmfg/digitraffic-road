@@ -45,7 +45,7 @@ public class TmsMetadataJMSListenerConfiguration extends AbstractJMSListenerConf
 
     @Override
     public JMSMessageListener<TmsMetadataUpdatedMessageDto> createJMSMessageListener() {
-        final JMSMessageListener.JMSDataUpdater<TmsMetadataUpdatedMessageDto> handleData = tmsMetadataUpdateMessageHandler::updateTmsMetadataFromJms;
+        final JMSMessageListener.JMSDataUpdater<TmsMetadataUpdatedMessageDto> handleData = tmsMetadataUpdateMessageHandler::updateMetadataFromJms;
         final TmsMetadataUpdatedMessageMarshaller messageMarshaller =
             new TmsMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller);
 

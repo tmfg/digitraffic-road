@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto.EntityType;
@@ -37,11 +38,11 @@ public class CameraMetadataUpdateMessageHandler {
 
     // Disable info logging as it can be normally over 1 s. Log only if over default warning level 5 s.
     @PerformanceMonitor(maxInfoExcecutionTime = 100000)
-    public int updateCameraMetadataFromJms(List<CameraMetadataUpdatedMessageDto> cameraMetadataUpdates) {
+    public int updateMetadataFromJms(List<CameraMetadataUpdatedMessageDto> cameraMetadataUpdates) {
         int updateCount = 0;
 
         for (CameraMetadataUpdatedMessageDto message : cameraMetadataUpdates) {
-            log.debug("method=updateCameraMetadataFromJms {}", ToStringHelper.toStringFull(message));
+            log.info("method=updateMetadataFromJms roadStationType={} data: {}", RoadStationType.CAMERA_STATION.name(), ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
             final UpdateType updateType = message.getUpdateType();
 

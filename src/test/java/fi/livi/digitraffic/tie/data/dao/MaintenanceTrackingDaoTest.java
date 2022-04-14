@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,12 @@ public class MaintenanceTrackingDaoTest extends AbstractServiceTest {
 
     private final static String DOMAIN_FOUND = "domain-1";
     private final static String DOMAIN_NOT_FOUND = "domain-2";
+
+    @BeforeEach
+    public void initDb() {
+        testHelper.insertDomain(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN, V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
+        commitAndEndTransactionAndStartNew();
+    }
 
     @AfterEach
     public void cleanDb() {

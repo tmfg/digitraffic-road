@@ -109,7 +109,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         when(lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(anturit);
 
         // 2. Send insert message
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(createMessage(TMS_STATION, UpdateType.INSERT, ROAD_STATION_LOTJU_ID, Collections.emptySet()));
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(TMS_STATION, UpdateType.INSERT, ROAD_STATION_LOTJU_ID, Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Check that new station and sensor are in place
@@ -142,7 +142,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final List<LamLaskennallinenAnturiVO> anturit = createAnturiListWith(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2);
         when(lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(anturit);
 
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(createMessage(TMS_STATION, UpdateType.UPDATE, 1, Collections.emptySet()));
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(TMS_STATION, UpdateType.UPDATE, 1, Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Check that update is done
@@ -167,7 +167,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         assertTrue(getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID).isPublishable());
 
         // 2. Send delete message
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(createMessage(TMS_STATION, UpdateType.DELETE, 1, Collections.emptySet()));
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(TMS_STATION, UpdateType.DELETE, 1, Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Assert delete happened
@@ -189,7 +189,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         when(lotjuTmsStationMetadataClient.getLamAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(lam);
         when(lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(Collections.singletonList(anturi));
 
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(TMS_COMPUTATIONAL_SENSOR, UpdateType.INSERT, NEW_LOTJU_ID, Collections.singleton(ROAD_STATION_LOTJU_ID)));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
@@ -219,7 +219,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final String newDesc = "Uusi kuvaus";
         anturi.setKuvausFi(newDesc);
         when(lotjuTmsStationMetadataClient.getLamLaskennallinenAnturi(eq(anturi.getId()))).thenReturn(anturi);
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(createMessage(TMS_COMPUTATIONAL_SENSOR, UpdateType.UPDATE, anturi.getId(), Collections.emptySet()));
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(TMS_COMPUTATIONAL_SENSOR, UpdateType.UPDATE, anturi.getId(), Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
 
@@ -238,7 +238,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
 
         // 2. Send update message
         when(lotjuTmsStationMetadataClient.getLamLaskennallinenAnturi(eq(anturi.getId()))).thenReturn(anturi);
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(createMessage(TMS_COMPUTATIONAL_SENSOR, UpdateType.DELETE, anturi.getId(), Collections.emptySet()));
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(TMS_COMPUTATIONAL_SENSOR, UpdateType.DELETE, anturi.getId(), Collections.emptySet()));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
 
@@ -257,7 +257,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         // 2. Send insert message
         final LamAnturiVakioVO anturiVakio = TestUtils.createLamAnturiVakio(ROAD_STATION_LOTJU_ID, SENSOR_CONSTANT_NAME_1);
         when(lotjuTmsStationMetadataClient.getLamAnturiVakio(eq(anturiVakio.getId()))).thenReturn(anturiVakio);
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(TMS_SENSOR_CONSTANT, UpdateType.INSERT, anturiVakio.getId(), Collections.singleton(ROAD_STATION_LOTJU_ID)));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
@@ -277,7 +277,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final LamAnturiVakioVO anturiVakio = TestUtils.createLamAnturiVakio(ROAD_STATION_LOTJU_ID, SENSOR_CONSTANT_NAME_2);
         anturiVakio.setId(anturiVakio1LotjuId);
         when(lotjuTmsStationMetadataClient.getLamAnturiVakio(eq(anturiVakio1LotjuId))).thenReturn(anturiVakio);
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(TMS_SENSOR_CONSTANT, UpdateType.UPDATE,anturiVakio1LotjuId, Collections.singleton(ROAD_STATION_LOTJU_ID)));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
@@ -293,7 +293,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final long anturiVakio1LotjuId = addTmsStationWithSensorConstant(ROAD_STATION_LOTJU_ID, SENSOR_CONSTANT_NAME_1);
 
         // 2. Send delete message
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(TMS_SENSOR_CONSTANT, UpdateType.DELETE, anturiVakio1LotjuId, Collections.singleton(ROAD_STATION_LOTJU_ID)));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
@@ -312,7 +312,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         // 2. Send insert message
         final LamAnturiVakioArvoVO anturiVakioArvo = TestUtils.createLamAnturiVakioArvo(anturiVakio1LotjuId, 101, 1231, 95);
         mockLotjuTmsStationMetadataClientEveryMonthForAnturiVakioArvo(anturiVakioArvo);
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(TMS_SENSOR_CONSTANT_VALUE, UpdateType.INSERT, anturiVakioArvo.getId(), Collections.singleton(ROAD_STATION_LOTJU_ID)));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
@@ -336,7 +336,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         // 2. Send update message
         anturiVakioArvo.setArvo(80);
         mockLotjuTmsStationMetadataClientEveryMonthForAnturiVakioArvo(anturiVakioArvo);
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(TMS_SENSOR_CONSTANT_VALUE, UpdateType.UPDATE, anturiVakioArvo.getId(), Collections.singleton(ROAD_STATION_LOTJU_ID)));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
@@ -358,7 +358,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         tmsStationSensorConstantService.updateSensorConstantValues(Collections.singletonList(anturiVakioArvo));
 
         // 2. Send delete message
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(TMS_SENSOR_CONSTANT_VALUE, UpdateType.DELETE, anturiVakioArvo.getId(), Collections.singleton(ROAD_STATION_LOTJU_ID)));
         TestUtils.entityManagerFlushAndClear(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
@@ -433,7 +433,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         to.setId(to.getId()+1);
         to.setTienumero(to.getTienumero()+1);
         when(lotjuTmsStationMetadataClient.getLamAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(lam);
-        tmsMetadataUpdateMessageHandler.updateTmsMetadataFromJms(createMessage(ROAD_ADDRESS, updateType, lam.getId(), Collections.singleton(lam.getId())));
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(ROAD_ADDRESS, updateType, lam.getId(), Collections.singleton(lam.getId())));
 
         // 3. Check that road address is updated
         final RoadStation rs = getTmsStationRoadStationByLotjuId(lam.getId());

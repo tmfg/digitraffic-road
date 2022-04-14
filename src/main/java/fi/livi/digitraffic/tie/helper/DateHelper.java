@@ -217,4 +217,11 @@ public final class DateHelper {
     public static Timestamp toSqlTimestamp(final ZonedDateTime zonedDateTime) {
         return zonedDateTime == null ? null : Timestamp.from(zonedDateTime.toInstant());
     }
+
+    public static Instant appendMillis(final Instant time, final long millis) {
+        if (time == null) {
+            return null;
+        }
+        return time.plusMillis(millis);
+    }
 }
