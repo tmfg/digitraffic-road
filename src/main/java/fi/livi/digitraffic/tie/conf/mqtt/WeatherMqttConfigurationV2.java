@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.livi.digitraffic.tie.aop.NoJobLogging;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.model.RoadStationType;
@@ -49,6 +50,7 @@ public class WeatherMqttConfigurationV2 {
         mqttMessageSender.setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION));
     }
 
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${mqtt.weather.v2.pollingIntervalMs}")
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {

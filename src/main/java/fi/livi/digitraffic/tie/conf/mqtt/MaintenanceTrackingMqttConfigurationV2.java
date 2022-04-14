@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.livi.digitraffic.tie.aop.NoJobLogging;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
@@ -63,6 +64,7 @@ public class MaintenanceTrackingMqttConfigurationV2 {
         }
     }
 
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${mqtt.maintenance.tracking.v2.pollingIntervalMs}")
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {
