@@ -15,8 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <!-- TODO Spring Boot version [2.6.x, 2.7.x] https://spring.io/projects/spring-boot#support -->
-        <version>2.5.12</version>
+        <version>2.6.6</version>
         <relativePath/>
     </parent>
 
@@ -35,9 +34,7 @@
         <org.apache.cxf.version>3.5.2</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>2.4.8</org.glassfish.metro.ws.version>
         <io.springfox.version>3.0.0</io.springfox.version>
-        <!-- TODO Spring cloud 3.1.x needs Spring Boot version [2.6.x, 2.7.x]-->
-        <spring.cloud.version>3.0.6</spring.cloud.version>
-        <org.testcontainers.version>1.17.1</org.testcontainers.version>
+        <spring.cloud.version>3.1.1</spring.cloud.version>
     </properties>
 
     <repositories>
@@ -104,7 +101,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>3.0.5</version>
+            <version>3.1.1</version>
         </dependency>
 
         <dependency>
