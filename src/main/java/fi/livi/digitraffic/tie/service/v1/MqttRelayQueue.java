@@ -51,10 +51,13 @@ public class MqttRelayQueue {
                             updateSentMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
                         }
                     } catch (final Exception e) {
+                        if (sendErrorStatisticsMap.isEmpty()) {
+                            logger.error("MqttGateway send failure", e);
+                        }
+
                         if (topicPayloadStatisticsType.getRight() != null) {
                             updateSendErrorMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
                         }
-                        logger.error("MqttGateway send failure", e);
                     }
                 }
             }
