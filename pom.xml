@@ -35,6 +35,7 @@
         <org.glassfish.metro.ws.version>2.4.8</org.glassfish.metro.ws.version>
         <io.springfox.version>3.0.0</io.springfox.version>
         <spring.cloud.version>3.1.1</spring.cloud.version>
+        <org.testcontainers.version>1.16.3</org.testcontainers.version>
     </properties>
 
     <repositories>
@@ -430,14 +431,14 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>localstack</artifactId>
-            <version>1.16.3</version>
+            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>1.16.3</version>
+            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
