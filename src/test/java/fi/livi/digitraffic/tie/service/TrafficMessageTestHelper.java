@@ -59,7 +59,8 @@ public class TrafficMessageTestHelper {
         V0_2_13(2.13, 213),
         V0_2_14(2.14, 214),
         V0_2_15(2.15, 215),
-        V0_2_16(2.16, 216);
+        V0_2_16(2.16, 216),
+        V0_2_17(2.17, 217);
 
         public double version;
         public int intVersion;

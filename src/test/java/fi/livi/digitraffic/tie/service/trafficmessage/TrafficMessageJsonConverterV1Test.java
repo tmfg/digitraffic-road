@@ -31,28 +31,32 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Area;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.ItineraryRoadLeg;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Restriction;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation.Direction;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadWorkPhase;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.WorkingHour;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Worktype;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Area;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.ItineraryRoadLeg;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Restriction;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadAddressLocation.Direction;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadWorkPhase;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.WeekdayTimePeriod;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.WorkType;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
-    private static final Logger log = getLogger(Datex2JsonConverterV1Test.class);
+/**
+ * Tests reads Json traffic messages with different schema versions from src/test/resources/tloik/ims/versions/
+ * and test converted result to be expected.
+ */
+public class TrafficMessageJsonConverterV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
+    private static final Logger log = getLogger(TrafficMessageJsonConverterV1Test.class);
 
     @Autowired
-    private Datex2JsonConverterV1 datex2JsonConverterV1;
+    private TrafficMessageJsonConverterV1 datex2JsonConverterV1;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -76,13 +80,13 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
     }
 
     @Test
-    public void convertImsSimpleJsonVersionToGeoJsonFeatureObjectV3() throws IOException {
-        for(ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
+    public void convertImsSimpleJsonVersionToGeoJsonFeatureObject_V1() throws IOException {
+        for (final ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
             for (final SituationType st : SituationType.values()) {
                 final String json = readStaticImsJmessageResourceContent(jsonVersion, st.name(), ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
                 log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
                 final TrafficAnnouncementFeature ta =
-                    datex2JsonConverterV1.convertToFeatureJsonObjectV3(json, st, GENERAL, true);
+                    datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, st, GENERAL, true);
                 validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(st, jsonVersion, ta);
                 log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
             }
@@ -98,7 +102,7 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
             ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
-            datex2JsonConverterV1.convertToFeatureJsonObjectV3(json, situationType, GENERAL, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, situationType, GENERAL, true);
         // _WITH_MULTIPLE_ANOUNCEMENTS.json contains five areas in 1. anouncement and one area in 2. anouncement.
         // Should be merged to MultiPolygon
         assertGeometry(ta.getGeometry(), MultiPolygon);
@@ -114,7 +118,7 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
             ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
-            datex2JsonConverterV1.convertToFeatureJsonObjectV3(json, situationType, GENERAL, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, situationType, GENERAL, false);
         // _WITH_MULTIPLE_ANOUNCEMENTS.json contains five areas in 1. anouncement and one area in 2. anouncement.
         // Should be merged to MultiPolygon
         assertNull(ta.getGeometry());
@@ -132,10 +136,10 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
         final String imsJson = writerForImsGeoJsonFeature.writeValueAsString(ims);
         // Convert to feature with includeAreaGeometry -parameter true -> should have the geometry
         final TrafficAnnouncementFeature resultWithGeometry =
-            datex2JsonConverterV1.convertToFeatureJsonObjectV3(imsJson, SituationType.ROAD_WORK, null, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, true);
         // Convert to feature with includeAreaGeometry -parameter false -> should not have the area geometry
         final TrafficAnnouncementFeature resultWithoutGeometry =
-            datex2JsonConverterV1.convertToFeatureJsonObjectV3(imsJson, SituationType.ROAD_WORK, null, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, false);
 
         assertNotNull(resultWithGeometry.getGeometry());
         assertNull(resultWithoutGeometry.getGeometry());
@@ -153,10 +157,10 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
         final String imsJson = writerForImsGeoJsonFeature.writeValueAsString(ims);
         // Convert to feature with includeAreaGeometry -parameter true -> should have the geometry
         final TrafficAnnouncementFeature resultWithGeometry =
-            datex2JsonConverterV1.convertToFeatureJsonObjectV3(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, true);
         // Convert to feature with includeAreaGeometry -parameter false -> should still have the geometry as it's not an area geometry
         final TrafficAnnouncementFeature resultWithoutGeometry =
-            datex2JsonConverterV1.convertToFeatureJsonObjectV3(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, false);
 
         assertNotNull(resultWithGeometry.getGeometry());
         assertNotNull(resultWithoutGeometry.getGeometry());
@@ -242,13 +246,13 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
             final RoadWorkPhase rwp = announcement.roadWorkPhases.get(0);
             assertNotNull(rwp.location);
             assertNotNull(rwp.locationDetails.roadAddressLocation);
-            assertEquals(WorkingHour.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
+            assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
             assertNotNull(rwp.workingHours.get(0).startTime);
             assertNotNull(rwp.workingHours.get(0).endTime);
 
             if (version.version >= 2.15) {
-                assertEquals(Worktype.Type.CULVERT_REPLACEMENT, rwp.worktypes.get(1).type);
-                assertEquals("Rummun vaihtotyö", rwp.worktypes.get(1).description);
+                assertEquals(WorkType.Type.CULVERT_REPLACEMENT, rwp.workTypes.get(1).type);
+                assertEquals("Rummun vaihtotyö", rwp.workTypes.get(1).description);
             }
 
             if (version.version >= 2.14) {
@@ -269,19 +273,28 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
             }
 
             if (version.version > 2.10) {
-                assertEquals(Worktype.Type.LIGHTING, rwp.worktypes.get(0).type);
-                assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
+                assertEquals(WorkType.Type.LIGHTING, rwp.workTypes.get(0).type);
+                assertEquals("Valaistustyö", rwp.workTypes.get(0).description);
                 assertEquals(Restriction.Type.SPEED_LIMIT, rwp.restrictions.get(0).type);
                 assertEquals("Nopeusrajoitus", rwp.restrictions.get(0).restriction.name);
                 assertEquals(40.0, rwp.restrictions.get(0).restriction.quantity, 0.01);
                 assertEquals("km/h", rwp.restrictions.get(0).restriction.unit);
             } else {
-                assertEquals(Worktype.Type.OTHER, rwp.worktypes.get(0).type);
-                assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
+                assertEquals(WorkType.Type.OTHER, rwp.workTypes.get(0).type);
+                assertEquals("Valaistustyö", rwp.workTypes.get(0).description);
             }
 
             if (version.version >= 2.08) {
                 assertNotNull(rwp.severity, "Severity should exist");
+            }
+
+            if (version.version >= 2.17) {
+                assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
+                assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
+                assertNotNull(rwp.slowTrafficTimes.get(0).startTime);
+                assertNotNull(rwp.slowTrafficTimes.get(0).endTime);
+                assertNotNull(rwp.queuingTrafficTimes.get(0).startTime);
+                assertNotNull(rwp.queuingTrafficTimes.get(0).endTime);
             }
         }
     }
@@ -303,15 +316,15 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
         }
     }
 
-    private void assertType(final TrafficAnnouncementProperties props, SituationType st) {
-        assertEquals(st, props.getSituationType());
-        if (st == SituationType.TRAFFIC_ANNOUNCEMENT) {
+    private void assertType(final TrafficAnnouncementProperties props, final SituationType st) {
+        assertEquals(st.name(), props.getSituationType().name());
+        if (st.name().equals(SituationType.TRAFFIC_ANNOUNCEMENT.name())) {
             assertNotNull(props.getTrafficAnnouncementType());
         }
     }
 
     private void assertContacts(final TrafficAnnouncementProperties props,
-                                  final ImsJsonVersion version) {
+                                final ImsJsonVersion version) {
         assertNotNull(props.contact.email);
         assertNotNull(props.contact.phone);
     }
@@ -338,7 +351,7 @@ public class Datex2JsonConverterV1Test extends AbstractRestWebTestWithRegionGeom
 
     private void assertRoadAddressLocation(final TrafficAnnouncement announcement,
                                            final Direction direction) {
-        final fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation ral = announcement.locationDetails.roadAddressLocation;
+        final fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadAddressLocation ral = announcement.locationDetails.roadAddressLocation;
         if (direction != null) {
             assertEquals(direction, ral.direction);
             assertNotNull(ral.primaryPoint);

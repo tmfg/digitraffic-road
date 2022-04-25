@@ -54,7 +54,13 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "WorkingHours of an traffic situation announcement", required = true)
     @NotNull
-    public List<WorkingHour> workingHours = new ArrayList<>();
+    public List<WeekdayTimePeriod> workingHours = new ArrayList<>();
+
+    @ApiModelProperty(value = "Time periods when the road work is expected to cause slow moving traffic.")
+    public List<WeekdayTimePeriod> slowTrafficTimes = new ArrayList<>();
+
+    @ApiModelProperty(value = "Time periods when the road work is expected to cause queuing of the traffic.")
+    public List<WeekdayTimePeriod> queuingTrafficTimes = new ArrayList<>();
 
     @ApiModelProperty(value = "Free comment")
     public String comment;
@@ -67,7 +73,9 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     }
 
     public RoadWorkPhase(final String id, final Location location, final LocationDetails locationDetails, final List<Worktype> worktypes, final List<Restriction> restrictions,
-                         final Boolean restrictionsLiftable, final Severity severity, final List<WorkingHour> workingHours, final String comment, final TimeAndDuration timeAndDuration) {
+                         final Boolean restrictionsLiftable, final Severity severity,
+                         final List<WeekdayTimePeriod> workingHours, final List<WeekdayTimePeriod> slowTrafficTimes, final List<WeekdayTimePeriod> queuingTrafficTimes,
+                         final String comment, final TimeAndDuration timeAndDuration) {
         this.id = id;
         this.location = location;
         this.locationDetails = locationDetails;
@@ -76,6 +84,8 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
         this.restrictionsLiftable = restrictionsLiftable;
         this.severity = severity;
         this.workingHours = workingHours;
+        this.slowTrafficTimes = slowTrafficTimes;
+        this.queuingTrafficTimes = queuingTrafficTimes;
         this.comment = comment;
         this.timeAndDuration = timeAndDuration;
     }

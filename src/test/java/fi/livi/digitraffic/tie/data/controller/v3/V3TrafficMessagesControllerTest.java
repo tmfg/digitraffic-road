@@ -43,11 +43,13 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadWorkPhase;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuration;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.WeekdayTimePeriod;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
@@ -224,6 +226,25 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
 
         final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
         assertTrue(commentXml.contains(announcement.title.trim()));
+
+        if (imsJsonVersion.version >= 2.05 && situationType.equals(SituationType.ROAD_WORK)) {
+            final RoadWorkPhase rwp =
+                feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
+            assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
+            assertEquals("09:30:00.000", rwp.workingHours.get(0).startTime);
+            assertEquals("15:00:00.000", rwp.workingHours.get(0).endTime);
+        }
+        if (imsJsonVersion.version >= 2.17 && situationType.equals(SituationType.ROAD_WORK)) {
+            final RoadWorkPhase rwp =
+                feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
+            assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
+            assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
+            assertEquals("10:30:00.000", rwp.slowTrafficTimes.get(0).startTime);
+            assertEquals("16:00:00.000", rwp.slowTrafficTimes.get(0).endTime);
+            assertEquals("11:30:00.000", rwp.queuingTrafficTimes.get(0).startTime);
+            assertEquals("17:00:00.000", rwp.queuingTrafficTimes.get(0).endTime);
+        }
+
     }
 
     private void assertIsValidDatex2Xml(final String xml) {

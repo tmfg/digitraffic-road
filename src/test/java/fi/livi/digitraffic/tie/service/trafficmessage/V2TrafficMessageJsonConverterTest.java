@@ -36,8 +36,8 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V2Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
-    private static final Logger log = getLogger(V2Datex2JsonConverterTest.class);
+public class V2TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
+    private static final Logger log = getLogger(V2TrafficMessageJsonConverterTest.class);
 
     @Autowired
     private V2Datex2JsonConverter v2Datex2JsonConverter;

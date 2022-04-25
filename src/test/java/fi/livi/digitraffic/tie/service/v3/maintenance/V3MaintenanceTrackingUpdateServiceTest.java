@@ -267,7 +267,6 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         LongStream.range(1, machineCount + 1).forEach(harjaId -> {
             final List<MaintenanceTracking> machineTrackings = trackingsByHarjaId.get(harjaId);
             IntStream.range(0, trackingsCountPerMachine*observationCountPerTracking).forEach(idx -> {
-                System.out.println(idx/observationCountPerTracking);
                 final MaintenanceTracking t = machineTrackings.get(idx);
                 assertEquals(getTaskSetWithIndex(idx/observationCountPerTracking), t.getTasks());
             });
