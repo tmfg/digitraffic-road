@@ -430,14 +430,14 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>localstack</artifactId>
-            <version>${org.testcontainers.version}</version>
+            <version>1.16.3</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${org.testcontainers.version}</version>
+            <version>1.16.3</version>
             <scope>test</scope>
         </dependency>
 
