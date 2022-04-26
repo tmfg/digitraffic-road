@@ -144,8 +144,13 @@ public class SwaggerConfiguration {
             private List<RequestMappingInfoHandlerMapping> getHandlerMappings(final Object bean) {
                 try {
                     final Field field = ReflectionUtils.findField(bean.getClass(), "handlerMappings");
-                    field.setAccessible(true);
-                    return (List<RequestMappingInfoHandlerMapping>) field.get(bean);
+
+                    if (field != null) {
+                        field.setAccessible(true);
+                        return (List<RequestMappingInfoHandlerMapping>) field.get(bean);
+                    }
+
+                    throw new IllegalStateException("no handlerMappings found");
                 } catch (final IllegalArgumentException | IllegalAccessException e) {
                     throw new IllegalStateException(e);
                 }
