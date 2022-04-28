@@ -443,8 +443,8 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // First tracking has end poind added from second tracking first poing
         final MaintenanceTracking first = trackings.get(0);
         final MaintenanceTracking second = trackings.get(1);
-        assertEquals(4, first.getLineString().getNumPoints());
-        assertEquals(4, second.getLineString().getNumPoints());
+        assertEquals(3, first.getLineString().getNumPoints()); // Simplification takes points from 3 -> 2, but next tracking start point is appended so sum is 2+1
+        assertEquals(4, second.getLineString().getNumPoints()); // Simplification drops from 5 -> 4 points
         assertEquals(first.getLastPoint(), second.getLineString().getStartPoint());
     }
 

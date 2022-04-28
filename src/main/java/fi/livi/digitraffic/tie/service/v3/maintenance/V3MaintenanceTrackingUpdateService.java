@@ -37,8 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfiguration;
-import fi.livi.digitraffic.tie.conf.mqtt.MaintenanceTrackingMqttConfigurationV2;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
@@ -68,8 +66,6 @@ public class V3MaintenanceTrackingUpdateService {
     private final ObjectReader jsonReader;
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     private final DataStatusService dataStatusService;
-    private final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration;
-    private final MaintenanceTrackingMqttConfigurationV2 maintenanceTrackingMqttConfigurationV2;
     private static int distinctObservationGapMinutes;
     private static double distinctLineStringObservationGapKm;
     private final ObjectWriter jsonWriterForHavainto;
@@ -80,8 +76,6 @@ public class V3MaintenanceTrackingUpdateService {
                                               final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository,
                                               final ObjectMapper objectMapper,
                                               final DataStatusService dataStatusService,
-                                              @Autowired(required = false) final MaintenanceTrackingMqttConfiguration maintenanceTrackingMqttConfiguration,
-                                              @Autowired(required = false) final MaintenanceTrackingMqttConfigurationV2 maintenanceTrackingMqttConfigurationV2,
                                               @Value("${workmachine.tracking.distinct.observation.gap.minutes}") final int distinctObservationGapMinutes,
                                               @Value("${workmachine.tracking.distinct.linestring.observationgap.km}") final double distinctLineStringObservationGapKm) {
         this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
@@ -90,8 +84,6 @@ public class V3MaintenanceTrackingUpdateService {
         this.jsonReader = objectMapper.readerFor(Havainto.class);
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
         this.dataStatusService = dataStatusService;
-        this.maintenanceTrackingMqttConfiguration = maintenanceTrackingMqttConfiguration;
-        this.maintenanceTrackingMqttConfigurationV2 = maintenanceTrackingMqttConfigurationV2;
         V3MaintenanceTrackingUpdateService.distinctObservationGapMinutes = distinctObservationGapMinutes;
         V3MaintenanceTrackingUpdateService.distinctLineStringObservationGapKm = distinctLineStringObservationGapKm;
     }
@@ -184,15 +176,20 @@ public class V3MaintenanceTrackingUpdateService {
                     // This happens only when task changes for same work machine or trakcing is continuation for previous tracking.
                     updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isNextInsideLimits());
 
+                    final Geometry simplifiedGeometry = PostgisGeometryHelper.simplify(geometry);
+                    if (geometry.getNumPoints() != simplifiedGeometry.getNumPoints()) {
+                        log.debug("method=handleRoute geometry simplified from {} points to {} points", geometry.getNumPoints() , simplifiedGeometry.getNumPoints());
+                    }
+
                     final MaintenanceTrackingWorkMachine workMachine =
                         getOrCreateWorkMachine(harjaWorkMachineId, harjaContractId, harjaWorkMachine.getTyokonetyyppi());
-                    final Point lastPoint = resolveLastPoint(geometry);
+                    final Point lastPoint = resolveLastPoint(simplifiedGeometry);
                     final Set<MaintenanceTrackingTask> performedTasks =
                         getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
 
                     final MaintenanceTracking created =
                         new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
-                            harjaObservationTime, harjaObservationTime, lastPoint, geometry.getLength() > 0.0 ? (LineString) geometry : null,
+                            harjaObservationTime, harjaObservationTime, lastPoint, simplifiedGeometry.getLength() > 0.0 ? (LineString) simplifiedGeometry : null,
                             performedTasks, direction, V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
 
                     // Mark new tracking to follow previous tracking
