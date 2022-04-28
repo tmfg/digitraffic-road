@@ -26,5 +26,8 @@ public final class ApiConstants {
     /* Waze feed */
     public static final String API_WAZEFEED = INTEGRATION + "/waze";
 
+    /** All deprecations */
+    public static final String DEPRECATED_2022_11_01 = "2022-11-01";
+
     private ApiConstants() {}
 }
