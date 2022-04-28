@@ -137,7 +137,7 @@ public class V2TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
     }
 
     private void assertLocationToDisplay(final TrafficAnnouncementProperties props, final ImsJsonVersion version) {
-        if (version.version < 2.08) {
+        if (version.version < ImsJsonVersion.V0_2_8.version) {
             assertNotNull(props.locationToDisplay);
         } else {
             assertNull(props.locationToDisplay);
@@ -148,7 +148,7 @@ public class V2TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
                                 final ImsJsonVersion version) {
         assertNotNull(props.contact.email);
         assertNotNull(props.contact.phone);
-        if (version.version < 2.09) {
+        if (version.version < ImsJsonVersion.V0_2_9.version) {
             assertNotNull(props.contact.fax);
         } else {
             assertNull(props.contact.fax);
@@ -183,14 +183,14 @@ public class V2TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
 
     private void assertAreaLocation(final TrafficAnnouncement announcement,
                                     final ImsJsonVersion version) {
-        final int size = version.version >= 2.08 ? 5 : 4;
+        final int size = version.version >= ImsJsonVersion.V0_2_8.version ? 5 : 4;
         assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
 
         assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.COUNTRY);
         assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.MUNICIPALITY);
         assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.PROVINCE);
         assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.WEATHER_REGION);
-        if (version.version >= 2.08) {
+        if (version.version >= ImsJsonVersion.V0_2_8.version) {
             assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
         }
 

@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createRegionGeometryFeatureCollection;
@@ -117,8 +119,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyActive() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
@@ -144,8 +146,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyInactiveWithInactiveHours() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
@@ -171,8 +173,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyInactive() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
@@ -243,7 +245,7 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     private void assertContentsMatch(final String d2xml, final String simpleJsonFeatureCollection, final SituationType situationType,
                                      final String situationId,
                                      final ZonedDateTime start, final ZonedDateTime end,
-                                     final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion)
+                                     final ImsJsonVersion imsJsonVersion)
         throws JsonProcessingException {
         final D2LogicalModel d2 = parseD2LogicalModel(d2xml);
 
@@ -280,14 +282,14 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
         final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
         assertTrue(commentXml.contains(announcement.title.trim()));
 
-        if (imsJsonVersion.version >= 2.05 && situationType.equals(SituationType.ROAD_WORK)) {
+        if (imsJsonVersion.version >= ImsJsonVersion.V0_2_5.version && situationType.equals(SituationType.ROAD_WORK)) {
             final RoadWorkPhase rwp =
                 feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
             assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
             assertEquals(LocalTime.parse("09:30:00.000"), rwp.workingHours.get(0).startTime);
             assertEquals(LocalTime.parse("15:00:00.000"), rwp.workingHours.get(0).endTime);
         }
-        if (imsJsonVersion.version >= 2.17 && situationType.equals(SituationType.ROAD_WORK)) {
+        if (imsJsonVersion.version >= ImsJsonVersion.V0_2_17.version && situationType.equals(SituationType.ROAD_WORK)) {
             final RoadWorkPhase rwp =
                 feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
             assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);

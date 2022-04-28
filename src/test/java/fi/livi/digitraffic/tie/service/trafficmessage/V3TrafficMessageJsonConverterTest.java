@@ -231,7 +231,7 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
 
     private void assertEarlyClosing(final TrafficAnnouncement announcement,
                                     final ImsJsonVersion version, final SituationType st) {
-        if (st == SituationType.ROAD_WORK && version.version >= 2.08) {
+        if (st == SituationType.ROAD_WORK && version.version >= ImsJsonVersion.V0_2_8.version) {
             assertNotNull(announcement.earlyClosing);
         } else {
             assertNull(announcement.earlyClosing);
@@ -240,7 +240,7 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
 
     private void assertRoadWorkPhases(final TrafficAnnouncement announcement,
                                       final ImsJsonVersion version) {
-        if (version.version < 2.05) {
+        if (version.version < ImsJsonVersion.V0_2_5.version) {
             AssertHelper.assertCollectionSize(0, announcement.roadWorkPhases);
         } else {
             AssertHelper.assertCollectionSize(1, announcement.roadWorkPhases);
@@ -251,12 +251,12 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
             assertNotNull(rwp.workingHours.get(0).startTime);
             assertNotNull(rwp.workingHours.get(0).endTime);
 
-            if (version.version >= 2.15) {
+            if (version.version >= ImsJsonVersion.V0_2_15.version) {
                 assertEquals(Worktype.Type.CULVERT_REPLACEMENT, rwp.worktypes.get(1).type);
                 assertEquals("Rummun vaihtotyö", rwp.worktypes.get(1).description);
             }
 
-            if (version.version >= 2.14) {
+            if (version.version >= ImsJsonVersion.V0_2_14.version) {
                 // restriction timeAndDuration && INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE added
                 final Restriction r3 = rwp.restrictions.get(2);
                 assertNotNull(r3.restriction.description);
@@ -265,7 +265,7 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
                 assertNotNull(r3.restriction.timeAndDuration);
             }
 
-            if (version.version >= 2.13) {
+            if (version.version >= ImsJsonVersion.V0_2_13.version) {
                 assertNotNull(rwp.restrictionsLiftable, "restrictionsLiftable should exist");
                 assertTrue(rwp.restrictionsLiftable);
                 assertNotNull(rwp.restrictions.get(0).restriction.description);
@@ -273,7 +273,7 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
                 assertNotNull(rwp.restrictions.get(1).restriction.description);
             }
 
-            if (version.version > 2.10) {
+            if (version.version > ImsJsonVersion.V0_2_10.version) {
                 assertEquals(Worktype.Type.LIGHTING, rwp.worktypes.get(0).type);
                 assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
                 assertEquals(Restriction.Type.SPEED_LIMIT, rwp.restrictions.get(0).type);
@@ -285,11 +285,11 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
                 assertEquals("Valaistustyö", rwp.worktypes.get(0).description);
             }
 
-            if (version.version >= 2.08) {
+            if (version.version >= ImsJsonVersion.V0_2_8.version) {
                 assertNotNull(rwp.severity, "Severity should exist");
             }
 
-            if (version.version >= 2.17) {
+            if (version.version >= ImsJsonVersion.V0_2_17.version) {
                 assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
                 assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
                 assertNotNull(rwp.slowTrafficTimes.get(0).startTime);
@@ -302,7 +302,7 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
 
     private void assertLastActiveItinerarySegment(final TrafficAnnouncement announcement,
                                                   final ImsJsonVersion version) {
-        if (version.version < 2.06) {
+        if (version.version < ImsJsonVersion.V0_2_6.version) {
             assertNull(announcement.lastActiveItinerarySegment);
         } else {
             assertNotNull(announcement.lastActiveItinerarySegment);
@@ -335,6 +335,7 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
         assertEquals(type, geometry.getType());
     }
 
+    @SafeVarargs
     private void assertFeatures(final TrafficAnnouncement announcement,
                                 final ImsJsonVersion version,
                                 final Triple<String, Double, String>...features) {
@@ -342,9 +343,9 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
         for (final Triple<String, Double, String> f : features) {
             announcement.features.stream().filter(value ->
                 !Objects.equals(f.getLeft(), value.name) ||
-                !Objects.equals(v >= 2.05 ? f.getMiddle() : null, value.quantity) ||
-                !Objects.equals(v >= 2.05 ? f.getRight() : null, value.unit) ||
-                !(v >= 2.13) || value.description != null
+                !Objects.equals(v >= ImsJsonVersion.V0_2_5.version ? f.getMiddle() : null, value.quantity) ||
+                !Objects.equals(v >= ImsJsonVersion.V0_2_5.version ? f.getRight() : null, value.unit) ||
+                !(v >= ImsJsonVersion.V0_2_13.version) || value.description != null
             ).findFirst().orElseThrow();
         }
         assertEquals(features.length, announcement.features.size());
@@ -365,14 +366,14 @@ public class V3TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRe
 
     private void assertAreaLocation(final TrafficAnnouncement announcement,
                                     final ImsJsonVersion version) {
-        final int size = version.version >= 2.08 ? 5 : 4;
+        final int size = version.version >= ImsJsonVersion.V0_2_8.version ? 5 : 4;
         assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
 
         assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.COUNTRY);
         assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.MUNICIPALITY);
         assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.PROVINCE);
         assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.WEATHER_REGION);
-        if (version.version >= 2.08) {
+        if (version.version >= ImsJsonVersion.V0_2_8.version) {
             assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
         }
     }
