@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.controller.v3;
 
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.SINCE_2022_11_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
@@ -372,7 +374,8 @@ public class V3DataController {
         return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, effectiveDate != null ? effectiveDate.toInstant() : null, id);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data latest points")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data latest points. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
@@ -416,7 +419,8 @@ public class V3DataController {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
@@ -467,14 +471,16 @@ public class V3DataController {
             xMin, yMin, xMax, yMax, taskIds, null);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data with tracking id")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data with tracking id. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
         return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
-    @ApiOperation(value = "Road maintenance tracking tasks")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking tasks. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
     public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
@@ -484,7 +490,8 @@ public class V3DataController {
             .collect(Collectors.toList());
     }
 
-    @ApiIgnore("This is only for internal debugging and not for the public")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiIgnore("This is only for internal debugging and not for the public. " + ApiDeprecations.API_NOTE_2022_11_01)
     @ApiOperation(value = "Road maintenance tracking source data")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_JSON_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance trackings data"))
