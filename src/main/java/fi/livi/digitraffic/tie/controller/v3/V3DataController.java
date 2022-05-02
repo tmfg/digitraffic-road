@@ -292,7 +292,8 @@ public class V3DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 
-    @ApiOperation(value = "Active traffic messages as Datex2")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Active traffic messages as Datex2. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
@@ -306,7 +307,8 @@ public class V3DataController {
         return v3Datex2DataService.findActive(inactiveHours, situationType);
     }
 
-    @ApiOperation(value = "Traffic messages history by situation as Datex2")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Traffic messages history by situation as Datex2. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
@@ -320,7 +322,8 @@ public class V3DataController {
         return v3Datex2DataService.findBySituationId(situationId, latest);
     }
 
-    @ApiOperation(value = "Active traffic messages as simple JSON")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Active traffic messages as simple JSON. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH, produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
@@ -338,7 +341,8 @@ public class V3DataController {
         return v3Datex2DataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
-    @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Traffic messages history by situation id as simple JSON. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH + "/{situationId}", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
@@ -356,7 +360,8 @@ public class V3DataController {
         return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
-    @ApiOperation(value = "Traffic messages geometries for regions")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Traffic messages geometries for regions. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_PATH + "/area-geometries", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
