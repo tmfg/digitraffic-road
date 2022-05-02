@@ -51,13 +51,13 @@ public class TrafficMessageController {
      * /api/traffic-message/v/area-geometries
      * /api/traffic-message/v/area-geometries/{id}
      */
-    public static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
-    private static final String API_TRAFFIC_MESSAGE_V1 = API_TRAFFIC_MESSAGE + V1;
+    private static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
+    public static final String API_TRAFFIC_MESSAGE_V1 = API_TRAFFIC_MESSAGE + V1;
 
     private static final String MESSAGES = "/messages";
     public static final String AREA_GEOMETRIES = "/area-geometries";
 
-    public static final String API_TRAFFIC_MESSAGE_BETA_MESSAGES = API_TRAFFIC_MESSAGE_BETA + MESSAGES;
+    private static final String API_TRAFFIC_MESSAGE_BETA_MESSAGES = API_TRAFFIC_MESSAGE_BETA + MESSAGES;
     public static final String API_TRAFFIC_MESSAGE_V1_MESSAGES = API_TRAFFIC_MESSAGE_V1 + MESSAGES;
 
     public static final String DATEX2 = ".datex2";
