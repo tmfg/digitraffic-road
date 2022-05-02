@@ -140,7 +140,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Traffic messages geometries for regions")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + AREA_GEOMETRIES })
+                    path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of geometries") })
     public RegionGeometryFeatureCollection areaLocationRegions(
         @ApiParam(value = "If the parameter value is true, then the result will only contain update status.", defaultValue = "true")
@@ -158,7 +158,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Traffic messages geometries for regions")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + AREA_GEOMETRIES + "/{locationCode}" })
+                    path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES + "/{locationCode}" })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of geometries"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Geometry not not found") })
     public RegionGeometryFeatureCollection areaLocationRegions(
