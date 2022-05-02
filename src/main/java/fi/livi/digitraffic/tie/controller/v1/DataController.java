@@ -178,7 +178,8 @@ public class DataController {
                                                                         null);
     }
 
-    @ApiOperation(value = "Active traffic disorders Datex2 messages")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Active traffic disorders Datex2 messages. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
     public TrafficDisordersDatex2Response trafficDisordersDatex2(
@@ -189,7 +190,8 @@ public class DataController {
         return datex2DataService.findActiveTrafficDisorders(inactiveHours);
     }
 
-    @ApiOperation(value = "Traffic disorder Datex2 messages by situation id")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Traffic disorder Datex2 messages by situation id. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
@@ -199,7 +201,8 @@ public class DataController {
         return datex2DataService.getAllTrafficDisordersBySituationId(situationId);
     }
 
-    @ApiOperation(value = "Traffic disorder Datex2 messages disorders history")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Traffic disorder Datex2 messages disorders history. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses(      {   @ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"),
                             @ApiResponse(code = 400, message = "Invalid parameter"),
