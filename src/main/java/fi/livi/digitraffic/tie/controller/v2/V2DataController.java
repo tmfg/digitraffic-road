@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
@@ -260,7 +261,7 @@ public class V2DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
     }
 
-    @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")
+    @ApiOperation("Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/changes", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of camera history changes"))
     public CameraHistoryChangesDto getCameraOrPresetHistoryChanges(
@@ -281,8 +282,8 @@ public class V2DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 
-    @Deprecated
-    @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Active Datex2 JSON messages for traffic-incident, roadwork, weight-restriction -types. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.json", produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of JSON traffic Datex2-messages"))
     public TrafficAnnouncementFeatureCollection datex2Json(
@@ -296,8 +297,8 @@ public class V2DataController {
         return v2Datex2DataService.findActiveJson(inactiveHours, datex2MessageType);
     }
 
-    @Deprecated
-    @ApiOperation(value = "Active Datex2 messages for traffic-incident, roadwork, weight-restriction -types")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Active Datex2 messages for traffic-incident, roadwork, weight-restriction -types. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}.xml", produces = { APPLICATION_XML_VALUE })
     @ApiResponses(@ApiResponse(code = 200, message = "Successful retrieval of traffic disorders"))
     public D2LogicalModel datex2(
@@ -311,8 +312,8 @@ public class V2DataController {
         return v2Datex2DataService.findActive(inactiveHours, datex2MessageType);
     }
 
-    @Deprecated
-    @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Datex2 JSON messages history by situation id for traffic-incident, roadwork, weight-restriction -types. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.json", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
@@ -326,8 +327,8 @@ public class V2DataController {
         return v2Datex2DataService.findAllBySituationIdJson(situationId, datex2MessageType);
     }
 
-    @Deprecated
-    @ApiOperation(value = "Datex2 messages history by situation id for traffic-incident, roadwork, weight-restriction -types")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Datex2 messages history by situation id for traffic-incident, roadwork, weight-restriction -types. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DATEX2_PATH + "/{datex2MessageType}/{situationId}.xml", produces = { APPLICATION_XML_VALUE })
     @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of datex2 messages"),
                     @ApiResponse(code = 404, message = "Situation id not found") })
@@ -341,7 +342,8 @@ public class V2DataController {
         return v2Datex2DataService.findAllBySituationId(situationId, datex2MessageType);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data latest points")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data latest points. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
@@ -385,7 +387,8 @@ public class V2DataController {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
@@ -436,14 +439,16 @@ public class V2DataController {
             xMin, yMin, xMax, yMax, taskIds, null);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data with tracking id")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data with tracking id. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
         return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
-    @ApiOperation(value = "Road maintenance tracking tasks")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking tasks. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
     public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
@@ -453,6 +458,7 @@ public class V2DataController {
             .collect(Collectors.toList());
     }
 
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
     @ApiIgnore("This is only for internal debugging and not for the public")
     @ApiOperation(value = "Road maintenance tracking source data")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_JSON_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)

@@ -35,9 +35,6 @@ public class TrafficMessageTestHelper {
     private static final Logger log = getLogger(TrafficMessageTestHelper.class);
 
     public final static String GUID_WITH_JSON = "GUID50001238";
-    public final static String GUID_NO_JSON = "GUID50001234";
-    public static final String FEATURE_1 = "Nopeusrajoitus";
-    public static final String FEATURE_2 = "Huono ajokeli";
     public final static String GUID_WITH_ACTIVE_ANDPASSIVE_RECORD = "GUID90000001";
 
     // Version of incoming ims message schema
@@ -51,6 +48,7 @@ public class TrafficMessageTestHelper {
 
     public enum ImsJsonVersion {
         V0_2_4(2.04, 204),
+        V0_2_5(2.05, 205),
         V0_2_6(2.06, 206),
         V0_2_8(2.08, 208),
         V0_2_9(2.09, 209),
@@ -59,7 +57,8 @@ public class TrafficMessageTestHelper {
         V0_2_13(2.13, 213),
         V0_2_14(2.14, 214),
         V0_2_15(2.15, 215),
-        V0_2_16(2.16, 216);
+        V0_2_16(2.16, 216),
+        V0_2_17(2.17, 217);
 
         public double version;
         public int intVersion;
@@ -241,13 +240,11 @@ public class TrafficMessageTestHelper {
                       .replace(START_DATE_TIME_PLACEHOLDER, startTime.toOffsetDateTime().toString())
                       .replace(endTime != null ? END_DATE_TIME_PLACEHOLDER : "RANDOMNOMATCHXYZ", (endTime != null ? endTime.toOffsetDateTime().toString() : ""))
                       .replace(endTime != null ? "<overallEndTime>" + END_DATE_TIME_PLACEHOLDER + "</overallEndTime>" : "RANDOMNOMATCHXYZ", "")
-//                      .replace(endTime != null ? "</overallStartTime>" : "RANDOMNOMATCHXYZ",
-//                               "</overallStartTime><overallEndTime>" + (endTime != null ? endTime.toOffsetDateTime().toString() : "") + "</overallEndTime>")
                       .replace(lifeCycleCanceled ? "<cancel>false</cancel>" : "RANDOMNOMATCHXYZ", "<cancel>true</cancel>");
     }
 
     /**
-     * Converts ie. V0_2_12 to 0.2.12
+     * Converts i.e. V0_2_12 to 0.2.12
      */
     public static String getJsonVersionString(final ImsJsonVersion jsonVersion) {
         return jsonVersion.toString().replace("V", "").replace("_", ".");

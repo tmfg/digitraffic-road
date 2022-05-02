@@ -1,6 +1,7 @@
 
 package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,31 +17,31 @@ import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Working hour", value = "WorkingHour_V1")
+@ApiModel(description = "Weekday time period", value = "WeekdayTimePeriod_V1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "weekday",
     "startTime",
     "endTime"
 })
-public class WorkingHour extends JsonAdditionalProperties {
+public class WeekdayTimePeriod extends JsonAdditionalProperties {
 
     @ApiModelProperty(value = "Weekday", required = true)
     @NotNull
-    public WorkingHour.Weekday weekday;
+    public WeekdayTimePeriod.Weekday weekday;
 
-    @ApiModelProperty(value = "Road work start time using ISO 8601 local time", required = true)
+    @ApiModelProperty(value = "Start time of the time period in ISO 8601 local time in Europe/Helsinki", required = true, dataType = "java.lang.String", example = "09:30:00")
     @NotNull
-    public String startTime;
+    public LocalTime startTime;
 
-    @ApiModelProperty(value = "Road work end time using ISO 8601 local time", required = true)
+    @ApiModelProperty(value = "End time of the time period in ISO 8601 local time in Europe/Helsinki", required = true, dataType = "java.lang.String", example = "15:30:00")
     @NotNull
-    public String endTime;
+    public LocalTime endTime;
 
-    public WorkingHour() {
+    public WeekdayTimePeriod() {
     }
 
-    public WorkingHour(Weekday weekday, String startTime, String endTime) {
+    public WeekdayTimePeriod(final Weekday weekday, final LocalTime startTime, final LocalTime endTime) {
         super();
         this.weekday = weekday;
         this.startTime = startTime;

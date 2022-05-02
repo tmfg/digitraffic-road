@@ -38,8 +38,8 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
  */
 @ConditionalOnWebApplication
 @Component
-public class Datex2JsonConverterV1 {
-    private static final Logger log = LoggerFactory.getLogger(Datex2JsonConverterV1.class);
+public class TrafficMessageJsonConverterV1 {
+    private static final Logger log = LoggerFactory.getLogger(TrafficMessageJsonConverterV1.class);
 
     protected final ObjectReader featureJsonReaderV2;
     protected final ObjectReader featureJsonReaderV3;
@@ -52,8 +52,8 @@ public class Datex2JsonConverterV1 {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    public Datex2JsonConverterV1(final ObjectMapper objectMapper,
-                                 final V3RegionGeometryDataService v3RegionGeometryDataService) {
+    public TrafficMessageJsonConverterV1(final ObjectMapper objectMapper,
+                                         final V3RegionGeometryDataService v3RegionGeometryDataService) {
         this.objectMapper = objectMapper;
 
         featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);

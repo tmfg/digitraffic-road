@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2JsonConverterV1;
+import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 
 @ConditionalOnWebApplication
@@ -34,13 +34,13 @@ public class V3Datex2DataService {
     private static final Logger log = LoggerFactory.getLogger(V3Datex2DataService.class);
 
     private final Datex2Repository datex2Repository;
-    private final Datex2JsonConverterV1 datex2JsonConverterV1;
+    private final TrafficMessageJsonConverterV1 datex2JsonConverterV1;
     private final DataStatusService dataStatusService;
     private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     public V3Datex2DataService(final Datex2Repository datex2Repository,
-                               final Datex2JsonConverterV1 datex2JsonConverterV1,
+                               final TrafficMessageJsonConverterV1 datex2JsonConverterV1,
                                final DataStatusService dataStatusService,
                                final V2Datex2DataService v2Datex2DataService) {
         this.datex2Repository = datex2Repository;

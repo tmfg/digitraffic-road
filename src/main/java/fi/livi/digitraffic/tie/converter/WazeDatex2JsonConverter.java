@@ -30,19 +30,19 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2JsonConverterV1;
+import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
 
 @ConditionalOnWebApplication
 @Component
 public class WazeDatex2JsonConverter {
     private static final Logger logger = LoggerFactory.getLogger(WazeDatex2JsonConverter.class);
 
-    private final Datex2JsonConverterV1 datex2JsonConverterV1;
+    private final TrafficMessageJsonConverterV1 datex2JsonConverterV1;
 
     private final WazeDatex2MessageConverter wazeDatex2MessageConverter;
 
     @Autowired
-    public WazeDatex2JsonConverter(final Datex2JsonConverterV1 datex2JsonConverterV1, final WazeDatex2MessageConverter wazeDatex2MessageConverter) {
+    public WazeDatex2JsonConverter(final TrafficMessageJsonConverterV1 datex2JsonConverterV1, final WazeDatex2MessageConverter wazeDatex2MessageConverter) {
         this.datex2JsonConverterV1 = datex2JsonConverterV1;
         this.wazeDatex2MessageConverter = wazeDatex2MessageConverter;
     }
