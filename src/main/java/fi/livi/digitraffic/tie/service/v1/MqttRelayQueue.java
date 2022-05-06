@@ -85,7 +85,8 @@ public class MqttRelayQueue {
 
     @Scheduled(fixedRate = 60000)
     public void logMqttQueue() {
-        logger.info("mqttQueueLength={}", maxQueueLength.getThenReset());
+        logger.info("prefix=CURRENT queueSize={}", messageList.size());
+        logger.info("prefix=MAX queueSize={}", maxQueueLength.getThenReset());
     }
 
     /**
