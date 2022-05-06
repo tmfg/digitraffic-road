@@ -22,6 +22,7 @@ import fi.livi.digitraffic.tie.conf.MqttConfiguration;
 @ConditionalOnExpression("'${app.type}' == 'daemon' and '${config.test}' != 'true'")
 public class MqttRelayQueue {
     private static final Logger logger = LoggerFactory.getLogger(MqttRelayQueue.class);
+    private static final int MAX_QUEUE_SIZE = 500000;
 
     private static final Map<StatisticsType, LongAdder> sentStatisticsMap = new ConcurrentHashMap<>();
     private static final Map<StatisticsType, LongAdder> sendErrorStatisticsMap = new ConcurrentHashMap<>();
@@ -100,8 +101,13 @@ public class MqttRelayQueue {
             throw new IllegalArgumentException(String.format("All parameters must be set topic:%s, payload:%s, statisticsType:%s",
                                                              topic, payLoad, statisticsType));
         }
-        messageList.add(Triple.of(topic, payLoad, statisticsType));
-        maxQueueLength.accumulate(messageList.size());
+
+        if(messageList.size() > MAX_QUEUE_SIZE) {
+            logger.error("Mqtt send queue too big!");
+        } else {
+            messageList.add(Triple.of(topic, payLoad, statisticsType));
+            maxQueueLength.accumulate(messageList.size());
+        }
     }
 
     /**
