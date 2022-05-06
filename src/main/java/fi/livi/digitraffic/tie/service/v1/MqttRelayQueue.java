@@ -5,7 +5,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
 
+import com.mchange.v2.lang.ThreadUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +23,8 @@ import fi.livi.digitraffic.tie.conf.MqttConfiguration;
 public class MqttRelayQueue {
     private static final Logger logger = LoggerFactory.getLogger(MqttRelayQueue.class);
 
-    private static final Map<StatisticsType, Integer> sentStatisticsMap = new ConcurrentHashMap<>();
-    private static final Map<StatisticsType, Integer> sendErrorStatisticsMap = new ConcurrentHashMap<>();
+    private static final Map<StatisticsType, LongAdder> sentStatisticsMap = new ConcurrentHashMap<>();
+    private static final Map<StatisticsType, LongAdder> sendErrorStatisticsMap = new ConcurrentHashMap<>();
     private final BlockingQueue<Triple<String, String, StatisticsType>> messageList = new LinkedBlockingQueue<>();
     private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
 
@@ -34,12 +36,12 @@ public class MqttRelayQueue {
     public MqttRelayQueue(final MqttConfiguration.MqttGateway mqttGateway) {
 
         for (final StatisticsType type : StatisticsType.values()) {
-            sentStatisticsMap.put(type, 0);
-            sendErrorStatisticsMap.put(type, 0);
+            sentStatisticsMap.put(type, new LongAdder());
+            sendErrorStatisticsMap.put(type, new LongAdder());
         }
 
         // in a threadsafe way, take messages from message list and send them to mqtt gateway
-        new Thread(() -> {
+        final Thread sender = new Thread(() -> {
             while(true) {
 
                 final Triple<String, String, StatisticsType> topicPayloadStatisticsType = getNextMessage();
@@ -61,7 +63,11 @@ public class MqttRelayQueue {
                     }
                 }
             }
-        }).start();
+        });
+
+        sender.setPriority(8);
+        sender.setName("MqttSenderThread");
+        sender.start();
     }
 
     private Triple<String, String, StatisticsType> getNextMessage() {
@@ -103,7 +109,7 @@ public class MqttRelayQueue {
      * @param messages Count of messages send
      */
     public void updateSentMqttStatistics(final StatisticsType type, final int messages) {
-        sentStatisticsMap.put(type, sentStatisticsMap.get(type) + messages);
+        sentStatisticsMap.get(type).add(messages);
     }
 
     /**
@@ -112,16 +118,16 @@ public class MqttRelayQueue {
      * @param messages Count of messages send
      */
     public void updateSendErrorMqttStatistics(final StatisticsType type, final int messages) {
-        sendErrorStatisticsMap.put(type, sendErrorStatisticsMap.get(type) + messages);
+        sendErrorStatisticsMap.get(type).add(messages);
     }
 
     @Scheduled(fixedRate = 60000)
     public void logMessageCount() {
         for (final StatisticsType type : StatisticsType.values()) {
-            final Integer sentMessages = sentStatisticsMap.put(type, 0);
-            final Integer sendErrors = sendErrorStatisticsMap.put(type, 0);
+            final long sentMessages = sentStatisticsMap.get(type).sumThenReset();
+            final long sentErrors = sendErrorStatisticsMap.get(type).sumThenReset();
 
-            logger.info("method=logMessageCount type={} messages={} errors={}", type, sentMessages != null ? sentMessages : 0, sendErrors != null ? sendErrors : 0);
+            logger.info("method=logMessageCount type={} messages={} errors={}", type, sentMessages, sentErrors);
         }
     }
 }
