@@ -102,7 +102,7 @@ public class MqttRelayQueue {
      * @param type Statistics type
      * @param messages Count of messages send
      */
-    public synchronized void updateSentMqttStatistics(final StatisticsType type, final int messages) {
+    public void updateSentMqttStatistics(final StatisticsType type, final int messages) {
         sentStatisticsMap.put(type, sentStatisticsMap.get(type) + messages);
     }
 
@@ -111,7 +111,7 @@ public class MqttRelayQueue {
      * @param type Statistics type
      * @param messages Count of messages send
      */
-    public synchronized void updateSendErrorMqttStatistics(final StatisticsType type, final int messages) {
+    public void updateSendErrorMqttStatistics(final StatisticsType type, final int messages) {
         sendErrorStatisticsMap.put(type, sendErrorStatisticsMap.get(type) + messages);
     }
 
