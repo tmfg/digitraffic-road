@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.conf.MqttConfiguration;
 @ConditionalOnExpression("'${app.type}' == 'daemon' and '${config.test}' != 'true'")
 public class MqttRelayQueue {
     private static final Logger logger = LoggerFactory.getLogger(MqttRelayQueue.class);
-    private static final int MAX_QUEUE_SIZE = 500000;
+    private static final int MAX_QUEUE_SIZE = 200000;
 
     private static final Map<StatisticsType, LongAdder> sentStatisticsMap = new ConcurrentHashMap<>();
     private static final Map<StatisticsType, LongAdder> sendErrorStatisticsMap = new ConcurrentHashMap<>();
@@ -49,7 +49,7 @@ public class MqttRelayQueue {
 
                 if (topicPayloadStatisticsType != null) {
                     try {
-                        mqttGateway.sendToMqtt(topicPayloadStatisticsType.getLeft(), QOS, topicPayloadStatisticsType.getMiddle());
+                        mqttGateway.sendToMqtt(topicPayloadStatisticsType.getLeft(), topicPayloadStatisticsType.getMiddle());
                         if (topicPayloadStatisticsType.getRight() != null) {
                             updateSentMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
                         }
