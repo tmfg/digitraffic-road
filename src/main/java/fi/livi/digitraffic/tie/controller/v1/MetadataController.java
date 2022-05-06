@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import fi.livi.digitraffic.tie.controller.TmsState;
 import fi.livi.digitraffic.tie.dto.v1.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
@@ -105,8 +104,7 @@ public class MetadataController {
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
-    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
-    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM). " + ApiDeprecations.API_NOTE_2022_11_01)
+    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM).")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                 APPLICATION_GEO_JSON_VALUE,
                                                                                                                 APPLICATION_VND_GEO_JSON_VALUE })
@@ -116,8 +114,7 @@ public class MetadataController {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
-    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
-    @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM). " + ApiDeprecations.API_NOTE_2022_11_01)
+    @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM).")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -134,8 +131,7 @@ public class MetadataController {
         return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
     }
 
-    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
-    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM). " + ApiDeprecations.API_NOTE_2022_11_01)
+    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM).")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })

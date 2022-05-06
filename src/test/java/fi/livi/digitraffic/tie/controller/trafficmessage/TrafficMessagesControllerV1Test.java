@@ -323,12 +323,12 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA + TrafficMessageController.AREA_GEOMETRIES +
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_V1 + TrafficMessageController.AREA_GEOMETRIES +
             "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry, int regionId) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA + TrafficMessageController.AREA_GEOMETRIES + "/" + regionId +
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_V1 + TrafficMessageController.AREA_GEOMETRIES + "/" + regionId +
             "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
