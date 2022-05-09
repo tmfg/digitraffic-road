@@ -5,7 +5,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 
-import com.mchange.v2.lang.ThreadUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +23,8 @@ public class MqttRelayQueue {
 
     private static final Map<StatisticsType, LongAdder> sentStatisticsMap = new ConcurrentHashMap<>();
     private static final Map<StatisticsType, LongAdder> sendErrorStatisticsMap = new ConcurrentHashMap<>();
-//    private final BlockingQueue<Triple<String, String, StatisticsType>> messageList = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
-    private final ArrayBlockingQueue<Triple<String, String, StatisticsType>> messageList = new ArrayBlockingQueue(MAX_QUEUE_SIZE);
+    private final BlockingQueue<QueueItem> messageList = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
+//    private final ArrayBlockingQueue<Triple<String, String, StatisticsType>> messageList = new ArrayBlockingQueue(MAX_QUEUE_SIZE);
 
     private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
 
@@ -45,21 +44,21 @@ public class MqttRelayQueue {
         final Thread sender = new Thread(() -> {
             while(true) {
 
-                final Triple<String, String, StatisticsType> topicPayloadStatisticsType = getNextMessage();
+                final QueueItem item = getNextMessage();
 
-                if (topicPayloadStatisticsType != null) {
+                if (item != null) {
                     try {
-                        mqttGateway.sendToMqtt(topicPayloadStatisticsType.getLeft(), topicPayloadStatisticsType.getMiddle());
-                        if (topicPayloadStatisticsType.getRight() != null) {
-                            updateSentMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
+                        mqttGateway.sendToMqtt(item.topic, item.message);
+                        if (item.statistics != null) {
+                            updateSentMqttStatistics(item.statistics, 1);
                         }
                     } catch (final Exception e) {
                         if (sendErrorStatisticsMap.isEmpty()) {
                             logger.error("MqttGateway send failure", e);
                         }
 
-                        if (topicPayloadStatisticsType.getRight() != null) {
-                            updateSendErrorMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
+                        if (item.statistics != null) {
+                            updateSendErrorMqttStatistics(item.statistics, 1);
                         }
                     }
                 }
@@ -71,7 +70,7 @@ public class MqttRelayQueue {
         sender.start();
     }
 
-    private Triple<String, String, StatisticsType> getNextMessage() {
+    private QueueItem getNextMessage() {
         try {
             return messageList.take();
         } catch (final InterruptedException ie) {
@@ -103,7 +102,7 @@ public class MqttRelayQueue {
         }
 
         try {
-            messageList.add(Triple.of(topic, payLoad, statisticsType));
+            messageList.add(new QueueItem(topic, payLoad, statisticsType));
             maxQueueLength.accumulate(messageList.size());
         } catch (final IllegalStateException e) {
             logger.error("Mqtt send queue full!");
@@ -136,6 +135,18 @@ public class MqttRelayQueue {
             final long sentErrors = sendErrorStatisticsMap.get(type).sumThenReset();
 
             logger.info("method=logMessageCount type={} messages={} errors={}", type, sentMessages, sentErrors);
+        }
+    }
+
+    private static final class QueueItem {
+        public final String topic;
+        public final String message;
+        public final StatisticsType statistics;
+
+        private QueueItem(final String topic, final String message, final StatisticsType statistics) {
+            this.topic = topic;
+            this.message = message;
+            this.statistics = statistics;
         }
     }
 }
