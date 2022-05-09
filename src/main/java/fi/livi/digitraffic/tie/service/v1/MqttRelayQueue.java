@@ -2,10 +2,8 @@ package fi.livi.digitraffic.tie.service.v1;
 
 import java.util.Map;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +22,8 @@ public class MqttRelayQueue {
     private static final Map<StatisticsType, LongAdder> sentStatisticsMap = new ConcurrentHashMap<>();
     private static final Map<StatisticsType, LongAdder> sendErrorStatisticsMap = new ConcurrentHashMap<>();
     private final BlockingQueue<QueueItem> messageList = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
-//    private final ArrayBlockingQueue<Triple<String, String, StatisticsType>> messageList = new ArrayBlockingQueue(MAX_QUEUE_SIZE);
 
+    private final LongAdder addedMessagesAdder = new LongAdder();
     private long maxQueueLength = 0;
 
     public enum StatisticsType {TMS, WEATHER, MAINTENANCE_TRACKING, STATUS}
@@ -49,17 +47,13 @@ public class MqttRelayQueue {
 
                     try {
                         mqttGateway.sendToMqtt(item.topic, item.message);
-                        if (item.statistics != null) {
-                            updateSentMqttStatistics(item.statistics, 1);
-                        }
+//                            updateSentMqttStatistics(item.statistics, 1);
                     } catch (final Exception e) {
                         if (sendErrorStatisticsMap.isEmpty()) {
                             logger.error("MqttGateway send failure", e);
                         }
 
-                        if (item.statistics != null) {
-                            updateSendErrorMqttStatistics(item.statistics, 1);
-                        }
+//                            updateSendErrorMqttStatistics(item.statistics, 1);
                     }
                 }
             }
@@ -87,6 +81,7 @@ public class MqttRelayQueue {
     public void logMqttQueue() {
         logger.info("prefix=CURRENT queueSize={}", messageList.size());
         logger.info("prefix=MAX queueSize={}", maxQueueLength);
+        logger.info("prefix=ADDED queueSize={}", addedMessagesAdder.sumThenReset());
 
         maxQueueLength = 0;
     }
@@ -105,6 +100,7 @@ public class MqttRelayQueue {
 
         try {
             messageList.add(new QueueItem(topic, payLoad, statisticsType));
+            addedMessagesAdder.increment();
         } catch (final IllegalStateException e) {
             logger.error("Mqtt send queue full!");
             messageList.clear();
