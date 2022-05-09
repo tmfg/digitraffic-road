@@ -25,7 +25,7 @@ public class MqttRelayQueue {
     private static final Map<StatisticsType, LongAdder> sentStatisticsMap = new ConcurrentHashMap<>();
     private static final Map<StatisticsType, LongAdder> sendErrorStatisticsMap = new ConcurrentHashMap<>();
 //    private final BlockingQueue<Triple<String, String, StatisticsType>> messageList = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
-    private final LinkedBlockingDeque<Triple<String, String, StatisticsType>> messageList = new LinkedBlockingDeque(MAX_QUEUE_SIZE);
+    private final ArrayBlockingQueue<Triple<String, String, StatisticsType>> messageList = new ArrayBlockingQueue(MAX_QUEUE_SIZE);
 
     private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
 
