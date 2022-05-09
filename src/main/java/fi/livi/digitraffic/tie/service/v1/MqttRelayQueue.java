@@ -47,13 +47,13 @@ public class MqttRelayQueue {
 
                     try {
                         mqttGateway.sendToMqtt(item.topic, item.message);
-//                            updateSentMqttStatistics(item.statistics, 1);
+                        updateSentMqttStatistics(item.statistics, 1);
                     } catch (final Exception e) {
                         if (sendErrorStatisticsMap.isEmpty()) {
                             logger.error("MqttGateway send failure", e);
                         }
 
-//                            updateSendErrorMqttStatistics(item.statistics, 1);
+                        updateSendErrorMqttStatistics(item.statistics, 1);
                     }
                 }
             }
