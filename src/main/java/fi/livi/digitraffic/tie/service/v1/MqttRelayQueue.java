@@ -1,9 +1,7 @@
 package fi.livi.digitraffic.tie.service.v1;
 
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -22,11 +20,13 @@ import fi.livi.digitraffic.tie.conf.MqttConfiguration;
 @ConditionalOnExpression("'${app.type}' == 'daemon' and '${config.test}' != 'true'")
 public class MqttRelayQueue {
     private static final Logger logger = LoggerFactory.getLogger(MqttRelayQueue.class);
-    private static final int MAX_QUEUE_SIZE = 200000;
+    private static final int MAX_QUEUE_SIZE = 100000;
 
     private static final Map<StatisticsType, LongAdder> sentStatisticsMap = new ConcurrentHashMap<>();
     private static final Map<StatisticsType, LongAdder> sendErrorStatisticsMap = new ConcurrentHashMap<>();
-    private final BlockingQueue<Triple<String, String, StatisticsType>> messageList = new LinkedBlockingQueue<>();
+//    private final BlockingQueue<Triple<String, String, StatisticsType>> messageList = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
+    private final LinkedBlockingDeque<Triple<String, String, StatisticsType>> messageList = new LinkedBlockingDeque(MAX_QUEUE_SIZE);
+
     private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
 
     public enum StatisticsType {TMS, WEATHER, MAINTENANCE_TRACKING, STATUS}
@@ -102,11 +102,12 @@ public class MqttRelayQueue {
                                                              topic, payLoad, statisticsType));
         }
 
-        if(messageList.size() > MAX_QUEUE_SIZE) {
-            logger.error("Mqtt send queue too big!");
-        } else {
+        try {
             messageList.add(Triple.of(topic, payLoad, statisticsType));
             maxQueueLength.accumulate(messageList.size());
+        } catch (final IllegalStateException e) {
+            logger.error("Mqtt send queue full!");
+            messageList.clear();
         }
     }
 
