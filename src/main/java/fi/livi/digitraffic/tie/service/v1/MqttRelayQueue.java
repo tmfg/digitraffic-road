@@ -26,7 +26,7 @@ public class MqttRelayQueue {
     private final BlockingQueue<QueueItem> messageList = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
 //    private final ArrayBlockingQueue<Triple<String, String, StatisticsType>> messageList = new ArrayBlockingQueue(MAX_QUEUE_SIZE);
 
-    private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
+    private long maxQueueLength = 0;
 
     public enum StatisticsType {TMS, WEATHER, MAINTENANCE_TRACKING, STATUS}
 
@@ -34,7 +34,6 @@ public class MqttRelayQueue {
 
     @Autowired
     public MqttRelayQueue(final MqttConfiguration.MqttGateway mqttGateway) {
-
         for (final StatisticsType type : StatisticsType.values()) {
             sentStatisticsMap.put(type, new LongAdder());
             sendErrorStatisticsMap.put(type, new LongAdder());
@@ -43,10 +42,11 @@ public class MqttRelayQueue {
         // in a threadsafe way, take messages from message list and send them to mqtt gateway
         final Thread sender = new Thread(() -> {
             while(true) {
-
                 final QueueItem item = getNextMessage();
 
                 if (item != null) {
+                    maxQueueLength = Math.max(maxQueueLength, messageList.size());
+
                     try {
                         mqttGateway.sendToMqtt(item.topic, item.message);
                         if (item.statistics != null) {
@@ -86,7 +86,9 @@ public class MqttRelayQueue {
     @Scheduled(fixedRate = 60000)
     public void logMqttQueue() {
         logger.info("prefix=CURRENT queueSize={}", messageList.size());
-        logger.info("prefix=MAX queueSize={}", maxQueueLength.getThenReset());
+        logger.info("prefix=MAX queueSize={}", maxQueueLength);
+
+        maxQueueLength = 0;
     }
 
     /**
@@ -103,7 +105,6 @@ public class MqttRelayQueue {
 
         try {
             messageList.add(new QueueItem(topic, payLoad, statisticsType));
-            maxQueueLength.accumulate(messageList.size());
         } catch (final IllegalStateException e) {
             logger.error("Mqtt send queue full!");
             messageList.clear();
