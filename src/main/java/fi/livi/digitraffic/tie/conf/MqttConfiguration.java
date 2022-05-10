@@ -1,9 +1,10 @@
 package fi.livi.digitraffic.tie.conf;
 
-import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
@@ -14,12 +15,19 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
+import org.springframework.integration.mqtt.core.MqttPahoComponent;
+import org.springframework.integration.mqtt.event.MqttConnectionFailedEvent;
+import org.springframework.integration.mqtt.event.MqttMessageSentEvent;
+import org.springframework.integration.mqtt.outbound.AbstractMqttMessageHandler;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.MqttHeaders;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.*;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
 
 @ConditionalOnProperty("mqtt.enabled")
 @ConditionalOnNotWebApplication
@@ -53,7 +61,7 @@ public class MqttConfiguration {
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel", async = "true")
     public MessageHandler mqttOutbound(final MqttPahoClientFactory mqttClientFactory) {
-        return new MqttPahoMessageHandler(clientId, mqttClientFactory);
+        return new DTMessageHandler(clientId, mqttClientFactory);
     }
 
     @Bean
@@ -66,5 +74,100 @@ public class MqttConfiguration {
         // Paho does not support concurrency, all calls to this must be synchronized!
         void sendToMqtt(@Header(MqttHeaders.TOPIC) final String topic, @Payload final String data);
         void sendToMqttWithQos(@Header(MqttHeaders.TOPIC) final String topic, @Header(MqttHeaders.QOS) final Integer qos, @Payload final String data);
+    }
+
+    private class DTMessageHandler extends AbstractMqttMessageHandler implements MqttCallback, MqttPahoComponent {
+        private final MqttPahoClientFactory clientFactory;
+        private volatile IMqttAsyncClient client;
+
+        public DTMessageHandler(final String clientId, final MqttPahoClientFactory clientFactory) {
+            super(null, clientId);
+            this.clientFactory = clientFactory;
+        }
+
+        @Override
+        protected void doStart() {
+        }
+
+        @Override
+        protected void doStop() {
+            try {
+                if (this.client != null) {
+                    this.client.disconnect().waitForCompletion(getDisconnectCompletionTimeout());
+                    closeClient();
+                }
+            }
+            catch (final MqttException me) {
+                logger.error(me, "Disconnect failed");
+            }
+        }
+
+        @Override
+        protected void publish(final String topic, final Object mqttMessage, final Message<?> message) {
+            try {
+                getConnection().publish(topic, (MqttMessage) mqttMessage);
+            }
+            catch (final MqttException me) {
+                throw new MessageHandlingException(message, "Publish failed", me);
+            }
+        }
+
+        private IMqttAsyncClient getConnection() throws MqttException {
+            if (this.client != null && !this.client.isConnected()) {
+                closeClient();
+            }
+
+            if (this.client == null) {
+                try {
+                    final MqttConnectOptions connectionOptions = this.clientFactory.getConnectionOptions();
+
+                    this.client = this.clientFactory.getAsyncClientInstance(this.getUrl(), this.getClientId());
+                    incrementClientInstance();
+                    this.client.setCallback(this);
+                    this.client.connect(connectionOptions).waitForCompletion(getCompletionTimeout());
+                }
+                catch (final MqttException me) {
+                    closeClient();
+
+                    throw new MessagingException("Failed to connect", me);
+                }
+            }
+
+            return this.client;
+        }
+
+        @Override
+        public synchronized void connectionLost(final Throwable cause) {
+            logger.error("Connection lost");
+
+            closeClient();
+        }
+
+        private void closeClient() {
+            if (this.client != null) {
+                this.client.setCallback(null);
+
+                try {
+                    this.client.close();
+                } catch (final MqttException me) {
+                    logger.error(me, "Exception when closing");
+                }
+
+                this.client = null;
+            }
+        }
+
+        @Override
+        public void messageArrived(final String topic, final MqttMessage message) {
+        }
+
+        @Override
+        public void deliveryComplete(final IMqttDeliveryToken token) {
+        }
+
+        @Override
+        public MqttConnectOptions getConnectionInfo() {
+            return this.clientFactory.getConnectionOptions();
+        }
     }
 }
