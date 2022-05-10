@@ -58,7 +58,7 @@ public class MqttRelayQueue {
                 }
             }
         });
-        
+
         sender.setName("MqttSenderThread");
         sender.start();
     }

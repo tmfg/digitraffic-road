@@ -65,9 +65,13 @@ public class MqttConfiguration {
     public interface MqttGateway {
         // Paho does not support concurrency, all calls to this must be synchronized!
         void sendToMqtt(@Header(MqttHeaders.TOPIC) final String topic, @Payload final String data);
-        void sendToMqttWithQos(@Header(MqttHeaders.TOPIC) final String topic, @Header(MqttHeaders.QOS) final Integer qos, @Payload final String data);
     }
 
+    /**
+     * Own simplified implemenation of message handler, for sending messages only.  Simplified and without synchronization, so
+     * must be called synhcronized or from a single thread!
+     *
+     */
     private class SingleThreadMessageHandler extends AbstractMqttMessageHandler implements MqttCallback, MqttPahoComponent {
         private final MqttPahoClientFactory clientFactory;
         private volatile IMqttAsyncClient client;
