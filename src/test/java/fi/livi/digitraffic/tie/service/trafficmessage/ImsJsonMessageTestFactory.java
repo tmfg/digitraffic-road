@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Restriction;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.RoadWorkPhase;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.WorkingHour;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.WeekdayTimePeriod;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Worktype;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 
@@ -146,6 +146,8 @@ public class ImsJsonMessageTestFactory {
             // V0.2.8.
             .withSeverity(RoadWorkPhase.Severity.HIGH)
             .withTimeAndDuration(createTimeAndDuration(releaseTime))
-            .withWorkingHours(Arrays.asList(new WorkingHour(WorkingHour.Weekday.MONDAY, "8:00", "15:30"), new WorkingHour(WorkingHour.Weekday.TUESDAY, "8:00", "15:30")));
+            .withWorkingHours(Arrays.asList(new WeekdayTimePeriod(WeekdayTimePeriod.Weekday.MONDAY, "8:00", "15:30"), new WeekdayTimePeriod(WeekdayTimePeriod.Weekday.TUESDAY, "8:00", "15:30")))
+            .withSlowTrafficTimes(Arrays.asList(new WeekdayTimePeriod(WeekdayTimePeriod.Weekday.TUESDAY, "8:00", "15:30"), new WeekdayTimePeriod(WeekdayTimePeriod.Weekday.WEDNESDAY, "8:00", "15:30")))
+            .withQueuingTrafficTimes(Arrays.asList(new WeekdayTimePeriod(WeekdayTimePeriod.Weekday.WEDNESDAY, "8:00", "15:30"), new WeekdayTimePeriod(WeekdayTimePeriod.Weekday.THURSDAY, "8:00", "15:30")));
     }
 }

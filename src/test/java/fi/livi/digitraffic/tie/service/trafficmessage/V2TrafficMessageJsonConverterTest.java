@@ -36,8 +36,8 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V2Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
-    private static final Logger log = getLogger(V2Datex2JsonConverterTest.class);
+public class V2TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
+    private static final Logger log = getLogger(V2TrafficMessageJsonConverterTest.class);
 
     @Autowired
     private V2Datex2JsonConverter v2Datex2JsonConverter;
@@ -137,7 +137,7 @@ public class V2Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeom
     }
 
     private void assertLocationToDisplay(final TrafficAnnouncementProperties props, final ImsJsonVersion version) {
-        if (version.version < 2.08) {
+        if (version.version < ImsJsonVersion.V0_2_8.version) {
             assertNotNull(props.locationToDisplay);
         } else {
             assertNull(props.locationToDisplay);
@@ -148,7 +148,7 @@ public class V2Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeom
                                 final ImsJsonVersion version) {
         assertNotNull(props.contact.email);
         assertNotNull(props.contact.phone);
-        if (version.version < 2.09) {
+        if (version.version < ImsJsonVersion.V0_2_9.version) {
             assertNotNull(props.contact.fax);
         } else {
             assertNull(props.contact.fax);
@@ -183,14 +183,14 @@ public class V2Datex2JsonConverterTest extends AbstractRestWebTestWithRegionGeom
 
     private void assertAreaLocation(final TrafficAnnouncement announcement,
                                     final ImsJsonVersion version) {
-        final int size = version.version >= 2.08 ? 5 : 4;
+        final int size = version.version >= ImsJsonVersion.V0_2_8.version ? 5 : 4;
         assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
 
         assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.COUNTRY);
         assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.MUNICIPALITY);
         assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.PROVINCE);
         assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.WEATHER_REGION);
-        if (version.version >= 2.08) {
+        if (version.version >= ImsJsonVersion.V0_2_8.version) {
             assertContainsLocationTypeV2(announcement.locationDetails.areaLocation.areas, AreaType.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
         }
 

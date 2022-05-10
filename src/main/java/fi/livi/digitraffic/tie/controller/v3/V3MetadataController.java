@@ -160,8 +160,7 @@ public class V3MetadataController {
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
-    @Deprecated(forRemoval = true)
-    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM).")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                 APPLICATION_GEO_JSON_VALUE,
                                                                                                                 APPLICATION_VND_GEO_JSON_VALUE })
@@ -171,13 +170,12 @@ public class V3MetadataController {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
-    @Deprecated(forRemoval = true)
     @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-        @ApiResponse(code = 404, message = "Road number not found") })
+    @ApiResponse(code = 404, message = "Road number not found") })
     public TmsStationFeatureCollection tmsStationsByRoadNumber(
         @PathVariable("number") final Integer roadNumber,
         @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
@@ -194,7 +192,7 @@ public class V3MetadataController {
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })
     @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-        @ApiResponse(code = 404, message = "Road Station not found") })
+    @ApiResponse(code = 404, message = "Road Station not found") })
     public TmsStationFeature tmsStationsByRoadStationId(
         @PathVariable("id") final Long id) {
         return tmsStationService.getTmsStationByRoadStationId(id);

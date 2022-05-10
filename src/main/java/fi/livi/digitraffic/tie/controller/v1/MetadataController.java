@@ -104,8 +104,7 @@ public class MetadataController {
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
-    @Deprecated(forRemoval = true)
-    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM).")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                 APPLICATION_GEO_JSON_VALUE,
                                                                                                                 APPLICATION_VND_GEO_JSON_VALUE })
@@ -115,8 +114,7 @@ public class MetadataController {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
-    @Deprecated(forRemoval = true)
-    @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM).")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -133,8 +131,7 @@ public class MetadataController {
         return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
     }
 
-    @Deprecated(forRemoval = true)
-    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
+    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM).")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })

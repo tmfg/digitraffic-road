@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.conf.mqtt;
 
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.TMS;
 
+import fi.livi.digitraffic.tie.aop.NoJobLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -35,6 +36,7 @@ public class TmsMqttConfiguration extends AbstractMqttSensorConfiguration {
             TMS_TOPIC, TMS_STATUS_TOPIC, TMS, clusteredLocker);
     }
 
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${mqtt.tms.pollingIntervalMs}")
     public void pollAndSendMessages() {
         try {

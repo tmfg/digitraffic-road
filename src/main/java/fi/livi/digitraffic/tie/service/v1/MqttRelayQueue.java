@@ -51,10 +51,13 @@ public class MqttRelayQueue {
                             updateSentMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
                         }
                     } catch (final Exception e) {
+                        if (sendErrorStatisticsMap.isEmpty()) {
+                            logger.error("MqttGateway send failure", e);
+                        }
+
                         if (topicPayloadStatisticsType.getRight() != null) {
                             updateSendErrorMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
                         }
-                        logger.error("MqttGateway send failure", e);
                     }
                 }
             }
@@ -64,10 +67,14 @@ public class MqttRelayQueue {
     private Triple<String, String, StatisticsType> getNextMessage() {
         try {
             return messageList.take();
-        } catch (Exception e) {
+        } catch (final InterruptedException ie) {
+            logger.error("method=getNextMessage Interrupted", ie);
+            Thread.currentThread().interrupt();
+        } catch (final Exception e) {
             logger.error("method=getNextMessage Mqtt messageList.take() failed", e);
-            return null;
         }
+
+        return null;
     }
 
     @Scheduled(fixedRate = 60000)

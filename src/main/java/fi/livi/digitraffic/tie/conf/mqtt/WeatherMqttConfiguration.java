@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.conf.mqtt;
 
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.WEATHER;
 
+import fi.livi.digitraffic.tie.aop.NoJobLogging;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -34,6 +35,7 @@ public class WeatherMqttConfiguration extends AbstractMqttSensorConfiguration {
               RoadStationType.WEATHER_STATION, WEATHER_TOPIC, WEATHER_STATUS_TOPIC, WEATHER, clusteredLocker);
     }
 
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${mqtt.weather.pollingIntervalMs}")
     public void pollAndSendMessages() {
         try {

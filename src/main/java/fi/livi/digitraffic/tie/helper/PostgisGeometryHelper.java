@@ -154,6 +154,10 @@ public class PostgisGeometryHelper {
         return g;
     }
 
+    public static Geometry simplify(final Geometry geometry) {
+        return DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
+    }
+
     public static String toGeoJson(final Geometry geometry) {
         return geoJsonWriter.write(geometry);
     }

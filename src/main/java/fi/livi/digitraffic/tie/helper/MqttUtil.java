@@ -10,7 +10,7 @@ public abstract class MqttUtil {
     }
 
     public static double roundToScale(final double number, final int scale) {
-        return new BigDecimal(number).setScale(scale, RoundingMode.HALF_UP).doubleValue();
+        return BigDecimal.valueOf(number).setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
     public static String getTopicForMessage(final String topicString, final Object...topicParams) {

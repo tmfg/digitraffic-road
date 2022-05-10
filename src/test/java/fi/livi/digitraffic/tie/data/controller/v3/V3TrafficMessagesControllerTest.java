@@ -5,6 +5,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
 import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createNewRegionGeometry;
@@ -43,11 +45,13 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadWorkPhase;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuration;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.WeekdayTimePeriod;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
@@ -90,8 +94,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyActive() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
@@ -118,8 +122,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyInactiveWithInactiveHours() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
@@ -145,8 +149,8 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyInactive() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
@@ -187,7 +191,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
     private void assertContentsMatch(final String d2xml, final String simpleJsonFeatureCollection, final SituationType situationType,
                                      final String situationId,
                                      final ZonedDateTime start, final ZonedDateTime end,
-                                     final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion)
+                                     final ImsJsonVersion imsJsonVersion)
         throws JsonProcessingException {
         final D2LogicalModel d2 = parseD2LogicalModel(d2xml);
 
@@ -224,6 +228,25 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
 
         final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
         assertTrue(commentXml.contains(announcement.title.trim()));
+
+        if (imsJsonVersion.version >= ImsJsonVersion.V0_2_5.version && situationType.equals(SituationType.ROAD_WORK)) {
+            final RoadWorkPhase rwp =
+                feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
+            assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
+            assertEquals("09:30:00.000", rwp.workingHours.get(0).startTime);
+            assertEquals("15:00:00.000", rwp.workingHours.get(0).endTime);
+        }
+        if (imsJsonVersion.version >= ImsJsonVersion.V0_2_17.version && situationType.equals(SituationType.ROAD_WORK)) {
+            final RoadWorkPhase rwp =
+                feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
+            assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
+            assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
+            assertEquals("10:30:00.000", rwp.slowTrafficTimes.get(0).startTime);
+            assertEquals("16:00:00.000", rwp.slowTrafficTimes.get(0).endTime);
+            assertEquals("11:30:00.000", rwp.queuingTrafficTimes.get(0).startTime);
+            assertEquals("17:00:00.000", rwp.queuingTrafficTimes.get(0).endTime);
+        }
+
     }
 
     private void assertIsValidDatex2Xml(final String xml) {

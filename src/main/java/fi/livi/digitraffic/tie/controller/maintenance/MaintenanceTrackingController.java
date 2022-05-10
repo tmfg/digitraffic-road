@@ -4,6 +4,8 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.API_MAINTENANCE;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController.FromToParamType.CREATED_TIME;
+import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController.FromToParamType.END_TIME;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
@@ -35,6 +37,7 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollection;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDto;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 import io.swagger.annotations.Api;
@@ -78,19 +81,35 @@ public class MaintenanceTrackingController {
     public static final String RANGE_X = "range[19.0, 32.0]";
     public static final String RANGE_Y = "range[59.0, 72.0]";
 
+    public enum FromToParamType {
+        END_TIME("end"),
+        CREATED_TIME("created");
+
+        private final String name;
+
+        FromToParamType(final String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
     public MaintenanceTrackingController(final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService) {
         this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
     }
 
-    @ApiOperation(value = "Road maintenance tracking data latest points")
+    @ApiOperation(value = "Road maintenance tracking routes latest points")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking latest routes"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-    @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is -1h from now and maximum -24h.")
+    @ApiParam(value = "Return routes which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    final ZonedDateTime endFrom,
+    final Instant endFrom,
 
     @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
     @RequestParam(defaultValue = "19.0", required = false)
@@ -116,7 +135,7 @@ public class MaintenanceTrackingController {
     @DecimalMax("72.0")
     final double yMax,
 
-    @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
+    @ApiParam(value = "Task ids to include. Any route containing one of the selected tasks will be returned.")
     @RequestParam(value = "taskId", required = false)
     final List<MaintenanceTrackingTask> taskIds,
 
@@ -124,26 +143,36 @@ public class MaintenanceTrackingController {
     @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
     final List<String> domains) {
 
-        validateTimeBetweenFromAndToMaxHours(endFrom, null, 24);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, null, 1);
+        validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
 
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data")
+    @ApiOperation(value = "Road maintenance tracking routes")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return trackings which have completed after the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return routes which have completed onwards from the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime endFrom,
+        final Instant endFrom,
 
-        @ApiParam(value = "Return trackings which have completed before the given time (inclusive). Default is now and maximum interval between from and to is 24h.")
+        @ApiParam(value = "Return routes which have completed before the given end time (exclusive). Default is now and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime endTo,
+        final Instant endBefore,
+
+        @ApiParam(value = "Return routes which have been created after the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final Instant createdAfter,
+
+        @ApiParam(value = "Return routes which have been created before the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final Instant createdBefore,
 
         @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
         @RequestParam(defaultValue = "19.0", required = false)
@@ -177,10 +206,11 @@ public class MaintenanceTrackingController {
         @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
         final List<String> domains) {
 
-        validateTimeBetweenFromAndToMaxHours(endFrom, endTo, 24);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endTo, 24);
+        validateTimeBetweenFromAndToMaxHours(endFrom, endBefore, 24, END_TIME);
+        validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
 
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
     @ApiOperation(value = "Road maintenance tracking route with tracking id")
@@ -207,24 +237,38 @@ public class MaintenanceTrackingController {
         return v2MaintenanceTrackingDataService.getDomainsWithGenerics();
     }
 
-    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(ZonedDateTime from, ZonedDateTime to, final int defaultHoursOfHistory) {
+    private static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final int defaultHoursOfHistory) {
+        return getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, null, null, defaultHoursOfHistory);
+    }
+
+    private static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final Instant to,
+                                                                                       final Instant createdFrom, final Instant createdTo,
+                                                                                       final int defaultHoursOfHistory) {
+        // If created time limit is given, then from and to can be as they are
+        if (createdFrom != null || createdTo != null) {
+            return Pair.of(from, to);
+        }
         // Make sure newest is also fetched
         final Instant now = Instant.now();
-        final Instant fromParam = from != null ? from.toInstant() : now.minus(defaultHoursOfHistory, HOURS);
+        final Instant fromParam = from != null ? from : now.minus(defaultHoursOfHistory, HOURS);
         // Just to be sure all events near now in future will be fetched
-        final Instant toParam = to != null ? to.toInstant() : now.plus(1, HOURS);
+        final Instant toParam = to != null ? to : now.plus(1, HOURS);
         return Pair.of(fromParam, toParam);
     }
 
     public static void validateTimeBetweenFromAndToMaxHours(final ZonedDateTime from, final ZonedDateTime to, final int maxDiffHours) {
+        validateTimeBetweenFromAndToMaxHours(DateHelper.toInstant(from), DateHelper.toInstant(to), maxDiffHours, END_TIME);
+    }
+
+    public static void validateTimeBetweenFromAndToMaxHours(final Instant from, final Instant to, final int maxDiffHours, final FromToParamType paramType) {
         if (from != null && to != null) {
             if (from.isAfter(to)) {
-                throw new IllegalArgumentException("Time from must be before to");
+                throw new IllegalArgumentException(String.format("Time parameter %sFrom value must be before %sTo value.", paramType, paramType));
             } else if (from.plus(maxDiffHours, HOURS).isBefore(to)) {
-                throw new IllegalArgumentException("Time between from and to -parameters must be less or equal to " + maxDiffHours + " h");
+                throw new IllegalArgumentException(String.format("Time between %sFrom and %sTo -parameter values must be less or equal to %d hours.", paramType, paramType, maxDiffHours));
             }
-        } else if (from != null && from.plus(maxDiffHours, HOURS).isBefore(ZonedDateTime.now())) {
-            throw new IllegalArgumentException("From-parameter must in " + maxDiffHours + " hours when to is not given.");
+        } else if (from != null && from.plus(maxDiffHours, HOURS).isBefore(Instant.now())) {
+            throw new IllegalArgumentException(String.format("When just %sFrom -parameter is given, it must be inside %d hours.", paramType, maxDiffHours));
         }
     }
 }

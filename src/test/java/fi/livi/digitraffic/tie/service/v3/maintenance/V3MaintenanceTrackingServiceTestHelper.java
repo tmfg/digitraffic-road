@@ -220,6 +220,24 @@ public class V3MaintenanceTrackingServiceTestHelper {
     /**
      * Creates WorkMachineTracking with a LineString observation
      * @param observationTime Time of observation (start and end is same)
+     * @param pointsPerObservation how many points (LineString length) to generate for every machine.
+     * @param jobId Harja job id
+     * @param machineCount How many machines to create
+     * @param tasks Performed tasks
+     * @return Created tracking
+     */
+    public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithLineString(final ZonedDateTime observationTime,
+                                                                                                 final int pointsPerObservation,
+                                                                                                 final int jobId,
+                                                                                                 final int machineCount,
+                                                                                                 final SuoritettavatTehtavat...tasks) {
+        final List<Tyokone> workMachines = createWorkMachines(machineCount);
+        return createMaintenanceTracking(observationTime, pointsPerObservation, jobId, 1, workMachines, true, tasks);
+    }
+
+    /**
+     * Creates WorkMachineTracking with a LineString observation
+     * @param observationTime Time of observation (start and end is same)
      * @param pointsPerObservation how many points (LineString lenght) to generate for every machine.
      * @param jobId Harja job id
      * @param workMachines Machines
@@ -231,7 +249,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
                                                                                                  final int jobId,
                                                                                                  final List<Tyokone> workMachines,
                                                                                                  final SuoritettavatTehtavat...tasks) {
-        return createMaintenanceTracking(observationTime, pointsPerObservation, jobId, 1, workMachines, true, tasks);
+        return createMaintenanceTracking(observationTime, pointsPerObservation, 1, jobId, workMachines, true, tasks);
     }
 
     /**
@@ -250,7 +268,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
                                                                                                  final int jobId,
                                                                                                  final List<Tyokone> workMachines,
                                                                                                  final SuoritettavatTehtavat...tasks) {
-        return createMaintenanceTracking(observationTime, observationCount, jobId, ordinal, workMachines, true, tasks);
+        return createMaintenanceTracking(observationTime, observationCount, ordinal, jobId, workMachines, true, tasks);
     }
 
     public static TyokoneenseurannanKirjausRequestSchema createMaintenanceTrackingWithPoints(final ZonedDateTime observationTime,
@@ -512,7 +530,8 @@ public class V3MaintenanceTrackingServiceTestHelper {
     public void insertDomain(final String domain, final String source) {
         entityManager.createNativeQuery(
                 "insert into maintenance_tracking_domain(name, source)\n" +
-                "VALUES (:domain, :source)")
+                         "VALUES (:domain, :source)" +
+                         "on conflict (name) do nothing ")
             .setParameter("domain", domain)
             .setParameter("source", source)
             .executeUpdate();

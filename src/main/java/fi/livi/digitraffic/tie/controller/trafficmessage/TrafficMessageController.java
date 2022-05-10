@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGE;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_BETA_TAG;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TAG;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = TRAFFIC_MESSAGE_BETA_TAG)
+@Api(tags = TRAFFIC_MESSAGE_TAG)
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -51,13 +51,13 @@ public class TrafficMessageController {
      * /api/traffic-message/v/area-geometries
      * /api/traffic-message/v/area-geometries/{id}
      */
-    public static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
-    private static final String API_TRAFFIC_MESSAGE_V1 = API_TRAFFIC_MESSAGE + V1;
+    private static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
+    public static final String API_TRAFFIC_MESSAGE_V1 = API_TRAFFIC_MESSAGE + V1;
 
     private static final String MESSAGES = "/messages";
     public static final String AREA_GEOMETRIES = "/area-geometries";
 
-    public static final String API_TRAFFIC_MESSAGE_BETA_MESSAGES = API_TRAFFIC_MESSAGE_BETA + MESSAGES;
+    private static final String API_TRAFFIC_MESSAGE_BETA_MESSAGES = API_TRAFFIC_MESSAGE_BETA + MESSAGES;
     public static final String API_TRAFFIC_MESSAGE_V1_MESSAGES = API_TRAFFIC_MESSAGE_V1 + MESSAGES;
 
     public static final String DATEX2 = ".datex2";
@@ -71,7 +71,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Active traffic messages as Datex2")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA_MESSAGES + DATEX2 })
+                    path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2 })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
         @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
@@ -86,7 +86,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Traffic messages by situationId as Datex2")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA_MESSAGES + "/{situationId}" + DATEX2 })
+                    path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" + DATEX2 })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public D2LogicalModel trafficMessageDatex2BySituationId(
@@ -102,7 +102,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Active traffic messages as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA_MESSAGES })
+                    path = { API_TRAFFIC_MESSAGE_V1_MESSAGES })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
         @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
@@ -121,7 +121,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA_MESSAGES + "/{situationId}" })
+                    path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
     public TrafficAnnouncementFeatureCollection trafficMessageSimpleBySituationId(
@@ -140,7 +140,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Traffic messages geometries for regions")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + AREA_GEOMETRIES })
+                    path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of geometries") })
     public RegionGeometryFeatureCollection areaLocationRegions(
         @ApiParam(value = "If the parameter value is true, then the result will only contain update status.", defaultValue = "true")
@@ -158,7 +158,7 @@ public class TrafficMessageController {
 
     @ApiOperation(value = "Traffic messages geometries for regions")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + AREA_GEOMETRIES + "/{locationCode}" })
+                    path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES + "/{locationCode}" })
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of geometries"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Geometry not not found") })
     public RegionGeometryFeatureCollection areaLocationRegions(

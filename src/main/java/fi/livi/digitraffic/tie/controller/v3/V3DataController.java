@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.controller.v3;
 
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.SINCE_2022_11_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
@@ -56,6 +58,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
@@ -289,7 +292,8 @@ public class V3DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 
-    @ApiOperation(value = "Active traffic messages as Datex2")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Active traffic messages as Datex2. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
@@ -303,7 +307,8 @@ public class V3DataController {
         return v3Datex2DataService.findActive(inactiveHours, situationType);
     }
 
-    @ApiOperation(value = "Traffic messages history by situation as Datex2")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Traffic messages history by situation as Datex2. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
@@ -317,7 +322,8 @@ public class V3DataController {
         return v3Datex2DataService.findBySituationId(situationId, latest);
     }
 
-    @ApiOperation(value = "Active traffic messages as simple JSON")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Active traffic messages as simple JSON. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH, produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
@@ -335,7 +341,8 @@ public class V3DataController {
         return v3Datex2DataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
-    @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Traffic messages history by situation id as simple JSON. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH + "/{situationId}", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
@@ -353,7 +360,8 @@ public class V3DataController {
         return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
-    @ApiOperation(value = "Traffic messages geometries for regions")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Traffic messages geometries for regions. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_PATH + "/area-geometries", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
                     @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
@@ -371,7 +379,8 @@ public class V3DataController {
         return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, effectiveDate != null ? effectiveDate.toInstant() : null, id);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data latest points")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data latest points. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
@@ -410,12 +419,13 @@ public class V3DataController {
     final List<MaintenanceTrackingTask> taskIds) {
 
         MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, null, 24);
-        final Pair<Instant, Instant> fromTo = MaintenanceTrackingController.getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
+        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
 
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
@@ -459,19 +469,23 @@ public class V3DataController {
         final List<MaintenanceTrackingTask> taskIds) {
 
         MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, to, 24);
-        Pair<Instant, Instant> fromTo = MaintenanceTrackingController.getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
+        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
+        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
+            fromTo.getLeft(), fromTo.getRight(),
+            xMin, yMin, xMax, yMax, taskIds, null);
     }
 
-    @ApiOperation(value = "Road maintenance tracking data with tracking id")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking data with tracking id. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
         return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
-    @ApiOperation(value = "Road maintenance tracking tasks")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiOperation(value = "Road maintenance tracking tasks. " + ApiDeprecations.API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
     public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
@@ -481,11 +495,26 @@ public class V3DataController {
             .collect(Collectors.toList());
     }
 
-    @ApiIgnore("This is only for internal debugging and not for the public")
+    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @ApiIgnore("This is only for internal debugging and not for the public. " + ApiDeprecations.API_NOTE_2022_11_01)
     @ApiOperation(value = "Road maintenance tracking source data")
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_JSON_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance trackings data"))
     public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
         return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(id);
     }
+
+    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final ZonedDateTime from, final ZonedDateTime to, final int defaultHoursOfHistory) {
+        return getFromAndToParamsIfNotSetWithHoursOfHistory(DateHelper.toInstant(from), DateHelper.toInstant(to), defaultHoursOfHistory);
+    }
+
+    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final Instant to, final int defaultHoursOfHistory) {
+        // Make sure newest is also fetched
+        final Instant now = Instant.now();
+        final Instant fromParam = from != null ? from : now.minus(defaultHoursOfHistory, HOURS);
+        // Just to be sure all events near now in future will be fetched
+        final Instant toParam = to != null ? to : now.plus(1, HOURS);
+        return Pair.of(fromParam, toParam);
+    }
+
 }

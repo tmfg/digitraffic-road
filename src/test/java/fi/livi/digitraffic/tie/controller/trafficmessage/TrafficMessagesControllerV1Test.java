@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
+import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createRegionGeometryFeatureCollection;
@@ -16,6 +18,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,6 +50,7 @@ import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadWorkPhase;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TimeAndDuration;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
@@ -54,6 +58,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.WeekdayTimePeriod;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -114,8 +119,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyActive() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
@@ -141,8 +146,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyInactiveWithInactiveHours() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
@@ -168,8 +173,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
      */
     @Test
     public void getJsonAndXmlCurrentlyInactive() throws Exception {
-        for (final TrafficMessageTestHelper.ImsXmlVersion imsXmlVersion : TrafficMessageTestHelper.ImsXmlVersion.values()) {
-            for (final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion : TrafficMessageTestHelper.ImsJsonVersion.values()) {
+        for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
@@ -240,7 +245,7 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     private void assertContentsMatch(final String d2xml, final String simpleJsonFeatureCollection, final SituationType situationType,
                                      final String situationId,
                                      final ZonedDateTime start, final ZonedDateTime end,
-                                     final TrafficMessageTestHelper.ImsJsonVersion imsJsonVersion)
+                                     final ImsJsonVersion imsJsonVersion)
         throws JsonProcessingException {
         final D2LogicalModel d2 = parseD2LogicalModel(d2xml);
 
@@ -276,6 +281,24 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
         final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
         assertTrue(commentXml.contains(announcement.title.trim()));
+
+        if (imsJsonVersion.version >= ImsJsonVersion.V0_2_5.version && situationType.equals(SituationType.ROAD_WORK)) {
+            final RoadWorkPhase rwp =
+                feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
+            assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
+            assertEquals(LocalTime.parse("09:30:00.000"), rwp.workingHours.get(0).startTime);
+            assertEquals(LocalTime.parse("15:00:00.000"), rwp.workingHours.get(0).endTime);
+        }
+        if (imsJsonVersion.version >= ImsJsonVersion.V0_2_17.version && situationType.equals(SituationType.ROAD_WORK)) {
+            final RoadWorkPhase rwp =
+                feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
+            assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
+            assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
+            assertEquals(LocalTime.parse("10:30:00.000"), rwp.slowTrafficTimes.get(0).startTime);
+            assertEquals(LocalTime.parse("16:00:00.000"), rwp.slowTrafficTimes.get(0).endTime);
+            assertEquals(LocalTime.parse("11:30:00.000"), rwp.queuingTrafficTimes.get(0).startTime);
+            assertEquals(LocalTime.parse("17:00:00.000"), rwp.queuingTrafficTimes.get(0).endTime);
+        }
     }
 
     private void assertIsValidDatex2Xml(final String xml) {
@@ -295,17 +318,17 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     }
 
     private static String getTrafficMessageUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA_MESSAGES + (json ?  "" : TrafficMessageController.DATEX2) +
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_V1_MESSAGES + (json ?  "" : TrafficMessageController.DATEX2) +
                "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA + TrafficMessageController.AREA_GEOMETRIES +
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_V1 + TrafficMessageController.AREA_GEOMETRIES +
             "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry, int regionId) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_BETA + TrafficMessageController.AREA_GEOMETRIES + "/" + regionId +
+        return TrafficMessageController.API_TRAFFIC_MESSAGE_V1 + TrafficMessageController.AREA_GEOMETRIES + "/" + regionId +
             "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMessageDto;
@@ -43,11 +44,11 @@ public class TmsMetadataUpdateMessageHandler {
 
     // Disable info logging as it can be normally over 1 s. Log only if over default warning level 5 s.
     @PerformanceMonitor(maxInfoExcecutionTime = 100000)
-    public int updateTmsMetadataFromJms(final List<TmsMetadataUpdatedMessageDto> tmsMetadataUpdates) {
+    public int updateMetadataFromJms(final List<TmsMetadataUpdatedMessageDto> tmsMetadataUpdates) {
         int updateCount = 0;
 
         for (TmsMetadataUpdatedMessageDto message : tmsMetadataUpdates) {
-            log.debug("method=updateTmsMetadataFromJms {}", ToStringHelper.toStringFull(message));
+            log.info("method=updateMetadataFromJms roadStationType={} data: {}", RoadStationType.TMS_STATION.name(), ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
             final UpdateType updateType = message.getUpdateType();
 
