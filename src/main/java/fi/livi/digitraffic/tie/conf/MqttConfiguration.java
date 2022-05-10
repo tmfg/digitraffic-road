@@ -20,8 +20,11 @@ import org.springframework.integration.mqtt.event.MqttConnectionFailedEvent;
 import org.springframework.integration.mqtt.event.MqttMessageSentEvent;
 import org.springframework.integration.mqtt.outbound.AbstractMqttMessageHandler;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
+import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.integration.mqtt.support.MqttHeaders;
+import org.springframework.integration.mqtt.support.MqttMessageConverter;
 import org.springframework.messaging.*;
+import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.util.Assert;
@@ -83,6 +86,16 @@ public class MqttConfiguration {
         public DTMessageHandler(final String clientId, final MqttPahoClientFactory clientFactory) {
             super(null, clientId);
             this.clientFactory = clientFactory;
+        }
+
+        @Override
+        protected void onInit() {
+            super.onInit();
+
+            final DefaultPahoMessageConverter defaultConverter = new DefaultPahoMessageConverter(getDefaultQos(),
+                getQosProcessor(), getDefaultRetained(), getRetainedProcessor());
+
+            setConverter(defaultConverter);
         }
 
         @Override
