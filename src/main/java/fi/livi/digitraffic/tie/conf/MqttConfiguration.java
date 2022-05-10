@@ -4,33 +4,22 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
-import org.springframework.integration.annotation.Payloads;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoComponent;
-import org.springframework.integration.mqtt.event.MqttConnectionFailedEvent;
-import org.springframework.integration.mqtt.event.MqttMessageSentEvent;
 import org.springframework.integration.mqtt.outbound.AbstractMqttMessageHandler;
-import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.integration.mqtt.support.MqttHeaders;
-import org.springframework.integration.mqtt.support.MqttMessageConverter;
 import org.springframework.messaging.*;
-import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Method;
 
 @ConditionalOnProperty("mqtt.enabled")
 @ConditionalOnNotWebApplication
@@ -64,7 +53,7 @@ public class MqttConfiguration {
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel", async = "true")
     public MessageHandler mqttOutbound(final MqttPahoClientFactory mqttClientFactory) {
-        return new DTMessageHandler(clientId, mqttClientFactory);
+        return new SingleThreadMessageHandler(clientId, mqttClientFactory);
     }
 
     @Bean
@@ -79,11 +68,11 @@ public class MqttConfiguration {
         void sendToMqttWithQos(@Header(MqttHeaders.TOPIC) final String topic, @Header(MqttHeaders.QOS) final Integer qos, @Payload final String data);
     }
 
-    private class DTMessageHandler extends AbstractMqttMessageHandler implements MqttCallback, MqttPahoComponent {
+    private class SingleThreadMessageHandler extends AbstractMqttMessageHandler implements MqttCallback, MqttPahoComponent {
         private final MqttPahoClientFactory clientFactory;
         private volatile IMqttAsyncClient client;
 
-        public DTMessageHandler(final String clientId, final MqttPahoClientFactory clientFactory) {
+        public SingleThreadMessageHandler(final String clientId, final MqttPahoClientFactory clientFactory) {
             super(null, clientId);
             this.clientFactory = clientFactory;
         }
