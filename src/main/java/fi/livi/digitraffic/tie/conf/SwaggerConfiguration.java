@@ -74,16 +74,6 @@ public class SwaggerConfiguration {
     }
 
     @Bean
-    public Docket oldMetadataApi() {
-        return getDocket("metadata-api", getProductionApiPaths());
-    }
-
-    @Bean
-    public Docket oldBetaApi() {
-        return getDocket("metadata-api-beta", getBetaApiPaths());
-    }
-
-    @Bean
     UiConfiguration uiConfiguration() {
         return UiConfigurationBuilder.builder()
             .docExpansion(DocExpansion.NONE)

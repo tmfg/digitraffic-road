@@ -88,7 +88,7 @@ public class LoggerMessageKeyValuePairJsonProviderTest  {
         "a{sijainti",
         "a)sijainti",
         "a(sijainti",
-        "metadata-api?group",
+        "road-api?group",
         "a\\/b",
         "a/b",
         };
