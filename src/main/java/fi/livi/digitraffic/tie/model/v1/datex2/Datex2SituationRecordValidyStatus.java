@@ -2,9 +2,9 @@ package fi.livi.digitraffic.tie.model.v1.datex2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "SituationRecordValidyStatus", description = "Datex2 situation record validy status")
+@Schema(name = "SituationRecordValidyStatus", description = "Datex2 situation record validy status")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public enum Datex2SituationRecordValidyStatus {
 

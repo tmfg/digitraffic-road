@@ -15,8 +15,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinatesDecimalConverter;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiModelProperty;
     @JsonSubTypes.Type(value = MultiPoint.class, name = "MultiPoint"),
     @JsonSubTypes.Type(value = MultiPolygon.class, name = "MultiPolygon")
 })
-@ApiModel(description = "GeoJson Geometry Object", value = "Geometry")
+@Schema(description = "GeoJson Geometry Object", name = "Geometry", subTypes = Point.class)
 @JsonPropertyOrder({ "type", "coordinates"})
 public abstract class Geometry<T> extends JsonAdditionalProperties implements Serializable {
 
@@ -53,13 +53,13 @@ public abstract class Geometry<T> extends JsonAdditionalProperties implements Se
         this.coordinates = Arrays.asList(coordinates);
     }
 
-    @ApiModelProperty(value = "GeoJson Geometry Object type", required = true, position = 1, allowableValues = "Point,LineString,Polygon,MultiPoint,MultiLineString,MultiPolygon")
+    @Schema(description = "GeoJson Geometry Object type", required = true, allowableValues = "Point,LineString,Polygon,MultiPoint,MultiLineString,MultiPolygon")
     public Type getType() {
         return type;
     }
 
     @JsonSerialize(using = CoordinatesDecimalConverter.class)
-    @ApiModelProperty(value = "GeoJson Geometry Object coordinates", required = true, position = 2)
+    @Schema(description = "GeoJson Geometry Object coordinates", required = true)
     public List<T> getCoordinates() {
         return coordinates;
     }

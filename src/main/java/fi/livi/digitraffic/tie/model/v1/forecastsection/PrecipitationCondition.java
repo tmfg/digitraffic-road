@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel("The quality of precipitation")
+@Schema(description = "The quality of precipitation")
 public enum PrecipitationCondition {
     NO_DATA_AVAILABLE(0),
     NO_RAIN_DRY_WEATHER(1),

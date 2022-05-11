@@ -1,14 +1,13 @@
 package fi.livi.digitraffic.tie.model.v3;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description="Description of code")
+@Schema(description = "Description of code")
 public interface V3CodeDescription {
-    @ApiModelProperty(value = "Code", required = true)
+    @Schema(description = "Code", required = true)
     String getCode();
-    @ApiModelProperty(value = "Description of the code(Finnish)", required = true)
+    @Schema(description = "Description of the code(Finnish)", required = true)
     String getDescriptionFi();
-    @ApiModelProperty(value = "Description of the code(English", required = true)
+    @Schema(description = "Description of the code(English", required = true)
     String getDescriptionEn();
 }

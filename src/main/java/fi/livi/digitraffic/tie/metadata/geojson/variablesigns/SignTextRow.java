@@ -1,9 +1,10 @@
 package fi.livi.digitraffic.tie.metadata.geojson.variablesigns;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 
-@ApiModel(description = "Variable Sign text row")
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Variable Sign text row")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SignTextRow {
     public final int screen;

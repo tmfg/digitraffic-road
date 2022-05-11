@@ -6,10 +6,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Camera preset", value = "CameraPreset")
+@Schema(description = "Camera preset", name = "CameraPreset")
 @JsonPropertyOrder({ "presetId", "cameraId", "name" })
 public class CameraPresetDto implements Comparable<CameraPresetDto>{
 
@@ -56,34 +55,34 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     @JsonIgnore
     private Long lotjuId;
 
-    @ApiModelProperty(value = "Camera id", position = 2)
+    @Schema(description = "Camera id")
     private String cameraId;
 
-    @ApiModelProperty(value = "Camera preset id", position = 1)
+    @Schema(description = "Camera preset id")
     private String presetId;
 
-    @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")
+    @Schema(description = "PresentationName (Preset name 1, direction)")
     private String presentationName;
 
-    @ApiModelProperty(value = "Is data in collection")
+    @Schema(description = "Is data in collection")
     private boolean inCollection;
 
-    @ApiModelProperty(value = "Resolution of camera [px x px]")
+    @Schema(description = "Resolution of camera [px x px]")
     private String resolution;
 
     @JsonIgnore
     private Long cameraLotjuId;
 
-    @ApiModelProperty(value = "Preset direction\n" +
+    @Schema(description = "Preset direction\n" +
                               "0 = Unknown direction. \n" +
                               "1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso. \n" +
                               "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso. \n" +
                               "3 = Increasing direction of the crossing road. \n" +
                               "4 = Decreasing direction of the crossing road.\n" +
-                              "5-99 = Special directions", required = true, position = 1)
+                              "5-99 = Special directions", required = true)
     private String directionCode;
 
-    @ApiModelProperty(value = "Image url")
+    @Schema(description = "Image url")
     private String imageUrl;
 
     public long getId() {
@@ -158,7 +157,7 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
         return directionCode;
     }
 
-    @ApiModelProperty(value = "Direction of camera")
+    @Schema(description = "Direction of camera")
     public Direction getDirection() {
         return Direction.getDirection(directionCode);
     }

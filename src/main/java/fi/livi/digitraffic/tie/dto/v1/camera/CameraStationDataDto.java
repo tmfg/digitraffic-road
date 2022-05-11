@@ -8,10 +8,10 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
-@ApiModel(value = "CameraStationData", description = "Road wather station with sensor values")
+@Schema(name = "CameraStationData", description = "Road wather station with sensor values")
 @JsonPropertyOrder( value = {"id", "roadStationId", "nearestWeatherStationId", "sensorValues"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraStationDataDto {

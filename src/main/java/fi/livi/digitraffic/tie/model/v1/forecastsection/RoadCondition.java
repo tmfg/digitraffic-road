@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel("The state of the road")
+@Schema(description = "The state of the road")
 public enum RoadCondition {
 
     DRY(1),

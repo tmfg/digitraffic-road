@@ -5,12 +5,18 @@ import java.time.ZonedDateTime;
 
 import org.hibernate.annotations.Immutable;
 
-import io.swagger.annotations.ApiModelProperty;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantRootDto;
+import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
+@Schema(subTypes = { CameraRootDataObjectDto.class, TmsRootDataObjectDto.class, TmsSensorConstantRootDto.class, FreeFlowSpeedRootDataObjectDto.class, WeatherRootDataObjectDto.class })
 public class RootDataObjectDto implements Serializable {
 
-    @ApiModelProperty(value = "Data last updated date time", required = true)
+    @Schema(description = "Data last updated date time", required = true)
     public final ZonedDateTime dataUpdatedTime;
 
     public RootDataObjectDto(final ZonedDateTime dataUpdatedTime) {

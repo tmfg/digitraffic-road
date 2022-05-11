@@ -12,10 +12,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Announcement time and duration", value = "TrafficAnnouncement_V1")
+@Schema(description = "Announcement time and duration", name = "TrafficAnnouncement_V1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "language",
@@ -32,44 +31,44 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class TrafficAnnouncement extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Language of the announcement, always fi. A subset of ISO 639-1.", required = true, allowableValues = "fi")
+    @Schema(description = "Language of the announcement, always fi. A subset of ISO 639-1.", required = true, allowableValues = "fi")
     @NotNull
     public TrafficAnnouncement.Language language;
 
-    @ApiModelProperty(value = "Short description about the situation", required = true)
+    @Schema(description = "Short description about the situation", required = true)
     @NotNull
     public String title;
 
-    @ApiModelProperty(value = "Location of an traffic situation announcement")
+    @Schema(description = "Location of an traffic situation announcement")
     public Location location;
 
-    @ApiModelProperty(value = "More detailed location")
+    @Schema(description = "More detailed location")
     public LocationDetails locationDetails;
 
-    @ApiModelProperty(value = "Features of the announcement")
+    @Schema(description = "Features of the announcement")
     public List<Feature> features = new ArrayList<>();
 
-    @ApiModelProperty(value = "Contains the phases of this road maintenance work")
+    @Schema(description = "Contains the phases of this road maintenance work")
     public List<RoadWorkPhase> roadWorkPhases = new ArrayList<>();
 
-    @ApiModelProperty(value = "Road work was closed before the planned time. 'CLOSED' means the road work closed after its start time, " +
+    @Schema(description = "Road work was closed before the planned time. 'CLOSED' means the road work closed after its start time, " +
                               "possibly skipping some phases. 'CANCELED' means the road work was canceled before its start time. " +
                               "Note: This field is null if the road work closes normally.")
     public EarlyClosing earlyClosing;
 
-    @ApiModelProperty(value = "The itinerary segment of this exempted transport that is or was last active.")
+    @Schema(description = "The itinerary segment of this exempted transport that is or was last active.")
     public LastActiveItinerarySegment lastActiveItinerarySegment;
 
-    @ApiModelProperty(value = "Free comment")
+    @Schema(description = "Free comment")
     public String comment;
 
-    @ApiModelProperty(value = "Time and expected duration of the announcement.")
+    @Schema(description = "Time and expected duration of the announcement.")
     public TimeAndDuration timeAndDuration;
 
-    @ApiModelProperty(value = "Additional information.")
+    @Schema(description = "Additional information.")
     public String additionalInformation;
 
-    @ApiModelProperty(value = "Name of the sender", required = true)
+    @Schema(description = "Name of the sender", required = true)
     @NotNull
     public String sender;
 

@@ -1,26 +1,21 @@
 package fi.livi.digitraffic.tie.metadata.geojson;
 
-
-
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public abstract class Feature<G extends Geometry<?>, P extends Properties>  extends GeoJsonObject {
 
-    @ApiModelProperty(value = "Type of GeoJSON Object",
-                      allowableValues = "Feature",
-                      required = true,
-                      example = "Feature",
-                      position = 2)
+    @Schema(description = "Type of GeoJSON Object",
+            allowableValues = "Feature",
+            required = true,
+            example = "Feature")
     private final String type = "Feature";
 
-    @ApiModelProperty(value = "GeoJSON Geometry Object",
-                      required = true,
-                      position = 3)
+    @Schema(description = "GeoJSON Geometry Object",
+                      required = true)
     private G geometry;
 
-    @ApiModelProperty(value = "GeoJSON Properties Object",
-                      required = true,
-                      position = 4)
+    @Schema(description = "GeoJSON Properties Object",
+                      required = true)
     private P properties;
 
     public Feature() {

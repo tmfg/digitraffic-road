@@ -8,42 +8,41 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Road station sensor")
+@Schema(description = "Road station sensor")
 @JsonPropertyOrder(value = {"id", "name", "shortName", "descriptionFi", "descriptionSv", "descriptionEn", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 public abstract class RoadStationSensorDto {
 
-    @ApiModelProperty(value = "Sensor id", position = 1)
+    @Schema(description = "Sensor id")
     @JsonProperty("id")
     private long naturalId;
 
-    @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future.", position = 2, notes = "noteja")
+    @Schema(description = "Sensor old name. For new sensors will equal name. Will deprecate in future.")
     @JsonProperty(value = "nameOld")
     private String name;
 
-    @ApiModelProperty(value = "Unit of sensor value")
+    @Schema(description = "Unit of sensor value")
     private String unit;
 
-    @ApiModelProperty(value = "Sensor name [fi]")
+    @Schema(description = "Sensor name [fi]")
     @JsonProperty(value = "name")
     private String nameFi;
 
-    @ApiModelProperty(value = "Short name for sensor [fi]")
+    @Schema(description = "Short name for sensor [fi]")
     @JsonProperty(value = "shortName")
     private String shortNameFi;
 
-    @ApiModelProperty(value = "Sensor accuracy")
+    @Schema(description = "Sensor accuracy")
     private Integer accuracy;
 
-    @ApiModelProperty("Possible additional descriptions for sensor values")
+    @Schema(description = "Possible additional descriptions for sensor values")
     private List<SensorValueDescription> sensorValueDescriptions;
 
-    @ApiModelProperty(value = "Map of descriptions [fi, sv, en]")
+    @Schema(description = "Map of descriptions [fi, sv, en]")
     private Map<String, String> descriptions = new HashMap<>();
 
-    @ApiModelProperty(value = "Map of presentation names [fi, sv, en]")
+    @Schema(description = "Map of presentation names [fi, sv, en]")
     private Map<String, String> presentationNames = new HashMap<>();
 
     public RoadStationSensorDto(long naturalId, String name, String unit, String descriptionFi, String descriptionSv, String descriptionEn,
@@ -78,7 +77,7 @@ public abstract class RoadStationSensorDto {
         return unit;
     }
 
-    @ApiModelProperty(value = "Sensor description [fi]")
+    @Schema(description = "Sensor description [fi]")
     public String getDescription() {
         return descriptions.get("fi");
     }

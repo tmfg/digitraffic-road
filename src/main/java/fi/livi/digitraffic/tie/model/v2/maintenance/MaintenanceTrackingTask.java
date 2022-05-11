@@ -41,7 +41,7 @@ import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TURVA
 import java.util.Arrays;
 
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public enum MaintenanceTrackingTask {
 
@@ -108,7 +108,7 @@ public enum MaintenanceTrackingTask {
         return nameEn;
     }
 
-    @ApiModelProperty("Enum id")
+    @Schema(description = "Enum id")
     public String getId() {
         return this.name();
     }

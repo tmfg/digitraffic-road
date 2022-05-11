@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Location types and location subtypes")
+@Schema(description = "Location types and location subtypes")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LocationTypesMetadata {
     public final ZonedDateTime typesUpdated;

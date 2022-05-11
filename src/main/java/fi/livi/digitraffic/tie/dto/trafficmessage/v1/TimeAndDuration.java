@@ -10,10 +10,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Announcement time and duration", value = "TimeAndDuration_V1")
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Announcement time and duration", name = "TimeAndDuration_V1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "startTime",
@@ -22,14 +22,14 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class TimeAndDuration extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Start time of the situation", required = true)
+    @Schema(description = "Start time of the situation", required = true)
     @NotNull
     public ZonedDateTime startTime;
 
-    @ApiModelProperty(value = "End time of the situation. If the end time has been passed, the situation can be assumed to be over. If end time is not given, there will be follow-up announcement about the situation.")
+    @Schema(description = "End time of the situation. If the end time has been passed, the situation can be assumed to be over. If end time is not given, there will be follow-up announcement about the situation.")
     public ZonedDateTime endTime;
 
-    @ApiModelProperty(value = "If exact endtime is not known, duration may be estimated.")
+    @Schema(description = "If exact endtime is not known, duration may be estimated.")
     public EstimatedDuration estimatedDuration;
 
     public TimeAndDuration() {

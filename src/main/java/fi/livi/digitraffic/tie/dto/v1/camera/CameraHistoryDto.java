@@ -4,16 +4,15 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "CameraHistory", description = "Weather camera's image history details.")
+@Schema(name = "CameraHistory", description = "Weather camera's image history details.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraHistoryDto {
 
-    @ApiModelProperty("Camera id")
+    @Schema(description = "Camera id")
     public final String cameraId;
-    @ApiModelProperty("History of the camera")
+    @Schema(description = "History of the camera")
     public final List<PresetHistoryDto> cameraHistory;
 
     public CameraHistoryDto(final String cameraId, final List<PresetHistoryDto> cameraHistory) {

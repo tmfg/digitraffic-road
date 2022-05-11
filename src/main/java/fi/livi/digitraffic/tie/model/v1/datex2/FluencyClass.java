@@ -11,10 +11,9 @@ import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "FluencyClass")
+@Schema(description = "FluencyClass")
 @Entity
 @Immutable
 public class FluencyClass {
@@ -30,14 +29,14 @@ public class FluencyClass {
     @JsonIgnore
     private BigDecimal upperLimit;
 
-    @ApiModelProperty(value = "1 = stationary traffic,\n"
+    @Schema(description = "1 = stationary traffic,\n"
                             + "2 = queuing traffic,\n"
                             + "3 = slow traffic,\n"
                             + "4 = heavy traffic,\n"
                             + "5 = traffic flowing freely", required = true)
     private int code;
 
-    @ApiModelProperty(value = "Name for fluency class", required = true)
+    @Schema(description = "Name for fluency class", required = true)
     @NotNull
     private String nameEn;
 

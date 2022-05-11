@@ -8,22 +8,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.v1.MeasuredDataObjectDto;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
-@ApiModel(value = "CameraPresetData", description = "Camera's preset data", parent = MeasuredDataObjectDto.class)
+@Schema(name = "CameraPresetData", description = "Camera's preset data")
 @JsonPropertyOrder( value = {"id", "presentationName", "public", "imageUrl"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraPresetDataDto implements MeasuredDataObjectDto {
 
-    @ApiModelProperty(value = "Camera preset id", position = 1)
+    @Schema(description = "Camera preset id")
     private String id;
 
-    @ApiModelProperty(value = "PresentationName (Preset name 1, direction)")
+    @Schema(description = "PresentationName (Preset name 1, direction)")
     private String presentationName;
 
-    @ApiModelProperty(value = "Image url")
+    @Schema(description = "Image url")
     private String imageUrl;
 
     private Instant measuredTime;

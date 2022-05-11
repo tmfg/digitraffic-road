@@ -5,15 +5,14 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
-@ApiModel(value = "TmsStationData", description = "TMS station with sensor values", parent = AbstractStationWithSensorsDto.class)
+@Schema(name = "TmsStationData", description = "TMS station with sensor values")
 @JsonPropertyOrder( value = {"id", "tmsNumber", "measuredTime", "sensorValues"})
 public class TmsStationDto extends AbstractStationWithSensorsDto {
 
-    @ApiModelProperty(value = "TMS station number", required = true)
+    @Schema(description = "TMS station number", required = true)
     @JsonProperty(value = "tmsNumber")
     private long tmsStationNaturalId;
 

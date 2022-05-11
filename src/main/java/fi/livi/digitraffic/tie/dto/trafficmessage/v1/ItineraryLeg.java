@@ -4,20 +4,19 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "ItineraryLeg is one leg of the route", value = "ItineraryLeg_V1")
+@Schema(description = "ItineraryLeg is one leg of the route", name = "ItineraryLeg_V1")
 @JsonPropertyOrder({
     "roadLeg",
     "streetName"
 })
 public class ItineraryLeg extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Road leg if ghe leg is on the road network")
+    @Schema(description = "Road leg if ghe leg is on the road network")
     public ItineraryRoadLeg roadLeg;
 
-    @ApiModelProperty(value = "Name of the street if leg is on the street network")
+    @Schema(description = "Name of the street if leg is on the street network")
     public String streetName;
 
     public ItineraryLeg() {

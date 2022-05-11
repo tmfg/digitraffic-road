@@ -10,7 +10,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @DynamicUpdate
@@ -18,19 +18,19 @@ import io.swagger.annotations.ApiModelProperty;
 public class Direction {
 
     @Id
-    @ApiModelProperty("Direction id")
+    @Schema(description = "Direction id")
     private Long naturalId;
 
-    @ApiModelProperty("Direction name in Finnish")
+    @Schema(description = "Direction name in Finnish")
     private String nameFi;
 
-    @ApiModelProperty("Direction name in Swedish")
+    @Schema(description = "Direction name in Swedish")
     private String nameSv;
 
-    @ApiModelProperty("Direction name in English")
+    @Schema(description = "Direction name in English")
     private String nameEn;
 
-    @ApiModelProperty("The value is P if the direction of travel is from west to east along the ring roads (Kehä Ⅰ and Kehä Ⅲ) or " +
+    @Schema(description = "The value is P if the direction of travel is from west to east along the ring roads (Kehä Ⅰ and Kehä Ⅲ) or " +
                       "away from Helsinki along roads running  radially (such as Vt1 and Vt4), and the value is N for the opposite direction")
     private String rdi;
 

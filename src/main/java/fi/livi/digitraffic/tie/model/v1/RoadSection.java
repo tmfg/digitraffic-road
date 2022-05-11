@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @JsonPropertyOrder({ "naturalId", "endDistance", "road", "roadDistrict" })
@@ -31,25 +31,25 @@ public class RoadSection {
     @JsonIgnore
     private Long id;
 
-    @ApiModelProperty(value = "Road section number")
+    @Schema(description = "Road section number")
     @JsonProperty(value = "id")
     private String naturalId;
 
-    @ApiModelProperty(value = "Distance from the beginning of the road section. Always 0.")
+    @Schema(description = "Distance from the beginning of the road section. Always 0.")
     @JsonIgnore
     private Integer beginDistance;
 
-    @ApiModelProperty(value = "Distance from the beginning to the end of the road section. (Length of the road section)")
+    @Schema(description = "Distance from the beginning to the end of the road section. (Length of the road section)")
     private Integer endDistance;
 
     @Transient // Not loaded, always null for backward compatibility
-    @ApiModelProperty(value = "District where road is located (or most of it), not use anymore")
+    @Schema(description = "District where road is located (or most of it), not use anymore")
     private RoadDistrict roadDistrict;
 
     @ManyToOne
     @JoinColumn(name = "road_id")
     @Fetch(FetchMode.JOIN)
-    @ApiModelProperty(value = "Road where this section is located")
+    @Schema(description = "Road where this section is located")
     private Road road;
 
     @JsonIgnore

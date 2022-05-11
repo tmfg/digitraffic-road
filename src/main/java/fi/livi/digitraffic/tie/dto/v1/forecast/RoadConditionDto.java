@@ -10,19 +10,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.model.v1.forecastsection.OverallRoadCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.Reliability;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({ "time", "type", "forecastName", "daylight", "roadTemperature", "temperature", "windSpeed",
     "windDirection", "overallRoadCondition", "weatherSymbol", "reliability", "forecastConditionReason" })
-@ApiModel(value = "RoadCondition")
+@Schema(name = "RoadCondition")
 public class RoadConditionDto {
     private final String forecastName;
 
-    @ApiModelProperty("Observation or forecast time depending on type")
+    @Schema(description = "Observation or forecast time depending on type")
     private final ZonedDateTime time;
 
-    @ApiModelProperty("Tells if there is daylight: true/false")
+    @Schema(description = "Tells if there is daylight: true/false")
     private final Boolean daylight;
 
     @Enumerated(EnumType.STRING)
@@ -31,23 +30,23 @@ public class RoadConditionDto {
     @Enumerated(EnumType.STRING)
     private final Reliability reliability;
 
-    @ApiModelProperty("Road temperature at given time. If not available value is not set")
+    @Schema(description = "Road temperature at given time. If not available value is not set")
     private final String roadTemperature;
 
-    @ApiModelProperty("Air temperature")
+    @Schema(description = "Air temperature")
     private final String temperature;
 
-    @ApiModelProperty("Weather symbol code http://corporate.foreca.com/en/products/foreca-symbols")
+    @Schema(description = "Weather symbol code http://corporate.foreca.com/en/products/foreca-symbols")
     private final String weatherSymbol;
 
-    @ApiModelProperty("Wind direction in degrees. 0 when there is no wind or the direction is variable. 90 degrees is arrow to the east " +
+    @Schema(description = "Wind direction in degrees. 0 when there is no wind or the direction is variable. 90 degrees is arrow to the east " +
         "(count clockwise)")
     private final Integer windDirection;
 
-    @ApiModelProperty("Wind speed in m/s")
+    @Schema(description = "Wind speed in m/s")
     private final Double windSpeed;
 
-    @ApiModelProperty("Tells if object is an observation or a forecast: OBSERVATION / FORECAST")
+    @Schema(description = "Tells if object is an observation or a forecast: OBSERVATION / FORECAST")
     private final String type;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

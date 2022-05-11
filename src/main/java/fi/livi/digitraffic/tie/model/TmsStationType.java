@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.model;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaTyyppi;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "TMS station type", value = "TmsStationType")
+@Schema(description = "TMS station type", name = "TmsStationType")
 public enum TmsStationType {
 
     DSL_4("DSL_4"),

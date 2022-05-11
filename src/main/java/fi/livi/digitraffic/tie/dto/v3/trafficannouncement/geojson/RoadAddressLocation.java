@@ -8,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Location consisting of a single road point or a road segment between two road points", value="RoadAddressLocationV3")
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Location consisting of a single road point or a road segment between two road points", name = "RoadAddressLocationV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "primaryPoint",
@@ -21,18 +21,18 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class RoadAddressLocation extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Primary road point", required = true)
+    @Schema(description = "Primary road point", required = true)
     @NotNull
     public RoadPoint primaryPoint;
 
-    @ApiModelProperty(value = "Secondary  road point")
+    @Schema(description = "Secondary  road point")
     public RoadPoint secondaryPoint;
 
-    @ApiModelProperty(value = "Affected road direction", required = true)
+    @Schema(description = "Affected road direction", required = true)
     @NotNull
     public RoadAddressLocation.Direction direction;
 
-    @ApiModelProperty(value = "Human readable description of the affected direction")
+    @Schema(description = "Human readable description of the affected direction")
     public String directionDescription;
 
     public RoadAddressLocation() {

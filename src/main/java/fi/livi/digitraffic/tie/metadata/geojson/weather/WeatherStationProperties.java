@@ -12,25 +12,24 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.model.WeatherStationType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Weather Station properties", value = "WeatherStationProperties", parent = RoadStationProperties.class)
+@Schema(description = "Weather Station properties", name = "WeatherStationProperties")
 @JsonPropertyOrder({ "roadStationId", "weatherStationType", "naturalId", "name" })
 public class WeatherStationProperties extends RoadStationProperties {
 
     @JsonIgnore // Using road station's natural id
-    @ApiModelProperty(name = "id", value = "Weather station's unique id", required = true)
+    @Schema(name = "id", description = "Weather station's unique id", required = true)
     private long id;
 
-    @ApiModelProperty(value = "Type of Weather Station")
+    @Schema(description = "Type of Weather Station")
     private WeatherStationType weatherStationType;
 
-    @ApiModelProperty(value = "Is station master or slave station")
+    @Schema(description = "Is station master or slave station")
     private Boolean master;
 
     /** Sensors natural ids */
-    @ApiModelProperty(value = "Weather Station Sensors ids")
+    @Schema(description = "Weather Station Sensors ids")
     private List<Long> stationSensors = new ArrayList<>();
 
     public long getId() {

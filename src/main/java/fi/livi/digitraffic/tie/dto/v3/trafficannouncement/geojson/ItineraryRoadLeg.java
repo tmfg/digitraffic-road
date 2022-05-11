@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "ItineraryRoadLeg is route leg that is on the road network.", value = "ItineraryRoadLegV3")
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "ItineraryRoadLeg is route leg that is on the road network.", name = "ItineraryRoadLegV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
                        "roadNumber",
@@ -19,16 +19,16 @@ import io.swagger.annotations.ApiModelProperty;
                    })
 public class ItineraryRoadLeg extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Number of the road.")
+    @Schema(description = "Number of the road.")
     public Integer roadNumber;
 
-    @ApiModelProperty(value = "Name of the road.")
+    @Schema(description = "Name of the road.")
     public String roadName;
 
-    @ApiModelProperty(value = "Description of the place on the road, where this leg starts.")
+    @Schema(description = "Description of the place on the road, where this leg starts.")
     public String startArea;
 
-    @ApiModelProperty(value = "Description of the place on the road, where this leg ends.")
+    @Schema(description = "Description of the place on the road, where this leg ends.")
     public String endArea;
 
     public ItineraryRoadLeg() {

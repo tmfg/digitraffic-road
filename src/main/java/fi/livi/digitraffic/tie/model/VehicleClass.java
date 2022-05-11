@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.AjoneuvoluokkaTyyppi;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Vehicle class", value = "VehicleClass")
+@Schema(description = "Vehicle class", name = "VehicleClass")
 public enum VehicleClass {
 
     CAR(AjoneuvoluokkaTyyppi.HA.value(), AjoneuvoluokkaTyyppi.PA.value()), // Henkilöauto – Passenger car / Pakettiauto - Delivery van

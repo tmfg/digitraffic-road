@@ -6,9 +6,9 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Traffic Announcement situation type", value = "SituationType_V1")
+@Schema(description = "Traffic Announcement situation type", name = "SituationType_V1")
 public enum SituationType {
 
     TRAFFIC_ANNOUNCEMENT("traffic announcement"),

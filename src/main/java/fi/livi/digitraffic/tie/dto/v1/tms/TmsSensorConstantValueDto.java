@@ -10,10 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "Sensor constant value")
+@Schema(name = "Sensor constant value")
 @JsonPropertyOrder({ "name", "value", "validFrom", "validTo"})
 @Entity
 @Immutable
@@ -26,11 +25,11 @@ public class TmsSensorConstantValueDto {
     @JsonIgnore
     private Long roadStationId;
 
-    @ApiModelProperty(value = "Name of the sensor constant", required = true)
+    @Schema(description = "Name of the sensor constant", required = true)
     @NotNull
     private String name;
 
-    @ApiModelProperty(value = "Value of the sensor constant", required = true)
+    @Schema(description = "Value of the sensor constant", required = true)
     @NotNull
     private Integer value;
 
@@ -73,13 +72,13 @@ public class TmsSensorConstantValueDto {
         return validTo;
     }
 
-    @ApiModelProperty(value = "Validity start in format mm-dd ie. value 01-31 is 31th of January", required = true)
+    @Schema(description = "Validity start in format mm-dd ie. value 01-31 is 31th of January", required = true)
     @JsonProperty("validFrom")
     public String getValidFromFormated() {
         return formatValidity(validFrom);
     }
 
-    @ApiModelProperty(value = "Validity end in format mm-dd ie. value 01-31 is 31th of January", required = true)
+    @Schema(description = "Validity end in format mm-dd ie. value 01-31 is 31th of January", required = true)
     @JsonProperty("validTo")
     public String getValidToFormated() {
         return formatValidity(validTo);

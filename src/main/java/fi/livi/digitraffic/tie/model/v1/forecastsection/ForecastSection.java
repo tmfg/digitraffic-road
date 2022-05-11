@@ -28,9 +28,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.model.v1.Road;
 import fi.livi.digitraffic.tie.model.v1.RoadSection;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.Coordinate;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionNaturalIdHelper;
-import io.swagger.annotations.ApiModelProperty;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.Coordinate;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @DynamicUpdate
@@ -54,7 +54,7 @@ public class ForecastSection {
      * Delimiter is underscore "_"
      */
 
-    @ApiModelProperty(value =
+    @Schema(description =
             "Forecast section identifier 15 characters ie. 00004_112_000_0: \n" +
             "1. Road number 5 characters ie. 00004, \n" +
             "2. Road section 3 characters ie. 112, \n" +
@@ -66,31 +66,31 @@ public class ForecastSection {
     @JsonIgnore
     private Integer version;
 
-    @ApiModelProperty(value = "Forecast section description")
+    @Schema(description = "Forecast section description")
     private String description;
 
-    @ApiModelProperty(value = "Road section number")
+    @Schema(description = "Road section number")
     @Column(insertable = false, updatable = false)
     private int roadSectionNumber;
 
-    @ApiModelProperty(value = "Forecast section road number")
+    @Schema(description = "Forecast section road number")
     @Column(insertable = false, updatable = false)
     private int roadNumber;
 
-    @ApiModelProperty(value = "Road section version number")
+    @Schema(description = "Road section version number")
     @Column(insertable = false, updatable = false)
     private int roadSectionVersionNumber;
 
-    @ApiModelProperty(value = "Forecast section start distance")
+    @Schema(description = "Forecast section start distance")
     private Integer startDistance;
 
-    @ApiModelProperty(value = "Forecast section end distance")
+    @Schema(description = "Forecast section end distance")
     private Integer endDistance;
 
-    @ApiModelProperty(value = "Forecast section length")
+    @Schema(description = "Forecast section length")
     private Integer length;
 
-    @ApiModelProperty(value = "Forecast section obsolete date")
+    @Schema(description = "Forecast section obsolete date")
     private Date obsoleteDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

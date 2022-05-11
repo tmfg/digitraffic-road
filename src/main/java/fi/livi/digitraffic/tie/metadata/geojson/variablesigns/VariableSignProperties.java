@@ -8,22 +8,22 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "Properties", description = "Variable Sign properties")
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "Properties", description = "Variable Sign properties")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VariableSignProperties {
     // device properties
     public final String id;
-    @ApiModelProperty(value = "Variable sign type",
+    @Schema(description = "Variable sign type",
         allowableValues = "SPEEDLIMIT,WARNING,INFORMATION")
     public final SignType type;
     public final String roadAddress;
-    @ApiModelProperty(value = "Direction of variable sign, increasing or decreasing road address",
+    @Schema(description = "Direction of variable sign, increasing or decreasing road address",
         allowableValues = "INCREASING,DECREASING")
     public final Direction direction;
-    @ApiModelProperty(value = "Variable sign placement:\n" +
+    @Schema(description = "Variable sign placement:\n" +
         "SINGLE = Single carriageway rod\n" +
         "RIGHT = First carriageway on the right in the direction of the road number\n" +
         "LEFT = Second carriageway on the left in the direction of the road number\n" +
@@ -35,10 +35,10 @@ public class VariableSignProperties {
     @JsonInclude
     public final String displayValue;
     public final String additionalInformation;
-    @ApiModelProperty("Information is effect after this date")
+    @Schema(description = "Information is effect after this date")
     public final ZonedDateTime effectDate;
     public final String cause;
-    @ApiModelProperty(value = "Variable sign reliability",
+    @Schema(description = "Variable sign reliability",
         allowableValues = "NORMAL,DISCONNECTED,MALFUNCTION")
     public final Reliability reliability;
     public final List<SignTextRow> textRows;
@@ -59,7 +59,7 @@ public class VariableSignProperties {
         this.textRows = textRows;
     }
 
-    @ApiModel
+    @Schema
     public enum SignType {
         SPEEDLIMIT, WARNING, INFORMATION;
 
@@ -78,7 +78,7 @@ public class VariableSignProperties {
         }
     }
 
-    @ApiModel
+    @Schema
     public enum Direction {
         INCREASING,
         DECREASING;
@@ -97,7 +97,7 @@ public class VariableSignProperties {
         }
     }
 
-    @ApiModel
+    @Schema
     public enum Carriageway {
         SINGLE("NORMAALI"),
         RIGHT("OIKEANPUOLEINEN"),
@@ -124,7 +124,7 @@ public class VariableSignProperties {
         }
     }
 
-    @ApiModel
+    @Schema
     public enum Reliability {
         NORMAL("NORMAALI"),
         DISCONNECTED("YHTEYSKATKO"),

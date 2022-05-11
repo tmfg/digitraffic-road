@@ -11,10 +11,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Announcement estimated duration", value = "EstimatedDurationV2")
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Announcement estimated duration", name = "EstimatedDurationV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
    "minimum",
@@ -25,16 +25,16 @@ public class EstimatedDuration extends JsonAdditionalProperties {
 
     @Pattern(regexp= DURATION_REGEXP, flags = Pattern.Flag.CASE_INSENSITIVE,
              message="Invalid minimum duration!")
-    @ApiModelProperty(value = "Estimated minimum duration using ISO-8601 duration", required = true, example = "PT6H")
+    @Schema(description = "Estimated minimum duration using ISO-8601 duration", required = true, example = "PT6H")
     @NotNull
     public String minimum;
 
     @Pattern(regexp=DURATION_REGEXP, flags = Pattern.Flag.CASE_INSENSITIVE,
              message="Invalid maximum duration!")
-    @ApiModelProperty(value = "Estimated maximum duration using ISO-8601 duration", dataType = "String", example = "PT8H")
+    @Schema(description = "Estimated maximum duration using ISO-8601 duration", type = "String", example = "PT8H")
     public String maximum;
 
-    @ApiModelProperty(value = "Informal description e.g. 1 - 3 hours", required = true)
+    @Schema(description = "Informal description e.g. 1 - 3 hours", required = true)
     @NotNull
     public String informal;
 
