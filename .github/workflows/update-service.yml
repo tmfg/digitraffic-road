@@ -1,0 +1,34 @@
+name: Update Fargate Service
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment'
+        required: true
+        type: choice
+        options:
+          - test
+          - prod
+      family-name:
+        description: 'Which service to update'
+        required: true
+        type: choice
+        options:
+          - road-daemon
+          - road-web
+          - road-db
+      ci-repo-branch:
+        description: 'Which branch/tag of ci-repo to use'
+        required: true
+        default: 'master'
+jobs:
+  update:
+      environment: ${{ github.event.inputs.env }}
+      runs-on: ubuntu-latest
+    steps:
+      - name: Update task
+        uses: tmfg/digitraffic-actions@ecs-service-update/v1
+        with:
+          ci-repo-branch: ${{ github.event.inputs.ci-repo-branch }}
+          family-name: ${{ github.event.inputs.family-name }}
+          asw-role: ${{ secrets.AWS_ROLE }}
