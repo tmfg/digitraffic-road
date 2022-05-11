@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.controller.beta;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_BAD_REQUEST;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -26,13 +26,15 @@ import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(tags = "Beta")
+@Tag(name = "Beta")
 @RestController
 @Validated
 @RequestMapping(API_BETA_BASE_PATH)
@@ -55,12 +57,11 @@ public class BetaController {
         this.weatherService = weatherService;
     }
 
-
-    @ApiOperation("The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")
+    @Operation(summary = "The static information of TMS stations in Datex2 format (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of TMS Stations Datex2 metadata"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Stations Datex2 metadata"))
     public D2LogicalModel tmsStationsDatex2(
-        @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
+        @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = "active,removed,all"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
@@ -69,28 +70,28 @@ public class BetaController {
         return tmsStationDatex2Service.findAllPublishableTmsStationsAsDatex2(state);
     }
 
-    @ApiOperation("Current data of TMS Stations in Datex2 format (Traffic Measurement System / LAM)")
+    @Operation(summary = "Current data of TMS Stations in Datex2 format (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of TMS Stations Datex2 data"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Stations Datex2 data"))
     public D2LogicalModel tmsDataDatex2() {
         return tmsDataDatex2Service.findPublishableTmsDataDatex2();
     }
 
-    @ApiOperation("List the history of sensor values from the weather road station")
+    @Operation(summary = "List the history of sensor values from the weather road station")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
-                   @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter(s)")})
+    @ApiResponses({@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"),
+                   @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter(s)", content = @Content)})
     public List<WeatherSensorValueHistoryDto> weatherDataHistory(
-        @ApiParam(value = "Weather station id", required = true)
+        @Parameter(description = "Weather station id", required = true)
         @PathVariable
         final long stationId,
 
-        @ApiParam("Fetch history after given date time")
+        @Parameter(description = "Fetch history after given date time")
         @RequestParam(value="from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from,
 
-        @ApiParam("Limit history to given date time")
+        @Parameter(description = "Limit history to given date time")
         @RequestParam(value="to", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to) {
@@ -98,18 +99,18 @@ public class BetaController {
         return weatherService.findWeatherHistoryData(stationId, from, to);
     }
 
-    @ApiOperation("List the history of sensor value from the weather road station")
+    @Operation(summary = "List the history of sensor value from the weather road station")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({@ApiResponse(code = SC_OK, message = "Successful retrieval of weather station data"),
-                  @ApiResponse(code = SC_BAD_REQUEST, message = "Invalid parameter")})
+    @ApiResponses({@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"),
+                  @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter", content = @Content)})
     public List<WeatherSensorValueHistoryDto> weatherDataHistory(
-        @ApiParam(value = "Weather Station id", required = true)
+        @Parameter(description = "Weather Station id", required = true)
         @PathVariable final long stationId,
 
-        @ApiParam(value = "Sensor id", required = true)
+        @Parameter(description = "Sensor id", required = true)
         @PathVariable final long sensorId,
 
-        @ApiParam("Fetch history after given time")
+        @Parameter(description = "Fetch history after given time")
         @RequestParam(value="from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from) {

@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.controller.v1;
 
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_VARIABLE_SIGN_UPDATE_PART_PATH;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.MediaType;
@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.external.tloik.variablesigns.Metatiedot;
 import fi.livi.digitraffic.tie.external.tloik.variablesigns.Tilatiedot;
 import fi.livi.digitraffic.tie.service.v1.VariableSignUpdateService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@ApiIgnore
-@Api(tags = "Variable speed limits")
+@Hidden
+@Tag(name = "Variable speed limits")
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_VARIABLE_SIGN_UPDATE_PART_PATH)
@@ -38,18 +38,18 @@ public class VariableSignUpdateController {
         this.variableSignUpdateService = variableSignUpdateService;
     }
 
-    @ApiOperation("Posting variable sign metadata from TLOIK")
+    @Operation(summary = "Posting variable sign metadata from TLOIK")
     @RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT}, path = METADATA_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful post of variable sign metadata from TLOIK"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful post of variable sign metadata from TLOIK"))
     public ResponseEntity<Void> postVariableSignMetadata(@RequestBody Metatiedot metadata) {
         variableSignUpdateService.saveMetadata(metadata);
 
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation("Posting variable sign data from TLOIK")
+    @Operation(summary = "Posting variable sign data from TLOIK")
     @RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT}, path = DATA_PATH, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful post of variable sign data from TLOIK"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful post of variable sign data from TLOIK"))
     public ResponseEntity<Void> postTrafficSignData(@RequestBody Tilatiedot data) {
         variableSignUpdateService.saveData(data);
 

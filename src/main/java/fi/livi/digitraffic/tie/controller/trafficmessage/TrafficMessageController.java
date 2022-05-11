@@ -6,8 +6,8 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TA
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
 import java.time.ZonedDateTime;
 
@@ -27,13 +27,15 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureC
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.trafficmessages.V1TrafficMessageDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(tags = TRAFFIC_MESSAGE_TAG)
+@Tag(name = TRAFFIC_MESSAGE_TAG, description = "Traffic Message Controller")
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -69,110 +71,110 @@ public class TrafficMessageController {
         this.v1TrafficMessageDataService = v1TrafficMessageDataService;
     }
 
-    @ApiOperation(value = "Active traffic messages as Datex2")
+    @Operation(summary = "Active traffic messages as Datex2")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2 })
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
-        @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
+        @Parameter(description = "Return traffic messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        @Parameter(description = "Situation type.", schema = @Schema(defaultValue = "TRAFFIC_ANNOUNCEMENT"))
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
         return v1TrafficMessageDataService.findActive(inactiveHours, situationType);
     }
 
-    @ApiOperation(value = "Traffic messages by situationId as Datex2")
+    @Operation(summary = "Traffic messages by situationId as Datex2")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" + DATEX2 })
-    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
-                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
     public D2LogicalModel trafficMessageDatex2BySituationId(
-        @ApiParam(value = "Situation id.", required = true)
+        @Parameter(description = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam(value = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned",
-                  defaultValue = "true")
+        @Parameter(description = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned",
+                  schema = @Schema(defaultValue = "true"))
         @RequestParam(defaultValue = "true")
         final boolean latest) {
         return v1TrafficMessageDataService.findBySituationId(situationId, latest);
     }
 
-    @ApiOperation(value = "Active traffic messages as simple JSON")
+    @Operation(summary = "Active traffic messages as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES })
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
-        @ApiParam(value = "Return traffic messages from given amount of hours in the past.")
+        @Parameter(description = "Return traffic messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @ApiParam(value = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
+        @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
+            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", schema = @Schema(defaultValue = "false"))
         @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @ApiParam(value = "Situation type.", defaultValue = "TRAFFIC_ANNOUNCEMENT")
+        @Parameter(description = "Situation type.", schema = @Schema(defaultValue = "TRAFFIC_ANNOUNCEMENT"))
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType...situationType) {
         return v1TrafficMessageDataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
-    @ApiOperation(value = "Traffic messages history by situation id as simple JSON")
+    @Operation(summary = "Traffic messages history by situation id as simple JSON")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" })
-    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of traffic messages"),
-                    @ApiResponse(code = SC_NOT_FOUND, message = "Situation id not found") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
     public TrafficAnnouncementFeatureCollection trafficMessageSimpleBySituationId(
-        @ApiParam(value = "Situation id.", required = true)
+        @Parameter(description = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @ApiParam(value = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", defaultValue = "false")
+        @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
+            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", schema = @Schema(defaultValue = "false"))
         @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @ApiParam(value = "If the parameter value is true, then only the latest message will be returned", defaultValue = "false")
+        @Parameter(description = "If the parameter value is true, then only the latest message will be returned", schema = @Schema(defaultValue = "false"))
         @RequestParam(defaultValue = "false")
         final boolean latest) {
         return v1TrafficMessageDataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
-    @ApiOperation(value = "Traffic messages geometries for regions")
+    @Operation(summary = "Traffic messages geometries for regions")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES })
-    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of geometries") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of geometries") })
     public RegionGeometryFeatureCollection areaLocationRegions(
-        @ApiParam(value = "If the parameter value is true, then the result will only contain update status.", defaultValue = "true")
+        @Parameter(description = "If the parameter value is true, then the result will only contain update status.", schema = @Schema(defaultValue = "true"))
         @RequestParam(defaultValue = "true")
         final boolean lastUpdated,
-        @ApiParam(value = "If the parameter value is false, then the result will not contain also geometries.", defaultValue = "false")
+        @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.", schema = @Schema(defaultValue = "false"))
         @RequestParam(defaultValue = "false")
         final boolean includeGeometry,
-        @ApiParam(value = "When effectiveDate parameter is given only effective geometries on that date are returned")
+        @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime effectiveDate) {
         return areaLocationRegions(lastUpdated, includeGeometry, effectiveDate, null);
     }
 
-    @ApiOperation(value = "Traffic messages geometries for regions")
+    @Operation(summary = "Traffic messages geometries for regions")
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES + "/{locationCode}" })
-    @ApiResponses({ @ApiResponse(code = SC_OK, message = "Successful retrieval of geometries"),
-                    @ApiResponse(code = SC_NOT_FOUND, message = "Geometry not not found") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of geometries"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Geometry not not found", content = @Content) })
     public RegionGeometryFeatureCollection areaLocationRegions(
-        @ApiParam(value = "If the parameter value is true, then the result will only contain update status.", defaultValue = "true")
+        @Parameter(description = "If the parameter value is true, then the result will only contain update status.", schema = @Schema(defaultValue = "false"))
         @RequestParam(defaultValue = "true")
         final boolean lastUpdated,
-        @ApiParam(value = "If the parameter value is false, then the result will not contain also geometries.", defaultValue = "false")
+        @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.", schema = @Schema(defaultValue = "false"))
         @RequestParam(defaultValue = "false")
         final boolean includeGeometry,
-        @ApiParam(value = "When effectiveDate parameter is given only effective geometries on that date are returned")
+        @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime effectiveDate,
-        @ApiParam(value = "Location code id", required = true)
+        @Parameter(description = "Location code id", required = true)
         @PathVariable
         final Integer locationCode) {
         return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, includeGeometry, effectiveDate != null ?
