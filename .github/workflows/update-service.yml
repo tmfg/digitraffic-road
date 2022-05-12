@@ -20,14 +20,18 @@ on:
         type: string
         required: true
         default: 'master'
+
 jobs:
   update:
-    environment: ${{ github.event.inputs.env }}
-    runs-on: ubuntu-latest
     name: Update task
+    environment: ${{ github.event.inputs.env }}
     uses: tmfg/digitraffic-actions/.github/workflows/update-ecs-service-action.yml@ecs-service-update/v1
     with:
       ci-repo-branch: ${{ github.event.inputs.ci-repo-branch }}
       family-name: ${{ github.event.inputs.family-name }}
       asw-role: ${{ secrets.AWS_ROLE }}
-    secrets: inherit
+    secrets:
+        CI_REPO_URL: ${{ secrets.CI_REPO_URL }}
+        CI_SSH_KEY: ${{ secrets.CI_SSH_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+
