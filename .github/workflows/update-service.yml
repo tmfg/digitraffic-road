@@ -23,8 +23,8 @@ on:
         default: 'master'
 jobs:
   update:
-      environment: ${{ github.event.inputs.env }}
-      runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.env }}
+    runs-on: ubuntu-latest
     steps:
       - name: Update task
         uses: tmfg/digitraffic-actions@ecs-service-update/v1
