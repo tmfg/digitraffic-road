@@ -36,5 +36,5 @@ jobs:
             family-name: ${{ github.event.inputs.family-name }}
             asw-role: ${{ secrets.AWS_ROLE }}
             cluster-name: ${{ secrets.CLUSTER_NAME }}
-            AWS_REGION: ${{ secrets.AWS_REGION }}
+            aws-region: ${{ secrets.AWS_REGION }}
 
