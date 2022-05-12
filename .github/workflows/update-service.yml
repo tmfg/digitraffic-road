@@ -23,14 +23,17 @@ on:
 
 jobs:
   update:
+    runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env }}
-    uses: tmfg/digitraffic-actions@ecs-service-update/v1
-    with:
-      ci-repo-branch: ${{ github.event.inputs.ci-repo-branch }}
-      family-name: ${{ github.event.inputs.family-name }}
-      asw-role: ${{ secrets.AWS_ROLE }}
-    secrets:
-        CI_REPO_URL: ${{ secrets.CI_REPO_URL }}
-        CI_SSH_KEY: ${{ secrets.CI_SSH_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
+    steps:
+        - name: Update
+          uses: tmfg/digitraffic-actions@ecs-service-update/v1
+          with:
+            ci-repo-branch: ${{ github.event.inputs.ci-repo-branch }}
+            family-name: ${{ github.event.inputs.family-name }}
+            asw-role: ${{ secrets.AWS_ROLE }}
+          secrets:
+            CI_REPO_URL: ${{ secrets.CI_REPO_URL }}
+            CI_SSH_KEY: ${{ secrets.CI_SSH_KEY }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
 
