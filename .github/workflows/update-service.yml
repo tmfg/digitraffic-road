@@ -5,10 +5,7 @@ on:
       env:
         description: 'Environment'
         required: true
-        type: choice
-        options:
-          - test
-          - prod
+        type: environment
       family-name:
         description: 'Which service to update'
         required: true
@@ -19,6 +16,7 @@ on:
           - road-db
       ci-repo-branch:
         description: 'Which branch/tag of ci-repo to use'
+        type: string
         required: true
         default: 'master'
 jobs:
