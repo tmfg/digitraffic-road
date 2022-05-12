@@ -6,6 +6,7 @@ on:
         description: 'Environment'
         required: true
         type: environment
+        default: 'test'
       family-name:
         description: 'Which service to update'
         required: true
@@ -30,3 +31,7 @@ jobs:
           ci-repo-branch: ${{ github.event.inputs.ci-repo-branch }}
           family-name: ${{ github.event.inputs.family-name }}
           asw-role: ${{ secrets.AWS_ROLE }}
+        secrets:
+          CI_REPO_URL: ${{ secrets.CI_REPO_URL }}
+          CI_SSH_KEY: ${{ secrets.CI_SSH_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
