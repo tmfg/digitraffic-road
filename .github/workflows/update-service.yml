@@ -23,9 +23,8 @@ on:
 
 jobs:
   update:
-    name: Update task
     environment: ${{ github.event.inputs.env }}
-    uses: tmfg/digitraffic-actions/.github/workflows/update-ecs-service-action.yml@ecs-service-update/v1
+    uses: tmfg/digitraffic-actions@ecs-service-update/v1
     with:
       ci-repo-branch: ${{ github.event.inputs.ci-repo-branch }}
       family-name: ${{ github.event.inputs.family-name }}
