@@ -26,15 +26,15 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env }}
     permissions:
-        id-token: write
-        contents: read
+      id-token: write
+      contents: read
     steps:
-        - name: Update
-          uses: tmfg/digitraffic-actions@ecs-service-update/v1
-          with:
-            revision: ${{ inputs.revision }}
-            family-name: ${{ github.event.inputs.family-name }}
-            asw-role: ${{ secrets.AWS_ROLE }}
-            cluster-name: ${{ secrets.CLUSTER_NAME }}
-            aws-region: ${{ secrets.AWS_REGION }}
+      - name: Update
+        uses: tmfg/digitraffic-actions@ecs-service-update/v1
+        with:
+          revision: ${{ github.event.inputs.revision }}
+          family-name: ${{ github.event.inputs.family-name }}
+          aws-role: ${{ secrets.AWS_ROLE }}
+          cluster-name: ${{ secrets.CLUSTER_NAME }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
