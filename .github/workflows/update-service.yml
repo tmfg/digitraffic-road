@@ -12,9 +12,9 @@ on:
         required: true
         type: choice
         options:
-          - road-daemon
-          - road-web
-          - road-db
+          - daemon
+          - web
+          - db
       revision:
         description: 'Which revision to install'
         type: string
@@ -33,7 +33,7 @@ jobs:
         uses: tmfg/digitraffic-actions@ecs-service-update/v1
         with:
           revision: ${{ github.event.inputs.revision }}
-          family-name: ${{ github.event.inputs.family-name }}
+          service-name: road-${{ github.event.inputs.family-name }}-${{ github.events.input.env }}
           aws-role: ${{ secrets.AWS_ROLE }}
           cluster-name: ${{ secrets.CLUSTER_NAME }}
           aws-region: ${{ secrets.AWS_REGION }}
