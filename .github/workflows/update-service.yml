@@ -33,7 +33,7 @@ jobs:
         uses: tmfg/digitraffic-actions@ecs-service-update/v1
         with:
           revision: ${{ github.event.inputs.revision }}
-          service-name: road-${{ github.event.inputs.family-name }}-${{ github.event.inputs.env }}
+          service-name: road-${{ github.event.inputs.env }}-${{ github.event.inputs.family-name }}
           aws-role: ${{ secrets.AWS_ROLE }}
           cluster-name: ${{ secrets.CLUSTER_NAME }}
           aws-region: ${{ secrets.AWS_REGION }}
