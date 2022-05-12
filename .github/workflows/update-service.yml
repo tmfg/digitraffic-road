@@ -25,6 +25,9 @@ jobs:
   update:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env }}
+    permissions:
+        id-token: write
+        contents: read
     steps:
         - name: Update
           uses: tmfg/digitraffic-actions@ecs-service-update/v1
