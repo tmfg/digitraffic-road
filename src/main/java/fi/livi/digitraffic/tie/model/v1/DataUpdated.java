@@ -32,14 +32,19 @@ public class DataUpdated {
 
     private String version;
 
-    private DataUpdated() {
-        // Empty for repository
+    public DataUpdated() {
+        // For JPA
     }
 
     public DataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
         setDataType(type);
         setUpdatedTime(updatedTime);
         setVersion(version);
+    }
+
+    public DataUpdated(final DataType type, final ZonedDateTime updatedTime) {
+        setDataType(type);
+        setUpdatedTime(updatedTime);
     }
 
     public Long getId() {

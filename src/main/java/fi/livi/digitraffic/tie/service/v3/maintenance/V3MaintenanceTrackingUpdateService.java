@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v3.maintenance;
 
+import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.UNKNOWN;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService.NextObservationStatus.Status.NEW;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService.NextObservationStatus.Status.SAME;
@@ -108,10 +109,7 @@ public class V3MaintenanceTrackingUpdateService {
         final Map<Pair<Integer, Integer>, MaintenanceTracking> cacheByHarjaWorkMachineIdAndContractId = new HashMap<>();
         final Stream<V3MaintenanceTrackingObservationData> data = v3MaintenanceTrackingObservationDataRepository.findUnhandled(maxToHandle, 2);
         final int count = (int) data.filter(trackingData -> handleMaintenanceTrackingObservationData(trackingData, cacheByHarjaWorkMachineIdAndContractId)).count();
-        if (count > 0) {
-            dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA);
-        }
-        dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED);
+        dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, STATE_ROADS_DOMAIN);
 
         log.info("method=handleUnhandledMaintenanceTrackingObservationData Read data from db {} times and from cache {} times. Db queries tookTotal {} ms and average {} ms/query",
                  fromDbCountAndMs.getLeft(), fromCacheCount,
@@ -190,7 +188,7 @@ public class V3MaintenanceTrackingUpdateService {
                     final MaintenanceTracking created =
                         new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
                             harjaObservationTime, harjaObservationTime, lastPoint, simplifiedGeometry.getLength() > 0.0 ? (LineString) simplifiedGeometry : null,
-                            performedTasks, direction, V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
+                            performedTasks, direction, STATE_ROADS_DOMAIN);
 
                     // Mark new tracking to follow previous tracking
                     if (status.is(SAME) && previousTracking  != null) {

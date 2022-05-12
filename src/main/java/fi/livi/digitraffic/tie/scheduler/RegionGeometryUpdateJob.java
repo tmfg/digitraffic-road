@@ -34,9 +34,9 @@ public class RegionGeometryUpdateJob extends SimpleUpdateJob {
         final String latestCommitId = v3RegionGeometryUpdateService.getLatestCommitId();
 
         if (changes.size() > 0) {
-            dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA, latestCommitId);
+            dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA);
         }
-        dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK, latestCommitId);
+        dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK);
         log.info("method=updateAreaLocationRegion from commitId {} to {} insertCount={} tookMs={}",
             currentLatestCommitId, latestCommitId, changes.size(), start.getTime());
     }

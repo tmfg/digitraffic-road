@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +28,23 @@ public class DataStatusService {
 
     @Transactional
     public void updateDataUpdated(final DataType dataType) {
-        updateDataUpdated(dataType, (String)null);
+        final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType);
+        log.debug("method=updateDataUpdated dataType={}", dataType);
+        if (updated == null) {
+            dataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now()));
+        } else {
+            updated.setUpdatedTime(ZonedDateTime.now());
+        }
     }
 
     @Transactional
     public void updateDataUpdated(final DataType dataType, final String version) {
-        final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType);
+        final DataUpdated updated = dataUpdatedRepository.findByDataTypeAndVersion(dataType, version);
         log.debug("method=updateDataUpdated dataType={}, dataVersion={}", dataType, version);
         if (updated == null) {
             dataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now(), version));
         } else {
             updated.setUpdatedTime(ZonedDateTime.now());
-            updated.setVersion(version);
         }
     }
 
@@ -64,6 +70,10 @@ public class DataStatusService {
     @Transactional(readOnly = true)
     public ZonedDateTime findDataUpdatedTime(final DataType...dataTypes) {
         return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataTypes));
+    }
+
+    public Instant findDataUpdatedTime(final DataType dataType, final List<String> versions) {
+        return dataUpdatedRepository.findUpdatedTime(dataType, versions);
     }
 
     @Transactional(readOnly = true)
