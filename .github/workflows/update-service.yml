@@ -15,11 +15,11 @@ on:
           - road-daemon
           - road-web
           - road-db
-      ci-repo-branch:
-        description: 'Which branch/tag of ci-repo to use'
+      revision:
+        description: 'Which revision to install'
         type: string
         required: true
-        default: 'master'
+        default: 'latest'
 
 jobs:
   update:
@@ -29,10 +29,9 @@ jobs:
         - name: Update
           uses: tmfg/digitraffic-actions@ecs-service-update/v1
           with:
-            ci-repo-branch: ${{ github.event.inputs.ci-repo-branch }}
+            revision: ${{ inputs.revision }}
             family-name: ${{ github.event.inputs.family-name }}
             asw-role: ${{ secrets.AWS_ROLE }}
-            CI_REPO_URL: ${{ secrets.CI_REPO_URL }}
-            CI_SSH_KEY: ${{ secrets.CI_SSH_KEY }}
+            cluster-name: ${{ secrets.CLUSTER_NAME }}
             AWS_REGION: ${{ secrets.AWS_REGION }}
 
