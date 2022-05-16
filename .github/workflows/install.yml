@@ -10,6 +10,7 @@ on:
             ci-repo-branch:
                 description: 'Branch or tag of CI-repo'
                 required: true
+                default: 'master'
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -21,6 +22,14 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+            - name: Checkout dependencies
+              uses: actions/checkout@v3
+              with:
+                repository: tmfg/digitraffic-build-dependencies
+                ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
+                path: digitraffic-build-dependencies
+            - name: Setup dependencies
+              run: cp -R digitraffic-build-dependencies/ ~/.m2/
             - name: Setup Node.js
               uses: actions/setup-node@v2
               with:
@@ -96,3 +105,9 @@ jobs:
                   fields: repo, job, took
               env:
                   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    deploy:
+        needs: install
+        runs-on: ubuntu-latest
+        steps:
+            - name: debug
+              run: echo About to deploy
