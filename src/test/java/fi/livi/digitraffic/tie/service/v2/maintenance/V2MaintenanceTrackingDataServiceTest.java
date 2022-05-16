@@ -675,7 +675,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // tracking for firstDomain
         insertTrackingForDomain(firstDomain, wm1.getId());
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, firstDomain);
-        sleep(2000); // delay creation with 2,1 s
+        sleep(2000); // delay creation with 2 s
         // tracking for secondDomain 2 s later
         flushCommitEndTransactionAndStartNew(entityManager);
         insertTrackingForDomain(secondDomain, wm2.getId());
