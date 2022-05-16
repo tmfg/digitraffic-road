@@ -63,14 +63,14 @@ jobs:
                 ssh-key: ${{ secrets.CONFIG_SSH_PRIVATE_KEY }}
                 ref: ${{ inputs.ci-repo-branch }}
                 path: digitraffic-ci
-                -   name: Configure AWS credentials
-                    uses: aws-actions/configure-aws-credentials@v1
-                    with:
-                        role-to-assume: ${{ secrets.AWS_ROLE }}
-                        role-session-name: gh-actions-install-road-${{ github.event.inputs.env }}
-                        aws-region: ${{ secrets.AWS_REGION }}
-                -   name: Login to Amazon ECR
-                    uses: aws-actions/amazon-ecr-login@v1
+            -   name: Configure AWS credentials
+                uses: aws-actions/configure-aws-credentials@v1
+                with:
+                    role-to-assume: ${{ secrets.AWS_ROLE }}
+                    role-session-name: gh-actions-install-road-${{ github.event.inputs.env }}
+                    aws-region: ${{ secrets.AWS_REGION }}
+            -   name: Login to Amazon ECR
+                uses: aws-actions/amazon-ecr-login@v1
             -   name: Download jar
                 uses: actions/download-artifact@master
                 with:
