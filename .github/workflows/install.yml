@@ -38,12 +38,12 @@ jobs:
               run: |
                   mvn install -DskipTests=true -Ddependency-check.skip=true
 
-                  ls target
+                  cp target/*.jar road.jar
             - name: Upload jar
               uses: actions/upload-artifact@v3
               with:
                 name: road.jar
-                path: target/road.jar
+                path: road.jar
             - name: Notify Slack
               if: failure()
               uses: 8398a7/action-slack@v3
