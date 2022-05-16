@@ -67,6 +67,7 @@ jobs:
         steps:
             - name: Checkout CI-repo
               uses: actions/checkout@v3
+              path: digitraffic-ci
               with:
                 repository: ${{ secrets.CI_REPO_URL }}
                 ssh-key: ${{ secrets.CI_SSH_KEY }}
@@ -85,10 +86,6 @@ jobs:
                     name: road.jar
             - name: Build docker image for daemon
               run: |
-                  ls
-                  ls digitraffic-ci
-                  ls digitraffic-ci/aws
-
                   docker build --no-cache \
                     --build-arg ENV=${{ github.event.inputs.env }} \
                     --build-arg JAR_FILE=road.jar \
