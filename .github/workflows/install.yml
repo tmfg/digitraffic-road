@@ -50,10 +50,10 @@ jobs:
             matrix:
                 app: [daemon, web, db]
         runs-on: ubuntu-latest
-            permissions:
-                id-token: write
-                contents: read
-                actions: read
+        permissions:
+            id-token: write
+            contents: read
+            actions: read
         environment: ${{ github.event.inputs.env }}
         steps:
             - name: Checkout CI-repo
