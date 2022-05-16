@@ -84,6 +84,7 @@ jobs:
                 uses: actions/download-artifact@master
                 with:
                     name: road.jar
+                    path: digitraffic-ci/aws/road.jar
             - name: Build docker image for daemon
               run: |
                   docker build --no-cache \
