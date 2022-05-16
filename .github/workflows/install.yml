@@ -67,11 +67,11 @@ jobs:
         steps:
             - name: Checkout CI-repo
               uses: actions/checkout@v3
-              path: digitraffic-ci
               with:
                 repository: ${{ secrets.CI_REPO_URL }}
                 ssh-key: ${{ secrets.CI_SSH_KEY }}
                 ref: ${{ inputs.ci-repo-branch }}
+                path: digitraffic-ci
             -   name: Configure AWS credentials
                 uses: aws-actions/configure-aws-credentials@v1
                 with:
