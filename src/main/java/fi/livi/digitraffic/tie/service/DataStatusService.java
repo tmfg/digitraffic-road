@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.dao.v1.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v1.DataUpdated;
 
 @Service
 public class DataStatusService {
@@ -28,38 +27,20 @@ public class DataStatusService {
 
     @Transactional
     public void updateDataUpdated(final DataType dataType) {
-        final DataUpdated updated = dataUpdatedRepository.findByDataType(dataType);
         log.debug("method=updateDataUpdated dataType={}", dataType);
-        if (updated == null) {
-            dataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now()));
-        } else {
-            updated.setUpdatedTime(ZonedDateTime.now());
-        }
+        dataUpdatedRepository.upsertDataUpdated(dataType);
     }
 
     @Transactional
-    public void updateDataUpdated(final DataType dataType, final String version) {
-        final DataUpdated updated = dataUpdatedRepository.findByDataTypeAndVersion(dataType, version);
-        log.debug("method=updateDataUpdated dataType={}, dataVersion={}", dataType, version);
-        if (updated == null) {
-            dataUpdatedRepository.save(new DataUpdated(dataType, ZonedDateTime.now(), version));
-        } else {
-            updated.setUpdatedTime(ZonedDateTime.now());
-        }
+    public void updateDataUpdated(final DataType dataType, final String extension) {
+        log.debug("method=updateDataUpdated dataType={}, extension={}", dataType, extension);
+        dataUpdatedRepository.upsertDataUpdated(dataType, extension);
     }
 
     @Transactional
     public void updateDataUpdated(final DataType dataType, final Instant updated) {
-        final DataUpdated dataUpdated = dataUpdatedRepository.findByDataType(dataType);
         log.debug("method=updateDataUpdated dataType={}, updatedTime={}", dataType, updated);
-
-        if(updated != null) {
-            if (dataUpdated == null) {
-                dataUpdatedRepository.save(new DataUpdated(dataType, DateHelper.toZonedDateTimeAtUtc(updated), null));
-            } else {
-                dataUpdated.setUpdatedTime(DateHelper.toZonedDateTimeAtUtc(updated));
-            }
-        }
+        dataUpdatedRepository.upsertDataUpdated(dataType, DataUpdatedRepository.UNSET_EXTENSION, updated);
     }
 
     @Transactional(readOnly = true)
@@ -72,8 +53,9 @@ public class DataStatusService {
         return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataTypes));
     }
 
-    public Instant findDataUpdatedTime(final DataType dataType, final List<String> versions) {
-        return dataUpdatedRepository.findUpdatedTime(dataType, versions);
+    @Transactional(readOnly = true)
+    public Instant findDataUpdatedTime(final DataType dataType, final List<String> extensions) {
+        return dataUpdatedRepository.findUpdatedTime(dataType, extensions);
     }
 
     @Transactional(readOnly = true)

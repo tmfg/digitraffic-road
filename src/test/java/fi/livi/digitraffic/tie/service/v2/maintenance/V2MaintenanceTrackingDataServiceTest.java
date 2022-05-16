@@ -437,7 +437,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(STATE_ROADS_DOMAIN));
+            singletonList(STATE_ROADS_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -474,7 +474,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(STATE_ROADS_DOMAIN));
+            singletonList(STATE_ROADS_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -505,7 +505,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(STATE_ROADS_DOMAIN));
+            singletonList(STATE_ROADS_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingProperties props = result.getFeatures().get(0).getProperties();
 
@@ -540,7 +540,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(STATE_ROADS_DOMAIN));
+            singletonList(STATE_ROADS_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -563,7 +563,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             startTime.toInstant(), startTime.toInstant(),
             BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight(),
             Collections.emptyList(),
-            Collections.singletonList(STATE_ROADS_DOMAIN));
+            singletonList(STATE_ROADS_DOMAIN));
         final MaintenanceTrackingFeature feature1 = result1.getFeatures().get(0);
 
         final MaintenanceTrackingFeature feature2 =
@@ -583,8 +583,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         commitAndEndTransactionAndStartNew();
         final long trackingId1 = insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
         final long trackingId2 = insertTrackingForDomain(DOMAIN_WITHOUT_SOURCE, wm2.getId());
-        entityManager.flush();
-        commitAndEndTransactionAndStartNew();
+        flushCommitEndTransactionAndStartNew(entityManager);
 
         // Tracking for domain with source should be found
         assertNotNull(v2MaintenanceTrackingDataService.getMaintenanceTrackingById(trackingId1));
@@ -612,8 +611,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         commitAndEndTransactionAndStartNew();
         insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
         insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
-        entityManager.flush();
-        commitAndEndTransactionAndStartNew();
+        flushCommitEndTransactionAndStartNew(entityManager);
 
         final List<MaintenanceTracking> all = v2MaintenanceTrackingRepository.findAll();
         assertCollectionSize(2, all);
@@ -642,17 +640,14 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // created time = transaction start time
         testHelper.saveTrackingDataAsObservations(seuranta1);
         testHelper.handleUnhandledWorkMachineObservations(1000);
-        entityManager.flush();
-        entityManager.clear();
         // created time = transaction start time
         // +1s to next creation time
         sleep(1000);
-        commitAndEndTransactionAndStartNew();
+        flushCommitEndTransactionAndStartNew(entityManager);
         testHelper.saveTrackingDataAsObservations(seuranta2);
         testHelper.handleUnhandledWorkMachineObservations(1000);
-        entityManager.flush();
-        entityManager.clear();
-        commitAndEndTransactionAndStartNew();
+
+        flushCommitEndTransactionAndStartNew(entityManager);
 
         // Get trackings and check second is created after first
         // and last update in data is same as created time of second
@@ -698,7 +693,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // find with first domain should have same update time as creation time and almost same the same data checked time
         final MaintenanceTrackingFeatureCollection fc1 = findMaintenanceTrackings(
             null, null,
-            null, null, asList(firstDomain));
+            null, null, singletonList(firstDomain));
         assertCollectionSize(1, fc1.getFeatures());
         assertEquals(first.getCreated(), fc1.getDataUpdatedTime());
         assertDatesInMillis(first.getCreated(), fc1.getDataLastCheckedTime(), 1000);
@@ -706,7 +701,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         // find with second domain should have same update time as creation time and almost same the same data checked time
         final MaintenanceTrackingFeatureCollection fc2 = findMaintenanceTrackings(
             null, null,
-            null, null, asList(secondDomain));
+            null, null, singletonList(secondDomain));
         assertCollectionSize(1, fc2.getFeatures());
         assertEquals(second.getCreated(), fc2.getDataUpdatedTime());
         assertDatesInMillis(second.getCreated(), fc2.getDataLastCheckedTime(), 1000);
@@ -730,7 +725,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
-            Collections.singletonList(STATE_ROADS_DOMAIN));
+            singletonList(STATE_ROADS_DOMAIN));
     }
 
     private void assertAllHasOnlyPointGeometries(final List<MaintenanceTrackingLatestFeature> features) {
@@ -743,14 +738,14 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             DateHelper.toInstant(endFrom), DateHelper.toInstant(endTo),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
-            Collections.singletonList(STATE_ROADS_DOMAIN));
+            singletonList(STATE_ROADS_DOMAIN));
 
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endFrom, final Instant endBefore,
                                                                           final Instant changeAfter, final Instant changeBefore,
                                                                           final MaintenanceTrackingTask...tasks) {
-        return findMaintenanceTrackings(endFrom, endBefore, changeAfter, changeBefore, Collections.singletonList(STATE_ROADS_DOMAIN), tasks);
+        return findMaintenanceTrackings(endFrom, endBefore, changeAfter, changeBefore, singletonList(STATE_ROADS_DOMAIN), tasks);
     }
 
     private MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endFrom, final Instant endBefore,

@@ -118,12 +118,12 @@ public class V2MaintenanceTrackingDataService {
                 toZonedDateTimeAtUtc(createdAfter), toZonedDateTimeAtUtc(createdBefore),
                 area, convertTasksToStringArrayOrNull(taskIds), realDomains);
 
-        log.info("method=findMaintenanceTrackingsV1 with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom={} endTimeBefore={} createdAfter={} createdBefore={} domains={} foundCount={} tookMs={}",
+        log.info("method=findMaintenanceTrackingsV1 with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
             xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
 
         final StopWatch startConvert = StopWatch.createStarted();
         final List<MaintenanceTrackingFeature> features = convertToTrackingFeatures(found);
-        log.info("method=findMaintenanceTrackingsV1-convert with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom={} endTimeBefore={} createdAfter={} createdBefore={} domains={} foundCount={} tookMs={}",
+        log.info("method=findMaintenanceTrackingsV1-convert with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
             xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), startConvert.getTime());
 
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
