@@ -93,7 +93,7 @@ jobs:
                 path: digitraffic-ci/aws/road.jar
             - name: Download sql
               uses: actions/download-artifact@master
-              if: matrix.app = 'db'
+              if: matrix.app == 'db'
               with:
                 name: sql
                 path: digitraffic-ci/aws/db/sql
@@ -108,7 +108,7 @@ jobs:
                     --pull=true --file=digitraffic-ci/aws/Dockerfile-road digitraffic-ci/aws
                   docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA}
             - name: Build docker image for db
-              if: matrix.app = 'db'
+              if: matrix.app == 'db'
               run: |
                         docker build --no-cache \
                           -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA} \
