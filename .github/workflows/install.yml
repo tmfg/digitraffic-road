@@ -71,7 +71,6 @@ jobs:
                 repository: ${{ secrets.CONFIG_REPO_URL }}
                 ssh-key: ${{ secrets.CONFIG_SSH_PRIVATE_KEY }}
                 ref: ${{ inputs.ci-repo-branch }}
-                path: digitraffic-ci
             -   name: Configure AWS credentials
                 uses: aws-actions/configure-aws-credentials@v1
                 with:
@@ -86,6 +85,8 @@ jobs:
                     name: road.jar
             - name: Build docker image for daemon
               run: |
+                  ls
+                  ls digitraffic-ci
                   ls digitraffic-ci/aws
 
                   docker build --no-cache \
