@@ -84,17 +84,16 @@ jobs:
                 uses: actions/download-artifact@master
                 with:
                     name: road.jar
-                    path: digitraffic-ci/aws/road.jar
             - name: Build docker image for daemon
               run: |
-                  cd digitraffic-ci/aws
+                  ls digitraffic-ci/aws
 
                   docker build --no-cache \
                     --build-arg ENV=${{ github.event.inputs.env }} \
                     --build-arg JAR_FILE=road.jar \
                     --build-arg PROPERTY_FILE=conf/road-${{ github.event.inputs.env }}-${{ matrix.app }}.properties \
                     -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA} \
-                    --pull=true --file=Dockerfile-road .
+                    --pull=true --file=digitraffic-ci/aws/Dockerfile-road digitraffic-ci/aws
                   docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA}
             - name: Notify Slack
               if: failure()
