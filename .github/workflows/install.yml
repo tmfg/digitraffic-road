@@ -37,7 +37,7 @@ jobs:
                 uses: actions/checkout@v3
                 with:
                     repository: tmfg/digitraffic-build-dependencies
-                    ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
+                    ssh-key: ${{ secrets.DEPENDENCY_SSH_KEY }}
                     path: digitraffic-build-dependencies
             -   name: Setup dependencies
                 run: cp -R digitraffic-build-dependencies/ ~/.m2/
@@ -136,7 +136,7 @@ jobs:
                     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
     deploy_fast:
         needs: install
-        if: inputs.db_install == 'false'
+        if: inputs.db_install == false
         strategy:
             matrix:
                 app: [ daemon, web ]
@@ -163,7 +163,7 @@ jobs:
                     desired-count: 1
     deploy_slow_stop:
         needs: install
-        if: inputs.db_install == 'true'
+        if: inputs.db_install == true
         strategy:
             matrix:
                 app: [ daemon, web ]
