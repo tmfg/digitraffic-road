@@ -18,6 +18,7 @@ on:
             db-install:
                 description: 'Run flyway or not'
                 required: true
+                type: boolean
                 default: false
 jobs:
     build:
