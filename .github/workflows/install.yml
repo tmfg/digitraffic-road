@@ -127,7 +127,7 @@ jobs:
                 if: matrix.app == 'db'
                 run: |
                     docker build --no-cache \
-                        -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA} \
+                        -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
                         --pull=true --file=digitraffic-ci/aws/db/Dockerfile digitraffic-ci/aws/db
                     docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
             -   name: Notify Slack
