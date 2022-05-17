@@ -140,7 +140,7 @@ jobs:
                 env:
                     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
     deploy_fast:
-        needs: install
+        needs: [install, build]
         if: inputs.db_install == false
         strategy:
             matrix:
@@ -149,6 +149,7 @@ jobs:
             contents: read
             actions: read
         runs-on: ubuntu-latest
+        environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Update task-def
                 uses: tmfg/digitraffic-actions@update-task-def/v1
@@ -161,7 +162,6 @@ jobs:
                     ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
                     ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
-                    service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
             -   name: Update service
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
                 with:
@@ -180,6 +180,7 @@ jobs:
             contents: read
             actions: read
         runs-on: ubuntu-latest
+        environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Stop service
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
@@ -195,6 +196,7 @@ jobs:
             contents: read
             actions: read
         runs-on: ubuntu-latest
+        environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Run flyway
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
