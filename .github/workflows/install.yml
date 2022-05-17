@@ -145,20 +145,23 @@ jobs:
         strategy:
             matrix:
                 app: [ daemon, web ]
+        permissions:
+            contents: read
+            actions: read
         runs-on: ubuntu-latest
         steps:
             -   name: Update task-def
                 uses: tmfg/digitraffic-actions@update-task-def/v1
                 with:
                     task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-task-def
-                    family-name: road-$${{ github.event.inputs.env }}-$${{ matrix.app }}
+                    family-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
                     image-arn: ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
                     aws-role: ${{ secrets.AWS_ROLE }}
                     aws-region: ${{ secrets.AWS_REGION }}
                     ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
                     ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
-                    service-name: road-$${{ github.event.inputs.env }}-$${{ matrix.app }}-service
+                    service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
             -   name: Update service
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
                 with:
@@ -173,6 +176,9 @@ jobs:
         strategy:
             matrix:
                 app: [ daemon, web ]
+        permissions:
+            contents: read
+            actions: read
         runs-on: ubuntu-latest
         steps:
             -   name: Stop service
@@ -185,6 +191,9 @@ jobs:
                     desired-count: 0
     deploy_install_db:
         needs: deploy_slow_stop
+        permissions:
+            contents: read
+            actions: read
         runs-on: ubuntu-latest
         steps:
             -   name: Run flyway
