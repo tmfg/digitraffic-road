@@ -27,12 +27,17 @@ jobs:
             id-token: write
             contents: read
             actions: read
+        outputs:
+            git_sha: ${{ steps.git_sha.outputs.sha_short }}
         environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Checkout
                 uses: actions/checkout@v3
                 with:
                     ref: ${{ github.event.inputs.ref }}
+            -   name: Set git sha output
+                id: git_sha
+                run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
             -   name: Checkout dependencies
                 uses: actions/checkout@v3
                 with:
@@ -115,16 +120,16 @@ jobs:
                         --build-arg ENV=${{ github.event.inputs.env }} \
                         --build-arg JAR_FILE=road.jar \
                         --build-arg PROPERTY_FILE=conf/road-${{ github.event.inputs.env }}-${{ matrix.app }}.properties \
-                        -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA} \
+                        -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
                         --pull=true --file=digitraffic-ci/aws/Dockerfile-road digitraffic-ci/aws
-                    docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA}
+                    docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
             -   name: Build docker image for db
                 if: matrix.app == 'db'
                 run: |
                     docker build --no-cache \
                         -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA} \
                         --pull=true --file=digitraffic-ci/aws/db/Dockerfile digitraffic-ci/aws/db
-                    docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA}
+                    docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
             -   name: Notify Slack
                 if: failure()
                 uses: 8398a7/action-slack@v3
@@ -147,12 +152,13 @@ jobs:
                 with:
                     task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-task-def
                     family-name: road-$${{ github.event.inputs.env }}-$${{ matrix.app }}
-                    image-arn: ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA}
+                    image-arn: ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
                     aws-role: ${{ secrets.AWS_ROLE }}
                     aws-region: ${{ secrets.AWS_REGION }}
                     ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
                     ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
+                    service-name: road-$${{ github.event.inputs.env }}-$${{ matrix.app }}-service
             -   name: Update service
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
                 with:
