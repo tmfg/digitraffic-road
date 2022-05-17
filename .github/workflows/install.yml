@@ -152,6 +152,7 @@ jobs:
         environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Update task-def
+                id: update
                 uses: tmfg/digitraffic-actions@update-task-def/v1
                 with:
                     task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-task-def
@@ -169,6 +170,7 @@ jobs:
                     aws-region: ${{ secrets.AWS_REGION }}
                     service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
+                    revision: ${{ steps.update.outputs.revision }}
                     desired-count: 1
     deploy_slow_stop:
         needs: install
