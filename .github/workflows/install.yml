@@ -156,7 +156,7 @@ jobs:
                 id: update
                 uses: tmfg/digitraffic-actions@update-task-def/v1
                 with:
-                    task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-task-def
+                    task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
                     family-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
                     image-arn: ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
                     aws-role: ${{ secrets.AWS_ROLE }}
