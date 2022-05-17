@@ -6,41 +6,27 @@ on:
         description: 'Environment'
         required: true
         type: environment
-        default: 'test'
       family-name:
         description: 'Which service to update'
         required: true
         type: choice
         options:
-          - daemon
-          - web
-          - db
-      revision:
-        description: 'Which revision to install'
+          - road-daemon
+          - road-web
+          - road-db
+      ci-repo-branch:
+        description: 'Which branch/tag of ci-repo to use'
         type: string
         required: true
-        default: 'latest'
-      desired-count:
-          description: 'Desired count of services'
-          type: string
-          required: true
-          default: '1'
-
+        default: 'master'
 jobs:
   update:
-    runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.env }}
-    permissions:
-      id-token: write
-      contents: read
+    runs-on: ubuntu-latest
     steps:
-      - name: Update
+      - name: Update task
         uses: tmfg/digitraffic-actions@ecs-service-update/v1
         with:
-          revision: ${{ github.event.inputs.revision }}
-          service-name: road-${{ github.event.inputs.env }}-${{ github.event.inputs.family-name }}
-          aws-role: ${{ secrets.AWS_ROLE }}
-          cluster-name: ${{ secrets.CLUSTER_NAME }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          desired-count: ${{ github.event.inputs.desired-count }}
-
+          ci-repo-branch: ${{ github.event.inputs.ci-repo-branch }}
+          family-name: ${{ github.event.inputs.family-name }}
+          asw-role: ${{ secrets.AWS_ROLE }}
