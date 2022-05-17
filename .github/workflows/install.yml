@@ -146,12 +146,13 @@ jobs:
             matrix:
                 app: [ daemon, web ]
         permissions:
+            id-token: write
             contents: read
             actions: read
         runs-on: ubuntu-latest
         environment: ${{ github.event.inputs.env }}
         steps:
-            -   name: Update task-def
+            -   name: Update ${{ matrix.app }} task-def
                 id: update
                 uses: tmfg/digitraffic-actions@update-task-def/v1
                 with:
@@ -163,7 +164,7 @@ jobs:
                     ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
                     ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
-            -   name: Update service
+            -   name: Update ${{ matrix.app }} service
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
                 with:
                     aws-role: ${{ secrets.AWS_ROLE }}
@@ -179,6 +180,7 @@ jobs:
             matrix:
                 app: [ daemon, web ]
         permissions:
+            id-token: write
             contents: read
             actions: read
         runs-on: ubuntu-latest
@@ -195,6 +197,7 @@ jobs:
     deploy_install_db:
         needs: deploy_slow_stop
         permissions:
+            id-token: write
             contents: read
             actions: read
         runs-on: ubuntu-latest
