@@ -150,7 +150,7 @@ jobs:
                     image-arn: ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${GITHUB_SHA}
                     aws-role: ${{ secrets.AWS_ROLE }}
                     aws-region: ${{ secrets.AWS_REGION }}
-                    ci-repo-url: ${{ env.CONFIG_REPO_NAME }}
+                    ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
                     ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
             -   name: Update service
