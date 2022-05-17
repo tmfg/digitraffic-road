@@ -92,7 +92,7 @@ jobs:
                 uses: aws-actions/configure-aws-credentials@v1
                 with:
                     role-to-assume: ${{ secrets.AWS_ROLE }}
-                    role-session-name: gh-actions-install-road-${{ github.event.inputs.env }}
+                    role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
                     aws-region: ${{ secrets.AWS_REGION }}
             -   name: Login to Amazon ECR
                 uses: aws-actions/amazon-ecr-login@v1
@@ -177,3 +177,15 @@ jobs:
                     service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
                     desired-count: 0
+    deploy_install_db:
+        needs: deploy_slow_stop
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Run flyway
+                uses: tmfg/digitraffic-actions@ecs-service-update/v1
+                    with:
+                        aws-role: ${{ secrets.AWS_ROLE }}
+                        aws-region: ${{ secrets.AWS_REGION }}
+                        service-name: road-${{ github.event.inputs.env }}-db-service
+                        cluster-name: ${{ secrets.CLUSTER_NAME }}
+                        desired-count: 0
