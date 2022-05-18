@@ -37,7 +37,7 @@ public class RoadConditionDto {
     @ApiModelProperty("Air temperature")
     private final String temperature;
 
-    @ApiModelProperty("Weather symbol code http://corporate.foreca.com/en/products/foreca-symbols")
+    @ApiModelProperty("Weather symbol code. See corresponding symbols at https://www.vaisala.com/en/vaisala-weather-symbols.")
     private final String weatherSymbol;
 
     @ApiModelProperty("Wind direction in degrees. 0 when there is no wind or the direction is variable. 90 degrees is arrow to the east " +
