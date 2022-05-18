@@ -171,7 +171,8 @@ jobs:
                     aws-region: ${{ secrets.AWS_REGION }}
                     service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
-                    task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}-${{ steps.update.outputs.revision }}
+                    task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}
+                    #:${{ steps.update.outputs.revision }}
                     desired-count: 1
     deploy_slow_stop:
         needs: install
