@@ -30,16 +30,16 @@ public class DataUpdated {
     @Column(name = "UPDATED")
     private ZonedDateTime updatedTime;
 
-    private String extension;
+    private String version;
 
     public DataUpdated() {
         // For JPA
     }
 
-    public DataUpdated(final DataType type, final ZonedDateTime updatedTime, final String extension) {
+    public DataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
         setDataType(type);
         setUpdatedTime(updatedTime);
-        setExtension(extension);
+        setVersion(version);
     }
 
     public DataUpdated(final DataType type, final ZonedDateTime updatedTime) {
@@ -71,12 +71,12 @@ public class DataUpdated {
         this.updatedTime = updated;
     }
 
-    public String getExtension() {
-        return extension;
+    public String getVersion() {
+        return version;
     }
 
-    public void setExtension(String extension) {
-        this.extension = extension;
+    public void setVersion(String extension) {
+        this.version = extension;
     }
 
 }

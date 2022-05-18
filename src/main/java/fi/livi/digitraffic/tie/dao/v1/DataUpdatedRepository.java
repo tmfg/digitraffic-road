@@ -15,42 +15,47 @@ import fi.livi.digitraffic.tie.model.v1.DataUpdated;
 @Repository
 public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> {
 
-    String UNSET_EXTENSION = "-";
+    String UNSET_VERSION = "-";
 
     @Query("SELECT max(d.updatedTime)\n" +
            "FROM DataUpdated d\n" +
            "WHERE d.dataType in (:dataTypes)\n" +
-           " AND d.extension = '" + UNSET_EXTENSION + "'")
+           " AND d.version = '" + UNSET_VERSION + "'")
     Instant findUpdatedTime(@Param("dataTypes") final DataType...dataTypes);
 
     @Query("SELECT max(d.updatedTime)\n" +
            "FROM DataUpdated d\n" +
            "WHERE d.dataType = :dataType" +
-           "  AND d.extension in (:extensions)")
-    Instant findUpdatedTime(@Param("dataType") final DataType dataType, @Param("extensions") final List<String> extensions);
+           "  AND d.version in (:versions)")
+    Instant findUpdatedTime(@Param("dataType") final DataType dataType, @Param("versions") final List<String> versions);
 
     @Query(value = "select transaction_timestamp()", nativeQuery = true)
     Instant getTransactionStartTime();
 
     @Modifying
     default void upsertDataUpdated(final DataType dataType) {
-        upsertDataUpdated(dataType, null);
+        upsertDataUpdated(dataType, (String)null);
+    }
+
+    @Modifying
+    default void upsertDataUpdated(final DataType dataType, final Instant updated) {
+        upsertDataUpdated(dataType, null, updated);
     }
 
     @Modifying
     @Query(value =
-           "INSERT INTO data_updated(id, data_type, extension, updated)\n" +
-           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, coalesce(cast(:extension AS TEXT), '" + UNSET_EXTENSION + "'), now())\n" +
-           "  ON CONFLICT (data_type, extension)\n" +
+           "INSERT INTO data_updated(id, data_type, version, updated)\n" +
+           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, coalesce(cast(:version AS TEXT), '" + UNSET_VERSION + "'), now())\n" +
+           "  ON CONFLICT (data_type, version)\n" +
            "  DO UPDATE SET updated = now()", nativeQuery = true)
-    void upsertDataUpdated(final DataType dataType, final String extension);
+    void upsertDataUpdated(final DataType dataType, final String version);
 
 
     @Modifying
     @Query(value =
-           "INSERT INTO data_updated(id, data_type, extension, updated)\n" +
-           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :extension, :updated)\n" +
-           "  ON CONFLICT (data_type, extension)\n" +
+           "INSERT INTO data_updated(id, data_type, version, updated)\n" +
+           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, coalesce(cast(:version AS TEXT), '" + UNSET_VERSION + "'), :updated)\n" +
+           "  ON CONFLICT (data_type, version)\n" +
            "  DO UPDATE SET updated = :updated", nativeQuery = true)
-    void upsertDataUpdated(final DataType dataType, final String extension, final Instant updated);
+    void upsertDataUpdated(final DataType dataType, final String version, final Instant updated);
 }

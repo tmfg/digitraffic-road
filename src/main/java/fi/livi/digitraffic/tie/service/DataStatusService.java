@@ -40,7 +40,7 @@ public class DataStatusService {
     @Transactional
     public void updateDataUpdated(final DataType dataType, final Instant updated) {
         log.debug("method=updateDataUpdated dataType={}, updatedTime={}", dataType, updated);
-        dataUpdatedRepository.upsertDataUpdated(dataType, DataUpdatedRepository.UNSET_EXTENSION, updated);
+        dataUpdatedRepository.upsertDataUpdated(dataType, updated);
     }
 
     @Transactional(readOnly = true)

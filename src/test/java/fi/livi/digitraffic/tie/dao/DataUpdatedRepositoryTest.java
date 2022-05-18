@@ -28,10 +28,11 @@ public class DataUpdatedRepositoryTest extends AbstractJpaTest {
     }
 
     @Test
-    public void upsertDataUpdatedWithNullExtension() {
-        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, null);
+    public void upsertDataUpdatedWithTime() {
+        final Instant time = Instant.now().minusSeconds(10);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, time);
         final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA);
-        assertPlusMinusMillis(dataUpdatedRepository.getTransactionStartTime(), result, 500);
+        assertPlusMinusMillis(time, result, 500);
     }
 
     @Test
