@@ -59,6 +59,8 @@ jobs:
                     echo Debug!
                     mvn install -DskipTests=true -Ddependency-check.skip=true
 
+                    ls -la target/*.jar
+
                     cp target/*.jar road.jar
             -   name: Upload jar
                 uses: actions/upload-artifact@v3
@@ -111,6 +113,7 @@ jobs:
                 if: matrix.app != 'db'
                 with:
                     name: road.jar
+                    path: road.jar
             -   name: Download sql
                 uses: actions/download-artifact@master
                 if: matrix.app == 'db'
@@ -120,6 +123,8 @@ jobs:
             -   name: Build docker image for daemon/web
                 if: matrix.app != 'db'
                 run: |
+                    ls -la road.jar
+
                     docker build --no-cache \
                         --build-arg ENV=${{ github.event.inputs.env }} \
                         --build-arg JAR_FILE=road.jar \
