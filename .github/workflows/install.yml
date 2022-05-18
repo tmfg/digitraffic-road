@@ -46,8 +46,15 @@ jobs:
                     path: digitraffic-build-dependencies
             -   name: Setup dependencies
                 run: cp -R digitraffic-build-dependencies/ ~/.m2/
+            -   name: Setup Java
+                    uses: actions/setup-java@v2.5.0
+                    with:
+                        java-version: 11
+                        distribution: temurin
+                        cache: maven
             -   name: Build package
                 run: |
+                    echo Debug!
                     mvn install -DskipTests=true -Ddependency-check.skip=true
 
                     cp target/*.jar road.jar
