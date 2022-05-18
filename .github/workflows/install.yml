@@ -46,10 +46,6 @@ jobs:
                     path: digitraffic-build-dependencies
             -   name: Setup dependencies
                 run: cp -R digitraffic-build-dependencies/ ~/.m2/
-            -   name: Setup Node.js
-                uses: actions/setup-node@v2
-                with:
-                    node-version: '14'
             -   name: Build package
                 run: |
                     mvn install -DskipTests=true -Ddependency-check.skip=true
