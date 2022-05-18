@@ -146,7 +146,7 @@ jobs:
                 env:
                     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
     install:
-        needs: images
+        needs: [images, build]
         strategy:
             matrix:
                 app: [daemon, web, db]
