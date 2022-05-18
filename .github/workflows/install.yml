@@ -37,7 +37,10 @@ jobs:
                     ref: ${{ github.event.inputs.ref }}
             -   name: Set git sha output
                 id: git_sha
-                run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+                run: |
+                    GIT_SHA=$(git rev-parse --short HEAD)
+                    echo "GIT_SHA $GIT_SHA"
+                    echo "::set-output name=sha_short::$GIT_SHA"
             -   name: Checkout dependencies
                 uses: actions/checkout@v3
                 with:
