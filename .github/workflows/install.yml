@@ -113,7 +113,7 @@ jobs:
                 if: matrix.app != 'db'
                 with:
                     name: road.jar
-                    path: road.jar
+                    path: digitraffic-ci/aws/road.jar
             -   name: Download sql
                 uses: actions/download-artifact@master
                 if: matrix.app == 'db'
@@ -123,7 +123,7 @@ jobs:
             -   name: Build docker image for daemon/web
                 if: matrix.app != 'db'
                 run: |
-                    ls -la road.jar
+                    ls -la digitraffic-ci/aws/road.jar
 
                     docker build --no-cache \
                         --build-arg ENV=${{ github.event.inputs.env }} \
