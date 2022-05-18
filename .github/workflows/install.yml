@@ -74,7 +74,7 @@ jobs:
                     fields: repo, job, took
                 env:
                     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-    install:
+    images:
         needs: build
         strategy:
             matrix:
@@ -139,18 +139,16 @@ jobs:
                     fields: repo, job, took
                 env:
                     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-    deploy_fast:
-        needs: [install, build]
-        if: inputs.db_install == false
+    install:
+        needs: images
         strategy:
             matrix:
-                app: [ daemon, web ]
+                app: [daemon, web, db]
         permissions:
             id-token: write
             contents: read
             actions: read
         runs-on: ubuntu-latest
-        environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Update ${{ matrix.app }} task-def
                 id: update
@@ -164,17 +162,7 @@ jobs:
                     ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
                     ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
-            -   name: Update ${{ matrix.app }} service
-                uses: tmfg/digitraffic-actions@ecs-service-update/v1
-                with:
-                    aws-role: ${{ secrets.AWS_ROLE }}
-                    aws-region: ${{ secrets.AWS_REGION }}
-                    service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
-                    cluster-name: ${{ secrets.CLUSTER_NAME }}
-                    task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}
-                    #:${{ steps.update.outputs.revision }}
-                    desired-count: 1
-    deploy_slow_stop:
+    stop_services:
         needs: install
         if: inputs.db_install == true
         strategy:
@@ -195,8 +183,8 @@ jobs:
                     service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
                     desired-count: 0
-    deploy_install_db:
-        needs: deploy_slow_stop
+    update_db:
+        needs: stop_services
         permissions:
             id-token: write
             contents: read
@@ -205,10 +193,33 @@ jobs:
         environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Run flyway
+                uses: tmfg/digitraffic-actions@run-ecs-task/v1
+                with:
+                    aws-role: ${{ secrets.AWS_ROLE }}
+                    aws-region: ${{ secrets.AWS_REGION }}
+                    task-definition-name: road-${{ github.event.inputs.env }}-db
+                    cluster-name: ${{ secrets.CLUSTER_NAME }}
+                    network-config: ${{ secrets.NETWORK_CONFIG }}
+    deploy:
+        needs: [ install, update_db ]
+        if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+        strategy:
+            matrix:
+                app: [ daemon, web ]
+        permissions:
+            id-token: write
+            contents: read
+            actions: read
+        runs-on: ubuntu-latest
+        environment: ${{ github.event.inputs.env }}
+        steps:
+            -   name: Update ${{ matrix.app }} service
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
                 with:
                     aws-role: ${{ secrets.AWS_ROLE }}
                     aws-region: ${{ secrets.AWS_REGION }}
-                    service-name: road-${{ github.event.inputs.env }}-db-service
+                    service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
+                    task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}
+                    #:${{ steps.update.outputs.revision }}
                     desired-count: 1
