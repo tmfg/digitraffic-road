@@ -96,11 +96,11 @@ jobs:
                     ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
                     ref: ${{ inputs.config-repo-branch }}
                     path: digitraffic-ci
-            -   name: Configure AWS credentials
+            -   name: Configure AWS credentials for ${{ matrix.app }}
                 uses: aws-actions/configure-aws-credentials@v1
                 with:
                     role-to-assume: ${{ secrets.AWS_ROLE }}
-                    role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
+                    role-session-name: gh-actions-install-image-road-${{ matrix.app }}-${{ github.event.inputs.env }}
                     aws-region: ${{ secrets.AWS_REGION }}
             -   name: Login to Amazon ECR
                 uses: aws-actions/amazon-ecr-login@v1
@@ -152,8 +152,9 @@ jobs:
             contents: read
             actions: read
         runs-on: ubuntu-latest
+        environment: ${{ github.event.inputs.env }}
         steps:
-            -   name: Configure AWS credentials
+            -   name: Configure AWS credentials for ${{ matrix.app }}
                 uses: aws-actions/configure-aws-credentials@v1
                 with:
                     role-to-assume: ${{ secrets.AWS_ROLE }}
@@ -184,6 +185,12 @@ jobs:
         runs-on: ubuntu-latest
         environment: ${{ github.event.inputs.env }}
         steps:
+            -   name: Configure AWS credentials for ${{ matrix.app }}
+                uses: aws-actions/configure-aws-credentials@v1
+                with:
+                    role-to-assume: ${{ secrets.AWS_ROLE }}
+                    role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
+                    aws-region: ${{ secrets.AWS_REGION }}
             -   name: Stop service
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
                 with:
@@ -201,6 +208,12 @@ jobs:
         runs-on: ubuntu-latest
         environment: ${{ github.event.inputs.env }}
         steps:
+            -   name: Configure AWS credentials for ${{ matrix.app }}
+                uses: aws-actions/configure-aws-credentials@v1
+                with:
+                    role-to-assume: ${{ secrets.AWS_ROLE }}
+                    role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
+                    aws-region: ${{ secrets.AWS_REGION }}
             -   name: Run flyway
                 uses: tmfg/digitraffic-actions@run-ecs-task/v1
                 with:
