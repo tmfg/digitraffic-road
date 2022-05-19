@@ -36,6 +36,12 @@ public class DataUpdated {
         // For JPA
     }
 
+    /**
+     *
+     * @param type of data
+     * @param updatedTime when was data updated
+     * @param version of data ie. subtype
+     */
     public DataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
         setDataType(type);
         setUpdatedTime(updatedTime);
@@ -59,7 +65,7 @@ public class DataUpdated {
         return dataType;
     }
 
-    public void setDataType(DataType dataType) {
+    public void setDataType(final DataType dataType) {
         this.dataType = dataType;
     }
 
@@ -75,8 +81,8 @@ public class DataUpdated {
         return version;
     }
 
-    public void setVersion(String extension) {
-        this.version = extension;
+    public void setVersion(final String version) {
+        this.version = version;
     }
 
 }

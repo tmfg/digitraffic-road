@@ -32,9 +32,9 @@ public class DataStatusService {
     }
 
     @Transactional
-    public void updateDataUpdated(final DataType dataType, final String extension) {
-        log.debug("method=updateDataUpdated dataType={}, extension={}", dataType, extension);
-        dataUpdatedRepository.upsertDataUpdated(dataType, extension);
+    public void updateDataUpdated(final DataType dataType, final String version) {
+        log.debug("method=updateDataUpdated dataType={}, extension={}", dataType, version);
+        dataUpdatedRepository.upsertDataUpdated(dataType, version);
     }
 
     @Transactional
@@ -46,11 +46,6 @@ public class DataStatusService {
     @Transactional(readOnly = true)
     public ZonedDateTime findDataUpdatedTime(final DataType dataType) {
         return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataType));
-    }
-
-    @Transactional(readOnly = true)
-    public ZonedDateTime findDataUpdatedTime(final DataType...dataTypes) {
-        return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataTypes));
     }
 
     @Transactional(readOnly = true)
