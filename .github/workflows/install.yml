@@ -18,11 +18,14 @@ on:
             db-install:
                 description: 'Run flyway and update DB'
                 required: true
-                type: boolean
-                default: false
+                type: choice
+                default: 'false'
+                options:
+                    - 'false'
+                    - 'true'
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         permissions:
             id-token: write
             contents: read
@@ -85,7 +88,7 @@ jobs:
         strategy:
             matrix:
                 app: [daemon, web, db]
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         permissions:
             id-token: write
             contents: read
@@ -158,7 +161,7 @@ jobs:
             id-token: write
             contents: read
             actions: read
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Configure AWS credentials for ${{ matrix.app }}
@@ -189,7 +192,7 @@ jobs:
             id-token: write
             contents: read
             actions: read
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Configure AWS credentials for ${{ matrix.app }}
@@ -212,7 +215,7 @@ jobs:
             id-token: write
             contents: read
             actions: read
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Configure AWS credentials for ${{ matrix.app }}
@@ -239,7 +242,7 @@ jobs:
             id-token: write
             contents: read
             actions: read
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         environment: ${{ github.event.inputs.env }}
         steps:
             -   name: Update ${{ matrix.app }} service
