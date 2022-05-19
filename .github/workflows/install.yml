@@ -225,7 +225,7 @@ jobs:
                     role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
                     aws-region: ${{ secrets.AWS_REGION }}
             -   name: Run flyway
-                uses: tmfg/digitraffic-actions@run-ecs-task/v1
+                uses: tmfg/digitraffic-actions@ecs-run-task/v1
                 with:
                     aws-role: ${{ secrets.AWS_ROLE }}
                     aws-region: ${{ secrets.AWS_REGION }}
