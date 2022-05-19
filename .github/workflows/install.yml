@@ -16,7 +16,7 @@ on:
                 required: true
                 default: 'master'
             db-install:
-                description: 'Run flyway or not'
+                description: 'Run flyway and update DB'
                 required: true
                 type: boolean
                 default: false
@@ -181,7 +181,7 @@ jobs:
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
     stop_services:
         needs: install
-        if: inputs.db-install == true
+        if: inputs.db-install == 'true'
         strategy:
             matrix:
                 app: [ daemon, web ]
