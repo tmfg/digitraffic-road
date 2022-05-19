@@ -122,21 +122,23 @@ jobs:
             -   name: Build docker image for ${{ matrix.app }}
                 if: matrix.app != 'db'
                 run: |
-                    ls -la digitraffic-ci/aws/road.jar
+                    cd digitraffic-ci/aws
 
                     docker build --no-cache \
                         --build-arg ENV=${{ github.event.inputs.env }} \
                         --build-arg JAR_FILE=road.jar \
                         --build-arg PROPERTY_FILE=conf/road-${{ github.event.inputs.env }}-${{ matrix.app }}.properties \
                         -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
-                        --pull=true --file=digitraffic-ci/aws/Dockerfile-road digitraffic-ci/aws
+                        --pull=true --file=Dockerfile-road .
                     docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
             -   name: Build docker image for db
                 if: matrix.app == 'db'
                 run: |
+                    cd digitraffic-ci/aws/db
+
                     docker build --no-cache \
                         -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
-                        --pull=true --file=digitraffic-ci/aws/db/Dockerfile digitraffic-ci/aws/db
+                        --pull=true --file=Dockerfile .
                     docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
             -   name: Notify Slack
                 if: failure()
