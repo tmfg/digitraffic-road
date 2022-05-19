@@ -30,59 +30,15 @@ public class DataUpdated {
     @Column(name = "UPDATED")
     private ZonedDateTime updatedTime;
 
-    private String version;
+    /**
+     * SubType-field is saved to version-column in database for historical reasons.
+     * If this will be changed in future from version to sub_type in db,
+     * it will need to be fixed also in cdk-projects and sync installation to test/production.
+     */
+    @Column(name = "VERSION")
+    private String subType;
 
     public DataUpdated() {
         // For JPA
     }
-
-    /**
-     *
-     * @param type of data
-     * @param updatedTime when was data updated
-     * @param version of data ie. subtype
-     */
-    public DataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
-        setDataType(type);
-        setUpdatedTime(updatedTime);
-        setVersion(version);
-    }
-
-    public DataUpdated(final DataType type, final ZonedDateTime updatedTime) {
-        setDataType(type);
-        setUpdatedTime(updatedTime);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(final DataType dataType) {
-        this.dataType = dataType;
-    }
-
-    public ZonedDateTime getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(ZonedDateTime updated) {
-        this.updatedTime = updated;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(final String version) {
-        this.version = version;
-    }
-
 }

@@ -36,32 +36,32 @@ public class DataUpdatedRepositoryTest extends AbstractJpaTest {
     }
 
     @Test
-    public void upsertDataUpdatedWithExtension() {
-        final String extension = RandomStringUtils.randomAlphabetic(5);
-        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, extension);
-        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA, Collections.singletonList(extension));
+    public void upsertDataUpdatedWithSubType() {
+        final String subType = RandomStringUtils.randomAlphabetic(5);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, subType);
+        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA, Collections.singletonList(subType));
         assertPlusMinusMillis(dataUpdatedRepository.getTransactionStartTime(), result, 500);
     }
 
     @Test
-    public void upsertDataUpdatedWithMultipleExtensionsAndTimes() {
-        final String extension1 = RandomStringUtils.randomAlphabetic(5);
-        final Instant extension1Time = Instant.now().minusSeconds(10);
-        final String extension2 = RandomStringUtils.randomAlphabetic(5);
-        final Instant extension2Time = Instant.now().minusSeconds(20);
-        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, extension1, extension1Time);
-        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, extension2, extension2Time);
+    public void upsertDataUpdatedWithMultipleSubTypesAndTimes() {
+        final String subType1 = RandomStringUtils.randomAlphabetic(5);
+        final Instant subType1Time = Instant.now().minusSeconds(10);
+        final String subType2 = RandomStringUtils.randomAlphabetic(5);
+        final Instant subType2Time = Instant.now().minusSeconds(20);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, subType1, subType1Time);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, subType2, subType2Time);
 
-        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA, Arrays.asList(extension1, extension2));
-        assertPlusMinusMillis(extension1Time, result, 500);
+        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA, Arrays.asList(subType1, subType2));
+        assertPlusMinusMillis(subType1Time, result, 500);
     }
 
     @Test
-    public void upsertDataUpdatedWithExtensionAndTime() {
+    public void upsertDataUpdatedWithSubTypeAndTime() {
         final Instant setTime = Instant.now().minusSeconds(10);
-        final String extension = RandomStringUtils.randomAlphabetic(5);
-        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, extension, setTime);
-        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA, Collections.singletonList(extension));
+        final String subType = RandomStringUtils.randomAlphabetic(5);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, subType, setTime);
+        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA, Collections.singletonList(subType));
         assertPlusMinusMillis(setTime, result, 500);
     }
 
@@ -69,10 +69,10 @@ public class DataUpdatedRepositoryTest extends AbstractJpaTest {
     public void upsertDataUpdatedWithMultipleTimes() {
         final Instant setTime1 = Instant.now().minusSeconds(100);
         final Instant setTime2 = Instant.now().minusSeconds(10);
-        final String extension = RandomStringUtils.randomAlphabetic(5);
-        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, extension, setTime1);
-        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, extension, setTime2);
-        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA, Collections.singletonList(extension));
+        final String subType = RandomStringUtils.randomAlphabetic(5);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, subType, setTime1);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, subType, setTime2);
+        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA, Collections.singletonList(subType));
         assertPlusMinusMillis(setTime2, result, 500);
     }
 

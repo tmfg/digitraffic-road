@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.DataType;
@@ -18,18 +17,18 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
 
     String UNSET_VERSION = "-";
 
-    default Instant findUpdatedTime(@Param("dataTypes") final DataType dataType) {
+    @Query(value = "select transaction_timestamp()", nativeQuery = true)
+    Instant getTransactionStartTime();
+
+    default Instant findUpdatedTime(final DataType dataType) {
         return findUpdatedTime(dataType, Collections.singletonList(UNSET_VERSION));
     }
 
     @Query("SELECT max(d.updatedTime)\n" +
            "FROM DataUpdated d\n" +
            "WHERE d.dataType = :dataType" +
-           "  AND d.version in (:versions)")
-    Instant findUpdatedTime(@Param("dataType") final DataType dataType, @Param("versions") final List<String> versions);
-
-    @Query(value = "select transaction_timestamp()", nativeQuery = true)
-    Instant getTransactionStartTime();
+           "  AND d.subType in (:subTypes)")
+    Instant findUpdatedTime(final DataType dataType, final List<String> subTypes);
 
     @Modifying
     default void upsertDataUpdated(final DataType dataType) {
@@ -44,17 +43,17 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
     @Modifying
     @Query(value =
            "INSERT INTO data_updated(id, data_type, version, updated)\n" +
-           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :version, now())\n" +
+           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :subType, now())\n" +
            "  ON CONFLICT (data_type, version)\n" +
            "  DO UPDATE SET updated = now()", nativeQuery = true)
-    void upsertDataUpdated(final DataType dataType, final String version);
+    void upsertDataUpdated(final DataType dataType, final String subType);
 
 
     @Modifying
     @Query(value =
            "INSERT INTO data_updated(id, data_type, version, updated)\n" +
-           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :version, :updated)\n" +
+           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :subType, :updated)\n" +
            "  ON CONFLICT (data_type, version)\n" +
            "  DO UPDATE SET updated = :updated", nativeQuery = true)
-    void upsertDataUpdated(final DataType dataType, final String version, final Instant updated);
+    void upsertDataUpdated(final DataType dataType, final String subType, final Instant updated);
 }

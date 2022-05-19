@@ -32,9 +32,9 @@ public class DataStatusService {
     }
 
     @Transactional
-    public void updateDataUpdated(final DataType dataType, final String version) {
-        log.debug("method=updateDataUpdated dataType={}, extension={}", dataType, version);
-        dataUpdatedRepository.upsertDataUpdated(dataType, version);
+    public void updateDataUpdated(final DataType dataType, final String subType) {
+        log.debug("method=updateDataUpdated dataType={}, subType={}", dataType, subType);
+        dataUpdatedRepository.upsertDataUpdated(dataType, subType);
     }
 
     @Transactional
@@ -49,8 +49,8 @@ public class DataStatusService {
     }
 
     @Transactional(readOnly = true)
-    public Instant findDataUpdatedTime(final DataType dataType, final List<String> extensions) {
-        return dataUpdatedRepository.findUpdatedTime(dataType, extensions);
+    public Instant findDataUpdatedTime(final DataType dataType, final List<String> subTypes) {
+        return dataUpdatedRepository.findUpdatedTime(dataType, subTypes);
     }
 
     @Transactional(readOnly = true)
