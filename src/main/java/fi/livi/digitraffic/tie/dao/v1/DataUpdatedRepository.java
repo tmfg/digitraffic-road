@@ -27,8 +27,8 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
     @Query("SELECT max(d.updatedTime)\n" +
            "FROM DataUpdated d\n" +
            "WHERE d.dataType = :dataType" +
-           "  AND d.subType in (:subTypes)")
-    Instant findUpdatedTime(final DataType dataType, final List<String> subTypes);
+           "  AND d.subtype in (:subtypes)")
+    Instant findUpdatedTime(final DataType dataType, final List<String> subtypes);
 
     @Modifying
     default void upsertDataUpdated(final DataType dataType) {
@@ -43,17 +43,17 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
     @Modifying
     @Query(value =
            "INSERT INTO data_updated(id, data_type, version, updated)\n" +
-           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :subType, now())\n" +
+           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :subtype, now())\n" +
            "  ON CONFLICT (data_type, version)\n" +
            "  DO UPDATE SET updated = now()", nativeQuery = true)
-    void upsertDataUpdated(final DataType dataType, final String subType);
+    void upsertDataUpdated(final DataType dataType, final String subtype);
 
 
     @Modifying
     @Query(value =
            "INSERT INTO data_updated(id, data_type, version, updated)\n" +
-           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :subType, :updated)\n" +
+           "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :subtype, :updated)\n" +
            "  ON CONFLICT (data_type, version)\n" +
            "  DO UPDATE SET updated = :updated", nativeQuery = true)
-    void upsertDataUpdated(final DataType dataType, final String subType, final Instant updated);
+    void upsertDataUpdated(final DataType dataType, final String subtype, final Instant updated);
 }

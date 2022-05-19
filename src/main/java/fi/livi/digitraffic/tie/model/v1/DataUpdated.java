@@ -36,7 +36,7 @@ public class DataUpdated {
      * it will need to be fixed also in cdk-projects and sync installation to test/production.
      */
     @Column(name = "VERSION")
-    private String subType;
+    private String subtype;
 
     public DataUpdated() {
         // For JPA

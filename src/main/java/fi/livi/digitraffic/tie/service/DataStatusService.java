@@ -27,19 +27,16 @@ public class DataStatusService {
 
     @Transactional
     public void updateDataUpdated(final DataType dataType) {
-        log.debug("method=updateDataUpdated dataType={}", dataType);
         dataUpdatedRepository.upsertDataUpdated(dataType);
     }
 
     @Transactional
-    public void updateDataUpdated(final DataType dataType, final String subType) {
-        log.debug("method=updateDataUpdated dataType={}, subType={}", dataType, subType);
-        dataUpdatedRepository.upsertDataUpdated(dataType, subType);
+    public void updateDataUpdated(final DataType dataType, final String subtype) {
+        dataUpdatedRepository.upsertDataUpdated(dataType, subtype);
     }
 
     @Transactional
     public void updateDataUpdated(final DataType dataType, final Instant updated) {
-        log.debug("method=updateDataUpdated dataType={}, updatedTime={}", dataType, updated);
         dataUpdatedRepository.upsertDataUpdated(dataType, updated);
     }
 
@@ -49,8 +46,8 @@ public class DataStatusService {
     }
 
     @Transactional(readOnly = true)
-    public Instant findDataUpdatedTime(final DataType dataType, final List<String> subTypes) {
-        return dataUpdatedRepository.findUpdatedTime(dataType, subTypes);
+    public Instant findDataUpdatedTime(final DataType dataType, final List<String> subtypes) {
+        return dataUpdatedRepository.findUpdatedTime(dataType, subtypes);
     }
 
     @Transactional(readOnly = true)
