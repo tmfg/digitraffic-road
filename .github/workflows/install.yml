@@ -182,9 +182,9 @@ jobs:
                     ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
                     ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
-    stop_services:
+    stop-services:
         needs: install
-        if: inputs.db-install == 'true'
+        if: github.event.inputs.db-install == 'true'
         strategy:
             matrix:
                 app: [ daemon, web ]
@@ -209,8 +209,8 @@ jobs:
                     service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
                     desired-count: 0
-    update_db:
-        needs: stop_services
+    update-db:
+        needs: stop-services
         permissions:
             id-token: write
             contents: read
@@ -233,7 +233,7 @@ jobs:
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
                     network-config: ${{ secrets.NETWORK_CONFIG }}
     deploy:
-        needs: [ install, update_db ]
+        needs: [ install, update-db ]
         if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
         strategy:
             matrix:
