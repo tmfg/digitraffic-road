@@ -56,7 +56,6 @@ jobs:
                     cache: maven
             -   name: Build package
                 run: |
-                    echo Debug!
                     mvn install -DskipTests=true -Ddependency-check.skip=true
 
                     ls -la target/*.jar
@@ -120,7 +119,7 @@ jobs:
                 with:
                     name: sql
                     path: digitraffic-ci/aws/db/sql
-            -   name: Build docker image for daemon/web
+            -   name: Build docker image for ${{ matrix.app }}
                 if: matrix.app != 'db'
                 run: |
                     ls -la digitraffic-ci/aws/road.jar
