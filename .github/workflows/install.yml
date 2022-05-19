@@ -229,7 +229,7 @@ jobs:
                 with:
                     aws-role: ${{ secrets.AWS_ROLE }}
                     aws-region: ${{ secrets.AWS_REGION }}
-                    task-definition-name: road-${{ github.event.inputs.env }}-db
+                    task-definition: road-${{ github.event.inputs.env }}-db
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
                     network-config: ${{ secrets.NETWORK_CONFIG }}
     deploy:
