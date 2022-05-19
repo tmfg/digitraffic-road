@@ -112,7 +112,7 @@ jobs:
                 if: matrix.app != 'db'
                 with:
                     name: road.jar
-                    path: digitraffic-ci/aws/road.jar
+                    path: digitraffic-ci/aws
             -   name: Download sql
                 uses: actions/download-artifact@master
                 if: matrix.app == 'db'
