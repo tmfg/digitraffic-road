@@ -181,7 +181,7 @@ jobs:
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
     stop_services:
         needs: install
-        if: inputs.db_install == true
+        if: inputs.db-install == true
         strategy:
             matrix:
                 app: [ daemon, web ]
