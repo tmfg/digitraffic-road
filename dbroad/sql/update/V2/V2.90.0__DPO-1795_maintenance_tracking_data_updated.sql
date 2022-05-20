@@ -8,14 +8,26 @@ WHERE data_type = 'MAINTENANCE_TRACKING_DATA';
 --   add column version_virtual text GENERATED ALWAYS AS (coalesce(version, 'null')) STORED;
 -- And use it in unique index
 -- Now we must use non null column
-update data_updated set version = '-' where version is null;
+
+-- handle error if column has been already renamed
+DO
+$$
+  BEGIN
+    ALTER TABLE data_updated
+      RENAME COLUMN version TO subtype;
+  EXCEPTION
+    WHEN undefined_column THEN
+  END;
+$$;
+
+update data_updated set subtype = '-' where subtype is null;
 
 ALTER TABLE data_updated
-  alter column version set default '-',
-  alter column version set not null;
+  alter column subtype set default '-',
+  alter column subtype set not null;
 
 DROP INDEX IF EXISTS data_updated_ui;
-CREATE UNIQUE INDEX data_updated_ui ON data_updated (data_type, version);
+CREATE UNIQUE INDEX data_updated_ui ON data_updated (data_type, subtype);
 
 -- Search with created and domain
 CREATE INDEX IF NOT EXISTS maintenance_tracking_domain_created_i

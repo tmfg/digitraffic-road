@@ -15,16 +15,16 @@ import fi.livi.digitraffic.tie.model.v1.DataUpdated;
 @Repository
 public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> {
 
-    String UNSET_VERSION = "-";
+    String UNSET_SUBTYPE = "-";
 
     @Query(value = "select transaction_timestamp()", nativeQuery = true)
     Instant getTransactionStartTime();
 
     default Instant findUpdatedTime(final DataType dataType) {
-        return findUpdatedTime(dataType, Collections.singletonList(UNSET_VERSION));
+        return findUpdatedTime(dataType, Collections.singletonList(UNSET_SUBTYPE));
     }
 
-    @Query("SELECT max(d.updatedTime)\n" +
+    @Query("SELECT max(d.updated)\n" +
            "FROM DataUpdated d\n" +
            "WHERE d.dataType = :dataType" +
            "  AND d.subtype in (:subtypes)")
@@ -32,28 +32,27 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
 
     @Modifying
     default void upsertDataUpdated(final DataType dataType) {
-        upsertDataUpdated(dataType, UNSET_VERSION);
+        upsertDataUpdated(dataType, UNSET_SUBTYPE);
     }
 
     @Modifying
     default void upsertDataUpdated(final DataType dataType, final Instant updated) {
-        upsertDataUpdated(dataType, UNSET_VERSION, updated);
+        upsertDataUpdated(dataType, UNSET_SUBTYPE, updated);
     }
 
     @Modifying
     @Query(value =
-           "INSERT INTO data_updated(id, data_type, version, updated)\n" +
+           "INSERT INTO data_updated(id, data_type, subtype, updated)\n" +
            "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :subtype, now())\n" +
-           "  ON CONFLICT (data_type, version)\n" +
+           "  ON CONFLICT (data_type, subtype)\n" +
            "  DO UPDATE SET updated = now()", nativeQuery = true)
     void upsertDataUpdated(final DataType dataType, final String subtype);
 
-
     @Modifying
     @Query(value =
-           "INSERT INTO data_updated(id, data_type, version, updated)\n" +
+           "INSERT INTO data_updated(id, data_type, subtype, updated)\n" +
            "  VALUES(NEXTVAL('seq_data_updated'), :#{#dataType.name()}, :subtype, :updated)\n" +
-           "  ON CONFLICT (data_type, version)\n" +
+           "  ON CONFLICT (data_type, subtype)\n" +
            "  DO UPDATE SET updated = :updated", nativeQuery = true)
     void upsertDataUpdated(final DataType dataType, final String subtype, final Instant updated);
 }
