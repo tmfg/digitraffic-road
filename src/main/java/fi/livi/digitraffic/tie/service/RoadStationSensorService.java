@@ -204,10 +204,10 @@ public class RoadStationSensorService {
         final int deleted = sensorslotjuIds.isEmpty() ?
                                 roadStationSensorRepository.deleteRoadStationsSensors(roadStationId) :
                                 roadStationSensorRepository.deleteNonExistingSensors(
-                                    roadStationType.name(), roadStationId, sensorslotjuIds);
+                                    roadStationType, roadStationId, sensorslotjuIds);
 
         final int inserted = sensorslotjuIds.isEmpty() ?
-                                0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType.name(),
+                                0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType,
                                                                                          roadStationId,
                                                                                          sensorslotjuIds);
         if (deleted > 0 || inserted > 0) {

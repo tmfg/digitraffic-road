@@ -141,7 +141,7 @@ public class TestUtils {
         rs.setMunicipalityCode("927");
         rs.setProvince("Uusimaa");
         rs.setProvinceCode("1");
-        final String name = roadStationType.toString() + getNameSuffix(nameSuffix);
+        final String name = roadStationType + getNameSuffix(nameSuffix);
         rs.setName(name);
         rs.setNameFi(name + "_fi");
         rs.setNameEn(name + "_en");
@@ -410,6 +410,12 @@ public class TestUtils {
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE weather_station ENABLE TRIGGER trg_weather_station_delete").executeUpdate();
         entityManager.flush();
+    }
+
+    public static void flushCommitEndTransactionAndStartNew(final EntityManager entityManager) {
+        entityManager.flush();
+        entityManager.clear();
+        commitAndEndTransactionAndStartNew();
     }
 
     public static void commitAndEndTransactionAndStartNew() {

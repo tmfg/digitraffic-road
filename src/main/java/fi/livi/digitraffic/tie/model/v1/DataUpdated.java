@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.model.v1;
 
 import java.time.ZonedDateTime;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,6 +14,9 @@ import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.model.DataType;
 
+/**
+ *
+ */
 @Entity
 @DynamicUpdate
 public class DataUpdated {
@@ -27,51 +29,13 @@ public class DataUpdated {
     @Enumerated(EnumType.STRING)
     private DataType dataType;
 
-    @Column(name = "UPDATED")
-    private ZonedDateTime updatedTime;
+    /** Time of the update */
+    private ZonedDateTime updated;
 
-    private String version;
+    /** Possible subtype of the data type */
+    private String subtype;
 
-    private DataUpdated() {
-        // Empty for repository
+    public DataUpdated() {
+        // For JPA
     }
-
-    public DataUpdated(final DataType type, final ZonedDateTime updatedTime, final String version) {
-        setDataType(type);
-        setUpdatedTime(updatedTime);
-        setVersion(version);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
-    }
-
-    public ZonedDateTime getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(ZonedDateTime updated) {
-        this.updatedTime = updated;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
 }

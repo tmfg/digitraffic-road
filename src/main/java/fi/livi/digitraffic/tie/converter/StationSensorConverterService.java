@@ -27,7 +27,7 @@ public class StationSensorConverterService {
     @Transactional(readOnly = true)
     public Map<Long, List<Long>> getPublishableSensorsNaturalIdsMappedByRoadStationId(final RoadStationType type) {
         if (type.equals(RoadStationType.TMS_STATION) || type.equals(RoadStationType.WEATHER_STATION)) {
-            final List<StationSensors> list = roadStationSensorRepository.listStationPublishableSensorsByType(type.name());
+            final List<StationSensors> list = roadStationSensorRepository.listStationPublishableSensorsByType(type);
             return createMap(list);
         }
         throw new IllegalArgumentException(String.format("RoadStationType %s not suported", type.name()));
@@ -38,7 +38,7 @@ public class StationSensorConverterService {
         if (type.equals(RoadStationType.TMS_STATION) || type.equals(RoadStationType.WEATHER_STATION)) {
             return roadStationId == null ?
                 Collections.emptyMap() :
-                createMap(roadStationSensorRepository.getRoadStationPublishableSensorsNaturalIdsByStationIdAndType(roadStationId, type.name()));
+                createMap(roadStationSensorRepository.getRoadStationPublishableSensorsNaturalIdsByStationIdAndType(roadStationId, type));
         }
         throw new IllegalArgumentException(String.format("RoadStationType %s not suported", type.name()));
     }
