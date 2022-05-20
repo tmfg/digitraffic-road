@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -164,4 +165,11 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "GROUP BY tracking.id, contract.source, domain.source",
         nativeQuery = true)
     List<MaintenanceTrackingDto> findTrackingsLatestPointsCreatedAfter(final ZonedDateTime createdFromExclusive);
+
+    @Query(value =
+           "select max(created)\n" +
+           "from maintenance_tracking t\n" +
+           "where t.domain IN (:domains)",
+           nativeQuery = true)
+    Instant findLastUpdatedForDomain(final List<String> domains);
 }

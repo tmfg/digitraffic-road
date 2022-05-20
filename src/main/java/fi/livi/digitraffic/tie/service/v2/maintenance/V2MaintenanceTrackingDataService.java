@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service.v2.maintenance;
 
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
+import static fi.livi.digitraffic.tie.model.DataType.MAINTENANCE_TRACKING_DATA_CHECKED;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -34,7 +35,6 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingProperties;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
@@ -76,8 +76,9 @@ public class V2MaintenanceTrackingDataService {
                                                                                      final double xMax, final double yMax,
                                                                                      final List<MaintenanceTrackingTask> taskIds,
                                                                                      final List<String> domains) {
-        final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA));
-        final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA_CHECKED));
+        final List<String> realDomains = convertToRealDomainNames(domains);
+        final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains));
+        final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(MAINTENANCE_TRACKING_DATA_CHECKED, realDomains));
 
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
@@ -88,7 +89,7 @@ public class V2MaintenanceTrackingDataService {
                 toZonedDateTimeAtUtc(endTimeto),
                 area,
                 convertTasksToStringArrayOrNull(taskIds),
-                convertToRealDomainNames(domains));
+                realDomains);
 
         log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
@@ -104,8 +105,9 @@ public class V2MaintenanceTrackingDataService {
                                                                          final double xMax, final double yMax,
                                                                          final List<MaintenanceTrackingTask> taskIds,
                                                                          final List<String> domains) {
-        final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA));
-        final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA_CHECKED));
+        final List<String> realDomains = convertToRealDomainNames(domains);
+        final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains));
+        final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(MAINTENANCE_TRACKING_DATA_CHECKED, realDomains));
 
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
@@ -114,15 +116,15 @@ public class V2MaintenanceTrackingDataService {
             v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(
                 toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeBefore),
                 toZonedDateTimeAtUtc(createdAfter), toZonedDateTimeAtUtc(createdBefore),
-                area, convertTasksToStringArrayOrNull(taskIds), convertToRealDomainNames(domains));
+                area, convertTasksToStringArrayOrNull(taskIds), realDomains);
 
-        log.info("method=findMaintenanceTrackingsV1 with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom={} endTimeTo={} createdTimeFrom={} createdTimeTo={} foundCount={} tookMs={}",
-            xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore,  found.size(), start.getTime());
+        log.info("method=findMaintenanceTrackingsV1 with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
+            xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
 
         final StopWatch startConvert = StopWatch.createStarted();
         final List<MaintenanceTrackingFeature> features = convertToTrackingFeatures(found);
-        log.info("method=findMaintenanceTrackingsV1-convert with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom={} endTimeTo={} createdTimeFrom={} createdTimeTo={} foundCount={} tookMs={}",
-            xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore,  found.size(), startConvert.getTime());
+        log.info("method=findMaintenanceTrackingsV1-convert with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
+            xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), startConvert.getTime());
 
         return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
     }
