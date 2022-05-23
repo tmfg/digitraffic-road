@@ -36,7 +36,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          text: FAILED Road deploy/build
+          text: FAILED Road Dependency Check
           fields: repo, job, took
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
