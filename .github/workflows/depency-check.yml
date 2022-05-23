@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: '0 8 * * *' # UTC
 jobs:
-  build:
+  dependency-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
