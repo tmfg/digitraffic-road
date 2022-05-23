@@ -6,14 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadSegment;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Forecast Section Properties", value = "ForecastSectionPropertiesV2")
+@Schema(description = "Forecast Section Properties", name = "ForecastSectionPropertiesV2")
 @JsonPropertyOrder({ "naturalId", "description" })
 public class ForecastSectionV2Properties {
 
-    @ApiModelProperty(value =
+    @Schema(description =
                           "Forecast section identifier ie. 00004_342_01435_0_274.569: \n" +
                           "1. Road number 5 characters ie. 00004, \n" +
                           "2. Road section 3 characters ie. 342, \n" +
@@ -24,22 +23,22 @@ public class ForecastSectionV2Properties {
     @JsonProperty("id")
     private String naturalId;
 
-    @ApiModelProperty(value = "Forecast section description")
+    @Schema(description = "Forecast section description")
     private String description;
 
-    @ApiModelProperty(value = "Forecast section road number")
+    @Schema(description = "Forecast section road number")
     private int roadNumber;
 
-    @ApiModelProperty(value = "Road section number")
+    @Schema(description = "Road section number")
     private int roadSectionNumber;
 
-    @ApiModelProperty(value = "Forecast section length in meters")
+    @Schema(description = "Forecast section length in meters")
     private Integer length;
 
-    @ApiModelProperty(value = "Forecast section road segments. Refers to https://aineistot.vayla.fi/digiroad/")
+    @Schema(description = "Forecast section road segments. Refers to https://aineistot.vayla.fi/digiroad/")
     private List<RoadSegment> roadSegments;
 
-    @ApiModelProperty(value = "Forecast section link indices. Refers to https://aineistot.vayla.fi/digiroad/")
+    @Schema(description = "Forecast section link indices. Refers to https://aineistot.vayla.fi/digiroad/")
     private List<Long> linkIdList;
 
     public ForecastSectionV2Properties() {

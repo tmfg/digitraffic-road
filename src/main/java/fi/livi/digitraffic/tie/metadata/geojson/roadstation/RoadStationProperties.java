@@ -14,13 +14,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
+import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "Properties", description = "Roadstation properties")
+@Schema(name = "Properties", description = "Roadstation properties", subTypes = { CameraProperties.class, TmsStationProperties.class, WeatherStationProperties.class })
 public abstract class RoadStationProperties extends Properties {
 
     private static final int LONGITUDE_IDX = 0;
@@ -28,35 +30,35 @@ public abstract class RoadStationProperties extends Properties {
     private static final int ALTITUDE_IDX = 2;
 
     @JsonIgnore
-    @ApiModelProperty(value = "Road station's lotju id")
+    @Schema(description = "Road station's lotju id")
     private Long lotjuId;
 
-    @ApiModelProperty(value = "Road station's id (naturalId)", required = true)
+    @Schema(description = "Road station's id (naturalId)", required = true)
     @JsonProperty("roadStationId")
     private long naturalId;
 
-    @ApiModelProperty(value = "Common name of road station")
+    @Schema(description = "Common name of road station")
     private String name;
 
-    @ApiModelProperty(value = "Data collection interval [s]")
+    @Schema(description = "Data collection interval [s]")
     private Integer collectionInterval;
 
-    @ApiModelProperty(value = "Data collection status")
+    @Schema(description = "Data collection status")
     private CollectionStatus collectionStatus;
 
-    @ApiModelProperty(value = "Municipality")
+    @Schema(description = "Municipality")
     private String municipality;
 
-    @ApiModelProperty(value = "Municipality code")
+    @Schema(description = "Municipality code")
     private String municipalityCode;
 
-    @ApiModelProperty(value = "Province")
+    @Schema(description = "Province")
     private String province;
 
-    @ApiModelProperty(value = "Province code")
+    @Schema(description = "Province code")
     private String provinceCode;
 
-    @ApiModelProperty(value = "Map of names [fi, sv, en]",
+    @Schema(description = "Map of names [fi, sv, en]",
                       example = "\"names\": {\n" +
                                 "          \"fi\": \"Tie 7 Porvoo\",\n" +
                                 "          \"sv\": \"Väg 7 Borgå\",\n" +
@@ -66,33 +68,33 @@ public abstract class RoadStationProperties extends Properties {
 
     private RoadAddress roadAddress = new RoadAddress();
 
-    @ApiModelProperty(value = "Id in road registry")
+    @Schema(description = "Id in road registry")
     private String liviId;
 
-    @ApiModelProperty(value = "Country where station is located")
+    @Schema(description = "Country where station is located")
     private String country;
 
-    @ApiModelProperty(value = "Station established date time")
+    @Schema(description = "Station established date time")
     private ZonedDateTime startTime;
 
-    @ApiModelProperty(value = "Repair maintenance date time")
+    @Schema(description = "Repair maintenance date time")
     private ZonedDateTime repairMaintenanceTime;
 
-    @ApiModelProperty(value = "Annual maintenance date time")
+    @Schema(description = "Annual maintenance date time")
     private ZonedDateTime annualMaintenanceTime;
 
     // Removed temporary until LOTJU data is fixed
     @JsonIgnore
-    @ApiModelProperty(value = "Location of the station")
+    @Schema(description = "Location of the station")
     private String location;
 
-    @ApiModelProperty(value = "Road station state")
+    @Schema(description = "Road station state")
     private RoadStationState state;
 
-    @ApiModelProperty(value = "Purpose of the road station")
+    @Schema(description = "Purpose of the road station")
     private String purpose;
 
-    @ApiModelProperty(value = "Road station coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. Coordinates are in ETRS89 / ETRS-TM35FIN format. " +
+    @Schema(description = "Road station coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. Coordinates are in ETRS89 / ETRS-TM35FIN format. " +
                               "Altitude is optional and measured in metres.)", required = true)
     private List<Double> coordinatesETRS89 = new ArrayList<>(3);
 

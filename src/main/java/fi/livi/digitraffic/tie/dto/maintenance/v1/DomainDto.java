@@ -4,18 +4,17 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({ "name", "source" })
-@ApiModel(description = "Maintenance tracking domain", value = "Domain_V1")
+@Schema(description = "Maintenance tracking domain", name = "Domain_V1")
 public interface DomainDto {
 
-    @ApiModelProperty(value = "Name of the maintenance tracking domain", required = true)
+    @Schema(description = "Name of the maintenance tracking domain", required = true)
     @NotNull
     String getName();
 
-    @ApiModelProperty(value = "Source and owner of the data", required = true)
+    @Schema(description = "Source and owner of the data", required = true)
     @NotNull
     String getSource();
 }

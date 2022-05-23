@@ -30,10 +30,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.VehicleClass;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Road station sensor")
+@Schema(description = "Road station sensor")
 @JsonPropertyOrder(value = {"id", "name", "shortName", "descriptionFi", "descriptionSv", "descriptionEn", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 @Entity
 @DynamicUpdate
@@ -54,41 +53,41 @@ public class RoadStationSensor {
     @NotNull
     private Long lotjuId;
 
-    @ApiModelProperty(value = "Sensor id", position = 1)
+    @Schema(description = "Sensor id")
     @JsonProperty("id")
     private long naturalId;
 
-    @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future.", position = 2, notes = "noteja")
+    @Schema(description = "Sensor old name. For new sensors will equal name. Will deprecate in future.")
     @JsonProperty(value = "nameOld")
     private String name;
 
-    @ApiModelProperty(value = "Unit of sensor value")
+    @Schema(description = "Unit of sensor value")
     private String unit;
 
     @JsonIgnore
     private LocalDate obsoleteDate;
 
-    @ApiModelProperty(value = "Sensor description [fi]")
+    @Schema(description = "Sensor description [fi]")
     private String descriptionFi;
 
-    @ApiModelProperty(value = "Sensor description [sv]")
+    @Schema(description = "Sensor description [sv]")
     private String descriptionSv;
 
-    @ApiModelProperty(value = "Sensor description [en]")
+    @Schema(description = "Sensor description [en]")
     private String descriptionEn;
 
-    @ApiModelProperty(value = "Sensor name [fi]")
+    @Schema(description = "Sensor name [fi]")
     @JsonProperty(value = "name")
     private String nameFi;
 
-    @ApiModelProperty(value = "Short name for sensor [fi]")
+    @Schema(description = "Short name for sensor [fi]")
     @JsonProperty(value = "shortName")
     private String shortNameFi;
 
-    @ApiModelProperty(value = "Sensor accuracy")
+    @Schema(description = "Sensor accuracy")
     private Integer accuracy;
 
-    @ApiModelProperty("Possible additional descriptions for sensor values")
+    @Schema(description = "Possible additional descriptions for sensor values")
     @OneToMany(mappedBy = "sensorValueDescriptionPK.sensorId", cascade = CascadeType.ALL)
     @OrderBy("sensorValueDescriptionPK.sensorValue")
     @SortNatural
@@ -98,26 +97,26 @@ public class RoadStationSensor {
     @Enumerated(EnumType.STRING)
     private RoadStationType roadStationType;
 
-    @ApiModelProperty(value = "Presentation name for sensor [fi]")
+    @Schema(description = "Presentation name for sensor [fi]")
     private String presentationNameFi;
 
-    @ApiModelProperty(value = "Presentation name for sensor [sv]")
+    @Schema(description = "Presentation name for sensor [sv]")
     private String presentationNameSv;
 
-    @ApiModelProperty(value = "Presentation name for sensor [en]")
+    @Schema(description = "Presentation name for sensor [en]")
     private String presentationNameEn;
 
     @JsonIgnore
     private boolean isPublic;
 
-    @ApiModelProperty(value = "Vehicle class")
+    @Schema(description = "Vehicle class")
     @Enumerated(EnumType.STRING)
     private VehicleClass vehicleClass;
 
-    @ApiModelProperty(value = "Lane of the sensor, 1st, 2nd, 3rd, etc.")
+    @Schema(description = "Lane of the sensor, 1st, 2nd, 3rd, etc.")
     private Integer lane;
 
-    @ApiModelProperty(value = "Preset direction " +
+    @Schema(description = "Preset direction " +
         "(0 = Unknown direction. " +
         "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi." +
         "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.")
@@ -191,7 +190,7 @@ public class RoadStationSensor {
         this.unit = unit;
     }
 
-    @ApiModelProperty(value = "Sensor description [fi]")
+    @Schema(description = "Sensor description [fi]")
     public String getDescription() {
         return getDescriptionFi();
     }

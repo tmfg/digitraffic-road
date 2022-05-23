@@ -264,11 +264,11 @@
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
 
-        <!-- Swagger2 JSON API specification generation-->
+        <!-- OpenApi JSON API specification generation-->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-            <version>${io.springfox.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.8</version>
         </dependency>
 
         <!-- Static Reader of META-INF/MANIFEST.MF Files -->

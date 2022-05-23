@@ -13,12 +13,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Immutable
-@ApiModel(value = "SensorValue", description = "Sensor value")
+@Schema(name = "SensorValue", description = "Sensor value")
 @JsonPropertyOrder({"id", "roadStationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "timeWindowStart", "timeWindowEnd", "measuredTime"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorValueDto {
@@ -27,53 +26,53 @@ public class SensorValueDto {
     @JsonIgnore
     private Long sensorValueId;
 
-    @ApiModelProperty(value = "Measured sensor value", required = true, position = 3)
+    @Schema(description = "Measured sensor value", required = true)
     private double sensorValue;
 
-    @ApiModelProperty(value = "Measured sensor value unit", required = true, position = 4)
+    @Schema(description = "Measured sensor value unit", required = true)
     private String sensorUnit;
 
     @JsonProperty("roadStationId")
     private Long roadStationNaturalId;
 
-    @ApiModelProperty(value = "Sensor type id (naturalId)", required = true, position = 2)
+    @Schema(description = "Sensor type id (naturalId)", required = true)
     @JsonProperty(value = "id")
     private Long sensorNaturalId;
 
     /** @deprecated */
     @Deprecated
-    @ApiModelProperty(value = "Sensor old name. For new sensors will equal name. Will deprecate in future version.", position = 1, notes = "noteja")
+    @Schema(description = "Sensor old name. For new sensors will equal name. Will deprecate in future version.")
     @JsonProperty("oldName")
     private String sensorNameOld;
 
-    @ApiModelProperty(value = "Sensor name", position = 1, required = true)
+    @Schema(description = "Sensor name", required = true)
     @JsonProperty(value = "name")
     private String sensorNameFi;
 
-    @ApiModelProperty(value = "Sensor short name", position = 2, required = true)
+    @Schema(description = "Sensor short name", required = true)
     @JsonProperty(value = "shortName")
     private String sensorShortNameFi;
 
-    @ApiModelProperty(value = "Additional information of sensor value [fi]")
+    @Schema(description = "Additional information of sensor value [fi]")
     private String sensorValueDescriptionFi;
 
-    @ApiModelProperty(value = "Additional information of sensor value [en]")
+    @Schema(description = "Additional information of sensor value [en]")
     private String sensorValueDescriptionEn;
 
     @JsonIgnore
     private ZonedDateTime stationLatestMeasuredTime;
 
-    @ApiModelProperty(value = "Measurement time window start time (only for fixed time window sensors)")
+    @Schema(description = "Measurement time window start time (only for fixed time window sensors)")
     private ZonedDateTime timeWindowStart;
 
-    @ApiModelProperty(value = "Measurement time window end time (only for fixed time window sensors)")
+    @Schema(description = "Measurement time window end time (only for fixed time window sensors)")
     private ZonedDateTime timeWindowEnd;
 
     /** Db's timestamp */
     @JsonIgnore
     private ZonedDateTime updatedTime;
 
-    @ApiModelProperty(value = "Measurement time", position = 5)
+    @Schema(description = "Measurement time")
     private ZonedDateTime measuredTime;
 
     public Long getRoadStationNaturalId() {

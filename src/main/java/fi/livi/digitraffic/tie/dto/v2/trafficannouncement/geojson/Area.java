@@ -10,10 +10,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "AlertC area", value = "AreaV2")
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "AlertC area", name = "AreaV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "name",
@@ -22,15 +22,15 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class Area extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "The name of the area", required = true)
+    @Schema(description = "The name of the area", required = true)
     @NotNull
     public String name;
 
-    @ApiModelProperty(value = "Location code of the area, number of the road point in AlertC location table", required = true)
+    @Schema(description = "Location code of the area, number of the road point in AlertC location table", required = true)
     @NotNull
     public Integer locationCode;
 
-    @ApiModelProperty(value = "The type of the area, example kaupunki, maakunta, sää-alue", required = true, allowableValues = "municipality,province,regional state administrative agency,weather region,country")
+    @Schema(description = "The type of the area, example kaupunki, maakunta, sää-alue", required = true, allowableValues = "municipality,province,regional state administrative agency,weather region,country")
     @NotNull
     public String type;
     private final Set<String> alloweTypes = Set.of("municipality", "province", "regional state administrative agency", "weather region", "country", "city region", "travel region");

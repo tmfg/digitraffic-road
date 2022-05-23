@@ -16,11 +16,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(description = "Road station road address", value = "RoadAddress")
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Road station road address", name = "RoadAddress")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "roadNumber", "roadSection", "distanceFromRoadSectionStart", "carriagewayCode", "sideCode" })
 @Entity
@@ -86,23 +86,23 @@ public class RoadAddress {
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_ADDRESS"))
     @GeneratedValue(generator = "SEQ_ROAD_ADDRESS")
     private Long id;
-    @ApiModelProperty(value = "Road number (values 1–99999)")
+    @Schema(description = "Road number (values 1–99999)")
     private Integer roadNumber;
-    @ApiModelProperty(value = "Road section (values 1–999)")
+    @Schema(description = "Road section (values 1–999)")
     private Integer roadSection;
 
-    @ApiModelProperty(value = "Distance from start of the road portion [m]")
+    @Schema(description = "Distance from start of the road portion [m]")
     @Column(name="DISTANCE_FROM_ROAD_SECTION_ST")
     private Integer distanceFromRoadSectionStart;
 
-    @ApiModelProperty(value = "Carriageway (" +
+    @Schema(description = "Carriageway (" +
                               "0 = One carriageway portion, " +
                               "1 = First carriageway of dual carriageway portion (measuring direction) " +
                               "2 = Second carriageway of dual carriageway portion (upstream))")
     @Column(name = "CARRIAGEWAY")
     private Integer carriagewayCode;
 
-    @ApiModelProperty(value = "Side of the road (" +
+    @Schema(description = "Side of the road (" +
                               "0 = Unknown, " +
                               "1 = Right (on the right side of the measuring direction), " +
                               "2 = Right (on the right side of the measuring direction), " +
@@ -114,13 +114,13 @@ public class RoadAddress {
     @JsonIgnore
     private Integer sideCode;
 
-    @ApiModelProperty(value = "Road maintenance class")
+    @Schema(description = "Road maintenance class")
     private String roadMaintenanceClass;
 
-    @ApiModelProperty(value = "Road contract area")
+    @Schema(description = "Road contract area")
     private String contractArea;
 
-    @ApiModelProperty(value = "Road contract area code")
+    @Schema(description = "Road contract area code")
     private Integer contractAreaCode;
 
     public RoadAddress() {
@@ -155,7 +155,7 @@ public class RoadAddress {
         this.distanceFromRoadSectionStart = distanceFromRoadSectionStart;
     }
 
-    @ApiModelProperty(value = "Side of the as enum value")
+    @Schema(description = "Side of the as enum value")
     @JsonIgnore
     public Side getSide() {
         return Side.getByCode(getSideCode());

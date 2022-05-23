@@ -2,10 +2,12 @@ package fi.livi.digitraffic.tie.dto.v1;
 
 import java.time.Instant;
 
-import io.swagger.annotations.ApiModelProperty;
+import fi.livi.digitraffic.tie.dto.v1.camera.CameraPresetDataDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(subTypes = CameraPresetDataDto.class)
 public interface MeasuredDataObjectDto {
 
-    @ApiModelProperty(value = "Value measured date time")
+    @Schema(description = "Value measured date time")
     Instant getMeasuredTime();
 }

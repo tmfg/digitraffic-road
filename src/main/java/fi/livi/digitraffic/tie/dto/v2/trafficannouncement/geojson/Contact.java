@@ -10,10 +10,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Sender's contact information", value = "ContactV2")
+@Schema(description = "Sender's contact information", name = "ContactV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "phone",
@@ -22,13 +21,13 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class Contact extends JsonAdditionalProperties {
 
-    @ApiModelProperty("Phone number")
+    @Schema(description = "Phone number")
     public String phone;
 
-    @ApiModelProperty("Fax number")
+    @Schema(description = "Fax number")
     public String fax;
 
-    @ApiModelProperty("Email")
+    @Schema(description = "Email")
     public String email;
 
     @JsonIgnore

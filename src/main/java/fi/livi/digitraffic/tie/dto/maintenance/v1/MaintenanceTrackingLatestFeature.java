@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "GeoJSON Feature Object.", value = "MaintenanceTrackingLatestFeature_V1")
+@Schema(description = "GeoJSON Feature Object.", name = "MaintenanceTrackingLatestFeature_V1")
 @JsonPropertyOrder({ "type", "properties", "geometry" })
 public class MaintenanceTrackingLatestFeature extends Feature<Geometry<?>, MaintenanceTrackingLatestProperties> {
 
@@ -15,7 +14,7 @@ public class MaintenanceTrackingLatestFeature extends Feature<Geometry<?>, Maint
         super(geometry, properties);
     }
 
-    @ApiModelProperty(value = "GeoJSON Point or LineString Geometry Object containing route point(s)", required = true, position = 3)
+    @Schema(description = "GeoJSON Point or LineString Geometry Object containing route point(s)", required = true)
     public Geometry<?> getGeometry() {
         return super.getGeometry();
     }

@@ -6,20 +6,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Region geometry properties", value = "RegionGeometryProperties_V1", parent = Properties.class)
+@Schema(description = "Region geometry properties", name = "RegionGeometryProperties_V1")
 @JsonPropertyOrder({ "locationCode", "name", "type", "effectiveDate" })
 public class RegionGeometryProperties extends Properties {
 
-    @ApiModelProperty(value = "The name of the region", required = true)
+    @Schema(description = "The name of the region", required = true)
     public String name;
-    @ApiModelProperty(value = "The Alert-C code of the region", required = true)
+    @Schema(description = "The Alert-C code of the region", required = true)
     public Integer locationCode;
-    @ApiModelProperty(value = "The type of the region", required = true)
+    @Schema(description = "The type of the region", required = true)
     public AreaType type;
-    @ApiModelProperty(value = "The moment, when the data comes into effect", required = true)
+    @Schema(description = "The moment, when the data comes into effect", required = true)
     public Instant effectiveDate;
 
     public RegionGeometryProperties(final String name, final Integer locationCode, final AreaType type, final Instant effectiveDate) {

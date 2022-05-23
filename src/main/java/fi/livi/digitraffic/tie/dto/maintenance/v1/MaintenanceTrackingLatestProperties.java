@@ -6,31 +6,30 @@ import java.util.Set;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Maintenance tracking properties", value = "MaintenanceTrackingLatestProperties_V1")
+@Schema(description = "Maintenance tracking properties", name = "MaintenanceTrackingLatestProperties_V1")
 public class MaintenanceTrackingLatestProperties extends Properties {
 
-    @ApiModelProperty(value = "Id for the tracking", required = true)
+    @Schema(description = "Id for the tracking", required = true)
     private final long id;
 
-    @ApiModelProperty(value = "Time of latest tracking", required = true)
+    @Schema(description = "Time of latest tracking", required = true)
     private Instant time;
 
-    @ApiModelProperty(value = "Creation time of tracking", required = true)
+    @Schema(description = "Creation time of tracking", required = true)
     public final Instant created;
 
-    @ApiModelProperty(value = "Tasks done during maintenance work", required = true)
+    @Schema(description = "Tasks done during maintenance work", required = true)
     public final Set<MaintenanceTrackingTask> tasks;
 
-    @ApiModelProperty(value = "Direction of the last observation")
+    @Schema(description = "Direction of the last observation")
     private BigDecimal direction;
 
-    @ApiModelProperty(value = "Domain of the data")
+    @Schema(description = "Domain of the data")
     public String domain;
 
-    @ApiModelProperty(value = "Source and owner of the data")
+    @Schema(description = "Source and owner of the data")
     public String source;
 
     public MaintenanceTrackingLatestProperties(final long id, final Instant time, final Instant created,

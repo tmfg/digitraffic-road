@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.documentation.RoadApiInfo;
-import springfox.documentation.service.ApiInfo;
 
 @Component
 public class RoadApiInfoGetter {
@@ -20,7 +19,7 @@ public class RoadApiInfoGetter {
         this.buildVersionResolver = buildVersionResolver;
     }
 
-    public ApiInfo getApiInfo() {
+    public RoadApiInfo getApiInfo() {
         return new RoadApiInfo(localizedMessageSource, buildVersionResolver);
     }
 }

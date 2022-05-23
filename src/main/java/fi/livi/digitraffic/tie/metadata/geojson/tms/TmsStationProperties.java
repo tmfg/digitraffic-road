@@ -14,10 +14,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.TmsStationType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "TMS station properties", value = "TmsStationProperties", parent = RoadStationProperties.class)
+@Schema(description = "TMS station properties", name = "TmsStationProperties")
 @JsonPropertyOrder({ "roadStationId", "tmsNumber", "name" })
 public class TmsStationProperties extends RoadStationProperties {
 
@@ -25,37 +24,37 @@ public class TmsStationProperties extends RoadStationProperties {
     private long id;
 
     // tms aseman naturalId
-    @ApiModelProperty(value = "TMS station number (naturalId)", required = true)
+    @Schema(description = "TMS station number (naturalId)", required = true)
     @JsonProperty(value = "tmsNumber")
     private long tmsNaturalId;
 
-    @ApiModelProperty(value = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true, position = 1)
+    @Schema(description = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true)
     private String direction1Municipality;
 
-    @ApiModelProperty(value = "Direction 1 municipality code")
+    @Schema(description = "Direction 1 municipality code")
     private Integer direction1MunicipalityCode;
 
-    @ApiModelProperty(value = "Direction 2 municipality (2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", required = true, position = 1)
+    @Schema(description = "Direction 2 municipality (2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", required = true)
     private String direction2Municipality;
 
-    @ApiModelProperty(value = "Direction 2 municipality code")
+    @Schema(description = "Direction 2 municipality code")
     private Integer direction2MunicipalityCode;
 
-    @ApiModelProperty(value = "Type of  TMS station")
+    @Schema(description = "Type of  TMS station")
     @JsonProperty(value = "tmsStationType")
     private TmsStationType tmsStationType;
 
-    @ApiModelProperty(value = "Type of calculation device")
+    @Schema(description = "Type of calculation device")
     private CalculatorDeviceType calculatorDeviceType;
 
     /** Sensors natural ids */
-    @ApiModelProperty(value = "Tms Station Sensors ids")
+    @Schema(description = "Tms Station Sensors ids")
     private List<Long> stationSensors = new ArrayList<>();
 
-    @ApiModelProperty(value = "Free flow speed to direction 1 [km/h]")
+    @Schema(description = "Free flow speed to direction 1 [km/h]")
     private Double freeFlowSpeed1;
 
-    @ApiModelProperty(value = "Free flow speed to direction 2 [km/h]")
+    @Schema(description = "Free flow speed to direction 2 [km/h]")
     private Double freeFlowSpeed2;
 
     public long getId() {

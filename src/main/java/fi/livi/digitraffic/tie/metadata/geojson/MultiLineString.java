@@ -5,10 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "GeoJson MultiLineString Geometry Object")
+@Schema(description = "GeoJson MultiLineString Geometry Object")
 @JsonPropertyOrder({ "type", "coordinates" })
 public class MultiLineString extends Geometry<List<List<Double>>> {
 
@@ -20,14 +19,14 @@ public class MultiLineString extends Geometry<List<List<Double>>> {
         super(Type.MultiLineString, coordinates);
     }
 
-    @ApiModelProperty(required = true, allowableValues = "MultiLineString", example = "MultiLineString")
+    @Schema(required = true, allowableValues = "MultiLineString", example = "MultiLineString")
     @Override
     public Type getType() {
         return super.getType();
     }
 
-    @ApiModelProperty(required = true, position = 2, example = "[ [ [100.00000000, 0.00000000], [101.00000000, 1.00000000] ], [ [102.00000000, 2.00000000], [103.00000000, 3.00000000] ] ]",
-                      value = "An array of LineString coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, dataType = "List")
+    @Schema(required = true, example = "[ [ [100.00000000, 0.00000000], [101.00000000, 1.00000000] ], [ [102.00000000, 2.00000000], [103.00000000, 3.00000000] ] ]",
+                      description = "An array of LineString coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, type = "List")
     @Override
     public List<List<List<Double>>> getCoordinates() {
         return super.getCoordinates();

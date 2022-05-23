@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel("Overall road condition")
+@Schema(description = "Overall road condition")
 public enum OverallRoadCondition {
 
     NORMAL_CONDITION(1),

@@ -6,21 +6,20 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({"from", "to"})
-@ApiModel(value = "CameraHistoryPresences", description = "Contains history status for cameras and presets at given time interval.")
+@Schema(name = "CameraHistoryPresences", description = "Contains history status for cameras and presets at given time interval.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraHistoryPresencesDto {
 
-    @ApiModelProperty("Camera history statuses")
+    @Schema(description = "Camera history statuses")
     public final List<CameraHistoryPresenceDto> cameraHistoryPresences;
 
-    @ApiModelProperty("Start of the time interval")
+    @Schema(description = "Start of the time interval")
     public final ZonedDateTime from;
 
-    @ApiModelProperty("End of the time interval")
+    @Schema(description = "End of the time interval")
     public final ZonedDateTime to;
 
     public CameraHistoryPresencesDto(final ZonedDateTime from, final ZonedDateTime to, final List<CameraHistoryPresenceDto> cameraHistoryPresences) {

@@ -6,9 +6,9 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Area location type", value = "AreaType_V1")
+@Schema(description = "Area location type", name = "AreaType_V1")
 public enum AreaType {
 
     MUNICIPALITY("municipality"),

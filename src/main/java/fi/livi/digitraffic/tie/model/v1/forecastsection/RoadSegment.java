@@ -12,7 +12,7 @@ import org.hibernate.annotations.FetchMode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -22,13 +22,13 @@ public class RoadSegment {
     @JsonIgnore
     private RoadSegmentPK roadSegmentPK;
 
-    @ApiModelProperty(value = "Road segment start distance")
+    @Schema(description = "Road segment start distance")
     private Integer startDistance;
 
-    @ApiModelProperty(value = "Road segment end distance")
+    @Schema(description = "Road segment end distance")
     private Integer endDistance;
 
-    @ApiModelProperty(value = "Road segment carriageway")
+    @Schema(description = "Road segment carriageway")
     private Integer carriageway;
 
     @JsonIgnore

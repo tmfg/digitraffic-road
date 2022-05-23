@@ -13,31 +13,30 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Camera preset properties", value = "CameraProperties", parent = RoadStationProperties.class)
+@Schema(description = "Camera preset properties", name = "CameraProperties")
 @JsonPropertyOrder({ "roadStationId", "presetId", "cameraId", "naturalId", "name", "cameraType" })
 public class CameraProperties extends RoadStationProperties {
 
     @JsonIgnore // Camerapreset id
     private long id;
 
-    @ApiModelProperty(value = "Camera id", position = 2)
+    @Schema(description = "Camera id")
     @JsonProperty(value = "id")
     private String cameraId;
 
-    @ApiModelProperty(value = "Type of camera")
+    @Schema(description = "Type of camera")
     private CameraType cameraType;
 
-    @ApiModelProperty(value = "Is camera targeted to default direction")
+    @Schema(description = "Is camera targeted to default direction")
     private Boolean defaultDirection;
 
-    @ApiModelProperty(name = "nearestWeatherStationId", value = "Id of nearest Weather Station")
+    @Schema(name = "nearestWeatherStationId", description = "Id of nearest Weather Station")
     @JsonProperty(value = "nearestWeatherStationId")
     private Long nearestWeatherStationNaturalId;
 
-    @ApiModelProperty(value = "Camera presets")
+    @Schema(description = "Camera presets")
     private List<CameraPresetDto> presets = new ArrayList<>();
 
     public long getId() {

@@ -8,10 +8,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Location in road address (road number + number of the road section + distance from the beginning of the road section", value="RoadAddressV2")
+@Schema(description = "Location in road address (road number + number of the road section + distance from the beginning of the road section", name = "RoadAddressV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "road",
@@ -20,15 +19,15 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class RoadAddress  extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Number of the road", required = true)
+    @Schema(description = "Number of the road", required = true)
     @NotNull
     public Integer road;
 
-    @ApiModelProperty(value = "Number of the road section", required = true)
+    @Schema(description = "Number of the road section", required = true)
     @NotNull
     public Integer roadSection;
 
-    @ApiModelProperty(value = "Distance from the beginning of the road section.", required = true)
+    @Schema(description = "Distance from the beginning of the road section.", required = true)
     @NotNull
     public Integer distance;
 

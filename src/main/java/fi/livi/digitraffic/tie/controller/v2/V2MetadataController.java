@@ -7,6 +7,7 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DE
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 
 import java.util.List;
@@ -25,13 +26,13 @@ import fi.livi.digitraffic.tie.dto.v1.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignDataService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(tags = "Metadata v2", description = "Metadata for Digitraffic services (Api version 2)")
+@Tag(name = "Metadata v2", description = "Metadata for Digitraffic services (Api version 2)")
 @RestController
 @RequestMapping(API_V2_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
@@ -49,13 +50,13 @@ public class V2MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                             APPLICATION_GEO_JSON_VALUE,
                                                                                             APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiOperation("The static information of weather forecast sections V2")
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
+    @Operation(summary = "The static information of weather forecast sections V2")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated,
-        @ApiParam(value = "List of forecast section indices")
+        @Parameter(description = "List of forecast section indices")
         @RequestParam(value = "naturalIds", required = false)
         final List<String> naturalIds) {
         return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null,
@@ -65,8 +66,8 @@ public class V2MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = { APPLICATION_JSON_VALUE,
                                                                                                               APPLICATION_GEO_JSON_VALUE,
                                                                                                               APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiOperation("The static information of weather forecast sections V2 by road number")
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
+    @Operation(summary = "The static information of weather forecast sections V2 by road number")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @PathVariable("roadNumber") final int roadNumber) {
         return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null,
@@ -77,22 +78,22 @@ public class V2MetadataController {
         APPLICATION_JSON_VALUE,
         APPLICATION_GEO_JSON_VALUE,
         APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiOperation("The static information of weather forecast sections V2 by bounding box")
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections V2") })
+    @Operation(summary = "The static information of weather forecast sections V2 by bounding box")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
-        @ApiParam(value = "Minimum longitude. " + COORD_FORMAT_WGS84)
+        @Parameter(description = "Minimum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLongitude") final double minLongitude,
-        @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
+        @Parameter(description = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLatitude") final double minLatitude,
-        @ApiParam(value = "Maximum longitude. " + COORD_FORMAT_WGS84)
+        @Parameter(description = "Maximum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLongitude") final double maxLongitude,
-        @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
+        @Parameter(description = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLatitude") final double maxLatitude) {
         return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
             maxLongitude, maxLatitude, null);
     }
 
-    @ApiOperation("Return all code descriptions.")
+    @Operation(summary = "Return all code descriptions.")
     @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public VariableSignDescriptions listCodeDescriptions() {

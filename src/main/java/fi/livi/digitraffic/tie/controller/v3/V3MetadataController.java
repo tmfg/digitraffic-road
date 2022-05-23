@@ -18,6 +18,8 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static fi.livi.digitraffic.tie.service.v1.location.LocationService.LATEST;
 
@@ -54,13 +56,15 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
 import fi.livi.digitraffic.tie.service.v3.V3VariableSignService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(tags = "Metadata v3")
+@Tag(name = "Metadata v3", description = "Metadata for Digitraffic services (Api version 3)")
 @RestController
 @RequestMapping(API_V3_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication
@@ -93,13 +97,13 @@ public class V3MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                             APPLICATION_GEO_JSON_VALUE,
                                                                                             APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiOperation("The static information of weather forecast sections")
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections") })
+    @Operation(summary = "The static information of weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
     public ForecastSectionV2FeatureCollection forecastSections(
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated,
-        @ApiParam(value = "List of forecast section indices")
+        @Parameter(description = "List of forecast section indices")
         @RequestParam(value = "naturalIds", required = false)
         final List<String> naturalIds) {
         return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(lastUpdated, null, null, null,
@@ -109,8 +113,8 @@ public class V3MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = { APPLICATION_JSON_VALUE,
                                                                                                               APPLICATION_GEO_JSON_VALUE,
                                                                                                               APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiOperation("The static information of weather forecast sections by road number")
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections") })
+    @Operation(summary = "The static information of weather forecast sections by road number")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @PathVariable("roadNumber") final int roadNumber) {
         return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, roadNumber, null, null,
@@ -120,38 +124,38 @@ public class V3MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                                                            APPLICATION_GEO_JSON_VALUE,
                                                                                                                                                            APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiOperation("The static information of weather forecast sections by bounding box")
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Forecast Sections") })
+    @Operation(summary = "The static information of weather forecast sections by bounding box")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
     public ForecastSectionV2FeatureCollection forecastSections(
-        @ApiParam(value = "Minimum longitude. " + COORD_FORMAT_WGS84)
+        @Parameter(description = "Minimum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLongitude") final double minLongitude,
-        @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
+        @Parameter(description = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("minLatitude") final double minLatitude,
-        @ApiParam(value = "Maximum longitude. " + COORD_FORMAT_WGS84)
+        @Parameter(description = "Maximum longitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLongitude") final double maxLongitude,
-        @ApiParam(value = "Minimum latitude. " + COORD_FORMAT_WGS84)
+        @Parameter(description = "Minimum latitude. " + COORD_FORMAT_WGS84)
         @PathVariable("maxLatitude") final double maxLatitude) {
         return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
             maxLongitude, maxLatitude, null);
     }
 
-    @ApiOperation("Return all code descriptions.")
+    @Operation(summary = "Return all code descriptions.")
     @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public V3VariableSignDescriptions listCodeDescriptions() {
         return new V3VariableSignDescriptions(v3VariableSignService.listVariableSignTypes());
     }
 
-    @ApiOperation("The static information of TMS stations (Traffic Measurement System / LAM)")
+    @Operation(summary = "The static information of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                        APPLICATION_GEO_JSON_VALUE,
                                                                                        APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationFeatureCollection tmsStations(
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated,
-        @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
+        @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = "active,removed,all"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
@@ -160,25 +164,25 @@ public class V3MetadataController {
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
-    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM).")
+    @Operation(summary = "The static information of one TMS station (Traffic Measurement System / LAM).")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                 APPLICATION_GEO_JSON_VALUE,
                                                                                                                 APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections") })
+    @ApiResponses({     @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationFeature tmsStationsByTmsNumber(
         @PathVariable("number") final Long tmsNumber) {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
-    @ApiOperation("The static information of TMS stations of given road (Traffic Measurement System / LAM)")
+    @Operation(summary = "The static information of TMS stations of given road (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-    @ApiResponse(code = 404, message = "Road number not found") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Feature Collections"),
+    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Road number not found", content = @Content) })
     public TmsStationFeatureCollection tmsStationsByRoadNumber(
         @PathVariable("number") final Integer roadNumber,
-        @ApiParam(value = "Return TMS stations of given state.", allowableValues = "active,removed,all")
+        @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = "active,removed,all"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
@@ -187,106 +191,106 @@ public class V3MetadataController {
         return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
     }
 
-    @ApiOperation("The static information of one TMS station (Traffic Measurement System / LAM)")
+    @Operation(summary = "The static information of one TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Feature Collections"),
-    @ApiResponse(code = 404, message = "Road Station not found") })
+    @ApiResponses({     @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Feature Collections"),
+    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Road Station not found", content = @Content) })
     public TmsStationFeature tmsStationsByRoadStationId(
         @PathVariable("id") final Long id) {
         return tmsStationService.getTmsStationByRoadStationId(id);
     }
 
-    @ApiOperation("The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
+    @Operation(summary = "The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({     @ApiResponse(code = 200, message = "Successful retrieval of TMS Station Sensors") })
+    @ApiResponses({     @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Sensors") })
     public TmsRoadStationsSensorsMetadata tmsSensors(
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
         return roadStationSensorService.findTmsRoadStationsSensorsMetadata(lastUpdated);
     }
 
-    @ApiOperation("The static information of weather camera presets")
+    @Operation(summary = "The static information of weather camera presets")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_STATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                           APPLICATION_GEO_JSON_VALUE,
                                                                                           APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Camera Preset Feature Collections") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Camera Preset Feature Collections") })
     public CameraStationFeatureCollection cameraStations(
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
         return cameraWebService.findAllPublishableCameraStationsAsFeatureCollection(lastUpdated);
     }
 
-    @ApiOperation("The static information of weather stations")
+    @Operation(summary = "The static information of weather stations")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                            APPLICATION_GEO_JSON_VALUE,
                                                                                            APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Feature Collections") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Feature Collections") })
     public WeatherStationFeatureCollection weatherStations(
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
         return weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(lastUpdated);
     }
 
-    @ApiOperation("The static information of available sensors of weather stations")
+    @Operation(summary = "The static information of available sensors of weather stations")
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of Weather Station Sensors") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Station Sensors") })
     public WeatherRoadStationsSensorsMetadata weatherSensors(
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
         return roadStationSensorService.findWeatherRoadStationsSensorsMetadata(lastUpdated);
     }
 
-    @ApiOperation("List available location versions")
+    @Operation(summary = "List available location versions")
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_VERSIONS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location versions") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location versions") })
     public List<LocationVersion> locationVersions () {
         return locationService.findLocationVersions();
     }
 
-    @ApiOperation("The static information of locations")
+    @Operation(summary = "The static information of locations")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                     APPLICATION_GEO_JSON_VALUE,
                                                                                     APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of locations") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of locations") })
     public LocationFeatureCollection locations (
-        @ApiParam("If parameter is given use this version.")
+        @Parameter(description = "If parameter is given use this version.")
         @RequestParam(value = "version", required = false, defaultValue = LATEST)
         final String version,
 
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
 
         return locationService.findLocationsMetadata(lastUpdated, version);
     }
 
-    @ApiOperation("The static information of location types and locationsubtypes")
+    @Operation(summary = "The static information of location types and locationsubtypes")
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_TYPES_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location types and location subtypes") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location types and location subtypes") })
     public LocationTypesMetadata locationTypes(
-        @ApiParam("If parameter is given use this version.")
+        @Parameter(description = "If parameter is given use this version.")
         @RequestParam(value = "version", required = false, defaultValue = LATEST)
         final String version,
 
-        @ApiParam("If parameter is given result will only contain update status.")
+        @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
         return locationService.findLocationSubtypes(lastUpdated, version);
     }
 
-    @ApiOperation("The static information of one location")
+    @Operation(summary = "The static information of one location")
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = { APPLICATION_JSON_VALUE,
                                                                                               APPLICATION_GEO_JSON_VALUE,
                                                                                               APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(code = 200, message = "Successful retrieval of location") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location") })
     public LocationFeatureCollection locationsById(
-        @ApiParam("If parameter is given use this version.")
+        @Parameter(description = "If parameter is given use this version.")
         @RequestParam(value = "version", required = false, defaultValue = LATEST)
         final String version,
 

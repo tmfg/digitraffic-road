@@ -4,19 +4,19 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public interface SensorValueHistoryDto {
-    @ApiModelProperty(value = "Value's measured date time")
+    @Schema(description = "Value's measured date time")
     Instant getMeasuredTime();
 
-    @ApiModelProperty(value = "Road station id")
+    @Schema(description = "Road station id")
     long getRoadStationId();
 
-    @ApiModelProperty(value = "Sensor id")
+    @Schema(description = "Sensor id")
     long getSensorId();
 
-    @ApiModelProperty(value = "Sensor value")
+    @Schema(description = "Sensor value")
     double getSensorValue();
 }
