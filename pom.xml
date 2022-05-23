@@ -488,6 +488,10 @@
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>7.0.4</version>
+                <configuration>
+                    <failBuildOnCVSS>0</failBuildOnCVSS>
+                    <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                </configuration>
             </plugin>
 
             <plugin>
