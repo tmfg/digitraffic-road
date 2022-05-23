@@ -15,6 +15,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +103,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
         }
     }
 
+    @Disabled("ks. DPO-1835")
     @Test
     public void s3Bucket() {
         ZonedDateTime now = ZonedDateTime.now();
