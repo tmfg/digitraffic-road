@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: tmfg/digitraffic-build-dependencies
-          ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
+          ssh-key: ${{ secrets.DEPENDENCY_SSH_KEY }}
           path: digitraffic-build-dependencies
       - name: Setup dependencies
         run: cp -R digitraffic-build-dependencies/ ~/.m2/
@@ -32,6 +32,7 @@ jobs:
       - name: Prepare test run
         run: cp src/test/resources/application-default.properties.template target/test-classes/application-ci.properties
       - name: Run tests
+        timeout-minutes: 10
         run: |
           mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -e -U -Dmaven.gitcommitid.skip=true -Dspring.jdbc.getParameterType.ignore=true -Dspring.profiles.active=ci -Dquartz.enabled=false -Droad.datasource.url=jdbc:postgresql://${{ env.db_addr }}:5432/road
       - name: Publish test results
