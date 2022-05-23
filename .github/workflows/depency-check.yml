@@ -1,0 +1,37 @@
+name: Dependency check
+on:
+  push:
+    branches: [master, develop]
+  schedule:
+    - cron: '0 8 * * *' # UTC
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Checkout dependencies
+        uses: actions/checkout@v3
+        with:
+          repository: tmfg/digitraffic-build-dependencies
+          ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
+          path: digitraffic-build-dependencies
+      - name: Setup dependencies
+        run: cp -R digitraffic-build-dependencies/ ~/.m2/
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: corretto
+          cache: maven
+      - name: Dependency check
+        run: mvn dependency-check:check
+      - name: Notify Slack
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: FAILED Road deploy/build
+          fields: repo, job, took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
