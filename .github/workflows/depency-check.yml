@@ -39,4 +39,4 @@ jobs:
           text: FAILED Road deploy/build
           fields: repo, job, took
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
