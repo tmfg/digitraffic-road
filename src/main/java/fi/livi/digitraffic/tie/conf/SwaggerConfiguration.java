@@ -19,7 +19,6 @@ import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.controller.v1.MetadataController;
 import fi.livi.digitraffic.tie.documentation.RoadApiInfo;
 import fi.livi.digitraffic.tie.service.RoadApiInfoGetter;
-
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 
@@ -94,11 +93,11 @@ public class SwaggerConfiguration {
                     .termsOfService(roadApiInfo.getTermsOfServiceUrl())
                     .license(roadApiInfo.getLicense()));
 
-            Server server = new Server();
-            server.setUrl(host);
+            final Server server = new Server();
+            final String url = scheme + "://" + host;
+            server.setUrl(url);
 
-            openApi
-                .setServers(Arrays.asList(server));
+            openApi.setServers(Arrays.asList(server));
         };
     }
 
