@@ -16,14 +16,21 @@ jobs:
           repository: tmfg/digitraffic-build-dependencies
           ssh-key: ${{secrets.DEPENDENCY_SSH_KEY}}
           path: digitraffic-build-dependencies
+      - name: Setup dependencies
+        run: cp -R digitraffic-build-dependencies/ ~/.m2/
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: corretto
           cache: maven
-      - name: Setup dependencies
-        run: cp -R digitraffic-build-dependencies/ ~/.m2/
+      - name: Cache dependency-check files
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository/org/owasp
+          key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-dependency-check-
       - name: Dependency check
         run: mvn dependency-check:check
       - name: Upload report
