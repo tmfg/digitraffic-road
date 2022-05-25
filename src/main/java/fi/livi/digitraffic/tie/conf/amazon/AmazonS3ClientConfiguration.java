@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.conf.amazon;
 
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -28,7 +28,7 @@ public class AmazonS3ClientConfiguration {
     private AmazonS3 build(String region) {
         return AmazonS3ClientBuilder
             .standard()
-            .withCredentials(new ProfileCredentialsProvider())
+            .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
             .withRegion(region)
             .build();
     }
