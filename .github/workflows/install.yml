@@ -24,6 +24,21 @@ on:
                     - 'false'
                     - 'true'
 jobs:
+    log-parameters:
+        runs-on: ubuntu-20.04
+        steps:
+            -   name: Create parameters.txt
+                run: |
+                    echo "User ${{ github.actor }} started install on $(date)" > parameters.txt
+                    echo "Environment ${{ github.event.inputs.env }}" >> parameters.txt
+                    echo "ref ${{ github.event.inputs.ref }}" >> parameters.txt
+                    echo "config-repo-branch ${{ github.event.inputs.config-repo-branch }}" >> parameters.txt
+                    echo "db-install ${{ github.event.inputs.db-install }}" >> parameters.txt
+            -   name: Upload parameters.txt
+                uses: actions/upload-artifact@v3
+                with:
+                    name: parameters.txt
+                    path: parameters.txt
     build:
         runs-on: ubuntu-20.04
         permissions:
@@ -163,6 +178,9 @@ jobs:
             actions: read
         runs-on: ubuntu-20.04
         environment: ${{ github.event.inputs.env }}
+        outputs:
+            revision_daemon: ${{ steps.revision.outputs.revision_daemon }}
+            revision_web: ${{ steps.revision.outputs.revision_web }}
         steps:
             -   name: Configure AWS credentials for ${{ matrix.app }}
                 uses: aws-actions/configure-aws-credentials@v1
@@ -182,6 +200,11 @@ jobs:
                     ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
                     ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
                     ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
+            -   name: Set ${{ matrix.app }} output
+                id: revision
+                run: |
+                    echo outputs ${{join(steps.update.outputs.*, '\n')}}
+                    echo "::set-output name=revision_${{ matrix.app }}::${{ steps.update.outputs.revision }}"
     stop-services:
         needs: install
         if: github.event.inputs.db-install == 'true'
@@ -245,6 +268,18 @@ jobs:
         runs-on: ubuntu-20.04
         environment: ${{ github.event.inputs.env }}
         steps:
+            -   name: Parameters ${{ matrix.ap  }}
+                id: revision
+                run: |
+                    echo revision_daemon ${{ needs.install.outputs.revision_daemon }}
+                    echo revision_web ${{ needs.install.outputs.revision_web }}
+
+                    if [ "${{ matrix.app }}" == "web" ]
+                    then
+                        echo "::set-output name=revision::${{ needs.install.outputs.revision_web }}"
+                    else
+                        echo "::set-output name=revision::${{ needs.install.outputs.revision_daemon }}"
+                    fi
             -   name: Update ${{ matrix.app }} service
                 uses: tmfg/digitraffic-actions@ecs-service-update/v1
                 with:
@@ -252,6 +287,5 @@ jobs:
                     aws-region: ${{ secrets.AWS_REGION }}
                     service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
                     cluster-name: ${{ secrets.CLUSTER_NAME }}
-                    task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}
-                    #:${{ steps.update.outputs.revision }}
+                    task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}:${{ steps.revision.outputs.revision }}
                     desired-count: 1
