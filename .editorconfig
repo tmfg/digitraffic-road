@@ -5,6 +5,9 @@ insert_final_newline=false
 indent_style=space
 indent_size=4
 
+[{*.yml,*.yaml}]
+indent_size=2
+
 [{*.ddl,*.sql}]
 indent_style=space
 indent_size=2
