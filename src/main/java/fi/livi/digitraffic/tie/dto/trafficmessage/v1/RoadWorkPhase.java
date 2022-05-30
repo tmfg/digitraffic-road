@@ -12,10 +12,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "A single phase in a larger road work", value = "RoadWorkPhase_V1")
+@Schema(description = "A single phase in a larger road work", name = "RoadWorkPhase_V1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "id",
@@ -28,44 +27,44 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class RoadWorkPhase extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "id", required = true)
+    @Schema(description = "id", required = true)
     @NotNull
     public String id;
 
-    @ApiModelProperty(value = "Location of an traffic situation announcement")
+    @Schema(description = "Location of an traffic situation announcement")
     public Location location;
 
-    @ApiModelProperty(value = "locationDetails")
+    @Schema(description = "locationDetails")
     public LocationDetails locationDetails;
 
-    @ApiModelProperty(value = "The types of work that are carried out")
+    @Schema(description = "The types of work that are carried out")
     public List<WorkType> workTypes = new ArrayList<>();
 
-    @ApiModelProperty(value = "Restrictions on traffic")
+    @Schema(description = "Restrictions on traffic")
     public List<Restriction> restrictions = new ArrayList<>();
 
-    @ApiModelProperty(value = "Restrictions can be lifted for abnormal transports")
+    @Schema(description = "Restrictions can be lifted for abnormal transports")
     public Boolean restrictionsLiftable;
 
-    @ApiModelProperty(value = "Severity of the disruption to traffic. How severely this road work phase disrupts traffic. LOW - no disruption, " +
+    @Schema(description = "Severity of the disruption to traffic. How severely this road work phase disrupts traffic. LOW - no disruption, " +
                                "HIGH - disruption, HIGHEST - significant disruption", required = true)
     @NotNull
     public Severity severity;
 
-    @ApiModelProperty(value = "WorkingHours of an traffic situation announcement", required = true)
+    @Schema(description = "WorkingHours of an traffic situation announcement", required = true)
     @NotNull
     public List<WeekdayTimePeriod> workingHours = new ArrayList<>();
 
-    @ApiModelProperty(value = "Time periods when the road work is expected to cause slow moving traffic.")
+    @Schema(description = "Time periods when the road work is expected to cause slow moving traffic.")
     public List<WeekdayTimePeriod> slowTrafficTimes = new ArrayList<>();
 
-    @ApiModelProperty(value = "Time periods when the road work is expected to cause queuing of the traffic.")
+    @Schema(description = "Time periods when the road work is expected to cause queuing of the traffic.")
     public List<WeekdayTimePeriod> queuingTrafficTimes = new ArrayList<>();
 
-    @ApiModelProperty(value = "Free comment")
+    @Schema(description = "Free comment")
     public String comment;
 
-    @ApiModelProperty(value = "Time and duration of an traffic situation announcement", required = true)
+    @Schema(description = "Time and duration of an traffic situation announcement", required = true)
     @NotNull
     public TimeAndDuration timeAndDuration;
 

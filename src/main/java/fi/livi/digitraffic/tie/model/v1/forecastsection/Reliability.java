@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel("Forecast reliability")
+@Schema(description = "Forecast reliability")
 public enum Reliability {
 
     SUCCESSFUL(0),

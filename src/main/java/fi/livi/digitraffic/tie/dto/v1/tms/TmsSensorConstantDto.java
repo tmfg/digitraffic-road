@@ -7,18 +7,17 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
-@ApiModel(value = "TmsSensorConstant", description = "Sensor constant values of TMS Station")
+@Schema(name = "TmsSensorConstant", description = "Sensor constant values of TMS Station")
 @JsonPropertyOrder({ "roadStationId", "sensorConstantValues"})
 public class TmsSensorConstantDto {
 
-    @ApiModelProperty(value = "Id of TMS station", required = true)
+    @Schema(description = "Id of TMS station", required = true)
     private final Long roadStationId;
 
-    @ApiModelProperty(value = "TMS Stations sensor constant values", required = true)
+    @Schema(description = "TMS Stations sensor constant values", required = true)
     @JsonProperty(value = "sensorConstantValues")
     private List<TmsSensorConstantValueDto> sensorConstantValues;
 

@@ -4,22 +4,22 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.PrecipitationCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.VisibilityCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.WindCondition;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(description =
+@Schema(description =
     "Forecast that is used is Foreca’s weather forecast which is initialised from the weather model that performs best " +
     "for Finland for a period under study. Majority of the times the initialisation is done from ECMWF model data. " +
-    "Then Foreca meteorologists also manually edit the data to fix certain known errors in the model.", value = "ForecastConditionReason")
+    "Then Foreca meteorologists also manually edit the data to fix certain known errors in the model.", name = "ForecastConditionReason")
 public class ForecastConditionReasonDto {
     @Enumerated(EnumType.STRING)
-    @ApiModelProperty("Precipitation condition:\n" +
+    @Schema(description = "Precipitation condition:\n" +
         "0 = no data available,\n" +
         "1 = rain intensity lt 0.2 mm/h,\n" +
         "2 = rain intensity ge 0.2 mm/h,\n" +
@@ -37,10 +37,10 @@ public class ForecastConditionReasonDto {
     @Enumerated(EnumType.STRING)
     private final WindCondition windCondition;
 
-    @ApiModelProperty("Tells if there is freezing rain: true/false")
+    @Schema(description = "Tells if there is freezing rain: true/false")
     private final Boolean freezingRainCondition;
 
-    @ApiModelProperty("Tells if it is slippery: true/false")
+    @Schema(description = "Tells if it is slippery: true/false")
     private final Boolean winterSlipperiness;
 
     @Enumerated(EnumType.STRING)

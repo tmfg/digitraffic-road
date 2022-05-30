@@ -10,16 +10,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.v1.RootDataObjectDto;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
-@ApiModel(value = "TmsData", description = "Latest measurement data from TMS Stations", parent = RootDataObjectDto.class)
+@Schema(name = "TmsData", description = "Latest measurement data from TMS Stations")
 @JsonPropertyOrder({ "dataUpdatedTime", "tmsStations"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TmsRootDataObjectDto extends RootDataObjectDto {
 
-    @ApiModelProperty(value = "TMS Stations data")
+    @Schema(description = "TMS Stations data")
     @JsonProperty(value = "tmsStations")
     private final List<TmsStationDto> tmsStations;
 

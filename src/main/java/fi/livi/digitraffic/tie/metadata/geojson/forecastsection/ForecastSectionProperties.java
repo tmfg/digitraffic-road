@@ -5,15 +5,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.model.v1.Road;
 import fi.livi.digitraffic.tie.model.v1.RoadSection;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Forecast Section Properties", value = "ForecastSectionPropertiesV1")
+@Schema(description = "Forecast Section Properties", name = "ForecastSectionPropertiesV1")
 @JsonPropertyOrder({ "naturalId", "description", "roadSectionNumber", "roadNumber", "roadSectionVersionNumber", "startDistance",
                      "endDistance", "length", "road", "startRoadSection", "endRoadSection" })
 public class ForecastSectionProperties {
 
-    @ApiModelProperty(value =
+    @Schema(description =
             "Forecast section identifier 15 characters ie. 00004_112_000_0: \n" +
             "1. Road number 5 characters ie. 00004, \n" +
             "2. Road section 3 characters ie. 112, \n" +
@@ -22,34 +21,34 @@ public class ForecastSectionProperties {
     @JsonProperty("id")
     private String naturalId;
 
-    @ApiModelProperty(value = "Forecast section description")
+    @Schema(description = "Forecast section description")
     private String description;
 
-    @ApiModelProperty(value = "Road section number")
+    @Schema(description = "Road section number")
     private int roadSectionNumber;
 
-    @ApiModelProperty(value = "Forecast section road number")
+    @Schema(description = "Forecast section road number")
     private int roadNumber;
 
-    @ApiModelProperty(value = "Road section version number")
+    @Schema(description = "Road section version number")
     private int roadSectionVersionNumber;
 
-    @ApiModelProperty(value = "Forecast section start distance")
+    @Schema(description = "Forecast section start distance")
     private Integer startDistance;
 
-    @ApiModelProperty(value = "Forecast section end distance")
+    @Schema(description = "Forecast section end distance")
     private Integer endDistance;
 
-    @ApiModelProperty(value = "Forecast section length")
+    @Schema(description = "Forecast section length")
     private Integer length;
 
-    @ApiModelProperty(value = "Road where forecast section is located")
+    @Schema(description = "Road where forecast section is located")
     private Road road;
 
-    @ApiModelProperty(value = "Road section where forecast section starts")
+    @Schema(description = "Road section where forecast section starts")
     private RoadSection startRoadSection;
 
-    @ApiModelProperty(value = "Road section where forecast section ends")
+    @Schema(description = "Road section where forecast section ends")
     private RoadSection endRoadSection;
 
     public String getNaturalId() {

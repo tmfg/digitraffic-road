@@ -8,27 +8,26 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "TmsFreeFlowSpeedData")
+@Schema(name = "TmsFreeFlowSpeedData")
 @Entity
 @Immutable
 public class TmsFreeFlowSpeedDto {
 
     @Id
     @JsonProperty("id")
-    @ApiModelProperty(value = "TMS station identifier (naturalId)", required = true)
+    @Schema(description = "TMS station identifier (naturalId)", required = true)
     private long roadStationNaturalId;
 
     @JsonProperty("tmsNumber")
-    @ApiModelProperty(value = "TMS station number", required = true)
+    @Schema(description = "TMS station number", required = true)
     private long tmsNaturalId;
 
-    @ApiModelProperty(value = "Free flow speed to direction 1 [km/h]", required = true)
+    @Schema(description = "Free flow speed to direction 1 [km/h]", required = true)
     private double freeFlowSpeed1;
 
-    @ApiModelProperty(value = "Free flow speed to direction 2 [km/h]", required = true)
+    @Schema(description = "Free flow speed to direction 2 [km/h]", required = true)
     private double freeFlowSpeed2;
 
     public double getFreeFlowSpeed1() {

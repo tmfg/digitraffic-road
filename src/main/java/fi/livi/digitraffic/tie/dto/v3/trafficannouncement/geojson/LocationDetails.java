@@ -6,10 +6,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "LocationDetails", value = "LocationDetailsV3")
+@Schema(description = "LocationDetails", name = "LocationDetailsV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "areaLocation",
@@ -17,10 +16,10 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class LocationDetails extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Location consisting of one or more areas.")
+    @Schema(description = "Location consisting of one or more areas.")
     public AreaLocation areaLocation;
 
-    @ApiModelProperty(value = "Location consisting of a single road point or a road segment between two road points")
+    @Schema(description = "Location consisting of a single road point or a road segment between two road points")
     public RoadAddressLocation roadAddressLocation;
 
     public LocationDetails() {

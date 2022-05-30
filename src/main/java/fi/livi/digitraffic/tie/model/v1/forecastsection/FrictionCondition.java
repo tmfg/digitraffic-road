@@ -1,14 +1,13 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel("The amount of friction on the road")
+@Schema(description = "The amount of friction on the road")
 public enum FrictionCondition {
 
-    @ApiModelProperty("Friction < 0.4")
+    @Schema(description = "Friction < 0.4")
     SLIPPERY(1),
-    @ApiModelProperty("Friction < 0.2")
+    @Schema(description = "Friction < 0.2")
     VERY_SLIPPERY(2);
 
     private final int value;

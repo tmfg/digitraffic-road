@@ -14,10 +14,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Weekday time period", value = "WeekdayTimePeriod_V1")
+@Schema(description = "Weekday time period", name = "WeekdayTimePeriod_V1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "weekday",
@@ -26,15 +25,15 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class WeekdayTimePeriod extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Weekday", required = true)
+    @Schema(description = "Weekday", required = true)
     @NotNull
     public WeekdayTimePeriod.Weekday weekday;
 
-    @ApiModelProperty(value = "Start time of the time period in ISO 8601 local time in Europe/Helsinki", required = true, dataType = "java.lang.String", example = "09:30:00")
+    @Schema(description = "Start time of the time period in ISO 8601 local time in Europe/Helsinki", required = true, type = "java.lang.String", example = "09:30:00")
     @NotNull
     public LocalTime startTime;
 
-    @ApiModelProperty(value = "End time of the time period in ISO 8601 local time in Europe/Helsinki", required = true, dataType = "java.lang.String", example = "15:30:00")
+    @Schema(description = "End time of the time period in ISO 8601 local time in Europe/Helsinki", required = true, type = "java.lang.String", example = "15:30:00")
     @NotNull
     public LocalTime endTime;
 

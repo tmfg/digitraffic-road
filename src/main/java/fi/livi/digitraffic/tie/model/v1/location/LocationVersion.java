@@ -5,17 +5,16 @@ import java.time.ZonedDateTime;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
-@ApiModel(description = "Location Version Object")
+@Schema(description = "Location Version Object")
 public class LocationVersion {
-    @ApiModelProperty(value = "Location version string")
+    @Schema(description = "Location version string")
     @Id
     private String version;
 
-    @ApiModelProperty(value = "Version last updated date time", required = true)
+    @Schema(description = "Version last updated date time", required = true)
     private ZonedDateTime updated;
 
     public LocationVersion() {}

@@ -7,15 +7,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({ "type", "features" })
 public class FeatureCollection<FeatureType> extends GeoJsonObject implements Iterable<FeatureType> {
 
-    @ApiModelProperty(value = "Type of GeoJSON Object", allowableValues = "FeatureCollection", example = "FeatureCollection", required = true, position = 1)
+    @Schema(description = "Type of GeoJSON Object", allowableValues = "FeatureCollection", example = "FeatureCollection", required = true)
     private final String type = "FeatureCollection";
 
-    @ApiModelProperty(value = "GeoJSON Feature Objects", required = true, position = 2)
+    @Schema(description = "GeoJSON Feature Objects", required = true)
     @JsonProperty("features")
     private final List<FeatureType> features;
 

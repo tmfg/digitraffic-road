@@ -7,7 +7,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 import fi.livi.digitraffic.tie.datex2.AbnormalTraffic;
 import fi.livi.digitraffic.tie.datex2.Accident;
 import fi.livi.digitraffic.tie.datex2.AnimalPresenceObstruction;
@@ -40,9 +39,10 @@ import fi.livi.digitraffic.tie.datex2.TransitInformation;
 import fi.livi.digitraffic.tie.datex2.VehicleObstruction;
 import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditions;
 import fi.livi.digitraffic.tie.datex2.WinterDrivingManagement;
-import io.swagger.annotations.ApiModel;
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "SituationRecordType", description = "Datex2 situation record type record")
+@Schema(name = "SituationRecordType", description = "Datex2 situation record type record")
 public enum Datex2SituationRecordType {
 
     // GenericSituationRecord

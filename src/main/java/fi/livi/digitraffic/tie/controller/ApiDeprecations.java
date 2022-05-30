@@ -9,7 +9,7 @@ package fi.livi.digitraffic.tie.controller;
  *
  * And add those values for deprecated APIs:
  * @Deprecated(forRemoval = true, since = SINCE_2022_01_01)
- * @ApiOperation(value = "Api description plaa plaa. " + ApiDeprecations.API_NOTE_2022_11_01)
+ * @Operation(summary = "Api description plaa plaa. " + ApiDeprecations.API_NOTE_2022_11_01)
  */
 public final class ApiDeprecations {
 

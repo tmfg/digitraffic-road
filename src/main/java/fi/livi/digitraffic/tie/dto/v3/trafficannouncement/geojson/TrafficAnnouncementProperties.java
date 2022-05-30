@@ -11,10 +11,9 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Traffic Announcement properties", value = "TrafficAnnouncementPropertiesV3")
+@Schema(description = "Traffic Announcement properties", name = "TrafficAnnouncementPropertiesV3")
 @JsonPropertyOrder({
     "situationId",
     "situationType",
@@ -28,31 +27,31 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class TrafficAnnouncementProperties extends Properties {
 
-    @ApiModelProperty(value = "Situation id", required = true)
+    @Schema(description = "Situation id", required = true)
     @NotNull
     public final String situationId;
 
-    @ApiModelProperty(value = "Announcement version", required = true)
+    @Schema(description = "Announcement version", required = true)
     @NotNull
     public final Integer version;
 
-    @ApiModelProperty(value = "The type of the situation", required = true)
+    @Schema(description = "The type of the situation", required = true)
     private SituationType situationType;
 
-    @ApiModelProperty(value = "The type of the traffic announcement. Omitted for other situation types. Note that ended and retracted are not actual types.")
+    @Schema(description = "The type of the traffic announcement. Omitted for other situation types. Note that ended and retracted are not actual types.")
     private TrafficAnnouncementType trafficAnnouncementType;
 
-    @ApiModelProperty(value = "Annoucement release time", required = true)
+    @Schema(description = "Annoucement release time", required = true)
     public final ZonedDateTime releaseTime;
 
-    @ApiModelProperty(value = "Annoucement version time", required = true)
+    @Schema(description = "Annoucement version time", required = true)
     public final ZonedDateTime versionTime;
 
-    @ApiModelProperty(value = "Contains announcement's different language versions available.", required = true)
+    @Schema(description = "Contains announcement's different language versions available.", required = true)
     @NotNull
     public final List<TrafficAnnouncement> announcements;
 
-    @ApiModelProperty(value = "Sender's contact information")
+    @Schema(description = "Sender's contact information")
     public final Contact contact;
 
     public TrafficAnnouncementProperties(final String situationId, final Integer version, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType, final ZonedDateTime releaseTime,

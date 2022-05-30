@@ -4,11 +4,11 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.API_MAINTENANCE;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController.FromToParamType.CREATED_TIME;
 import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController.FromToParamType.END_TIME;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -40,13 +40,14 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Api(tags = ApiConstants.MAINTENANCE_TAG)
+@Tag(name = ApiConstants.MAINTENANCE_TAG, description = "Maintenance Tracking Controller")
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -101,45 +102,45 @@ public class MaintenanceTrackingController {
         this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
     }
 
-    @ApiOperation(value = "Road maintenance tracking routes latest points")
+    @Operation(summary = "Road maintenance tracking routes latest points")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking latest routes"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking latest routes"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
 
-    @ApiParam(value = "Return routes which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
+    @Parameter(description = "Return routes which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     final Instant endFrom,
 
-    @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+    @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
     @RequestParam(defaultValue = "19.0", required = false)
     @DecimalMin("19.0")
     @DecimalMax("32.0")
     final double xMin,
 
-    @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+    @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
     @RequestParam(defaultValue = "59.0", required = false)
     @DecimalMin("59.0")
     @DecimalMax("72.0")
     final double yMin,
 
-    @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+    @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
     @RequestParam(defaultValue = "32", required = false)
     @DecimalMin("19.0")
     @DecimalMax("32.0")
     final double xMax,
 
-    @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+    @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
     @RequestParam(defaultValue = "72.0", required = false)
     @DecimalMin("59.0")
     @DecimalMax("72.0")
     final double yMax,
 
-    @ApiParam(value = "Task ids to include. Any route containing one of the selected tasks will be returned.")
+    @Parameter(description = "Task ids to include. Any route containing one of the selected tasks will be returned.")
     @RequestParam(value = "taskId", required = false)
     final List<MaintenanceTrackingTask> taskIds,
 
-    @ApiParam(value = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
+    @Parameter(description = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
     @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
     final List<String> domains) {
 
@@ -149,60 +150,60 @@ public class MaintenanceTrackingController {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
-    @ApiOperation(value = "Road maintenance tracking routes")
+    @Operation(summary = "Road maintenance tracking routes")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking routes"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
 
-        @ApiParam(value = "Return routes which have completed onwards from the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
+        @Parameter(description = "Return routes which have completed onwards from the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant endFrom,
 
-        @ApiParam(value = "Return routes which have completed before the given end time (exclusive). Default is now and maximum interval between from and to is 24h.")
+        @Parameter(description = "Return routes which have completed before the given end time (exclusive). Default is now and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant endBefore,
 
-        @ApiParam(value = "Return routes which have been created after the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
+        @Parameter(description = "Return routes which have been created after the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant createdAfter,
 
-        @ApiParam(value = "Return routes which have been created before the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
+        @Parameter(description = "Return routes which have been created before the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant createdBefore,
 
-        @ApiParam(allowableValues = RANGE_X, value = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
         @RequestParam(defaultValue = "19.0", required = false)
         @DecimalMin("19.0")
         @DecimalMax("32.0")
         final double xMin,
 
-        @ApiParam(allowableValues = RANGE_Y, value = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
         @RequestParam(defaultValue = "59.0", required = false)
         @DecimalMin("59.0")
         @DecimalMax("72.0")
         final double yMin,
 
-        @ApiParam(allowableValues = RANGE_X, value = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
         @RequestParam(defaultValue = "32", required = false)
         @DecimalMin("19.0")
         @DecimalMax("32.0")
         final double xMax,
 
-        @ApiParam(allowableValues = RANGE_Y, value = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
         @RequestParam(defaultValue = "72.0", required = false)
         @DecimalMin("59.0")
         @DecimalMax("72.0")
         final double yMax,
 
-        @ApiParam(value = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
+        @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds,
 
-        @ApiParam(value = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
+        @Parameter(description = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
         @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
         final List<String> domains) {
 
@@ -213,16 +214,16 @@ public class MaintenanceTrackingController {
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
-    @ApiOperation(value = "Road maintenance tracking route with tracking id")
+    @Operation(summary = "Road maintenance tracking route with tracking id")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES + "/{id}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking routes"))
-    public MaintenanceTrackingFeature getMaintenanceTracking(@ApiParam("Tracking id") @PathVariable(value = "id") final long id) {
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking routes"))
+    public MaintenanceTrackingFeature getMaintenanceTracking(@Parameter(description = "Tracking id") @PathVariable(value = "id") final long id) {
         return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
-    @ApiOperation(value = "Road maintenance tracking tasks")
+    @Operation(summary = "Road maintenance tracking tasks")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_TASKS, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking tasks"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking tasks"))
     public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
         return Stream.of(MaintenanceTrackingTask.values())
             .sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
@@ -230,9 +231,9 @@ public class MaintenanceTrackingController {
             .collect(Collectors.toList());
     }
 
-    @ApiOperation(value = "Road maintenance tracking domains")
+    @Operation(summary = "Road maintenance tracking domains")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_DOMAINS, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(code = SC_OK, message = "Successful retrieval of maintenance tracking domains"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking domains"))
     public List<DomainDto> getMaintenanceTrackingDomains() {
         return v2MaintenanceTrackingDataService.getDomainsWithGenerics();
     }

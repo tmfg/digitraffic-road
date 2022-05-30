@@ -3,27 +3,26 @@ package fi.livi.digitraffic.tie.metadata.geojson.forecastsection;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "GeoJSON Feature Object", value = "ForecastSectionFeatureV2")
+@Schema(description = "GeoJSON Feature Object", name = "ForecastSectionFeatureV2")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class ForecastSectionV2Feature {
 
-    @ApiModelProperty(value = "\"Feature\": GeoJSON Feature Object", required = true, position = 1)
+    @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true)
     @JsonPropertyOrder(value = "1")
     private final String type = "Feature";
 
     // TODO: Remove this from next version as it is just db id and real id is in properties
-    @ApiModelProperty(value = "Forecast section id", required = true, position = 2)
+    @Schema(description = "Forecast section id", required = true)
     @JsonPropertyOrder(value = "2")
     private long id;
 
-    @ApiModelProperty(value = "GeoJSON MultiLineString Geometry Object. Points represent the road.", required = true, position = 3)
+    @Schema(description = "GeoJSON MultiLineString Geometry Object. Points represent the road.", required = true)
     @JsonPropertyOrder(value = "3")
     private MultiLineString geometry;
 
-    @ApiModelProperty(value = "Forecast section properties", required = true, position = 4)
+    @Schema(description = "Forecast section properties", required = true)
     @JsonPropertyOrder(value = "4")
     private ForecastSectionV2Properties properties = new ForecastSectionV2Properties();
 

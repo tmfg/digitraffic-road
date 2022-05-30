@@ -39,41 +39,21 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
     }
 
     @Test
-    public void testSwaggerRestApi() throws Exception {
-        mockMvc.perform(get("/v2/api-docs?group=metadata-api"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(restContentType))
-                .andExpect(jsonPath("$.swagger", is("2.0")))
-                .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-                .andExpect(jsonPath("$.paths." + API_V1_BASE_PATH + API_METADATA_PART_PATH + TMS_STATIONS_PATH, anything()));
-    }
-
-    @Test
     public void testSwaggerRestRoadApi() throws Exception {
-        mockMvc.perform(get("/v2/api-docs?group=road-api"))
+        mockMvc.perform(get("/v3/api-docs/road-api"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(restContentType))
-            .andExpect(jsonPath("$.swagger", is("2.0")))
+            .andExpect(jsonPath("$.openapi", is("3.0.1")))
             .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
             .andExpect(jsonPath("$.paths." + API_V1_BASE_PATH + API_METADATA_PART_PATH + TMS_STATIONS_PATH, anything()));
     }
 
     @Test
-    public void testSwaggerRestApiBeta() throws Exception {
-        mockMvc.perform(get("/v2/api-docs?group=metadata-api-beta"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(restContentType))
-            .andExpect(jsonPath("$.swagger", is("2.0")))
-            .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-            .andExpect(content().string(containsString(API_BETA_BASE_PATH + "/")));
-    }
-
-    @Test
     public void testSwaggerRestRoadApiBeta() throws Exception {
-        mockMvc.perform(get("/v2/api-docs?group=road-api-beta"))
+        mockMvc.perform(get("/v3/api-docs/road-api-beta"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(restContentType))
-            .andExpect(jsonPath("$.swagger", is("2.0")))
+            .andExpect(jsonPath("$.openapi", is("3.0.1")))
             .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
             .andExpect(content().string(containsString(API_BETA_BASE_PATH + "/")));
     }

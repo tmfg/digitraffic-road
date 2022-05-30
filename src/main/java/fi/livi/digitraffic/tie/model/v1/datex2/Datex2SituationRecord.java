@@ -24,10 +24,9 @@ import org.hibernate.annotations.Parameter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "SituationRecord", description = "Datex2 situation record")
+@Schema(name = "SituationRecord", description = "Datex2 situation record")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @DynamicUpdate
@@ -41,7 +40,7 @@ public class Datex2SituationRecord {
     @GeneratedValue(generator = "SEQ_DATEX2SITUATIONRECORD")
     private Long id;
 
-    @ApiModelProperty(value = "Record id", required = true)
+    @Schema(description = "Record id", required = true)
     @NotNull
     private String situationRecordId;
 
@@ -50,35 +49,35 @@ public class Datex2SituationRecord {
     @JoinColumn(name = "DATEX2_SITUATION_ID", nullable = false)
     private Datex2Situation situation;
 
-    @ApiModelProperty(value = "Record validy status", required = true)
+    @Schema(description = "Record validy status", required = true)
     @NotNull
     @Enumerated(EnumType.STRING)
     private Datex2SituationRecordValidyStatus validyStatus;
 
-    @ApiModelProperty(value = "Record creation date time", required = true)
+    @Schema(description = "Record creation date time", required = true)
     @NotNull
     private ZonedDateTime creationTime;
 
-    @ApiModelProperty(value = "Record version date time", required = true)
+    @Schema(description = "Record version date time", required = true)
     @NotNull
     private ZonedDateTime versionTime;
 
-    @ApiModelProperty(value = "Record observation date time")
+    @Schema(description = "Record observation date time")
     private ZonedDateTime observationTime;
 
-    @ApiModelProperty(value = "Record overall start date time", required = true)
+    @Schema(description = "Record overall start date time", required = true)
     @NotNull
     private ZonedDateTime overallStartTime;
 
-    @ApiModelProperty(value = "Record overall end date time")
+    @Schema(description = "Record overall end date time")
     private ZonedDateTime overallEndTime;
 
-    @ApiModelProperty(value = "Record type", required = true)
+    @Schema(description = "Record type", required = true)
     @Enumerated(EnumType.STRING)
     @NotNull
     private Datex2SituationRecordType type;
 
-    @ApiModelProperty(value = "Record comments", required = true)
+    @Schema(description = "Record comments", required = true)
     @OneToMany(mappedBy = "situationRecord", cascade = CascadeType.ALL)
     private List<SituationRecordCommentI18n> publicComments;
 

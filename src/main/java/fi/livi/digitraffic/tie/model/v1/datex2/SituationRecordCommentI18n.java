@@ -19,10 +19,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "SituationRecordGeneralPublicComment", description = "Datex2 situation record general public comment")
+@Schema(name = "SituationRecordGeneralPublicComment", description = "Datex2 situation record general public comment")
 @JsonPropertyOrder({ "lang", "value"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
@@ -37,12 +36,12 @@ public class SituationRecordCommentI18n {
     @GeneratedValue(generator = "SEQ_SITUATION_RECORD_COMMENT")
     private Long id;
 
-    @ApiModelProperty(value = "Comment language", required = true)
+    @Schema(description = "Comment language", required = true)
     @NotNull
     @Length(min = 2, max = 2)
     private String lang;
 
-    @ApiModelProperty(value = "Comment value", required = true)
+    @Schema(description = "Comment value", required = true)
     @NotNull
     private String value;
 

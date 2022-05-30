@@ -8,45 +8,44 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Maintenance tracking properties", value = "MaintenanceTrackingProperties_V1")
+@Schema(description = "Maintenance tracking properties", name = "MaintenanceTrackingProperties_V1")
 public class MaintenanceTrackingProperties extends Properties {
 
-    @ApiModelProperty(value = "Id for the tracking", required = true)
+    @Schema(description = "Id for the tracking", required = true)
     public final long id;
 
-    @ApiModelProperty(value = "Id for the previous tracking if known")
+    @Schema(description = "Id for the previous tracking if known")
     public final Long previousId;
 
     // "Value is not allowed to share to public"
     @JsonIgnore()
-    // @ApiModelProperty(value = "Id for work machine for tracking", required = true)
+    // @Schema(description = "Id for work machine for tracking", required = true)
     public final long workMachineId;
 
-    @ApiModelProperty(value = "Time when tracking was reported", required = true)
+    @Schema(description = "Time when tracking was reported", required = true)
     public final Instant sendingTime;
 
-    @ApiModelProperty(value = "Creation time of tracking", required = true)
+    @Schema(description = "Creation time of tracking", required = true)
     public final Instant created;
 
-    @ApiModelProperty(value = "Tasks done during maintenance work", required = true)
+    @Schema(description = "Tasks done during maintenance work", required = true)
     public final Set<MaintenanceTrackingTask> tasks;
 
-    @ApiModelProperty(value = "Start time of maintenance work tasks", required = true)
+    @Schema(description = "Start time of maintenance work tasks", required = true)
     public final Instant startTime;
 
-    @ApiModelProperty(value = "End time of maintenance work tasks", required = true)
+    @Schema(description = "End time of maintenance work tasks", required = true)
     public final Instant endTime;
 
-    @ApiModelProperty(value = "Direction of the last observation")
+    @Schema(description = "Direction of the last observation")
     public BigDecimal direction;
 
-    @ApiModelProperty(value = "Domain of the data")
+    @Schema(description = "Domain of the data")
     public String domain;
 
-    @ApiModelProperty(value = "Source and owner of the data")
+    @Schema(description = "Source and owner of the data")
     public String source;
 
     public MaintenanceTrackingProperties(final long id, final Long previousId, final long workMachineId,

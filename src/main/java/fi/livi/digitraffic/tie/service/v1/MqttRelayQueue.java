@@ -4,9 +4,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +19,14 @@ import fi.livi.digitraffic.tie.conf.MqttConfiguration;
 @ConditionalOnExpression("'${app.type}' == 'daemon' and '${config.test}' != 'true'")
 public class MqttRelayQueue {
     private static final Logger logger = LoggerFactory.getLogger(MqttRelayQueue.class);
+    private static final int MAX_QUEUE_SIZE = 100000;
 
-    private static final Map<StatisticsType, Integer> sentStatisticsMap = new ConcurrentHashMap<>();
-    private static final Map<StatisticsType, Integer> sendErrorStatisticsMap = new ConcurrentHashMap<>();
-    private final BlockingQueue<Triple<String, String, StatisticsType>> messageList = new LinkedBlockingQueue<>();
-    private final LongAccumulator maxQueueLength = new LongAccumulator(Long::max, 0L);
+    private static final Map<StatisticsType, LongAdder> sentStatisticsMap = new ConcurrentHashMap<>();
+    private static final Map<StatisticsType, LongAdder> sendErrorStatisticsMap = new ConcurrentHashMap<>();
+    private final BlockingQueue<QueueItem> messageList = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
+
+    private final LongAdder addedMessagesAdder = new LongAdder();
+    private long maxQueueLength = 0;
 
     public enum StatisticsType {TMS, WEATHER, MAINTENANCE_TRACKING, STATUS}
 
@@ -32,39 +34,38 @@ public class MqttRelayQueue {
 
     @Autowired
     public MqttRelayQueue(final MqttConfiguration.MqttGateway mqttGateway) {
-
         for (final StatisticsType type : StatisticsType.values()) {
-            sentStatisticsMap.put(type, 0);
-            sendErrorStatisticsMap.put(type, 0);
+            sentStatisticsMap.put(type, new LongAdder());
+            sendErrorStatisticsMap.put(type, new LongAdder());
         }
 
         // in a threadsafe way, take messages from message list and send them to mqtt gateway
-        new Thread(() -> {
+        final Thread sender = new Thread(() -> {
             while(true) {
+                final QueueItem item = getNextMessage();
 
-                final Triple<String, String, StatisticsType> topicPayloadStatisticsType = getNextMessage();
+                if (item != null) {
+                    maxQueueLength = Math.max(maxQueueLength, messageList.size());
 
-                if (topicPayloadStatisticsType != null) {
                     try {
-                        mqttGateway.sendToMqtt(topicPayloadStatisticsType.getLeft(), QOS, topicPayloadStatisticsType.getMiddle());
-                        if (topicPayloadStatisticsType.getRight() != null) {
-                            updateSentMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
-                        }
+                        mqttGateway.sendToMqtt(item.topic, item.message);
+                        updateSentMqttStatistics(item.statistics, 1);
                     } catch (final Exception e) {
                         if (sendErrorStatisticsMap.isEmpty()) {
                             logger.error("MqttGateway send failure", e);
                         }
 
-                        if (topicPayloadStatisticsType.getRight() != null) {
-                            updateSendErrorMqttStatistics(topicPayloadStatisticsType.getRight(), 1);
-                        }
+                        updateSendErrorMqttStatistics(item.statistics, 1);
                     }
                 }
             }
-        }).start();
+        });
+
+        sender.setName("MqttSenderThread");
+        sender.start();
     }
 
-    private Triple<String, String, StatisticsType> getNextMessage() {
+    private QueueItem getNextMessage() {
         try {
             return messageList.take();
         } catch (final InterruptedException ie) {
@@ -79,7 +80,11 @@ public class MqttRelayQueue {
 
     @Scheduled(fixedRate = 60000)
     public void logMqttQueue() {
-        logger.info("mqttQueueLength={}", maxQueueLength.getThenReset());
+        logger.info("prefix=CURRENT queueSize={}", messageList.size());
+        logger.info("prefix=MAX queueSize={}", maxQueueLength);
+        logger.info("prefix=ADDED queueSize={}", addedMessagesAdder.sumThenReset());
+
+        maxQueueLength = 0;
     }
 
     /**
@@ -93,8 +98,14 @@ public class MqttRelayQueue {
             throw new IllegalArgumentException(String.format("All parameters must be set topic:%s, payload:%s, statisticsType:%s",
                                                              topic, payLoad, statisticsType));
         }
-        messageList.add(Triple.of(topic, payLoad, statisticsType));
-        maxQueueLength.accumulate(messageList.size());
+
+        try {
+            messageList.add(new QueueItem(topic, payLoad, statisticsType));
+            addedMessagesAdder.increment();
+        } catch (final IllegalStateException e) {
+            logger.error("Mqtt send queue full!");
+            messageList.clear();
+        }
     }
 
     /**
@@ -102,8 +113,8 @@ public class MqttRelayQueue {
      * @param type Statistics type
      * @param messages Count of messages send
      */
-    public synchronized void updateSentMqttStatistics(final StatisticsType type, final int messages) {
-        sentStatisticsMap.put(type, sentStatisticsMap.get(type) + messages);
+    public void updateSentMqttStatistics(final StatisticsType type, final int messages) {
+        sentStatisticsMap.get(type).add(messages);
     }
 
     /**
@@ -111,17 +122,29 @@ public class MqttRelayQueue {
      * @param type Statistics type
      * @param messages Count of messages send
      */
-    public synchronized void updateSendErrorMqttStatistics(final StatisticsType type, final int messages) {
-        sendErrorStatisticsMap.put(type, sendErrorStatisticsMap.get(type) + messages);
+    public void updateSendErrorMqttStatistics(final StatisticsType type, final int messages) {
+        sendErrorStatisticsMap.get(type).add(messages);
     }
 
     @Scheduled(fixedRate = 60000)
     public void logMessageCount() {
         for (final StatisticsType type : StatisticsType.values()) {
-            final Integer sentMessages = sentStatisticsMap.put(type, 0);
-            final Integer sendErrors = sendErrorStatisticsMap.put(type, 0);
+            final long sentMessages = sentStatisticsMap.get(type).sumThenReset();
+            final long sentErrors = sendErrorStatisticsMap.get(type).sumThenReset();
 
-            logger.info("method=logMessageCount type={} messages={} errors={}", type, sentMessages != null ? sentMessages : 0, sendErrors != null ? sendErrors : 0);
+            logger.info("method=logMessageCount type={} messages={} errors={}", type, sentMessages, sentErrors);
+        }
+    }
+
+    private static final class QueueItem {
+        public final String topic;
+        public final String message;
+        public final StatisticsType statistics;
+
+        private QueueItem(final String topic, final String message, final StatisticsType statistics) {
+            this.topic = topic;
+            this.message = message;
+            this.statistics = statistics;
         }
     }
 }

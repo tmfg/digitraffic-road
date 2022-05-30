@@ -6,10 +6,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Location to display in ETRS-TM35FIN coordinate format.", value = "LocationToDisplayV2")
+@Schema(description = "Location to display in ETRS-TM35FIN coordinate format.", name = "LocationToDisplayV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "e",
@@ -17,10 +16,10 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class LocationToDisplay extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "ETRS-TM35FIN east coordinate", required = true, position = 1)
+    @Schema(description = "ETRS-TM35FIN east coordinate", required = true)
     public Double e;
 
-    @ApiModelProperty(value = "ETRS-TM35FIN north coordinate", required = true, position = 1)
+    @Schema(description = "ETRS-TM35FIN north coordinate", required = true)
     public Double n;
 
     public LocationToDisplay(Double e, Double n) {

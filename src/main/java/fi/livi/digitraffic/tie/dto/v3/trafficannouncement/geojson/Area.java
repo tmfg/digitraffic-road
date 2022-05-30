@@ -8,10 +8,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "AlertC area", value = "AreaV3")
+@Schema(description = "AlertC area", name = "AreaV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
    "name",
@@ -20,15 +19,15 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class Area extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "The name of the area", required = true)
+    @Schema(description = "The name of the area", required = true)
     @NotNull
     public String name;
 
-    @ApiModelProperty(value = "Location code of the area, number of the road point in AlertC location table", required = true)
+    @Schema(description = "Location code of the area, number of the road point in AlertC location table", required = true)
     @NotNull
     public Integer locationCode;
 
-    @ApiModelProperty(value = "The type of the area", required = true, example = "MUNICIPALITY")
+    @Schema(description = "The type of the area", required = true, example = "MUNICIPALITY")
     @NotNull
     public AreaType type;
 

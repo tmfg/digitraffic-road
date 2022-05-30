@@ -21,10 +21,10 @@ on:
         required: true
         default: 'latest'
       desired-count:
-          description: 'Desired count of services'
-          type: string
-          required: true
-          default: '1'
+        description: 'Desired count of services'
+        type: string
+        required: true
+        default: '1'
 
 jobs:
   update:

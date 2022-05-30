@@ -11,10 +11,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "A single phase in a larger road work", value = "RestrictionV3")
+@Schema(description = "A single phase in a larger road work", name = "RestrictionV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "type",
@@ -22,10 +21,10 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class Restriction extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Type of the restriction.")
+    @Schema(description = "Type of the restriction.")
     public Type type;
 
-    @ApiModelProperty(value = "Feature describes characteristics and qualities of the situation.")
+    @Schema(description = "Feature describes characteristics and qualities of the situation.")
     @JsonPropertyDescription("Feature describes characteristics and qualities of the situation.")
     public Feature restriction;
 

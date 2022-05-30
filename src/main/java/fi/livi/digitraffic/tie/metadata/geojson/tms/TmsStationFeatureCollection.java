@@ -6,9 +6,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.v1.RootFeatureCollectionDto;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "GeoJSON Feature Collection of TMS stations", value = "TmsStationFeatureCollection")
+@Schema(description = "GeoJSON Feature Collection of TMS stations", name = "TmsStationFeatureCollection")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
 public class TmsStationFeatureCollection extends RootFeatureCollectionDto<TmsStationFeature> {
 

@@ -9,19 +9,21 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import io.swagger.annotations.ApiModelProperty;
+import fi.livi.digitraffic.tie.dto.v1.weather.WeatherStationDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
+@Schema(subTypes = { TmsStationDto.class, WeatherStationDto.class })
 public abstract class AbstractStationWithSensorsDto {
 
-    @ApiModelProperty(value = "Road station id", required = true)
+    @Schema(description = "Road station id", required = true)
     @JsonProperty(value = "id")
     private long roadStationNaturalId;
 
-    @ApiModelProperty(value = "Measured sensor values of the Weather Station", required = true)
+    @Schema(description = "Measured sensor values of the Weather Station", required = true)
     private List<SensorValueDto> sensorValues = new ArrayList<>();
 
-    @ApiModelProperty(value = "Date and time of the sensor's measurement")
+    @Schema(description = "Date and time of the sensor's measurement")
     private ZonedDateTime measuredTime;
 
     public long getRoadStationNaturalId() {

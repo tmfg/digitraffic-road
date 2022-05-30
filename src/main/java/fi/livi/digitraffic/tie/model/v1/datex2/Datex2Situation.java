@@ -21,10 +21,9 @@ import org.hibernate.annotations.Parameter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "Situation", description = "Datex2 situation")
+@Schema(name = "Situation", description = "Datex2 situation")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @DynamicUpdate
@@ -38,7 +37,7 @@ public class Datex2Situation {
     @GeneratedValue(generator = "SEQ_DATEX2SITUATION")
     private Long id;
 
-    @ApiModelProperty(value = "Situation id", required = true)
+    @Schema(description = "Situation id", required = true)
     @NotNull
     private String situationId;
 
@@ -47,12 +46,12 @@ public class Datex2Situation {
     @JoinColumn(name = "DATEX2_ID", nullable = false)
     private Datex2 datex2;
 
-    @ApiModelProperty(value = "Situation records", required = true)
+    @Schema(description = "Situation records", required = true)
     @NotNull
     @OneToMany(mappedBy = "situation", cascade = CascadeType.ALL)
     private List<Datex2SituationRecord> situationRecords;
 
-    @ApiModelProperty(value = "Situation version date time")
+    @Schema(description = "Situation version date time")
     private ZonedDateTime versionTime;
 
     public Long getId() {

@@ -9,9 +9,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.v1.RootFeatureCollectionDto;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "GeoJSON Feature Collection of Cameras with presets", value = "CameraStationFeatureCollection")
+@Schema(description = "GeoJSON Feature Collection of Cameras with presets", name = "CameraStationFeatureCollection")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
 public class CameraStationFeatureCollection extends RootFeatureCollectionDto<CameraStationFeature> {
 

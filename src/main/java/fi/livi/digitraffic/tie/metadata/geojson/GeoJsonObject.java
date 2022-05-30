@@ -8,17 +8,16 @@ import org.slf4j.Logger;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "GeoJSON object", discriminator = "type")
+@Schema(description = "GeoJSON object", discriminatorProperty = "type")
 public abstract class GeoJsonObject extends JsonAdditionalProperties implements Serializable {
     private static final Logger log = getLogger(GeoJsonObject.class);
 
     public GeoJsonObject() {
     }
 
-    @ApiModelProperty(value = "GeoJSON Object Type", required = true)
+    @Schema(description = "GeoJSON Object Type", required = true)
     public abstract String getType();
 
     @Override

@@ -5,9 +5,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Traffic Announcement type", value = "TrafficAnnouncementType_V1")
+@Schema(description = "Traffic Announcement type", name = "TrafficAnnouncementType_V1")
 public enum TrafficAnnouncementType {
 
     GENERAL("general"),

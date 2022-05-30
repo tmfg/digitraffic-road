@@ -1,14 +1,13 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel("Visibility")
+@Schema(description = "Visibility")
 public enum VisibilityCondition {
 
-    @ApiModelProperty("400 m")
+    @Schema(description = "400 m")
     FAIRLY_POOR(1),
-    @ApiModelProperty("200 m")
+    @Schema(description = "200 m")
     POOR(2);
 
     private final int value;

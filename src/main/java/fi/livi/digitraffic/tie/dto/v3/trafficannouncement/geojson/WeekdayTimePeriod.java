@@ -13,10 +13,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Working hour", value = "WeekdayTimePeriodV3")
+@Schema(description = "Working hour", name = "WeekdayTimePeriodV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "weekday",
@@ -25,15 +24,15 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class WeekdayTimePeriod extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Weekday", required = true)
+    @Schema(description = "Weekday", required = true)
     @NotNull
     public WeekdayTimePeriod.Weekday weekday;
 
-    @ApiModelProperty(value = "Start time of the time period in ISO 8601 local time in Europe/Helsinki", required = true)
+    @Schema(description = "Start time of the time period in ISO 8601 local time in Europe/Helsinki", required = true)
     @NotNull
     public String startTime;
 
-    @ApiModelProperty(value = "End time of the time period in ISO 8601 local time in Europe/Helsinki", required = true)
+    @Schema(description = "End time of the time period in ISO 8601 local time in Europe/Helsinki", required = true)
     @NotNull
     public String endTime;
 

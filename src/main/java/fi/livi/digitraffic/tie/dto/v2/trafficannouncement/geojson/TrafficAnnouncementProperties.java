@@ -12,10 +12,9 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Traffic Announcement properties", value = "TrafficAnnouncementPropertiesV2")
+@Schema(description = "Traffic Announcement properties", name = "TrafficAnnouncementPropertiesV2")
 @JsonPropertyOrder({
     "situationId",
     "messageType",
@@ -27,29 +26,29 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class TrafficAnnouncementProperties extends Properties {
 
-    @ApiModelProperty(value = "Situation id", required = true)
+    @Schema(description = "Situation id", required = true)
     @NotNull
     public final String situationId;
 
-    @ApiModelProperty(value = "Announcement version", required = true)
+    @Schema(description = "Announcement version", required = true)
     @NotNull
     public final Integer version;
 
-    @ApiModelProperty(value = "Annoucement release time", required = true)
+    @Schema(description = "Annoucement release time", required = true)
     @NotNull
     public final Instant releaseTime;
 
-    @ApiModelProperty(value = "Location to display in ETRS-TM35FIN coordinate format.")
+    @Schema(description = "Location to display in ETRS-TM35FIN coordinate format.")
     public final LocationToDisplay locationToDisplay;
 
-    @ApiModelProperty(value = "Contains announcement's different language versions available.", required = true)
+    @Schema(description = "Contains announcement's different language versions available.", required = true)
     @NotNull
     public final List<TrafficAnnouncement> announcements;
 
-    @ApiModelProperty(value = "Sender's contact information")
+    @Schema(description = "Sender's contact information")
     public final Contact contact;
 
-    @ApiModelProperty(value = "Message type")
+    @Schema(description = "Message type")
     private Datex2MessageType messageType;
 
     public TrafficAnnouncementProperties(final String situationId, final Integer version, final ZonedDateTime releaseTime,

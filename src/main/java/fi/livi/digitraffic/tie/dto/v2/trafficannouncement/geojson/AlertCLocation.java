@@ -8,10 +8,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "AlertC location", value = "AlertCLocationV2")
+@Schema(description = "AlertC location", name = "AlertCLocationV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "locationCode",
@@ -20,14 +19,14 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class AlertCLocation extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "AlertC location code. Number of the location point in AlertC location table", required = true)
+    @Schema(description = "AlertC location code. Number of the location point in AlertC location table", required = true)
     public Integer locationCode;
 
-    @ApiModelProperty(value = "Location point name")
+    @Schema(description = "Location point name")
     @NotNull
     public String name;
 
-    @ApiModelProperty(value = "Distance of the road point from the AlertC location point", required = true)
+    @Schema(description = "Distance of the road point from the AlertC location point", required = true)
     @NotNull
     public Integer distance;
 

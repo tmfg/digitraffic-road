@@ -8,16 +8,16 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.FeatureCollection;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "type", "features" })
 public class RootFeatureCollectionDto<FeatureType> extends FeatureCollection<FeatureType> {
 
-    @ApiModelProperty(value = "Data last updated date time", required = true)
+    @Schema(description = "Data last updated date time", required = true)
     private final ZonedDateTime dataUpdatedTime;
 
-    @ApiModelProperty(value = "Data last checked date time", required = true)
+    @Schema(description = "Data last checked date time", required = true)
     private final ZonedDateTime dataLastCheckedTime;
 
     public RootFeatureCollectionDto(final ZonedDateTime dataUpdatedTime,

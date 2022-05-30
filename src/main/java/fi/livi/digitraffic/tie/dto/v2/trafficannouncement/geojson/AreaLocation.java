@@ -14,17 +14,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Location consisting of one or more areas", value = "AreaLocationV2")
+@Schema(description = "Location consisting of one or more areas", name = "AreaLocationV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "areas"
 })
 public class AreaLocation extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "List of areas", required = true)
+    @Schema(description = "List of areas", required = true)
     @NotNull
     public List<Area> areas = new ArrayList<>();
 

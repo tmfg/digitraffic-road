@@ -11,10 +11,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Worktype", value = "WorktypeV3")
+@Schema(description = "Worktype", name = "WorktypeV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "type",
@@ -22,11 +21,11 @@ import io.swagger.annotations.ApiModelProperty;
 })
 public class Worktype extends JsonAdditionalProperties {
 
-    @ApiModelProperty(value = "Worktype", required = true)
+    @Schema(description = "Worktype", required = true)
     @NotNull
     public Worktype.Type type;
 
-    @ApiModelProperty(value = "Description", required = true)
+    @Schema(description = "Description", required = true)
     @NotNull
     public String description;
 

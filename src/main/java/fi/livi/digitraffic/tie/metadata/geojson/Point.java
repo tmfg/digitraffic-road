@@ -8,11 +8,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "GeoJson Point Geometry Object", value = "Point", parent = Geometry.class)
+@Schema(description = "GeoJson Point Geometry Object", name = "Point")
 @JsonPropertyOrder({ "type", "coordinates"})
 public class Point extends Geometry<Double> implements Serializable {
 
@@ -36,14 +34,14 @@ public class Point extends Geometry<Double> implements Serializable {
         super(Type.Point, coordinatesAsList(longitude, latitude, altitude));
     }
 
-    @ApiModelProperty(required = true, allowableValues = "Point", example = "Point")
+    @Schema(required = true, allowableValues = "Point", example = "Point")
     @Override
     public Type getType() {
         return super.getType();
     }
 
-    @ApiModelProperty(required = true, position = 2, example = "[26.97677492, 65.34673850]",
-                      value = "An array of coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT)
+    @Schema(required = true, example = "[26.97677492, 65.34673850]",
+                      description = "An array of coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT)
     @Override
     public List<Double> getCoordinates() {
         return super.getCoordinates();

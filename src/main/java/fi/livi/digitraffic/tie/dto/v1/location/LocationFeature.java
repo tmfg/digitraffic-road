@@ -4,21 +4,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel
+@Schema
 public final class LocationFeature {
     public final String type = "Feature";
 
     // TODO: Remove this from next version as it is duplicated in properties
-    @ApiModelProperty(value = "Unique locationCode for this location", required = true)
+    @Schema(description = "Unique locationCode for this location", required = true)
     public final int id;
 
-    @ApiModelProperty(value = "GeoJSON Point Geometry Object. Point where station is located", required = true)
+    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", required = true)
     public final Point geometry;
 
-    @ApiModelProperty(value = "Location properties.", required = true)
+    @Schema(description = "Location properties.", required = true)
     public final LocationProperties properties;
 
     public LocationFeature(final LocationJson l) {

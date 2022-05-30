@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @JsonPropertyOrder({ "naturalId", "name" })
@@ -26,14 +26,14 @@ public class Road {
     @JsonIgnore
     private Long id;
 
-    @ApiModelProperty(value = "Road number")
+    @Schema(description = "Road number")
     @JsonProperty(value = "id")
     private String naturalId;
 
     @JsonIgnore
     private Date obsoleteDate;
 
-    @ApiModelProperty(value = "Road name")
+    @Schema(description = "Road name")
     private String name;
 
     public Road() {

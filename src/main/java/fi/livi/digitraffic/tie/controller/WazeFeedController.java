@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
 import fi.livi.digitraffic.tie.service.WazeFeedService;
-import io.swagger.annotations.ApiOperation;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @Validated
-@ApiIgnore
+@Hidden
 @ConditionalOnWebApplication
 @ConditionalOnProperty(prefix="dt.waze", name="enabled", havingValue="true")
 public class WazeFeedController {
@@ -32,7 +32,7 @@ public class WazeFeedController {
         this.wazeFeedService = wazeFeedService;
     }
 
-    @ApiOperation(value = "Traffic incident announcements for Waze")
+    @Operation(summary = "Traffic incident announcements for Waze")
     @RequestMapping(method = RequestMethod.GET, path = API_WAZE_V1_FEED, produces = { APPLICATION_JSON_VALUE })
     public WazeFeedAnnouncementDto wazeFeedAnnouncement() {
         return wazeFeedService.findActive();

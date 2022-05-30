@@ -5,22 +5,21 @@ import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
 import fi.livi.digitraffic.tie.model.VehicleClass;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "TMS road station sensor")
+@Schema(description = "TMS road station sensor")
 public class TmsRoadStationSensorDto extends RoadStationSensorDto {
 
-    @ApiModelProperty(value = "Vehicle class")
+    @Schema(description = "Vehicle class")
     @Enumerated(EnumType.STRING)
     private VehicleClass vehicleClass;
 
-    @ApiModelProperty(value = "Lane of the sensor, 1st, 2nd, 3rd, etc.")
+    @Schema(description = "Lane of the sensor, 1st, 2nd, 3rd, etc.")
     private Integer lane;
 
-    @ApiModelProperty(value = "Preset direction " +
+    @Schema(description = "Preset direction " +
         "(0 = Unknown direction. " +
         "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi." +
         "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.")

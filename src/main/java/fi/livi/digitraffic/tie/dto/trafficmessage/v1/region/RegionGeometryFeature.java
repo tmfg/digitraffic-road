@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "Region area GeoJSON Feature object", value = "RegionGeometryFeature_V1")
+@Schema(description = "Region area GeoJSON Feature object", name = "RegionGeometryFeature_V1")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class RegionGeometryFeature extends Feature<Geometry<?>, RegionGeometryProperties> {
 

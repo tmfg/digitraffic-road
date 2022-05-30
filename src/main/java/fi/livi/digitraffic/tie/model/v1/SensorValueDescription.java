@@ -9,11 +9,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Immutable;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-
-@ApiModel(description = "Additional information of sensor values")
+@Schema(description = "Additional information of sensor values")
 @Entity
 @DynamicUpdate
 @Immutable
@@ -22,13 +20,13 @@ public class SensorValueDescription implements Comparable<SensorValueDescription
     @EmbeddedId
     SensorValueDescriptionPK sensorValueDescriptionPK;
 
-    @ApiModelProperty(value = "Sensor description [en]", position = 2)
+    @Schema(description = "Sensor description [en]")
     private String descriptionEn;
 
-    @ApiModelProperty(value = "Sensor description [fi]")
+    @Schema(description = "Sensor description [fi]")
     private String descriptionFi;
 
-    @ApiModelProperty(value = "Sensor value")
+    @Schema(description = "Sensor value")
     public Double getSensorValue() {
         return sensorValueDescriptionPK.getSensorValue();
     }
