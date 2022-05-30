@@ -19,7 +19,6 @@ import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.controller.v1.MetadataController;
 import fi.livi.digitraffic.tie.documentation.RoadApiInfo;
 import fi.livi.digitraffic.tie.service.RoadApiInfoGetter;
-
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 
@@ -78,7 +77,7 @@ public class SwaggerConfiguration {
     public SwaggerUiConfigProperties swaggerUiConfig() {
         SwaggerUiConfigProperties config = new SwaggerUiConfigProperties();
         config.setDocExpansion("none");
-        config.setDefaultModelRendering("example");
+        config.setDefaultModelRendering("model");
         config.setTagsSorter("alpha");
         return config;
     }
