@@ -77,7 +77,7 @@ public class SwaggerConfiguration {
     public SwaggerUiConfigProperties swaggerUiConfig() {
         SwaggerUiConfigProperties config = new SwaggerUiConfigProperties();
         config.setDocExpansion("none");
-        config.setDefaultModelRendering("example");
+        config.setDefaultModelRendering("model");
         config.setTagsSorter("alpha");
         return config;
     }

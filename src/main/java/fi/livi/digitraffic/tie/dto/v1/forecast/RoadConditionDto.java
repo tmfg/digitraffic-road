@@ -36,7 +36,8 @@ public class RoadConditionDto {
     @Schema(description = "Air temperature")
     private final String temperature;
 
-    @Schema(description = "Weather symbol code. See corresponding symbols at https://www.vaisala.com/en/vaisala-weather-symbols.")
+    @Schema(description = "Weather symbol code. See corresponding symbols at https://www.vaisala.com/en/vaisala-weather-symbols. " +
+                          "Symbols are allowed to be used in user's applications but any further modification and redistribution is denied.")
     private final String weatherSymbol;
 
     @Schema(description = "Wind direction in degrees. 0 when there is no wind or the direction is variable. 90 degrees is arrow to the east " +
