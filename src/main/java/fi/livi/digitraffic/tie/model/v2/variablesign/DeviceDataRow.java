@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.model.v2.trafficsigns;
+package fi.livi.digitraffic.tie.model.v2.variablesign;
 
 import org.hibernate.annotations.Immutable;
 

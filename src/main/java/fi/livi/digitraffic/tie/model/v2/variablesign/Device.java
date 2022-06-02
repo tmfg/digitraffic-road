@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.model.v2.trafficsigns;
+package fi.livi.digitraffic.tie.model.v2.variablesign;
 
 import java.time.ZonedDateTime;
 import javax.persistence.Column;
@@ -16,6 +16,8 @@ public class Device {
     private String id;
 
     private ZonedDateTime updatedDate;
+
+    private ZonedDateTime deletedDate;
 
     private String type;
 
@@ -93,6 +95,14 @@ public class Device {
 
     public void setCarriageway(final String carriageway) {
         this.carriageway = carriageway;
+    }
+
+    public ZonedDateTime getDeletedDate() {
+        return deletedDate;
+    }
+
+    public void setDeletedDate(ZonedDateTime deletedDate) {
+        this.deletedDate = deletedDate;
     }
 
     @PreUpdate

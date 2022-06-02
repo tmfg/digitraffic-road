@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.SignTextRow;
-import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceDataRow;
+import fi.livi.digitraffic.tie.model.v2.variablesign.DeviceDataRow;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +18,8 @@ import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
-import fi.livi.digitraffic.tie.model.v2.trafficsigns.Device;
-import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
+import fi.livi.digitraffic.tie.model.v2.variablesign.Device;
+import fi.livi.digitraffic.tie.model.v2.variablesign.DeviceData;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.dao.v2.V2CodeDescriptionRepository;
 import fi.livi.digitraffic.tie.dto.v1.CodeDescription;
@@ -45,12 +45,12 @@ public class V2VariableSignDataService {
     @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 3000)
     @Transactional(readOnly = true)
     public VariableSignFeatureCollection listLatestValues() {
-        final Stream<Device> devices = v2DeviceRepository.streamAll();
+        final List<Device> devices = v2DeviceRepository.findAllByDeletedDateIsNull();
         final List<Long> dataIds = v2DeviceDataRepository.findLatestData();
         final List<DeviceData> data = v2DeviceDataRepository.findDistinctByIdIn(dataIds);
 
         final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
-        final List<VariableSignFeature> features = devices
+        final List<VariableSignFeature> features = devices.stream()
             .map(d -> convert(d, dataMap))
             .filter(Objects::nonNull)
             .collect(Collectors.toUnmodifiableList());

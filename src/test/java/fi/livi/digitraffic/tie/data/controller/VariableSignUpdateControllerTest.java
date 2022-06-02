@@ -24,8 +24,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
-import fi.livi.digitraffic.tie.model.v2.trafficsigns.Device;
-import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
+import fi.livi.digitraffic.tie.model.v2.variablesign.Device;
+import fi.livi.digitraffic.tie.model.v2.variablesign.DeviceData;
 
 public class VariableSignUpdateControllerTest extends AbstractRestWebTest {
     @Autowired

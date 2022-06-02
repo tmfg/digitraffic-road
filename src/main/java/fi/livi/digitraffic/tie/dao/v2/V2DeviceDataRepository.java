@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +9,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
-import fi.livi.digitraffic.tie.model.v2.trafficsigns.DeviceData;
+import fi.livi.digitraffic.tie.model.v2.variablesign.DeviceData;
 
 import javax.persistence.QueryHint;
 
