@@ -11,6 +11,7 @@ jobs:
         uses: mprencipe/waggers-action@v1
         with:
           url: https://tie-test.digitraffic.fi/swagger/swagger-spec.json
+          fuzzcount: 5
       - name: Notify Slack
         if: failure()
         uses: 8398a7/action-slack@v3
