@@ -2,7 +2,7 @@ name: Fuzz
 on:
   schedule:
     - cron: '0 8 * * *' # UTC
-  workflow_dispatch
+  workflow_dispatch:
 jobs:
   fuzz:
     runs-on: ubuntu-latest
