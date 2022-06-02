@@ -19,4 +19,4 @@ jobs:
           text: FAILED Road fuzz
           fields: repo, job, took
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
