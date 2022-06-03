@@ -10,7 +10,7 @@ on:
       ref:
         description: 'Branch/tag/SHA of digitraffic-road-private'
         required: true
-        default: 'develop'
+        default: 'master'
       config-repo-branch:
         description: 'Branch or tag of CI-repo'
         required: true
