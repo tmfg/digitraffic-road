@@ -4,6 +4,8 @@
     <!--
         Temporary suppressions, check and update these periodically
     -->
+
+    <!-- No new version of proj4 available -->
     <suppress until="2022-06-23Z">
         <notes><![CDATA[
    file name: proj4j-*.jar
@@ -11,19 +13,51 @@
         <packageUrl regex="true">^pkg:maven/org\.osgeo/proj4j@.*$</packageUrl>
         <cpe>cpe:/a:trac:trac</cpe>
     </suppress>
+
     <suppress until="2022-06-23Z">
         <notes><![CDATA[
    file name: spring-*.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework.*$</packageUrl>
+        <!-- RCE through deserialization vulnerability, not using vulnerable version of Spring -->
         <cve>CVE-2016-1000027</cve>
+
+        <!-- JAXB marshalling XXE/CSRF vulnerability, not using vulnerable version of Spring -->
         <cve>CVE-2013-4152</cve>
+
+        <!-- File upload vulnerability, not using file uploads -->
         <cve>CVE-2022-22970</cve>
+
+        <!-- DoS via WebSocket vulnerability, WebSockets not served through application -->
         <cve>CVE-2022-22971</cve>
+
+        <!-- XXE vulnerability, not using vulnerable version of Spring -->
         <cve>CVE-2013-7315</cve>
+
+        <!-- XXE/CSRF vulnerability, not using vulnerable version of Spring -->
         <cve>CVE-2014-0054</cve>
+
+        <!-- RCE via data binding vulnerability, not using data binding -->
         <cve>CVE-2022-22965</cve>
+
+        <!-- Data binding field protection vulnerability, not using data binding -->
         <cve>CVE-2022-22968</cve>
+    </suppress>
+
+    <suppress until="2022-06-23Z">
+        <notes><![CDATA[
+   file name: spring-security-crypto-*.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
+
+        <!-- Crypto vulnerability, not using vulnerable version of Spring Security -->
+        <cve>CVE-2020-5408</cve>
+
+        <!-- BCrypt vulnerability, not used -->
+        <cve>CVE-2022-22976</cve>
+
+        <!-- Authorization not used -->
+        <cve>CVE-2022-22978</cve>
     </suppress>
 
     <!--
@@ -46,6 +80,15 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
         <cve>CVE-2022-29885</cve>
+    </suppress>
+
+    <!-- Not using BCrypt -->
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-security-rsa-*.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.*$</packageUrl>
+        <cve>CVE-2022-22976</cve>
     </suppress>
 
 </suppressions>
