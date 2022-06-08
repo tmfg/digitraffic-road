@@ -31,7 +31,7 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
     // Must start with upper or lower case letter
     // Must end with number or upper or lower case letter
     // Between can be numbers, letters, one at the time of "_", "-" or "." surrounded by numbers or letters
-    private final static Pattern keyPattern = Pattern.compile("^[a-zA-Z]+([_\\.-]?[a-zA-Z0-9])*$");
+    private final static Pattern keyPattern = Pattern.compile("^[a-zA-Z](?:(?=([-._]?[a-zA-Z0-9]+))\\1)*$");
 
     @Override
     public void writeTo(final JsonGenerator generator, final ILoggingEvent event) {
