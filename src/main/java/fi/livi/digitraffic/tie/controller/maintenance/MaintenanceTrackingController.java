@@ -42,7 +42,6 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -79,8 +78,12 @@ public class MaintenanceTrackingController {
 
     public static final String RANGE_X_TXT = "Values between 19.0 and 32.0.";
     public static final String RANGE_Y_TXT = "Values between 59.0 and 72.0.";
-    public static final String RANGE_X = "range[19.0, 32.0]";
-    public static final String RANGE_Y = "range[59.0, 72.0]";
+
+    public static final String X_MIN = "19.0";
+    public static final String X_MAX = "32.0";
+
+    public static final String Y_MIN = "59.0";
+    public static final String Y_MAX = "72.0";
 
     public enum FromToParamType {
         END_TIME("end"),
@@ -112,28 +115,28 @@ public class MaintenanceTrackingController {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     final Instant endFrom,
 
-    @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-    @RequestParam(defaultValue = "19.0", required = false)
-    @DecimalMin("19.0")
-    @DecimalMax("32.0")
+    @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+    @RequestParam(defaultValue = X_MIN, required = false)
+    @DecimalMin(X_MIN)
+    @DecimalMax(X_MAX)
     final double xMin,
 
-    @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-    @RequestParam(defaultValue = "59.0", required = false)
-    @DecimalMin("59.0")
-    @DecimalMax("72.0")
+    @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+    @RequestParam(defaultValue = Y_MIN, required = false)
+    @DecimalMin(Y_MIN)
+    @DecimalMax(Y_MAX)
     final double yMin,
 
-    @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-    @RequestParam(defaultValue = "32", required = false)
-    @DecimalMin("19.0")
-    @DecimalMax("32.0")
+    @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+    @RequestParam(defaultValue = X_MAX, required = false)
+    @DecimalMin(X_MIN)
+    @DecimalMax(X_MAX)
     final double xMax,
 
-    @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-    @RequestParam(defaultValue = "72.0", required = false)
-    @DecimalMin("59.0")
-    @DecimalMax("72.0")
+    @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+    @RequestParam(defaultValue = Y_MAX, required = false)
+    @DecimalMin(Y_MIN)
+    @DecimalMax(Y_MAX)
     final double yMax,
 
     @Parameter(description = "Task ids to include. Any route containing one of the selected tasks will be returned.")
@@ -175,28 +178,28 @@ public class MaintenanceTrackingController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant createdBefore,
 
-        @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-        @RequestParam(defaultValue = "19.0", required = false)
-        @DecimalMin("19.0")
-        @DecimalMax("32.0")
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MIN, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
         final double xMin,
 
-        @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-        @RequestParam(defaultValue = "59.0", required = false)
-        @DecimalMin("59.0")
-        @DecimalMax("72.0")
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MIN, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
         final double yMin,
 
-        @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-        @RequestParam(defaultValue = "32", required = false)
-        @DecimalMin("19.0")
-        @DecimalMax("32.0")
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MAX, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
         final double xMax,
 
-        @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-        @RequestParam(defaultValue = "72.0", required = false)
-        @DecimalMin("59.0")
-        @DecimalMax("72.0")
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MAX, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
         final double yMax,
 
         @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
