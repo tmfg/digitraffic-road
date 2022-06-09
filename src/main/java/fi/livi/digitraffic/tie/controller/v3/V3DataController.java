@@ -11,6 +11,12 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_DATEX
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_MESSAGES_SIMPLE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.RANGE_X_TXT;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.RANGE_Y_TXT;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MAX;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MIN;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
@@ -74,7 +80,6 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -92,11 +97,6 @@ public class V3DataController {
     private final V3Datex2DataService v3Datex2DataService;
     private final V3RegionGeometryDataService v3RegionGeometryDataService;
     private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
-
-    public static final String RANGE_X_TXT = "Values between 19.0 and 32.0.";
-    public static final String RANGE_Y_TXT = "Values between 59.0 and 72.0.";
-    public static final String RANGE_X = "range[19.0, 32.0]";
-    public static final String RANGE_Y = "range[59.0, 72.0]";
 
     public V3DataController(final ForecastSectionDataService forecastSectionDataService,
                             final V2VariableSignDataService v2VariableSignDataService,
@@ -159,9 +159,11 @@ public class V3DataController {
 
     @Operation(summary = "List the latest data of variable signs")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
-    @Parameter(description = "If parameter is given list only latest value of given sign")
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Traffic Sign data"))
-    public VariableSignFeatureCollection variableSigns(@RequestParam(value = "deviceId", required = false) final String deviceId) {
+    public VariableSignFeatureCollection variableSigns(
+        @Parameter(description = "If parameter is given list only latest value of given sign")
+        @RequestParam(value = "deviceId", required = false)
+        final String deviceId) {
         if(deviceId != null) {
             return v2VariableSignDataService.listLatestValue(deviceId);
         } else {
@@ -178,9 +180,11 @@ public class V3DataController {
 
     @Operation(summary = "List the history of variable sign data")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
-    @Parameter(description = "List history data of given sign")
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign history"))
-    public List<TrafficSignHistory> variableSignHistory(@RequestParam(value = "deviceId") final String deviceId) {
+    public List<TrafficSignHistory> variableSignHistory(
+        @Parameter(description = "List history data of given sign")
+        @RequestParam(value = "deviceId")
+        final String deviceId) {
         return v2VariableSignDataService.listVariableSignHistory(deviceId);
     }
 
@@ -303,7 +307,7 @@ public class V3DataController {
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @Parameter(description = "Situation type.", schema = @Schema(defaultValue = "TRAFFIC_ANNOUNCEMENT"))
+        @Parameter(description = "Situation type.")
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
         return v3Datex2DataService.findActive(inactiveHours, situationType);
@@ -318,7 +322,7 @@ public class V3DataController {
         @Parameter(description = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @Parameter(description = "If the parameter value is true, then only the latest message will be returned", schema = @Schema(defaultValue = "false"))
+        @Parameter(description = "If the parameter value is true, then only the latest message will be returned")
         @RequestParam(defaultValue = "false")
         final boolean latest) {
         return v3Datex2DataService.findBySituationId(situationId, latest);
@@ -334,10 +338,10 @@ public class V3DataController {
         @Range(min = 0)
         final int inactiveHours,
         @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", schema = @Schema(defaultValue = "false"))
+            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
         @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @Parameter(description = "Situation type.", schema = @Schema(defaultValue = "TRAFFIC_ANNOUNCEMENT"))
+        @Parameter(description = "Situation type.")
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType...situationType) {
         return v3Datex2DataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
@@ -353,10 +357,10 @@ public class V3DataController {
         @PathVariable
         final String situationId,
         @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", schema = @Schema(defaultValue = "false"))
+            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
         @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @Parameter(description = "If the parameter value is true, then only the latest message will be returned", schema = @Schema(defaultValue = "false"))
+        @Parameter(description = "If the parameter value is true, then only the latest message will be returned")
         @RequestParam(defaultValue = "false")
         final boolean latest) {
         return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
@@ -368,7 +372,7 @@ public class V3DataController {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
     public RegionGeometryFeatureCollection areaLocationRegions(
-        @Parameter(description = "If the parameter value is true, then the result will only contain update status.", schema = @Schema(defaultValue = "true"))
+        @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
         @RequestParam(defaultValue = "true")
         final boolean lastUpdated,
         @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
@@ -392,28 +396,28 @@ public class V3DataController {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     final ZonedDateTime from,
 
-    @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-    @RequestParam(defaultValue = "19.0", required = false)
-    @DecimalMin("19.0")
-    @DecimalMax("32.0")
+    @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+    @RequestParam(defaultValue = X_MIN, required = false)
+    @DecimalMin(X_MIN)
+    @DecimalMax(X_MAX)
     final double xMin,
 
-    @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-    @RequestParam(defaultValue = "59.0", required = false)
-    @DecimalMin("59.0")
-    @DecimalMax("72.0")
+    @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+    @RequestParam(defaultValue = Y_MIN, required = false)
+    @DecimalMin(Y_MIN)
+    @DecimalMax(Y_MAX)
     final double yMin,
 
-    @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-    @RequestParam(defaultValue = "32", required = false)
-    @DecimalMin("19.0")
-    @DecimalMax("32.0")
+    @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+    @RequestParam(defaultValue = X_MAX, required = false)
+    @DecimalMin(X_MIN)
+    @DecimalMax(X_MAX)
     final double xMax,
 
-    @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-    @RequestParam(defaultValue = "72.0", required = false)
-    @DecimalMin("59.0")
-    @DecimalMax("72.0")
+    @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+    @RequestParam(defaultValue = Y_MAX, required = false)
+    @DecimalMin(Y_MIN)
+    @DecimalMax(Y_MAX)
     final double yMax,
 
     @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
@@ -442,28 +446,28 @@ public class V3DataController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to,
 
-        @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-        @RequestParam(defaultValue = "19.0", required = false)
-        @DecimalMin("19.0")
-        @DecimalMax("32.0")
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MIN, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
         final double xMin,
 
-        @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-        @RequestParam(defaultValue = "59.0", required = false)
-        @DecimalMin("59.0")
-        @DecimalMax("72.0")
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MIN, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
         final double yMin,
 
-        @Parameter(schema = @Schema(allowableValues = RANGE_X), description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-        @RequestParam(defaultValue = "32", required = false)
-        @DecimalMin("19.0")
-        @DecimalMax("32.0")
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MAX, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
         final double xMax,
 
-        @Parameter(schema = @Schema(allowableValues = RANGE_Y), description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-        @RequestParam(defaultValue = "72.0", required = false)
-        @DecimalMin("59.0")
-        @DecimalMax("72.0")
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MAX, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
         final double yMax,
 
         @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")

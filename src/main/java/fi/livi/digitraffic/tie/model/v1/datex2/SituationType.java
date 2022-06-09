@@ -6,6 +6,9 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Traffic Announcement situation type", name = "SituationTypeV1", defaultValue = "TRAFFIC_ANNOUNCEMENT", enumAsRef = true)
 public enum SituationType {
 
     TRAFFIC_ANNOUNCEMENT("traffic announcement"),

@@ -30,7 +30,6 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -80,7 +79,7 @@ public class TrafficMessageController {
         @RequestParam(defaultValue = "0")
         @Range(min = 0)
         final int inactiveHours,
-        @Parameter(description = "Situation type.", schema = @Schema(defaultValue = "TRAFFIC_ANNOUNCEMENT"))
+        @Parameter(description = "Situation type.", required = true)
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
         return v1TrafficMessageDataService.findActive(inactiveHours, situationType);
@@ -95,8 +94,7 @@ public class TrafficMessageController {
         @Parameter(description = "Situation id.", required = true)
         @PathVariable
         final String situationId,
-        @Parameter(description = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned",
-                  schema = @Schema(defaultValue = "true"))
+        @Parameter(description = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned")
         @RequestParam(defaultValue = "true")
         final boolean latest) {
         return v1TrafficMessageDataService.findBySituationId(situationId, latest);
@@ -112,10 +110,10 @@ public class TrafficMessageController {
         @Range(min = 0)
         final int inactiveHours,
         @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", schema = @Schema(defaultValue = "false"))
+            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
         @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @Parameter(description = "Situation type.", schema = @Schema(defaultValue = "TRAFFIC_ANNOUNCEMENT"))
+        @Parameter(description = "Situation type.", required = true)
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType...situationType) {
         return v1TrafficMessageDataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
@@ -131,10 +129,10 @@ public class TrafficMessageController {
         @PathVariable
         final String situationId,
         @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-            "Geometries for areas can be fetched from Traffic messages geometries for regions -api", schema = @Schema(defaultValue = "false"))
+            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
         @RequestParam(defaultValue = "false")
         final boolean includeAreaGeometry,
-        @Parameter(description = "If the parameter value is true, then only the latest message will be returned", schema = @Schema(defaultValue = "false"))
+        @Parameter(description = "If the parameter value is true, then only the latest message will be returned")
         @RequestParam(defaultValue = "false")
         final boolean latest) {
         return v1TrafficMessageDataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
@@ -145,10 +143,10 @@ public class TrafficMessageController {
                     path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of geometries") })
     public RegionGeometryFeatureCollection areaLocationRegions(
-        @Parameter(description = "If the parameter value is true, then the result will only contain update status.", schema = @Schema(defaultValue = "true"))
+        @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
         @RequestParam(defaultValue = "true")
         final boolean lastUpdated,
-        @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.", schema = @Schema(defaultValue = "false"))
+        @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
         @RequestParam(defaultValue = "false")
         final boolean includeGeometry,
         @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
@@ -164,10 +162,10 @@ public class TrafficMessageController {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of geometries"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Geometry not not found", content = @Content) })
     public RegionGeometryFeatureCollection areaLocationRegions(
-        @Parameter(description = "If the parameter value is true, then the result will only contain update status.", schema = @Schema(defaultValue = "false"))
+        @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
         @RequestParam(defaultValue = "true")
         final boolean lastUpdated,
-        @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.", schema = @Schema(defaultValue = "false"))
+        @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
         @RequestParam(defaultValue = "false")
         final boolean includeGeometry,
         @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")

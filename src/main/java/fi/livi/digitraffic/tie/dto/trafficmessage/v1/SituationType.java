@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Traffic Announcement situation type", name = "SituationType_V1")
+@Schema(description = "Traffic Announcement situation type", name = "SituationType_V1", defaultValue = "TRAFFIC_ANNOUNCEMENT", enumAsRef = true)
 public enum SituationType {
 
     TRAFFIC_ANNOUNCEMENT("traffic announcement"),

@@ -155,7 +155,7 @@ public class V3MetadataController {
         @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated,
-        @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = "active,removed,all"))
+        @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = { "active", "removed", "all" }, defaultValue = "active"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
@@ -182,7 +182,7 @@ public class V3MetadataController {
     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Road number not found", content = @Content) })
     public TmsStationFeatureCollection tmsStationsByRoadNumber(
         @PathVariable("number") final Integer roadNumber,
-        @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = "active,removed,all"))
+        @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = { "active", "removed", "all" }, defaultValue = "active"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
