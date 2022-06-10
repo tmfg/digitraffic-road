@@ -92,10 +92,6 @@ public class WazeDatex2JsonConverter {
                     new WazeFeedIncidentDto(id, street, description, direction, polyline, type))));
     }
 
-    public static String convertSituationRecordToString(final D2LogicalModel d2LogicalModel) {
-        return "Lanes deviated. Temporary speed limit of 50 km/h.";
-    }
-
     private Optional<WazeFeedIncidentDto.Type> convertToWazeType(final TrafficAnnouncementType trafficAnnouncementType) {
         if (trafficAnnouncementType == null) {
             return Optional.empty();
