@@ -35,6 +35,7 @@ jobs:
         run: mvn dependency-check:check
       - name: Upload report
         uses: actions/upload-artifact@v3
+        if: ${{ success() || failure() }}
         with:
           name: dependency-check-report.html
           path: target/dependency-check-report.html
