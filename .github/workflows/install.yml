@@ -202,9 +202,7 @@ jobs:
             ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
       -   name: Set ${{ matrix.app }} output
           id: revision
-          run: |
-            echo outputs ${{join(steps.update.outputs.*, '\n')}}
-            echo "::set-output name=revision_${{ matrix.app }}::${{ steps.update.outputs.revision }}"
+          run: echo "::set-output name=revision_${{ matrix.app }}::${{ steps.update.outputs.revision }}"
   stop-services:
     needs: install
     if: github.event.inputs.db-install == 'true'
@@ -271,9 +269,6 @@ jobs:
       -   name: Parameters ${{ matrix.ap  }}
           id: revision
           run: |
-            echo revision_daemon ${{ needs.install.outputs.revision_daemon }}
-            echo revision_web ${{ needs.install.outputs.revision_web }}
-
             if [ "${{ matrix.app }}" == "web" ]
             then
                 echo "::set-output name=revision::${{ needs.install.outputs.revision_web }}"
