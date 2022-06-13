@@ -23,7 +23,6 @@ jobs:
         with:
           java-version: 11
           distribution: corretto
-          cache: maven
       - name: Cache dependency-check files
         uses: actions/cache@v3
         with:
