@@ -23,8 +23,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.release>11</maven.compiler.release>
-        <ch.qos.logback.version>1.2.10</ch.qos.logback.version>
-        <net.logstash.logback.version>6.3</net.logstash.logback.version>
         <com.google.protobuf.version>3.20.0</com.google.protobuf.version>
         <org.apache.cxf.version>3.5.2</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>2.4.8</org.glassfish.metro.ws.version>
@@ -34,7 +32,6 @@
     </properties>
 
     <repositories>
-        <!-- PLACEHOLDER -->
         <repository>
             <id>maven-central</id>
             <name>maven central repo</name>
@@ -51,33 +48,6 @@
             <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
-
-    <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${ch.qos.logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${ch.qos.logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-access</artifactId>
-                <version>${ch.qos.logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.logstash.logback</groupId>
-                <artifactId>logstash-logback-encoder</artifactId>
-                <version>${net.logstash.logback.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    <!-- *** https://github.com/logstash/logstash-logback-encoder#including-it-in-your-project *** -->
 
     <dependencies>
 
@@ -345,6 +315,11 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>6.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
 
         <dependency>
