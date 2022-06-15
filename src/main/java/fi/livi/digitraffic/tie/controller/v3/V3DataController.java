@@ -157,6 +157,7 @@ public class V3DataController {
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
     }
 
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
     @Operation(summary = "List the latest data of variable signs")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Traffic Sign data"))
@@ -171,6 +172,7 @@ public class V3DataController {
         }
     }
 
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
     @Operation(summary = "List the latest value of a variable sign")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign data"))
@@ -178,6 +180,7 @@ public class V3DataController {
         return v2VariableSignDataService.listLatestValue(deviceId);
     }
 
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
     @Operation(summary = "List the history of variable sign data")
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign history"))
