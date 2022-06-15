@@ -696,7 +696,7 @@
   </wsdl:binding>
   <wsdl:service name="KameraPerustiedot_v7">
     <wsdl:port name="KameraPerustiedotPort" binding="tns:KameraPerustiedot_v7SoapBinding">
-      <soap:address location="http://tesblb.ha.tvt.liikennevirasto.fi/LOTJU/KameraPerustiedot/v7"/>
+      <soap:address location="http://localhost:8182/LOTJU/KameraPerustiedot/v7"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

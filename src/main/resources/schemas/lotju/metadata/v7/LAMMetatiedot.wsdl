@@ -1069,7 +1069,7 @@
   </wsdl:binding>
   <wsdl:service name="LAMMetatiedot_v7">
     <wsdl:port name="LAMMetatiedotPort" binding="tns:LAMMetatiedot_v7SoapBinding">
-      <soap:address location="http://tesblb.ha.tvt.liikennevirasto.fi/LOTJU/LAMMetatiedot/v7"/>
+      <soap:address location="http://localhost:8182/LOTJU/LAMMetatiedot/v7"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
