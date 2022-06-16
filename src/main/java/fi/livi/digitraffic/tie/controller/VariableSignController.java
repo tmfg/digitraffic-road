@@ -59,12 +59,4 @@ public class VariableSignController {
         final String deviceId) {
         return v2VariableSignDataService.listVariableSignHistory(deviceId);
     }
-
-    @Operation(summary = "List the history of variable sign data")
-    @RequestMapping(method = RequestMethod.GET, path = API_VS_V1 + API_SIGNS_HISTORY + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign history"))
-    public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
-        return v2VariableSignDataService.listVariableSignHistory(deviceId);
-    }
-
 }
