@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "AlertC area", name = "AreaV2")
+@Schema(description = "AlertC area", name = "Area_OldV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "name",

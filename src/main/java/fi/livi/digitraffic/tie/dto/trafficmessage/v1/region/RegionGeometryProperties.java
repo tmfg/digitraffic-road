@@ -8,7 +8,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Region geometry properties", name = "RegionGeometryProperties_V1")
+@Schema(description = "Region geometry properties", name = "RegionGeometryPropertiesV1")
 @JsonPropertyOrder({ "locationCode", "name", "type", "effectiveDate" })
 public class RegionGeometryProperties extends Properties {
 

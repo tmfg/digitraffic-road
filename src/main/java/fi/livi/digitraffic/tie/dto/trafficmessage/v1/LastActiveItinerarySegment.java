@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "The itinerary segment of this special transport that is or was last active.",
-        name = "LastActiveItinerarySegment_V1")
+        name = "LastActiveItinerarySegmentV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "startTime", "endTime", "legs" })
 public class LastActiveItinerarySegment extends JsonAdditionalProperties {

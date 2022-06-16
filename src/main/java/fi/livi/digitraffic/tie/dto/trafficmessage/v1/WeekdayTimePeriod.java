@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Weekday time period", name = "WeekdayTimePeriod_V1")
+@Schema(description = "Weekday time period", name = "WeekdayTimePeriodV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "weekday",

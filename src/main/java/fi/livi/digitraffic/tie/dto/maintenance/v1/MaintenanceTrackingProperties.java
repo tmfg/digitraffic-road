@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Maintenance tracking properties", name = "MaintenanceTrackingProperties_V1")
+@Schema(description = "Maintenance tracking properties", name = "MaintenanceTrackingPropertiesV1")
 public class MaintenanceTrackingProperties extends Properties {
 
     @Schema(description = "Id for the tracking", required = true)

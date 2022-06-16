@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Location consisting of one or more areas", name = "AreaLocation_V1")
+@Schema(description = "Location consisting of one or more areas", name = "AreaLocationV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "areas"

@@ -8,7 +8,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "ItineraryRoadLeg is route leg that is on the road network.", name = "ItineraryRoadLeg_V1")
+@Schema(description = "ItineraryRoadLeg is route leg that is on the road network.", name = "ItineraryRoadLegV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
                        "roadNumber",

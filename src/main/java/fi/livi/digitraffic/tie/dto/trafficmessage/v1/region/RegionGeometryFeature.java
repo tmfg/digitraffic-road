@@ -6,7 +6,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Region area GeoJSON Feature object", name = "RegionGeometryFeature_V1")
+@Schema(description = "Region area GeoJSON Feature object", name = "RegionGeometryFeatureV1")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class RegionGeometryFeature extends Feature<Geometry<?>, RegionGeometryProperties> {
 

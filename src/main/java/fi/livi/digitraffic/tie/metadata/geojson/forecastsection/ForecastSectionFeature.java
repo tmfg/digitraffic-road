@@ -8,11 +8,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * GeoJSON ForecastSectionFeature Object
  */
-@Schema(description = "GeoJSON Feature Object", name = "ForecastSectionFeatureV1")
+@Schema(description = "GeoJSON Feature Object", name = "ForecastSectionFeature_OldV1")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class ForecastSectionFeature {
 
-    @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true)
+    @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true, allowableValues = "Feature")
     @JsonPropertyOrder(value = "1")
     private final String type = "Feature";
 

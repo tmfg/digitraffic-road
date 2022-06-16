@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Characteristics and qualities of the situation", name = "Feature_V1")
+@Schema(description = "Characteristics and qualities of the situation", name = "FeatureV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "name",

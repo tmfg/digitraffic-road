@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "GeoJSON Feature Object", name = "ForecastSectionFeatureV2")
+@Schema(description = "GeoJSON Feature Object", name = "ForecastSectionFeature_OldV2")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class ForecastSectionV2Feature {
 
-    @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true)
+    @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true, allowableValues = "Feature")
     @JsonPropertyOrder(value = "1")
     private final String type = "Feature";
 

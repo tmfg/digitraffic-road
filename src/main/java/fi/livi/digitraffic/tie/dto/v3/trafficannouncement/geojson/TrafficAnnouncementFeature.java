@@ -6,7 +6,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "TrafficAnnouncement GeoJSON Feature Object", name = "TrafficAnnouncementFeatureV3")
+@Schema(description = "TrafficAnnouncement GeoJSON Feature Object", name = "TrafficAnnouncementFeature_OldV3")
 @JsonPropertyOrder({
     "type",
     "id",

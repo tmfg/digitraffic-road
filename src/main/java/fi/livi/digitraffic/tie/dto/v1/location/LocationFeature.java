@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema
 public final class LocationFeature {
+
+    @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true, allowableValues = "Feature")
     public final String type = "Feature";
 
     // TODO: Remove this from next version as it is duplicated in properties

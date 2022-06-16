@@ -7,7 +7,7 @@ import fi.livi.digitraffic.tie.model.v1.Road;
 import fi.livi.digitraffic.tie.model.v1.RoadSection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Forecast Section Properties", name = "ForecastSectionPropertiesV1")
+@Schema(description = "Forecast Section Properties", name = "ForecastSectionProperties_OldV1")
 @JsonPropertyOrder({ "naturalId", "description", "roadSectionNumber", "roadNumber", "roadSectionVersionNumber", "startDistance",
                      "endDistance", "length", "road", "startRoadSection", "endRoadSection" })
 public class ForecastSectionProperties {

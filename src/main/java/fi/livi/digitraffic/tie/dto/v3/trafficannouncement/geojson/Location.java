@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "AlertC location of a traffic situation announcement", name = "LocationV3")
+@Schema(description = "AlertC location of a traffic situation announcement", name = "Location_OldV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "countryCode",

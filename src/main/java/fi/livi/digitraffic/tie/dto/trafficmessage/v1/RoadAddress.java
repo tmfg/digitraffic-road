@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Location in road address (road number + number of the road section + distance from the beginning of the road section", name = "RoadAddress_V1")
+@Schema(description = "Location in road address (road number + number of the road section + distance from the beginning of the road section", name = "TrafficMessageRoadAddressV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "road",

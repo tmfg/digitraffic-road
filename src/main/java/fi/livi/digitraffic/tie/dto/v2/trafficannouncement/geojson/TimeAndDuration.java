@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Announcement time and duration", name = "TimeAndDurationV2")
+@Schema(description = "Announcement time and duration", name = "TimeAndDuration_OldV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "startTime",

@@ -16,7 +16,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
         super(Type.LineString, coordinates);
     }
 
-    @Schema(required = true, allowableValues = "LineString", example = "LineString")
+    // See https://github.com/swagger-api/swagger-core/issues/2949
+    @Schema(type = "String", required = true, allowableValues = { "LineString" }, example = "LineString")
     @Override
     public Type getType() {
         return super.getType();

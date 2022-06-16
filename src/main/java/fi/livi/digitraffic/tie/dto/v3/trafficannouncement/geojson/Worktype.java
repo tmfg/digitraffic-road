@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Worktype", name = "WorktypeV3")
+@Schema(description = "Worktype", name = "Worktype_OldV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "type",

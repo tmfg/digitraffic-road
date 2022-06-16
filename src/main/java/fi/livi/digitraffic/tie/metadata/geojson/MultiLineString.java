@@ -19,7 +19,8 @@ public class MultiLineString extends Geometry<List<List<Double>>> {
         super(Type.MultiLineString, coordinates);
     }
 
-    @Schema(required = true, allowableValues = "MultiLineString", example = "MultiLineString")
+    // See https://github.com/swagger-api/swagger-core/issues/2949
+    @Schema(type = "String", required = true, allowableValues = { "MultiLineString" }, example = "MultiLineString")
     @Override
     public Type getType() {
         return super.getType();

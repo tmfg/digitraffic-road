@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "GeoJSON Feature Collection of forecast sections v2", name = "ForecastSectionFeatureCollectionV2")
+@Schema(description = "GeoJSON Feature Collection of forecast sections v2", name = "ForecastSectionFeatureCollection_OldV2")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
 public class ForecastSectionV2FeatureCollection implements Iterable<ForecastSectionV2Feature> {
 

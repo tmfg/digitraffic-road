@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Maintenance tracking task", name = "MaintenanceTrackingTask_V1")
+@Schema(description = "Maintenance tracking task", name = "MaintenanceTrackingTaskV1")
 @JsonPropertyOrder({ "id", "nameFi", "nameEn", "nameSv"})
 public class MaintenanceTrackingTaskDto {
 

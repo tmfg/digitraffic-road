@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Traffic Announcement properties", name = "TrafficAnnouncementPropertiesV2")
+@Schema(description = "Traffic Announcement properties", name = "TrafficAnnouncementProperties_OldV2")
 @JsonPropertyOrder({
     "situationId",
     "messageType",

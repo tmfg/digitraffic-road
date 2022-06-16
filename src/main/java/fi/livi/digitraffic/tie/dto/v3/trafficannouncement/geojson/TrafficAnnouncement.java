@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Announcement time and duration", name = "TrafficAnnouncementV3")
+@Schema(description = "Announcement time and duration", name = "TrafficAnnouncement_OldV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "language",
@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class TrafficAnnouncement extends JsonAdditionalProperties {
 
-    @Schema(description = "Language of the announcement, always fi. A subset of ISO 639-1.", required = true, allowableValues = "fi")
+    @Schema(description = "Language of the announcement, always fi. A subset of ISO 639-1 in upper case.", required = true)
     @NotNull
     public TrafficAnnouncement.Language language;
 

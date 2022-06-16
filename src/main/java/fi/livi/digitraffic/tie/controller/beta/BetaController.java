@@ -64,7 +64,7 @@ public class BetaController {
         @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = "active,removed,all"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
-
+        // TODO fixme: Enum suoraan parametriksi
         final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
 
         return tmsStationDatex2Service.findAllPublishableTmsStationsAsDatex2(state);

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Traffic Announcement type", name = "TrafficAnnouncementType_V1")
+@Schema(description = "Traffic Announcement type", name = "TrafficAnnouncementTypeV1")
 public enum TrafficAnnouncementType {
 
     GENERAL("general"),
@@ -28,11 +28,6 @@ public enum TrafficAnnouncementType {
 
     TrafficAnnouncementType(final String value) {
         this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return this.value;
     }
 
     @JsonCreator
