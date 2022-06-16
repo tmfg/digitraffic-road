@@ -860,7 +860,7 @@
   </wsdl:binding>
   <wsdl:service name="TiesaaPerustiedot_v6">
     <wsdl:port name="TiesaaPerustiedotPort" binding="tns:TiesaaPerustiedot_v6SoapBinding">
-      <soap:address location="TIESAA_METADATA_WS_URL"/>
+      <soap:address location="http://localhost:8182/LOTJU/TiesaaPerustiedot/v6"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
