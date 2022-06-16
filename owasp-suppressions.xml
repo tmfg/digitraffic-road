@@ -64,6 +64,15 @@
         Permanent suppressions
     -->
 
+    <!-- Not using Spring Security authorization -->
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-security-rsa-*.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.*$</packageUrl>
+        <cve>CVE-2022-22978</cve>
+    </suppress>
+
     <!-- Using embedded Tomcat -->
     <suppress>
         <notes><![CDATA[
