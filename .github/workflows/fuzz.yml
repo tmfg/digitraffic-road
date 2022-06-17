@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fuzz
-        uses: mprencipe/waggers-action@v1
+        uses: mprencipe/waggers-action@v2
         with:
           url: https://tie-test.digitraffic.fi/swagger/swagger-spec.json
           fuzzcount: 5
