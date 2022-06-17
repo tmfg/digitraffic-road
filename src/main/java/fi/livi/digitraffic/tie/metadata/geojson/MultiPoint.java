@@ -16,7 +16,8 @@ public class MultiPoint extends Geometry<List<Double>> {
         super(Type.MultiPoint, coordinates);
     }
 
-    @Schema(required = true, allowableValues = "MultiPoint", example = "MultiPoint")
+    // See https://github.com/swagger-api/swagger-core/issues/2949
+    @Schema(type = "String", required = true, allowableValues = { "MultiPoint" }, example = "MultiPoint")
     @Override
     public Type getType() {
         return super.getType();

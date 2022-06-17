@@ -19,7 +19,8 @@ public class MultiPolygon extends Geometry<List<List<List<Double>>>> {
         super(Type.MultiPolygon, coordinates);
     }
 
-    @Schema(required = true, allowableValues = "MultiPolygon", example = "MultiPolygon")
+    // See https://github.com/swagger-api/swagger-core/issues/2949
+    @Schema(type = "String", required = true, allowableValues = { "MultiPolygon" }, example = "MultiPolygon")
     @Override
     public Type getType() {
         return super.getType();

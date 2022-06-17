@@ -8,7 +8,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Location to display in ETRS-TM35FIN coordinate format.", name = "LocationToDisplayV2")
+@Schema(description = "Location to display in ETRS-TM35FIN coordinate format.", name = "LocationToDisplay_OldV2")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "e",

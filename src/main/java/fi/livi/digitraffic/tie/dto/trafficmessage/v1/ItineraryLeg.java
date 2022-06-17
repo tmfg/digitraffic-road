@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "ItineraryLeg is one leg of the route", name = "ItineraryLeg_V1")
+@Schema(description = "ItineraryLeg is one leg of the route", name = "ItineraryLegV1")
 @JsonPropertyOrder({
     "roadLeg",
     "streetName"

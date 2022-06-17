@@ -34,7 +34,7 @@ public class DateHelperTest extends AbstractTest {
 
 
     private final static String ISO_DATE_TIME_WITH_Z_REGEX_PATTERN =      "([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][0-9]):([0-5][0-9]):([0-5][0-9])(\\.(\\d{3}|\\d{6}))?Z";
-    private final static String ISO_DATE_TIME_WITH_OFFSET_REGEX_PATTERN = "([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][0-9]):([0-6][0-9])(:([0-6][0-9])){0,1}(\\.[0-9]{0,6})?{0,1}[+|-].*";
+    private final static String ISO_DATE_TIME_WITH_OFFSET_REGEX_PATTERN = "([0-9]{4})-(1[0-2]|0[1-9])-([0-3][0-9])T([0-2][0-9]):([0-6][0-9])(:([0-6][0-9])){0,1}(\\.[0-9]{0,6})?[+|-].*";
 
     public static final Matcher<String> ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER = Matchers.matchesRegex(ISO_DATE_TIME_WITH_Z_REGEX_PATTERN);
     public static final Matcher<String> ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER = Matchers.matchesRegex("[\\s\\S]*" +

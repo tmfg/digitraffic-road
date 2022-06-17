@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Traffic Announcement properties", name = "TrafficAnnouncementPropertiesV3")
+@Schema(description = "Traffic Announcement properties", name = "TrafficAnnouncementProperties_OldV3")
 @JsonPropertyOrder({
     "situationId",
     "situationType",

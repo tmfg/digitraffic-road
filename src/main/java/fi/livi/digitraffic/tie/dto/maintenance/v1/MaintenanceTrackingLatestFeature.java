@@ -6,7 +6,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "GeoJSON Feature Object.", name = "MaintenanceTrackingLatestFeature_V1")
+@Schema(description = "GeoJSON Feature Object.", name = "MaintenanceTrackingLatestFeatureV1")
 @JsonPropertyOrder({ "type", "properties", "geometry" })
 public class MaintenanceTrackingLatestFeature extends Feature<Geometry<?>, MaintenanceTrackingLatestProperties> {
 

@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "A single phase in a larger road work", name = "RoadWorkPhaseV3")
+@Schema(description = "A single phase in a larger road work", name = "RoadWorkPhase_OldV3")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "id",

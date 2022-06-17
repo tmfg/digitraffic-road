@@ -34,7 +34,8 @@ public class Point extends Geometry<Double> implements Serializable {
         super(Type.Point, coordinatesAsList(longitude, latitude, altitude));
     }
 
-    @Schema(required = true, allowableValues = "Point", example = "Point")
+    // See https://github.com/swagger-api/swagger-core/issues/2949
+    @Schema(type = "String", required = true, allowableValues = { "Point" }, example = "Point")
     @Override
     public Type getType() {
         return super.getType();

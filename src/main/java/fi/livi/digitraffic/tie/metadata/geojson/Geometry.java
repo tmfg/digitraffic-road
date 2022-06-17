@@ -29,7 +29,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
     @JsonSubTypes.Type(value = MultiPoint.class, name = "MultiPoint"),
     @JsonSubTypes.Type(value = MultiPolygon.class, name = "MultiPolygon")
 })
-@Schema(description = "GeoJson Geometry Object", name = "Geometry", subTypes = Point.class)
+@Schema(description = "GeoJson Geometry Object", name = "Geometry",
+        subTypes = {Point.class, LineString.class, Polygon.class, MultiLineString.class, MultiPoint.class, MultiPolygon.class})
 @JsonPropertyOrder({ "type", "coordinates"})
 public abstract class Geometry<T> extends JsonAdditionalProperties implements Serializable {
 
@@ -52,7 +53,7 @@ public abstract class Geometry<T> extends JsonAdditionalProperties implements Se
         this.coordinates = Arrays.asList(coordinates);
     }
 
-    @Schema(description = "GeoJson Geometry Object type", required = true, allowableValues = "Point,LineString,Polygon,MultiPoint,MultiLineString,MultiPolygon")
+    @Schema(description = "GeoJson Geometry Object type", required = true)
     public Type getType() {
         return type;
     }

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadSegment;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Forecast Section Properties", name = "ForecastSectionPropertiesV2")
+@Schema(description = "Forecast Section Properties", name = "ForecastSectionProperties_OldV2")
 @JsonPropertyOrder({ "naturalId", "description" })
 public class ForecastSectionV2Properties {
 

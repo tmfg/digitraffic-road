@@ -15,32 +15,42 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VariableSignProperties {
     // device properties
+    // TODO @Schema(description = "TODO")
     public final String id;
-    @Schema(description = "Variable sign type",
-        allowableValues = "SPEEDLIMIT,WARNING,INFORMATION")
+
+    @Schema(description = "Variable sign type")
     public final SignType type;
+
+    // TODO @Schema(description = "TODO")
     public final String roadAddress;
-    @Schema(description = "Direction of variable sign, increasing or decreasing road address",
-        allowableValues = "INCREASING,DECREASING")
+
+    @Schema(description = "Direction of variable sign, increasing or decreasing road address")
     public final Direction direction;
+
     @Schema(description = "Variable sign placement:\n" +
-        "SINGLE = Single carriageway rod\n" +
-        "RIGHT = First carriageway on the right in the direction of the road number\n" +
-        "LEFT = Second carriageway on the left in the direction of the road number\n" +
-        "BETWEEN = Between the carriageways",
-        allowableValues = "SINGLE,RIGHT,LEFT,BETWEEN")
+                          "SINGLE = Single carriageway rod\n" +
+                          "RIGHT = First carriageway on the right in the direction of the road number\n" +
+                          "LEFT = Second carriageway on the left in the direction of the road number\n" +
+                          "BETWEEN = Between the carriageways")
     public final Carriageway carriageway;
 
     // data properties
-    @JsonInclude
+    // TODO @Schema(description = "TODO")
     public final String displayValue;
+
+    // TODO @Schema(description = "TODO")
     public final String additionalInformation;
+
     @Schema(description = "Information is effect after this date")
     public final ZonedDateTime effectDate;
+
+    // TODO @Schema(description = "TODO")
     public final String cause;
-    @Schema(description = "Variable sign reliability",
-        allowableValues = "NORMAL,DISCONNECTED,MALFUNCTION")
+
+    @Schema(description = "Variable sign reliability")
     public final Reliability reliability;
+
+    // TODO @Schema(description = "TODO")
     public final List<SignTextRow> textRows;
 
     public VariableSignProperties(final String id, final SignType type, final String roadAddress, final Direction direction,
@@ -78,7 +88,6 @@ public class VariableSignProperties {
         }
     }
 
-    @Schema
     public enum Direction {
         INCREASING,
         DECREASING;

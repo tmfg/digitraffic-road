@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Location consisting of a single road point or a road segment between two road points", name = "RoadAddressLocation_V1")
+@Schema(description = "Location consisting of a single road point or a road segment between two road points", name = "RoadAddressLocationV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "primaryPoint",

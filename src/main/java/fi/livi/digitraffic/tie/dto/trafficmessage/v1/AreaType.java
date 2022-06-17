@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Area location type", name = "AreaType_V1")
+@Schema(description = "Area location type", name = "AreaTypeV1", enumAsRef = true)
 public enum AreaType {
 
     MUNICIPALITY("municipality"),
