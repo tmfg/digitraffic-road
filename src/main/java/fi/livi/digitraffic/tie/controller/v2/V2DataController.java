@@ -152,9 +152,9 @@ public class V2DataController {
     }
 
     @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
-    @Operation(summary = "List the latest data of variable signs")
+    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Traffic Sign data"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
     public VariableSignFeatureCollection variableSigns(
         @Parameter(description = "If parameter is given list only latest value of given sign")
         @RequestParam(value = "deviceId", required = false)
@@ -169,7 +169,7 @@ public class V2DataController {
     @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
     @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign data"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
     public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
         return v2VariableSignDataService.listLatestValue(deviceId);
     }
@@ -177,7 +177,7 @@ public class V2DataController {
     @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
     @Operation(summary = "List the history of variable sign data. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign history"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public List<TrafficSignHistory> variableSignHistory(
         @Parameter(description = "List history data of given sign")
         @RequestParam(value = "deviceId")
@@ -188,7 +188,7 @@ public class V2DataController {
     @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
     @Operation(summary = "List the history of variable sign data. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign history"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
         return v2VariableSignDataService.listVariableSignHistory(deviceId);
     }

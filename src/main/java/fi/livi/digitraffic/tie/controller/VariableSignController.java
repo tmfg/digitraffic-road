@@ -31,7 +31,7 @@ public class VariableSignController {
 
     @Operation(summary = "List the latest data of variable signs")
     @RequestMapping(method = RequestMethod.GET, path = API_VS_V1 + API_SIGNS, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Traffic Sign data"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
     public VariableSignFeatureCollection variableSigns(
         @Parameter(description = "If parameter is given list only latest value of given sign")
         @RequestParam(value = "deviceId", required = false)
@@ -45,14 +45,14 @@ public class VariableSignController {
 
     @Operation(summary = "List the latest value of a variable sign")
     @RequestMapping(method = RequestMethod.GET, path = API_VS_V1 + API_SIGNS + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign data"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
     public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
         return v2VariableSignDataService.listLatestValue(deviceId);
     }
 
     @Operation(summary = "List the history of variable sign data")
     @RequestMapping(method = RequestMethod.GET, path = API_VS_V1 + API_SIGNS_HISTORY, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign history"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public List<TrafficSignHistory> variableSignHistory(
         @Parameter(description = "List history data of given sign")
         @RequestParam(value = "deviceId")
