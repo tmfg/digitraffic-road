@@ -25,9 +25,9 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
 
-public class WeathercamControllerTest extends AbstractRestWebTest {
+public class WeathercamPermissionControllerTest extends AbstractRestWebTest {
 
-    private static final Logger log = LoggerFactory.getLogger(WeathercamControllerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(WeathercamPermissionControllerTest.class);
 
     @Autowired
     private WeathercamS3Properties weathercamS3Properties;

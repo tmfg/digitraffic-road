@@ -24,9 +24,9 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.
 @Validated
 @RequestMapping(WEATHERCAM_PATH)
 @ConditionalOnWebApplication
-public class WeathercamController {
+public class WeathercamPermissionController {
 
-    private static final Logger log = LoggerFactory.getLogger(WeathercamController.class);
+    private static final Logger log = LoggerFactory.getLogger(WeathercamPermissionController.class);
 
     private static final String VERSION_ID_PARAM = "versionId";
 
@@ -34,8 +34,8 @@ public class WeathercamController {
     private WeathercamS3Properties weathercamS3Properties;
 
     @Autowired
-    public WeathercamController(final CameraPresetHistoryDataService cameraPresetHistoryDataService,
-                                final WeathercamS3Properties weathercamS3Properties) {
+    public WeathercamPermissionController(final CameraPresetHistoryDataService cameraPresetHistoryDataService,
+                                          final WeathercamS3Properties weathercamS3Properties) {
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
         this.weathercamS3Properties = weathercamS3Properties;
     }

@@ -85,6 +85,7 @@ public class DateHelperTest extends AbstractTest {
         Assertions.assertFalse(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME_MIKROS + ZONE_OFFSET));
 
         // All digits should "match" iso with offset -> make no-matcher to not match as ok (offset checker can be looser to match)
+        System.out.println(DATE_TIME + ".1" + ZONE_OFFSET);
         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".1" + ZONE_OFFSET));
         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".12" + ZONE_OFFSET));
         Assertions.assertFalse(NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER.matches(DATE_TIME + ".123" + ZONE_OFFSET));

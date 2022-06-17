@@ -46,6 +46,11 @@ public class DataStatusService {
     }
 
     @Transactional(readOnly = true)
+    public Instant findDataUpdatedInstant(final DataType dataType) {
+        return dataUpdatedRepository.findUpdatedTime(dataType);
+    }
+
+    @Transactional(readOnly = true)
     public Instant findDataUpdatedTime(final DataType dataType, final List<String> subtypes) {
         return dataUpdatedRepository.findUpdatedTime(dataType, subtypes);
     }

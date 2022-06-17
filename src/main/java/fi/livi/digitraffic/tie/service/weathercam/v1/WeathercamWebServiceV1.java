@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.v1.camera;
+package fi.livi.digitraffic.tie.service.weathercam.v1;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,39 +10,40 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.converter.feature.CameraPresetMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.converter.weathercam.v1.WeathercamPresetToFeatureConverter;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureCollectionV1;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 @ConditionalOnWebApplication
 @Service
-public class CameraWebService {
-    private static final Logger log = LoggerFactory.getLogger(CameraWebService.class);
+public class WeathercamWebServiceV1 {
+    private static final Logger log = LoggerFactory.getLogger(WeathercamWebServiceV1.class);
 
-    private final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter;
+    private final WeathercamPresetToFeatureConverter weathercamPresetToFeatureConverter;
     private final CameraPresetService cameraPresetService;
     private final DataStatusService dataStatusService;
 
     @Autowired
-    public CameraWebService(final CameraPresetMetadata2FeatureConverter cameraPresetMetadata2FeatureConverter,
-                            final CameraPresetService cameraPresetService,
-                            final DataStatusService dataStatusService) {
-        this.cameraPresetMetadata2FeatureConverter = cameraPresetMetadata2FeatureConverter;
+    public WeathercamWebServiceV1(final WeathercamPresetToFeatureConverter weathercamPresetToFeatureConverter,
+                                  final CameraPresetService cameraPresetService,
+                                  final DataStatusService dataStatusService) {
+        this.weathercamPresetToFeatureConverter = weathercamPresetToFeatureConverter;
         this.cameraPresetService = cameraPresetService;
         this.dataStatusService = dataStatusService;
     }
 
     @Transactional(readOnly = true)
-    public CameraStationFeatureCollection findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-        return cameraPresetMetadata2FeatureConverter.convert(
+    public WeathercamFeatureCollectionV1 findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
+        return weathercamPresetToFeatureConverter.convert(
                 onlyUpdateInfo ?
                 Collections.emptyList() :
                 cameraPresetService.findAllPublishableCameraPresets(),
-                dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_METADATA),
-                dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_METADATA_CHECK));
+                dataStatusService.findDataUpdatedInstant(DataType.CAMERA_STATION_METADATA),
+                dataStatusService.findDataUpdatedInstant(DataType.CAMERA_STATION_METADATA_CHECK));
     }
 
     @Transactional(readOnly = true)

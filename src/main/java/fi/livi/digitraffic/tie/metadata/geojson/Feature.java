@@ -4,15 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public abstract class Feature<G extends Geometry<?>, P extends Properties>  extends GeoJsonObject {
 
-    @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true, allowableValues = "Feature")
+    @Schema(description = "GeoJSON Feature Object", required = true, allowableValues = "Feature", example = "Feature")
     private final String type = "Feature";
 
-    @Schema(description = "GeoJSON Geometry Object",
-                      required = true)
+    @Schema(description = "GeoJSON Geometry Object", required = true)
     private G geometry;
 
-    @Schema(description = "GeoJSON Properties Object",
-                      required = true)
+    @Schema(description = "GeoJSON Properties Object", required = true)
     private P properties;
 
     public Feature() {

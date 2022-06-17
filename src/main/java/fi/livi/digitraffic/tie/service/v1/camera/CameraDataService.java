@@ -41,7 +41,7 @@ public class CameraDataService {
             return new CameraRootDataObjectDto(updated);
         } else {
             return cameraPreset2CameraDataConverter.convert(
-                    cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(),
+                    cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(null),
                     updated);
         }
     }

@@ -655,11 +655,11 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             null, null,
             null, null, new MaintenanceTrackingTask[0]);
         assertCollectionSize(2, fc.getFeatures());
-        final ZonedDateTime lastUpdated = fc.getDataUpdatedTime();
+        final Instant lastUpdated = fc.dataUpdatedTime;
         final MaintenanceTrackingFeature first = fc.getFeatures().get(0);
         final MaintenanceTrackingFeature second = fc.getFeatures().get(1);
         assertTrue(first.getProperties().created.isBefore(second.getProperties().created));
-        assertEquals(lastUpdated.toInstant(), second.getProperties().created);
+        assertEquals(lastUpdated, second.getProperties().created);
     }
 
     @Test
@@ -695,28 +695,28 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             null, null,
             null, null, singletonList(firstDomain));
         assertCollectionSize(1, fc1.getFeatures());
-        assertEquals(first.getCreated(), fc1.getDataUpdatedTime());
-        assertDatesInMillis(first.getCreated(), fc1.getDataLastCheckedTime(), 1000);
+        assertEquals(first.getCreated().toInstant(), fc1.dataUpdatedTime);
+        assertDatesInMillis(first.getCreated(), fc1.dataLastCheckedTime, 1000);
 
         // find with second domain should have same update time as creation time and almost same the same data checked time
         final MaintenanceTrackingFeatureCollection fc2 = findMaintenanceTrackings(
             null, null,
             null, null, singletonList(secondDomain));
         assertCollectionSize(1, fc2.getFeatures());
-        assertEquals(second.getCreated(), fc2.getDataUpdatedTime());
-        assertDatesInMillis(second.getCreated(), fc2.getDataLastCheckedTime(), 1000);
+        assertEquals(second.getCreated().toInstant(), fc2.dataUpdatedTime);
+        assertDatesInMillis(second.getCreated(), fc2.dataLastCheckedTime, 1000);
 
         // With both domains, the result has the newest creation time (=second domain)
         final MaintenanceTrackingFeatureCollection fcBoth = findMaintenanceTrackings(
             null, null,
             null, null, asList(secondDomain, firstDomain));
         assertCollectionSize(2, fcBoth.getFeatures());
-        assertEquals(second.getCreated(), fcBoth.getDataUpdatedTime());
-        assertDatesInMillis(second.getCreated(), fcBoth.getDataLastCheckedTime(), 1000);
+        assertEquals(second.getCreated().toInstant(), fcBoth.dataUpdatedTime);
+        assertDatesInMillis(second.getCreated(), fcBoth.dataLastCheckedTime, 1000);
     }
 
-    private void assertDatesInMillis(final ZonedDateTime first, final ZonedDateTime second, final int deltaMillis) {
-        assertEquals((double)first.toInstant().toEpochMilli(), (double)second.toInstant().toEpochMilli(), deltaMillis);
+    private void assertDatesInMillis(final ZonedDateTime first, final Instant second, final int deltaMillis) {
+        assertEquals((double)first.toInstant().toEpochMilli(), (double)second.toEpochMilli(), deltaMillis);
     }
 
     private MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,

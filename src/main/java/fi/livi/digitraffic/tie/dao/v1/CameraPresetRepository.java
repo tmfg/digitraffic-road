@@ -47,19 +47,20 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
                "        (rs.isPublic = true AND COALESCE(rs.publicityStartTime, CURRENT_TIMESTAMP) <= CURRENT_TIMESTAMP) " +
                "        OR (rs.isPublicPrevious = true AND COALESCE(rs.publicityStartTime, CURRENT_TIMESTAMP) > CURRENT_TIMESTAMP) " +
                "  ) " +
+               "  AND (:cameraId IS NULL OR cp.cameraId = :cameraId) " +
                "ORDER BY cp.presetId")
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<CameraPreset> findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId();
+    List<CameraPreset> findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(final String cameraId);
 
     /**
-     * Only difference to {@link #findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId()}
+     * Only difference to {@link #findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(String)} ()}
      * is that this query filters result by given cameraId.
 
      * @param cameraId camera id which presets to fetch.
      * @return Publishable presets for given camera id
      *
-     * @see {@link CameraPresetRepository#findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId()}
+     * @see {@link CameraPresetRepository#findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(String)}
      */
     @Query(value =
                "SELECT cp, rs, ra, ws " +
@@ -117,4 +118,19 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
 
     @EntityGraph(attributePaths = "roadStation")
     CameraPreset findByPresetId(String presetId);
+
+    @Query(value =
+        "select distinct cp.camera_id as cameraId, rs.natural_id as nearestWeatherStationNaturalId\n" +
+        "from camera_preset cp\n" +
+        "inner join weather_station ws on cp.nearest_rd_weather_station_id = ws.id\n" +
+        "inner join road_station rs on ws.road_station_id = rs.id AND rs.type = 2 -- weatherstation\n" +
+        "where cp.publishable = true\n" +
+        "  and rs.publishable = true", nativeQuery = true)
+    List<WeathercamNearestWeatherStationV1> findAllPublishableNearestWeatherStations();
+
+    interface WeathercamNearestWeatherStationV1 {
+        String getCameraId();
+
+        Long getNearestWeatherStationNaturalId();
+    }
 }
