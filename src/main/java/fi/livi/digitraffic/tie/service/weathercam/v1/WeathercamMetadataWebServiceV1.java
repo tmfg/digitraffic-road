@@ -11,34 +11,35 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.converter.weathercam.v1.WeathercamPresetToFeatureConverter;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureCollectionV1;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureCollectionSimpleV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detailed;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 @ConditionalOnWebApplication
 @Service
-public class WeathercamWebServiceV1 {
-    private static final Logger log = LoggerFactory.getLogger(WeathercamWebServiceV1.class);
+public class WeathercamMetadataWebServiceV1 {
+    private static final Logger log = LoggerFactory.getLogger(WeathercamMetadataWebServiceV1.class);
 
     private final WeathercamPresetToFeatureConverter weathercamPresetToFeatureConverter;
     private final CameraPresetService cameraPresetService;
     private final DataStatusService dataStatusService;
 
     @Autowired
-    public WeathercamWebServiceV1(final WeathercamPresetToFeatureConverter weathercamPresetToFeatureConverter,
-                                  final CameraPresetService cameraPresetService,
-                                  final DataStatusService dataStatusService) {
+    public WeathercamMetadataWebServiceV1(final WeathercamPresetToFeatureConverter weathercamPresetToFeatureConverter,
+                                          final CameraPresetService cameraPresetService,
+                                          final DataStatusService dataStatusService) {
         this.weathercamPresetToFeatureConverter = weathercamPresetToFeatureConverter;
         this.cameraPresetService = cameraPresetService;
         this.dataStatusService = dataStatusService;
     }
 
     @Transactional(readOnly = true)
-    public WeathercamFeatureCollectionV1 findAllPublishableCameraStationsAsFeatureCollection(final boolean onlyUpdateInfo) {
-        return weathercamPresetToFeatureConverter.convert(
+    public WeathercamFeatureCollectionSimpleV1 findAllPublishableCameraStationsAsSimpleFeatureCollection(final boolean onlyUpdateInfo) {
+        return weathercamPresetToFeatureConverter.convertToSimpleFeatureCollection(
                 onlyUpdateInfo ?
                 Collections.emptyList() :
                 cameraPresetService.findAllPublishableCameraPresets(),
@@ -47,10 +48,12 @@ public class WeathercamWebServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public CameraStationFeature findPublishableCameraStationAsFeature(final String stationId) {
-        // TODO
-        final List<CameraPreset> resutl =
+    public WeathercamStationFeatureV1Detailed findPublishableCameraStationAsDetailedFeature(final String stationId) {
+        final List<CameraPreset> presets =
             cameraPresetService.findAllPublishableCameraPresetsByCameraId(stationId);
-        return null;
+        if (presets.isEmpty()) {
+            throw new ObjectNotFoundException("weathercam station", stationId);
+        }
+        return weathercamPresetToFeatureConverter.convertToDetailedFeature(presets);
     }
 }

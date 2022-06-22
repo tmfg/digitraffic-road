@@ -8,15 +8,15 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureCollectionDto;
+import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureCollectionV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "GeoJSON FeatureCollection of camera stations with camera presets", name = "WeathercamFeatureCollectionV1")
+@Schema(description = "Weathercam GeoJSON FeatureCollection object with basic information")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
-public class WeathercamFeatureCollectionV1 extends FeatureCollectionDto<WeathercamFeatureV1> {
+public class WeathercamFeatureCollectionSimpleV1 extends FeatureCollectionV1<WeathercamStationFeatureSimpleV1> {
 
-    public WeathercamFeatureCollectionV1(final Instant updatedTime, final Instant checkedTime,
-                                         final List<WeathercamFeatureV1> features) {
+    public WeathercamFeatureCollectionSimpleV1(final Instant updatedTime, final Instant checkedTime,
+                                               final List<WeathercamStationFeatureSimpleV1> features) {
         super(updatedTime, checkedTime, features);
     }
 
@@ -28,7 +28,7 @@ public class WeathercamFeatureCollectionV1 extends FeatureCollectionDto<Weatherc
         if (o == null || getClass() != o.getClass())
             return false;
 
-        final WeathercamFeatureCollectionV1 that = (WeathercamFeatureCollectionV1) o;
+        final WeathercamFeatureCollectionSimpleV1 that = (WeathercamFeatureCollectionSimpleV1) o;
 
         return new EqualsBuilder()
                 .append(getType(), that.getType())

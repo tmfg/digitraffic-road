@@ -12,8 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "type", "features" })
-@Schema(description = "GeoJSON Feature Collection Object", name = "FeatureCollectionV1")
-public class FeatureCollectionDto<FeatureType> extends FeatureCollection<FeatureType> {
+@Schema(description = "GeoJSON Feature Collection Object")
+public class FeatureCollectionV1<FeatureType> extends FeatureCollection<FeatureType> {
 
     @Schema(description = "Data last updated date time", required = true)
     public final Instant dataUpdatedTime;
@@ -21,9 +21,9 @@ public class FeatureCollectionDto<FeatureType> extends FeatureCollection<Feature
     @Schema(description = "Data last checked date time", required = true)
     public final Instant dataLastCheckedTime;
 
-    public FeatureCollectionDto(final Instant dataUpdatedTime,
-                                final Instant dataLastCheckedTime,
-                                final List<FeatureType> features) {
+    public FeatureCollectionV1(final Instant dataUpdatedTime,
+                               final Instant dataLastCheckedTime,
+                               final List<FeatureType> features) {
         super(features);
         this.dataUpdatedTime = dataUpdatedTime;
         this.dataLastCheckedTime = dataLastCheckedTime;

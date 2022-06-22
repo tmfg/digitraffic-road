@@ -9,65 +9,42 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesV1;
+import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesDetailedV1;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Weathercam properties")
-@JsonPropertyOrder({ "id", "name", "cameraType" })
-public class WeathercamPropertiesV1 extends RoadStationPropertiesV1<String> {
+@Schema(description = "Weathercam station properties object with detailed information")
+@JsonPropertyOrder({ "id", "name", "cameraType", "nearestWeatherStationId" })
+public class WeathercamStationPropertiesDetailedV1 extends RoadStationPropertiesDetailedV1<String> {
 
-    @Schema(description = "Weathercam id")
-    private String id;
+    @Schema(description = "Weathercam presets")
+    private List<WeathercamPresetDetailedV1> presets = new ArrayList<>();
 
-    @Schema(description = "Type of camera")
-    private CameraType cameraType;
-
-    /** Nearest weather station natural id */
-    @Schema(description = "Nearest weather station id")
-    private Long nearestWeatherStationId;
-
-    @Schema(description = "Camera presets")
-    private List<WeathercamPresetV1> presets = new ArrayList<>();
-
-
-    public void setCameraType(final CameraType cameraType) {
-        this.cameraType = cameraType;
-    }
-
-    public CameraType getCameraType() {
-        return cameraType;
-    }
-
-    public void setNearestWeatherStationId(final Long nearestWeatherStationId) {
-        this.nearestWeatherStationId = nearestWeatherStationId;
-    }
-
-    public Long getNearestWeatherStationId() {
-        return nearestWeatherStationId;
-    }
-
-    public List<WeathercamPresetV1> getPresets() {
+    public List<WeathercamPresetDetailedV1> getPresets() {
         return presets;
     }
 
-    public void setPresets(final List<WeathercamPresetV1> presets) {
+    @Schema(description = "Type of camera")
+    public final CameraType cameraType;
+
+    /** Nearest weather station natural id */
+    @Schema(description = "Nearest weather station id")
+    public final Long nearestWeatherStationId;
+
+    public WeathercamStationPropertiesDetailedV1(final String cameraId, final CameraType cameraType,
+                                                 final Long nearestWeatherStationId) {
+        super(cameraId);
+        this.cameraType = cameraType;
+        this.nearestWeatherStationId = nearestWeatherStationId;
+    }
+
+    public void setPresets(final List<WeathercamPresetDetailedV1> presets) {
         this.presets = presets;
     }
 
-    public void addPreset(final WeathercamPresetV1 preset) {
+    public void addPreset(final WeathercamPresetDetailedV1 preset) {
         this.presets.add(preset);
         Collections.sort(this.presets);
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(final String id) {
-        this.id = id;
     }
 
     @Override
@@ -78,13 +55,12 @@ public class WeathercamPropertiesV1 extends RoadStationPropertiesV1<String> {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        final WeathercamPropertiesV1 that = (WeathercamPropertiesV1) o;
+        final WeathercamStationPropertiesDetailedV1 that = (WeathercamStationPropertiesDetailedV1) o;
 
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))
                 .append(cameraType, that.cameraType)
                 .append(nearestWeatherStationId, that.nearestWeatherStationId)
-                .append(presets, that.presets)
                 .isEquals();
     }
 
@@ -94,7 +70,6 @@ public class WeathercamPropertiesV1 extends RoadStationPropertiesV1<String> {
                 .appendSuper(super.hashCode())
                 .append(cameraType)
                 .append(nearestWeatherStationId)
-                .append(presets)
                 .toHashCode();
     }
 }

@@ -176,4 +176,8 @@ public class CameraPresetService {
         return stations.stream().collect(Collectors.toMap(WeathercamNearestWeatherStationV1::getCameraId, WeathercamNearestWeatherStationV1::getNearestWeatherStationNaturalId));
     }
 
+    @Transactional(readOnly = true)
+    public Long getNearestWeatherStationNaturalIdByCameraNatualId(final String cameraId) {
+        return cameraPresetRepository.getNearestWeatherStationNaturalIdByCameraNatualId(cameraId);
+    }
 }

@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.dto.weathercam.v1;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Weathercam preset direction", defaultValue = "TRAFFIC_ANNOUNCEMENT", enumAsRef = true)
+@Schema(description = "Weathercam preset direction", defaultValue = "UNKNOWN", enumAsRef = true)
 public enum WeathercamPresetDirectionV1 {
 
     UNKNOWN(0),

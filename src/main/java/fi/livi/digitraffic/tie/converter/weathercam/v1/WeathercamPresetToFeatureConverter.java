@@ -15,10 +15,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.roadstation.v1.AbstractRoadstationToFeatureConverterV1;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureCollectionV1;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureV1;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetV1;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPropertiesV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureCollectionSimpleV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDetailedV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetSimpleV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureSimpleV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detailed;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesDetailedV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
@@ -43,60 +46,92 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
         this.cameraPresetService = cameraPresetService;
     }
 
-    public WeathercamFeatureCollectionV1 convert(final List<CameraPreset> cameraPresets, final Instant dataLastUpdated, final Instant dataLastCheckedTime) {
+    public WeathercamFeatureCollectionSimpleV1 convertToSimpleFeatureCollection(final List<CameraPreset> cameraPresets, final Instant dataLastUpdated, final Instant dataLastCheckedTime) {
 
         // Cameras mapped with cameraId
-        final Map<String, WeathercamFeatureV1> weathercamFeatureMappedByCameraId = new HashMap<>();
-        final List<WeathercamFeatureV1> weathercamFeatureV1s = new ArrayList<>();
-        final Map<String, Long> weatherStationsMapByCameraId = cameraPresetService.getNearestWeatherStationNaturalIdMappedByCameraId();
+        final Map<String, WeathercamStationFeatureSimpleV1> weathercamFeatureMappedByCameraId = new HashMap<>();
+        final List<WeathercamStationFeatureSimpleV1> weathercamStationFeatureSimpleV1s = new ArrayList<>();
+        //final Map<String, Long> weatherStationsIdsMapByCameraId = cameraPresetService.getNearestWeatherStationNaturalIdMappedByCameraId();
         // CameraPreset contains camera and preset informations and
         // camera info is duplicated on every preset db line
-        // So we take camera only once
+        // So we take camera only once and append presets to it
         cameraPresets
             .forEach(cp -> {
-                WeathercamFeatureV1 weathercamFeatureV1 = weathercamFeatureMappedByCameraId.get(cp.getCameraId());
-                if (weathercamFeatureV1 == null) {
-                    weathercamFeatureV1 = convert(weatherStationsMapByCameraId, cp);
-                    weathercamFeatureMappedByCameraId.put(cp.getCameraId(), weathercamFeatureV1);
-                    weathercamFeatureV1s.add(weathercamFeatureV1);
+                WeathercamStationFeatureSimpleV1 weathercamStationFeatureSimpleV1 = weathercamFeatureMappedByCameraId.get(cp.getCameraId());
+                if (weathercamStationFeatureSimpleV1 == null) {
+                    weathercamStationFeatureSimpleV1 = convertToSimpleFeature(cp);
+                    weathercamFeatureMappedByCameraId.put(cp.getCameraId(), weathercamStationFeatureSimpleV1);
+                    weathercamStationFeatureSimpleV1s.add(weathercamStationFeatureSimpleV1);
                 }
-                weathercamFeatureV1.getProperties().addPreset(convertPreset(cp));
+                weathercamStationFeatureSimpleV1.getProperties().addPreset(convertToSimplePreset(cp));
             });
 
-        return new WeathercamFeatureCollectionV1(dataLastUpdated, dataLastCheckedTime, weathercamFeatureV1s);
+        return new WeathercamFeatureCollectionSimpleV1(dataLastUpdated, dataLastCheckedTime, weathercamStationFeatureSimpleV1s);
     }
 
-    private WeathercamPresetV1 convertPreset(final CameraPreset cp) {
-        final WeathercamPresetV1 dto = new WeathercamPresetV1();
-        dto.setCameraId(cp.getCameraId());
-        dto.setId(cp.getPresetId());
-        dto.setPresentationName(DataValidityHelper.nullifyUnknownValue(cp.getPresetName1()));
-        dto.setResolution(cp.getResolution());
-        dto.setDirectionCode(cp.getDirection());
-        dto.setInCollection(cp.isInCollection());
-        dto.setImageUrl(StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg");
-        return dto;
+    private WeathercamPresetSimpleV1 convertToSimplePreset(final CameraPreset cp) {
+        return new WeathercamPresetSimpleV1(cp.getPresetId(), cp.getCameraId());
     }
 
-    private WeathercamFeatureV1 convert(final Map<String, Long> nearestWeatherStationMap, final CameraPreset cp) {
+    private WeathercamPresetDetailedV1 convertToDetailedPreset(final CameraPreset cp) {
+        return new WeathercamPresetDetailedV1(
+            cp.getPresetId(),
+            cp.getCameraId(),
+            DataValidityHelper.nullifyUnknownValue(cp.getPresetName1()), // dto.setPresentationName
+            cp.getResolution(),
+            cp.getDirection(),
+            cp.isInCollection(),
+            getImageUrl(cp));
+    }
+
+    private String getImageUrl(final CameraPreset cp) {
+        return StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg";
+    }
+
+    private WeathercamStationFeatureSimpleV1 convertToSimpleFeature(final CameraPreset cp) {
 
             if (log.isDebugEnabled()) {
                 log.debug("Convert: " + cp);
             }
 
             // Camera properties
-            final WeathercamPropertiesV1 properties = new WeathercamPropertiesV1();
-            properties.setId(cp.getCameraId());
-            properties.setCameraType(cp.getCameraType());
-
-            if(cp.getNearestWeatherStation() != null) {
-                properties.setNearestWeatherStationId(nearestWeatherStationMap.get(cp.getCameraId()));
-            }
+            final WeathercamStationPropertiesSimpleV1 properties =
+                new WeathercamStationPropertiesSimpleV1(cp.getCameraId());
 
             // RoadStation properties
             final RoadStation rs = cp.getRoadStation();
             setRoadStationProperties(properties, rs);
 
-            return new WeathercamFeatureV1(getGeometry(rs), properties);
+            return new WeathercamStationFeatureSimpleV1(getGeometry(rs), properties);
+    }
+
+    public WeathercamStationFeatureV1Detailed convertToDetailedFeature(final List<CameraPreset> cameraPresets) {
+
+        if (cameraPresets.isEmpty()) {
+            throw new IllegalArgumentException("Empty collection");
+        }
+
+        final WeathercamStationFeatureV1Detailed feature = createWeathercamFeatureDetailedV1(cameraPresets.get(0));
+
+        cameraPresets
+            .forEach(cp -> feature.getProperties().addPreset(convertToDetailedPreset(cp)));
+        return feature;
+    }
+
+    private WeathercamStationFeatureV1Detailed createWeathercamFeatureDetailedV1(final CameraPreset cp) {
+        if (log.isDebugEnabled()) {
+            log.debug("method=createWeathercamFeatureDetailedV1 " + cp);
+        }
+
+        // Camera properties
+        final WeathercamStationPropertiesDetailedV1 properties =
+            new WeathercamStationPropertiesDetailedV1(cp.getCameraId(), cp.getCameraType(),
+                                                      cameraPresetService.getNearestWeatherStationNaturalIdByCameraNatualId(cp.getCameraId()));
+
+        // RoadStation properties
+        final RoadStation rs = cp.getRoadStation();
+        setRoadStationPropertiesDetailed(properties, rs);
+
+        return new WeathercamStationFeatureV1Detailed(getGeometry(rs), properties);
     }
 }
