@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
-public class AbstractRoadstationToFeatureConverterV1 {
+public abstract class AbstractRoadstationToFeatureConverterV1 {
     private static final Logger log = LoggerFactory.getLogger(AbstractRoadstationToFeatureConverterV1.class);
 
     protected final CoordinateConverter coordinateConverter;
