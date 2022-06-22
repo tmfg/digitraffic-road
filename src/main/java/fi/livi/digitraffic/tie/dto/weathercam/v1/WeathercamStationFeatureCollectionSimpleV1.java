@@ -13,10 +13,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Weathercam GeoJSON FeatureCollection object with basic information")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
-public class WeathercamFeatureCollectionSimpleV1 extends FeatureCollectionV1<WeathercamStationFeatureSimpleV1> {
+public class WeathercamStationFeatureCollectionSimpleV1 extends FeatureCollectionV1<WeathercamStationFeatureSimpleV1> {
 
-    public WeathercamFeatureCollectionSimpleV1(final Instant updatedTime, final Instant checkedTime,
-                                               final List<WeathercamStationFeatureSimpleV1> features) {
+    public WeathercamStationFeatureCollectionSimpleV1(final Instant updatedTime, final Instant checkedTime,
+                                                      final List<WeathercamStationFeatureSimpleV1> features) {
         super(updatedTime, checkedTime, features);
     }
 
@@ -28,7 +28,7 @@ public class WeathercamFeatureCollectionSimpleV1 extends FeatureCollectionV1<Wea
         if (o == null || getClass() != o.getClass())
             return false;
 
-        final WeathercamFeatureCollectionSimpleV1 that = (WeathercamFeatureCollectionSimpleV1) o;
+        final WeathercamStationFeatureCollectionSimpleV1 that = (WeathercamStationFeatureCollectionSimpleV1) o;
 
         return new EqualsBuilder()
                 .append(getType(), that.getType())

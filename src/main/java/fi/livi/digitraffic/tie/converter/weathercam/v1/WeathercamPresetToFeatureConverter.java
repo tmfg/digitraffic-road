@@ -15,9 +15,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.roadstation.v1.AbstractRoadstationToFeatureConverterV1;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDetailedV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetSimpleV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detailed;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesDetailedV1;
@@ -46,7 +46,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
         this.cameraPresetService = cameraPresetService;
     }
 
-    public WeathercamFeatureCollectionSimpleV1 convertToSimpleFeatureCollection(final List<CameraPreset> cameraPresets, final Instant dataLastUpdated, final Instant dataLastCheckedTime) {
+    public WeathercamStationFeatureCollectionSimpleV1 convertToSimpleFeatureCollection(final List<CameraPreset> cameraPresets, final Instant dataLastUpdated, final Instant dataLastCheckedTime) {
 
         // Cameras mapped with cameraId
         final Map<String, WeathercamStationFeatureSimpleV1> weathercamFeatureMappedByCameraId = new HashMap<>();
@@ -66,7 +66,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
                 weathercamStationFeatureSimpleV1.getProperties().addPreset(convertToSimplePreset(cp));
             });
 
-        return new WeathercamFeatureCollectionSimpleV1(dataLastUpdated, dataLastCheckedTime, weathercamStationFeatureSimpleV1s);
+        return new WeathercamStationFeatureCollectionSimpleV1(dataLastUpdated, dataLastCheckedTime, weathercamStationFeatureSimpleV1s);
     }
 
     private WeathercamPresetSimpleV1 convertToSimplePreset(final CameraPreset cp) {

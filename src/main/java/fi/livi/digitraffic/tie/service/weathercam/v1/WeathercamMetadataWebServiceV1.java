@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.converter.weathercam.v1.WeathercamPresetToFeatureConverter;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureCollectionSimpleV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detailed;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
@@ -38,7 +38,7 @@ public class WeathercamMetadataWebServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public WeathercamFeatureCollectionSimpleV1 findAllPublishableCameraStationsAsSimpleFeatureCollection(final boolean onlyUpdateInfo) {
+    public WeathercamStationFeatureCollectionSimpleV1 findAllPublishableCameraStationsAsSimpleFeatureCollection(final boolean onlyUpdateInfo) {
         return weathercamPresetToFeatureConverter.convertToSimpleFeatureCollection(
                 onlyUpdateInfo ?
                 Collections.emptyList() :

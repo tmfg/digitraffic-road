@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detailed;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDatasV1;
 import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamDataWebServiceV1;
@@ -77,7 +77,7 @@ public class WeathercamController {
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHERCAM_V1_STATIONS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Camera Preset Feature Collections") })
-    public WeathercamFeatureCollectionSimpleV1 weathercamStations(
+    public WeathercamStationFeatureCollectionSimpleV1 weathercamStations(
         @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated) {
