@@ -25,6 +25,7 @@ import com.google.common.collect.Iterables;
 
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
+import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository.WeathercamNearestWeatherStationV1;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
@@ -81,12 +82,12 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public List<CameraPreset> findAllPublishableCameraPresets() {
-        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId();
+        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(null);
     }
 
     @Transactional(readOnly = true)
-    public List<String> findAllNotPublishableCameraPresetsPresetIds() {
-        return cameraPresetRepository.findAllNotPublishableCameraPresetsPresetIds();
+    public List<CameraPreset> findAllPublishableCameraPresetsByCameraId(final String cameraId) {
+        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(cameraId);
     }
 
     @Transactional(readOnly = true)
@@ -167,5 +168,16 @@ public class CameraPresetService {
             return cp.makeObsolete();
         }
         return false;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Long> getNearestWeatherStationNaturalIdMappedByCameraId() {
+        final List<WeathercamNearestWeatherStationV1> stations = cameraPresetRepository.findAllPublishableNearestWeatherStations();
+        return stations.stream().collect(Collectors.toMap(WeathercamNearestWeatherStationV1::getCameraId, WeathercamNearestWeatherStationV1::getNearestWeatherStationNaturalId));
+    }
+
+    @Transactional(readOnly = true)
+    public Long getNearestWeatherStationNaturalIdByCameraNatualId(final String cameraId) {
+        return cameraPresetRepository.getNearestWeatherStationNaturalIdByCameraNatualId(cameraId);
     }
 }

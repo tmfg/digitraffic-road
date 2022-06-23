@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraPresetDto;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDirectionV1;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
@@ -47,7 +47,7 @@ public class CameraMetadataControllerRestWebTest extends AbstractRestWebTest {
         }
 
         final ArrayList<String> directions = new ArrayList<>();
-        for (final CameraPresetDto.Direction direction : CameraPresetDto.Direction.values()) {
+        for (final WeathercamPresetDirectionV1 direction : WeathercamPresetDirectionV1.values()) {
             directions.add(direction.name());
         }
 

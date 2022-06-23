@@ -1,8 +1,8 @@
-package fi.livi.digitraffic.tie.service.v1.camera;
+package fi.livi.digitraffic.tie.service.weathercam.v1;
 
 import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_IMAGE_UPDATED;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,53 +10,51 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.converter.CameraPreset2CameraDataConverter;
+import fi.livi.digitraffic.tie.converter.weathercam.v1.WeathercamDataConverter;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
-import fi.livi.digitraffic.tie.dto.v1.camera.CameraRootDataObjectDto;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDatasV1;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @ConditionalOnWebApplication
 @Service
-public class CameraDataService {
+public class WeathercamDataWebServiceV1 {
     private final CameraPresetRepository cameraPresetRepository;
-    private final CameraPreset2CameraDataConverter cameraPreset2CameraDataConverter;
+    private final WeathercamDataConverter weathercamDataConverter;
     private final DataStatusService dataStatusService;
 
     @Autowired
-    CameraDataService(final CameraPresetRepository cameraPresetRepository,
-                      final CameraPreset2CameraDataConverter cameraPreset2CameraDataConverter,
-                      final DataStatusService dataStatusService) {
+    WeathercamDataWebServiceV1(final CameraPresetRepository cameraPresetRepository,
+                               final WeathercamDataConverter weathercamDataConverter,
+                               final DataStatusService dataStatusService) {
         this.cameraPresetRepository = cameraPresetRepository;
-        this.cameraPreset2CameraDataConverter = cameraPreset2CameraDataConverter;
+        this.weathercamDataConverter = weathercamDataConverter;
         this.dataStatusService = dataStatusService;
     }
 
     @Transactional(readOnly = true)
-    public CameraRootDataObjectDto findPublishableCameraStationsData(final boolean onlyUpdateInfo) {
-        final ZonedDateTime updated = dataStatusService.findDataUpdatedTime(CAMERA_STATION_IMAGE_UPDATED);
+    public WeathercamStationsDatasV1 findPublishableWeathercamStationsData(final boolean onlyUpdateInfo) {
+        final Instant updated = dataStatusService.findDataUpdatedInstant(CAMERA_STATION_IMAGE_UPDATED);
 
         if (onlyUpdateInfo) {
-            return new CameraRootDataObjectDto(updated);
+            return new WeathercamStationsDatasV1(updated);
         } else {
-            return cameraPreset2CameraDataConverter.convert(
+            return weathercamDataConverter.convert(
                     cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(null),
                     updated);
         }
     }
 
     @Transactional(readOnly = true)
-    public CameraRootDataObjectDto findPublishableCameraStationsData(final String cameraId) {
-        final ZonedDateTime updated = dataStatusService.findDataUpdatedTime(CAMERA_STATION_IMAGE_UPDATED);
+    public WeathercamStationDataV1 findPublishableWeathercamStationData(final String cameraId, final boolean onlyUpdateInfo) {
         final List<CameraPreset> data = cameraPresetRepository
                 .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(cameraId);
 
         if (data.isEmpty()) {
             throw new ObjectNotFoundException("CameraStation", cameraId);
         }
-        return cameraPreset2CameraDataConverter.convert(
-                data,
-                updated);
+        return weathercamDataConverter.convertSingleStationData(data, onlyUpdateInfo);
     }
 }

@@ -19,16 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
     "Then Foreca meteorologists also manually edit the data to fix certain known errors in the model.", name = "ForecastConditionReason")
 public class ForecastConditionReasonDto {
     @Enumerated(EnumType.STRING)
-    @Schema(description = "Precipitation condition:\n" +
-        "0 = no data available,\n" +
-        "1 = rain intensity lt 0.2 mm/h,\n" +
-        "2 = rain intensity ge 0.2 mm/h,\n" +
-        "3 = rain intensity ge 2.5 mm/h,\n" +
-        "4 = rain intensity ge 7.6 mm/h,\n" +
-        "5 = snowing intensity ge 0.2 cm/h,\n" +
-        "6 = snowing intensity ge 1 cm/h,\n" +
-        "7 = snowing intensity ge 3 cm/h\n" +
-        "(lt = lower than, ge = greater or equal)")
+    /* Schema in {@link PrecipitationCondition} */
     private final PrecipitationCondition precipitationCondition;
 
     @Enumerated(EnumType.STRING)

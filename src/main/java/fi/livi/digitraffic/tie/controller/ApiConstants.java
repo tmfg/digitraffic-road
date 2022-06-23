@@ -9,6 +9,8 @@ public final class ApiConstants {
     public static final String BETA = "/beta";
     public static final String INTEGRATION = API + "/integration";
 
+    public static final String LAST_UPDATED_PARAM = "lastUpdated";
+
     /**
      * API data types
      */
@@ -22,6 +24,11 @@ public final class ApiConstants {
     public static final String MAINTENANCE_TAG = "Maintenance";
     public static final String MAINTENANCE_BETA_TAG = "Maintenance (BETA)";
     public static final String API_MAINTENANCE = API + "/maintenance";
+
+    /** Weathercam */
+    public static final String WEATHERCAM_TAG = "Weathercam";
+    public static final String WEATHERCAM_BETA_TAG = "Weathercam (BETA)";
+    public static final String API_WEATHERCAM = API + "/weathercam";
 
     /* Waze feed */
     public static final String API_WAZEFEED = INTEGRATION + "/waze";

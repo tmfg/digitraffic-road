@@ -106,8 +106,8 @@ public class V2MaintenanceTrackingDataService {
                                                                          final List<MaintenanceTrackingTask> taskIds,
                                                                          final List<String> domains) {
         final List<String> realDomains = convertToRealDomainNames(domains);
-        final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains));
-        final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(MAINTENANCE_TRACKING_DATA_CHECKED, realDomains));
+        final Instant lastUpdated = v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains);
+        final Instant lastChecked = dataStatusService.findDataUpdatedTime(MAINTENANCE_TRACKING_DATA_CHECKED, realDomains);
 
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 

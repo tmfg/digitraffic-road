@@ -86,19 +86,22 @@ public class RoadAddress {
                       parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_ADDRESS"))
     @GeneratedValue(generator = "SEQ_ROAD_ADDRESS")
     private Long id;
-    @Schema(description = "Road number (values 1–99999)")
+
+    @Schema(description = "Road number (values 1–99999)", example = "7")
     private Integer roadNumber;
-    @Schema(description = "Road section (values 1–999)")
+
+    @Schema(description = "Road section (values 1–999)", example = "8")
     private Integer roadSection;
 
-    @Schema(description = "Distance from start of the road portion [m]")
+    @Schema(description = "Distance from start of the road portion [m]", example = "3801")
     @Column(name="DISTANCE_FROM_ROAD_SECTION_ST")
     private Integer distanceFromRoadSectionStart;
 
     @Schema(description = "Carriageway (" +
                               "0 = One carriageway portion, " +
                               "1 = First carriageway of dual carriageway portion (measuring direction) " +
-                              "2 = Second carriageway of dual carriageway portion (upstream))")
+                              "2 = Second carriageway of dual carriageway portion (upstream))",
+            example = "1")
     @Column(name = "CARRIAGEWAY")
     private Integer carriagewayCode;
 
@@ -114,13 +117,13 @@ public class RoadAddress {
     @JsonIgnore
     private Integer sideCode;
 
-    @Schema(description = "Road maintenance class")
+    @Schema(description = "Road winter maintenance class", example = "1")
     private String roadMaintenanceClass;
 
-    @Schema(description = "Road contract area")
+    @Schema(description = "Road contract area", example = "Espoo 19-24")
     private String contractArea;
 
-    @Schema(description = "Road contract area code")
+    @Schema(description = "Road contract area code", example = "142")
     private Integer contractAreaCode;
 
     public RoadAddress() {

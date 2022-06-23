@@ -59,11 +59,11 @@ public abstract class RoadStationProperties extends Properties {
     private String provinceCode;
 
     @Schema(description = "Map of names [fi, sv, en]",
-                      example = "\"names\": {\n" +
-                                "          \"fi\": \"Tie 7 Porvoo\",\n" +
-                                "          \"sv\": \"Väg 7 Borgå\",\n" +
-                                "          \"en\": \"Road 7 Porvoo\"\n" +
-                                "        },")
+                      example = "{\n" +
+                                "      \"fi\": \"Tie 7 Porvoo, Harabacka\",\n" +
+                                "      \"sv\": \"Väg 7 Borgå, Harabacka\",\n" +
+                                "      \"en\": \"Road 7 Porvoo, Harabacka\"\n" +
+                                "}")
     private Map<String, String> names = new HashMap<>();
 
     private RoadAddress roadAddress = new RoadAddress();
@@ -252,7 +252,7 @@ public abstract class RoadStationProperties extends Properties {
         return purpose;
     }
 
-    public void setPurpose(String purpose) {
+    public void setPurpose(final String purpose) {
         this.purpose = purpose;
     }
 

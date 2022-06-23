@@ -6,48 +6,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDirectionV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Camera preset", name = "CameraPreset")
 @JsonPropertyOrder({ "presetId", "cameraId", "name" })
 public class CameraPresetDto implements Comparable<CameraPresetDto>{
-
-    public enum Direction {
-        UNKNOWN(0),
-        INCREASING_DIRECTION(1),
-        DECREASING_DIRECTION(2),
-        CROSSING_ROAD_INCREASING_DIRECTION(3),
-        CROSSING_ROAD_DECREASING_DIRECTION(4),
-        SPECIAL_DIRECTION(null);
-
-        private final Integer code;
-
-        Direction(final Integer code) {
-            this.code = code;
-        }
-
-        public Integer getCode() {
-            return code;
-        }
-
-        public static Direction getDirection(final String code) {
-            if (code == null) {
-                return UNKNOWN;
-            }
-            try {
-                final int parsed = Integer.parseInt(code);
-                for (final Direction direction : Direction.values()) {
-                    if (direction.getCode() != null && direction.getCode().equals(parsed)) {
-                        return direction;
-                    }
-                }
-                return SPECIAL_DIRECTION;
-            } catch (final NumberFormatException e) {
-                return UNKNOWN;
-            }
-        }
-
-    }
 
     @JsonIgnore // Using presetId id as id
     private long id;
@@ -158,8 +122,8 @@ public class CameraPresetDto implements Comparable<CameraPresetDto>{
     }
 
     @Schema(description = "Direction of camera")
-    public Direction getDirection() {
-        return Direction.getDirection(directionCode);
+    public WeathercamPresetDirectionV1 getDirection() {
+        return WeathercamPresetDirectionV1.getDirection(directionCode);
     }
 
     public void setImageUrl(final String imageUrl) {
