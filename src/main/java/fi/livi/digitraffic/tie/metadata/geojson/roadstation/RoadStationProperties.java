@@ -252,7 +252,7 @@ public abstract class RoadStationProperties extends Properties {
         return purpose;
     }
 
-    public void setPurpose(String purpose) {
+    public void setPurpose(final String purpose) {
         this.purpose = purpose;
     }
 

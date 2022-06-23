@@ -141,7 +141,7 @@ public abstract class RoadStationPropertiesDetailedV1<ID_TYPE> extends RoadStati
         return purpose;
     }
 
-    public void setPurpose(String purpose) {
+    public void setPurpose(final String purpose) {
         this.purpose = purpose;
     }
 

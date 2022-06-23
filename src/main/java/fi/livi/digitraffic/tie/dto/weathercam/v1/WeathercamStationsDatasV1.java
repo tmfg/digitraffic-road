@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Weathercam stations' data")
 public class WeathercamStationsDatasV1 extends StationsDatasV1<String, WeathercamStationDataV1> {
 
-    public WeathercamStationsDatasV1(final Instant measuredTime, List<WeathercamStationDataV1> stationsData) {
+    public WeathercamStationsDatasV1(final Instant measuredTime, final List<WeathercamStationDataV1> stationsData) {
         super(measuredTime, stationsData);
     }
 

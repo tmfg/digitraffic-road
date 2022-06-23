@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 
 import java.time.Instant;
@@ -69,6 +68,11 @@ public class CameraPresetHistoryDataService {
 
     @Transactional(readOnly = true)
     public List<CameraHistoryDto> findCameraOrPresetPublicHistory(final List<String> cameraOrPresetIds, final ZonedDateTime atTime) {
+        return findCameraOrPresetPublicHistory(cameraOrPresetIds, atTime != null ? atTime.toInstant() : null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CameraHistoryDto> findCameraOrPresetPublicHistory(final List<String> cameraOrPresetIds, final Instant atTime) {
 
         final List<String> cameraIds = parseCameraIds(cameraOrPresetIds);
         final List<String> presetIds = parsePresetIds(cameraOrPresetIds);
@@ -77,9 +81,9 @@ public class CameraPresetHistoryDataService {
         final List<CameraPresetHistory> history =
             atTime != null ?
                 cameraPresetHistoryRepository.findLatestPublishableByCameraAndPresetIdsAndTimeOrderByPresetIdAndLastModifiedDesc(
-                    cameraIds, presetIds, atTime.toInstant(), getOldestTimeLimit().toInstant()) :
+                    cameraIds, presetIds, atTime, getOldestTimeLimit()) :
                 cameraPresetHistoryRepository.findAllPublishableByCameraAndPresetIdsOrderByPresetIdAndLastModifiedDesc(
-                    cameraIds, presetIds, getOldestTimeLimit().toInstant());
+                    cameraIds, presetIds, getOldestTimeLimit());
 
         return convertToCameraHistory(history);
     }
@@ -138,6 +142,21 @@ public class CameraPresetHistoryDataService {
     @Transactional(readOnly = true)
     public CameraHistoryPresencesDto findCameraOrPresetHistoryPresences(final String cameraOrPresetId, final ZonedDateTime fromTime,
                                                                         final ZonedDateTime toTime) {
+        return findCameraOrPresetHistoryPresences(cameraOrPresetId, DateHelper.toInstant(fromTime), DateHelper.toInstant(toTime));
+    }
+
+    /**
+     * Finds cameras' and presets' history status. History status tells if
+     * history exists for given time interval.
+     *
+     * @param cameraOrPresetId camera or preset id to find
+     * @param fromTime inclusive
+     * @param toTime inclusive
+     * @return Presets history presences
+     */
+    @Transactional(readOnly = true)
+    public CameraHistoryPresencesDto findCameraOrPresetHistoryPresences(final String cameraOrPresetId, final Instant fromTime,
+                                                                        final Instant toTime) {
 
         if (cameraOrPresetId == null) {
             return findCameraHistoryPresences(checkAndFixFromTime(fromTime), checkAndFixToTime(toTime));
@@ -151,50 +170,47 @@ public class CameraPresetHistoryDataService {
         }
     }
 
-    private ZonedDateTime checkAndFixFromTime(final ZonedDateTime fromTime) {
-        final ZonedDateTime fromLimit = getOldestTimeLimit();
+    private Instant checkAndFixFromTime(final Instant fromTime) {
+        final Instant fromLimit = getOldestTimeLimit();
         if (fromTime == null || fromTime.isBefore(fromLimit)) {
             return fromLimit;
         }
-        return toZonedDateTimeAtUtc(fromTime);
+        return fromTime;
     }
 
-    private ZonedDateTime checkAndFixToTime(final ZonedDateTime toTime) {
+    private Instant checkAndFixToTime(final Instant toTime) {
         if (toTime == null) {
-            return getZonedDateTimeNowAtUtc();
+            return Instant.now();
         }
-        return toZonedDateTimeAtUtc(toTime);
+        return toTime;
     }
 
-    private CameraHistoryPresencesDto findCameraHistoryPresences(final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+    private CameraHistoryPresencesDto findCameraHistoryPresences(final Instant fromTime, final Instant toTime) {
         List<PresetHistoryPresenceDto> presetsHistoryStatuses =
-            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByTime(fromTime.toInstant(), toTime.toInstant(),
-                                                                              getOldestTimeLimit().toInstant());
+            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByTime(fromTime, toTime, getOldestTimeLimit());
         return convertToCameraHistoryPresences(presetsHistoryStatuses, fromTime, toTime);
     }
 
-    private CameraHistoryPresencesDto findCameraHistoryPresences(final String cameraId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+    private CameraHistoryPresencesDto findCameraHistoryPresences(final String cameraId, final Instant fromTime, final Instant toTime) {
         if (!cameraPresetHistoryRepository.existsByCameraId(cameraId)) {
             throw new ObjectNotFoundException("CameraHistory", cameraId);
         }
         final List<PresetHistoryPresenceDto> history =
-            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByCameraIdAndTime(cameraId, fromTime.toInstant(), toTime.toInstant(),
-                                                                                         getOldestTimeLimit().toInstant());
+            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByCameraIdAndTime(cameraId, fromTime, toTime, getOldestTimeLimit());
         return convertToCameraHistoryPresences(history, fromTime, toTime);
     }
 
-    private CameraHistoryPresencesDto findCameraPresetHistoryPresences(final String presetId, final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+    private CameraHistoryPresencesDto findCameraPresetHistoryPresences(final String presetId, final Instant fromTime, final Instant toTime) {
         if (!cameraPresetHistoryRepository.existsByIdPresetId(presetId)) {
             throw new ObjectNotFoundException("CameraHistory", presetId);
         }
         final List<PresetHistoryPresenceDto> history =
-            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByPresetIdAndTime(presetId, fromTime.toInstant(), toTime.toInstant(),
-                                                                                           getOldestTimeLimit().toInstant());
+            cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByPresetIdAndTime(presetId, fromTime, toTime, getOldestTimeLimit());
         return convertToCameraHistoryPresences(history, fromTime, toTime);
     }
 
     private static CameraHistoryPresencesDto convertToCameraHistoryPresences(final List<PresetHistoryPresenceDto> presetsHistoryPresences,
-                                                                             final ZonedDateTime fromTime, final ZonedDateTime toTime) {
+                                                                             final Instant fromTime, final Instant toTime) {
 
         final Map<String, List<PresetHistoryPresenceDto>> cameraIdToPresetHistoryPresences = presetsHistoryPresences.parallelStream()
             .collect(Collectors.groupingBy(PresetHistoryPresenceDto::getCameraId));
@@ -261,13 +277,13 @@ public class CameraPresetHistoryDataService {
         }
         // C1234567.jpg -> C1234567
         final CameraPresetHistory history = findHistoryVersionInclSecretInternal(weathercamS3Properties.getPresetIdFromImageName(presetImageName), versionId);
-        final ZonedDateTime oldestLimit = getOldestTimeLimit();
+        final Instant oldestLimit = getOldestTimeLimit();
 
         if (history == null) {
             return HistoryStatus.NOT_FOUND;
         } else if (!history.getPublishable()) {
             return HistoryStatus.SECRET;
-        } else if (history.getLastModified().isBefore(oldestLimit)) {
+        } else if (history.getLastModified().toInstant().isBefore(oldestLimit)) {
             return HistoryStatus.TOO_OLD;
         }
         return HistoryStatus.PUBLIC;
@@ -275,8 +291,8 @@ public class CameraPresetHistoryDataService {
 
 
 
-    private ZonedDateTime getOldestTimeLimit() {
-        return getZonedDateTimeNowAtUtc().minus(weathercamS3Properties.getHistoryMaxAgeHours(), ChronoUnit.HOURS);
+    private Instant getOldestTimeLimit() {
+        return Instant.now().minus(weathercamS3Properties.getHistoryMaxAgeHours(), ChronoUnit.HOURS);
     }
 
 

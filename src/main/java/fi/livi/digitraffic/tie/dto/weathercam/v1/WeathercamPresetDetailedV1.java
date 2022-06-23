@@ -43,66 +43,11 @@ public class WeathercamPresetDetailedV1 extends WeathercamPresetSimpleV1 {
         this.imageUrl = imageUrl;
     }
 
-    //    public void setCameraId(final String cameraId) {
-//        this.cameraId = cameraId;
-//    }
-//
-//    public String getCameraId() {
-//        return cameraId;
-//    }
-//
-//    public void setId(final String id) {
-//        this.id = id;
-//    }
-//
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setPresentationName(final String presentationName) {
-//        this.presentationName = presentationName;
-//    }
-//
-//    public String getPresentationName() {
-//        return presentationName;
-//    }
-//
-//    public void setInCollection(final boolean inCollection) {
-//        this.inCollection = inCollection;
-//    }
-//
-//    public boolean isInCollection() {
-//        return inCollection;
-//    }
-//
-//    public void setResolution(final String resolution) {
-//        this.resolution = resolution;
-//    }
-//
-//    public String getResolution() {
-//        return resolution;
-//    }
-//
-//    public void setDirectionCode(final String directionCode) {
-//        this.directionCode = directionCode;
-//    }
-//
-//    public String getDirectionCode() {
-//        return directionCode;
-//    }
 
-    @Schema(description = "Direction of weathercam preset")
+    @Schema(description = "Direction of weathercam preset", required = true)
     public WeathercamPresetDirectionV1 getDirection() {
         return WeathercamPresetDirectionV1.getDirection(directionCode);
     }
-
-//    public void setImageUrl(final String imageUrl) {
-//        this.imageUrl = imageUrl;
-//    }
-//
-//    public String getImageUrl() {
-//        return imageUrl;
-//    }
 
     @Override
     public boolean equals(final Object o) {

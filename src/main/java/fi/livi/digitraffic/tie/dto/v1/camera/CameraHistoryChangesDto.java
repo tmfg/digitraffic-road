@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "CameraHistory", description = "Weather cameras history changes.")
+@Schema(name = "CameraHistoryChanges", description = "Weather cameras history changes.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CameraHistoryChangesDto {
 

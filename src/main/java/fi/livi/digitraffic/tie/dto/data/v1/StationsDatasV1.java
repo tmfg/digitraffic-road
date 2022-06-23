@@ -16,7 +16,7 @@ public abstract class StationsDatasV1<ID_TYPE, StationsDataType extends StationD
     @Schema(description = "Stations data")
     public final List<StationsDataType> stations;
 
-    public StationsDatasV1(final Instant dataUpdatedTime, List<StationsDataType> stations) {
+    public StationsDatasV1(final Instant dataUpdatedTime, final List<StationsDataType> stations) {
         this.dataUpdatedTime = dataUpdatedTime;
         this.stations = stations;
     }

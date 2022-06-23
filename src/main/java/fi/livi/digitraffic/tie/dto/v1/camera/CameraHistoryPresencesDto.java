@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.dto.v1.camera;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,12 +17,12 @@ public class CameraHistoryPresencesDto {
     public final List<CameraHistoryPresenceDto> cameraHistoryPresences;
 
     @Schema(description = "Start of the time interval")
-    public final ZonedDateTime from;
+    public final Instant from;
 
     @Schema(description = "End of the time interval")
-    public final ZonedDateTime to;
+    public final Instant to;
 
-    public CameraHistoryPresencesDto(final ZonedDateTime from, final ZonedDateTime to, final List<CameraHistoryPresenceDto> cameraHistoryPresences) {
+    public CameraHistoryPresencesDto(final Instant from, final Instant to, final List<CameraHistoryPresenceDto> cameraHistoryPresences) {
         this.from = from;
         this.to = to;
         this.cameraHistoryPresences = cameraHistoryPresences;

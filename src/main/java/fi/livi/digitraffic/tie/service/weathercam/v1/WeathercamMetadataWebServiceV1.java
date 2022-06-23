@@ -40,9 +40,9 @@ public class WeathercamMetadataWebServiceV1 {
     @Transactional(readOnly = true)
     public WeathercamStationFeatureCollectionSimpleV1 findAllPublishableCameraStationsAsSimpleFeatureCollection(final boolean onlyUpdateInfo) {
         return weathercamPresetToFeatureConverter.convertToSimpleFeatureCollection(
-                onlyUpdateInfo ?
-                Collections.emptyList() :
-                cameraPresetService.findAllPublishableCameraPresets(),
+                onlyUpdateInfo
+                    ? Collections.emptyList()
+                    : cameraPresetService.findAllPublishableCameraPresets(),
                 dataStatusService.findDataUpdatedInstant(DataType.CAMERA_STATION_METADATA),
                 dataStatusService.findDataUpdatedInstant(DataType.CAMERA_STATION_METADATA_CHECK));
     }
