@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.controller.v3;
 
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2022_11_01;
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.SINCE_2022_11_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
@@ -157,9 +158,10 @@ public class V3DataController {
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
     }
 
-    @Operation(summary = "List the latest data of variable signs")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Traffic Sign data"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data. " + API_NOTE_2022_11_01))
     public VariableSignFeatureCollection variableSigns(
         @Parameter(description = "If parameter is given list only latest value of given sign")
         @RequestParam(value = "deviceId", required = false)
@@ -171,16 +173,18 @@ public class V3DataController {
         }
     }
 
-    @Operation(summary = "List the latest value of a variable sign")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign data"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
     public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
         return v2VariableSignDataService.listLatestValue(deviceId);
     }
 
-    @Operation(summary = "List the history of variable sign data")
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign history"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public List<TrafficSignHistory> variableSignHistory(
         @Parameter(description = "List history data of given sign")
         @RequestParam(value = "deviceId")
@@ -188,9 +192,9 @@ public class V3DataController {
         return v2VariableSignDataService.listVariableSignHistory(deviceId);
     }
 
-    @Operation(summary = "List the history of variable sign data")
+    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Variable sign history"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
         return v2VariableSignDataService.listVariableSignHistory(deviceId);
     }
@@ -299,7 +303,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Active traffic messages as Datex2. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Active traffic messages as Datex2. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
     public D2LogicalModel trafficMessageDatex2(
@@ -314,7 +318,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Traffic messages history by situation as Datex2. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Traffic messages history by situation as Datex2. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
@@ -329,7 +333,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Active traffic messages as simple JSON. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Active traffic messages as simple JSON. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH, produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
@@ -348,7 +352,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Traffic messages history by situation id as simple JSON. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Traffic messages history by situation id as simple JSON. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH + "/{situationId}", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
@@ -367,7 +371,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Traffic messages geometries for regions. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Traffic messages geometries for regions. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_PATH + "/area-geometries", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
@@ -386,7 +390,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Road maintenance tracking data latest points. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Road maintenance tracking data latest points. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
@@ -431,7 +435,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Road maintenance tracking data. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Road maintenance tracking data. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
@@ -483,7 +487,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Road maintenance tracking data with tracking id. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Road maintenance tracking data with tracking id. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
     public MaintenanceTrackingFeature getMaintenanceTracking(@Parameter(description = "Tracking id") @PathVariable(value = "id") final long id) {
@@ -491,7 +495,7 @@ public class V3DataController {
     }
 
     @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
-    @Operation(summary = "Road maintenance tracking tasks. " + ApiDeprecations.API_NOTE_2022_11_01)
+    @Operation(summary = "Road maintenance tracking tasks. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking tasks"))
     public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {

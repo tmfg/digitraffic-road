@@ -33,5 +33,11 @@ public final class ApiConstants {
     /* Waze feed */
     public static final String API_WAZEFEED = INTEGRATION + "/waze";
 
+    /* Variable Sign */
+    public static final String VARIABLE_SIGN_V1_TAG = "Variable Sign V1";
+    public static final String API_VS_V1 = API + "/variable-sign/v1";
+    public static final String API_SIGNS = "/signs";
+    public static final String API_SIGNS_HISTORY = API_SIGNS + "/history";
+
     private ApiConstants() {}
 }

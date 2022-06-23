@@ -1,13 +1,12 @@
 package fi.livi.digitraffic.tie.conf.amazon;
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
@@ -17,23 +16,19 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 public class AmazonS3ClientConfiguration {
 
     @Bean
-    public AmazonS3 weathercamS3Client(final @Value("${dt.amazon.s3.weathercam.userAccessKey}") String accessKey,
-                                    final @Value("${dt.amazon.s3.weathercam.userSecretKey}") String secretKey,
-                                    final @Value("${dt.amazon.s3.weathercam.region}") String region) {
-        return build(accessKey, secretKey, region);
+    public AmazonS3 weathercamS3Client(final @Value("${dt.amazon.s3.weathercam.region}") String region) {
+        return build(region);
     }
 
     @Bean
-    public AmazonS3 sensorDataS3Client(final @Value("${dt.amazon.s3.sensordata.userAccessKey}") String accessKey,
-                                    final @Value("${dt.amazon.s3.sensordata.userSecretKey}") String secretKey,
-                                    final @Value("${dt.amazon.s3.sensordata.region}") String region) {
-        return build(accessKey, secretKey, region);
+    public AmazonS3 sensorDataS3Client(final @Value("${dt.amazon.s3.sensordata.region}") String region) {
+        return build(region);
     }
 
-    private AmazonS3 build(final String accessKey, final String secretKey, final String region) {
+    private AmazonS3 build(String region) {
         return AmazonS3ClientBuilder
             .standard()
-            .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
+            .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
             .withRegion(region)
             .build();
     }
