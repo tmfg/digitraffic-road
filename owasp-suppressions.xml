@@ -5,8 +5,8 @@
         Temporary suppressions, check and update these periodically
     -->
 
-    <!-- No new version of proj4 available -->
-    <suppress until="2022-06-23Z">
+    <!-- No new version of proj4 available. Ticket: DPO-1904 -->
+    <suppress until="2022-08-01Z">
         <notes><![CDATA[
    file name: proj4j-*.jar
    ]]></notes>
@@ -14,7 +14,7 @@
         <cpe>cpe:/a:trac:trac</cpe>
     </suppress>
 
-    <suppress until="2022-06-23Z">
+    <suppress until="2022-08-01Z">
         <notes><![CDATA[
    file name: spring-*.jar
    ]]></notes>
@@ -37,14 +37,31 @@
         <!-- XXE/CSRF vulnerability, not using vulnerable version of Spring -->
         <cve>CVE-2014-0054</cve>
 
-        <!-- RCE via data binding vulnerability, not using data binding -->
+        <!-- RCE via data binding vulnerability, not using data binding.
+        We use Spring Boot with executable jar which isn't vulnerable to this. -->
         <cve>CVE-2022-22965</cve>
 
-        <!-- Data binding field protection vulnerability, not using data binding -->
+        <!-- Data binding field protection vulnerability, not using data binding.
+        Our version of Spring is not vulnerable. -->
         <cve>CVE-2022-22968</cve>
+
+        <!-- Not using vulnerable version of Spring -->
+        <cve>CVE-2018-11039</cve>
+
+        <!-- Not using vulnerable version of Spring -->
+        <cve>CVE-2018-11040</cve>
+
+        <!-- Not using vulnerable version of Spring -->
+        <cve>CVE-2018-1257</cve>
+
+        <!-- Not using vulnerable version of Spring -->
+        <cve>CVE-2020-5421</cve>
+
+        <!-- Not using vulnerable version of Spring -->
+        <cve>CVE-2022-22950</cve>
     </suppress>
 
-    <suppress until="2022-06-23Z">
+    <suppress until="2022-08-01Z">
         <notes><![CDATA[
    file name: spring-security-crypto-*.jar
    ]]></notes>
