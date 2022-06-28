@@ -38,6 +38,7 @@ public final class ApiConstants {
     public static final String API_VS_V1 = API + "/variable-sign/v1";
     public static final String API_SIGNS = "/signs";
     public static final String API_SIGNS_HISTORY = API_SIGNS + "/history";
+    public static final String API_SIGNS_CODE_DESCRIPTIONS = API_SIGNS + "/code-descriptions";
 
     private ApiConstants() {}
 }

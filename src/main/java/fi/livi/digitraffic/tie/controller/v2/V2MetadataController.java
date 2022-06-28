@@ -12,6 +12,7 @@ import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS
 
 import java.util.List;
 
+import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,6 +94,7 @@ public class V2MetadataController {
             maxLongitude, maxLatitude, null);
     }
 
+    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
     @Operation(summary = "Return all code descriptions.")
     @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
     @ResponseBody

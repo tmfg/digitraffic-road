@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.controller;
 
+import fi.livi.digitraffic.tie.dto.v1.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.service.v2.V2VariableSignDataService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.*;
+import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DESCRIPTIONS;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
@@ -58,5 +60,12 @@ public class VariableSignController {
         @RequestParam(value = "deviceId")
         final String deviceId) {
         return v2VariableSignDataService.listVariableSignHistory(deviceId);
+    }
+
+    @Operation(summary = "Return all code descriptions.")
+    @GetMapping(path = API_VS_V1 + API_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public VariableSignDescriptions listCodeDescriptions() {
+        return new VariableSignDescriptions(v2VariableSignDataService.listVariableSignTypes());
     }
 }
