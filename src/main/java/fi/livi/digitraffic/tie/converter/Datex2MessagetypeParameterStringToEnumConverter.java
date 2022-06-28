@@ -9,12 +9,16 @@ public class Datex2MessagetypeParameterStringToEnumConverter implements Converte
 
     @Override
     public Datex2MessageType convert(final String from) {
-        final Datex2MessageType type = Datex2MessageType.valueOf(from.replace("-", "_").toUpperCase());
+        try {
+            final Datex2MessageType type = Datex2MessageType.valueOf(from.replace("-", "_").toUpperCase());
 
-        if (type == null) {
-            throw new IllegalArgumentException("Invalid messagetype " + from);
+            if (type == null) {
+                throw new IllegalArgumentException("Invalid messagetype " + from);
+            }
+
+            return type;
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("invalid messagetype " + from);
         }
-
-        return type;
     }
 }

@@ -13,6 +13,7 @@ import javax.xml.bind.MarshalException;
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -104,14 +105,14 @@ public class DefaultExceptionHandler {
             exception);
     }
 
-    @ExceptionHandler({ ObjectNotFoundException.class, ResourceAccessException.class, BadRequestException.class,
+    @ExceptionHandler({ ObjectNotFoundException.class, ResourceAccessException.class, BadRequestException.class, ConversionFailedException.class,
         IllegalArgumentException.class, MethodArgumentTypeMismatchException.class })
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleObjectNotFoundException(final Exception exception, final ServletWebRequest request) {
         final HttpStatus status;
         if (exception instanceof ObjectNotFoundException) {
             status = HttpStatus.NOT_FOUND;
-        } else if (exception instanceof BadRequestException || exception instanceof IllegalArgumentException || exception instanceof MethodArgumentTypeMismatchException) {
+        } else if (exception instanceof BadRequestException || exception instanceof IllegalArgumentException || exception instanceof MethodArgumentTypeMismatchException || exception instanceof ConversionFailedException) {
             status = HttpStatus.BAD_REQUEST;
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
