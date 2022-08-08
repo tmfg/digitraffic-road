@@ -185,11 +185,6 @@
         <!-- Web Service dependencies-->
         <dependency>
             <groupId>org.glassfish.metro</groupId>
-            <artifactId>webservices-rt</artifactId>
-            <version>${org.glassfish.metro.ws.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.metro</groupId>
             <artifactId>wsit-api</artifactId>
             <version>${org.glassfish.metro.ws.version}</version>
         </dependency>
