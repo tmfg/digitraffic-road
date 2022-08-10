@@ -5,8 +5,15 @@
         Temporary suppressions, check and update these periodically
     -->
 
-    <!-- No new version of proj4 available. Ticket: DPO-1904 -->
-    <suppress until="2022-08-01Z">
+    <suppress until="2022-09-15Z">
+        <!-- We don't use com.amazonaws.services.s3.transfer.TransferManager::downloadDirectory -->
+        <notes><![CDATA[file name: aws-java-sdk-(secretsmanager|ec2).jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.amazonaws/(aws\-java\-sdk\-secretsmanager|aws\-java\-sdk\-ec2)@.*$</packageUrl>
+        <cve>CVE-2022-31159</cve>
+    </suppress>
+
+    <suppress until="2022-09-15Z">
+        <!-- No new version of proj4 available. Ticket: DPO-1904 -->
         <notes><![CDATA[
    file name: proj4j-*.jar
    ]]></notes>
@@ -14,54 +21,16 @@
         <cpe>cpe:/a:trac:trac</cpe>
     </suppress>
 
-    <suppress until="2022-08-01Z">
+    <suppress until="2022-09-15Z">
         <notes><![CDATA[
    file name: spring-*.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework.*$</packageUrl>
         <!-- RCE through deserialization vulnerability, not using vulnerable version of Spring -->
         <cve>CVE-2016-1000027</cve>
-
-        <!-- JAXB marshalling XXE/CSRF vulnerability, not using vulnerable version of Spring -->
-        <cve>CVE-2013-4152</cve>
-
-        <!-- File upload vulnerability, not using file uploads -->
-        <cve>CVE-2022-22970</cve>
-
-        <!-- DoS via WebSocket vulnerability, WebSockets not served through application -->
-        <cve>CVE-2022-22971</cve>
-
-        <!-- XXE vulnerability, not using vulnerable version of Spring -->
-        <cve>CVE-2013-7315</cve>
-
-        <!-- XXE/CSRF vulnerability, not using vulnerable version of Spring -->
-        <cve>CVE-2014-0054</cve>
-
-        <!-- RCE via data binding vulnerability, not using data binding.
-        We use Spring Boot with executable jar which isn't vulnerable to this. -->
-        <cve>CVE-2022-22965</cve>
-
-        <!-- Data binding field protection vulnerability, not using data binding.
-        Our version of Spring is not vulnerable. -->
-        <cve>CVE-2022-22968</cve>
-
-        <!-- Not using vulnerable version of Spring -->
-        <cve>CVE-2018-11039</cve>
-
-        <!-- Not using vulnerable version of Spring -->
-        <cve>CVE-2018-11040</cve>
-
-        <!-- Not using vulnerable version of Spring -->
-        <cve>CVE-2018-1257</cve>
-
-        <!-- Not using vulnerable version of Spring -->
-        <cve>CVE-2020-5421</cve>
-
-        <!-- Not using vulnerable version of Spring -->
-        <cve>CVE-2022-22950</cve>
     </suppress>
 
-    <suppress until="2022-08-01Z">
+    <suppress until="2022-09-15Z">
         <notes><![CDATA[
    file name: spring-security-crypto-*.jar
    ]]></notes>
@@ -77,6 +46,25 @@
         <cve>CVE-2022-22978</cve>
     </suppress>
 
+    <suppress until="2022-09-15">
+        <!-- This is a false positive. This vulnerability is for "Caoyongqi912/Fan_Platform" and we are not using it.
+             See: https://github.com/github/securitylab/issues/669#issuecomment-1189616056 -->
+        <notes><![CDATA[file name: junit-platform-commons-1.8.2.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.junit\.platform/junit\-platform\-commons@.*$</packageUrl>
+        <cve>CVE-2022-31514</cve>
+    </suppress>
+
+    <suppress until="2022-09-15">
+        <!-- From https://lists.apache.org/thread/k04zk0nq6w57m72w5gb0r6z9ryhmvr4k
+             "Remove the examples web application as documented in the Tomcat security guide".
+
+             This shouldn't be a problem when we use embedded tomcat provided by spring boot.
+             Our tomcat does not expose the problematic examples. -->
+        <notes><![CDATA[file name: tomcat-embed-*-9.0.63.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-(core|websocket)@.*$</packageUrl>
+        <cve>CVE-2022-34305</cve>
+    </suppress>
+
     <!--
         Permanent suppressions
     -->
@@ -88,24 +76,6 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.*$</packageUrl>
         <cve>CVE-2022-22978</cve>
-    </suppress>
-
-    <!-- Using embedded Tomcat -->
-    <suppress>
-        <notes><![CDATA[
-   file name: tomcat-embed-core-*.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-        <cve>CVE-2022-29885</cve>
-    </suppress>
-
-    <!-- Not using WebSockets -->
-    <suppress>
-        <notes><![CDATA[
-   file name: tomcat-embed-websocket-*.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
-        <cve>CVE-2022-29885</cve>
     </suppress>
 
     <!-- Not using BCrypt -->

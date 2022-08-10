@@ -31,6 +31,30 @@
         <org.testcontainers.version>1.17.3</org.testcontainers.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>depcheck</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <defaultGoal>dependency-check:check</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>7.1.0</version>
+                        <configuration>
+                            <failBuildOnCVSS>5</failBuildOnCVSS>
+                            <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                            <formats>html,xml</formats>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <repositories>
         <repository>
             <id>maven-central</id>
@@ -468,16 +492,6 @@
 
                         <exclude>fi/livi/digitraffic/tie/external/**/*.class</exclude>
                     </excludes>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>7.0.4</version>
-                <configuration>
-                    <failBuildOnCVSS>0</failBuildOnCVSS>
-                    <suppressionFile>owasp-suppressions.xml</suppressionFile>
                 </configuration>
             </plugin>
 
