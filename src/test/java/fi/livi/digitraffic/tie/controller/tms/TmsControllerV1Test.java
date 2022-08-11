@@ -140,7 +140,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.properties.municipalityCode", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.properties.provinceCode", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.tmsStationType", Matchers.is(TmsStationType.DSL_6.name())))
+                .andExpect(jsonPath("$.properties.stationType", Matchers.is(TmsStationType.DSL_6.name())))
                 .andExpect(jsonPath("$.properties.roadAddress.roadSection", isA(Integer.class)))
                 .andExpect(jsonPath("$.properties.roadAddress.roadNumber", isA(Integer.class)))
                 .andExpect(jsonPath("$.properties.names.fi", Matchers.isA(String.class)))
