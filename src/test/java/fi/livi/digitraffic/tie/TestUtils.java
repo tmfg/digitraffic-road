@@ -50,6 +50,7 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.TmsStationType;
 import fi.livi.digitraffic.tie.model.WeatherStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
@@ -338,6 +339,7 @@ public class TestUtils {
         ts.setDirection1MunicipalityCode(927);
         ts.setDirection2Municipality("Helsinki");
         ts.setDirection2MunicipalityCode(91);
+        ts.setTmsStationType(TmsStationType.DSL_6);
 
         return ts;
     }

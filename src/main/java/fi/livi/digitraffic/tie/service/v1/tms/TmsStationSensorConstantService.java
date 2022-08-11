@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.tms;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,7 +53,7 @@ public class TmsStationSensorConstantService {
 
     @Transactional
     public boolean updateSingleSensorConstantValues(final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos) {
-        lamAnturiVakioArvos.forEach(v -> tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantValueLotjuId(v.getAnturiVakioId()));
+        lamAnturiVakioArvos.forEach(v -> tmsSensorConstantDao.updateSensorConstantValueToObsoleteWithSensorConstantValueLotjuId(v.getAnturiVakioId()));
         final int upsert = tmsSensorConstantDao.updateSensorConstantValues(lamAnturiVakioArvos);
         log.info("method=updateSingleSensorConstantValues upsert={}", upsert);
         return upsert > 0;
@@ -62,22 +62,21 @@ public class TmsStationSensorConstantService {
     @Transactional
     public boolean updateSensorConstantValues(final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos) {
         final List<Long> ids = allLamAnturiVakioArvos.stream().map(LamAnturiVakioArvoVO::getId).collect(Collectors.toList());
-        final int obsoleted = tmsSensorConstantDao.obsoleteSensorConstantValuesExcludingIds(ids);
+        final int obsoleted = tmsSensorConstantDao.updateSensorSensorConstantValuesToObsoleteExcludingIds(ids);
         final int upsert = tmsSensorConstantDao.updateSensorConstantValues(allLamAnturiVakioArvos);
         log.info("method=updateSensorConstantValues upsert={}, obsoleteCount={}", upsert, obsoleted);
         return obsoleted > 0 || upsert > 0;
     }
 
     @Transactional(readOnly = true)
-    public boolean obsoleteSensorConstantValueWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId) {
-        return tmsSensorConstantDao.obsoleteSensorConstantValueWithSensorConstantValueLotjuId(sensorConstantValueLotjuId) > 0;
+    public boolean updateSensorConstantValueToObsoleteWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId) {
+        return tmsSensorConstantDao.updateSensorConstantValueToObsoleteWithSensorConstantValueLotjuId(sensorConstantValueLotjuId) > 0;
     }
 
-
     @Transactional(readOnly = true)
-    public ZonedDateTime getLatestMeasurementTime() {
-        final ZonedDateTime dataUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
-        final ZonedDateTime metadataUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_SENSOR_CONSTANT_METADATA);
-        return DateHelper.getNewestAtUtc(dataUpdated, metadataUpdated);
+    public Instant getLatestMeasurementTime() {
+        final Instant dataUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
+        final Instant metadataUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_METADATA);
+        return DateHelper.getNewest(dataUpdated, metadataUpdated);
     }
 }

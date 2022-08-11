@@ -1,12 +1,13 @@
 package fi.livi.digitraffic.tie.converter.feature;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AbstractMetadataToFeatureConverter {
     private static final Logger log = LoggerFactory.getLogger(AbstractMetadataToFeatureConverter.class);
@@ -43,7 +44,7 @@ public class AbstractMetadataToFeatureConverter {
         properties.setAnnualMaintenanceTime(roadStation.getAnnualMaintenanceDate());
         properties.setLocation(roadStation.getLocation());
         properties.setState(roadStation.getState());
-        properties.setCoordinatesETRS89(getETRS89CoordinatesPoint(roadStation));
+        properties.setCoordinatesETRS89(resolveETRS89PointLocation(roadStation));
         properties.setPurpose(roadStation.getPurpose());
     }
 
@@ -63,7 +64,7 @@ public class AbstractMetadataToFeatureConverter {
     }
 
 
-    public static Point getETRS89CoordinatesPoint(RoadStation rs) {
+    public static Point resolveETRS89PointLocation(final RoadStation rs) {
         if (rs.getLatitude() != null && rs.getLongitude() != null) {
             if (rs.getAltitude() != null) {
                 return new Point(
@@ -79,8 +80,8 @@ public class AbstractMetadataToFeatureConverter {
         return null;
     }
 
-    protected Point getGeometry(final RoadStation rs) {
-        final Point etrS89 = getETRS89CoordinatesPoint(rs);
+    protected Point resolvePointLocation(final RoadStation rs) {
+        final Point etrS89 = resolveETRS89PointLocation(rs);
         if (etrS89 != null) {
             return CoordinateConverter.convertFromETRS89ToWGS84(etrS89);
         }

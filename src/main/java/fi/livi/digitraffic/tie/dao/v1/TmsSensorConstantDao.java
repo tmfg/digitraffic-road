@@ -141,7 +141,7 @@ public class TmsSensorConstantDao {
         return count;
     }
 
-    public int obsoleteSensorConstantValuesExcludingIds(Collection<Long> excludeLotjuIds) {
+    public int updateSensorSensorConstantValuesToObsoleteExcludingIds(Collection<Long> excludeLotjuIds) {
         final Map<String, Collection<Long>> paramMap = Collections.singletonMap("ids", excludeLotjuIds);
         return namedParameterJdbcTemplate.update(
                 "UPDATE TMS_SENSOR_CONSTANT_VALUE\n" +
@@ -151,7 +151,7 @@ public class TmsSensorConstantDao {
             paramMap);
     }
 
-    public int obsoleteSensorConstantValueWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId) {
+    public int updateSensorConstantValueToObsoleteWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId) {
         final Map<String, Long> paramMap = Collections.singletonMap("sensorConstantValueLotjuId", sensorConstantValueLotjuId);
         return namedParameterJdbcTemplate.update(
             "UPDATE TMS_SENSOR_CONSTANT_VALUE\n" +

@@ -156,7 +156,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "  AND domain.source IS NOT NULL\n" +
         "GROUP BY tracking.id, contract.source, domain.source",
         nativeQuery = true)
-    List<MaintenanceTrackingForMqttV2> findTrackingsCreatedAfter(final ZonedDateTime createdFromExclusive);
+    List<MaintenanceTrackingForMqttV2> findTrackingsCreatedAfter(final Instant createdFromExclusive);
 
     @Query(value =
         DTO_LAST_POINT_SQL +
@@ -164,7 +164,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "  AND domain.source IS NOT NULL\n" +
         "GROUP BY tracking.id, contract.source, domain.source",
         nativeQuery = true)
-    List<MaintenanceTrackingDto> findTrackingsLatestPointsCreatedAfter(final ZonedDateTime createdFromExclusive);
+    List<MaintenanceTrackingDto> findTrackingsLatestPointsCreatedAfter(final Instant createdFromExclusive);
 
     @Query(value =
            "select max(created)\n" +

@@ -595,7 +595,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void findTrackingsLatestPointCreatedAfter() {
-        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(ZonedDateTime.now()));
+        assertEmpty(v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(Instant.now()));
     }
 
     @Test
@@ -619,10 +619,10 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
 
         // no data as param is exlusive
         assertCollectionSize(0, v2MaintenanceTrackingDataService.findTrackingsLatestPointsCreatedAfter(created));
-        assertCollectionSize(0, v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(DateHelper.toZonedDateTimeAtUtc(created)));
+        assertCollectionSize(0, v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(created));
         // no data as param is exlusive
         assertCollectionSize(2, v2MaintenanceTrackingDataService.findTrackingsLatestPointsCreatedAfter(created.minusMillis(1)));
-        assertCollectionSize(2, v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(DateHelper.toZonedDateTimeAtUtc(created.minusMillis(1))));
+        assertCollectionSize(2, v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(created.minusMillis(1)));
     }
 
     @Test

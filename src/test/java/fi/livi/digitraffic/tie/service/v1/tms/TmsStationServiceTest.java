@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.service.v1.tms;
 
-import static fi.livi.digitraffic.tie.controller.TmsState.ACTIVE;
-import static fi.livi.digitraffic.tie.controller.TmsState.ALL;
-import static fi.livi.digitraffic.tie.controller.TmsState.REMOVED;
+import static fi.livi.digitraffic.tie.controller.RoadStationState.ACTIVE;
+import static fi.livi.digitraffic.tie.controller.RoadStationState.ALL;
+import static fi.livi.digitraffic.tie.controller.RoadStationState.REMOVED;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

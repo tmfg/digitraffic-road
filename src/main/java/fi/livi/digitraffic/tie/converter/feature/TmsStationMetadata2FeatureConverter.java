@@ -46,7 +46,7 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
                                                final ZonedDateTime dataLastCheckedTime) {
 
         final Map<Long, List<Long>> sensorMap = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(RoadStationType.TMS_STATION);
-        final Map<Long, Pair<Double, Double>> rsNaturalIdToFreeFlosSpeedsMap =
+        final Map<Long, Pair<Double, Double>> rsNaturalIdToFreeFlowsSpeedsMap =
             freeFlowSpeeds.stream()
                 .collect(Collectors.toMap(TmsFreeFlowSpeedDto::getRoadStationNaturalId,
                                           ffs -> Pair.of(ffs.getFreeFlowSpeed1OrNull(),
@@ -56,8 +56,8 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
             stations.stream()
                 .filter(tms -> tms.getRoadStation().isPublicNow())
                 .map(tms -> convert(sensorMap, tms,
-                                    getFreeFlowSpeed(FreeFlowSpeed.FREE_FLOW_SPEED_1, tms.getRoadStationNaturalId(), rsNaturalIdToFreeFlosSpeedsMap),
-                                    getFreeFlowSpeed(FreeFlowSpeed.FREE_FLOW_SPEED_1, tms.getRoadStationNaturalId(), rsNaturalIdToFreeFlosSpeedsMap)))
+                                    getFreeFlowSpeed(FreeFlowSpeed.FREE_FLOW_SPEED_1, tms.getRoadStationNaturalId(), rsNaturalIdToFreeFlowsSpeedsMap),
+                                    getFreeFlowSpeed(FreeFlowSpeed.FREE_FLOW_SPEED_2, tms.getRoadStationNaturalId(), rsNaturalIdToFreeFlowsSpeedsMap)))
                 .collect(Collectors.toList());
 
         return new TmsStationFeatureCollection(lastUpdated, dataLastCheckedTime, features);
@@ -83,7 +83,6 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
     }
 
     public TmsStationFeature convert(final Map<Long, List<Long>> sensorMap, final TmsStation tms, final Double freeFlowSpeed1, final Double freeFlowSpeed2) {
-        final TmsStationFeature f;
         if (log.isDebugEnabled()) {
             log.debug("Convert: " + tms);
         }
@@ -116,6 +115,6 @@ public final class TmsStationMetadata2FeatureConverter extends AbstractMetadataT
         } else {
             setRoadStationProperties(properties, rs);
         }
-        return new TmsStationFeature(getGeometry(rs), properties, tms.getRoadStationNaturalId());
+        return new TmsStationFeature(resolvePointLocation(rs), properties, tms.getRoadStationNaturalId());
     }
 }

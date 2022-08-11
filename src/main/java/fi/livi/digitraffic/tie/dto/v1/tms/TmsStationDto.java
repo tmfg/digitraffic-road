@@ -20,7 +20,7 @@ public class TmsStationDto extends AbstractStationWithSensorsDto {
         return tmsStationNaturalId;
     }
 
-    public void setTmsStationNaturalId(long tmsStationNaturalId) {
+    public void setTmsStationNaturalId(final long tmsStationNaturalId) {
         this.tmsStationNaturalId = tmsStationNaturalId;
     }
 }

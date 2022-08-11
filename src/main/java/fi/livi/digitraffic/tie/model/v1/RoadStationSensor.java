@@ -40,7 +40,7 @@ public class RoadStationSensor {
 
     /** These id:s are for station status sensors */
     protected static final Set<Long> STATUS_SENSORS_NATURAL_IDS_SET =
-            new HashSet<Long>(Arrays.asList(60000L, 60002L));
+            new HashSet<>(Arrays.asList(60000L, 60002L));
 
     @JsonIgnore
     @Id
@@ -109,13 +109,16 @@ public class RoadStationSensor {
     @JsonIgnore
     private boolean isPublic;
 
+    /** Not up to date in source system */
     @Schema(description = "Vehicle class")
     @Enumerated(EnumType.STRING)
     private VehicleClass vehicleClass;
 
+    /** Not up to date in source system */
     @Schema(description = "Lane of the sensor, 1st, 2nd, 3rd, etc.")
     private Integer lane;
 
+    /** Normally not up to date in source system */
     @Schema(description = "Preset direction " +
         "(0 = Unknown direction. " +
         "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi." +
@@ -276,7 +279,7 @@ public class RoadStationSensor {
     public void setRoadStationType(RoadStationType roadStationType) {
         if (this.roadStationType != null && !this.roadStationType.equals(roadStationType)) {
             throw new IllegalStateException("Cannot change roadStationType of RoadStationSensor from " +
-                    this.roadStationType + " to " + roadStationType + ". (" + this.toString() + ")");
+                    this.roadStationType + " to " + roadStationType + ". (" + this + ")");
         }
         this.roadStationType = roadStationType;
     }

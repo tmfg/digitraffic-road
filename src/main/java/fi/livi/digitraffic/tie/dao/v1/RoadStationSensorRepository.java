@@ -64,6 +64,17 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
     List<StationSensors> getRoadStationPublishableSensorsNaturalIdsByStationIdAndType(@Param("id") final long roadStationId,
                                                                                       @Param("roadStationType") final RoadStationType roadStationType);
 
+    @Query(value =
+            "SELECT sensor.natural_id\n" +
+            "FROM road_station_sensor sensor\n" +
+            "inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id\n" +
+            "inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id\n" +
+            "where rs_sensors.road_station_id = :id\n" +
+            "  and sensor.publishable = true\n" +
+            "  and sensor.road_station_type = :#{#roadStationType.name()}\n" +
+            "order by sensor.natural_id", nativeQuery = true)
+    List<Long> findRoadStationPublishableSensorsNaturalIdsByStationIdAndType(@Param("id") final long roadStationId,
+                                                                             @Param("roadStationType") final RoadStationType roadStationType);
 
     @Modifying(clearAutomatically = true)
     @Query(value =

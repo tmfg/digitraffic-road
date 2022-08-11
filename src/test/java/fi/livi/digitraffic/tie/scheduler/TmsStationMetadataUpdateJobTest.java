@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static fi.livi.digitraffic.tie.controller.TmsState.ACTIVE;
+import static fi.livi.digitraffic.tie.controller.RoadStationState.ACTIVE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

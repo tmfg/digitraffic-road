@@ -4,10 +4,13 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import fi.livi.digitraffic.tie.dto.data.v1.StationDataV1;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import fi.livi.digitraffic.tie.dto.roadstation.v1.StationDataV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Weathercam stations' data")
+@JsonPropertyOrder({ "id", "dataUpdatedTime" })
 public class WeathercamStationDataV1 extends StationDataV1<String> {
 
     @Schema(description = "Id of the weathercam station", required = true)

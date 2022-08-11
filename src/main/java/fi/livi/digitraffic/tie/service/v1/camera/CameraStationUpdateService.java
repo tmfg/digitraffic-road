@@ -136,7 +136,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
     @Override
     @Transactional
-    public boolean obsoleteStationWithLotjuId(final long lotjuId) {
+    public boolean updateStationToObsoleteWithLotjuId(final long lotjuId) {
         return cameraPresetService.obsoleteCameraStationWithLotjuId(lotjuId);
     }
 

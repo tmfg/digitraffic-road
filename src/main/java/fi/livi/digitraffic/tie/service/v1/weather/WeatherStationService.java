@@ -108,7 +108,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
 
     @Override
     @Transactional
-    public boolean obsoleteStationWithLotjuId(final long lotjuId) {
+    public boolean updateStationToObsoleteWithLotjuId(final long lotjuId) {
         final WeatherStation station = weatherStationRepository.findByLotjuId(lotjuId);
         if (station != null) {
             return station.makeObsolete();

@@ -56,6 +56,15 @@ public final class DateHelper {
         return toZonedDateTimeAtUtc(second);
     }
 
+    public static Instant getNewest(final Instant first, final Instant second) {
+        if (first == null) {
+            return second;
+        } else if(second == null || first.isAfter(second)) {
+            return first;
+        }
+        return second;
+    }
+
     public static ZonedDateTime toZonedDateTimeAtUtc(final XMLGregorianCalendar calendar) {
         return calendar == null ? null : toZonedDateTimeAtUtc(calendar.toGregorianCalendar().toInstant());
     }

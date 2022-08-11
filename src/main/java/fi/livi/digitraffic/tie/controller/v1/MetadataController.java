@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fi.livi.digitraffic.tie.controller.TmsState;
+import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.dto.v1.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
@@ -96,14 +96,16 @@ public class MetadataController {
                                                                                        APPLICATION_VND_GEO_JSON_VALUE })
     @ApiResponses({     @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Feature Collections") })
     public TmsStationFeatureCollection tmsStations(
-                @Parameter(description = "If parameter is given result will only contain update status.")
-                @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                final boolean lastUpdated,
+
+        @Parameter(description = "If parameter is given result will only contain update status.")
+        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+        final boolean lastUpdated,
+
         @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = { "active", "removed", "all" }, defaultValue = "active"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
-        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+        final RoadStationState state = EnumConverter.parseState(RoadStationState.class, stateString);
 
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
@@ -125,12 +127,13 @@ public class MetadataController {
     @ApiResponses({     @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Feature Collections"),
                         @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Road number not found", content = @Content) })
     public TmsStationFeatureCollection tmsStationsByRoadNumber(
+
         @PathVariable("number") final Integer roadNumber,
         @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = { "active", "removed", "all" }, defaultValue = "active"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
-        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+        final RoadStationState state = EnumConverter.parseState(RoadStationState.class, stateString);
 
         return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
     }
@@ -151,9 +154,11 @@ public class MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({     @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Sensors") })
     public TmsRoadStationsSensorsMetadata tmsSensors(
+
             @Parameter(description = "If parameter is given result will only contain update status.")
             @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-                    final boolean lastUpdated) {
+            final boolean lastUpdated) {
+
         return roadStationSensorService.findTmsRoadStationsSensorsMetadata(lastUpdated);
     }
 

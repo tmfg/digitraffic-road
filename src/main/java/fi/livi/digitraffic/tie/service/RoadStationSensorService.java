@@ -128,7 +128,7 @@ public class RoadStationSensorService {
     @Transactional(readOnly = true)
     public Map<Long, List<SensorValueDto>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
         final List<SensorValueDto> sensors = roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
-                        roadStationType.getTypeNumber(),
+                        roadStationType,
                         sensorValueTimeLimitInMins.get(roadStationType));
 
         return sensors.parallelStream()
@@ -138,11 +138,6 @@ public class RoadStationSensorService {
     @Transactional(readOnly = true)
     public ZonedDateTime getLatestSensorValueUpdatedTime(final RoadStationType roadStationType) {
         return dataStatusService.findDataUpdatedTime(DataType.getSensorValueUpdatedDataType(roadStationType));
-    }
-
-    @Transactional(readOnly = true)
-    public ZonedDateTime getLatestSensorValueMeasurementTime(final RoadStationType roadStationType) {
-        return dataStatusService.findDataUpdatedTime(DataType.getSensorValueMeasuredDataType(roadStationType));
     }
 
     @Transactional(readOnly = true)
@@ -156,7 +151,7 @@ public class RoadStationSensorService {
 
         return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
                 roadStationNaturalId,
-                roadStationType.getTypeNumber(),
+                roadStationType,
                 sensorValueTimeLimitInMins.get(roadStationType));
     }
 
@@ -185,7 +180,7 @@ public class RoadStationSensorService {
     @Transactional(readOnly = true)
     public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final ZonedDateTime updatedAfter, final RoadStationType roadStationType) {
         return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
-                roadStationType.getTypeNumber(),
+                roadStationType,
                 updatedAfter.toInstant());
     }
 

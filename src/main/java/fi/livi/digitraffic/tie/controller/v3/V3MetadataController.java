@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.controller.TmsState;
+import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.location.LocationFeatureCollection;
@@ -159,7 +159,7 @@ public class V3MetadataController {
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
-        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+        final RoadStationState state = EnumConverter.parseState(RoadStationState.class, stateString);
 
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
@@ -182,11 +182,13 @@ public class V3MetadataController {
     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Road number not found", content = @Content) })
     public TmsStationFeatureCollection tmsStationsByRoadNumber(
         @PathVariable("number") final Integer roadNumber,
+
         @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = { "active", "removed", "all" }, defaultValue = "active"))
         @RequestParam(value = "state", required = false, defaultValue = "active")
         final String stateString) {
 
-        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+        final RoadStationState state = EnumConverter.parseState(RoadStationState.class, stateString);
+
 
         return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
     }

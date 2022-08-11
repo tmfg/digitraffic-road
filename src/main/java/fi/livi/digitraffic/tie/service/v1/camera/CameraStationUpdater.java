@@ -150,7 +150,7 @@ public class CameraStationUpdater {
                                        final MetadataUpdatedMessageDto.UpdateType updateType) {
         log.info("method=updateCameraStationFromJms start lotjuId={} type={}", cameraLotjuId, updateType);
         if (updateType.isDelete()) {
-            return cameraStationUpdateService.obsoleteStationWithLotjuId(cameraLotjuId);
+            return cameraStationUpdateService.updateStationToObsoleteWithLotjuId(cameraLotjuId);
         } else {
             final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(cameraLotjuId);
             if (kamera == null) {

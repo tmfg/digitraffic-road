@@ -206,13 +206,13 @@ public class V2MaintenanceTrackingDataService {
     }
 
     @Transactional(readOnly = true)
-    public List<MaintenanceTrackingForMqttV2> findTrackingsForMqttCreatedAfter(final ZonedDateTime from) {
+    public List<MaintenanceTrackingForMqttV2> findTrackingsForMqttCreatedAfter(final Instant from) {
         return v2MaintenanceTrackingRepository.findTrackingsCreatedAfter(from);
     }
 
     @Transactional(readOnly = true)
     public List<MaintenanceTrackingLatestFeature> findTrackingsLatestPointsCreatedAfter(final Instant from) {
-        return v2MaintenanceTrackingRepository.findTrackingsLatestPointsCreatedAfter(DateHelper.toZonedDateTimeAtUtc(from)).stream()
+        return v2MaintenanceTrackingRepository.findTrackingsLatestPointsCreatedAfter(from).stream()
             .map(V2MaintenanceTrackingDataService::convertToTrackingLatestFeature)
             .collect(Collectors.toList());
     }

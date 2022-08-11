@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.dto.weathercam.v1;
 
 import java.time.Instant;
 
-import fi.livi.digitraffic.tie.dto.data.v1.StationMeasurementDataV1;
+import fi.livi.digitraffic.tie.dto.roadstation.v1.StationMeasurementDataV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDataV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDatasV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDataV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 
@@ -31,8 +31,8 @@ public class WeathercamDataConverter {
     public WeathercamDataConverter() {
     }
 
-    public WeathercamStationsDatasV1 convert(final List<CameraPreset> cameraPresets,
-                                             final Instant updated) {
+    public WeathercamStationsDataV1 convert(final List<CameraPreset> cameraPresets,
+                                            final Instant updated) {
         final StopWatch start = StopWatch.createStarted();
         final Map<String, List<WeathercamPresetDataV1>> cameraIdToPresetDataMap =
             cameraPresets.stream()
@@ -47,7 +47,7 @@ public class WeathercamDataConverter {
                 .map(e -> new WeathercamStationDataV1(e.getKey(), e.getValue(), getMaxMeasuredTime(e.getValue())))
                 .collect(toList());
 
-        return new WeathercamStationsDatasV1(updated, stationsDatas);
+        return new WeathercamStationsDataV1(updated, stationsDatas);
     }
 
     public WeathercamStationDataV1 convertSingleStationData(final List<CameraPreset> data, final boolean onlyUpdateInfo) {

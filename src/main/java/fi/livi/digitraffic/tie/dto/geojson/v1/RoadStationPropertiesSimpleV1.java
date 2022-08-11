@@ -3,16 +3,12 @@ package fi.livi.digitraffic.tie.dto.geojson.v1;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.metadata.geojson.PropertiesWithId;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "Properties", description = "Roadstation properties",
-        subTypes = { RoadStationPropertiesDetailedV1.class,
-                     WeathercamStationPropertiesSimpleV1.class
-                     /* TODO TmsStationPropertiesSimpleV1, WeatherStationPropertiesSimpleV1 */ })
+@Schema(description = "Roadstation simple properties")
 public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesWithId<ID_TYPE> {
 
     @Schema(description = "Common name of road station")
@@ -28,13 +24,13 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
     private String municipality;
 
     @Schema(description = "Municipality code")
-    private String municipalityCode;
+    private Integer municipalityCode;
 
     @Schema(description = "Province")
     private String province;
 
     @Schema(description = "Province code")
-    private String provinceCode;
+    private Integer provinceCode;
 
     public RoadStationPropertiesSimpleV1(final ID_TYPE id) {
         super(id);
@@ -64,11 +60,11 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
         this.municipality = municipality;
     }
 
-    public String getMunicipalityCode() {
+    public Integer getMunicipalityCode() {
         return municipalityCode;
     }
 
-    public void setMunicipalityCode(final String municipalityCode) {
+    public void setMunicipalityCode(final Integer municipalityCode) {
         this.municipalityCode = municipalityCode;
     }
 
@@ -80,11 +76,11 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
         this.province = province;
     }
 
-    public String getProvinceCode() {
+    public Integer getProvinceCode() {
         return provinceCode;
     }
 
-    public void setProvinceCode(final String provinceCode) {
+    public void setProvinceCode(final Integer provinceCode) {
         this.provinceCode = provinceCode;
     }
 

@@ -4,15 +4,15 @@ import static org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Stream;
+
 import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
-import org.springframework.data.repository.query.Param;
 
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
+import fi.livi.digitraffic.tie.model.RoadStationType;
 
 public interface RoadStationSensorValueDtoRepository extends JpaRepository<SensorValueDto, Long> {
     @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
@@ -37,7 +37,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
             "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id\n" +
             "                                            and svd.sensor_value = sv.value\n" +
-            "where rs.type = :stationTypeId\n" +
+            "where rs.road_station_type = :#{#roadStationType.name()}\n" +
             "  and rs.publishable = true\n" +
             "  and s.publishable = true\n" +
             "  and sv.measured > (now() -(:timeLimitInMinutes * interval '1 MINUTE'))\n" +
@@ -50,9 +50,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
            nativeQuery = true)
     // sensor typeid 2 = rws
     List<SensorValueDto> findAllPublicPublishableRoadStationSensorValues(
-            @Param("stationTypeId")
-            final int stationTypeId,
-            @Param("timeLimitInMinutes")
+            final RoadStationType roadStationType,
             final int timeLimitInMinutes);
 
     @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
@@ -77,7 +75,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
             "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id\n" +
             "                                            and svd.sensor_value = sv.value\n" +
-            "where rs.type = :stationTypeId\n" +
+            "where rs.road_station_type = :#{#roadStationType.name()}\n" +
             "  and rs.natural_id = :stationNaturalId\n" +
             "  and rs.publishable = true\n" +
             "  and s.publishable = true\n" +
@@ -91,11 +89,8 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
             "order by rs.natural_id, s.natural_id",
            nativeQuery = true)
     List<SensorValueDto> findAllPublicPublishableRoadStationSensorValues(
-            @Param("stationNaturalId")
             final long stationNaturalId,
-            @Param("stationTypeId")
-            final int stationTypeId,
-            @Param("timeLimitInMinutes")
+            final RoadStationType roadStationType,
             final int timeLimitInMinutes);
 
     @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
@@ -120,7 +115,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
                    "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
                    "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id\n" +
                    "                                            and svd.sensor_value = sv.value\n" +
-                   "where rs.type = :stationTypeId\n" +
+                   "where rs.type = :#{#roadStationType.name()}\n" +
                    "  and rs.publishable = true\n" +
                    "  and s.publishable = true\n" +
                    "  and sv.updated > :afterDate\n" +
@@ -133,8 +128,6 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
                    "order by sv.updated",
                    nativeQuery = true)
     List<SensorValueDto> findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
-            @Param("stationTypeId")
-            final int stationTypeId,
-            @Param("afterDate")
+            final RoadStationType roadStationType,
             final Instant afterDate);
 }

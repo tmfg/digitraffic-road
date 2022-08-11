@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.dto.data.v1;
+package fi.livi.digitraffic.tie.dto.roadstation.v1;
 
 import java.io.Serializable;
 import java.time.Instant;

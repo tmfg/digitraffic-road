@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.controller.v1;
 
+import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_DATA_PATH;
@@ -62,8 +63,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ConditionalOnWebApplication
 public class DataController {
 
-    public static final String LAST_UPDATED_PARAM = "lastUpdated";
-
     private final TmsDataService tmsDataService;
     private final FreeFlowSpeedService freeFlowSpeedService;
     private final WeatherService weatherService;
@@ -93,7 +92,7 @@ public class DataController {
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of free flow speeds"))
     public FreeFlowSpeedRootDataObjectDto freeFlowSpeeds(
             @Parameter(description = "If parameter is given result will only contain update status")
-            @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
+            @RequestParam(value= LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
             boolean lastUpdated) {
         return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(lastUpdated);
     }
@@ -313,7 +312,7 @@ public class DataController {
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of sensor constants and values"))
     public TmsSensorConstantRootDto tmsSensorConstants(
         @Parameter(description = "If parameter is given result will only contain update status")
-        @RequestParam(value=DataController.LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
+        @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
         boolean lastUpdated) {
         return tmsDataService.findPublishableSensorConstants(lastUpdated);
     }

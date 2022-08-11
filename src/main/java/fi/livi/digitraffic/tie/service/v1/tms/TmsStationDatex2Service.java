@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.controller.TmsState;
+import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationDatex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.converter.TmsStationMetadata2Datex2Converter;
@@ -29,8 +29,8 @@ public class TmsStationDatex2Service {
     }
 
     @Transactional(readOnly = true)
-    public D2LogicalModel findAllPublishableTmsStationsAsDatex2(final TmsState tmsState) {
-        final List<TmsStation> stations = findStations(tmsState);
+    public D2LogicalModel findAllPublishableTmsStationsAsDatex2(final RoadStationState roadStationState) {
+        final List<TmsStation> stations = findStations(roadStationState);
         return tmsStationMetadata2Datex2Converter.convert(stations,tmsStationService.getMetadataLastUpdated());
     }
 
@@ -39,9 +39,9 @@ public class TmsStationDatex2Service {
         return tmsStationDatex2Repository.findDistinctByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
     }
 
-    private List<TmsStation> findStations(final TmsState tmsState) {
+    private List<TmsStation> findStations(final RoadStationState roadStationState) {
 
-        switch(tmsState) {
+        switch(roadStationState) {
         case ACTIVE:
             return tmsStationDatex2Repository.findDistinctByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
         case REMOVED:

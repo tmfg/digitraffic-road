@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.feature.AbstractMetadataToFeatureConverter;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.datex2.ConfidentialityValueEnum;
 import fi.livi.digitraffic.tie.datex2.CountryEnum;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -27,6 +26,7 @@ import fi.livi.digitraffic.tie.datex2.MultilingualStringValue;
 import fi.livi.digitraffic.tie.datex2.Point;
 import fi.livi.digitraffic.tie.datex2.PointByCoordinates;
 import fi.livi.digitraffic.tie.datex2.PointCoordinates;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.v1.TmsStation;
 
@@ -75,7 +75,7 @@ public class TmsStationMetadata2Datex2Converter {
 
     private static MeasurementSiteRecord getMeasurementSiteRecord(final TmsStation station, final RoadStationSensor sensor) {
         final fi.livi.digitraffic.tie.metadata.geojson.Point point =
-            AbstractMetadataToFeatureConverter.getETRS89CoordinatesPoint(station.getRoadStation());
+            AbstractMetadataToFeatureConverter.resolveETRS89PointLocation(station.getRoadStation());
 
         final MeasurementSiteRecord measurementSiteRecord =
             new MeasurementSiteRecord()

@@ -74,6 +74,6 @@ public final class WeatherStationMetadata2FeatureConverter extends AbstractMetad
             setRoadStationProperties(properties, rs);
         }
 
-        return new WeatherStationFeature(getGeometry(rs), properties, rws.getRoadStationNaturalId());
+        return new WeatherStationFeature(resolvePointLocation(rs), properties, rws.getRoadStationNaturalId());
     }
 }

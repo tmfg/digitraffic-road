@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.controller.v1.DataController;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -65,7 +66,7 @@ public class DataUpdatedControllerRestWebTest extends AbstractRestWebTest {
         for(final Field field : fields) {
             final String url = API_V1_BASE_PATH + API_DATA_PART_PATH +
                          field.get(dataController) +
-                         "?" + DataController.LAST_UPDATED_PARAM + "=true";
+                         "?" + ApiConstants.LAST_UPDATED_PARAM + "=true";
 
             log.info("Test url: " + url);
             mockMvc.perform(get(url))

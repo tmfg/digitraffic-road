@@ -43,6 +43,17 @@ public class StationSensorConverterService {
         throw new IllegalArgumentException(String.format("RoadStationType %s not suported", type.name()));
     }
 
+    @Transactional(readOnly = true)
+    public List<Long> getPublishableSensorsNaturalIdsByRoadStationId(final Long roadStationId, final RoadStationType type) {
+        if (type.equals(RoadStationType.TMS_STATION) || type.equals(RoadStationType.WEATHER_STATION)) {
+            return roadStationId == null ?
+                   Collections.emptyList() :
+                   roadStationSensorRepository.findRoadStationPublishableSensorsNaturalIdsByStationIdAndType(roadStationId, type);
+        }
+        throw new IllegalArgumentException(String.format("RoadStationType %s not suported", type.name()));
+    }
+
+
     private static Map<Long, List<Long>> createMap(final List<StationSensors> sensors) {
         final Map<Long, List<Long>> sensorMap = new HashMap<>();
 

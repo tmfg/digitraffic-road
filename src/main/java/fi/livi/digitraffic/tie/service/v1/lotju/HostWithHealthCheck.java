@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.conf.RestTemplateConfiguration;
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 public class HostWithHealthCheck {
@@ -76,21 +76,21 @@ public class HostWithHealthCheck {
 
         final String healthString = doRequestHealthString();
 
-        if (StringUtils.trimToEmpty(healthString).toUpperCase().startsWith(healthOkValue.toUpperCase()) ) {
-            log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true", healthUrl, dataUrl, healthString,
-                healthOkValue);
+        if (healthString != null && StringUtils.trimToEmpty(healthString).toUpperCase().startsWith(healthOkValue.toUpperCase()) ) {
+            log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true",
+                     healthUrl, dataUrl, healthString, healthOkValue);
             setHealthy(true);
             return true;
         }
-        log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=false", healthUrl, dataUrl, healthString,
-            healthOkValue);
+        log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=false",
+                 healthUrl, dataUrl, healthString, healthOkValue);
         setHealthy(false);
         return false;
     }
 
     /**
-     * Requests health from server.
-     * @return Null if there is error.
+     * Requests health status message from server.
+     * @return Error message or null if there is error.
      */
     private String doRequestHealthString() {
         try {
@@ -98,7 +98,7 @@ public class HostWithHealthCheck {
             return response.getBody();
         } catch (final Exception e) {
             log.warn(String.format("method=doRequestHealthStatus Health check for healthCheckUrl=%s failed", healthUrl), e);
-            return null;
+            return e.getMessage(); // Can be null
         }
     }
 

@@ -124,6 +124,6 @@ public class CameraPresetMetadata2FeatureConverter extends AbstractMetadataToFea
             final RoadStation rs = cp.getRoadStation();
             setRoadStationProperties(properties, rs);
 
-            return new CameraStationFeature(getGeometry(rs), properties);
+            return new CameraStationFeature(resolvePointLocation(rs), properties);
     }
 }

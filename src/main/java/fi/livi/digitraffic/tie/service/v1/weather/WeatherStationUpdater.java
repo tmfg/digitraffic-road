@@ -66,7 +66,7 @@ public class WeatherStationUpdater  {
                                                   final MetadataUpdatedMessageDto.UpdateType updateType) {
         log.info("method=updateWeatherStationAndSensors start lotjuId={} type={}", lotjuId, updateType);
         if (updateType.isDelete()) {
-            if (weatherStationService.obsoleteStationWithLotjuId(lotjuId)) {
+            if (weatherStationService.updateStationToObsoleteWithLotjuId(lotjuId)) {
                 dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_METADATA);
                 return true;
             }

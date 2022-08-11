@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.controller.TmsState;
+import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.v1.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
@@ -56,8 +56,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo, final TmsState tmsState) {
-        final List<TmsStation> stations = onlyUpdateInfo ? Collections.emptyList() : findPublishableStations(tmsState);
+    public TmsStationFeatureCollection findAllPublishableTmsStationsAsFeatureCollection(final boolean onlyUpdateInfo, final RoadStationState roadStationState) {
+        final List<TmsStation> stations = onlyUpdateInfo ? Collections.emptyList() : findPublishableStations(roadStationState);
         final List<TmsFreeFlowSpeedDto> ffs = onlyUpdateInfo ? Collections.emptyList() : tmsFreeFlowSpeedRepository.findAllPublicTmsFreeFlowSpeeds();
 
         return tmsStationMetadata2FeatureConverter.convert(
@@ -68,8 +68,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final TmsState tmsState) {
-        final List<TmsStation> stations = findPublishableStations(roadNumber, tmsState);
+    public TmsStationFeatureCollection listTmsStationsByRoadNumber(final Integer roadNumber, final RoadStationState roadStationState) {
+        final List<TmsStation> stations = findPublishableStations(roadNumber, roadStationState);
         final List<TmsFreeFlowSpeedDto> ffs = stations.isEmpty() ? Collections.emptyList() : tmsFreeFlowSpeedRepository.findAllPublicTmsFreeFlowSpeeds();
 
         return tmsStationMetadata2FeatureConverter.convert(
@@ -166,7 +166,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Override
     @Transactional
-    public boolean obsoleteStationWithLotjuId(final long lotjuId) {
+    public boolean updateStationToObsoleteWithLotjuId(final long lotjuId) {
         final TmsStation station = tmsStationRepository.findByLotjuId(lotjuId);
         if (station != null) {
             return station.makeObsolete();
@@ -174,8 +174,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         return false;
     }
 
-    private List<TmsStation> findPublishableStations(final Integer roadNumber, final TmsState tmsState) {
-        switch(tmsState) {
+    private List<TmsStation> findPublishableStations(final Integer roadNumber, final RoadStationState roadStationState) {
+        switch(roadStationState) {
         case ACTIVE:
             return tmsStationRepository
                 .findByRoadStationPublishableIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(roadNumber);
@@ -191,8 +191,8 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
         }
     }
 
-    private List<TmsStation> findPublishableStations(final TmsState tmsState) {
-        switch(tmsState) {
+    private List<TmsStation> findPublishableStations(final RoadStationState roadStationState) {
+        switch(roadStationState) {
         case ACTIVE:
             return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
         case REMOVED:

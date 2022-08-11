@@ -24,5 +24,5 @@ public abstract class AbstractRoadStationAttributeUpdater {
         return value != null ? value.setScale(2, RoundingMode.HALF_UP) : null;
     }
 
-    public abstract boolean obsoleteStationWithLotjuId(final long lotjuId);
+    public abstract boolean updateStationToObsoleteWithLotjuId(final long lotjuId);
 }

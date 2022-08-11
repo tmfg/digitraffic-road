@@ -1,12 +1,12 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 
 public class MqttDataMessageV2 {
     private final String topic;
     private final Object data;
 
-    public static MqttDataMessageV2 createV2(final String topic, final SensorValueDto sv) {
+    public static MqttDataMessageV2 createV2(final String topic, final SensorValueDtoV1 sv) {
         final MqttSensorValueMessageV2 msvm = new MqttSensorValueMessageV2(sv);
 
         return new MqttDataMessageV2(topic, msvm);

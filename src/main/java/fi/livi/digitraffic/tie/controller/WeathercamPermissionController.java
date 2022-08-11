@@ -30,8 +30,8 @@ public class WeathercamPermissionController {
 
     private static final String VERSION_ID_PARAM = "versionId";
 
-    private CameraPresetHistoryDataService cameraPresetHistoryDataService;
-    private WeathercamS3Properties weathercamS3Properties;
+    private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
+    private final WeathercamS3Properties weathercamS3Properties;
 
     @Autowired
     public WeathercamPermissionController(final CameraPresetHistoryDataService cameraPresetHistoryDataService,
@@ -43,7 +43,7 @@ public class WeathercamPermissionController {
     @RequestMapping(method = RequestMethod.GET, path = "{imageName}")
     public ResponseEntity<Void>  imageVersion(
         @PathVariable final String imageName,
-        @RequestParam(value=VERSION_ID_PARAM) final String versionId) {
+        @RequestParam(value = VERSION_ID_PARAM) final String versionId) {
 
         final HistoryStatus historyStatus = cameraPresetHistoryDataService.resolveHistoryStatusForVersion(imageName, versionId);
         log.info("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.controller.v3;
 
+import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2022_11_01;
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.SINCE_2022_11_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
@@ -22,7 +23,6 @@ import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VA
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
-import static fi.livi.digitraffic.tie.controller.v1.DataController.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
 
@@ -120,7 +120,7 @@ public class V3DataController {
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @Parameter(description = "If parameter is given result will only contain update status")
-        @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
+        @RequestParam(value = LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
         boolean lastUpdated,
         @Parameter(description = "List of forecast section indices")
         @RequestParam(value = "naturalIds", required = false)
@@ -209,12 +209,12 @@ public class V3DataController {
         final long stationId,
 
         @Parameter(description = "Fetch history after given date time")
-        @RequestParam(value="from", required = false)
+        @RequestParam(value = "from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from,
 
         @Parameter(description = "Limit history to given date time")
-        @RequestParam(value="to", required = false)
+        @RequestParam(value = "to", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime to) {
 
@@ -233,7 +233,7 @@ public class V3DataController {
         @PathVariable final long sensorId,
 
         @Parameter(description = "Fetch history after given time")
-        @RequestParam(value="from", required = false)
+        @RequestParam(value = "from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final ZonedDateTime from) {
 

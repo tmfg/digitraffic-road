@@ -66,8 +66,7 @@ public class V3RegionGeometryDataService {
 
     @Autowired
     public V3RegionGeometryDataService(final RegionGeometryRepository regionGeometryRepository,
-                                       final DataStatusService dataStatusService,
-                                       final ObjectMapper objectMapper) {
+                                       final DataStatusService dataStatusService) {
         this.regionGeometryRepository = regionGeometryRepository;
         this.dataStatusService = dataStatusService;
     }
@@ -265,7 +264,7 @@ public class V3RegionGeometryDataService {
         return regions;
     }
 
-    private class RegionStatus {
+    private static class RegionStatus {
 
         private final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode;
         public final List<RegionGeometryFeature> allRegionsDtosInDescOrder;

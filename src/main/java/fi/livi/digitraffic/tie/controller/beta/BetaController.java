@@ -19,17 +19,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fi.livi.digitraffic.tie.controller.TmsState;
+import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
-import fi.livi.digitraffic.tie.helper.EnumConverter;
 import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,13 +59,11 @@ public class BetaController {
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Stations Datex2 metadata"))
     public D2LogicalModel tmsStationsDatex2(
-        @Parameter(description = "Return TMS stations of given state.", schema = @Schema(allowableValues = "active,removed,all"))
+        @Parameter(description = "Return TMS stations of given state.")
         @RequestParam(value = "state", required = false, defaultValue = "active")
-        final String stateString) {
-        // TODO fixme: Enum suoraan parametriksi
-        final TmsState state = EnumConverter.parseState(TmsState.class, stateString);
+        final RoadStationState roadStationState) {
 
-        return tmsStationDatex2Service.findAllPublishableTmsStationsAsDatex2(state);
+        return tmsStationDatex2Service.findAllPublishableTmsStationsAsDatex2(roadStationState);
     }
 
     @Operation(summary = "Current data of TMS Stations in Datex2 format (Traffic Measurement System / LAM)")

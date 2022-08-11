@@ -1,6 +1,4 @@
-package fi.livi.digitraffic.tie.dto.data.v1;
-
-import javax.persistence.Column;
+package fi.livi.digitraffic.tie.dto.roadstation.v1;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -16,18 +14,65 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Road station road address")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "roadNumber", "roadSection", "distanceFromRoadSectionStart", "carriagewayCode", "sideCode" })
+@JsonPropertyOrder({ "roadNumber", "roadSection", "distanceFromRoadSectionStart", "carriageway", "side" })
 public class StationRoadAddressV1 {
 
-    @Schema(description = "Road address side information")
+    /**
+     * tierekisteri_tietosisallon_kuvaus.pdf
+     *
+     * Sijaintitarkenteita (4.11.2020)
+     * Puoli: Tietolajin tie-/ajorata -tasoisuudesta riippuen ilmaistaan tiedon puoli suhteessa tieosoitteen kasvusuuntaan
+     * 1 = oikealla
+     * 2 = vasemmalla
+     * 3 = ajoratojen välissä (käytetään vain varusteilla ajoradalla 1)
+     * 4 = kävely- tai pyöräilytien takana (esim. viherkuviot, kun viheralue on päätien osoitteella)
+     * 7 = tien päässä (tien lopussa, jos ei ole oikealla/vasemmalla)
+     * 8 = tien tai ajoradan keskellä / ajorataa pitkin (välikohtainen tieto)
+     * 9 = tien päällä / ajoradan poikki (esim. korkeusrajoitukset)
+     * 0 = puoli ei ole tiedossa tai sitä ei ole määritelty
+     *
+     * @see <a href="https://julkaisut.vayla.fi/tierekisteri/tierekisteri_tietosisallon_kuvaus.pdf">tierekisteri_tietosisallon_kuvaus.pdf</a>
+     * @see <a href="https://vayla.fi/palveluntuottajat/aineistot/tierekisteri">Tierekisterin ohjeet ja kuvaukset</a>
+     */
+    public static final String ROAD_ADDRESS_SIDE_DESCRIPTION =
+        "Road address side information <br>" +
+        "* UNKNOWN: 0 = Unknown, <br>" +
+        "* RIGHT    1 = On the right side of the carriageway in the increasing direction, <br>" +
+        "* LEFT:    2 = On the left side of the carriageway in the increasing direction, <br>" +
+        "* BETWEEN: 3 = Between the carriageways, <br>" +
+        "* END:     7 = At the end of the road, <br>" +
+        "* MIDDLE:  8 = In the middle of the carriageway / on the carriageway, <br>" +
+        "* CROSS:   9 = Across the road";
+
+    /**
+     * Tieosoitejärjestelmä.pdf
+     * 8. AJORATA
+     *
+     * Tiellä voi olla yksi tai kaksi ajorataa. Ns. tietason tietolajit (kuten tieluokka) ovat molemmille
+     * ajoradoille yhteisiä, mutta esimerkiksi varusteet ja laitteet ovat yleensä ajoratakohtaisia.
+     * Ajorata yksilöidään seuraavasti:
+     * Ajr 0 = 1-ajoratainen tieosuus
+     * Ajr 1 = 2-ajorataisen tien kasvusuunnassa oikeanpuoleinen ajorata
+     * Ajr 2 = 2-ajorataisen tien kasvusuunnassa vasemmanpuoleinen ajorata
+     *
+     * @see <a href="https://vayla.fi/documents/25230764/35411009/Tieosoitejärjestelmä.pdf">Tieosoitejärjestelmä.pdf</a>
+     * @see <a href="https://vayla.fi/palveluntuottajat/aineistot/tierekisteri">Tierekisterin ohjeet ja kuvaukset</a>
+     */
+    public static final String ROAD_ADDRESS_CARRIAGEWAY_DESCRIPTION =
+        "Carriageway <br>" +
+        "ONE_CARRIAGEWAY:                                0 = One carriageway road section <br>" +
+        "DUAL_CARRIAGEWAY_RIGHT_IN_INCREASING_DIRECTION: 1 = Dual carriageway's right carriageway on increasing direction <br>" +
+        "DUAL_CARRIAGEWAY_LEFT_IN_INCREASING_DIRECTION:  2 = Dual carriageway's left carriageway on increasing direction (upstream)";
+
+    @Schema(description = ROAD_ADDRESS_SIDE_DESCRIPTION)
     public enum RoadAddressSide {
         UNKNOWN(0),
-        RIGHT(1), // oikea ( mittaussuunnan oikealla puolella)
-        LEFT(2), // vasen ( mittaussuunnan vasemmalla puolella)
-        BETWEEN(3), // välissä (ajoratojen välissä)
-        END(7), // päässä ( tien päässä)
-        MIDDLE(8), // keskellä
-        CROSS (9); // poikki
+        RIGHT(1),
+        LEFT(2),
+        BETWEEN(3),
+        END(7),
+        MIDDLE(8),
+        CROSS (9);
 
         private final int code;
 
@@ -49,11 +94,11 @@ public class StationRoadAddressV1 {
         }
     }
 
-    @Schema(description = "Road address carriageway information")
+    @Schema(description = ROAD_ADDRESS_CARRIAGEWAY_DESCRIPTION)
     public enum RoadAddressCarriageway {
-        ONE_CARRIAGEWAY(0), // yksiajoratainen osuus
-        DUAL_CARRIAGEWAY_FIRST_MEASURING_DIRECTION(1), // kaksiajorataisen osuuden ykkösajorata (mittaussuunta)
-        DUAL_CARRIAGEWAY_SECOND_UPSTREAM(2); // kaksiajorataisen osuuden kakkosajorata (vastasuunta)
+        ONE_CARRIAGEWAY(0),
+        DUAL_CARRIAGEWAY_RIGHT_IN_INCREASING_DIRECTION(1),
+        DUAL_CARRIAGEWAY_LEFT_IN_INCREASING_DIRECTION(2);
 
         private final int code;
         private static final Logger log = LoggerFactory.getLogger(RoadAddressSide.class);
@@ -81,16 +126,13 @@ public class StationRoadAddressV1 {
     public final Integer roadSection;
 
     @Schema(description = "Distance from start of the road portion [m]", example = "3801")
-    @Column(name="DISTANCE_FROM_ROAD_SECTION_ST")
     public final Integer distanceFromRoadSectionStart;
 
-    @Schema(description = "Carriageway (" +
-                              "0 = One carriageway portion, " +
-                              "1 = First carriageway of dual carriageway portion (measuring direction) " +
-                              "2 = Second carriageway of dual carriageway portion (upstream))",
-            example = "1")
-    @Column(name = "CARRIAGEWAY")
-    public final Integer carriagewayCode;
+    @Schema(description = ROAD_ADDRESS_SIDE_DESCRIPTION)
+    public final RoadAddressSide side;
+
+    @Schema(description = "Carriageway")
+    public final RoadAddressCarriageway carriageway;
 
     @JsonIgnore // Value can contain handwritten values
     @Schema(description = "Road winter maintenance class", example = "1")
@@ -103,12 +145,13 @@ public class StationRoadAddressV1 {
     public final Integer contractAreaCode;
 
     public StationRoadAddressV1(final Integer roadNumber, final Integer roadSection, final Integer distanceFromRoadSectionStart,
-                                final Integer carriagewayCode, final String contractArea, final Integer contractAreaCode,
+                                final Integer carriagewayCode, final Integer sideCode, final String contractArea, final Integer contractAreaCode,
                                 final String roadMaintenanceClass) {
         this.roadNumber = roadNumber;
         this.roadSection = roadSection;
         this.distanceFromRoadSectionStart = distanceFromRoadSectionStart;
-        this.carriagewayCode = carriagewayCode;
+        this.carriageway = RoadAddressCarriageway.getByCode(carriagewayCode);
+        this.side = RoadAddressSide.getByCode(sideCode);
         this.contractArea = contractArea;
         this.contractAreaCode = contractAreaCode;
         this.roadMaintenanceClass = roadMaintenanceClass;
@@ -136,7 +179,8 @@ public class StationRoadAddressV1 {
                 .append(roadNumber, that.roadNumber)
                 .append(roadSection, that.roadSection)
                 .append(distanceFromRoadSectionStart, that.distanceFromRoadSectionStart)
-                .append(carriagewayCode, that.carriagewayCode)
+                .append(carriageway, that.carriageway)
+                .append(side, that.side)
                 .append(roadMaintenanceClass, that.roadMaintenanceClass)
                 .append(contractArea, that.contractArea)
                 .append(contractAreaCode, that.contractAreaCode)
@@ -149,7 +193,8 @@ public class StationRoadAddressV1 {
                 .append(roadNumber)
                 .append(roadSection)
                 .append(distanceFromRoadSectionStart)
-                .append(carriagewayCode)
+                .append(carriageway)
+                .append(side)
                 .append(roadMaintenanceClass)
                 .append(contractArea)
                 .append(contractAreaCode)

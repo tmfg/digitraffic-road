@@ -3,19 +3,15 @@ package fi.livi.digitraffic.tie.converter.roadstation.v1;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fi.livi.digitraffic.tie.dto.data.v1.StationRoadAddressV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesDetailedV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesSimpleV1;
+import fi.livi.digitraffic.tie.dto.roadstation.v1.StationRoadAddressV1;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
 public abstract class AbstractRoadstationToFeatureConverterV1 {
-    private static final Logger log = LoggerFactory.getLogger(AbstractRoadstationToFeatureConverterV1.class);
 
     protected final CoordinateConverter coordinateConverter;
 
@@ -29,9 +25,9 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
         properties.setCollectionStatus(roadStation.getCollectionStatus());
         properties.setState(roadStation.getState());
         properties.setMunicipality(roadStation.getMunicipality());
-        properties.setMunicipalityCode(roadStation.getMunicipalityCode());
+        properties.setMunicipalityCode(parseIntegerOrNull(roadStation.getMunicipalityCode()));
         properties.setProvince(roadStation.getProvince());
-        properties.setProvinceCode(roadStation.getProvinceCode());
+        properties.setProvinceCode(parseIntegerOrNull(roadStation.getProvinceCode()));
     }
 
     protected static void setRoadStationPropertiesDetailed(final RoadStationPropertiesDetailedV1<?> properties,
@@ -49,7 +45,8 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
         properties.setStartTime(roadStation.getStartDate());
         properties.setRepairMaintenanceTime(roadStation.getRepairMaintenanceDate());
         properties.setAnnualMaintenanceTime(roadStation.getAnnualMaintenanceDate());
-        properties.setLocation(roadStation.getLocation());
+        // HOX: Removed temporary until LOTJU data is fixed in 2016
+        // properties.setLocation(roadStation.getLocation());
         properties.setPurpose(roadStation.getPurpose());
         properties.setRoadAddress(createRoaddAddress(roadStation.getRoadAddress()));
     }
@@ -63,6 +60,7 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
             source.getRoadSection(),
             source.getDistanceFromRoadSectionStart(),
             source.getCarriagewayCode(),
+            source.getSideCode(),
             source.getContractArea(),
             source.getContractAreaCode(),
             source.getRoadMaintenanceClass());
@@ -84,5 +82,13 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
                 Optional.ofNullable(rs.getAltitude()).orElse(BigDecimal.valueOf(0)).doubleValue());
         }
         return null;
+    }
+
+    private static Integer parseIntegerOrNull(final String municipalityCode) {
+        try {
+            return Integer.parseInt(municipalityCode);
+        } catch (final Exception e) {
+            return null;
+        }
     }
 }

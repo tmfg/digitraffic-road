@@ -316,7 +316,7 @@ public abstract class RoadStationProperties extends Properties {
                 .toHashCode();
     }
 
-    public void setCoordinatesETRS89(Point coordinatesETRS89Point) {
+    public void setCoordinatesETRS89(final Point coordinatesETRS89Point) {
         this.coordinatesETRS89.clear();
         if (coordinatesETRS89Point != null) {
             setCoordinateETRS89(LONGITUDE_IDX, coordinatesETRS89Point.getLongitude());
@@ -325,7 +325,7 @@ public abstract class RoadStationProperties extends Properties {
         }
     }
 
-    private void setCoordinateETRS89(int index, Double coordinate) {
+    private void setCoordinateETRS89(final int index, final Double coordinate) {
         if (coordinate != null) {
             while (coordinatesETRS89.size() <= index) {
                 coordinatesETRS89.add(null);

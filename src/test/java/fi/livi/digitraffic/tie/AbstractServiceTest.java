@@ -28,7 +28,11 @@ import fi.livi.digitraffic.tie.service.FlywayService;
 import fi.livi.digitraffic.tie.service.LockingServiceInternal;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
+import fi.livi.digitraffic.tie.service.TmsTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
+import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
+import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
+import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.v1.FreeFlowSpeedService;
@@ -75,6 +79,9 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
           MetadataFileFetcher.class, ClusteredLocker.class, LockingServiceInternal.class,
           V3RegionGeometryDataService.class, V2MaintenanceTrackingDataService.class,
 
+          // V1 services
+          RoadStationSensorServiceV1.class, TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class,
+
           // converters
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverterService.class,
           ObjectMapper.class,
@@ -84,10 +91,8 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
           LockingDao.class,
 
           // Test services etc.
-          TrafficMessageTestHelper.class, V3MaintenanceTrackingServiceTestHelper.class,
-
-
-        })
+          TrafficMessageTestHelper.class, V3MaintenanceTrackingServiceTestHelper.class, TmsTestHelper.class
+})
 public abstract class AbstractServiceTest extends AbstractJpaTest {
 
     @MockBean

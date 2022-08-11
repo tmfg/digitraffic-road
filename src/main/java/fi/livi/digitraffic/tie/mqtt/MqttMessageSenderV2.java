@@ -1,18 +1,20 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
-import org.slf4j.Logger;
+import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
+import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.STATUS;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.STATUS;
+import org.slf4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
 public class MqttMessageSenderV2 {
     private final Logger log;
@@ -23,8 +25,8 @@ public class MqttMessageSenderV2 {
     private final String lockName;
     private final long instanceId;
 
-    private final AtomicReference<ZonedDateTime> lastUpdated = new AtomicReference<>();
-    private final AtomicReference<ZonedDateTime> lastError = new AtomicReference<>();
+    private final AtomicReference<Instant> lastUpdated = new AtomicReference<>();
+    private final AtomicReference<Instant> lastError = new AtomicReference<>();
     private final MqttRelayQueue.StatisticsType statisticsType;
     
     public MqttMessageSenderV2(final Logger log,
@@ -43,7 +45,7 @@ public class MqttMessageSenderV2 {
         this.instanceId = ClusteredLocker.generateInstanceId();
     }
 
-    public void sendMqttMessages(final ZonedDateTime lastUpdated, final Collection<MqttDataMessageV2> messages) {
+    public void sendMqttMessages(final Instant lastUpdated, final Collection<MqttDataMessageV2> messages) {
         // Get lock and keep it to prevent sending on multiple nodes
 
         if (acquireLock()) {
@@ -62,24 +64,24 @@ public class MqttMessageSenderV2 {
             log.debug("method=sendMqttMessage {}", message);
             mqttRelay.queueMqttMessage(message.getTopic(), objectMapper.writeValueAsString(message.getData()), statisticsType);
         } catch (final JsonProcessingException e) {
-            setLastError(ZonedDateTime.now());
+            setLastError(Instant.now());
             log.error("method=sendMqttMessage Error sending message", e);
         }
     }
 
-    public void setLastUpdated(final ZonedDateTime lastUpdatedIn) {
-        lastUpdated.set(Objects.requireNonNullElse(lastUpdatedIn, ZonedDateTime.now()));
+    public void setLastUpdated(final Instant lastUpdatedIn) {
+        lastUpdated.set(Objects.requireNonNullElse(lastUpdatedIn, Instant.now()));
     }
 
-    public ZonedDateTime getLastUpdated() {
+    public Instant getLastUpdated() {
         return lastUpdated.get();
     }
 
-    private void setLastError(final ZonedDateTime lastErrorIn) {
+    private void setLastError(final Instant lastErrorIn) {
         lastError.set(lastErrorIn);
     }
 
-    private ZonedDateTime getLastError() {
+    private Instant getLastError() {
         return lastError.get();
     }
 

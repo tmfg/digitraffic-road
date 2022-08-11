@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.converter.weathercam.v1.WeathercamDataConverter;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDatasV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDataV1;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -35,11 +35,11 @@ public class WeathercamDataWebServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public WeathercamStationsDatasV1 findPublishableWeathercamStationsData(final boolean onlyUpdateInfo) {
+    public WeathercamStationsDataV1 findPublishableWeathercamStationsData(final boolean onlyUpdateInfo) {
         final Instant updated = dataStatusService.findDataUpdatedInstant(CAMERA_STATION_IMAGE_UPDATED);
 
         if (onlyUpdateInfo) {
-            return new WeathercamStationsDatasV1(updated);
+            return new WeathercamStationsDataV1(updated);
         } else {
             return weathercamDataConverter.convert(
                     cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(null),

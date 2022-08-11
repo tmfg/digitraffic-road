@@ -19,7 +19,6 @@ import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VA
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
-import static fi.livi.digitraffic.tie.controller.v1.DataController.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.controller.v3.V3DataController.getFromAndToParamsIfNotSetWithHoursOfHistory;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -48,6 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -113,7 +113,7 @@ public class V2DataController {
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
         @Parameter(description = "If parameter is given result will only contain update status")
-        @RequestParam(value=LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
+        @RequestParam(value= ApiConstants.LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
         boolean lastUpdated,
         @Parameter(description = "List of forecast section indices")
         @RequestParam(value = "naturalIds", required = false)

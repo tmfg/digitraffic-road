@@ -21,7 +21,7 @@ import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detailed;
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDatasV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDataV1;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamMetadataWebServiceV1;
@@ -86,7 +86,7 @@ public class WeathercamControllerV1 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Camera Preset Feature Collections") })
     public WeathercamStationFeatureCollectionSimpleV1 weathercamStations(
         @Parameter(description = "If parameter is given result will only contain update status.")
-        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+        @RequestParam(value = LAST_UPDATED_PARAM, required = false, defaultValue = "false")
         final boolean lastUpdated) {
         return weathercamMetadataWebServiceV1.findAllPublishableCameraStationsAsSimpleFeatureCollection(lastUpdated);
     }
@@ -110,7 +110,7 @@ public class WeathercamControllerV1 {
     @Operation(summary = "Current data of weathercams")
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHERCAM_V1_STATIONS + DATA, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of camera station data"))
-    public WeathercamStationsDatasV1 weathercamsDatas(
+    public WeathercamStationsDataV1 weathercamsDatas(
         @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = LAST_UPDATED_PARAM, required = false, defaultValue = "false")
         final boolean lastUpdated) {

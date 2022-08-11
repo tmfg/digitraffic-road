@@ -1,9 +1,10 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-
 import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MqttSensorValueMessageV2 {
@@ -12,8 +13,8 @@ public class MqttSensorValueMessageV2 {
     public final Long start;
     public final Long end;
 
-    public MqttSensorValueMessageV2(final SensorValueDto sv) {
-        this.value = sv.getSensorValue();
+    public MqttSensorValueMessageV2(final SensorValueDtoV1 sv) {
+        this.value = sv.getValue();
         this.time = getEpochSeconds(sv.getUpdatedTime());
         this.start = getEpochSeconds(sv.getTimeWindowStart());
         this.end = getEpochSeconds(sv.getTimeWindowEnd());

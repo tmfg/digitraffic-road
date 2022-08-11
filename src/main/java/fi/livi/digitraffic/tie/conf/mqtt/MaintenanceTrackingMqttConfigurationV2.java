@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.conf.mqtt;
 import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.MAINTENANCE_TRACKING;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +47,7 @@ public class MaintenanceTrackingMqttConfigurationV2 {
         this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
         this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, MAINTENANCE_TRACKING, clusteredLocker);
 
-        mqttMessageSender.setLastUpdated(ZonedDateTime.now());
+        mqttMessageSender.setLastUpdated(Instant.now());
     }
 
     @Scheduled(fixedDelayString = "${mqtt.maintenance.tracking.v2.pollingIntervalMs}")
@@ -62,13 +60,13 @@ public class MaintenanceTrackingMqttConfigurationV2 {
                     final Instant lastUpdated = trackings.stream().max(Comparator.comparing(MaintenanceTrackingForMqttV2::getCreatedTime)).get().getCreatedTime();
                     final List<MqttDataMessageV2> dataMessages = trackings.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 
-                    mqttMessageSender.sendMqttMessages(lastUpdated.atZone(ZoneId.of("UTC")), dataMessages);
+                    mqttMessageSender.sendMqttMessages(lastUpdated, dataMessages);
                 }
             } catch (final Exception e) {
                 LOGGER.error("Polling failed", e);
             }
         } else {
-            mqttMessageSender.setLastUpdated(ZonedDateTime.now());
+            mqttMessageSender.setLastUpdated(Instant.now());
         }
     }
 

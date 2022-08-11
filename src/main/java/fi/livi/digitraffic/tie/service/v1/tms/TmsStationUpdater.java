@@ -138,7 +138,7 @@ public class TmsStationUpdater {
                                               final MetadataUpdatedMessageDto.UpdateType updateType) {
         log.info("method=updateTmsStationAndSensors start lotjuId={} type={}", tmsStationLotjuId, updateType);
         if ( updateType.isDelete() ) {
-            if (tmsStationService.obsoleteStationWithLotjuId(tmsStationLotjuId)) {
+            if (tmsStationService.updateStationToObsoleteWithLotjuId(tmsStationLotjuId)) {
                 dataStatusService.updateDataUpdated(DataType.TMS_STATION_METADATA);
                 return true;
             }

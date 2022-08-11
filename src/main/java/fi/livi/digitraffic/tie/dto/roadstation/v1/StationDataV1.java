@@ -1,16 +1,14 @@
-package fi.livi.digitraffic.tie.dto.data.v1;
+package fi.livi.digitraffic.tie.dto.roadstation.v1;
 
 import java.io.Serializable;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 
-@Schema(description = "Data from road station",
-        subTypes = { WeathercamStationDataV1.class })
+@Schema(description = "Data from road station")
 @JsonPropertyOrder({ "id", "dataUpdatedTime" })
 public abstract class StationDataV1<ID_TYPE> implements Serializable {
 
