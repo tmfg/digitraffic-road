@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
+import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryServiceAndGitMock;
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature;
@@ -36,7 +36,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V2TrafficMessageJsonConverterTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
+public class V2TrafficMessageJsonConverterTest extends AbstractWebServiceTestWithRegionGeometryServiceAndGitMock {
     private static final Logger log = getLogger(V2TrafficMessageJsonConverterTest.class);
 
     @Autowired

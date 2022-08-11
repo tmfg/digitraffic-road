@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
+import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryServiceAndGitMock;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V3Datex2DataServiceTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
+public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeometryServiceAndGitMock {
     private static final Logger log = getLogger(V3Datex2DataServiceTest.class);
 
     @Autowired

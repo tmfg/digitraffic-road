@@ -64,17 +64,4 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
          TmsTestHelper.class, TrafficMessageTestHelper.class,
 })
 public abstract class AbstractWebServiceTest extends AbstractJpaTest {
-
-//    @MockBean
-//    protected V3RegionGeometryDataService v3RegionGeometryDataServicMock;
-
-//    @MockBean
-//    protected RegionGeometryGitClient regionGeometryGitClientMock;
-
-//    @SpyBean
-//    protected MetadataFileFetcher metadataFileFetcherSpy;
-
-//    protected void whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(final RegionGeometry regionGeometry) {
-//        when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(regionGeometry.getLocationCode()), any())).thenReturn(regionGeometry);
-//    }
 }

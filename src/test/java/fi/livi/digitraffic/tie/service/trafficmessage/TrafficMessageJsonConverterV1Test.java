@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
+import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryServiceAndGitMock;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Area;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.ItineraryRoadLeg;
@@ -52,7 +52,7 @@ import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
  * Tests reads Json traffic messages with different schema versions from src/test/resources/tloik/ims/versions/
  * and test converted result to be expected.
  */
-public class TrafficMessageJsonConverterV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
+public class TrafficMessageJsonConverterV1Test extends AbstractWebServiceTestWithRegionGeometryServiceAndGitMock {
     private static final Logger log = getLogger(TrafficMessageJsonConverterV1Test.class);
 
     @Autowired
@@ -173,7 +173,7 @@ public class TrafficMessageJsonConverterV1Test extends AbstractRestWebTestWithRe
         final TrafficAnnouncement announcement = props.announcements.get(0);
 
         // Common
-        assertContacts(props, version);
+        assertContacts(props);
         assertEarlyClosing(announcement, version, st);
         assertType(props, st);
         assertPropertiesTimes(props);
@@ -323,8 +323,7 @@ public class TrafficMessageJsonConverterV1Test extends AbstractRestWebTestWithRe
         }
     }
 
-    private void assertContacts(final TrafficAnnouncementProperties props,
-                                final ImsJsonVersion version) {
+    private void assertContacts(final TrafficAnnouncementProperties props) {
         assertNotNull(props.contact.email);
         assertNotNull(props.contact.phone);
     }

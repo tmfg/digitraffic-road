@@ -9,7 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
-public class AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock extends AbstractRestWebTest {
+public class AbstractWebServiceTestWithRegionGeometryServiceAndGitMock extends AbstractWebServiceTestWithRegionGeometryGitMock {
 
     @MockBean
     protected V3RegionGeometryDataService v3RegionGeometryDataServicMock;
@@ -17,5 +17,4 @@ public class AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock extends 
     protected void whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(final RegionGeometry regionGeometry) {
         when(v3RegionGeometryDataServicMock.getAreaLocationRegionEffectiveOn(eq(regionGeometry.getLocationCode()), any())).thenReturn(regionGeometry);
     }
-
 }
