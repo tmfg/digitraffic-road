@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.dto.tms.v1;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -30,14 +29,14 @@ public class TmsStationPropertiesDetailedV1 extends RoadStationPropertiesDetaile
     public Integer direction2MunicipalityCode;
 
     @Schema(description = "Type of  TMS station")
-    public TmsStationType tmsStationType;
+    public TmsStationType stationType;
 
     @Schema(description = "Type of calculation device")
     public CalculatorDeviceType calculatorDeviceType;
 
     /** Sensors natural ids */
     @Schema(description = "Tms Station Sensors ids")
-    public List<Long> sensors = new ArrayList<>();
+    public List<Long> sensors;
 
     @Schema(description = "Free flow speed to direction 1 [km/h]")
     public Double freeFlowSpeed1;
@@ -47,7 +46,7 @@ public class TmsStationPropertiesDetailedV1 extends RoadStationPropertiesDetaile
 
     public TmsStationPropertiesDetailedV1(final long id, final long tmsNumber,
                                           final String direction1Municipality, final Integer direction1MunicipalityCode,
-                                          final String direction2Municipality, final Integer direction2MunicipalityCode, final TmsStationType tmsStationType,
+                                          final String direction2Municipality, final Integer direction2MunicipalityCode, final TmsStationType stationType,
                                           final CalculatorDeviceType calculatorDeviceType, final List<Long> sensors,
                                           final Double freeFlowSpeed1, final Double freeFlowSpeed2) {
         super(id);
@@ -56,7 +55,7 @@ public class TmsStationPropertiesDetailedV1 extends RoadStationPropertiesDetaile
         this.direction1MunicipalityCode = direction1MunicipalityCode;
         this.direction2Municipality = direction2Municipality;
         this.direction2MunicipalityCode = direction2MunicipalityCode;
-        this.tmsStationType = tmsStationType;
+        this.stationType = stationType;
         this.calculatorDeviceType = calculatorDeviceType;
         this.sensors = sensors;
         this.freeFlowSpeed1 = freeFlowSpeed1;
