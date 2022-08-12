@@ -152,7 +152,9 @@ public class WazeDatex2JsonConverter {
     }
 
     private static String formatPolylineFromMultiLineString(final MultiLineString multiLineString, final WazeFeedLocationDto.Direction direction) {
-        final List<List<Double>> path = multiLineString.getCoordinates().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        final List<List<Double>> path = multiLineString.getCoordinates().stream()
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
 
         if (direction == WazeFeedLocationDto.Direction.BOTH_DIRECTIONS) {
             final List<List<Double>> copy = new ArrayList<>(path);
@@ -161,12 +163,19 @@ public class WazeDatex2JsonConverter {
         }
 
         return path.stream()
-            .flatMap(Collection::stream)
-            .map(Object::toString)
+            .map(WazeDatex2JsonConverter::formatPolylineFromPoint)
             .collect(Collectors.joining(" "));
     }
 
     private static String formatPolylineFromPoint(final Point point) {
-        return String.format(Locale.US,"%f %f", point.getLongitude(), point.getLatitude());
+        return formatPolylineFromPoint(point.getLongitude(), point.getLatitude());
+    }
+
+    private static String formatPolylineFromPoint(final List<Double> point) {
+        return formatPolylineFromPoint(point.get(0), point.get(1));
+    }
+
+    private static String formatPolylineFromPoint(final Double longitude, final Double latitude) {
+        return String.format(Locale.US,"%f %f", latitude, longitude);
     }
 }

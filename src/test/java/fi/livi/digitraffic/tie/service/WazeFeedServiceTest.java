@@ -108,7 +108,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertEquals(1, incidents.size());
 
         final WazeFeedIncidentDto incident = incidents.get(0);
-        assertEquals("25.182835 61.575153", incident.location.polyline);
+        assertEquals("61.575153 25.182835", incident.location.polyline);
         assertNull(incident.location.direction);
     }
 
@@ -168,7 +168,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         final WazeFeedIncidentDto incident = incidents.get(0);
 
-        assertEquals("25.180874 61.569262 25.180826 61.569394 25.180826 61.569394 25.180874 61.569262", incident.location.polyline);
+        assertEquals("61.569262 25.180874 61.569394 25.180826 61.569394 25.180826 61.569262 25.180874", incident.location.polyline);
         assertEquals(WazeFeedLocationDto.Direction.BOTH_DIRECTIONS, incident.location.direction);
     }
 
@@ -219,8 +219,8 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final Optional<String> maybePolyline1 = WazeDatex2JsonConverter.formatPolyline(geometry1, WazeFeedLocationDto.Direction.ONE_DIRECTION);
         final Optional<String> maybePolyline2 = WazeDatex2JsonConverter.formatPolyline(geometry2, WazeFeedLocationDto.Direction.ONE_DIRECTION);
 
-        assertEquals("25.180874 61.569262 25.180826 61.569394", maybePolyline1.orElse(null));
-        assertEquals("25.182835 61.575153 25.183062 61.575386 25.18328 61.575587 25.180874 61.569262 25.180826 61.569394", maybePolyline2.orElse(null));
+        assertEquals("61.569262 25.180874 61.569394 25.180826", maybePolyline1.orElse(null));
+        assertEquals("61.575153 25.182835 61.575386 25.183062 61.575587 25.183280 61.569262 25.180874 61.569394 25.180826", maybePolyline2.orElse(null));
     }
 
     @Test
@@ -245,7 +245,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertTrue(maybePolyline.isPresent());
 
         final String polyline = maybePolyline.get();
-        assertEquals("25.180874 61.569262 25.180826 61.569394 25.180754 61.569586 25.180681 61.569794 25.180601 61.570065 25.212664 61.586387 25.212664 61.586387 25.212664 61.586387 25.212664 61.586387 25.180601 61.570065 25.180681 61.569794 25.180754 61.569586 25.180826 61.569394 25.180874 61.569262", polyline);
+        assertEquals("61.569262 25.180874 61.569394 25.180826 61.569586 25.180754 61.569794 25.180681 61.570065 25.180601 61.586387 25.212664 61.586387 25.212664 61.586387 25.212664 61.586387 25.212664 61.570065 25.180601 61.569794 25.180681 61.569586 25.180754 61.569394 25.180826 61.569262 25.180874", polyline);
     }
 
     @Test
@@ -270,7 +270,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertTrue(maybePolyline.isPresent());
 
         final String polyline = maybePolyline.get();
-        assertEquals("25.180874 61.569262 25.180826 61.569394 25.180754 61.569586 25.180681 61.569794 25.180601 61.570065 25.212664 61.586387 25.212674 61.586377", polyline);
+        assertEquals("61.569262 25.180874 61.569394 25.180826 61.569586 25.180754 61.569794 25.180681 61.570065 25.180601 61.586387 25.212664 61.586377 25.212674", polyline);
     }
 
     @Test
