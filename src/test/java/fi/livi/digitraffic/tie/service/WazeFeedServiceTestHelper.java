@@ -25,6 +25,8 @@ import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuratio
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.helper.RoadCacheHelper;
+import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
@@ -38,6 +40,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 @Component
 public class WazeFeedServiceTestHelper {
 
+    private final ObjectMapper objectMapper;
     private final Datex2Repository datex2Repository;
     private final ObjectWriter genericJsonWriter;
 
@@ -47,6 +50,7 @@ public class WazeFeedServiceTestHelper {
     WazeFeedServiceTestHelper(final ObjectMapper objectMapper, final Datex2Repository datex2Repository) {
         this.datex2Repository = datex2Repository;
 
+        this.objectMapper = objectMapper;
         this.genericJsonWriter = objectMapper.writer();
     }
 
@@ -266,6 +270,11 @@ public class WazeFeedServiceTestHelper {
             this.roadName = roadName;
             this.street = street;
         }
+    }
+
+    public WazeReverseGeocodingService constructWazeReverseGeocodingServiceWithMockApi(final WazeReverseGeocodingApi wazeReverseGeocodingApi) {
+        final RoadCacheHelper cacheHelper = new RoadCacheHelper();
+        return new WazeReverseGeocodingService(objectMapper, wazeReverseGeocodingApi, cacheHelper);
     }
 
 }
