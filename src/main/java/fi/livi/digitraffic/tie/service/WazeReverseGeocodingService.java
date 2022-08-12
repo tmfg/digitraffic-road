@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,14 +39,14 @@ public class WazeReverseGeocodingService {
     }
 
     public Optional<ReverseGeocode> fetch(final double latitude, final double longitude) {
-        final String cacheKey = String.format("%f,%f", latitude, longitude);
+        final String cacheKey = String.format(Locale.US, "%f,%f", latitude, longitude);
 
         if (cache.containsKey(cacheKey)) {
-            logger.info(String.format("Retrieve reverse geocoding for lat: %f, lon: %f from cache", latitude, longitude));
+            logger.info(String.format(Locale.US, "Retrieve reverse geocoding for lat: %f, lon: %f from cache", latitude, longitude));
             return Optional.of(cache.get(cacheKey));
         }
 
-        logger.info(String.format("Get reverse geocoding for lat: %f, lon: %f", latitude, longitude));
+        logger.info(String.format(Locale.US, "Get reverse geocoding for lat: %f, lon: %f", latitude, longitude));
         return wazeReverseGeocodingApi
             .fetch(latitude, longitude)
             .flatMap(this::parseReverseGeocodeJson)
