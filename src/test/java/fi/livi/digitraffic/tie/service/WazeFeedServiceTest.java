@@ -77,13 +77,9 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     public void announcementIsProperlyFormatted() {
         final String situationId = "GUID12345";
         final ZonedDateTime startTime = ZonedDateTime.parse("2021-07-28T13:09:47.470Z");
-        final Integer streetNumber = 24;
-        final String municipality = "Espoo";
-        final String roadName = "Puolarmetsänkatu";
 
-        final WazeFeedServiceTestHelper.AnnouncementAddress announcementAddress = new WazeFeedServiceTestHelper.AnnouncementAddress(municipality, roadName, streetNumber);
         final WazeFeedServiceTestHelper.SituationParams params =
-            new WazeFeedServiceTestHelper.SituationParams(situationId, announcementAddress, startTime,
+            new WazeFeedServiceTestHelper.SituationParams(situationId, startTime,
                 TrafficAnnouncementType.ACCIDENT_REPORT, RoadAddressLocation.Direction.BOTH);
 
         wazeFeedServiceTestHelper.insertSituation(params, "");
@@ -95,7 +91,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final WazeFeedIncidentDto incident = incidents.get(0);
 
         assertEquals(situationId, incident.id);
-        assertEquals(String.format("%s - %s, %s", streetNumber, roadName, municipality), incident.location.street);
         assertEquals(WazeFeedIncidentDto.Type.ACCIDENT, incident.type);
         assertEquals("", incident.description);
         assertTrue(incident.description.length() <= 40);
@@ -106,7 +101,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     public void pointInAnnouncement() {
         final Point point = new Point(25.182835, 61.575153);
 
-        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, 130, point);
+        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, point);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
@@ -131,9 +126,9 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
     @Test
     public void onewayDirectionInAccidents() {
-        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.POS, 130);
-        wazeFeedServiceTestHelper.insertSituation("GUID1235", RoadAddressLocation.Direction.NEG, 129);
-        wazeFeedServiceTestHelper.insertSituation("GUID1236", RoadAddressLocation.Direction.UNKNOWN, 131);
+        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.POS);
+        wazeFeedServiceTestHelper.insertSituation("GUID1235", RoadAddressLocation.Direction.NEG);
+        wazeFeedServiceTestHelper.insertSituation("GUID1236", RoadAddressLocation.Direction.UNKNOWN);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
@@ -149,10 +144,10 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         geometry.addLineString(coords);
 
         // using supported MultiLineString
-        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, 130, geometry);
+        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, geometry);
 
         // unsupported MultiPolygon
-        wazeFeedServiceTestHelper.insertSituation("GUID1235", RoadAddressLocation.Direction.BOTH, 130, new MultiPolygon(List.of(coords)));
+        wazeFeedServiceTestHelper.insertSituation("GUID1235", RoadAddressLocation.Direction.BOTH, new MultiPolygon(List.of(coords)));
 
         // expect the multipolygon version to be filtered out
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
@@ -165,7 +160,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final MultiLineString geometry = new MultiLineString();
         geometry.addLineString(List.of(List.of(25.180874, 61.569262), List.of(25.180826, 61.569394)));
 
-        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, 130, geometry);
+        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, geometry);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
@@ -276,84 +271,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         final String polyline = maybePolyline.get();
         assertEquals("25.180874 61.569262 25.180826 61.569394 25.180754 61.569586 25.180681 61.569794 25.180601 61.570065 25.212664 61.586387 25.212674 61.586377", polyline);
-    }
-
-    @Test
-    public void checkForNullValues() {
-        final ZonedDateTime startTime = ZonedDateTime.parse("2021-07-28T13:09:47.470Z");
-
-        // Create multiple invalid announcements
-        final List<WazeFeedServiceTestHelper.SituationParams> situationParams = List.of(
-            // Filtered out
-            new WazeFeedServiceTestHelper.SituationParams(
-                wazeFeedServiceTestHelper.nextSituationRecord(),
-                new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", 1),
-                startTime,
-                TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH,
-                null
-            ),
-            // Filtered out
-            new WazeFeedServiceTestHelper.SituationParams(
-                wazeFeedServiceTestHelper.nextSituationRecord(),
-                new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", 1),
-                startTime,
-                null,
-                RoadAddressLocation.Direction.BOTH
-            ),
-            // Filtered out
-            new WazeFeedServiceTestHelper.SituationParams(
-                wazeFeedServiceTestHelper.nextSituationRecord(),
-                new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", 1),
-                startTime,
-                TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH,
-                null
-            ),
-
-            // These are in the end result even if they may have some missing values
-            new WazeFeedServiceTestHelper.SituationParams(
-                wazeFeedServiceTestHelper.nextSituationRecord(),
-                new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", 1),
-                startTime,
-                TrafficAnnouncementType.GENERAL,
-                null
-            ),
-            new WazeFeedServiceTestHelper.SituationParams(
-                wazeFeedServiceTestHelper.nextSituationRecord(),
-                new WazeFeedServiceTestHelper.AnnouncementAddress(null, "roadName", 1),
-                startTime,
-                TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH
-            ),
-            new WazeFeedServiceTestHelper.SituationParams(
-                wazeFeedServiceTestHelper.nextSituationRecord(),
-                new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", null, 1),
-                startTime,
-                TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH
-            ),
-            new WazeFeedServiceTestHelper.SituationParams(
-                wazeFeedServiceTestHelper.nextSituationRecord(),
-                new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", null),
-                startTime,
-                TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH
-            ),
-            new WazeFeedServiceTestHelper.SituationParams(
-                wazeFeedServiceTestHelper.nextSituationRecord(),
-                new WazeFeedServiceTestHelper.AnnouncementAddress("municipality", "roadName", 1),
-                null,
-                TrafficAnnouncementType.GENERAL,
-                RoadAddressLocation.Direction.BOTH
-            )
-        );
-
-        situationParams.forEach(wazeFeedServiceTestHelper::insertSituation);
-
-        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
-        assertEquals(5, incidents.size());
     }
 
     @Test
