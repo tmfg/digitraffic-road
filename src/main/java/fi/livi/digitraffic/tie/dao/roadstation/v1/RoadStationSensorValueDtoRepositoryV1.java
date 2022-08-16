@@ -9,7 +9,6 @@ import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
-import org.springframework.data.repository.query.Param;
 
 import fi.livi.digitraffic.tie.dao.SqlRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
@@ -55,14 +54,12 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
            SQL_SELECT +
            SQL_FROM +
            SQL_WHERE_PUBLISHABLE +
-           "  and rs.type = :stationTypeId\n" +
+           "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
            "  and sv.measured > (now() -(:timeLimitInMinutes * interval '1 MINUTE'))\n" +
            "order by rs.natural_id, s.natural_id",
            nativeQuery = true)
     List<SensorValueDtoV1> findAllPublicPublishableRoadStationSensorValues(
-            @Param("stationTypeId")
-            final int stationTypeId,
-            @Param("timeLimitInMinutes")
+            final RoadStationType roadStationType,
             final int timeLimitInMinutes);
 
     @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
@@ -85,7 +82,7 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
                SQL_SELECT +
                SQL_FROM +
                SQL_WHERE_PUBLISHABLE +
-               "  and rs.type = :#{#roadStationType.name()}\n" +
+               "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
                "  and sv.updated > :afterDate\n" +
                "order by sv.updated",
                    nativeQuery = true)

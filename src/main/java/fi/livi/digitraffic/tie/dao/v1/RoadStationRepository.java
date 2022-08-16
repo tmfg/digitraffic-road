@@ -12,8 +12,8 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.v1.RoadStation;
 
 @Repository
 public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
@@ -37,7 +37,7 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
     RoadStation findByTypeAndLotjuId(final RoadStationType tmsStation, final Long id);
 
     @Query("SELECT rs.id\n" +
-               "FROM RoadStation rs\n" +
-               "WHERE rs.naturalId = :naturalId")
+           "FROM RoadStation rs\n" +
+           "WHERE rs.naturalId = :naturalId")
     Optional<Long> findByRoadStationId(@Param("naturalId") final long naturalId);
 }

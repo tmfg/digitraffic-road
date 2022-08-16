@@ -97,7 +97,7 @@ public class RoadStationSensorServiceV1 {
     @Transactional(readOnly = true)
     public Map<Long, List<SensorValueDtoV1>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
         final List<SensorValueDtoV1> sensors = roadStationSensorValueDtoRepositoryV1.findAllPublicPublishableRoadStationSensorValues(
-                        roadStationType.getTypeNumber(),
+                        roadStationType,
                         sensorValueTimeLimitInMins.get(roadStationType));
 
         return sensors.parallelStream()
