@@ -19,20 +19,16 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
         this.coordinateConverter = coordinateConverter;
     }
 
-    protected static void setRoadStationProperties(final RoadStationPropertiesSimpleV1<?> properties,
-                                                   final RoadStation roadStation) {
+    protected static void setRoadStationPropertiesSimple(final RoadStationPropertiesSimpleV1<?> properties,
+                                                         final RoadStation roadStation) {
         properties.setName(roadStation.getName());
         properties.setCollectionStatus(roadStation.getCollectionStatus());
         properties.setState(roadStation.getState());
-        properties.setMunicipality(roadStation.getMunicipality());
-        properties.setMunicipalityCode(parseIntegerOrNull(roadStation.getMunicipalityCode()));
-        properties.setProvince(roadStation.getProvince());
-        properties.setProvinceCode(parseIntegerOrNull(roadStation.getProvinceCode()));
     }
 
     protected static void setRoadStationPropertiesDetailed(final RoadStationPropertiesDetailedV1<?> properties,
                                                            final RoadStation roadStation) {
-        setRoadStationProperties(properties, roadStation);
+        setRoadStationPropertiesSimple(properties, roadStation);
 
         properties.setCollectionInterval(roadStation.getCollectionInterval());
 
@@ -48,6 +44,11 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
         // HOX: Removed temporary until LOTJU data is fixed in 2016
         // properties.setLocation(roadStation.getLocation());
         properties.setPurpose(roadStation.getPurpose());
+        properties.setMunicipality(roadStation.getMunicipality());
+        properties.setMunicipalityCode(parseIntegerOrNull(roadStation.getMunicipalityCode()));
+        properties.setProvince(roadStation.getProvince());
+        properties.setProvinceCode(parseIntegerOrNull(roadStation.getProvinceCode()));
+
         properties.setRoadAddress(createRoaddAddress(roadStation.getRoadAddress()));
     }
 

@@ -40,7 +40,7 @@ public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeature
 
         final List<TmsStationFeatureSimpleV1> features =
             stations.stream()
-                .map(station -> convertToSimpleFeature(station))
+                .map(this::convertToSimpleFeature)
                 .collect(Collectors.toList());
 
         return new TmsStationFeatureCollectionSimpleV1(lastUpdated, dataLastCheckedTime, features);
@@ -56,7 +56,7 @@ public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeature
 
         // RoadStation properties
         final RoadStation rs = station.getRoadStation();
-        setRoadStationProperties(properties, rs);
+        setRoadStationPropertiesSimple(properties, rs);
 
         return new TmsStationFeatureSimpleV1(getGeometry(rs), properties);
     }

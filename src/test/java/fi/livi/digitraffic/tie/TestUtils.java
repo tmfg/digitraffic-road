@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,6 +50,7 @@ import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.RoadStationState;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.TmsStationType;
 import fi.livi.digitraffic.tie.model.WeatherStationType;
@@ -74,7 +76,7 @@ public class TestUtils {
     }
 
     public static Path getPath(final String filename) {
-        return new File(TestUtils.class.getResource(filename).getFile()).toPath();
+        return new File(Objects.requireNonNull(TestUtils.class.getResource(filename)).getFile()).toPath();
     }
 
     public static  List<Resource> loadResources(final String pattern) throws IOException {
@@ -132,6 +134,8 @@ public class TestUtils {
         rs.setName(roadStationType.name());
         rs.updatePublicity(true);
         rs.setCollectionStatus(CollectionStatus.GATHERING);
+        rs.setState(RoadStationState.OK);
+        rs.setCollectionInterval(60);
         if (RoadStationType.WEATHER_STATION != roadStationType) {
             rs.setPurpose("Maisema");
         }
@@ -142,6 +146,8 @@ public class TestUtils {
         rs.setMunicipalityCode("927");
         rs.setProvince("Uusimaa");
         rs.setProvinceCode("1");
+        rs.setCountry("Finland");
+        rs.setLiviId(rs.getNaturalId().toString());
         final String name = roadStationType + getNameSuffix(nameSuffix);
         rs.setName(name);
         rs.setNameFi(name + "_fi");
@@ -149,9 +155,9 @@ public class TestUtils {
         rs.setNameSv(name + "_sv");
         rs.setStartDate(ZonedDateTime.now().minusDays(7));
         rs.setRepairMaintenanceDate(ZonedDateTime.now().minusDays(6));
-        rs.setRepairMaintenanceDate(ZonedDateTime.now().minusDays(5));
+        rs.setAnnualMaintenanceDate(ZonedDateTime.now().minusDays(10));
 
-        RoadAddress ra = generateDummyRoadAddres();
+        final RoadAddress ra = generateDummyRoadAddres();
         rs.setRoadAddress(ra);
 
         return rs;
@@ -383,8 +389,8 @@ public class TestUtils {
 
     public static void truncateCameraData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE camera_preset DISABLE TRIGGER trg_camera_preset_delete").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM camera_preset_history").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM camera_preset").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM camera_preset_history where 1=1").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM camera_preset where 1=1").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'CAMERA_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE camera_preset ENABLE TRIGGER trg_camera_preset_delete").executeUpdate();
         entityManager.flush();
@@ -395,9 +401,9 @@ public class TestUtils {
         entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id not in (select natural_id from road_station_sensor where lotju_id <= 252 AND road_station_type = 'TMS_STATION') AND road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id > 252 AND road_station_type = 'TMS_STATION'").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM tms_sensor_constant_value").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM tms_sensor_constant").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM tms_station").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM tms_sensor_constant_value where 1=1").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM tms_sensor_constant where 1=1").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM tms_station where 1=1").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE tms_station ENABLE TRIGGER trg_lam_station_delete").executeUpdate();
         entityManager.flush();
@@ -408,7 +414,7 @@ public class TestUtils {
         entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id > " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id >= " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM weather_station").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM weather_station where 1=1").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE weather_station ENABLE TRIGGER trg_weather_station_delete").executeUpdate();
         entityManager.flush();

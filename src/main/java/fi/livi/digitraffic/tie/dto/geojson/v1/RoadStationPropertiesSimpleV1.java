@@ -20,18 +20,6 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
     @Schema(description = "Road station state")
     private RoadStationState state;
 
-    @Schema(description = "Municipality")
-    private String municipality;
-
-    @Schema(description = "Municipality code")
-    private Integer municipalityCode;
-
-    @Schema(description = "Province")
-    private String province;
-
-    @Schema(description = "Province code")
-    private Integer provinceCode;
-
     public RoadStationPropertiesSimpleV1(final ID_TYPE id) {
         super(id);
     }
@@ -50,38 +38,6 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
 
     public void setCollectionStatus(final CollectionStatus collectionStatus) {
         this.collectionStatus = collectionStatus;
-    }
-
-    public String getMunicipality() {
-        return municipality;
-    }
-
-    public void setMunicipality(final String municipality) {
-        this.municipality = municipality;
-    }
-
-    public Integer getMunicipalityCode() {
-        return municipalityCode;
-    }
-
-    public void setMunicipalityCode(final Integer municipalityCode) {
-        this.municipalityCode = municipalityCode;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(final String province) {
-        this.province = province;
-    }
-
-    public Integer getProvinceCode() {
-        return provinceCode;
-    }
-
-    public void setProvinceCode(final Integer provinceCode) {
-        this.provinceCode = provinceCode;
     }
 
     public void setState(final RoadStationState state) {
@@ -107,10 +63,6 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
                 .append(name, that.name)
                 .append(collectionStatus, that.collectionStatus)
                 .append(state, that.state)
-                .append(municipality, that.municipality)
-                .append(municipalityCode, that.municipalityCode)
-                .append(province, that.province)
-                .append(provinceCode, that.provinceCode)
                 .isEquals();
     }
 
@@ -121,10 +73,6 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
                 .append(name)
                 .append(collectionStatus)
                 .append(state)
-                .append(municipality)
-                .append(municipalityCode)
-                .append(province)
-                .append(provinceCode)
                 .toHashCode();
     }
 }

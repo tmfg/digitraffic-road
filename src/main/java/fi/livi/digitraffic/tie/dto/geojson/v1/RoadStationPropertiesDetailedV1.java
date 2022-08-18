@@ -46,6 +46,18 @@ public abstract class RoadStationPropertiesDetailedV1<ID_TYPE> extends RoadStati
     @Schema(description = "Purpose of the road station")
     private String purpose;
 
+    @Schema(description = "Municipality")
+    private String municipality;
+
+    @Schema(description = "Municipality code")
+    private Integer municipalityCode;
+
+    @Schema(description = "Province")
+    private String province;
+
+    @Schema(description = "Province code")
+    private Integer provinceCode;
+
     public RoadStationPropertiesDetailedV1(final ID_TYPE id) {
         super(id);
     }
@@ -128,6 +140,38 @@ public abstract class RoadStationPropertiesDetailedV1<ID_TYPE> extends RoadStati
         this.purpose = purpose;
     }
 
+    public String getMunicipality() {
+        return municipality;
+    }
+
+    public void setMunicipality(final String municipality) {
+        this.municipality = municipality;
+    }
+
+    public Integer getMunicipalityCode() {
+        return municipalityCode;
+    }
+
+    public void setMunicipalityCode(final Integer municipalityCode) {
+        this.municipalityCode = municipalityCode;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(final String province) {
+        this.province = province;
+    }
+
+    public Integer getProvinceCode() {
+        return provinceCode;
+    }
+
+    public void setProvinceCode(final Integer provinceCode) {
+        this.provinceCode = provinceCode;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o)
@@ -149,6 +193,10 @@ public abstract class RoadStationPropertiesDetailedV1<ID_TYPE> extends RoadStati
                 .append(repairMaintenanceTime, that.repairMaintenanceTime)
                 .append(annualMaintenanceTime, that.annualMaintenanceTime)
                 .append(purpose, that.purpose)
+                .append(municipality, that.municipality)
+                .append(municipalityCode, that.municipalityCode)
+                .append(province, that.province)
+                .append(provinceCode, that.provinceCode)
                 .isEquals();
     }
 
@@ -165,6 +213,10 @@ public abstract class RoadStationPropertiesDetailedV1<ID_TYPE> extends RoadStati
                 .append(repairMaintenanceTime)
                 .append(annualMaintenanceTime)
                 .append(purpose)
+                .append(municipality)
+                .append(municipalityCode)
+                .append(province)
+                .append(provinceCode)
                 .toHashCode();
     }
 }

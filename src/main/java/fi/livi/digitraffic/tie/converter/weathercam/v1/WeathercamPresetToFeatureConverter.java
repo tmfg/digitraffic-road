@@ -34,7 +34,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
     private static final Logger log = LoggerFactory.getLogger( WeathercamPresetToFeatureConverter.class );
 
     private final String weathercamBaseurl;
-    private CameraPresetService cameraPresetService;
+    private final CameraPresetService cameraPresetService;
 
     @Autowired
     public WeathercamPresetToFeatureConverter(@Value("${weathercam.baseUrl}")
@@ -100,7 +100,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
 
             // RoadStation properties
             final RoadStation rs = cp.getRoadStation();
-            setRoadStationProperties(properties, rs);
+            setRoadStationPropertiesSimple(properties, rs);
 
             return new WeathercamStationFeatureSimpleV1(getGeometry(rs), properties);
     }

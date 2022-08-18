@@ -60,15 +60,15 @@ public class WeathercamControllerV1 {
 
     private static final String STATIONS = "/stations";
     private static final String HISTORIES = "/history";
-    private static final String DATA = "/data";
-    private static final String PRESENCE = "/presence";
+    public static final String DATA = "/data";
+    public static final String PRESENCE = "/presence";
 
     /** TODO change beta when going to production */
-    private static final String API_WEATHERCAM_V1_STATIONS = API_WEATHERCAM_BETA + STATIONS;
-    private static final String API_WEATHERCAM_V1_HISTORIES = API_WEATHERCAM_BETA + HISTORIES;
+    public static final String API_WEATHERCAM_V1_STATIONS = API_WEATHERCAM_BETA + STATIONS;
+    public static final String API_WEATHERCAM_V1_HISTORIES = API_WEATHERCAM_BETA + HISTORIES;
 
     private final WeathercamMetadataWebServiceV1 weathercamMetadataWebServiceV1;
-    private WeathercamDataWebServiceV1 weathercamDataWebServiceV1;
+    private final WeathercamDataWebServiceV1 weathercamDataWebServiceV1;
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
 
     @Autowired

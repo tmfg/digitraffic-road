@@ -110,10 +110,6 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus",
                     Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name())))
                 .andExpect(jsonPath("$.features[0].properties.state", Matchers.anything()))
-                .andExpect(jsonPath("$.features[0].properties.municipality", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.municipalityCode", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.province", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.provinceCode", Matchers.isA(Integer.class)))
                 .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
@@ -147,7 +143,12 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.properties.names.sv", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.properties.names.en", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.properties.purpose", Matchers.isA(String.class)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
+                .andExpect(jsonPath("$.properties.municipality", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.properties.municipalityCode", Matchers.isA(Integer.class)))
+                .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))
+                .andExpect(jsonPath("$.properties.provinceCode", Matchers.isA(Integer.class)))
+
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test
