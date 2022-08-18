@@ -29,6 +29,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.service.WazeReverseGeocodingService;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
 
 @ConditionalOnWebApplication
@@ -40,10 +41,15 @@ public class WazeDatex2JsonConverter {
 
     private final WazeDatex2MessageConverter wazeDatex2MessageConverter;
 
+    private final WazeReverseGeocodingService wazeReverseGeocodingService;
+
     @Autowired
-    public WazeDatex2JsonConverter(final TrafficMessageJsonConverterV1 datex2JsonConverterV1, final WazeDatex2MessageConverter wazeDatex2MessageConverter) {
+    public WazeDatex2JsonConverter(final TrafficMessageJsonConverterV1 datex2JsonConverterV1,
+                                   final WazeDatex2MessageConverter wazeDatex2MessageConverter,
+                                   final WazeReverseGeocodingService wazeReverseGeocodingService) {
         this.datex2JsonConverterV1 = datex2JsonConverterV1;
         this.wazeDatex2MessageConverter = wazeDatex2MessageConverter;
+        this.wazeReverseGeocodingService = wazeReverseGeocodingService;
     }
 
     public Optional<WazeFeedIncidentDto> convertToWazeFeedAnnouncementDto(final Datex2 datex2) {
@@ -71,11 +77,6 @@ public class WazeDatex2JsonConverter {
         final Optional<Geometry<?>> maybeGeometry = Optional.ofNullable(feature.getGeometry());
 
         final String id = properties.situationId;
-        final Optional<String> maybeStreet = getRoadAddress(announcement);
-
-        if (maybeStreet.isEmpty()) {
-            logger.info("method=getRoadAddress TrafficAnnouncement {} missing road address.", situationId);
-        }
 
         final String description = wazeDatex2MessageConverter.export(situationId, datex2.getMessage());
 
@@ -84,6 +85,8 @@ public class WazeDatex2JsonConverter {
             .orElse(null);
 
         final Optional<String> maybePolyline = maybeGeometry.flatMap(geometry -> formatPolyline(geometry, direction));
+
+        final Optional<String> maybeStreet = maybeGeometry.flatMap(wazeReverseGeocodingService::getStreetName);
 
         return maybePolyline.flatMap(polyline ->
             maybeStreet.flatMap(street ->
@@ -104,22 +107,6 @@ public class WazeDatex2JsonConverter {
         default:
             return Optional.empty();
         }
-    }
-
-    private Optional<String> getRoadAddress(final TrafficAnnouncement announcement) {
-        Optional<String> address;
-
-        try {
-            address = Optional.of(String.format("%s - %s, %s",
-                announcement.locationDetails.roadAddressLocation.primaryPoint.roadAddress.road,
-                announcement.locationDetails.roadAddressLocation.primaryPoint.roadName,
-                announcement.locationDetails.roadAddressLocation.primaryPoint.municipality
-            ));
-        } catch (NullPointerException e) {
-            address = Optional.empty();
-        }
-
-        return address;
     }
 
     private Optional<WazeFeedLocationDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, Geometry<?> geometry) {

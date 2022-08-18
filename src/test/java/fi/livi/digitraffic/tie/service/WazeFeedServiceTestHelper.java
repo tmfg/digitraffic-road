@@ -249,9 +249,4 @@ public class WazeFeedServiceTestHelper {
         }
     }
 
-    public WazeReverseGeocodingService constructWazeReverseGeocodingServiceWithMockApi(final WazeReverseGeocodingApi wazeReverseGeocodingApi) {
-        final RoadCacheHelper cacheHelper = new RoadCacheHelper();
-        return new WazeReverseGeocodingService(objectMapper, wazeReverseGeocodingApi, cacheHelper);
-    }
-
 }
