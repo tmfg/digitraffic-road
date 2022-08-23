@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
+import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocodeResult;
 import fi.livi.digitraffic.tie.helper.RoadCacheHelper;
 import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -62,7 +63,7 @@ public class WazeReverseGeocodingService {
 
     private Optional<String> closestStreetName(final ReverseGeocode reverseGeocode) {
         return reverseGeocode.results.stream()
-            .findFirst()
+            .reduce((accumulator, element) -> accumulator.distance > element.distance ? element : accumulator)
             .flatMap(reverseGeocodeResult -> reverseGeocodeResult.names.stream().findFirst());
     }
 

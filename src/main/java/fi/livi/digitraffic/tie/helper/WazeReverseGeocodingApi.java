@@ -24,7 +24,7 @@ public class WazeReverseGeocodingApi {
     private final String token;
     private final String endpoint;
 
-    public WazeReverseGeocodingApi(@Value("${waze.reverseGeocodeToken}") final String token, @Value("${waze.reverseGeocodeEndpoint") final String endpoint) {
+    public WazeReverseGeocodingApi(@Value("${waze.reverseGeocodeToken}") final String token, @Value("${waze.reverseGeocodeEndpoint}") final String endpoint) {
         this.token = token;
         this.endpoint = endpoint;
     }
@@ -52,6 +52,8 @@ public class WazeReverseGeocodingApi {
                 final HttpEntity httpEntity = httpResponse.getEntity();
                 return httpEntity != null ? Optional.of(EntityUtils.toString(httpEntity)) : Optional.empty();
             }
+
+            logger.error(String.format("method=fetch status=%s api returned incorrect status code", responseCode));
             return Optional.empty();
         };
     }

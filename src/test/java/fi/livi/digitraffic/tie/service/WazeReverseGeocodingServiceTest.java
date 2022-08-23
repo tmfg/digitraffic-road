@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
 import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocodeResult;
 import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
+import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 public class WazeReverseGeocodingServiceTest extends AbstractRestWebTest {
 
@@ -28,7 +31,33 @@ public class WazeReverseGeocodingServiceTest extends AbstractRestWebTest {
     private WazeReverseGeocodingApi wazeReverseGeocodingApi;
 
     @Test
-    public void shouldConvertReverseGeocodingResponseToJavaObject() {
+    public void shouldReturnNearestStreetName() {
+        final String streetName = "correct street name 123";
+        final String responseTemplate = "{\"lat\":1.1,\"lon\":1.1,\"radius\":0,\"result\":[{\"distance\":100,\"names\":[\"foo\",\"bar\"]},{\"distance\":10,\"names\":[\"%s\",\"baz\"]}]}";
+        final String RESPONSE = String.format(responseTemplate, streetName);
+
+        when(this.wazeReverseGeocodingApi.fetch(anyDouble(), anyDouble())).thenReturn(Optional.of(RESPONSE));
+        final var result = wazeReverseGeocodingService.getStreetName(new Point(1, 2));
+
+        assertTrue(result.isPresent());
+        assertEquals(streetName, result.orElse(null));
+    }
+
+    @Test void shouldUseTheFirstCoordinatePairFromMultiLineString() {
+        final double latitude = 26.26;
+        final double longitude = 65.65;
+        final List<List<Double>> coords = List.of(List.of(longitude, latitude), List.of(24.24, 63.63));
+        final MultiLineString geometry = new MultiLineString();
+        geometry.addLineString(coords);
+
+        when(this.wazeReverseGeocodingApi.fetch(anyDouble(), anyDouble())).thenReturn(Optional.empty());
+        wazeReverseGeocodingService.getStreetName(geometry);
+
+        verify(this.wazeReverseGeocodingApi, times(1)).fetch(latitude, longitude);
+    }
+
+    @Test
+    public void shouldConvertReverseGeocodingResponseToReverseGeocodeResult() {
         final int RADIUS = 50;
         final double DISTANCE = 2.242342;
         final String NAME = "Lautta";
@@ -75,24 +104,6 @@ public class WazeReverseGeocodingServiceTest extends AbstractRestWebTest {
         assertEquals(reverseGeocode1.longitude, reverseGeocode2.longitude);
 
         verify(this.wazeReverseGeocodingApi, times(1)).fetch(latitude, longitude);
-    }
-
-    @Test
-    public void shouldFetchReverseGeocoding() {
-        final double latitude = 60.1;
-        final double longitude = 21.3;
-        final String responseTemplate = "{\"lat\":%s,\"lon\":%s,\"radius\":50,\"result\":[{\"distance\":3.1415,\"names\":[\"Lautta\"]},{\"distance\":20.24164959825527,\"names\":[\"192 - Kivimaantie\"]}]}";
-        final String response = String.format(responseTemplate, latitude, longitude);
-        when(this.wazeReverseGeocodingApi.fetch(anyDouble(), anyDouble())).thenReturn(Optional.of(response));
-
-        final var maybeReverseGeocode = wazeReverseGeocodingService.fetch(latitude, longitude);
-
-        assertNotNull(maybeReverseGeocode);
-        assertTrue(maybeReverseGeocode.isPresent());
-
-        final var reverseGeocode = maybeReverseGeocode.get();
-        assertEquals(latitude, reverseGeocode.latitude);
-        assertEquals(longitude, reverseGeocode.longitude);
     }
 
     @Test
