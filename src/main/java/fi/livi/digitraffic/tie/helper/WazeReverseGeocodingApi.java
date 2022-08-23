@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 @ConditionalOnWebApplication
 @Component
-@Configuration
 public class WazeReverseGeocodingApi {
     private static final Logger logger = LoggerFactory.getLogger(WazeReverseGeocodingApi.class);
     private final String token;

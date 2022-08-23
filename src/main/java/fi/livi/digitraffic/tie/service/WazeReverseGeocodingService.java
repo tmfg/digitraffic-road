@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
-import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocodeResult;
 import fi.livi.digitraffic.tie.helper.RoadCacheHelper;
 import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -41,6 +41,7 @@ public class WazeReverseGeocodingService {
         this.cache = roadCacheHelper.getWazeReverseGeocodeCache();
     }
 
+    @Transactional(readOnly = true)
     public Optional<String> getStreetName(final Geometry<?> geometry) {
         return getPoint(geometry)
             .flatMap(this::fetch)
@@ -52,8 +53,11 @@ public class WazeReverseGeocodingService {
             return Optional.of((Point) geometry);
         } else if (geometry instanceof MultiLineString) {
             return ((MultiLineString) geometry).getCoordinates().stream()
+                // Stream<List<List<Double>>>
                 .flatMap(Collection::stream)
+                // Stream<List<Double>>
                 .findFirst()
+                // Optional<List<Double>>
                 .map(pair -> new Point(pair.get(0), pair.get(1)));
         }
 
@@ -63,15 +67,15 @@ public class WazeReverseGeocodingService {
 
     private Optional<String> closestStreetName(final ReverseGeocode reverseGeocode) {
         return reverseGeocode.results.stream()
+            // Stream<ReverseGeocodeResult>
             .reduce((accumulator, element) -> accumulator.distance > element.distance ? element : accumulator)
+            // Optional<ReverseGeocodeResult>
             .flatMap(reverseGeocodeResult -> reverseGeocodeResult.names.stream().findFirst());
     }
 
-    public Optional<ReverseGeocode> fetch(final Point point) {
-        return fetch(point.getLatitude(), point.getLongitude());
-    }
-
-    public Optional<ReverseGeocode> fetch(final double latitude, final double longitude) {
+    private Optional<ReverseGeocode> fetch(final Point point) {
+        final Double latitude = point.getLatitude();
+        final Double longitude = point.getLongitude();
         final String cacheKey = String.format(Locale.US, "%f,%f", latitude, longitude);
 
         if (cache.containsKey(cacheKey)) {
@@ -89,7 +93,7 @@ public class WazeReverseGeocodingService {
             });
     }
 
-    public Optional<ReverseGeocode> parseReverseGeocodeJson(final String input) {
+    private Optional<ReverseGeocode> parseReverseGeocodeJson(final String input) {
         try {
             ReverseGeocode reverseGeocode = this.genericJsonReader.readValue(input, ReverseGeocode.class);
             return Optional.of(reverseGeocode);

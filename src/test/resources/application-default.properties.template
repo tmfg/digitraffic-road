@@ -128,3 +128,7 @@ maintenance.realization.job.enabled = false
 
 # This allows to disable @Scheduled jobs for tests.
 dt.scheduled.annotation.enabled = false
+
+# Waze reverse geocoding
+waze.reverseGeocodeToken=
+waze.reverseGeocodeEndpoint=
