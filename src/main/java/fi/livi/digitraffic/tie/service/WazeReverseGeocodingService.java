@@ -53,11 +53,8 @@ public class WazeReverseGeocodingService {
             return Optional.of((Point) geometry);
         } else if (geometry instanceof MultiLineString) {
             return ((MultiLineString) geometry).getCoordinates().stream()
-                // Stream<List<List<Double>>>
                 .flatMap(Collection::stream)
-                // Stream<List<Double>>
                 .findFirst()
-                // Optional<List<Double>>
                 .map(pair -> new Point(pair.get(0), pair.get(1)));
         }
 
@@ -67,9 +64,7 @@ public class WazeReverseGeocodingService {
 
     private Optional<String> closestStreetName(final ReverseGeocode reverseGeocode) {
         return reverseGeocode.results.stream()
-            // Stream<ReverseGeocodeResult>
             .reduce((accumulator, element) -> accumulator.distance > element.distance ? element : accumulator)
-            // Optional<ReverseGeocodeResult>
             .flatMap(reverseGeocodeResult -> reverseGeocodeResult.names.stream().findFirst());
     }
 

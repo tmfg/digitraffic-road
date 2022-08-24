@@ -28,7 +28,7 @@ public class WazeReverseGeocodingApi {
         this.endpoint = endpoint;
     }
 
-    public Optional<String> fetch(double latitude, double longitude) {
+    public Optional<String> fetch(final double latitude, final double longitude) {
         final CloseableHttpClient httpClient = HttpClients.createDefault();
         final String url = String.format("%s?lat=%s&lon=%s&token=%s", endpoint, latitude, longitude, token);
 

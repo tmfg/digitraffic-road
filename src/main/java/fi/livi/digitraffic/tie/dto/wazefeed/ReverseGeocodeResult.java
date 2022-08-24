@@ -11,7 +11,7 @@ public class ReverseGeocodeResult {
     @JsonProperty("names")
     public final List<String> names;
 
-    public ReverseGeocodeResult(double distance, List<String> names) {
+    public ReverseGeocodeResult(final double distance, final List<String> names) {
         this.distance = distance;
         this.names = names;
     }
