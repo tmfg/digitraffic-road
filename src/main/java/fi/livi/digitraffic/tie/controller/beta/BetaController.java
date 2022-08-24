@@ -60,7 +60,7 @@ public class BetaController {
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Stations Datex2 metadata"))
     public D2LogicalModel tmsStationsDatex2(
         @Parameter(description = "Return TMS stations of given state.")
-        @RequestParam(value = "state", required = false, defaultValue = "active")
+        @RequestParam(value = "state", required = false, defaultValue = "ACTIVE")
         final RoadStationState roadStationState) {
 
         return tmsStationDatex2Service.findAllPublishableTmsStationsAsDatex2(roadStationState);
