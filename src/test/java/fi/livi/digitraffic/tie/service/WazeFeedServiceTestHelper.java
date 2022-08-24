@@ -25,8 +25,6 @@ import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuratio
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.helper.RoadCacheHelper;
-import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;

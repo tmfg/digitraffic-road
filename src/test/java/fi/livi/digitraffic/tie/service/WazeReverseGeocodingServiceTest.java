@@ -17,9 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
-import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocodeResult;
-import fi.livi.digitraffic.tie.helper.RoadCacheHelper;
 import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
@@ -32,13 +29,9 @@ public class WazeReverseGeocodingServiceTest extends AbstractRestWebTest {
     @MockBean
     private WazeReverseGeocodingApi wazeReverseGeocodingApi;
 
-    @Autowired
-    private RoadCacheHelper roadCacheHelper;
-
     @BeforeEach
     public void beforeEach() {
-        final var cache = roadCacheHelper.getWazeReverseGeocodeCache();
-        cache.clear();
+        wazeReverseGeocodingService.evictCache();
     }
 
     @Test

@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service;
 
+import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_REVERSE_GEOCODE;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
@@ -8,16 +10,16 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import org.ehcache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
-import fi.livi.digitraffic.tie.helper.RoadCacheHelper;
 import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
@@ -25,6 +27,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 @ConditionalOnWebApplication
 @Service
+@Transactional(readOnly = true)
 public class WazeReverseGeocodingService {
     private static final Logger logger = LoggerFactory.getLogger(WazeReverseGeocodingService.class);
 
@@ -32,21 +35,21 @@ public class WazeReverseGeocodingService {
 
     private final WazeReverseGeocodingApi wazeReverseGeocodingApi;
 
-    private final Cache<String, ReverseGeocode> cache;
-
     @Autowired
-    public WazeReverseGeocodingService(final ObjectMapper objectMapper, final WazeReverseGeocodingApi wazeReverseGeocodingApi, final RoadCacheHelper roadCacheHelper) {
+    public WazeReverseGeocodingService(final ObjectMapper objectMapper, final WazeReverseGeocodingApi wazeReverseGeocodingApi) {
         this.genericJsonReader = objectMapper.reader();
         this.wazeReverseGeocodingApi = wazeReverseGeocodingApi;
-        this.cache = roadCacheHelper.getWazeReverseGeocodeCache();
     }
 
-    @Transactional(readOnly = true)
+    @Cacheable(CACHE_REVERSE_GEOCODE)
     public Optional<String> getStreetName(final Geometry<?> geometry) {
         return getPoint(geometry)
             .flatMap(this::fetch)
             .flatMap(this::closestStreetName);
     }
+
+    @CacheEvict(value = CACHE_REVERSE_GEOCODE, allEntries = true)
+    public void evictCache () { }
 
     private Optional<Point> getPoint(final Geometry<?> geometry) {
         if (geometry instanceof Point) {
@@ -71,21 +74,11 @@ public class WazeReverseGeocodingService {
     private Optional<ReverseGeocode> fetch(final Point point) {
         final Double latitude = point.getLatitude();
         final Double longitude = point.getLongitude();
-        final String cacheKey = String.format(Locale.US, "%f,%f", latitude, longitude);
-
-        if (cache.containsKey(cacheKey)) {
-            logger.info(String.format(Locale.US, "Retrieve reverse geocoding for lat: %f, lon: %f from cache", latitude, longitude));
-            return Optional.of(cache.get(cacheKey));
-        }
 
         logger.info(String.format(Locale.US, "Get reverse geocoding for lat: %f, lon: %f", latitude, longitude));
         return wazeReverseGeocodingApi
             .fetch(latitude, longitude)
-            .flatMap(this::parseReverseGeocodeJson)
-            .map(r -> {
-                cache.put(cacheKey, r);
-                return r;
-            });
+            .flatMap(this::parseReverseGeocodeJson);
     }
 
     private Optional<ReverseGeocode> parseReverseGeocodeJson(final String input) {
