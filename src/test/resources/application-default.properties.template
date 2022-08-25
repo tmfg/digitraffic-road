@@ -128,3 +128,10 @@ maintenance.realization.job.enabled = false
 
 # This allows to disable @Scheduled jobs for tests.
 dt.scheduled.annotation.enabled = false
+
+# Cache in millis
+cache.reverseGeocode=#{900*1000}
+
+# Waze reverse geocoding
+waze.reverseGeocodeToken=
+waze.reverseGeocodeEndpoint=

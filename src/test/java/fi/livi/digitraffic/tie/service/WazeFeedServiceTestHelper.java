@@ -38,6 +38,7 @@ import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 @Component
 public class WazeFeedServiceTestHelper {
 
+    private final ObjectMapper objectMapper;
     private final Datex2Repository datex2Repository;
     private final ObjectWriter genericJsonWriter;
 
@@ -47,6 +48,7 @@ public class WazeFeedServiceTestHelper {
     WazeFeedServiceTestHelper(final ObjectMapper objectMapper, final Datex2Repository datex2Repository) {
         this.datex2Repository = datex2Repository;
 
+        this.objectMapper = objectMapper;
         this.genericJsonWriter = objectMapper.writer();
     }
 
@@ -56,12 +58,10 @@ public class WazeFeedServiceTestHelper {
 
     void insertSituation() {
         final String situationId = "GUID1234";
-        final Integer street = 130;
-        insertSituation(situationId, RoadAddressLocation.Direction.BOTH, street);
+        insertSituation(situationId, RoadAddressLocation.Direction.BOTH);
     }
 
-    void insertSituation(final String situationId, final RoadAddressLocation.Direction direction,
-                                final Integer street) {
+    void insertSituation(final String situationId, final RoadAddressLocation.Direction direction) {
         final MultiLineString geometry = new MultiLineString();
         final List<List<Double>> coordinates = new ArrayList<>();
 
@@ -70,15 +70,13 @@ public class WazeFeedServiceTestHelper {
 
         geometry.addLineString(coordinates);
 
-        insertSituation(situationId, direction, street, geometry);
+        insertSituation(situationId, direction, geometry);
     }
 
-    void insertSituation(final String situationId, final RoadAddressLocation.Direction direction,
-                                final Integer street, final Geometry<?> geometry) {
+    void insertSituation(final String situationId, final RoadAddressLocation.Direction direction, final Geometry<?> geometry) {
 
         final SituationParams params = new SituationParams(
             situationId,
-            new AnnouncementAddress("municipality", "roadName", street),
             ZonedDateTime.now(),
             TrafficAnnouncementType.ACCIDENT_REPORT,
             direction,
@@ -141,32 +139,29 @@ public class WazeFeedServiceTestHelper {
         Geometry<?> geometry;
         TrafficAnnouncementType trafficAnnouncementType;
 
-        final AnnouncementAddress announcementAddress;
         final ZonedDateTime startTime;
         final RoadAddressLocation.Direction direction;
 
         SituationParams() {
             this(
                 null,
-                new AnnouncementAddress(),
                 ZonedDateTime.now(),
                 TrafficAnnouncementType.ACCIDENT_REPORT,
                 RoadAddressLocation.Direction.UNKNOWN
             );
         }
 
-        SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
+        SituationParams(final String situationId, final ZonedDateTime startTime,
                                final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction) {
-            this(situationId, announcementAddress, startTime, trafficAnnouncementType, direction, null);
+            this(situationId, startTime, trafficAnnouncementType, direction, null);
 
             this.geometry = createDummyGeometry();
         }
 
-        SituationParams(final String situationId, final AnnouncementAddress announcementAddress, final ZonedDateTime startTime,
+        SituationParams(final String situationId, final ZonedDateTime startTime,
                                final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
                                final Geometry<?> geometry) {
             this.situationId = situationId;
-            this.announcementAddress = announcementAddress;
             this.startTime = startTime;
             this.trafficAnnouncementType = trafficAnnouncementType;
             this.direction = direction;
@@ -211,9 +206,9 @@ public class WazeFeedServiceTestHelper {
 
         private TrafficAnnouncementProperties createTrafficAnnouncementProperties() {
             final RoadPoint roadPoint = new RoadPoint();
-            roadPoint.municipality = this.announcementAddress.municipality;
-            roadPoint.roadName = this.announcementAddress.roadName;
-            roadPoint.roadAddress = new RoadAddress(this.announcementAddress.street, 0, 0);
+            roadPoint.municipality = null;
+            roadPoint.roadName = null;
+            roadPoint.roadAddress = new RoadAddress(null, 0, 0);
             roadPoint.alertCLocation = new AlertCLocation();
 
             final RoadAddressLocation roadAddressLocation = new RoadAddressLocation(roadPoint, null, direction, "");
@@ -249,22 +244,6 @@ public class WazeFeedServiceTestHelper {
                 List.of(announcement),
                 null
             );
-        }
-    }
-
-    static class AnnouncementAddress {
-        final String municipality;
-        final String roadName;
-        final Integer street;
-
-        AnnouncementAddress() {
-            this("Espoo", "Puolarmetsänkatu", 123);
-        }
-
-        AnnouncementAddress(final String municipality, final String roadName, final Integer street) {
-            this.municipality = municipality;
-            this.roadName = roadName;
-            this.street = street;
         }
     }
 
