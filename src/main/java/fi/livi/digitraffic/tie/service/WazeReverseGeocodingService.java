@@ -27,7 +27,6 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 @ConditionalOnWebApplication
 @Service
-@Transactional(readOnly = true)
 public class WazeReverseGeocodingService {
     private static final Logger logger = LoggerFactory.getLogger(WazeReverseGeocodingService.class);
 
@@ -42,6 +41,7 @@ public class WazeReverseGeocodingService {
     }
 
     @Cacheable(CACHE_REVERSE_GEOCODE)
+    @Transactional(readOnly = true)
     public Optional<String> getStreetName(final Geometry<?> geometry) {
         return getPoint(geometry)
             .flatMap(this::fetch)
@@ -49,6 +49,7 @@ public class WazeReverseGeocodingService {
     }
 
     @CacheEvict(value = CACHE_REVERSE_GEOCODE, allEntries = true)
+    @Transactional(readOnly = true)
     public void evictCache () { }
 
     private Optional<Point> getPoint(final Geometry<?> geometry) {
