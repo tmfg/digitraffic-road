@@ -152,6 +152,13 @@ public final class DateHelper {
         return null;
     }
 
+    public static Instant getNowWithoutNanos() {
+        return withoutNanos(Instant.now());
+    }
+
+    public static Instant getNowWithoutMillis() {
+        return withoutMillis(Instant.now());
+    }
     public static ZonedDateTime getZonedDateTimeNowAtUtc() {
         return toZonedDateTimeAtUtc(Instant.now());
     }

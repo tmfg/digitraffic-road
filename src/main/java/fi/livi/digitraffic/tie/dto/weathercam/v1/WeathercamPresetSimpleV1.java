@@ -14,14 +14,17 @@ public class WeathercamPresetSimpleV1 implements Comparable<WeathercamPresetSimp
 
     @JsonIgnore
     @Schema(description = "Id of the camera that the preset belongs to")
-    public String cameraId;
+    public final String cameraId;
 
     @Schema(description = "Id of preset")
-    public String id;
+    public final String id;
+    @Schema(description = "Is preset in collection")
+    public final boolean inCollection;
 
-    public WeathercamPresetSimpleV1(final String presetId, final String cameraId) {
+    public WeathercamPresetSimpleV1(final String presetId, final String cameraId, final boolean inCollection) {
         this.id = presetId;
         this.cameraId = cameraId;
+        this.inCollection = inCollection;
     }
 
     @Override

@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class CameraStationFeature extends Feature<Point, CameraProperties> {
 
-    // TODO: Remove this from next version as it is duplicated in properties
     @Schema(description = "Road station id, same as CameraStationProperties.roadStationId", required = true)
     private String id;
 

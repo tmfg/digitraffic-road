@@ -7,9 +7,14 @@ import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSO
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
+import static java.time.temporal.ChronoUnit.HOURS;
 
+import java.time.Instant;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +27,12 @@ import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detailed;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDataV1;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsPresetsPublicityHistoryV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetsHistoryDtoV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamsHistoryDtoV1;
 import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamMetadataWebServiceV1;
+import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamPresetHistoryDataWebServiceV1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,10 +56,9 @@ public class WeathercamControllerV1 {
      * /api/weathercam/v/stations/data (all)
      * /api/weathercam/v/stations/{id}/data (one station)
      *
-     * Histories TODO
+     * Histories
      * /api/weathercam/v/stations/histories
      * /api/weathercam/v/stations/histories/changes
-     * /api/weathercam/v/stations/presences
      *
      */
 
@@ -59,25 +66,25 @@ public class WeathercamControllerV1 {
     private static final String API_WEATHERCAM_BETA = API_WEATHERCAM + BETA;
 
     private static final String STATIONS = "/stations";
-    private static final String HISTORIES = "/history";
+    private static final String PUBLICITIES = "/publicities";
     public static final String DATA = "/data";
-    public static final String PRESENCE = "/presence";
+    public static final String HISTORY = "/history";
 
     /** TODO change beta when going to production */
     public static final String API_WEATHERCAM_V1_STATIONS = API_WEATHERCAM_BETA + STATIONS;
-    public static final String API_WEATHERCAM_V1_HISTORIES = API_WEATHERCAM_BETA + HISTORIES;
+    public static final String API_WEATHERCAM_V1_PUBLICITIES = API_WEATHERCAM_BETA + PUBLICITIES;
 
     private final WeathercamMetadataWebServiceV1 weathercamMetadataWebServiceV1;
     private final WeathercamDataWebServiceV1 weathercamDataWebServiceV1;
-    private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
+    private final WeathercamPresetHistoryDataWebServiceV1 weathercamPresetHistoryDataWebServiceV1;
 
     @Autowired
     public WeathercamControllerV1(final WeathercamMetadataWebServiceV1 weathercamMetadataWebServiceV1,
                                   final WeathercamDataWebServiceV1 weathercamDataWebServiceV1,
-                                  final CameraPresetHistoryDataService cameraPresetHistoryDataService) {
+                                  final WeathercamPresetHistoryDataWebServiceV1 weathercamPresetHistoryDataWebServiceV1) {
         this.weathercamMetadataWebServiceV1 = weathercamMetadataWebServiceV1;
         this.weathercamDataWebServiceV1 = weathercamDataWebServiceV1;
-        this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
+        this.weathercamPresetHistoryDataWebServiceV1 = weathercamPresetHistoryDataWebServiceV1;
     }
 
     @Operation(summary = "The static information of weather camera stations")
@@ -91,7 +98,7 @@ public class WeathercamControllerV1 {
         return weathercamMetadataWebServiceV1.findAllPublishableCameraStationsAsSimpleFeatureCollection(lastUpdated);
     }
 
-    @Operation(summary = "The static information of weather camera stations")
+    @Operation(summary = "The static information of weather camera station")
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHERCAM_V1_STATIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Success") })
@@ -132,46 +139,41 @@ public class WeathercamControllerV1 {
 
     /* History APIs */
 
-    // TODO CameraHistoryDto: peri StationDataV1
-    // TODO: mieti vielä rajapinnat kuntoon mm. polut ja histories/{id} varmaan riittävä ei tarvitse tukea listaa asemien historiasta
-    // TODO sama changes-rajapinnan kanssa
-/*
-    @Operation(summary = "Weathercam history for given camera or preset")
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHERCAM_V1_HISTORIES, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of camera images history"))
-    public List<CameraHistoryDto> getWeathercamStationOrPresetHistory(
-
-        @Parameter(description = "Camera or preset id(s)", required = true)
-        @RequestParam(value = "id")
-        final List<String> cameraOrPresetIds,
-        @Parameter(description = "Return the latest url for the image from the history at the given date time. " +
-                                 "If the time is not given then the history of last 24h is returned.")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam(value = "at", required = false)
-        final Instant at) {
-
-        return cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(cameraOrPresetIds, at);
-    }
-
-    @Operation(summary = "Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields.")
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHERCAM_V1_HISTORIES + "/changes", produces = APPLICATION_JSON_VALUE)
+    @Operation(summary = "Weathercam presets publicity changes after given time. Result is in ascending order by presetId and lastModified -fields. ")
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHERCAM_V1_PUBLICITIES + "/changes", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of camera history changes"))
-    public CameraHistoryChangesDto getWeathercamStationOrPresetHistoryChanges(
+    public WeathercamStationsPresetsPublicityHistoryV1 weathercamPresetPublicityChangesAfter(
 
-        @Parameter(description = "Camera or preset id(s)")
-        @RequestParam(value = "id", required = false)
-        final List<String> cameraOrPresetIds,
-
-        @Parameter(description = "Return changes int the history after given time. Given time must be within 24 hours.", required = true)
+        @Parameter(description = "Return changes int the history after given time. Given time must be within 24 hours. Default is 24h in past")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        @RequestParam
-        final ZonedDateTime after) {
+        @RequestParam(required = false)
+        final Instant after) {
 
-        if (after.plus(24, HOURS).isBefore(ZonedDateTime.now())) {
+        if (after != null && after.plus(24, HOURS).isBefore(Instant.now())) {
             throw new IllegalArgumentException("Given time must be within 24 hours.");
         }
 
-        return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
+        return weathercamPresetHistoryDataWebServiceV1.findWeathercamPresetPublicityChangesAfter(
+            ObjectUtils.defaultIfNull(after, Instant.now().minus(24, HOURS)));
     }
-     */
+
+    @Operation(summary = "Weathercam presets history for given camera")
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHERCAM_V1_STATIONS + "/{id}" + HISTORY , produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weathercam image history"))
+    public WeathercamPresetsHistoryDtoV1 getWeathercamPresetsHistoryById(
+
+        @Parameter(description = "Camera id")
+        @PathVariable(value = "id")
+        final String cameraOrPresetId) {
+
+        return weathercamPresetHistoryDataWebServiceV1.findCameraOrPresetPublicHistory(cameraOrPresetId);
+    }
+
+    @Operation(summary = "Weathercams presets history for all cameras")
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHERCAM_V1_STATIONS + HISTORY, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weathercams image history"))
+    // TODO presetId-query parameter?
+    public WeathercamsHistoryDtoV1 getWeathercamsPresetsHistory() {
+        return weathercamPresetHistoryDataWebServiceV1.getWeathercamsHistory();
+    }
 }

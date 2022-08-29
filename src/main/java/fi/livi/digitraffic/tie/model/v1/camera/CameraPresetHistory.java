@@ -58,6 +58,10 @@ public class CameraPresetHistory {
         return id.getPresetId();
     }
 
+    public String getCameraId() {
+        return cameraId;
+    }
+
     public String getVersionId() {
         return id.getVersionId();
     }

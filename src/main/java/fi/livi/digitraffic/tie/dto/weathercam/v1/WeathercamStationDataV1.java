@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.dto.weathercam.v1;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -13,16 +12,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "dataUpdatedTime" })
 public class WeathercamStationDataV1 extends StationDataV1<String> {
 
-    @Schema(description = "Id of the weathercam station", required = true)
+    @Schema(description = "Weathercam presets data", required = true)
     public final List<WeathercamPresetDataV1> presets;
 
     public WeathercamStationDataV1(final String id, List<WeathercamPresetDataV1> presetsData, final Instant dataUpdatedTime) {
         super(id, dataUpdatedTime);
         this.presets = presetsData;
-    }
-
-    public WeathercamStationDataV1(final String id) {
-        super(id);
-        this.presets = Collections.emptyList();
     }
 }

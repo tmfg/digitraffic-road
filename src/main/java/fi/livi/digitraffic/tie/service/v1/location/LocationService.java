@@ -1,17 +1,20 @@
 package fi.livi.digitraffic.tie.service.v1.location;
 
+import static org.springframework.data.domain.Sort.Order.asc;
+
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationTypeRepository;
@@ -21,6 +24,7 @@ import fi.livi.digitraffic.tie.dto.v1.location.LocationFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v1.location.LocationJson;
 import fi.livi.digitraffic.tie.dto.v1.location.LocationTypesMetadata;
 import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service
 public class LocationService {
@@ -55,7 +59,7 @@ public class LocationService {
 
         final List<LocationFeature> features =
             locationRepository.findAllByVersion(lVersion).parallel().map(LocationFeature::new).collect(Collectors.toList());
-
+        features.sort(Comparator.comparing(locationFeature -> locationFeature.id));
         return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion, features);
     }
 
@@ -106,6 +110,6 @@ public class LocationService {
 
     @Transactional(readOnly = true)
     public List<LocationVersion> findLocationVersions() {
-        return locationVersionRepository.findAll();
+        return locationVersionRepository.findAll(Sort.by(asc("version")));
     }
 }

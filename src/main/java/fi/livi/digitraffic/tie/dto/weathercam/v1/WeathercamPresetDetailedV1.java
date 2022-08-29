@@ -12,13 +12,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class WeathercamPresetDetailedV1 extends WeathercamPresetSimpleV1 {
 
     @Schema(description = "PresentationName (Preset name 1, direction)")
-    public String presentationName;
-
-    @Schema(description = "Is data in collection")
-    public boolean inCollection;
+    public final String presentationName;
 
     @Schema(description = "Resolution of camera [px x px]")
-    public String resolution;
+    public final String resolution;
 
     @Schema(description = "Preset direction:<br>\n" +
                           "0 = Unknown direction.<br>\n" +
@@ -27,19 +24,18 @@ public class WeathercamPresetDetailedV1 extends WeathercamPresetSimpleV1 {
                           "3 = Increasing direction of the crossing road.<br>\n" +
                           "4 = Decreasing direction of the crossing road.<br>\n" +
                           "5-99 = Special directions", required = true)
-    public String directionCode;
+    public final String directionCode;
 
     @Schema(description = "Image url")
-    public String imageUrl;
+    public final String imageUrl;
 
-    public WeathercamPresetDetailedV1(final String presetId, final String cameraId,
+    public WeathercamPresetDetailedV1(final String presetId, final String cameraId, final boolean inCollection,
                                       final String presentationName, final String resolution,
-                                      final String directionCode, final boolean inCollection, final String imageUrl) {
-        super(presetId, cameraId);
+                                      final String directionCode,  final String imageUrl) {
+        super(presetId, cameraId, inCollection);
         this.presentationName = presentationName;
         this.resolution = resolution;
         this.directionCode = directionCode;
-        this.inCollection = inCollection;
         this.imageUrl = imageUrl;
     }
 

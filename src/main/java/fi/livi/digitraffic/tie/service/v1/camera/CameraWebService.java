@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.camera;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.converter.feature.CameraPresetMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @ConditionalOnWebApplication
@@ -43,13 +40,5 @@ public class CameraWebService {
                 cameraPresetService.findAllPublishableCameraPresets(),
                 dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_METADATA),
                 dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_METADATA_CHECK));
-    }
-
-    @Transactional(readOnly = true)
-    public CameraStationFeature findPublishableCameraStationAsFeature(final String stationId) {
-        // TODO
-        final List<CameraPreset> resutl =
-            cameraPresetService.findAllPublishableCameraPresetsByCameraId(stationId);
-        return null;
     }
 }

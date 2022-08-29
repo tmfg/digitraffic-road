@@ -102,6 +102,13 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus", is(in(new String[] {"GATHERING", "REMOVED_TEMPORARILY"}))))
                 .andExpect(jsonPath("$.features[0].properties.state", is(RoadStationState.OK.name())))
                 .andExpect(jsonPath("$.features[0].properties.presets", hasSize(2)))
+
+                .andExpect(jsonPath("$.features[0].properties.presets[0].id", is(preset1.getPresetId())))
+                .andExpect(jsonPath("$.features[0].properties.presets[0].inCollection", is(preset1.isInCollection())))
+
+                .andExpect(jsonPath("$.features[0].properties.presets[1].id", is(preset2.getPresetId())))
+                .andExpect(jsonPath("$.features[0].properties.presets[1].inCollection", is(preset2.isInCollection())))
+
                 .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
 
     }

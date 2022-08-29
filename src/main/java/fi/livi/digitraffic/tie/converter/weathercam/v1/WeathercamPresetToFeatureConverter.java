@@ -70,17 +70,17 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
     }
 
     private WeathercamPresetSimpleV1 convertToSimplePreset(final CameraPreset cp) {
-        return new WeathercamPresetSimpleV1(cp.getPresetId(), cp.getCameraId());
+        return new WeathercamPresetSimpleV1(cp.getPresetId(), cp.getCameraId(), cp.isInCollection());
     }
 
     private WeathercamPresetDetailedV1 convertToDetailedPreset(final CameraPreset cp) {
         return new WeathercamPresetDetailedV1(
             cp.getPresetId(),
             cp.getCameraId(),
+            cp.isInCollection(),
             DataValidityHelper.nullifyUnknownValue(cp.getPresetName1()), // dto.setPresentationName
             cp.getResolution(),
             cp.getDirection(),
-            cp.isInCollection(),
             getImageUrl(cp));
     }
 

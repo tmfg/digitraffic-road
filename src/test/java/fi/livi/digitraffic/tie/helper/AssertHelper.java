@@ -1,10 +1,11 @@
 package fi.livi.digitraffic.tie.helper;
 
-import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -28,6 +29,13 @@ public final class AssertHelper {
     }
 
     public static void assertTimesEqual(final ZonedDateTime t1, final ZonedDateTime t2) {
+        assertTimesEqual(DateHelper.toInstant(t1), DateHelper.toInstant(t2), 0);
+    }
+
+    public static void assertTimesEqual(final Instant t1, final Instant t2) {
+        assertTimesEqual(t1, t2, 0);
+    }
+    public static void assertTimesEqual(final Instant t1, final Instant t2, final int maxDiffMs) {
         if(t1 == null && t2 == null) return;
 
         if(t1 == null) {
@@ -38,10 +46,9 @@ public final class AssertHelper {
             fail("given value was null");
         }
 
-        final ZonedDateTime tz1 = t1.withZoneSameInstant(UTC);
-        final ZonedDateTime tz2 = t2.withZoneSameInstant(UTC);
-
-        assertEquals(tz1, tz2);
+        final Duration timeElapsed = Duration.between(t1, t2);
+        final long diffMillis = timeElapsed.toMillis();
+        assertTrue(Math.abs(diffMillis) <= maxDiffMs, "Difference between times was " + diffMillis + " ms and allowed diff was " + maxDiffMs + " ms");
     }
 
     public static void collectionContains(final Object objectToFind, List<?> collection) {

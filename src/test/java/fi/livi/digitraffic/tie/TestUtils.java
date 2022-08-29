@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -374,7 +375,11 @@ public class TestUtils {
 
     public static List<CameraPreset> generateDummyCameraStation(final int presetCount) {
         final RoadStation rs = generateDummyRoadStation(RoadStationType.CAMERA_STATION);
-        return IntStream.range(0,presetCount).mapToObj(i -> generateDummyPreset(rs)).collect(Collectors.toList());
+        return IntStream
+            .range(0,presetCount)
+            .mapToObj(i -> generateDummyPreset(rs))
+            .sorted(Comparator.comparing(CameraPreset::getPresetId))
+            .collect(Collectors.toList());
     }
 
     public static List<List<CameraPreset>> generateDummyCameraStations(final int stationCount, final int presetCount) {
@@ -389,8 +394,8 @@ public class TestUtils {
 
     public static void truncateCameraData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE camera_preset DISABLE TRIGGER trg_camera_preset_delete").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM camera_preset_history where 1=1").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM camera_preset where 1=1").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM camera_preset_history").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM camera_preset").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'CAMERA_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE camera_preset ENABLE TRIGGER trg_camera_preset_delete").executeUpdate();
         entityManager.flush();
@@ -401,9 +406,9 @@ public class TestUtils {
         entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id not in (select natural_id from road_station_sensor where lotju_id <= 252 AND road_station_type = 'TMS_STATION') AND road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id > 252 AND road_station_type = 'TMS_STATION'").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM tms_sensor_constant_value where 1=1").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM tms_sensor_constant where 1=1").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM tms_station where 1=1").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM tms_sensor_constant_value").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM tms_sensor_constant").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM tms_station").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE tms_station ENABLE TRIGGER trg_lam_station_delete").executeUpdate();
         entityManager.flush();
@@ -414,7 +419,7 @@ public class TestUtils {
         entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id > " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id >= " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM weather_station where 1=1").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM weather_station").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE weather_station ENABLE TRIGGER trg_weather_station_delete").executeUpdate();
         entityManager.flush();
@@ -492,5 +497,14 @@ public class TestUtils {
             lotjuId + " as natural_id, '" +
             roadStationType.name() + "' as road_station_type" +
             " ON CONFLICT DO NOTHING").executeUpdate();
+    }
+
+    public static void updateCameraHistoryModified(final String presetId, final String versionId, final Instant modified,
+                                                   final EntityManager entityManager) {
+        entityManager.createNativeQuery("ALTER TABLE camera_preset_history DISABLE TRIGGER camera_preset_history_modified_trigger").executeUpdate();
+        entityManager.createNativeQuery(String.format("UPDATE camera_preset_history set modified = '%s' where preset_id = '%s' and version_id = '%s'",
+                                                      modified.toString(), presetId, versionId)).executeUpdate();
+        entityManager.createNativeQuery("ALTER TABLE camera_preset_history ENABLE TRIGGER camera_preset_history_modified_trigger").executeUpdate();
+        entityManager.flush();
     }
 }

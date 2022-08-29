@@ -81,13 +81,6 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
     @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
     List<CameraPreset> findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(final String cameraId);
 
-    @Query(value =
-           "SELECT CP.PRESET_ID\n" +
-           "FROM CAMERA_PRESET CP\n" +
-           "WHERE PUBLISHABLE = false",
-           nativeQuery = true)
-    List<String> findAllNotPublishableCameraPresetsPresetIds();
-
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value = "select rs.natural_id nearestNaturalId, ws.id weatherStationId\n" +
         "from weather_station ws, road_station rs\n" +
