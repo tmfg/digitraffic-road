@@ -25,6 +25,10 @@ dt.amazon.s3.weathercam.region = eu-west-1
 dt.amazon.s3.sensordata.bucketName = sensordata-road-test
 dt.amazon.s3.sensordata.region = eu-west-1
 
+# Waze reverse geocoding
+waze.reverseGeocodeToken=
+waze.reverseGeocodeEndpoint==
+
 # disable healthchecks
 management.health.jms.enabled=false
 management.health.db.enabled=false

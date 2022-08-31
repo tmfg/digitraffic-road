@@ -124,7 +124,6 @@ logging.level.com.amazonaws.auth.profile.internal.BasicProfileConfigLoader=ERROR
 
 # application.properties
 maintenance.tracking.job.enabled = false
-maintenance.realization.job.enabled = false
 
 # This allows to disable @Scheduled jobs for tests.
 dt.scheduled.annotation.enabled = false
