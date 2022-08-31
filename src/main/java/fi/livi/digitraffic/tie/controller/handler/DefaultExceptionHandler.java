@@ -22,6 +22,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -86,8 +87,21 @@ public class DefaultExceptionHandler {
 
         return getErrorResponseEntityAndLogException(
             request,
-            String.format("Query parameter missing: queryString=%s, parameterName=%s, expectedType=%S",
+            String.format("Query parameter missing: queryString=%s, parameterName=%s, expectedType=%s",
                           request.getRequest().getQueryString(), parameterName, requiredType),
+            HttpStatus.BAD_REQUEST, exception);
+    }
+
+    @ExceptionHandler(MissingPathVariableException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleMissingPathVariableException(final MissingPathVariableException exception, final ServletWebRequest request) {
+        final String pathVariableName = exception.getVariableName();
+        final String parameterType = exception.getParameter().getParameterType().getSimpleName();
+
+        return getErrorResponseEntityAndLogException(
+            request,
+            String.format("Path variable missing: pathVariableName: %s, expectedType=%s",
+                          pathVariableName, parameterType),
             HttpStatus.BAD_REQUEST, exception);
     }
 
@@ -182,9 +196,9 @@ public class DefaultExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> getErrorResponseEntityAndLogException(final ServletWebRequest request,
-                                                                 final String errorMsg,
-                                                                 final HttpStatus httpStatus,
-                                                                 final Exception exception) {
+                                                                                final String errorMsg,
+                                                                                final HttpStatus httpStatus,
+                                                                                final Exception exception) {
         // Remove a=b from errorMessage as it can contain values like "1971"-H"accept:application/json;charset=UTF-8"
         // and that will be indexed with key "1971"-H"accept:application/json;charset and value UTF-8"
         final String logMessage =
