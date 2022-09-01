@@ -133,7 +133,7 @@ public class CameraPresetService {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                                         isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
-            log.info("method=updateCameraPresetAndHistoryWithLotjuId Save history with presetId={} s3VersionId={} versionIdLenght={}",
+            log.info("method=updateCameraPresetAndHistoryWithLotjuId Save history with presetId={} s3VersionId=\"{}\" versionIdLenght={}",
                      cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getVersionId().length());
             cameraPresetHistoryRepository.save(history);
         }

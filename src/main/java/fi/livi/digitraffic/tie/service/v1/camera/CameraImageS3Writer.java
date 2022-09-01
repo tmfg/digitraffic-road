@@ -89,7 +89,7 @@ public class CameraImageS3Writer {
             final PutObjectResult result = amazonS3Client.putObject(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey,
                                                                     new ByteArrayInputStream(versionedImageData), metadata);
             if (log.isDebugEnabled()) {
-                log.debug("method=writeVersionedImage s3Key={} lastModified: {} s3VersionId={}",
+                log.debug("method=writeVersionedImage s3Key={} lastModified: {} s3VersionId=\"{}\"",
                           versionedKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER), result.getVersionId());
             }
             return result.getVersionId();

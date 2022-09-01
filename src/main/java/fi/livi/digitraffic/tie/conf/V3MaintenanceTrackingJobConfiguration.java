@@ -53,8 +53,9 @@ public class V3MaintenanceTrackingJobConfiguration {
                     count = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(MAX_HANDLE_COUNT_PER_CALL);
                     totalCount += count;
                     if (count > 0) {
+                        final long msPerObservation = startInternal.getTime() / count;
                         log.info("method=handleUnhandledMaintenanceTrackingObservations handledCount={} tookMs={} tookMsPerObservation={}",
-                                 count, startInternal.getTime(), (double) startInternal.getTime() / count);
+                                 count, startInternal.getTime(), msPerObservation);
                     }
                 } catch (final Exception e) {
                     log.error(String.format("method=handleUnhandledMaintenanceTrackingObservations observations failed tookMs=%d", startInternal.getTime()), e);
