@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.aop;
 
 import java.lang.reflect.Method;
-import java.text.DecimalFormat;
 import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +24,6 @@ public class PerformanceMonitorAspect {
     public static final int DEFAULT_ERROR_LIMIT = 60000;
     public static final int DEFAULT_WARNING_LIMIT = 5000;
     public static final int DEFAULT_INFO_LIMIT = 1000;
-    private static final DecimalFormat decimalFormat = new DecimalFormat("#0.0");
 
     /**
      * By default every method in class with @Service annotation is monitored.
@@ -91,7 +89,7 @@ public class PerformanceMonitorAspect {
     }
 
     private boolean getMonitor(final PerformanceMonitor monitorAnnotation) {
-        return monitorAnnotation != null ? monitorAnnotation.monitor() : true;
+        return monitorAnnotation == null || monitorAnnotation.monitor();
     }
 
     private static String getMethodWithClass(final MethodSignature methodSignature) {
@@ -100,11 +98,10 @@ public class PerformanceMonitorAspect {
 
     private String buildMessage(final String invocationName,
                                 final Object[] args,
-                                final double executionTime) {
-        final double executionTimeSeconds = executionTime/1000.0;
+                                final long executionTimeMs) {
         final StringBuilder builder = new StringBuilder(100)
             .append("invocation=").append(invocationName)
-            .append(" invocationTimeSec=").append(decimalFormat.format(executionTimeSeconds));
+            .append(" tookMs=").append(executionTimeMs);
 
         if (args != null && args.length > 0) {
             builder.append(" arguments=");
@@ -126,14 +123,14 @@ public class PerformanceMonitorAspect {
                 buildArrayToString(builder, objects);
             } catch (ClassCastException e) {
                 log.debug("buildArrayToString Error", e);
-                builder.append("[" + value + "]");
+                builder.append("[").append(value).append("]");
             }
         } else if (value instanceof Collection<?>) {
             final Collection<?> values = (Collection<?>) value;
-            final Object[] objects = values.toArray(new Object[values.size()]);
+            final Object[] objects = values.toArray(new Object[0]);
             buildArrayToString(builder, objects);
         } else {
-            builder.append(value.toString());
+            builder.append(value);
         }
     }
 
