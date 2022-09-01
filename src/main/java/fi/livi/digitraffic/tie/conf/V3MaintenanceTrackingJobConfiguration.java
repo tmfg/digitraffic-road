@@ -71,7 +71,7 @@ public class V3MaintenanceTrackingJobConfiguration {
         } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getTime() < runRateMs * 10);
 
         if (totalCount > 0) {
-            final double msPerObservation = (double) start.getTime() / totalCount;
+            final long msPerObservation = start.getTime() / totalCount;
             log.info("method=handleUnhandledMaintenanceTrackingObservations handledTotalCount={} tookMs={} tookMsPerObservation={}",
                      totalCount, start.getTime(), msPerObservation);
         } else {
