@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,8 +35,11 @@ public class WazeReverseGeocodingService {
 
     private final WazeReverseGeocodingApi wazeReverseGeocodingApi;
 
+    private final boolean featureFlagMultiLineString;
+
     @Autowired
-    public WazeReverseGeocodingService(final ObjectMapper objectMapper, final WazeReverseGeocodingApi wazeReverseGeocodingApi) {
+    public WazeReverseGeocodingService(@Value("${waze.feature.multilinestring: true}") final boolean featureFlagMultiLineString, final ObjectMapper objectMapper, final WazeReverseGeocodingApi wazeReverseGeocodingApi) {
+        this.featureFlagMultiLineString = featureFlagMultiLineString;
         this.genericJsonReader = objectMapper.reader();
         this.wazeReverseGeocodingApi = wazeReverseGeocodingApi;
     }
@@ -55,7 +59,7 @@ public class WazeReverseGeocodingService {
     private Optional<Point> getPoint(final Geometry<?> geometry) {
         if (geometry instanceof Point) {
             return Optional.of((Point) geometry);
-        } else if (geometry instanceof MultiLineString) {
+        } else if (featureFlagMultiLineString && geometry instanceof MultiLineString) {
             return ((MultiLineString) geometry).getCoordinates().stream()
                 .flatMap(Collection::stream)
                 .findFirst()
