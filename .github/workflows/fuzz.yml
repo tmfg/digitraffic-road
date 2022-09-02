@@ -8,10 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fuzz
-        uses: mprencipe/waggers-action@v2
+        uses: mprencipe/waggers-action@v3
         with:
           url: https://tie-test.digitraffic.fi/swagger/swagger-spec.json
           fuzzcount: 5
+          headers: 'digitraffic-user:internal-digitraffic-fuzz'
       - name: Notify Slack
         if: failure()
         uses: 8398a7/action-slack@v3
