@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.service.v1.location;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.toInstantWithOutMillis;
 import static org.springframework.data.domain.Sort.Order.asc;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -52,15 +54,15 @@ public class LocationService {
     public LocationFeatureCollection findLocationsMetadata(final boolean onlyUpdateInfo, final String version) {
         final LocationVersion locationVersion = getLocationVersion(version);
         final String lVersion = locationVersion.getVersion();
-
+        final Instant updated = toInstantWithOutMillis(locationVersion.getUpdated());
         if(onlyUpdateInfo) {
-            return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion);
+            return new LocationFeatureCollection(updated, lVersion);
         }
 
         final List<LocationFeature> features =
             locationRepository.findAllByVersion(lVersion).parallel().map(LocationFeature::new).collect(Collectors.toList());
         features.sort(Comparator.comparing(locationFeature -> locationFeature.id));
-        return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion, features);
+        return new LocationFeatureCollection(updated, lVersion, features);
     }
 
     private static boolean isLatestVersion(final String version) {
@@ -90,7 +92,7 @@ public class LocationService {
             throw new ObjectNotFoundException("Location", id);
         }
 
-        return new LocationFeatureCollection(locationVersion.getUpdated(), lVersion,
+        return new LocationFeatureCollection(toInstantWithOutMillis(locationVersion.getUpdated()), lVersion,
                 Collections.singletonList(new LocationFeature(location)));
     }
 

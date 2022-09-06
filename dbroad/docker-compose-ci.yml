@@ -1,9 +1,8 @@
 version: '2.1'
 
 networks:
-  db_network:
-    external:
-      name: dnet1
+  dnet1:
+    external: true
 
 services:
   db:
@@ -14,7 +13,7 @@ services:
       POSTGRES_PASSWORD: road
       POSTGRES_DB: road
     networks:
-      - db_network
+      - dnet1
     command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all -c max_connections=200
     build:
       context: ./postgis

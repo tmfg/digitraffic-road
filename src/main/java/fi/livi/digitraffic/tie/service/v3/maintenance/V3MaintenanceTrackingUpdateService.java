@@ -529,7 +529,9 @@ public class V3MaintenanceTrackingUpdateService {
     private static boolean isTasksChangedNullSafe(final Set<MaintenanceTrackingTask> newTasks, final MaintenanceTracking previousTracking) {
         if (previousTracking != null) {
             final Set<MaintenanceTrackingTask> previousTasks = previousTracking.getTasks();
-            final boolean changed = !newTasks.equals(previousTasks);
+            final boolean bothNullsOrEmpty = (newTasks == null || newTasks.isEmpty()) && (previousTasks == null || previousTasks.isEmpty());
+
+            final boolean changed = !bothNullsOrEmpty && !newTasks.equals(previousTasks);
 
             if (changed && log.isDebugEnabled()) {
                 log.debug("WorkMachineTrackingTask changed from {} to {} for {}",
