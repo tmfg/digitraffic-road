@@ -81,3 +81,4 @@ Check for Maven dependency updates
 Update Maven dependencies
 
     $  mvn versions:use-latest-releases versions:update-properties
+
