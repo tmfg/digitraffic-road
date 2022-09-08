@@ -52,6 +52,7 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
 
     private CameraPreset preset1;
     private CameraPreset preset2;
+    private Instant stationModified;
 
     @BeforeEach
     public void initData() {
@@ -73,6 +74,13 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
         // Persist to db and clear context to force saved data re-read from db
         entityManager.flush();
         entityManager.clear();
+
+        // Reload to get modified fields from db
+        preset1 = entityManager.find(CameraPreset.class, preset1.getId());
+        preset2 = entityManager.find(CameraPreset.class, preset2.getId());
+
+        stationModified = DateHelper.getNewest(preset1.getRoadStation().getModified(),
+                                               DateHelper.getNewest(preset1.getModified(), preset2.getModified()));
 
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA, metadataUpdateTime);
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK, metadataCheckedTime);
@@ -101,6 +109,7 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.name", isA(String.class)))
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus", is(in(new String[] {"GATHERING", "REMOVED_TEMPORARILY"}))))
                 .andExpect(jsonPath("$.features[0].properties.state", is(RoadStationState.OK.name())))
+                .andExpect(jsonPath("$.features[0].properties.dataUpdatedTime", is(stationModified.toString())))
                 .andExpect(jsonPath("$.features[0].properties.presets", hasSize(2)))
 
                 .andExpect(jsonPath("$.features[0].properties.presets[0].id", is(preset1.getPresetId())))
@@ -131,6 +140,7 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
 
                 .andExpect(jsonPath("$.properties.collectionStatus", is(cameraStation.getCollectionStatus().name())))
                 .andExpect(jsonPath("$.properties.state", is(RoadStationState.OK.name())))
+                .andExpect(jsonPath("$.properties.dataUpdatedTime", is(stationModified.toString())))
                 .andExpect(jsonPath("$.properties.collectionInterval", isA(Integer.class)))
                 .andExpect(jsonPath("$.properties.names", aMapWithSize(3)))
                 .andExpect(jsonPath("$.properties.roadAddress").exists())

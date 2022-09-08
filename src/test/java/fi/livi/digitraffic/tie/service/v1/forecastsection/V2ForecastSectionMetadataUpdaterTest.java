@@ -73,6 +73,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
         final Instant updated = forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
         final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA).toInstant();
+        final Instant lastChecked = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA_CHECK).toInstant();
 
         assertEquals(updated, lastUpdated);
 
@@ -81,7 +82,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
                                                                           null);
         final Instant now = Instant.now();
         assertEquals(updated, featureCollection.dataUpdatedTime.toInstant());
-        assertEquals(now.getEpochSecond(), featureCollection.dataLastCheckedTime.toEpochSecond(), 2);
+        assertEquals(lastChecked.getEpochSecond(), featureCollection.dataLastCheckedTime.toEpochSecond(), 2);
 
         final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
         assertEquals(3, featureCollection.getFeatures().size());

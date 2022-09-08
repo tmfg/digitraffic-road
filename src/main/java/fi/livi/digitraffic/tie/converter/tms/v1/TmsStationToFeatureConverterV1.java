@@ -56,7 +56,7 @@ public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeature
 
         // RoadStation properties
         final RoadStation rs = station.getRoadStation();
-        setRoadStationPropertiesSimple(properties, rs);
+        setRoadStationPropertiesSimple(properties, rs, station.getModified());
 
         return new TmsStationFeatureSimpleV1(getGeometry(rs), properties);
     }
@@ -81,7 +81,7 @@ public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeature
 
         // RoadStation properties
         final RoadStation rs = station.getRoadStation();
-        setRoadStationPropertiesDetailed(properties, rs);
+        setRoadStationPropertiesDetailed(properties, rs, station.getModified());
 
         return new TmsStationFeatureDetailedV1(getGeometry(rs), properties);
     }

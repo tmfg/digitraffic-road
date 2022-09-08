@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.dto.weathercam.v1;
 
+import java.time.Instant;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -9,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Weathercam preset object with basic information")
-@JsonPropertyOrder({ "id", "cameraId", "presentationName" })
+@JsonPropertyOrder({ "id", "cameraId", "dataUpdatedTime", "presentationName" })
 public class WeathercamPresetSimpleV1 implements Comparable<WeathercamPresetSimpleV1>{
 
     @JsonIgnore
@@ -21,10 +23,14 @@ public class WeathercamPresetSimpleV1 implements Comparable<WeathercamPresetSimp
     @Schema(description = "Is preset in collection")
     public final boolean inCollection;
 
-    public WeathercamPresetSimpleV1(final String presetId, final String cameraId, final boolean inCollection) {
+    @JsonIgnore // Just for data transfer
+    private final Instant modified;
+
+    public WeathercamPresetSimpleV1(final String presetId, final String cameraId, final boolean inCollection, final Instant modified) {
         this.id = presetId;
         this.cameraId = cameraId;
         this.inCollection = inCollection;
+        this.modified = modified;
     }
 
     @Override
@@ -61,5 +67,9 @@ public class WeathercamPresetSimpleV1 implements Comparable<WeathercamPresetSimp
             return 0;
         }
         return this.id.compareTo(other.id);
+    }
+
+    public Instant getModified() {
+        return modified;
     }
 }

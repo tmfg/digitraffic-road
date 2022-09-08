@@ -70,7 +70,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
     }
 
     private WeathercamPresetSimpleV1 convertToSimplePreset(final CameraPreset cp) {
-        return new WeathercamPresetSimpleV1(cp.getPresetId(), cp.getCameraId(), cp.isInCollection());
+        return new WeathercamPresetSimpleV1(cp.getPresetId(), cp.getCameraId(), cp.isInCollection(), cp.getModified());
     }
 
     private WeathercamPresetDetailedV1 convertToDetailedPreset(final CameraPreset cp) {
@@ -81,7 +81,8 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
             DataValidityHelper.nullifyUnknownValue(cp.getPresetName1()), // dto.setPresentationName
             cp.getResolution(),
             cp.getDirection(),
-            getImageUrl(cp));
+            getImageUrl(cp),
+            cp.getModified());
     }
 
     private String getImageUrl(final CameraPreset cp) {
@@ -100,7 +101,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
 
             // RoadStation properties
             final RoadStation rs = cp.getRoadStation();
-            setRoadStationPropertiesSimple(properties, rs);
+            setRoadStationPropertiesSimple(properties, rs, null);
 
             return new WeathercamStationFeatureSimpleV1(getGeometry(rs), properties);
     }
@@ -130,7 +131,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
 
         // RoadStation properties
         final RoadStation rs = cp.getRoadStation();
-        setRoadStationPropertiesDetailed(properties, rs);
+        setRoadStationPropertiesDetailed(properties, rs, null);
 
         return new WeathercamStationFeatureV1Detailed(getGeometry(rs), properties);
     }

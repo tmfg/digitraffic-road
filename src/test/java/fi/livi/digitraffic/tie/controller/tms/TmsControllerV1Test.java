@@ -86,7 +86,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
 
-        this.tmsStation = tms;
+        this.tmsStation = entityManager.find(TmsStation.class, tms.getId());
     }
 
     /* METADATA */
@@ -110,6 +110,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.collectionStatus",
                     Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name())))
                 .andExpect(jsonPath("$.features[0].properties.state", Matchers.anything()))
+                .andExpect(jsonPath("$.features[0].properties.dataUpdatedTime", is(tmsStation.getRoadStation().getModified().toString())))
                 .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
@@ -132,6 +133,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.properties.collectionStatus",
                     Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name())))
                 .andExpect(jsonPath("$.properties.state", Matchers.anything()))
+                .andExpect(jsonPath("$.properties.dataUpdatedTime", is(tmsStation.getRoadStation().getModified().toString())))
                 .andExpect(jsonPath("$.properties.municipality", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.properties.municipalityCode", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.model.v1.camera;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
@@ -102,6 +103,12 @@ public class CameraPreset {
      */
     @Column(updatable = false, insertable = false) // virtual column
     private boolean publishable;
+
+    @Column(nullable = false, updatable = false, insertable = false)
+    private Instant created;
+
+    @Column(nullable = false, updatable = false, insertable = false)
+    private Instant modified;
 
     public Long getId() {
         return id;
@@ -316,5 +323,13 @@ public class CameraPreset {
                 .appendField("roadStationLotjuId", getRoadStationLotjuId())
                 .appendField("roadStationNaturalId", getRoadStationNaturalId())
                 .toString();
+    }
+
+    public Instant getCreated() {
+        return created;
+    }
+
+    public Instant getModified() {
+        return modified;
     }
 }

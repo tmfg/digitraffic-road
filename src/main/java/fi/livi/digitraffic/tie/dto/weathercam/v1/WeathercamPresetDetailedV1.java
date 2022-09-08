@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.dto.weathercam.v1;
 
+import java.time.Instant;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -8,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Weathercam preset object with detailed information")
-@JsonPropertyOrder({ "id", "cameraId", "presentationName" })
+@JsonPropertyOrder({ "id", "cameraId", "dataUpdatedTime", "presentationName" })
 public class WeathercamPresetDetailedV1 extends WeathercamPresetSimpleV1 {
 
     @Schema(description = "PresentationName (Preset name 1, direction)")
@@ -31,8 +33,8 @@ public class WeathercamPresetDetailedV1 extends WeathercamPresetSimpleV1 {
 
     public WeathercamPresetDetailedV1(final String presetId, final String cameraId, final boolean inCollection,
                                       final String presentationName, final String resolution,
-                                      final String directionCode,  final String imageUrl) {
-        super(presetId, cameraId, inCollection);
+                                      final String directionCode, final String imageUrl, final Instant modified) {
+        super(presetId, cameraId, inCollection, modified);
         this.presentationName = presentationName;
         this.resolution = resolution;
         this.directionCode = directionCode;

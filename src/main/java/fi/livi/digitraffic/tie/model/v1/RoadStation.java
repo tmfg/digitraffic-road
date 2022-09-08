@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.model.v1;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -125,6 +126,12 @@ public class RoadStation {
      */
     @Column(updatable = false, insertable = false) // virtual column
     private boolean publishable;
+
+    @Column(nullable = false, updatable = false, insertable = false)
+    private Instant created;
+
+    @Column(nullable = false, updatable = false, insertable = false)
+    private Instant modified;
 
     protected RoadStation() {
     }
@@ -507,5 +514,13 @@ public class RoadStation {
      */
     public void updatePublicity(final boolean isPublic) {
         updatePublicity(isPublic, null);
+    }
+
+    public Instant getCreated() {
+        return created;
+    }
+
+    public Instant getModified() {
+        return modified;
     }
 }

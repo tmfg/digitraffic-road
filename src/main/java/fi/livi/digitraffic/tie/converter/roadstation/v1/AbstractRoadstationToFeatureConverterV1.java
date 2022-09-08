@@ -1,11 +1,13 @@
 package fi.livi.digitraffic.tie.converter.roadstation.v1;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Optional;
 
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesDetailedV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.dto.roadstation.v1.StationRoadAddressV1;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.RoadAddress;
@@ -20,15 +22,16 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
     }
 
     protected static void setRoadStationPropertiesSimple(final RoadStationPropertiesSimpleV1<?> properties,
-                                                         final RoadStation roadStation) {
+                                                         final RoadStation roadStation, final Instant childModified) {
         properties.setName(roadStation.getName());
         properties.setCollectionStatus(roadStation.getCollectionStatus());
         properties.setState(roadStation.getState());
+        properties.setDataUpdatedTime(DateHelper.getNewest(roadStation.getModified(), childModified));
     }
 
     protected static void setRoadStationPropertiesDetailed(final RoadStationPropertiesDetailedV1<?> properties,
-                                                           final RoadStation roadStation) {
-        setRoadStationPropertiesSimple(properties, roadStation);
+                                                           final RoadStation roadStation, final Instant childModified) {
+        setRoadStationPropertiesSimple(properties, roadStation, childModified);
 
         properties.setCollectionInterval(roadStation.getCollectionInterval());
 

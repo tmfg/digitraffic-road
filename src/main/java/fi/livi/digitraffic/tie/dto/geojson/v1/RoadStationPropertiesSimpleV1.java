@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.dto.geojson.v1;
 
+import java.time.Instant;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -19,6 +21,9 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
 
     @Schema(description = "Road station state")
     private RoadStationState state;
+
+    @Schema(description = "Data last updated date time", required = true)
+    private Instant dataUpdatedTime;
 
     public RoadStationPropertiesSimpleV1(final ID_TYPE id) {
         super(id);
@@ -63,6 +68,7 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
                 .append(name, that.name)
                 .append(collectionStatus, that.collectionStatus)
                 .append(state, that.state)
+                .append(dataUpdatedTime, that.dataUpdatedTime)
                 .isEquals();
     }
 
@@ -73,6 +79,15 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
                 .append(name)
                 .append(collectionStatus)
                 .append(state)
+                .append(dataUpdatedTime)
                 .toHashCode();
+    }
+
+    public Instant getDataUpdatedTime() {
+        return dataUpdatedTime;
+    }
+
+    public void setDataUpdatedTime(final Instant dataUpdatedTime) {
+        this.dataUpdatedTime = dataUpdatedTime;
     }
 }

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.model.v1;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import javax.persistence.CascadeType;
@@ -71,6 +72,12 @@ public class TmsStation {
     @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
+
+    @Column(nullable = false, updatable = false, insertable = false)
+    private Instant created;
+
+    @Column(nullable = false, updatable = false, insertable = false)
+    private Instant modified;
 
     public Long getId() {
         return id;
@@ -208,4 +215,11 @@ public class TmsStation {
         return roadStation != null ? roadStation.getNaturalId() : null;
     }
 
+    public Instant getCreated() {
+        return created;
+    }
+
+    public Instant getModified() {
+        return modified;
+    }
 }
