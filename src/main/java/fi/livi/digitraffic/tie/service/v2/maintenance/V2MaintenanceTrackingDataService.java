@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -182,7 +183,7 @@ public class V2MaintenanceTrackingDataService {
         if (taskIds == null || taskIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return taskIds.stream().map(Enum::name).collect(Collectors.toList());
+        return taskIds.stream().filter(Objects::nonNull).map(Enum::name).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
