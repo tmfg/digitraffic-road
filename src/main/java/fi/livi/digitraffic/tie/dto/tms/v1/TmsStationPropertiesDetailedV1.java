@@ -17,32 +17,32 @@ public class TmsStationPropertiesDetailedV1 extends RoadStationPropertiesDetaile
     public final long tmsNumber;
 
     @Schema(description = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true)
-    public String direction1Municipality;
+    public final String direction1Municipality;
 
     @Schema(description = "Direction 1 municipality code")
-    public Integer direction1MunicipalityCode;
+    public final Integer direction1MunicipalityCode;
 
     @Schema(description = "Direction 2 municipality (2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", required = true)
-    public String direction2Municipality;
+    public final String direction2Municipality;
 
     @Schema(description = "Direction 2 municipality code")
-    public Integer direction2MunicipalityCode;
+    public final Integer direction2MunicipalityCode;
 
     @Schema(description = "Type of  TMS station")
-    public TmsStationType stationType;
+    public final TmsStationType stationType;
 
     @Schema(description = "Type of calculation device")
-    public CalculatorDeviceType calculatorDeviceType;
+    public final CalculatorDeviceType calculatorDeviceType;
 
     /** Sensors natural ids */
     @Schema(description = "Tms Station Sensors ids")
-    public List<Long> sensors;
+    public final List<Long> sensors;
 
     @Schema(description = "Free flow speed to direction 1 [km/h]")
-    public Double freeFlowSpeed1;
+    public final Double freeFlowSpeed1;
 
     @Schema(description = "Free flow speed to direction 2 [km/h]")
-    public Double freeFlowSpeed2;
+    public final Double freeFlowSpeed2;
 
     public TmsStationPropertiesDetailedV1(final long id, final long tmsNumber,
                                           final String direction1Municipality, final Integer direction1MunicipalityCode,

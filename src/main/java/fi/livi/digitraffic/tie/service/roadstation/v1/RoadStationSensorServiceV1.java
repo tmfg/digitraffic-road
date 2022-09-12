@@ -22,9 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.dao.roadstation.v1.RoadStationSensorValueDtoRepositoryV1;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
-import fi.livi.digitraffic.tie.dto.roadstation.v1.RoadStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
@@ -75,8 +75,8 @@ public class RoadStationSensorServiceV1 {
 
     // TODO use in weather apis
     @Transactional(readOnly = true)
-    public RoadStationSensorsDtoV1<?> findWeatherRoadStationsSensorsMetadata(final boolean onlyUpdateInfo) {
-        return new RoadStationSensorsDtoV1<>(
+    public WeatherStationSensorsDtoV1 findWeatherRoadStationsSensorsMetadata(final boolean onlyUpdateInfo) {
+        return new WeatherStationSensorsDtoV1(
             dataStatusService.findDataUpdatedInstant(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION)),
             dataStatusService.findDataUpdatedInstant(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION)),
             onlyUpdateInfo ?

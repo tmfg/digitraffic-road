@@ -41,9 +41,9 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
            "  AND tms.roadStation.isPublic = true")
     boolean tmsExistsWithRoadStationNaturalId(final long roadStationNaturalId);
 
-    TmsStation findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(final Long id);
+    TmsStation findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(final Long naturalId);
 
-    TmsStation findByRoadStationIsPublicIsTrueAndNaturalId(final Long lamId);
+    TmsStation findByRoadStationIsPublicIsTrueAndNaturalId(final Long tmsNumber);
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})

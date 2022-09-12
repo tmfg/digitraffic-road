@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.dto.roadstation.v1.RoadStationSensorsDtoV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Available sensors of weather stations")
+@Schema(description = "Available sensors of TMS stations")
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "roadStationSensors" })
 public class TmsStationSensorsDtoV1 extends RoadStationSensorsDtoV1<TmsStationSensorDtoV1> {
 

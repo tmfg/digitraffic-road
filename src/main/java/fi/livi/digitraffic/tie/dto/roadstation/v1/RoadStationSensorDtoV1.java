@@ -41,9 +41,9 @@ public abstract class RoadStationSensorDtoV1 {
     @Schema(description = "Descriptions for sensor values")
     public final List<SensorValueDescription> sensorValueDescriptions;
 
-    public RoadStationSensorDtoV1(long naturalId, String nameFi, final String shortNameFi, final String unit, final Integer accuracy,
+    public RoadStationSensorDtoV1(final long naturalId, final String nameFi, final String shortNameFi, final String unit, final Integer accuracy,
                                   final String descriptionFi, final String descriptionSv, final String descriptionEn,
-                                  final String presentationNameFi, final String presentationNameSv, String presentationNameEn,
+                                  final String presentationNameFi, final String presentationNameSv, final String presentationNameEn,
                                   final List<SensorValueDescription> sensorValueDescriptions) {
         this.naturalId = naturalId;
         this.unit = unit;

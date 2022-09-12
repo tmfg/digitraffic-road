@@ -13,12 +13,19 @@ public class TmsStationSensorDtoV1 extends RoadStationSensorDtoV1 {
     @Schema(description = RoadStationSensorDirection.API_DESCRIPTION)
     public final RoadStationSensorDirection direction;
 
-    public TmsStationSensorDtoV1(long naturalId, String nameFi, String shortNameFi, String unit, Integer accuracy,
-                                 String descriptionFi, String descriptionSv, String descriptionEn,
-
-                                 List<SensorValueDescription> sensorValueDescriptions,
-                                 String presentationNameFi, String presentationNameSv, String presentationNameEn,
-                                 Integer direction) {
+    public TmsStationSensorDtoV1(final long naturalId,
+                                 final String nameFi,
+                                 final String shortNameFi,
+                                 final String unit,
+                                 final Integer accuracy,
+                                 final String descriptionFi,
+                                 final String descriptionSv,
+                                 final String descriptionEn,
+                                 final List<SensorValueDescription> sensorValueDescriptions,
+                                 final String presentationNameFi,
+                                 final String presentationNameSv,
+                                 final String presentationNameEn,
+                                 final Integer direction) {
         super(naturalId, nameFi, shortNameFi, unit, accuracy,
               descriptionFi, descriptionSv, descriptionEn,
               presentationNameFi, presentationNameSv, presentationNameEn,

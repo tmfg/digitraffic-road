@@ -6,7 +6,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Road station sensors metadata")
-public class RoadStationSensorsDtoV1<T extends RoadStationSensorDtoV1> extends StationMetadataDtoV1  {
+public abstract class RoadStationSensorsDtoV1<T extends RoadStationSensorDtoV1> extends StationMetadataDtoV1  {
 
     @Schema(description = "Available sensors of road stations", required = true)
     public final List<T> sensors;

@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.dto.tms.v1;
+package fi.livi.digitraffic.tie.dto.weather.v1;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -11,16 +11,16 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * GeoJSON TMS station feature object
+ * GeoJSON weather station object
  */
-@Schema(description = "Tms GeoJSON feature object base")
+@Schema(description = "Weather station GeoJSON feature object base")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
-public class TmsStationFeatureBaseV1<TmsStationPropertiesType extends RoadStationPropertiesSimpleV1<Long>> extends Feature<Point, TmsStationPropertiesType> {
+public class WeatherStationFeatureBaseV1<WeatherStationPropertiesType extends RoadStationPropertiesSimpleV1<Long>> extends Feature<Point, WeatherStationPropertiesType> {
 
     @Schema(description = "Id of the road station", required = true)
     public final Long id;
 
-    public TmsStationFeatureBaseV1(final Point geometry, final TmsStationPropertiesType properties) {
+    public WeatherStationFeatureBaseV1(final Point geometry, final WeatherStationPropertiesType properties) {
         super(geometry, properties);
         this.id = properties.id;
     }
@@ -39,7 +39,7 @@ public class TmsStationFeatureBaseV1<TmsStationPropertiesType extends RoadStatio
         if (o == null || getClass() != o.getClass())
             return false;
 
-        final TmsStationFeatureBaseV1<?> that = (TmsStationFeatureBaseV1<?>) o;
+        final WeatherStationFeatureBaseV1<?> that = (WeatherStationFeatureBaseV1<?>) o;
 
         return new EqualsBuilder()
             .append(getType(), that.getType())

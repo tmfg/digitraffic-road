@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.dto.tms.v1;
+package fi.livi.digitraffic.tie.dto.weather.v1;
 
 import java.time.Instant;
 import java.util.List;
@@ -9,16 +9,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.dto.roadstation.v1.StationsDataV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Latest measurement data from TMS stations")
+@Schema(description = "Latest measurement data from Weather stations")
 @JsonPropertyOrder({ "dataUpdatedTime", "stations"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TmsStationsDataDtoV1 extends StationsDataV1<Long, TmsStationDataDtoV1> {
+public class WeatherStationsDataDtoV1 extends StationsDataV1<Long, WeatherStationDataDtoV1> {
 
-    public TmsStationsDataDtoV1(final List<TmsStationDataDtoV1> stations, final Instant updated) {
+    public WeatherStationsDataDtoV1(final List<WeatherStationDataDtoV1> stations, final Instant updated) {
         super(updated, stations);
     }
 
-    public TmsStationsDataDtoV1(final Instant updated) {
+    public WeatherStationsDataDtoV1(final Instant updated) {
         this(null, updated);
     }
 }

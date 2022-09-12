@@ -49,12 +49,12 @@ public class TmsControllerV1 {
 
     /**
      * API paths:
-     *
+     * <p>
      * Metadata
      * /api/tms/v/stations (simple)
      * /api/tms/v/stations/{id} (detailed)
      * /api/tms/v/sensors/ (sensors metadata)
-     *
+     * <p>
      * Data
      * /api/tms/v/stations/data (all)
      * /api/tms/v/stations/{id}/data (one station)

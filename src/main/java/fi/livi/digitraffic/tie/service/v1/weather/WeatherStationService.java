@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.model.WeatherStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.UpdateStatus;
 
 @Service
@@ -140,4 +141,16 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.WEATHER_STATION_METADATA_CHECK);
         return getNewestAtUtc(sensorsUpdated, stationsUpdated);
     }
+
+    @Transactional(readOnly = true)
+    public WeatherStation findPublishableWeatherStationByRoadStationNaturalId(long roadStationNaturalId) {
+        final WeatherStation entity = weatherStationRepository.findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(roadStationNaturalId);
+
+        if (entity == null) {
+            throw new ObjectNotFoundException(WeatherStation.class, roadStationNaturalId);
+        }
+
+        return entity;
+    }
+
 }
