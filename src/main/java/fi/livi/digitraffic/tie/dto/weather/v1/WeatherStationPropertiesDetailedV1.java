@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "name" })
 public class WeatherStationPropertiesDetailedV1 extends RoadStationPropertiesDetailedV1<Long> {
 
-    @Schema(description = "Type of 2eather station")
+    @Schema(description = "Type of weather station")
     public final WeatherStationType stationType;
 
     @Schema(description = "Is station master or slave station", required = true)

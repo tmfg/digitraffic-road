@@ -95,7 +95,6 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
                 .andExpect(jsonPath("$.dataUpdatedTime", is(metadataUpdateTime.toString())))
-                .andExpect(jsonPath("$.dataLastCheckedTime", is(metadataCheckedTime.toString())))
 
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", isA(String.class)))

@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
+import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
@@ -117,6 +118,15 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     @Test
     public void tmsStationRestApi() throws Exception {
 
+        final Integer vvapaas1Arvo = getRandomId(80, 100);
+        final Integer vvapaas2Arvo = getRandomId(101, 120);
+
+        final LamAnturiVakioVO vakio1 = tmsTestHelper.createAndSaveLamAnturiVakio(tmsStation.getLotjuId(), "VVAPAAS1");
+        tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio1, vvapaas1Arvo);
+        final LamAnturiVakioVO vakio2 = tmsTestHelper.createAndSaveLamAnturiVakio(tmsStation.getLotjuId(), "VVAPAAS2");
+        tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio2, vvapaas2Arvo);
+
+
         mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
@@ -150,7 +160,15 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.properties.provinceCode", Matchers.isA(Integer.class)))
 
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
+                .andExpect(jsonPath("$.properties.direction1Municipality", is("Vihti")))
+                .andExpect(jsonPath("$.properties.direction1MunicipalityCode", is(927)))
+                .andExpect(jsonPath("$.properties.direction2Municipality", is("Helsinki")))
+                .andExpect(jsonPath("$.properties.direction2MunicipalityCode", is(91)))
+                .andExpect(jsonPath("$.properties.calculatorDeviceType", Matchers.is(CalculatorDeviceType.DSL_5.name())))
+                .andExpect(jsonPath("$.properties.freeFlowSpeed1", is(vvapaas1Arvo.doubleValue())))
+                .andExpect(jsonPath("$.properties.freeFlowSpeed2", is(vvapaas2Arvo.doubleValue())))
+
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
     }
 
     @Test

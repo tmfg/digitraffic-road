@@ -16,7 +16,9 @@ import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
 import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
+import fi.livi.digitraffic.tie.converter.feature.WeatherStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.converter.tms.v1.TmsStationToFeatureConverterV1;
+import fi.livi.digitraffic.tie.converter.weather.v1.WeatherStationToFeatureConverterV1;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
@@ -33,9 +35,12 @@ import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
+import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
+import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
+import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
 
 @DataJpaTest(properties = "spring.main.web-application-type=servlet",
              excludeAutoConfiguration = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,
@@ -46,19 +51,20 @@ import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
          Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
 
          // Services V1
-         TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class,
+         TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class, WeatherDataWebServiceV1.class, WeatherStationMetadataWebServiceV1.class,
          RoadStationSensorServiceV1.class,
 
          // Services
          TmsStationService.class, DataStatusService.class, TmsStationSensorConstantService.class, StationSensorConverterService.class,
-         V3RegionGeometryDataService.class, V3Datex2DataService.class, V2Datex2DataService.class,
+         V3RegionGeometryDataService.class, V3Datex2DataService.class, V2Datex2DataService.class, WeatherStationService.class,
 
          // Repositories and daos
          TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class,
 
          // Conveters
-         TmsStationMetadata2FeatureConverter.class, TmsStationToFeatureConverterV1.class, CoordinateConverter.class,
-         TrafficMessageJsonConverterV1.class, V2Datex2JsonConverter.class, ImsJsonConverter.class,
+         TmsStationMetadata2FeatureConverter.class, TmsStationToFeatureConverterV1.class,
+         WeatherStationMetadata2FeatureConverter.class, WeatherStationToFeatureConverterV1.class,
+         TrafficMessageJsonConverterV1.class, V2Datex2JsonConverter.class, ImsJsonConverter.class, CoordinateConverter.class,
 
          // Test services
          TmsTestHelper.class, TrafficMessageTestHelper.class,

@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.dto.geojson.v1;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,13 +34,13 @@ public abstract class RoadStationPropertiesDetailedV1<ID_TYPE> extends RoadStati
     private String country;
 
     @Schema(description = "Station established date time")
-    private ZonedDateTime startTime;
+    private Instant startTime;
 
     @Schema(description = "Repair maintenance date time")
-    private ZonedDateTime repairMaintenanceTime;
+    private Instant repairMaintenanceTime;
 
     @Schema(description = "Annual maintenance date time")
-    private ZonedDateTime annualMaintenanceTime;
+    private Instant annualMaintenanceTime;
 
 
     @Schema(description = "Purpose of the road station")
@@ -108,27 +108,27 @@ public abstract class RoadStationPropertiesDetailedV1<ID_TYPE> extends RoadStati
         return country;
     }
 
-    public void setStartTime(final ZonedDateTime startTime) {
+    public void setStartTime(final Instant startTime) {
         this.startTime = startTime;
     }
 
-    public ZonedDateTime getStartTime() {
+    public Instant getStartTime() {
         return startTime;
     }
 
-    public void setRepairMaintenanceTime(final ZonedDateTime repairMaintenanceTime) {
+    public void setRepairMaintenanceTime(final Instant repairMaintenanceTime) {
         this.repairMaintenanceTime = repairMaintenanceTime;
     }
 
-    public ZonedDateTime getRepairMaintenanceTime() {
+    public Instant getRepairMaintenanceTime() {
         return repairMaintenanceTime;
     }
 
-    public void setAnnualMaintenanceTime(final ZonedDateTime annualMaintenanceTime) {
+    public void setAnnualMaintenanceTime(final Instant annualMaintenanceTime) {
         this.annualMaintenanceTime = annualMaintenanceTime;
     }
 
-    public ZonedDateTime getAnnualMaintenanceTime() {
+    public Instant getAnnualMaintenanceTime() {
         return annualMaintenanceTime;
     }
 

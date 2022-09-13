@@ -41,9 +41,9 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
 
         properties.setLiviId(roadStation.getLiviId());
         properties.setCountry(roadStation.getCountry());
-        properties.setStartTime(roadStation.getStartDate());
-        properties.setRepairMaintenanceTime(roadStation.getRepairMaintenanceDate());
-        properties.setAnnualMaintenanceTime(roadStation.getAnnualMaintenanceDate());
+        properties.setStartTime(DateHelper.toInstant(roadStation.getStartDate()));
+        properties.setRepairMaintenanceTime(DateHelper.toInstant(roadStation.getRepairMaintenanceDate()));
+        properties.setAnnualMaintenanceTime(DateHelper.toInstant(roadStation.getAnnualMaintenanceDate()));
         // HOX: Removed temporary until LOTJU data is fixed in 2016
         // properties.setLocation(roadStation.getLocation());
         properties.setPurpose(roadStation.getPurpose());

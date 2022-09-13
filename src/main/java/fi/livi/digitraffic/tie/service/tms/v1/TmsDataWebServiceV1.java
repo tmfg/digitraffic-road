@@ -69,7 +69,6 @@ public class TmsDataWebServiceV1 {
             });
             return new TmsStationsDataDtoV1(stations, updated);
         }
-
     }
 
     @Transactional(readOnly = true)
