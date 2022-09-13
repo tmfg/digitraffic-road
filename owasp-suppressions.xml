@@ -5,6 +5,13 @@
         Temporary suppressions, check and update these periodically
     -->
 
+    <suppress until="2022-10-13">
+        <!-- Requires update in upstream org.springframework.boot/spring-boot-starter-parent -->
+        <notes><![CDATA[file name: snakeyaml-1.30.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <cve>CVE-2022-25857</cve>
+    </suppress>
+
     <suppress until="2022-09-15Z">
         <!-- We don't use com.amazonaws.services.s3.transfer.TransferManager::downloadDirectory -->
         <notes><![CDATA[file name: aws-java-sdk-(secretsmanager|ec2).jar]]></notes>
