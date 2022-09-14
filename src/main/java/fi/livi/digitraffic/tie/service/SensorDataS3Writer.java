@@ -3,10 +3,7 @@ package fi.livi.digitraffic.tie.service;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -19,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
@@ -57,47 +53,6 @@ public class SensorDataS3Writer {
         this.s3Client = sensorDataS3Client;
     }
 
-    // this is called from tests only!
-    @Transactional(readOnly = true)
-    public boolean updateSensorDataS3History(final ZonedDateTime currentTimeWindow) {
-        final AtomicBoolean fixedHistoryItems = new AtomicBoolean(false);
-
-        // Do 24h-window and loop through
-        ZonedDateTime windowLoop = currentTimeWindow.minusHours(23);
-
-        // Missing time windows
-        List<ZonedDateTime> missingWindows = new ArrayList<>();
-
-        while (windowLoop.isBefore(currentTimeWindow)) {
-            try {
-                s3Client.getObjectMetadata(s3Properties.getS3BucketName(), s3Properties.getFileStorageName(windowLoop));
-            } catch (AmazonS3Exception s3Exception) {
-                if (s3Exception.getErrorCode().startsWith(NOT_FOUND)) {
-                    log.warn("Found missing history item: {} - {}", windowLoop, windowLoop.plusHours(1));
-
-                    missingWindows.add(windowLoop);
-                }
-            } catch (Exception e) {
-                log.warn("Unexpected error with aws/s3", e);
-            }
-
-            windowLoop = windowLoop.plusHours(1);
-        }
-
-        missingWindows.forEach(missingWindow -> {
-            try {
-                log.info("Fix {} missing history item", missingWindow);
-
-                writeSensorData(missingWindow, missingWindow.plusHours(1));
-
-                fixedHistoryItems.set(true);
-            } catch (Exception e) {
-                log.error("Failed to fix missing history: " + missingWindow, e);
-            }
-        });
-
-        return fixedHistoryItems.get();
-    }
 
     @Transactional(readOnly = true)
     public int writeSensorData(final ZonedDateTime from, final ZonedDateTime to) {

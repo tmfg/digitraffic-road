@@ -3,42 +3,44 @@ package fi.livi.digitraffic.tie.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang3.RandomUtils;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.opencsv.bean.CsvToBeanBuilder;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTestWithS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 
-public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
+@ExtendWith(MockitoExtension.class)
+public class SensorDataS3WriterTest extends AbstractDaemonTest {
     public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 
-    @Autowired
+    @Mock
     private AmazonS3 amazonS3;
 
     @Autowired
@@ -47,22 +49,9 @@ public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
     @Autowired
     private SensorValueHistoryRepository repository;
 
-    @Autowired
-    private SensorDataS3Properties sensorDataS3Properties;
+    private final SensorDataS3Properties sensorDataS3Properties = new SensorDataS3Properties("fakeTestBucket");
 
     private SensorValueHistoryBuilder builder;
-
-    @BeforeEach
-    public void initS3BucketForSensorData() {
-        log.info("Init S3 Bucket {} with S3: {}, {}", sensorDataS3Properties.getS3BucketName(), amazonS3);
-
-        if (amazonS3.doesBucketExistV2(sensorDataS3Properties.getS3BucketName())) {
-            log.info("Bucket {} exists already", sensorDataS3Properties.getS3BucketName());
-        } else {
-            amazonS3.createBucket(sensorDataS3Properties.getS3BucketName());
-            log.info("Bucket {} created", sensorDataS3Properties.getS3BucketName());
-        }
-    }
 
     protected void initDBContent(final ZonedDateTime time) {
         int min = time.getMinute();
@@ -74,33 +63,6 @@ public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
             .buildRandom(10, 10, 10, 0, min)
             .buildRandom(50, 10, 10, min + 1, min + 61)
             .save();
-    }
-
-    protected void createS3Object(final ZonedDateTime time) {
-        String filename = sensorDataS3Properties.getFileStorageName(time);
-
-        String dummyContent = "Lorem ipsum";
-
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("application/zip");
-        metadata.setContentLength(dummyContent.getBytes().length);
-
-        PutObjectResult result = amazonS3.putObject(sensorDataS3Properties.getS3BucketName(),
-            filename,
-            new ByteArrayInputStream(dummyContent.getBytes()),
-            metadata);
-
-        log.info("Store object: {}, result: {}", filename, result.toString());
-    }
-
-    protected void cleanBucket() {
-        ListObjectsV2Result result = amazonS3.listObjectsV2(sensorDataS3Properties.getS3BucketName());
-
-        if (!result.getObjectSummaries().isEmpty()) {
-            result.getObjectSummaries().stream().forEach(elem -> {
-                amazonS3.deleteObject(elem.getBucketName(), elem.getKey());
-            });
-        }
     }
 
     @Disabled("ks. DPO-1835")
@@ -163,23 +125,28 @@ public class SensorDataS3WriterTest extends AbstractDaemonTestWithS3 {
     }
 
     @Test
+    @Transactional(readOnly = true)
     public void historyCap() {
-        ZonedDateTime now = ZonedDateTime.now();
-        // Current time window
-        ZonedDateTime from = now.minusHours(1).truncatedTo(ChronoUnit.HOURS);
+        ReflectionTestUtils.setField(writer, "s3Properties", sensorDataS3Properties);
 
-        cleanBucket();
+        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime currentTimeWindow = now.minusHours(1).truncatedTo(ChronoUnit.HOURS);
 
-        int minusHours = RandomUtils.nextInt(3, 7);
+        ZonedDateTime windowLoop = currentTimeWindow.minusHours(23);
+        final List<ZonedDateTime> missingWindows = new ArrayList<>();
 
-        // Create test file (now - n hours)
-        createS3Object(now.minusHours(minusHours));
+        // Create some test keys for missing time windows.
+        while (windowLoop.isBefore(currentTimeWindow)) {
+            if (windowLoop.getHour() % 3 == 0) {
+                missingWindows.add(windowLoop);
+            }
+            windowLoop = windowLoop.plusHours(1);
+        }
 
-        // Test missing files update
-        assertTrue(writer.updateSensorDataS3History(from), "History update failure");
-
-        // No updates if no missing files
-        //Assert.assertFalse("Invalid history update", writer.updateSensorDataS3History(from));
+        missingWindows.forEach(missingWindow -> {
+            final int i = writer.writeSensorData(missingWindow, missingWindow.plusHours(1));
+            Assertions.assertTrue(i > -1, "History update failure");
+        });
     }
 }
 
