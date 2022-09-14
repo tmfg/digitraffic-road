@@ -1,10 +1,10 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,10 +42,10 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTest {
         }
 
         // Assert that scheduledServices has been running even when there has been errors
-        Assert.assertEquals(5, scheduledJob1ErrorCount);
-        Assert.assertEquals(5, scheduledJob2ErrorCount);
-        Assert.assertTrue(count1 > job1StartErrorsAfter + poolSize);
-        Assert.assertTrue(count2 > job2StartErrorsAfter + poolSize);
+        Assertions.assertEquals(5, scheduledJob1ErrorCount);
+        Assertions.assertEquals(5, scheduledJob2ErrorCount);
+        Assertions.assertTrue(count1 > job1StartErrorsAfter + poolSize);
+        Assertions.assertTrue(count2 > job2StartErrorsAfter + poolSize);
         log.info("Test took {} ms", start.getTime());
     }
 
