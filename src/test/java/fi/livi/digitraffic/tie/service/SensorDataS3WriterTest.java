@@ -16,13 +16,10 @@ import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
@@ -34,7 +31,6 @@ import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 
-@ExtendWith(MockitoExtension.class)
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
     public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 
@@ -120,7 +116,6 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     }
 
     @Test
-    @Transactional(readOnly = true)
     public void historyCap() {
         ReflectionTestUtils.setField(writer, "s3Properties", sensorDataS3Properties);
 

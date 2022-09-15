@@ -8,30 +8,21 @@ import java.time.Instant;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
 
-@ExtendWith(MockitoExtension.class)
-public class CameraImageS3WriterTest {
+public class CameraImageS3WriterTest extends AbstractDaemonTest {
 
     @Autowired
-    @InjectMocks
     private CameraImageS3Writer cameraImageS3Writer;
-
-    @Mock
-    private AmazonS3 amazonS3Client;
 
     @BeforeEach
     public void beforeEach() {
@@ -41,7 +32,7 @@ public class CameraImageS3WriterTest {
 
     @Test
     public void writeCurrentImageTest() {
-        Mockito.when(amazonS3Client.putObject(Mockito.anyString(), Mockito.anyString(), Mockito.any(ByteArrayInputStream.class), Mockito.any(
+        Mockito.when(amazonS3.putObject(Mockito.anyString(), Mockito.anyString(), Mockito.any(ByteArrayInputStream.class), Mockito.any(
             ObjectMetadata.class))).thenReturn(new PutObjectResult());
 
         final String key = "C1234567.jpg";
@@ -69,7 +60,7 @@ public class CameraImageS3WriterTest {
         final byte[] versionedImgData = new byte[] { (byte) 4 };
         final long nowEpochMilli = Instant.now().toEpochMilli();
 
-        Mockito.when(amazonS3Client.putObject(Mockito.anyString(), Mockito.anyString(),
+        Mockito.when(amazonS3.putObject(Mockito.anyString(), Mockito.anyString(),
                 Mockito.any(ByteArrayInputStream.class), Mockito.any(ObjectMetadata.class)))
             .thenReturn(putObjectResult);
 
@@ -80,8 +71,8 @@ public class CameraImageS3WriterTest {
     public void deleteTest() {
         final String imgKey = "C0650802.jpg";
         final String versionedKey = CameraImageS3Writer.getVersionedKey(imgKey);
-        Mockito.when(amazonS3Client.doesObjectExist(Mockito.anyString(), Mockito.eq(imgKey))).thenReturn(true);
-        Mockito.when(amazonS3Client.doesObjectExist(Mockito.anyString(), Mockito.eq(versionedKey))).thenReturn(false);
+        Mockito.when(amazonS3.doesObjectExist(Mockito.anyString(), Mockito.eq(imgKey))).thenReturn(true);
+        Mockito.when(amazonS3.doesObjectExist(Mockito.anyString(), Mockito.eq(versionedKey))).thenReturn(false);
 
         final CameraImageS3Writer.DeleteInfo deleteInfo = cameraImageS3Writer.deleteImage(imgKey);
         Assertions.assertTrue(deleteInfo.isDeleteSuccess());
