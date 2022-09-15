@@ -1,7 +1,10 @@
 package fi.livi.digitraffic.tie;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+
+import com.amazonaws.services.s3.AmazonS3;
 
 @TestPropertySource(properties = {
     "app.type=daemon",
@@ -14,5 +17,8 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(classes = RoadApplication.class,
                 webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public abstract class AbstractDaemonTest extends AbstractSpringJUnitTest {
+
+    @MockBean
+    protected AmazonS3 amazonS3;
 
 }

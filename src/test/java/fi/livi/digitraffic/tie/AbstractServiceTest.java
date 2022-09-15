@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.RestTemplate;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
@@ -96,6 +97,9 @@ public abstract class AbstractServiceTest extends AbstractJpaTest {
 
     @MockBean
     protected RegionGeometryGitClient regionGeometryGitClientMock;
+
+    @MockBean
+    protected AmazonS3 amazonS3;
 
     @SpyBean
     protected MetadataFileFetcher metadataFileFetcherSpy;

@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -39,9 +37,6 @@ import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 @ExtendWith(MockitoExtension.class)
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
     public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
-
-    @Mock
-    private AmazonS3 amazonS3;
 
     @Autowired
     private SensorDataS3Writer writer;
