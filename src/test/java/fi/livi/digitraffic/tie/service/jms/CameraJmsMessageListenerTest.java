@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
@@ -46,7 +47,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.data.s3.AbstractCameraTestWithS3;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -58,7 +59,7 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateManager;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 
 @Disabled("Does not execute properly in CI server")
-public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
+public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
     private static final String IMAGE_SUFFIX = "image.jpg";
@@ -82,11 +83,14 @@ public class CameraJmsMessageListenerTest extends AbstractCameraTestWithS3 {
     @Autowired
     private EntityManager entityManager;
 
-    @Autowired
+    @MockBean
     private AmazonS3 amazonS3;
 
     @Value("${dt.amazon.s3.weathercam.bucketName}")
     private String bucketName;
+
+    @Value("${metadata.server.path.image}")
+    private String LOTJU_IMAGE_PATH;
 
     private Map<String, byte[]> imageFilesMap = new HashMap<>();
     @BeforeEach

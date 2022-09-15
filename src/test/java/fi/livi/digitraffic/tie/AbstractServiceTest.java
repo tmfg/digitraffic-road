@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
@@ -62,7 +61,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServi
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
 
 @Import({// configurations
-          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
+          S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
           Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
 
           // services
