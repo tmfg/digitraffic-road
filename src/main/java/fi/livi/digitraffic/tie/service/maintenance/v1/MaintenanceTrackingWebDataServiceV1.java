@@ -1,10 +1,8 @@
-package fi.livi.digitraffic.tie.service.v2.maintenance;
+package fi.livi.digitraffic.tie.service.maintenance.v1;
 
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
-import static fi.livi.digitraffic.tie.model.DataType.MAINTENANCE_TRACKING_DATA_CHECKED;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -16,6 +14,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,19 +25,18 @@ import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
-import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingFeature;
-import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingFeatureCollection;
-import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingLatestFeature;
-import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingLatestFeatureCollection;
-import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingLatestProperties;
-import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingProperties;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestPropertiesV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingPropertiesV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 /**
@@ -47,38 +45,34 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
  * @see fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService
  * @see <a href="https://github.com/finnishtransportagency/harja">https://github.com/finnishtransportagency/harja</a>
  */
+@ConditionalOnWebApplication
 @Service
-public class V2MaintenanceTrackingDataService {
+public class MaintenanceTrackingWebDataServiceV1 {
 
-    private static final Logger log = LoggerFactory.getLogger(V2MaintenanceTrackingDataService.class);
+    private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingWebDataServiceV1.class);
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
     private final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
-    private final DataStatusService dataStatusService;
-
     private final ObjectMapper objectMapper;
     private static ObjectReader geometryReader;
 
     @Autowired
-    public V2MaintenanceTrackingDataService(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
-                                            final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository,
-                                            final DataStatusService dataStatusService,
-                                            final ObjectMapper objectMapper) {
+    public MaintenanceTrackingWebDataServiceV1(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
+                                               final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository,
+                                               final ObjectMapper objectMapper) {
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
         this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
-        this.dataStatusService = dataStatusService;
         this.objectMapper = objectMapper;
         geometryReader = objectMapper.readerFor(Geometry.class);
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(final Instant endTimefrom, final Instant endTimeto,
-                                                                                     final double xMin, final double yMin,
-                                                                                     final double xMax, final double yMax,
-                                                                                     final List<MaintenanceTrackingTask> taskIds,
-                                                                                     final List<String> domains) {
+    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final Instant endTimefrom, final Instant endTimeto,
+                                                                                       final double xMin, final double yMin,
+                                                                                       final double xMax, final double yMax,
+                                                                                       final List<MaintenanceTrackingTask> taskIds,
+                                                                                       final List<String> domains) {
         final List<String> realDomains = convertToRealDomainNames(domains);
-        final ZonedDateTime lastUpdated = toZonedDateTimeAtUtc(v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains));
-        final ZonedDateTime lastChecked = toZonedDateTimeAtUtc(dataStatusService.findDataUpdatedTime(MAINTENANCE_TRACKING_DATA_CHECKED, realDomains));
+        final Instant lastUpdated = DateHelper.withoutNanos(v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains));
 
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
@@ -94,20 +88,19 @@ public class V2MaintenanceTrackingDataService {
         log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
             xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
 
-        final List<MaintenanceTrackingLatestFeature> features = convertToTrackingLatestFeatures(found);
-        return new MaintenanceTrackingLatestFeatureCollection(lastUpdated, lastChecked, features);
+        final List<MaintenanceTrackingLatestFeatureV1> features = convertToTrackingLatestFeatures(found);
+        return new MaintenanceTrackingLatestFeatureCollectionV1(lastUpdated, features);
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeBefore,
-                                                                         final Instant createdAfter, final Instant createdBefore,
-                                                                         final double xMin, final double yMin,
-                                                                         final double xMax, final double yMax,
-                                                                         final List<MaintenanceTrackingTask> taskIds,
-                                                                         final List<String> domains) {
+    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeBefore,
+                                                                           final Instant createdAfter, final Instant createdBefore,
+                                                                           final double xMin, final double yMin,
+                                                                           final double xMax, final double yMax,
+                                                                           final List<MaintenanceTrackingTask> taskIds,
+                                                                           final List<String> domains) {
         final List<String> realDomains = convertToRealDomainNames(domains);
         final Instant lastUpdated = v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains);
-        final Instant lastChecked = dataStatusService.findDataUpdatedTime(MAINTENANCE_TRACKING_DATA_CHECKED, realDomains);
 
         final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
@@ -122,19 +115,19 @@ public class V2MaintenanceTrackingDataService {
             xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
 
         final StopWatch startConvert = StopWatch.createStarted();
-        final List<MaintenanceTrackingFeature> features = convertToTrackingFeatures(found);
+        final List<MaintenanceTrackingFeatureV1> features = convertToTrackingFeatures(found);
         log.info("method=findMaintenanceTrackingsV1-convert with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
             xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), startConvert.getTime());
 
-        return new MaintenanceTrackingFeatureCollection(lastUpdated, lastChecked, features);
+        return new MaintenanceTrackingFeatureCollectionV1(lastUpdated, features);
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeTo,
-                                                                         final double xMin, final double yMin,
-                                                                         final double xMax, final double yMax,
-                                                                         final List<MaintenanceTrackingTask> taskIds,
-                                                                         final List<String> domains) {
+    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeTo,
+                                                                           final double xMin, final double yMin,
+                                                                           final double xMax, final double yMax,
+                                                                           final List<MaintenanceTrackingTask> taskIds,
+                                                                           final List<String> domains) {
         return findMaintenanceTrackings(endTimeFrom, DateHelper.appendMillis(endTimeTo, 1), null, null, xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
@@ -173,6 +166,11 @@ public class V2MaintenanceTrackingDataService {
         return all;
     }
 
+    @Transactional(readOnly = true)
+    public List<MaintenanceTrackingDomainDtoV1> getDomainsWithGenerics() {
+        return v2MaintenanceTrackingRepository.getDomainsWithGenerics();
+    }
+
     private List<String> convertTasksToStringArrayOrNull(final List<MaintenanceTrackingTask> taskIds) {
         if (taskIds == null || taskIds.isEmpty()) {
             return Collections.emptyList();
@@ -181,7 +179,7 @@ public class V2MaintenanceTrackingDataService {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeature getMaintenanceTrackingById(final long id) throws ObjectNotFoundException {
+    public MaintenanceTrackingFeatureV1 getMaintenanceTrackingById(final long id) throws ObjectNotFoundException {
         final MaintenanceTrackingDto tracking = v2MaintenanceTrackingRepository.getDto(id);
         if (tracking != null) {
             return convertToTrackingFeature(tracking);
@@ -201,29 +199,24 @@ public class V2MaintenanceTrackingDataService {
     }
 
     @Transactional(readOnly = true)
-    public List<MaintenanceTrackingForMqttV2> findTrackingsForMqttCreatedAfter(final Instant from) {
-        return v2MaintenanceTrackingRepository.findTrackingsCreatedAfter(from);
-    }
-
-    @Transactional(readOnly = true)
-    public List<MaintenanceTrackingLatestFeature> findTrackingsLatestPointsCreatedAfter(final Instant from) {
+    public List<MaintenanceTrackingLatestFeatureV1> findTrackingsLatestPointsCreatedAfter(final Instant from) {
         return v2MaintenanceTrackingRepository.findTrackingsLatestPointsCreatedAfter(from).stream()
-            .map(V2MaintenanceTrackingDataService::convertToTrackingLatestFeature)
+            .map(MaintenanceTrackingWebDataServiceV1::convertToTrackingLatestFeature)
             .collect(Collectors.toList());
     }
 
-    private static List<MaintenanceTrackingFeature> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {
-        return trackings.stream().map(V2MaintenanceTrackingDataService::convertToTrackingFeature).collect(Collectors.toList());
+    private static List<MaintenanceTrackingFeatureV1> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {
+        return trackings.stream().map(MaintenanceTrackingWebDataServiceV1::convertToTrackingFeature).collect(Collectors.toList());
     }
 
-    private static List<MaintenanceTrackingLatestFeature> convertToTrackingLatestFeatures(final List<MaintenanceTrackingDto> trackings) {
-        return trackings.stream().map(V2MaintenanceTrackingDataService::convertToTrackingLatestFeature).collect(Collectors.toList());
+    private static List<MaintenanceTrackingLatestFeatureV1> convertToTrackingLatestFeatures(final List<MaintenanceTrackingDto> trackings) {
+        return trackings.stream().map(MaintenanceTrackingWebDataServiceV1::convertToTrackingLatestFeature).collect(Collectors.toList());
     }
 
-    private static MaintenanceTrackingFeature convertToTrackingFeature(final MaintenanceTrackingDto tracking) {
+    private static MaintenanceTrackingFeatureV1 convertToTrackingFeature(final MaintenanceTrackingDto tracking) {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, false);
-        final MaintenanceTrackingProperties properties =
-            new MaintenanceTrackingProperties(tracking.getId(),
+        final MaintenanceTrackingPropertiesV1 properties =
+            new MaintenanceTrackingPropertiesV1(tracking.getId(),
                 tracking.getPreviousId(),
                 tracking.getWorkMachineId(),
                 tracking.getSendingTime(),
@@ -233,19 +226,19 @@ public class V2MaintenanceTrackingDataService {
                 tracking.getTasks(), tracking.getDirection(),
                 tracking.getDomain(),
                 tracking.getSource());
-        return new MaintenanceTrackingFeature(geometry, properties);
+        return new MaintenanceTrackingFeatureV1(geometry, properties, tracking.getModified());
     }
 
-    public static MaintenanceTrackingLatestFeature convertToTrackingLatestFeature(final MaintenanceTrackingDto tracking) {
+    public static MaintenanceTrackingLatestFeatureV1 convertToTrackingLatestFeature(final MaintenanceTrackingDto tracking) {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, true);
-        final MaintenanceTrackingLatestProperties properties =
-            new MaintenanceTrackingLatestProperties(tracking.getId(),
+        final MaintenanceTrackingLatestPropertiesV1 properties =
+            new MaintenanceTrackingLatestPropertiesV1(tracking.getId(),
                                                     tracking.getEndTime(),
                                                     tracking.getCreated(),
                                                     tracking.getTasks(), tracking.getDirection(),
                                                     tracking.getDomain(),
                                                     tracking.getSource());
-        return new MaintenanceTrackingLatestFeature(geometry, properties);
+        return new MaintenanceTrackingLatestFeatureV1(geometry, properties);
     }
 
     /**

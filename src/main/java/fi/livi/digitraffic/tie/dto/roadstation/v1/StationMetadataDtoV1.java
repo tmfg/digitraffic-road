@@ -4,10 +4,11 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "type", "features" })
-public class StationMetadataDtoV1 {
+public class StationMetadataDtoV1 implements LastModifiedSupport {
 
     @Schema(description = "Data last updated date time", required = true)
     public final Instant dataUpdatedTime;
@@ -19,5 +20,10 @@ public class StationMetadataDtoV1 {
                                 final Instant dataLastCheckedTime) {
         this.dataUpdatedTime = dataUpdatedTime;
         this.dataLastCheckedTime = dataLastCheckedTime;
+    }
+
+    @Override
+    public Instant getLastModified() {
+        return dataUpdatedTime;
     }
 }

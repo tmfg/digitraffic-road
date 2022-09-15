@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dto.roadstation.v1.StationRoadAddressV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDirectionV1;
@@ -94,7 +96,7 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.dataUpdatedTime", is(metadataUpdateTime.toString())))
+                .andExpect(jsonPath("$.dataUpdatedTime", is(stationModified.toString())))
 
                 .andExpect(jsonPath("$.features[0].type", is("Feature")))
                 .andExpect(jsonPath("$.features[0].id", isA(String.class)))
@@ -117,7 +119,9 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.features[0].properties.presets[1].id", is(preset2.getPresetId())))
                 .andExpect(jsonPath("$.features[0].properties.presets[1].inCollection", is(preset2.isInCollection())))
 
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, stationModified.toEpochMilli()));
 
     }
 
@@ -178,8 +182,9 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.properties.presets[1].direction", is(WeathercamPresetDirectionV1.SPECIAL_DIRECTION.name())))
                 .andExpect(jsonPath("$.properties.presets[1].imageUrl", isA(String.class)))
 
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
-
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, stationModified.toEpochMilli()));
     }
 
     @Test
@@ -203,7 +208,8 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.stations[0].presets[1].measuredTime", is(imageUpdateTime2.toString())))
 
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-        ;
+            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, imageUpdateTime1.toEpochMilli()));
     }
 
     @Test
@@ -223,7 +229,8 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.presets[1].measuredTime", is(imageUpdateTime2.toString())))
 
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-        ;
+            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, imageUpdateTime1.toEpochMilli()));
     }
 
     private static String getIsoDateWithoutMillis(final ZonedDateTime time) {

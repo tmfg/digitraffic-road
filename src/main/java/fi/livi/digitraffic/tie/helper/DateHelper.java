@@ -8,12 +8,13 @@ import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -26,6 +27,13 @@ import org.slf4j.LoggerFactory;
 public final class DateHelper {
 
     private static final Logger log = LoggerFactory.getLogger(DateHelper.class);
+
+
+    // Tue, 03 Sep 2019 13:56:36 GMT
+    private final static ZoneId GMT = ZoneId.of("GMT");
+    public static final String LAST_MODIFIED_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+    public static final DateTimeFormatter LAST_MODIFIED_FORMATTER =
+        DateTimeFormatter.ofPattern(LAST_MODIFIED_FORMAT, Locale.US).withZone(GMT);
 
     public static final DateTimeFormatter ISO_DATE_TIME_WITH_MILLIS_AT_UTC;
     static {
@@ -46,6 +54,10 @@ public final class DateHelper {
     }
 
     private DateHelper() {}
+
+    public static String getInLastModifiedHeaderFormat(final Instant instant) {
+        return LAST_MODIFIED_FORMATTER.format(instant);
+    }
 
     public static ZonedDateTime getNewestAtUtc(final ZonedDateTime first, final ZonedDateTime second) {
         if (first == null) {
@@ -169,14 +181,14 @@ public final class DateHelper {
 
     public static Instant withoutNanos(final Instant from) {
         if (from != null) {
-            return from.with(ChronoField.MILLI_OF_SECOND, from.get(ChronoField.MILLI_OF_SECOND));
+            return Instant.ofEpochMilli(from.toEpochMilli());
         }
         return null;
     }
 
     public static Instant withoutMillis(final Instant from) {
         if (from != null) {
-            return from.with(MILLI_OF_SECOND, 0);
+            return Instant.ofEpochSecond(from.getEpochSecond());
         }
         return null;
     }
@@ -195,39 +207,8 @@ public final class DateHelper {
         return null;
     }
 
-    public static ZonedDateTime toZonedDateTimeWithoutNanosAtUtc(final Instant from) {
-        if (from != null) {
-            return toZonedDateTimeAtUtc(withoutNanos(from));
-        }
-        return null;
-    }
-
-    public static Date toDate(final ZonedDateTime from) {
-        if (from != null) {
-            return Date.from(from.toInstant());
-        }
-
-        return new Date();
-    }
-
     public static String toIsoDateTimeWithMillisAtUtc(final Instant from) {
         return ISO_DATE_TIME_WITH_MILLIS_AT_UTC.format(from);
-    }
-
-    public static String toIsoDateTimeWithMillisAtUtc(final ZonedDateTime from) {
-        return ISO_DATE_TIME_WITH_MILLIS_AT_UTC.format(from);
-    }
-
-    public static ZonedDateTime parseToZonedDateAtUtc(final String isoString) {
-        if (isoString != null) {
-            return toZonedDateTimeAtUtc(ZonedDateTime.parse(isoString));
-        } return null;
-    }
-
-    public static Instant parseToInstant(final String isoString) {
-        if (isoString != null) {
-            return ZonedDateTime.parse(isoString).toInstant();
-        } return null;
     }
 
     public static Timestamp toSqlTimestamp(final ZonedDateTime zonedDateTime) {
@@ -239,5 +220,16 @@ public final class DateHelper {
             return null;
         }
         return time.plusMillis(millis);
+    }
+
+    public static Instant toInstant(final java.sql.Timestamp value) {
+        return value == null ? null : value.toInstant();
+    }
+
+    public static Instant roundToSeconds(final Instant from) {
+        if ( from == null) {
+            return null;
+        }
+        return Instant.ofEpochSecond(from.getEpochSecond() + (from.getNano() >= 500000000 ? 1 : 0));
     }
 }

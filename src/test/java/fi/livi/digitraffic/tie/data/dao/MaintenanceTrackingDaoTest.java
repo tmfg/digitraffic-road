@@ -9,17 +9,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.DomainDto;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 
 public class MaintenanceTrackingDaoTest extends AbstractServiceTest {
-    private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingDaoTest.class);
 
     @Autowired
     private V2MaintenanceTrackingRepository maintenanceTrackingRepository;
@@ -49,8 +46,8 @@ public class MaintenanceTrackingDaoTest extends AbstractServiceTest {
         testHelper.insertDomain(DOMAIN_FOUND, "Foo/Bar");
         testHelper.insertDomain(DOMAIN_NOT_FOUND, null);
         commitAndEndTransactionAndStartNew();
-        final List<DomainDto> domains = maintenanceTrackingRepository.getDomainsWithGenerics();
-        final List<String> names = domains.stream().map(DomainDto::getName).collect(Collectors.toList());
+        final List<MaintenanceTrackingDomainDtoV1> domains = maintenanceTrackingRepository.getDomainsWithGenerics();
+        final List<String> names = domains.stream().map(MaintenanceTrackingDomainDtoV1::getName).collect(Collectors.toList());
 
         Assertions.assertTrue(names.contains(DOMAIN_FOUND));
         Assertions.assertFalse(names.contains(DOMAIN_NOT_FOUND));

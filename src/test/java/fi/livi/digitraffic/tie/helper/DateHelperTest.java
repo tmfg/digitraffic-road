@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -15,6 +16,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -50,6 +52,13 @@ public class DateHelperTest extends AbstractTest {
     public static final ResultMatcher ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER =
         MockMvcResultMatchers.content().string(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER);
 
+    @Test
+    public void getInLastModifiedHeaderFormat() throws ParseException {
+        final String srcString = "Tue, 03 Sep 2019 13:56:36 GMT";
+        final java.util.Date srcDate = DateUtils.parseDate(srcString, DateHelper.LAST_MODIFIED_FORMAT);
+        final Instant srcInstant = Instant.ofEpochMilli(srcDate.getTime());
+        assertEquals(srcString, DateHelper.getInLastModifiedHeaderFormat(srcInstant));
+    }
 
     /**
      * This is test of test. It checks that ISO_DATE_TIME regex patterns works.

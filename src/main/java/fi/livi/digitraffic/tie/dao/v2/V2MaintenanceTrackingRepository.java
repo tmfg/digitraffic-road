@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
-import fi.livi.digitraffic.tie.dto.maintenance.v1.DomainDto;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
@@ -41,7 +41,8 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "     , tracking.work_machine_id AS workMachineId\n" +
         "     , STRING_AGG(tasks.task, ',') AS tasksAsString\n" +
         "     , tracking.domain\n" +
-        "     , COALESCE(contract.source, domain.source) AS source\n";
+        "     , COALESCE(contract.source, domain.source) AS source\n" +
+        "     , tracking.modified\n";
 
     String DTO_SELECT_FIELDS_WITH_LINE_STRING =
         DTO_SELECT_FIELDS_WITHOUT_LINE_STRING +
@@ -137,7 +138,7 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
         "SELECT '" + GENERIC_MUNICIPALITY_DOMAINS + "', 'All municipality domains', -1\n" +
         "order by rnum",
         nativeQuery = true)
-    List<DomainDto> getDomainsWithGenerics();
+    List<MaintenanceTrackingDomainDtoV1> getDomainsWithGenerics();
 
     @Query(value =
         "select name\n" +

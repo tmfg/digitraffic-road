@@ -23,8 +23,8 @@ import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 
 @ConditionalOnProperty("mqtt.maintenance.tracking.v2.enabled")
 @ConditionalOnNotWebApplication
@@ -36,15 +36,15 @@ public class MaintenanceTrackingMqttConfigurationV2 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MaintenanceTrackingMqttConfigurationV2.class);
 
-    private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
+    private final MaintenanceTrackingDataServiceV1 maintenanceTrackingDataServiceV1;
     private final MqttMessageSenderV2 mqttMessageSender;
 
     @Autowired
-    public MaintenanceTrackingMqttConfigurationV2(final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService,
+    public MaintenanceTrackingMqttConfigurationV2(final MaintenanceTrackingDataServiceV1 maintenanceTrackingDataServiceV1,
                                                   final MqttRelayQueue mqttRelay,
                                                   final ObjectMapper objectMapper,
                                                   final ClusteredLocker clusteredLocker) {
-        this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
+        this.maintenanceTrackingDataServiceV1 = maintenanceTrackingDataServiceV1;
         this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, MAINTENANCE_TRACKING, clusteredLocker);
 
         mqttMessageSender.setLastUpdated(Instant.now());
@@ -54,7 +54,7 @@ public class MaintenanceTrackingMqttConfigurationV2 {
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {
             try {
-                final List<MaintenanceTrackingForMqttV2> trackings = v2MaintenanceTrackingDataService.findTrackingsForMqttCreatedAfter(mqttMessageSender.getLastUpdated());
+                final List<MaintenanceTrackingForMqttV2> trackings = maintenanceTrackingDataServiceV1.findTrackingsForMqttCreatedAfter(mqttMessageSender.getLastUpdated());
 
                 if(!trackings.isEmpty()) {
                     final Instant lastUpdated = trackings.stream().max(Comparator.comparing(MaintenanceTrackingForMqttV2::getCreatedTime)).get().getCreatedTime();

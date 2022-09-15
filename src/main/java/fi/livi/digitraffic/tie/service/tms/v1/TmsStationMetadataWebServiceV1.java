@@ -6,8 +6,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
@@ -30,8 +28,6 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 @ConditionalOnWebApplication
 @Service
 public class TmsStationMetadataWebServiceV1 {
-    private static final Logger log = LoggerFactory.getLogger(fi.livi.digitraffic.tie.service.v1.tms.TmsStationService.class);
-
     private final TmsStationRepository tmsStationRepository;
     private final DataStatusService dataStatusService;
     private final TmsStationToFeatureConverterV1 tmsStationToFeatureConverterV1;
@@ -54,8 +50,7 @@ public class TmsStationMetadataWebServiceV1 {
 
         return tmsStationToFeatureConverterV1.convertToSimpleFeatureCollection(
             stations,
-            getMetadataLastUpdated(),
-            getMetadataLastChecked());
+            getMetadataLastUpdated());
     }
 
     @Transactional(readOnly = true)

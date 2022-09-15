@@ -96,7 +96,6 @@ public class TmsControllerV1 {
                       required = false,
                       defaultValue = "ACTIVE")
         final RoadStationState roadStationState) {
-
         return tmsStationMetadataWebServiceV1.findAllPublishableTmsStationsAsSimpleFeatureCollection(lastUpdated, roadStationState);
     }
 

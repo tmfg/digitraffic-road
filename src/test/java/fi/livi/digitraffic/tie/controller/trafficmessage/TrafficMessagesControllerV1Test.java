@@ -1,6 +1,8 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.model.DataType.TRAFFIC_MESSAGES_DATA;
+import static fi.livi.digitraffic.tie.model.DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
@@ -15,6 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -37,6 +40,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.xml.transform.StringSource;
@@ -46,6 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
+import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
@@ -63,6 +68,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatur
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
@@ -86,6 +92,10 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @Autowired
     private TrafficMessageTestHelper trafficMessageTestHelper;
+
+
+    @Autowired
+    private DataStatusService dataStatusService;
 
     @BeforeEach
     public void init() {
@@ -128,8 +138,10 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
+                    final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_DATA));
+                    // TODO last modified check and implementation
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType));
-                    final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType));
+                    final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType), lastUpdated);
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatchesIsoDateTimeWithZ(xml);
@@ -155,8 +167,10 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
+                    final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_DATA));
+                    // TODO last modified check and implementation
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 2, situationType));
-                    final String json = getResponse(getTrafficMessageUrlWithType(true, 2, situationType));
+                    final String json = getResponse(getTrafficMessageUrlWithType(true, 2, situationType), lastUpdated);
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatchesIsoDateTimeWithZ(xml);
@@ -182,8 +196,10 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
 
+                    final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_DATA));
+                    // TODO last modified check and implementation
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType));
-                    final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType));
+                    final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType), lastUpdated);
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertEmptyD2Situations(xml);
@@ -195,7 +211,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @Test
     public void getRegionGeometry() throws Exception {
-        final String json = getResponse(getRegionGeometryUrl(true));
+        final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final String json = getResponse(getRegionGeometryUrl(true), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(6, result.getFeatures().size());
         result.getFeatures().forEach(f -> assertNotNull(f.getGeometry()));
@@ -203,7 +220,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @Test
     public void getRegionGeometryWithoutGeometry() throws Exception {
-        final String json = getResponse(getRegionGeometryUrl(false));
+        final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final String json = getResponse(getRegionGeometryUrl(false), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(6, result.getFeatures().size());
         result.getFeatures().forEach(f -> assertNull(f.getGeometry()));
@@ -211,7 +229,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @Test
     public void getRegionGeometryWithId() throws Exception {
-        final String json = getResponse(getRegionGeometryUrl(true, 3));
+        final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final String json = getResponse(getRegionGeometryUrl(true, 3), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(1, result.getFeatures().size());
         assertNotNull(result.getFeatures().get(0).getGeometry());
@@ -318,28 +337,37 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     }
 
     private static String getTrafficMessageUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_V1_MESSAGES + (json ?  "" : TrafficMessageController.DATEX2) +
+        return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES + (json ? "" : TrafficMessageControllerV1.DATEX2) +
                "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_V1 + TrafficMessageController.AREA_GEOMETRIES +
+        return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES +
             "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry, int regionId) {
-        return TrafficMessageController.API_TRAFFIC_MESSAGE_V1 + TrafficMessageController.AREA_GEOMETRIES + "/" + regionId +
+        return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES + "/" + regionId +
             "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
     private String getResponse(final String url) throws Exception {
+        return getResponse(url, null);
+    }
+    private String getResponse(final String url, final Instant lastUpdated) throws Exception {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
+
         if (url.contains("datex2")) {
             get.contentType(MediaType.APPLICATION_XML);
         } else {
             get.contentType(MediaType.APPLICATION_JSON);
         }
-        return mockMvc.perform(get).andReturn().getResponse().getContentAsString();
+        final ResultActions result = mockMvc.perform(get);
+        if (lastUpdated != null) {
+            result.andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+                  .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastUpdated.toEpochMilli()));
+        }
+        return result.andReturn().getResponse().getContentAsString();
     }
 
     private void assertTraficAnouncmentTypeUpperCase(final String json, final SituationType situationType) {

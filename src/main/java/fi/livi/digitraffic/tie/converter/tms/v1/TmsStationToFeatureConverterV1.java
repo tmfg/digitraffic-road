@@ -35,15 +35,14 @@ public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeature
     }
 
     public TmsStationFeatureCollectionSimpleV1 convertToSimpleFeatureCollection(final List<TmsStation> stations,
-                                                                                final Instant lastUpdated,
-                                                                                final Instant dataLastCheckedTime) {
+                                                                                final Instant lastUpdated) {
 
         final List<TmsStationFeatureSimpleV1> features =
             stations.stream()
                 .map(this::convertToSimpleFeature)
                 .collect(Collectors.toList());
 
-        return new TmsStationFeatureCollectionSimpleV1(lastUpdated, dataLastCheckedTime, features);
+        return new TmsStationFeatureCollectionSimpleV1(lastUpdated, features);
     }
 
     private TmsStationFeatureSimpleV1 convertToSimpleFeature(final TmsStation station) {

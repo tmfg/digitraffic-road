@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({ "name", "source" })
-@Schema(description = "Maintenance tracking domain", name = "DomainV1")
-public interface DomainDto {
+@Schema(description = "Maintenance tracking domain")
+public interface MaintenanceTrackingDomainDtoV1 {
 
     @Schema(description = "Name of the maintenance tracking domain", required = true)
     @NotNull

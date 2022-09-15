@@ -30,6 +30,7 @@ import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingDataServiceV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
@@ -81,6 +82,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
 
           // V1 services
           RoadStationSensorServiceV1.class, TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class,
+          MaintenanceTrackingDataServiceV1.class,
 
           // converters
           TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverterService.class,

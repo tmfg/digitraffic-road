@@ -38,7 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @Validated
 @ConditionalOnWebApplication
-public class TrafficMessageController {
+public class TrafficMessageControllerV1 {
 
     private final V3RegionGeometryDataService v3RegionGeometryDataService;
     private final V1TrafficMessageDataService v1TrafficMessageDataService;
@@ -63,9 +63,10 @@ public class TrafficMessageController {
 
     public static final String DATEX2 = ".datex2";
 
+    /** TODO create V1 dto's without dataLastCheckedTime and Datex2 with Last-Modified -header */
 
-    public TrafficMessageController(final V3RegionGeometryDataService v3RegionGeometryDataService,
-                                    final V1TrafficMessageDataService v1TrafficMessageDataService) {
+    public TrafficMessageControllerV1(final V3RegionGeometryDataService v3RegionGeometryDataService,
+                                      final V1TrafficMessageDataService v1TrafficMessageDataService) {
         this.v3RegionGeometryDataService = v3RegionGeometryDataService;
         this.v1TrafficMessageDataService = v1TrafficMessageDataService;
     }

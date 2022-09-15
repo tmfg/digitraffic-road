@@ -51,13 +51,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.tie.controller.ApiDeprecations;
-import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController;
+import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollection;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDto;
+import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingLatestFeatureCollection;
+import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingTaskDto;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
@@ -428,7 +428,7 @@ public class V3DataController {
     @RequestParam(value = "taskId", required = false)
     final List<MaintenanceTrackingTask> taskIds) {
 
-        MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, null, 24);
+        MaintenanceTrackingControllerV1.validateTimeBetweenFromAndToMaxHours(from, null, 24);
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
 
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
@@ -478,7 +478,7 @@ public class V3DataController {
         @RequestParam(value = "taskId", required = false)
         final List<MaintenanceTrackingTask> taskIds) {
 
-        MaintenanceTrackingController.validateTimeBetweenFromAndToMaxHours(from, to, 24);
+        MaintenanceTrackingControllerV1.validateTimeBetweenFromAndToMaxHours(from, to, 24);
         Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(

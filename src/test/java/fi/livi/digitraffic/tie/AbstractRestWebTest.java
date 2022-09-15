@@ -62,4 +62,9 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
             .andExpect(jsonPath("type", equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", hasSize(featuresSize)));
     }
+
+    protected ResultActions expectOkFeature(final ResultActions rs) throws Exception {
+        return rs.andExpect(status().isOk())
+            .andExpect(jsonPath("type", equalTo("Feature")));
+    }
 }

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
+import fi.livi.digitraffic.tie.dto.maintenance.old.MaintenanceTrackingLatestFeature;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
@@ -30,7 +30,7 @@ public class MaintenanceTrackingMqttConfiguration extends AbstractMqttConfigurat
     // maintenance/tracking/{trackingId}
     private static final String TOPIC = "maintenance/tracking/%d";
     private static final String STATUS_TOPIC = "maintenance/tracking/status";
-    private V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
+    private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
 
     private Instant latestCreated = Instant.now();
 

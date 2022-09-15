@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dto.v1;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -7,12 +8,14 @@ import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.FeatureCollection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "type", "features" })
-public class RootFeatureCollectionDto<FeatureType> extends FeatureCollection<FeatureType> {
+public class RootFeatureCollectionDto<FeatureType> extends FeatureCollection<FeatureType> implements LastModifiedSupport {
 
     @Schema(description = "Data last updated date time", required = true)
     private final ZonedDateTime dataUpdatedTime;
@@ -34,5 +37,10 @@ public class RootFeatureCollectionDto<FeatureType> extends FeatureCollection<Fea
 
     public ZonedDateTime getDataUpdatedTime() {
         return dataUpdatedTime;
+    }
+
+    @Override
+    public Instant getLastModified() {
+        return DateHelper.toInstant(dataUpdatedTime);
     }
 }

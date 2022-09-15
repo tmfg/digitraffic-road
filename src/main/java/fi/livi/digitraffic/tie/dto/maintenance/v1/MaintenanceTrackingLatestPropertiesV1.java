@@ -8,8 +8,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Maintenance tracking properties", name = "MaintenanceTrackingLatestPropertiesV1")
-public class MaintenanceTrackingLatestProperties extends Properties {
+@Schema(description = "Maintenance tracking properties")
+public class MaintenanceTrackingLatestPropertiesV1 extends Properties {
 
     @Schema(description = "Id for the tracking", required = true)
     private final long id;
@@ -32,9 +32,9 @@ public class MaintenanceTrackingLatestProperties extends Properties {
     @Schema(description = "Source and owner of the data")
     public String source;
 
-    public MaintenanceTrackingLatestProperties(final long id, final Instant time, final Instant created,
-                                               final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
-                                               final String domain, final String source) {
+    public MaintenanceTrackingLatestPropertiesV1(final long id, final Instant time, final Instant created,
+                                                 final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
+                                                 final String domain, final String source) {
         this.id = id;
         this.time = time;
         this.created = created;

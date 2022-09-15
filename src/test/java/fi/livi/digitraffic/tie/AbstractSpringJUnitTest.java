@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
@@ -9,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
+
+import fi.livi.digitraffic.tie.helper.DateHelper;
 
 /**
  To keep created context count as low as possible take in account that configuration
@@ -53,4 +58,14 @@ public abstract class AbstractSpringJUnitTest extends AbstractTest {
 
     @Autowired
     protected EntityManager entityManager;
+
+    public Instant getTransactionTimestamp() {
+        final Timestamp value =
+            (Timestamp) entityManager.createNativeQuery("select now()").getSingleResult();
+        return DateHelper.toInstant(value);
+    }
+
+    public Instant getTransactionTimestampRoundedToSeconds() {
+        return DateHelper.roundToSeconds(getTransactionTimestamp());
+    }
 }

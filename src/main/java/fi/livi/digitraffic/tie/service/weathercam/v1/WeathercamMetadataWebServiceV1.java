@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.service.weathercam.v1;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,6 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
 @ConditionalOnWebApplication
 @Service
 public class WeathercamMetadataWebServiceV1 {
-    private static final Logger log = LoggerFactory.getLogger(WeathercamMetadataWebServiceV1.class);
 
     private final WeathercamPresetToFeatureConverter weathercamPresetToFeatureConverter;
     private final CameraPresetService cameraPresetService;
@@ -43,8 +40,7 @@ public class WeathercamMetadataWebServiceV1 {
                 onlyUpdateInfo
                     ? Collections.emptyList()
                     : cameraPresetService.findAllPublishableCameraPresets(),
-                dataStatusService.findDataUpdatedInstant(DataType.CAMERA_STATION_METADATA),
-                dataStatusService.findDataUpdatedInstant(DataType.CAMERA_STATION_METADATA_CHECK));
+                dataStatusService.findDataUpdatedInstant(DataType.CAMERA_STATION_METADATA));
     }
 
     @Transactional(readOnly = true)

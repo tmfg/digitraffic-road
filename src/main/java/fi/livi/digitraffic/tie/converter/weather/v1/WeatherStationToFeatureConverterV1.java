@@ -35,15 +35,14 @@ public class WeatherStationToFeatureConverterV1 extends AbstractRoadstationToFea
     }
 
     public WeatherStationFeatureCollectionSimpleV1 convertToSimpleFeatureCollection(final List<WeatherStation> stations,
-                                                                                    final Instant lastUpdated,
-                                                                                    final Instant dataLastCheckedTime) {
+                                                                                    final Instant lastUpdated) {
 
         final List<WeatherStationFeatureSimpleV1> features =
             stations.stream()
                 .map(this::convertToSimpleFeature)
                 .collect(Collectors.toList());
 
-        return new WeatherStationFeatureCollectionSimpleV1(lastUpdated, dataLastCheckedTime, features);
+        return new WeatherStationFeatureCollectionSimpleV1(lastUpdated, features);
     }
 
     private WeatherStationFeatureSimpleV1 convertToSimpleFeature(final WeatherStation station) {

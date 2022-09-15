@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.service.v1.camera;
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -17,6 +15,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 @Component
@@ -26,13 +25,10 @@ public class CameraImageS3Writer {
     public static final String IMAGE_VERSION_KEY_SUFFIX = "-versions.jpg";
 
     private final AmazonS3 amazonS3Client;
-    private WeathercamS3Properties weathercamS3Properties;
+    private final WeathercamS3Properties weathercamS3Properties;
 
     public final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
 
-    // Tue, 03 Sep 2019 13:56:36 GMT
-    public static final String LAST_MODIFIED_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
-    public static final DateTimeFormatter LAST_MODIFIED_FORMATTER = DateTimeFormatter.ofPattern(LAST_MODIFIED_FORMAT).withZone(ZoneId.of("GMT"));
 
     CameraImageS3Writer(final AmazonS3 weathercamS3Client, final WeathercamS3Properties weathercamS3Properties) {
         this.amazonS3Client = weathercamS3Client;
@@ -100,7 +96,7 @@ public class CameraImageS3Writer {
 
     private ObjectMetadata createS3Metadata(final long timestampEpochMillis, final long contentLength) {
         final ObjectMetadata metadata = new ObjectMetadata();
-        final String lastModifiedInHeaderFormat = getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
+        final String lastModifiedInHeaderFormat = DateHelper.getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
         metadata.addUserMetadata(LAST_MODIFIED_USER_METADATA_HEADER, lastModifiedInHeaderFormat);
         metadata.setContentType("image/jpeg");
         metadata.setContentLength(contentLength);
@@ -131,10 +127,6 @@ public class CameraImageS3Writer {
             log.error(String.format("Failed to remove s3 file s3Key=%s", imageKey), e);
             return DeleteInfo.failed(start.getTime(), imageKey);
         }
-    }
-
-    public static String getInLastModifiedHeaderFormat(final Instant instant) {
-        return LAST_MODIFIED_FORMATTER.format(instant);
     }
 
     private static String resolvePresetIdFromKey(final String key) {

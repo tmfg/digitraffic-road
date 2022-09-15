@@ -26,6 +26,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingDataServiceV1;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingWebDataServiceV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
@@ -39,6 +41,8 @@ import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
+import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
+import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
 
@@ -52,9 +56,9 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
 
          // Services V1
          TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class, WeatherDataWebServiceV1.class, WeatherStationMetadataWebServiceV1.class,
-         RoadStationSensorServiceV1.class,
+         RoadStationSensorServiceV1.class, MaintenanceTrackingWebDataServiceV1.class, MaintenanceTrackingDataServiceV1.class,
 
-         // Services
+         // Old Services
          TmsStationService.class, DataStatusService.class, TmsStationSensorConstantService.class, StationSensorConverterService.class,
          V3RegionGeometryDataService.class, V3Datex2DataService.class, V2Datex2DataService.class, WeatherStationService.class,
 
@@ -66,8 +70,8 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
          WeatherStationMetadata2FeatureConverter.class, WeatherStationToFeatureConverterV1.class,
          TrafficMessageJsonConverterV1.class, V2Datex2JsonConverter.class, ImsJsonConverter.class, CoordinateConverter.class,
 
-         // Test services
-         TmsTestHelper.class, TrafficMessageTestHelper.class,
+         // Test helpers etc.
+         TmsTestHelper.class, TrafficMessageTestHelper.class, V3MaintenanceTrackingServiceTestHelper.class, V3MaintenanceTrackingUpdateService.class
 })
 public abstract class AbstractWebServiceTest extends AbstractJpaTest {
 }

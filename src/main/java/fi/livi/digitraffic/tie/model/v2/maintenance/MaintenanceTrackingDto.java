@@ -36,8 +36,10 @@ public interface MaintenanceTrackingDto {
 
     String getSource();
 
+    Instant getModified();
+
     default Set<MaintenanceTrackingTask> getTasks() {
-        return Arrays.stream(getTasksAsString().split(",")).map(s -> MaintenanceTrackingTask.valueOf(s)).collect(Collectors.toSet());
+        return Arrays.stream(getTasksAsString().split(",")).map(MaintenanceTrackingTask::valueOf).collect(Collectors.toSet());
     }
 
     default String toStringTiny() {

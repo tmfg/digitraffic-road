@@ -5,13 +5,14 @@ import java.time.Instant;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.metadata.geojson.PropertiesWithId;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Roadstation simple properties")
-public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesWithId<ID_TYPE> {
+public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesWithId<ID_TYPE> implements LastModifiedSupport {
 
     @Schema(description = "Common name of road station")
     private String name;
@@ -89,5 +90,10 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
 
     public void setDataUpdatedTime(final Instant dataUpdatedTime) {
         this.dataUpdatedTime = dataUpdatedTime;
+    }
+
+    @Override
+    public Instant getLastModified() {
+        return dataUpdatedTime;
     }
 }

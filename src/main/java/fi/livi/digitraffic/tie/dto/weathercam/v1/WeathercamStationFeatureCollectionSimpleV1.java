@@ -12,8 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "dataLastCheckedTime", "features" })
 public class WeathercamStationFeatureCollectionSimpleV1 extends FeatureCollectionV1<WeathercamStationFeatureSimpleV1> {
 
-    public WeathercamStationFeatureCollectionSimpleV1(final Instant updatedTime, final Instant checkedTime,
+    public WeathercamStationFeatureCollectionSimpleV1(final Instant updatedTime,
                                                       final List<WeathercamStationFeatureSimpleV1> features) {
-        super(updatedTime, checkedTime, features);
+        super(updatedTime, features);
     }
 }

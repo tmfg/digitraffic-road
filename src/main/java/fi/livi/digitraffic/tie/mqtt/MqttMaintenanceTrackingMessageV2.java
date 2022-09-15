@@ -1,15 +1,14 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeature;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
+import static fi.livi.digitraffic.tie.helper.MqttUtil.roundToScale;
 
 import java.util.Set;
 
-import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
-import static fi.livi.digitraffic.tie.helper.MqttUtil.roundToScale;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureV1;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
+import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MqttMaintenanceTrackingMessageV2 {
@@ -19,7 +18,7 @@ public class MqttMaintenanceTrackingMessageV2 {
     public final double x;
     public final double y;
 
-    public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingLatestFeature f) {
+    public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingLatestFeatureV1 f) {
         this.time = f.getProperties().getTime().getEpochSecond();
         this.source = f.getProperties().source;
         this.tasks = f.getProperties().tasks;

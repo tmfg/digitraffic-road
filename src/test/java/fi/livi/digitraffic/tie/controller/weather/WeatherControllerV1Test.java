@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
@@ -52,6 +54,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
     private SensorValueRepository sensorValueRepository;
 
     private WeatherStation weatherStation;
+    private long lastModifiedMillis;
 
     @BeforeEach
     public void initData() {
@@ -81,6 +84,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
 
         this.weatherStation = entityManager.find(WeatherStation.class, ws.getId());
+        this.lastModifiedMillis = weatherStation.getRoadStation().getModified().toEpochMilli();
     }
 
     /* METADATA */
@@ -104,7 +108,10 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
                     Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name())))
                 .andExpect(jsonPath("$.features[0].properties.state", Matchers.anything()))
                 .andExpect(jsonPath("$.features[0].properties.dataUpdatedTime", is(weatherStation.getRoadStation().getModified().toString())))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
+
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
     }
 
     @Test
@@ -141,7 +148,10 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
                 .andExpect(jsonPath("$.properties.municipalityCode", Matchers.isA(Integer.class)))
                 .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))
                 .andExpect(jsonPath("$.properties.provinceCode", Matchers.isA(Integer.class)))
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
+
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
     }
 
     @Test
@@ -160,7 +170,9 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.sensors[0].sensorValueDescriptions").hasJsonPath())
             .andExpect(jsonPath("$.sensors[0].presentationNames").hasJsonPath())
             .andExpect(jsonPath("$.sensors[0].presentationNames.fi").hasJsonPath())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER);
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
     }
 
     /* DATA */
@@ -186,7 +198,8 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.stations[0].sensorValues[0].unit", isA(String.class)))
             .andExpect(jsonPath("$.stations[0].sensorValues[0].measuredTime", isA(String.class)))
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-        ;
+            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
     }
 
     @Test
@@ -205,6 +218,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.sensorValues[0].unit", isA(String.class)))
             .andExpect(jsonPath("$.sensorValues[0].measuredTime", isA(String.class)))
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-        ;
+            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
     }
 }

@@ -1,10 +1,10 @@
-package fi.livi.digitraffic.tie.dto.maintenance.v1;
+package fi.livi.digitraffic.tie.dto.maintenance.old;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Maintenance tracking task", name = "MaintenanceTrackingTaskV1")
+@Schema(description = "Maintenance tracking task", name = "MaintenanceTrackingTaskOld")
 @JsonPropertyOrder({ "id", "nameFi", "nameEn", "nameSv"})
 public class MaintenanceTrackingTaskDto {
 

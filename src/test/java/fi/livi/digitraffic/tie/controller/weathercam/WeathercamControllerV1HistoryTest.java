@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.helper.DateHelper.getNowWithoutMillis;
 import static fi.livi.digitraffic.tie.helper.DateHelper.getNowWithoutNanos;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 
 public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
@@ -53,36 +55,6 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
         TestUtils.commitAndEndTransactionAndStartNew();
     }
 
-    private ResultActions getCameraHistoryJson(final String presetOrCameraId) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + presetOrCameraId + WeathercamControllerV1.HISTORY);
-
-        get.contentType(MediaType.APPLICATION_JSON);
-        final ResultActions result = mockMvc.perform(get);
-        log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
-        return result;
-    }
-
-    /** @return versionId */
-    private String insertHistoryTestData(final String presetId, final Instant lastModified) {
-        return insertHistoryTestData(presetId, lastModified, true);
-    }
-
-    /** @return versionId */
-    private String insertHistoryTestData(final String presetId, final Instant lastModified, final boolean isPublic) {
-        final String versionId = RandomStringUtils.randomAlphanumeric(32);
-        final String cameraId = getCameraIdFromPresetId(presetId);
-        entityManager.createNativeQuery(
-            "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created, preset_public)\n" +
-            "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  (select id from camera_preset where preset_id = '" + presetId + "' and obsolete_date IS NULL) , timestamp with time zone '" + lastModified + "', " + isPublic + ", " +
-                IMAGE_SIZE + ", NOW(), "+ true +")")
-            .executeUpdate();
-        return versionId;
-    }
-
-    private Matcher<String> matchUrl(String presetId, String versionId) {
-        return is(String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId));
-    }
-
     @Test()
     public void getWeathercamPresetsHistoryByIdNotFoundPreset() throws Exception {
         getCameraHistoryJson("C0000000")
@@ -103,6 +75,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
 
         getCameraHistoryJson(preset.getCameraId())
             .andExpect(status().isNotFound());
+
     }
 
     @Test
@@ -113,7 +86,9 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
 
         getCameraHistoryJson(preset.getCameraId())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.presets", Matchers.hasSize(1)));
+            .andExpect(jsonPath("$.presets", Matchers.hasSize(1)))
+            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()));
     }
 
 
@@ -149,7 +124,8 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
             .andExpect(jsonPath("presets[1].history[0].lastModified", is(now.toString())))
             .andExpect(jsonPath("presets[1].history[0].sizeBytes", is(IMAGE_SIZE)))
 
-        ;
+            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()));
     }
 
     @Test
@@ -177,12 +153,42 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
             .andExpect(jsonPath("presets[0].history[1].imageUrl", matchUrl(preset_0.getPresetId(), versionId_0_1)))
             .andExpect(jsonPath("presets[0].history[1].lastModified", is(now.toString())))
             .andExpect(jsonPath("presets[0].history[1].sizeBytes", is(IMAGE_SIZE)))
-        ;
+
+            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()));
     }
 
     private String getCameraIdFromPresetId(String presetId) {
         return presetId.substring(0, 6);
     }
 
+    private ResultActions getCameraHistoryJson(final String presetOrCameraId) throws Exception {
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + presetOrCameraId + WeathercamControllerV1.HISTORY);
 
+        get.contentType(MediaType.APPLICATION_JSON);
+        final ResultActions result = mockMvc.perform(get);
+        log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
+        return result;
+    }
+
+    /** @return versionId */
+    private String insertHistoryTestData(final String presetId, final Instant lastModified) {
+        return insertHistoryTestData(presetId, lastModified, true);
+    }
+
+    /** @return versionId */
+    private String insertHistoryTestData(final String presetId, final Instant lastModified, final boolean isPublic) {
+        final String versionId = RandomStringUtils.randomAlphanumeric(32);
+        final String cameraId = getCameraIdFromPresetId(presetId);
+        entityManager.createNativeQuery(
+                "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created, preset_public)\n" +
+                    "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  (select id from camera_preset where preset_id = '" + presetId + "' and obsolete_date IS NULL) , timestamp with time zone '" + lastModified + "', " + isPublic + ", " +
+                    IMAGE_SIZE + ", NOW(), "+ true +")")
+            .executeUpdate();
+        return versionId;
+    }
+
+    private Matcher<String> matchUrl(String presetId, String versionId) {
+        return is(String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId));
+    }
 }

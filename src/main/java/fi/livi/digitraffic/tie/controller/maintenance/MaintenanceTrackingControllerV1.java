@@ -11,8 +11,8 @@ import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX;
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
-import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController.FromToParamType.CREATED_TIME;
-import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingController.FromToParamType.END_TIME;
+import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1.FromToParamType.CREATED_TIME;
+import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1.FromToParamType.END_TIME;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
 
@@ -38,14 +38,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.DomainDto;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeature;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollection;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollection;
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDto;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDtoV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingWebDataServiceV1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -56,8 +56,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @Validated
 @ConditionalOnWebApplication
-public class MaintenanceTrackingController {
-    private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
+public class MaintenanceTrackingControllerV1 {
+    private final MaintenanceTrackingWebDataServiceV1 maintenanceTrackingWebDataServiceV1;
 
     /**
      * API paths:
@@ -97,14 +97,14 @@ public class MaintenanceTrackingController {
         }
     }
 
-    public MaintenanceTrackingController(final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService) {
-        this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
+    public MaintenanceTrackingControllerV1(final MaintenanceTrackingWebDataServiceV1 maintenanceTrackingWebDataServiceV1) {
+        this.maintenanceTrackingWebDataServiceV1 = maintenanceTrackingWebDataServiceV1;
     }
 
     @Operation(summary = "Road maintenance tracking routes latest points")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking latest routes"))
-    public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
+    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(
 
     @Parameter(description = "Return routes which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
@@ -146,13 +146,13 @@ public class MaintenanceTrackingController {
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
         Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
 
-        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
     @Operation(summary = "Road maintenance tracking routes")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking routes"))
-    public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
+    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings(
 
         @Parameter(description = "Return routes which have completed onwards from the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
         @RequestParam(required = false)
@@ -210,31 +210,31 @@ public class MaintenanceTrackingController {
         validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
         Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
 
-        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax, taskIds, domains);
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
     @Operation(summary = "Road maintenance tracking route with tracking id")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking routes"))
-    public MaintenanceTrackingFeature getMaintenanceTracking(@Parameter(description = "Tracking id") @PathVariable(value = "id") final long id) {
-        return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
+    public MaintenanceTrackingFeatureV1 getMaintenanceTracking(@Parameter(description = "Tracking id") @PathVariable(value = "id") final long id) {
+        return maintenanceTrackingWebDataServiceV1.getMaintenanceTrackingById(id);
     }
 
     @Operation(summary = "Road maintenance tracking tasks")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_TASKS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking tasks"))
-    public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
+    public List<MaintenanceTrackingTaskDtoV1> getMaintenanceTrackingTasks() {
         return Stream.of(MaintenanceTrackingTask.values())
             .sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
-            .map(t -> new MaintenanceTrackingTaskDto(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn()))
+            .map(t -> new MaintenanceTrackingTaskDtoV1(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn()))
             .collect(Collectors.toList());
     }
 
     @Operation(summary = "Road maintenance tracking domains")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_DOMAINS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking domains"))
-    public List<DomainDto> getMaintenanceTrackingDomains() {
-        return v2MaintenanceTrackingDataService.getDomainsWithGenerics();
+    public List<MaintenanceTrackingDomainDtoV1> getMaintenanceTrackingDomains() {
+        return maintenanceTrackingWebDataServiceV1.getDomainsWithGenerics();
     }
 
     private static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final int defaultHoursOfHistory) {

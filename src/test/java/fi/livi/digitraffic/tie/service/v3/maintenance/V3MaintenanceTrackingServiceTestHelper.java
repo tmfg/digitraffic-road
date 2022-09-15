@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.v3.maintenance;
 
+import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.BRUSHING;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -7,6 +8,7 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -545,4 +547,25 @@ public class V3MaintenanceTrackingServiceTestHelper {
             .executeUpdate();
         entityManager.flush();
     }
+
+    public long insertTrackingForDomain(final String domain, final long workMachineId) {
+        entityManager.flush();
+        entityManager.createNativeQuery(
+                "INSERT INTO maintenance_tracking(id, domain, last_point, work_machine_id, sending_system, sending_time, start_time, end_time, finished)\n" +
+                    "VALUES (nextval('SEQ_MAINTENANCE_TRACKING'), '" + domain + "', ST_PointFromText('POINT(20.0 64.0 0)', 4326), " +
+                    workMachineId + ", 'dummy', now(), now(), now(), true)" )
+            .executeUpdate();
+        final long id = ((BigInteger) entityManager.createNativeQuery(
+            "select id " +
+                "from road.public.maintenance_tracking " +
+                "where domain = '" + domain + "' " +
+                "order by id desc " +
+                "limit 1").getSingleResult()).longValue();
+        entityManager.createNativeQuery(
+                "INSERT INTO road.public.maintenance_tracking_task(maintenance_tracking_id, task)\n" +
+                    "VALUES (" + id + ", '" + BRUSHING.name() + "')")
+            .executeUpdate();
+        return id;
+    }
+
 }
