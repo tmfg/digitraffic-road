@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
@@ -83,7 +82,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     @Autowired
     private EntityManager entityManager;
 
-    @MockBean
+    @Autowired
     private AmazonS3 amazonS3;
 
     @Value("${dt.amazon.s3.weathercam.bucketName}")
