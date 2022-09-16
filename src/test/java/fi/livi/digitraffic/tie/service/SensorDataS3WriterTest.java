@@ -137,6 +137,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
             windowLoop = windowLoop.plusHours(1);
         }
 
+        Assertions.assertEquals(8, missingWindows.size());
         missingWindows.forEach(missingWindow -> {
             final int i = writer.writeSensorData(missingWindow, missingWindow.plusHours(1));
             Assertions.assertTrue(i > -1, "History update failure");
