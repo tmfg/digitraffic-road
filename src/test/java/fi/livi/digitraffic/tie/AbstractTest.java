@@ -4,7 +4,6 @@ import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = {
     "config.test=true",
-    "testcontainers.disabled=true",
     "dt.scheduled.annotation.enabled=false",
     "dt.job.scheduler.enabled=false",
     "spring.quartz.auto-startup=false",
