@@ -26,7 +26,7 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
     private final String DOMAIN_WITHOUT_SOURCE = "domain-without-source";
 
     @Autowired
-    private MaintenanceTrackingDataServiceV1 maintenanceTrackingWebDataServiceV1;
+    private MaintenanceTrackingMqttDataService maintenanceTrackingWebDataServiceV1;
 
     @Autowired
     private V3MaintenanceTrackingServiceTestHelper testHelper;

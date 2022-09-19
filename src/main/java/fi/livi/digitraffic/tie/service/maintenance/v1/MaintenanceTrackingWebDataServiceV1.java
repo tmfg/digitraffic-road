@@ -216,9 +216,9 @@ public class MaintenanceTrackingWebDataServiceV1 {
     private static MaintenanceTrackingFeatureV1 convertToTrackingFeature(final MaintenanceTrackingDto tracking) {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, false);
         final MaintenanceTrackingPropertiesV1 properties =
-            new MaintenanceTrackingPropertiesV1(tracking.getId(),
+            new MaintenanceTrackingPropertiesV1(
+                tracking.getId(),
                 tracking.getPreviousId(),
-                tracking.getWorkMachineId(),
                 tracking.getSendingTime(),
                 tracking.getStartTime(),
                 tracking.getEndTime(),

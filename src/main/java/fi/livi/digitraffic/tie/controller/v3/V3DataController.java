@@ -479,7 +479,7 @@ public class V3DataController {
         final List<MaintenanceTrackingTask> taskIds) {
 
         MaintenanceTrackingControllerV1.validateTimeBetweenFromAndToMaxHours(from, to, 24);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
+        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
 
         return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
             fromTo.getLeft(), fromTo.getRight(),

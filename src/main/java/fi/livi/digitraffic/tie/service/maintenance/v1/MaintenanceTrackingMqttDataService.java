@@ -19,11 +19,11 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2
  */
 @ConditionalOnNotWebApplication
 @Service
-public class MaintenanceTrackingDataServiceV1 {
+public class MaintenanceTrackingMqttDataService {
     private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
 
     @Autowired
-    public MaintenanceTrackingDataServiceV1(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository) {
+    public MaintenanceTrackingMqttDataService(final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository) {
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
     }
 

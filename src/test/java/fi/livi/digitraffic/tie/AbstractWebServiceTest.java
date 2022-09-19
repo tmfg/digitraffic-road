@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingDataServiceV1;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingMqttDataService;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingWebDataServiceV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
@@ -56,7 +56,7 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
 
          // Services V1
          TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class, WeatherDataWebServiceV1.class, WeatherStationMetadataWebServiceV1.class,
-         RoadStationSensorServiceV1.class, MaintenanceTrackingWebDataServiceV1.class, MaintenanceTrackingDataServiceV1.class,
+         RoadStationSensorServiceV1.class, MaintenanceTrackingWebDataServiceV1.class, MaintenanceTrackingMqttDataService.class,
 
          // Old Services
          TmsStationService.class, DataStatusService.class, TmsStationSensorConstantService.class, StationSensorConverterService.class,

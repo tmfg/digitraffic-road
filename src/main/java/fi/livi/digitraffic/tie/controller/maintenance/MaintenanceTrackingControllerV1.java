@@ -144,7 +144,7 @@ public class MaintenanceTrackingControllerV1 {
     final List<String> domains) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
+        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
 
         return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
     }
@@ -208,7 +208,7 @@ public class MaintenanceTrackingControllerV1 {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, endBefore, 24, END_TIME);
         validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
-        Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
+        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
 
         return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax, taskIds, domains);
     }

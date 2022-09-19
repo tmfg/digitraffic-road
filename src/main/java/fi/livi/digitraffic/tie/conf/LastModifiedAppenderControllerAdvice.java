@@ -1,10 +1,13 @@
 package fi.livi.digitraffic.tie.conf;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -25,16 +28,20 @@ public class LastModifiedAppenderControllerAdvice implements ResponseBodyAdvice<
     private static final Logger log = LoggerFactory.getLogger(LastModifiedAppenderControllerAdvice.class);
     public static final String LAST_MODIFIED_HEADER = "Last-Modified";
 
+    private final static List<HttpMethod> ALLOWED_METHODS = Arrays.asList(HttpMethod.GET, HttpMethod.HEAD);
+
     @Override
     public boolean supports(final MethodParameter returnType, final Class<? extends HttpMessageConverter<?>> converterType) {
         return true;
     }
 
+
     @Override
     public Object beforeBodyWrite(final Object body, final MethodParameter returnType, final MediaType selectedContentType,
                                   final Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   final ServerHttpRequest request, final ServerHttpResponse response) {
-        if (body instanceof LastModifiedSupport) {
+
+        if (ALLOWED_METHODS.contains(request.getMethod()) && body instanceof LastModifiedSupport) {
             final Instant lastModified = ((LastModifiedSupport) body).getLastModified();
             if (lastModified != null) {
                 response.getHeaders().add(LAST_MODIFIED_HEADER, DateHelper.getInLastModifiedHeaderFormat(lastModified));

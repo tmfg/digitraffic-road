@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,11 +16,6 @@ public class MaintenanceTrackingPropertiesV1 extends Properties {
 
     @Schema(description = "Id for the previous tracking if known")
     public final Long previousId;
-
-    // "Value is not allowed to share to public"
-    @JsonIgnore()
-    // @Schema(description = "Id for work machine for tracking", required = true)
-    public final long workMachineId;
 
     @Schema(description = "Time when tracking was reported", required = true)
     public final Instant sendingTime;
@@ -48,13 +41,12 @@ public class MaintenanceTrackingPropertiesV1 extends Properties {
     @Schema(description = "Source and owner of the data")
     public String source;
 
-    public MaintenanceTrackingPropertiesV1(final long id, final Long previousId, final long workMachineId,
+    public MaintenanceTrackingPropertiesV1(final long id, final Long previousId,
                                            final Instant sendingTime, final Instant startTime, final Instant endTime, final Instant created,
                                            final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
                                            final String domain, final String source) {
         this.id = id;
         this.previousId = previousId;
-        this.workMachineId = workMachineId;
         this.sendingTime = sendingTime;
         this.created = created;
         this.tasks = tasks;

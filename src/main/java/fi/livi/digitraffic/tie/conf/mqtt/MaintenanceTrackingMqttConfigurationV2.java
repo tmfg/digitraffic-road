@@ -23,7 +23,7 @@ import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
-import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingDataServiceV1;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingMqttDataService;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
 @ConditionalOnProperty("mqtt.maintenance.tracking.v2.enabled")
@@ -36,11 +36,11 @@ public class MaintenanceTrackingMqttConfigurationV2 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MaintenanceTrackingMqttConfigurationV2.class);
 
-    private final MaintenanceTrackingDataServiceV1 maintenanceTrackingDataServiceV1;
+    private final MaintenanceTrackingMqttDataService maintenanceTrackingDataServiceV1;
     private final MqttMessageSenderV2 mqttMessageSender;
 
     @Autowired
-    public MaintenanceTrackingMqttConfigurationV2(final MaintenanceTrackingDataServiceV1 maintenanceTrackingDataServiceV1,
+    public MaintenanceTrackingMqttConfigurationV2(final MaintenanceTrackingMqttDataService maintenanceTrackingDataServiceV1,
                                                   final MqttRelayQueue mqttRelay,
                                                   final ObjectMapper objectMapper,
                                                   final ClusteredLocker clusteredLocker) {
