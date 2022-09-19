@@ -32,7 +32,6 @@ import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -192,7 +191,6 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractWebServiceT
         final LinkedHashMap<Long, List<MaintenanceTrackingPropertiesV1>> grouped = groupTrackingsByStartId(features);
         assertEquals(machineCount, grouped.size());
 
-        final Set<Long> workMachineUniqueIds = new HashSet<>();
         grouped.forEach((id, properties) -> {
             // Each group (machine) should have 2 combined trackings
             assertEquals(2, properties.size());
@@ -200,8 +198,6 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractWebServiceT
             final MaintenanceTrackingPropertiesV1 second = properties.get(1);
             assertEquals(start.toInstant(), first.startTime);
             assertEquals(end.toInstant(), second.endTime);
-            assertFalse(workMachineUniqueIds.contains(first.workMachineId));
-            workMachineUniqueIds.add(first.workMachineId);
         });
     }
 
