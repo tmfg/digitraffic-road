@@ -12,14 +12,14 @@
         <cve>CVE-2022-25857</cve>
     </suppress>
 
-    <suppress until="2022-09-15Z">
+    <suppress until="2022-10-13Z">
         <!-- We don't use com.amazonaws.services.s3.transfer.TransferManager::downloadDirectory -->
         <notes><![CDATA[file name: aws-java-sdk-(secretsmanager|ec2).jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.amazonaws/(aws\-java\-sdk\-secretsmanager|aws\-java\-sdk\-ec2)@.*$</packageUrl>
         <cve>CVE-2022-31159</cve>
     </suppress>
 
-    <suppress until="2022-09-15Z">
+    <suppress until="2022-10-13Z">
         <notes><![CDATA[
    file name: spring-*.jar
    ]]></notes>
@@ -28,7 +28,7 @@
         <cve>CVE-2016-1000027</cve>
     </suppress>
 
-    <suppress until="2022-09-15Z">
+    <suppress until="2022-10-13Z">
         <notes><![CDATA[
    file name: spring-security-crypto-*.jar
    ]]></notes>
@@ -44,23 +44,12 @@
         <cve>CVE-2022-22978</cve>
     </suppress>
 
-    <suppress until="2022-09-15">
+    <suppress until="2022-10-13">
         <!-- This is a false positive. This vulnerability is for "Caoyongqi912/Fan_Platform" and we are not using it.
              See: https://github.com/github/securitylab/issues/669#issuecomment-1189616056 -->
         <notes><![CDATA[file name: junit-platform-commons-1.8.2.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.junit\.platform/junit\-platform\-commons@.*$</packageUrl>
         <cve>CVE-2022-31514</cve>
-    </suppress>
-
-    <suppress until="2022-09-15">
-        <!-- From https://lists.apache.org/thread/k04zk0nq6w57m72w5gb0r6z9ryhmvr4k
-             "Remove the examples web application as documented in the Tomcat security guide".
-
-             This shouldn't be a problem when we use embedded tomcat provided by spring boot.
-             Our tomcat does not expose the problematic examples. -->
-        <notes><![CDATA[file name: tomcat-embed-*-9.0.63.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-(core|websocket)@.*$</packageUrl>
-        <cve>CVE-2022-34305</cve>
     </suppress>
 
     <!--
