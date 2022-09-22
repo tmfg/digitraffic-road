@@ -27,18 +27,26 @@ jobs:
   log-parameters:
     runs-on: ubuntu-20.04
     steps:
+      -   name: Checkout
+          uses: actions/checkout@v3
+          with:
+            ref: ${{ github.event.inputs.ref }}
       -   name: Create parameters.txt
           run: |
-            echo "User ${{ github.actor }} started install on $(date)" > parameters.txt
-            echo "Environment ${{ github.event.inputs.env }}" >> parameters.txt
-            echo "ref ${{ github.event.inputs.ref }}" >> parameters.txt
-            echo "config-repo-branch ${{ github.event.inputs.config-repo-branch }}" >> parameters.txt
-            echo "db-install ${{ github.event.inputs.db-install }}" >> parameters.txt
-      -   name: Upload parameters.txt
-          uses: actions/upload-artifact@v3
+            export target_dir=install-${{ github.run_number }}
+            mkdir $target_dir
+            echo "User ${{ github.actor }} started install on $(date)" > $target_dir/parameters.txt
+            echo "Environment ${{ github.event.inputs.env }}" >> $target_dir/parameters.txt
+            echo "ref ${{ github.event.inputs.ref }}" >> $target_dir/parameters.txt
+            echo "config-repo-branch ${{ github.event.inputs.config-repo-branch }}" >> $target_dir/parameters.txt
+            echo "db-install ${{ github.event.inputs.db-install }}" >> $target_dir/parameters.txt
+      -   name: Upload parameters.txt to GitHub Pages
+          uses: tmfg/digitraffic-actions@gh-pages-publish/v1
           with:
-            name: parameters.txt
-            path: parameters.txt
+            GH_PAGES_BRANCH: gh-pages
+            FILE_PATH: install-${{ github.run_number }}/parameters.txt
+            COMMIT_MESSAGE: "Upload parameters.txt for install #${{ github.run_number }}"
+            LINK_TEXT: parameters.txt
   build:
     runs-on: ubuntu-20.04
     permissions:
