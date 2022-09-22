@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 
-public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
+public class MaintenanceTrackingMqttDataServiceTest extends AbstractServiceTest {
 
 
     private final String DOMAIN_WITH_SOURCE = "domain-with-source";

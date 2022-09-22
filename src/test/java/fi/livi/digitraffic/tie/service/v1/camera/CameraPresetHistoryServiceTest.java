@@ -35,7 +35,6 @@ import javax.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -59,6 +58,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
@@ -106,7 +106,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     @AfterEach
     public void clearData() {
-        final StopWatch sw = StopWatch.createStarted();
         TestUtils.commitAndEndTransactionAndStartNew();
         TestUtils.truncateCameraData(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew(); // make sure db is cleaned
@@ -495,7 +494,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         final List<String> presetIds = generateHistoryForPublicPresets(2, historySize);
         final CameraPreset cp1 = cameraPresetService.findCameraPresetByPresetId(presetIds.get(1));
         final RoadStation rs1 = cp1.getRoadStation();
-        final List<ZonedDateTime> changeTimes = new ArrayList<>();
         final List<CameraPresetHistory> allBefore = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(cp1.getPresetId());
 
         // Must end transaction to save different timestamps to db
@@ -509,7 +507,6 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
             log.info("Index {}/{} to {}", index, historySize, changeTo);
             final CameraPresetHistory h = allBefore.get(index);
             rs1.updatePublicity(changeTo, h.getLastModified());
-            changeTimes.add(h.getLastModified());
             cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs1);
             // Must end transaction to save different timestamps to db
             TestUtils.commitAndEndTransactionAndStartNew();
@@ -523,7 +520,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
             final boolean changeTo = i % 2 == 0; // 1:false -> 2:true -> 3:false
             final int changesCount = 4 - i;
             final int index = historySize * i/4;
-            final ZonedDateTime changedOn = allAfter.get(index).getModified();
+            final ZonedDateTime changedOn = DateHelper.toZonedDateTimeAtUtc(allAfter.get(index).getModified());
             log.info("Find changes from index {}/{} change to {} on {}", index, historySize, changeTo, changedOn);
 
             final List<PresetHistoryChangeDto> changesAfter =
@@ -643,7 +640,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusSeconds(10);
         // History for 39 hours backwards
         assertDoesNotThrow(() -> {
-            final String cameraId = generateHistoryForCamera(historySize, lastModified);
+            generateHistoryForCamera(historySize, lastModified);
         });
     }
 

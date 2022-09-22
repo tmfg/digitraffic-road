@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.v2.datex2;
+package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,22 +21,19 @@ import org.springframework.context.support.GenericApplicationContext;
 
 import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryGitMock;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
-import fi.livi.digitraffic.tie.dto.trafficmessage.old.region.RegionGeometryFeatureCollection;
-import fi.livi.digitraffic.tie.dto.trafficmessage.old.region.RegionGeometryProperties;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProperties;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
+import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper;
+import fi.livi.digitraffic.tie.service.v2.datex2.V3RegionGeometryTestHelper;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
 
-public class V3RegionGeometryDataServiceServiceTest extends AbstractWebServiceTestWithRegionGeometryGitMock {
+public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTestWithRegionGeometryGitMock {
 
     @Autowired
     private RegionGeometryRepository regionGeometryRepository;
-    @Autowired
-    private V3RegionGeometryDataService v3RegionGeometryDataService;
-
     @Autowired
     private RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
     @Autowired
@@ -75,16 +72,15 @@ public class V3RegionGeometryDataServiceServiceTest extends AbstractWebServiceTe
         v3RegionGeometryTestHelper.runUpdateJob(); // update to commit2
         v3RegionGeometryTestHelper.runUpdateJob(); // update to commit3
 
-        v3RegionGeometryDataService.refreshCache();
         regionGeometryDataServiceV1.refreshCache();
 
         // Latest valid on time should be returned
         assertVersion(commit3Changes.get(0),
-                      v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(1, secondAndThirdCommiteffectiveDate));
+                      regionGeometryDataServiceV1.getAreaLocationRegionEffectiveOn(1, secondAndThirdCommiteffectiveDate));
 
         // First commit should be returned
         assertVersion(commit1Changes.get(0),
-                      v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(1, secondAndThirdCommiteffectiveDate.minusSeconds(1)));
+                      regionGeometryDataServiceV1.getAreaLocationRegionEffectiveOn(1, secondAndThirdCommiteffectiveDate.minusSeconds(1)));
     }
 
     @Test
@@ -102,13 +98,12 @@ public class V3RegionGeometryDataServiceServiceTest extends AbstractWebServiceTe
 
         v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1
         v3RegionGeometryTestHelper.runUpdateJob(); // update to commit2
-        v3RegionGeometryDataService.refreshCache();
         regionGeometryDataServiceV1.refreshCache();
 
         // Even when asking version valid from commit1, it should not be returned as it is not valid
         // Instead commit2 version should be returned although it's not effective but it's first effective that is valid
         assertVersion(commit2Changes.get(0),
-            v3RegionGeometryDataService.getAreaLocationRegionEffectiveOn(1, firstCommiteffectiveDate));
+            regionGeometryDataServiceV1.getAreaLocationRegionEffectiveOn(1, firstCommiteffectiveDate));
     }
 
     @Test
@@ -128,28 +123,29 @@ public class V3RegionGeometryDataServiceServiceTest extends AbstractWebServiceTe
 
         v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1
         v3RegionGeometryTestHelper.runUpdateJob(); // update to commit2
-        v3RegionGeometryDataService.refreshCache();
         regionGeometryDataServiceV1.refreshCache();
 
         // Id 1 with first effective date
         final RegionGeometryFeatureCollection commit1Area1 =
-            v3RegionGeometryDataService.findAreaLocationRegions(false, commit1EffectiveDate, 1);
+            regionGeometryDataServiceV1.findAreaLocationRegions(false, false, commit1EffectiveDate, 1);
         assertCollectionSize(1, commit1Area1.getFeatures());
-        final RegionGeometryProperties commit1Area1Props = commit1Area1.getFeatures().get(0).getProperties();
+        final RegionGeometryProperties commit1Area1Props =
+            commit1Area1.getFeatures().get(0).getProperties();
         assertEquals(1, commit1Area1Props.locationCode);
         assertEquals(commit1EffectiveDate, commit1Area1Props.effectiveDate);
 
         // Id 2 with first effective date
         final RegionGeometryFeatureCollection commit2Area1 =
-            v3RegionGeometryDataService.findAreaLocationRegions(false, commit2EffectiveDate, 1);
+            regionGeometryDataServiceV1.findAreaLocationRegions(false, false, commit2EffectiveDate, 1);
         assertCollectionSize(1, commit2Area1.getFeatures());
-        final RegionGeometryProperties commit2Area1Props = commit2Area1.getFeatures().get(0).getProperties();
+        final RegionGeometryProperties commit2Area1Props =
+            commit2Area1.getFeatures().get(0).getProperties();
         assertEquals(1, commit1Area1Props.locationCode);
         assertEquals(commit2EffectiveDate, commit2Area1Props.effectiveDate);
 
         // All with effective date
         final RegionGeometryFeatureCollection commit2All =
-            v3RegionGeometryDataService.findAreaLocationRegions(false, commit2EffectiveDate);
+            regionGeometryDataServiceV1.findAreaLocationRegions(false, false, commit2EffectiveDate, null);
         assertCollectionSize(3, commit2All.getFeatures());
         commit2All.getFeatures().forEach(f -> assertEquals(commit2EffectiveDate, f.getProperties().effectiveDate));
     }
@@ -162,15 +158,14 @@ public class V3RegionGeometryDataServiceServiceTest extends AbstractWebServiceTe
         final List<RegionGeometry> commitChanges = createCommit(commitId, effectiveDate, 1,2);
         when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(commitChanges);
         v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1
-        v3RegionGeometryDataService.refreshCache();
         regionGeometryDataServiceV1.refreshCache();
 
         // Id 1 with first effective date
         final RegionGeometryFeatureCollection commitArea =
-            v3RegionGeometryDataService.findAreaLocationRegions(true, effectiveDate);
+            regionGeometryDataServiceV1.findAreaLocationRegions(true, false, effectiveDate, null);
         assertTrue(commitArea.getFeatures().isEmpty());
-        assertTrue(effectiveDate.minusSeconds(1).isBefore(commitArea.getDataUpdatedTime().toInstant()));
-        assertTrue(effectiveDate.plusSeconds(1).isAfter(commitArea.getDataUpdatedTime().toInstant()));
+        assertTrue(effectiveDate.minusSeconds(1).isBefore(commitArea.getLastModified()));
+        assertTrue(effectiveDate.plusSeconds(1).isAfter(commitArea.getLastModified()));
     }
 
     private void assertVersion(final RegionGeometry expected, final RegionGeometry actual) {

@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -7,8 +8,8 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Traffic Announcement properties", name = "TrafficAnnouncementPropertiesV1")
@@ -23,7 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
     "announcements",
     "contact"
 })
-public class TrafficAnnouncementProperties extends Properties {
+public class TrafficAnnouncementProperties extends PropertiesV1 {
 
     @Schema(description = "Situation id", required = true)
     @NotNull
@@ -52,6 +53,7 @@ public class TrafficAnnouncementProperties extends Properties {
     @Schema(description = "Sender's contact information")
     public final Contact contact;
 
+    private Instant lastModified;
     public TrafficAnnouncementProperties(final String situationId, final Integer version, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType, final ZonedDateTime releaseTime,
                                          final ZonedDateTime versionTime, final List<TrafficAnnouncement> announcements, final Contact contact) {
         super();
@@ -92,5 +94,18 @@ public class TrafficAnnouncementProperties extends Properties {
 
     public TrafficAnnouncementType getTrafficAnnouncementType() {
         return trafficAnnouncementType;
+    }
+
+    @Schema(description = "Data last updated date time", required = true)
+    public Instant getDataUpdatedTime() {
+        return getLastModified();
+    }
+    @Override
+    public Instant getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(final Instant lastModified) {
+        this.lastModified = lastModified;
     }
 }

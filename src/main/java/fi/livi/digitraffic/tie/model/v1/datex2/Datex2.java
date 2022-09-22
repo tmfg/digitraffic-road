@@ -23,11 +23,13 @@ import org.hibernate.annotations.TypeDef;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
+
 @TypeDef(name = "json", typeClass = JsonType.class)
 @Entity
 @DynamicUpdate
 @Table(name = "DATEX2")
-public class Datex2 {
+public class Datex2 extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
     @GenericGenerator(name = "SEQ_DATEX2", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",

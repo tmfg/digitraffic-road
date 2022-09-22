@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
 
-import fi.livi.digitraffic.tie.metadata.geojson.Properties;
+import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Maintenance tracking properties")
-public class MaintenanceTrackingPropertiesV1 extends Properties {
+public class MaintenanceTrackingPropertiesV1 extends PropertiesV1 {
 
     @Schema(description = "Id for the tracking", required = true)
     public final long id;
@@ -40,11 +40,12 @@ public class MaintenanceTrackingPropertiesV1 extends Properties {
 
     @Schema(description = "Source and owner of the data")
     public String source;
+    private final Instant lastModified;
 
     public MaintenanceTrackingPropertiesV1(final long id, final Long previousId,
                                            final Instant sendingTime, final Instant startTime, final Instant endTime, final Instant created,
                                            final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
-                                           final String domain, final String source) {
+                                           final String domain, final String source, final Instant lastModified) {
         this.id = id;
         this.previousId = previousId;
         this.sendingTime = sendingTime;
@@ -55,5 +56,11 @@ public class MaintenanceTrackingPropertiesV1 extends Properties {
         this.direction = direction;
         this.domain = domain;
         this.source = source;
+        this.lastModified = lastModified;
+    }
+
+    @Override
+    public Instant getLastModified() {
+        return lastModified;
     }
 }

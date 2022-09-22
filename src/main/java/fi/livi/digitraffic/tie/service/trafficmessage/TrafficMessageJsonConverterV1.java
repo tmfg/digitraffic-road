@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +31,7 @@ import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnounc
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 
 /**
  * In this java class V2 and V3 refers to old controller and api path hierarchy
@@ -47,24 +48,25 @@ public class TrafficMessageJsonConverterV1 {
 
     protected final Validator validator;
     protected final ObjectReader genericJsonReader;
-    private V3RegionGeometryDataService v3RegionGeometryDataService;
+    private final RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
 
     protected ObjectMapper objectMapper;
 
     @Autowired
     public TrafficMessageJsonConverterV1(final ObjectMapper objectMapper,
-                                         final V3RegionGeometryDataService v3RegionGeometryDataService) {
+                                         final RegionGeometryDataServiceV1 regionGeometryDataServiceV1) {
         this.objectMapper = objectMapper;
 
-        featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
-        featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class);
-        featureJsonReader_V1 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature.class);
+        this.featureJsonReaderV2 = objectMapper.readerFor(TrafficAnnouncementFeature.class);
+        this.featureJsonReaderV3 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature.class);
+        this.featureJsonReader_V1 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature.class);
 
-        genericJsonReader = objectMapper.reader();
-        this.v3RegionGeometryDataService = v3RegionGeometryDataService;
+        this.genericJsonReader = objectMapper.reader();
+        this.regionGeometryDataServiceV1 = regionGeometryDataServiceV1;
 
-        final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            this.validator = factory.getValidator();
+        }
     }
 
     public fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature convertToFeatureJsonObjectV3(final String imsJson,
@@ -94,7 +96,7 @@ public class TrafficMessageJsonConverterV1 {
 
         if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
             if (includeAreaGeometry) {
-                feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
+                feature.setGeometry(regionGeometryDataServiceV1.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
                     announcementsWithAreas.stream()
                         .map(withArea ->
                             withArea.locationDetails.areaLocation.areas.stream()
@@ -113,13 +115,15 @@ public class TrafficMessageJsonConverterV1 {
         final String imsJson,
         final SituationType situationType,
         final TrafficAnnouncementType trafficAnnouncementType,
-        boolean includeAreaGeometry) throws JsonProcessingException {
+        final boolean includeAreaGeometry,
+        final Instant lastModified) throws JsonProcessingException {
 
         // Ims JSON String can be in 0.2.4, 0.2.6 or 0.2.8 format. Convert all to 0.2.10 format.
         final String imsJsonV3 = convertImsJsonTo_V1Compatible(imsJson);
 
         final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature feature =
             featureJsonReader_V1.readValue(imsJsonV3);
+        feature.getProperties().setLastModified(lastModified);
 
         // Older
         if (feature.getProperties().getSituationType() == null) {
@@ -140,7 +144,7 @@ public class TrafficMessageJsonConverterV1 {
 
         if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
             if (includeAreaGeometry) {
-                feature.setGeometry(v3RegionGeometryDataService.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
+                feature.setGeometry(regionGeometryDataServiceV1.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
                     announcementsWithAreas.stream()
                         .map(withArea ->
                             withArea.locationDetails.areaLocation.areas.stream()

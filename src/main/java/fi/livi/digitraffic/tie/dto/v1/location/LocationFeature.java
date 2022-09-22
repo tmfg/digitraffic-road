@@ -12,7 +12,6 @@ public final class LocationFeature {
     @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true, allowableValues = "Feature")
     public final String type = "Feature";
 
-    // TODO: Remove this from next version as it is duplicated in properties
     @Schema(description = "Unique locationCode for this location", required = true)
     public final int id;
 

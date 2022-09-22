@@ -10,10 +10,11 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.DynamicUpdate;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 
 @Entity
 @DynamicUpdate
-public class CameraPresetHistory {
+public class CameraPresetHistory extends ReadOnlyCreatedAndModifiedFields {
 
     @EmbeddedId
     private CameraPresetHistoryPK id;
@@ -29,11 +30,6 @@ public class CameraPresetHistory {
     private String cameraId;
     @Column(nullable = false)
     private Boolean presetPublic;
-
-    @Column(nullable = false, updatable = false, insertable = false)
-    private ZonedDateTime created; // history created
-    @Column(nullable = false, updatable = false, insertable = false)
-    private ZonedDateTime modified; // history modified
 
     // For Hibernate
     public CameraPresetHistory() {
@@ -84,14 +80,6 @@ public class CameraPresetHistory {
 
     public Integer getSize() {
         return size;
-    }
-
-    public ZonedDateTime getCreated() {
-        return created;
-    }
-
-    public ZonedDateTime getModified() {
-        return modified;
     }
 
     @Override

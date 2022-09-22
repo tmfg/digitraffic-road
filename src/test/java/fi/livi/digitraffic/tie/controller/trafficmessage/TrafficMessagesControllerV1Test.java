@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
-import static fi.livi.digitraffic.tie.model.DataType.TRAFFIC_MESSAGES_DATA;
 import static fi.livi.digitraffic.tie.model.DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
@@ -32,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -50,6 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -71,8 +72,8 @@ import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeomet
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     private static final Logger log = getLogger(TrafficMessagesControllerV1Test.class);
@@ -110,18 +111,23 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
         whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(5898).get(0));
 
         final RegionGeometryFeatureCollection featureCollectionWithGeometry =
-            createRegionGeometryFeatureCollection(V3RegionGeometryDataService.convertToDtoList(regionsInDescOrderMappedByLocationCode, true));
+            createRegionGeometryFeatureCollection(RegionGeometryDataServiceV1.convertToDtoList(regionsInDescOrderMappedByLocationCode, true));
         final RegionGeometryFeatureCollection featureCollectionWithoutGeometry =
-            createRegionGeometryFeatureCollection(V3RegionGeometryDataService.convertToDtoList(regionsInDescOrderMappedByLocationCode, false));
+            createRegionGeometryFeatureCollection(RegionGeometryDataServiceV1.convertToDtoList(regionsInDescOrderMappedByLocationCode, false));
 
-        when(v3RegionGeometryDataServicMock.findAreaLocationRegions(eq(false), eq(true), isNull(), isNull())).thenReturn(featureCollectionWithGeometry);
-        when(v3RegionGeometryDataServicMock.findAreaLocationRegions(eq(false), eq(false), isNull(), isNull())).thenReturn(featureCollectionWithoutGeometry);
+        when(regionGeometryDataServiceV1.findAreaLocationRegions(eq(false), eq(true), isNull(), isNull())).thenReturn(featureCollectionWithGeometry);
+        when(regionGeometryDataServiceV1.findAreaLocationRegions(eq(false), eq(false), isNull(), isNull())).thenReturn(featureCollectionWithoutGeometry);
 
         // Map return value for locationCode 3
         final RegionGeometryFeature feature3 =
             featureCollectionWithGeometry.getFeatures().stream().filter(f -> f.getProperties().locationCode.equals(3)).findFirst().orElseThrow();
-        when(v3RegionGeometryDataServicMock.findAreaLocationRegions(eq(false), eq(true), isNull(), eq(3)))
+        when(regionGeometryDataServiceV1.findAreaLocationRegions(eq(false), eq(true), isNull(), eq(3)))
             .thenReturn(createRegionGeometryFeatureCollection(Collections.singletonList(feature3)));
+    }
+
+    @AfterEach
+    public void cleanDb() {
+        TestUtils.truncateTrafficMessageData(entityManager);
     }
 
     /**
@@ -135,12 +141,10 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
+                    final Instant lastUpdated = DateHelper.roundToSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
-
-                    final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_DATA));
-                    // TODO last modified check and implementation
-                    final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType));
+                    final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType), lastUpdated);
                     final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType), lastUpdated);
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
@@ -164,12 +168,10 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
+                    final Instant lastUpdated = DateHelper.roundToSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
-
-                    final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_DATA));
-                    // TODO last modified check and implementation
-                    final String xml = getResponse(getTrafficMessageUrlWithType(false, 2, situationType));
+                    final String xml = getResponse(getTrafficMessageUrlWithType(false, 2, situationType), lastUpdated);
                     final String json = getResponse(getTrafficMessageUrlWithType(true, 2, situationType), lastUpdated);
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
@@ -195,11 +197,8 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
                     final ZonedDateTime end = start.plusHours(2);
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
-
-                    final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_DATA));
-                    // TODO last modified check and implementation
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType));
-                    final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType), lastUpdated);
+                    final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertEmptyD2Situations(xml);
@@ -211,7 +210,7 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @Test
     public void getRegionGeometry() throws Exception {
-        final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated = DateHelper.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(true), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(6, result.getFeatures().size());
@@ -220,7 +219,7 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @Test
     public void getRegionGeometryWithoutGeometry() throws Exception {
-        final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated = DateHelper.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(false), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(6, result.getFeatures().size());
@@ -229,7 +228,7 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
 
     @Test
     public void getRegionGeometryWithId() throws Exception {
-        final Instant lastUpdated = DateHelper.roundToSeconds(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated = DateHelper.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(true, 3), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(1, result.getFeatures().size());

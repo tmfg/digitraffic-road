@@ -56,7 +56,7 @@ public class V2TrafficMessageJsonConverterTest extends AbstractWebServiceTestWit
         whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(419));
         whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(5898));
 
-        when(v3RegionGeometryDataServicMock.getGeoJsonGeometryUnion(any(), any())).thenCallRealMethod();
+        when(regionGeometryDataServiceV1.getGeoJsonGeometryUnion(any(), any())).thenCallRealMethod();
     }
 
 

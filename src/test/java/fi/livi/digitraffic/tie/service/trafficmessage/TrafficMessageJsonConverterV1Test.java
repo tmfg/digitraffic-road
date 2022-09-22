@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -76,7 +77,7 @@ public class TrafficMessageJsonConverterV1Test extends AbstractWebServiceTestWit
         whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(419));
         whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(5898));
 
-        when(v3RegionGeometryDataServicMock.getGeoJsonGeometryUnion(any(), any())).thenCallRealMethod();
+        when(regionGeometryDataServiceV1.getGeoJsonGeometryUnion(any(), any())).thenCallRealMethod();
     }
 
     @Test
@@ -84,10 +85,11 @@ public class TrafficMessageJsonConverterV1Test extends AbstractWebServiceTestWit
         for (final ImsJsonVersion jsonVersion : ImsJsonVersion.values()) {
             for (final SituationType st : SituationType.values()) {
                 final String json = readStaticImsJmessageResourceContent(jsonVersion, st.name(), ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+                final Instant now = Instant.now();
                 log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
                 final TrafficAnnouncementFeature ta =
-                    datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, st, GENERAL, true);
-                validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(st, jsonVersion, ta);
+                    datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, st, GENERAL, true, now);
+                validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(st, jsonVersion, ta, now);
                 log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, jsonVersion);
             }
         }
@@ -100,9 +102,10 @@ public class TrafficMessageJsonConverterV1Test extends AbstractWebServiceTestWit
         final String json = readStaticImsJmessageResourceContent(
             "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
             ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+        final Instant now = Instant.now();
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
-            datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, situationType, GENERAL, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, situationType, GENERAL, true, now);
         // _WITH_MULTIPLE_ANOUNCEMENTS.json contains five areas in 1. anouncement and one area in 2. anouncement.
         // Should be merged to MultiPolygon
         assertGeometry(ta.getGeometry(), MultiPolygon);
@@ -116,9 +119,10 @@ public class TrafficMessageJsonConverterV1Test extends AbstractWebServiceTestWit
         final String json = readStaticImsJmessageResourceContent(
             "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
             ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+        final Instant now = Instant.now();
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
-            datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, situationType, GENERAL, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, situationType, GENERAL, false, now);
         // _WITH_MULTIPLE_ANOUNCEMENTS.json contains five areas in 1. anouncement and one area in 2. anouncement.
         // Should be merged to MultiPolygon
         assertNull(ta.getGeometry());
@@ -134,12 +138,13 @@ public class TrafficMessageJsonConverterV1Test extends AbstractWebServiceTestWit
                 true, readerForGeometry);
 
         final String imsJson = writerForImsGeoJsonFeature.writeValueAsString(ims);
+        final Instant now = Instant.now();
         // Convert to feature with includeAreaGeometry -parameter true -> should have the geometry
         final TrafficAnnouncementFeature resultWithGeometry =
-            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, true, now);
         // Convert to feature with includeAreaGeometry -parameter false -> should not have the area geometry
         final TrafficAnnouncementFeature resultWithoutGeometry =
-            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.ROAD_WORK, null, false, now);
 
         assertNotNull(resultWithGeometry.getGeometry());
         assertNull(resultWithoutGeometry.getGeometry());
@@ -155,19 +160,20 @@ public class TrafficMessageJsonConverterV1Test extends AbstractWebServiceTestWit
                 false, readerForGeometry);
 
         final String imsJson = writerForImsGeoJsonFeature.writeValueAsString(ims);
+        final Instant now = Instant.now();
         // Convert to feature with includeAreaGeometry -parameter true -> should have the geometry
         final TrafficAnnouncementFeature resultWithGeometry =
-            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, true);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, true, now);
         // Convert to feature with includeAreaGeometry -parameter false -> should still have the geometry as it's not an area geometry
         final TrafficAnnouncementFeature resultWithoutGeometry =
-            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, false);
+            datex2JsonConverterV1.convertToFeatureJsonObject_V1(imsJson, SituationType.TRAFFIC_ANNOUNCEMENT, null, false, now);
 
         assertNotNull(resultWithGeometry.getGeometry());
         assertNotNull(resultWithoutGeometry.getGeometry());
     }
 
     private void validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(final SituationType st, final ImsJsonVersion version,
-                                                                      final TrafficAnnouncementFeature feature) {
+                                                                      final TrafficAnnouncementFeature feature, final Instant now) {
 
         final TrafficAnnouncementProperties props = feature.getProperties();
         final TrafficAnnouncement announcement = props.announcements.get(0);
@@ -177,6 +183,7 @@ public class TrafficMessageJsonConverterV1Test extends AbstractWebServiceTestWit
         assertEarlyClosing(announcement, version, st);
         assertType(props, st);
         assertPropertiesTimes(props);
+        assertEquals(now, feature.getLastModified());
 
         switch (st) {
             case TRAFFIC_ANNOUNCEMENT:

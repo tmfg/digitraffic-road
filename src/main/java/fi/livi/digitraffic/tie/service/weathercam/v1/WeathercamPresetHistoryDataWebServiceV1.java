@@ -172,7 +172,7 @@ public class WeathercamPresetHistoryDataWebServiceV1 {
 
     private WeathercamPresetHistoryItemDtoV1 convertToWeathercamPresetHistoryItemDtoV1(final AtomicReference<Instant> historyModified,
                                                                                        final CameraPresetHistory historyItem) {
-        historyModified.set(DateHelper.getNewest(historyModified.get(), DateHelper.toInstant(historyItem.getModified())));
+        historyModified.set(DateHelper.getNewest(historyModified.get(), historyItem.getModified()));
         return new WeathercamPresetHistoryItemDtoV1(
             DateHelper.toInstant(historyItem.getLastModified()),
             weathercamS3Properties.getPublicUrlForVersion(historyItem.getPresetId(), historyItem.getVersionId()),

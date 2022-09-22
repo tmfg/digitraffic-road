@@ -6,13 +6,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
-import fi.livi.digitraffic.tie.metadata.geojson.PropertiesWithId;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Roadstation simple properties")
-public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesWithId<ID_TYPE> implements LastModifiedSupport {
+public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesWithIdV1<ID_TYPE> implements LastModifiedSupport {
 
     @Schema(description = "Common name of road station")
     private String name;

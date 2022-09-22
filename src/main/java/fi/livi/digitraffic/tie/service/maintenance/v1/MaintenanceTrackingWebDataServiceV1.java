@@ -223,9 +223,11 @@ public class MaintenanceTrackingWebDataServiceV1 {
                 tracking.getStartTime(),
                 tracking.getEndTime(),
                 tracking.getCreated(),
-                tracking.getTasks(), tracking.getDirection(),
+                tracking.getTasks(),
+                tracking.getDirection(),
                 tracking.getDomain(),
-                tracking.getSource());
+                tracking.getSource(),
+                tracking.getModified());
         return new MaintenanceTrackingFeatureV1(geometry, properties, tracking.getModified());
     }
 
@@ -233,11 +235,13 @@ public class MaintenanceTrackingWebDataServiceV1 {
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, true);
         final MaintenanceTrackingLatestPropertiesV1 properties =
             new MaintenanceTrackingLatestPropertiesV1(tracking.getId(),
-                                                    tracking.getEndTime(),
-                                                    tracking.getCreated(),
-                                                    tracking.getTasks(), tracking.getDirection(),
-                                                    tracking.getDomain(),
-                                                    tracking.getSource());
+                                                      tracking.getEndTime(),
+                                                      tracking.getCreated(),
+                                                      tracking.getTasks(),
+                                                      tracking.getDirection(),
+                                                      tracking.getDomain(),
+                                                      tracking.getSource(),
+                                                      tracking.getModified());
         return new MaintenanceTrackingLatestFeatureV1(geometry, properties);
     }
 

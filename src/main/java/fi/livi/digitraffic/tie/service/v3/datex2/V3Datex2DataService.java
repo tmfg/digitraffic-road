@@ -106,9 +106,9 @@ public class V3Datex2DataService {
             .map(d2 -> {
                 try {
                     return datex2JsonConverterV1.convertToFeatureJsonObjectV3(d2.getJsonMessage(),
-                                                                                   d2.getSituationType(),
-                                                                                   d2.getTrafficAnnouncementType(),
-                                                                                   includeAreaGeometry);
+                                                                              d2.getSituationType(),
+                                                                              d2.getTrafficAnnouncementType(),
+                                                                              includeAreaGeometry);
                 } catch (final Exception e) {
                     log.error(String.format("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3 datex2.id: %s", d2.getId()), e);
                     return null;

@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.model.v1;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -32,12 +31,13 @@ import org.hibernate.annotations.Parameter;
 import fi.livi.digitraffic.tie.converter.RoadStationTypeIntegerConverter;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import fi.livi.digitraffic.tie.model.RoadStationState;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 
 @Entity
 @DynamicUpdate
-public class RoadStation {
+public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
     @GenericGenerator(name = "SEQ_ROAD_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
@@ -126,12 +126,6 @@ public class RoadStation {
      */
     @Column(updatable = false, insertable = false) // virtual column
     private boolean publishable;
-
-    @Column(nullable = false, updatable = false, insertable = false)
-    private Instant created;
-
-    @Column(nullable = false, updatable = false, insertable = false)
-    private Instant modified;
 
     protected RoadStation() {
     }
@@ -514,13 +508,5 @@ public class RoadStation {
      */
     public void updatePublicity(final boolean isPublic) {
         updatePublicity(isPublic, null);
-    }
-
-    public Instant getCreated() {
-        return created;
-    }
-
-    public Instant getModified() {
-        return modified;
     }
 }

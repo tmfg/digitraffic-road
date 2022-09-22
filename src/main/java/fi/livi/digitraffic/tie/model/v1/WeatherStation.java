@@ -1,9 +1,6 @@
 package fi.livi.digitraffic.tie.model.v1;
 
-import java.time.Instant;
-
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -21,11 +18,12 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import fi.livi.digitraffic.tie.model.WeatherStationType;
 
 @Entity
 @DynamicUpdate
-public class WeatherStation {
+public class WeatherStation extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
     @NotNull
@@ -46,12 +44,6 @@ public class WeatherStation {
     @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.SELECT)
     private RoadStation roadStation;
-
-    @Column(nullable = false, updatable = false, insertable = false)
-    private Instant created;
-
-    @Column(nullable = false, updatable = false, insertable = false)
-    private Instant modified;
 
     public Long getId() {
         return id;
@@ -113,13 +105,5 @@ public class WeatherStation {
 
     public Long getRoadStationNaturalId() {
         return roadStation != null ? roadStation.getNaturalId() : null;
-    }
-
-    public Instant getCreated() {
-        return created;
-    }
-
-    public Instant getModified() {
-        return modified;
     }
 }

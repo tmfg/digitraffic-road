@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.v2.datex2;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,7 +52,7 @@ public class RegionGeometryTestHelper {
         return createNewRegionGeometry(locationCode, effectiveDate, commitId, AreaType.MUNICIPALITY);
     }
 
-    public static final Map<Integer, List<RegionGeometry>> createRegionsInDescOrderMappedByLocationCode(int...locationCodes) {
+    public static Map<Integer, List<RegionGeometry>> createRegionsInDescOrderMappedByLocationCode(int...locationCodes) {
         final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode = new HashMap<>();
         Arrays.stream(locationCodes).forEach(locationCode -> regionsInDescOrderMappedByLocationCode.put(locationCode, createRegionGeometrySingletonCollection(locationCode)));
         return regionsInDescOrderMappedByLocationCode;
@@ -64,7 +63,7 @@ public class RegionGeometryTestHelper {
     }
 
     public static RegionGeometryFeatureCollection createRegionGeometryFeatureCollection(final List<RegionGeometryFeature> regionGeometryFeatures) {
-        return new RegionGeometryFeatureCollection(ZonedDateTime.now(), ZonedDateTime.now(), regionGeometryFeatures);
+        return new RegionGeometryFeatureCollection(Instant.now(), regionGeometryFeatures);
     }
 
     public static RegionGeometry createNewRegionGeometry(final int locationCode, final Instant effectiveDate, final String commitId, final AreaType type) {

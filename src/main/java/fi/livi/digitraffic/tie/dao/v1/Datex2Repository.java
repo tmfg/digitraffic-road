@@ -137,37 +137,14 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
         "    SELECT situation.datex2_id\n" +
         "    FROM datex2_situation situation\n" +
         "    WHERE situation.situation_id = :situationId)\n" +
-        "  AND situation_type in (:situationTypes)", nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findBySituationIdAndSituationType(final String situationId, final String...situationTypes);
-
-    @Query(value =
-        "SELECT d.*\n" +
-        "FROM datex2 d\n" +
-        "WHERE d.id in (\n" +
-        "    SELECT situation.datex2_id\n" +
-        "    FROM datex2_situation situation\n" +
-        "    WHERE situation.situation_id = :situationId)\n" +
         "  AND message_type = :messageType\n" +
         "  AND d.json_message IS NOT NULL", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findBySituationIdAndMessageTypeWithJson(final String situationId, final String messageType);
 
     @Query(value =
-        "SELECT d.*\n" +
-        "FROM datex2 d\n" +
-        "WHERE d.id in (\n" +
-        "    SELECT situation.datex2_id\n" +
-        "    FROM datex2_situation situation\n" +
-        "    WHERE situation.situation_id = :situationId)\n" +
-        "  AND situation_type in (:situationTypes)\n" +
-        "  AND d.json_message IS NOT NULL", nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findBySituationIdAndSituationTypeWithJson(final String situationId, final String...situationTypes);
-
-    @Query(value =
            "WITH v_time AS (\n" +
-           "    SELECT d2s.datex2_id, MAX(sr.version_time) version_time\n" +
+           "    SELECT d2s.datex2_id, MAX(sr.version_time) as version_time\n" +
            "    FROM datex2_situation_record sr\n" +
            "    INNER JOIN datex2_situation d2s ON sr.datex2_situation_id = d2s.id\n" +
            "    WHERE d2s.situation_id = :situationId\n" +
@@ -186,7 +163,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
 
     @Query(value =
            "WITH v_time AS (\n" +
-           "    SELECT d2s.datex2_id, max(sr.version_time) version_time\n" +
+           "    SELECT d2s.datex2_id, max(sr.version_time) as version_time\n" +
            "    from datex2_situation_record sr\n" +
            "    inner join datex2_situation d2s on sr.datex2_situation_id = d2s.id\n" +
            "    where d2s.situation_id = :situationId\n" +
@@ -210,21 +187,6 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     boolean existsWithSituationId(@Param("situationId") final String situationId);
 
     @Query(value =
-        "SELECT situation_id, version_time\n" +
-        "FROM (\n" +
-        "    SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY record.version_time DESC) AS rnum\n" +
-        "    , situation.situation_id, record.version_time\n" +
-        "    FROM DATEX2 d\n" +
-        "    INNER JOIN datex2_situation situation ON situation.datex2_id = d.id\n" +
-        "    INNER JOIN datex2_situation_record record ON record.datex2_situation_id = situation.id\n" +
-        "    WHERE d.message_type = :messageType\n" +
-        ") d2\n" +
-        "WHERE rnum = 1",
-        nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Object[]> listDatex2SituationVersionTimes(@Param("messageType") final String messageType);
-
-    @Query(value =
                "SELECT version_time\n" +
                "FROM (\n" +
                "    SELECT ROW_NUMBER() OVER (PARTITION BY situation.SITUATION_ID ORDER BY record.version_time DESC) AS rnum\n" +
@@ -238,4 +200,10 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
                "WHERE rnum = 1",
            nativeQuery = true)
     Instant findDatex2SituationLatestVersionTime(final String situationId, final String situationType);
+
+    @Query(value =
+               "SELECT max(d.modified)\n" +
+               "FROM datex2 d\n" +
+               "WHERE situation_type in (:situationTypes)", nativeQuery = true)
+    Instant getLastModified(final String...situationTypes);
 }

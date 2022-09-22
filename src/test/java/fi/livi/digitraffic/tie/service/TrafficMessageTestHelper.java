@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service;
 
+import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
 import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
@@ -60,8 +62,8 @@ public class TrafficMessageTestHelper {
         V0_2_16(2.16, 216),
         V0_2_17(2.17, 217);
 
-        public double version;
-        public int intVersion;
+        public final double version;
+        public final int intVersion;
 
         ImsJsonVersion(final double version, final int intVersion) {
             this.version = version;
@@ -113,6 +115,11 @@ public class TrafficMessageTestHelper {
 
     public V2Datex2DataService getV2Datex2DataService() {
         if (v2Datex2DataService == null) {
+            final RegionGeometryDataServiceV1 regionGeometryDataServiceV1 =
+                applicationContext.getAutowireCapableBeanFactory().createBean(RegionGeometryDataServiceV1.class);
+            applicationContext.getBeanFactory().registerSingleton(
+                regionGeometryDataServiceV1.getClass().getCanonicalName(), regionGeometryDataServiceV1);
+
             final V3RegionGeometryDataService v3RegionGeometryDataService =
                 applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryDataService.class);
             v2Datex2DataService = new V2Datex2DataService(
@@ -185,6 +192,7 @@ public class TrafficMessageTestHelper {
         final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationTypeName, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        commitAndEndTransactionAndStartNew();
     }
 
     public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion, final String situationTypeName, final ImsJsonVersion jsonVersion,

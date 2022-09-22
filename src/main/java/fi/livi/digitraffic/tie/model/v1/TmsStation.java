@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.model.v1;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 import javax.persistence.CascadeType;
@@ -26,12 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import fi.livi.digitraffic.tie.model.TmsStationType;
 
 @Entity
 @Table(name = "TMS_STATION")
 @DynamicUpdate
-public class TmsStation {
+public class TmsStation extends ReadOnlyCreatedAndModifiedFields {
     private static final Logger log = LoggerFactory.getLogger(TmsStation.class);
 
     @Id
@@ -72,12 +72,6 @@ public class TmsStation {
     @JoinColumn(name="road_station_id", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
-
-    @Column(nullable = false, updatable = false, insertable = false)
-    private Instant created;
-
-    @Column(nullable = false, updatable = false, insertable = false)
-    private Instant modified;
 
     public Long getId() {
         return id;
@@ -213,13 +207,5 @@ public class TmsStation {
 
     public Long getRoadStationNaturalId() {
         return roadStation != null ? roadStation.getNaturalId() : null;
-    }
-
-    public Instant getCreated() {
-        return created;
-    }
-
-    public Instant getModified() {
-        return modified;
     }
 }

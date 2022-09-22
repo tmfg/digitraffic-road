@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureV1;
+import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureWithIdV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "Weathercam GeoJSON Feature object base")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
-public class WeathercamStationFeatureBaseV1<WeathercamStationPropertiesType extends RoadStationPropertiesSimpleV1<String>> extends FeatureV1<Point, WeathercamStationPropertiesType> {
+public class WeathercamStationFeatureBaseV1<WeathercamStationPropertiesType extends RoadStationPropertiesSimpleV1<String>> extends FeatureWithIdV1<Point, WeathercamStationPropertiesType> {
 
     /** Camera id ie. C01234 */
     @Schema(description = "Id of the road station", required = true)

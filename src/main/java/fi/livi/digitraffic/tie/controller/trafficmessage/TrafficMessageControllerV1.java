@@ -21,12 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.trafficmessages.V1TrafficMessageDataService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,7 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ConditionalOnWebApplication
 public class TrafficMessageControllerV1 {
 
-    private final V3RegionGeometryDataService v3RegionGeometryDataService;
+    private final RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
     private final V1TrafficMessageDataService v1TrafficMessageDataService;
 
     /**
@@ -65,9 +66,9 @@ public class TrafficMessageControllerV1 {
 
     /** TODO create V1 dto's without dataLastCheckedTime and Datex2 with Last-Modified -header */
 
-    public TrafficMessageControllerV1(final V3RegionGeometryDataService v3RegionGeometryDataService,
+    public TrafficMessageControllerV1(final RegionGeometryDataServiceV1 regionGeometryDataServiceV1,
                                       final V1TrafficMessageDataService v1TrafficMessageDataService) {
-        this.v3RegionGeometryDataService = v3RegionGeometryDataService;
+        this.regionGeometryDataServiceV1 = regionGeometryDataServiceV1;
         this.v1TrafficMessageDataService = v1TrafficMessageDataService;
     }
 
@@ -75,14 +76,14 @@ public class TrafficMessageControllerV1 {
     @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2 })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
-    public D2LogicalModel trafficMessageDatex2(
+    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> trafficMessageDatex2(
         @Parameter(description = "Return traffic messages from given amount of hours in the past.")
         @RequestParam(defaultValue = "0")
-        @Range(min = 0)
-        final int inactiveHours,
+        final @Range(min = 0) int inactiveHours,
         @Parameter(description = "Situation type.", required = true)
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
+
         return v1TrafficMessageDataService.findActive(inactiveHours, situationType);
     }
 
@@ -91,7 +92,7 @@ public class TrafficMessageControllerV1 {
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" + DATEX2 })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
-    public D2LogicalModel trafficMessageDatex2BySituationId(
+    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> trafficMessageDatex2BySituationId(
         @Parameter(description = "Situation id.", required = true)
         @PathVariable
         final String situationId,
@@ -176,7 +177,7 @@ public class TrafficMessageControllerV1 {
         @Parameter(description = "Location code id", required = true)
         @PathVariable
         final Integer locationCode) {
-        return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, includeGeometry, effectiveDate != null ?
+        return regionGeometryDataServiceV1.findAreaLocationRegions(lastUpdated, includeGeometry, effectiveDate != null ?
                                                                                                  effectiveDate.toInstant() : null, locationCode);
     }
 }

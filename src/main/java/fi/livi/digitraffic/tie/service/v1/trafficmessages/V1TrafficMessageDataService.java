@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.trafficmessages;
 
-import static fi.livi.digitraffic.tie.model.DataType.TRAFFIC_MESSAGES_DATA;
-
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -14,16 +12,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
@@ -35,56 +33,78 @@ public class V1TrafficMessageDataService {
 
     private final Datex2Repository datex2Repository;
     private final TrafficMessageJsonConverterV1 datex2JsonConverterV1;
-    private final DataStatusService dataStatusService;
     private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
     public V1TrafficMessageDataService(final Datex2Repository datex2Repository,
                                        final TrafficMessageJsonConverterV1 datex2JsonConverterV1,
-                                       final DataStatusService dataStatusService,
                                        final V2Datex2DataService v2Datex2DataService) {
         this.datex2Repository = datex2Repository;
         this.datex2JsonConverterV1 = datex2JsonConverterV1;
-        this.dataStatusService = dataStatusService;
         this.v2Datex2DataService = v2Datex2DataService;
     }
 
-    @Transactional(readOnly = true)
+    // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     public TrafficAnnouncementFeatureCollection findActiveJson(final int activeInPastHours,
                                                                boolean includeAreaGeometry, final SituationType... situationTypes) {
         final List<Datex2> allActive = datex2Repository.findAllActiveBySituationTypeWithJson(activeInPastHours, typesAsStrings(situationTypes));
-        return convertToFeatureCollection(allActive, includeAreaGeometry);
+        final Instant lastModified = getLastModified(allActive, situationTypes);
+        return convertToFeatureCollection(allActive, includeAreaGeometry, lastModified);
     }
 
-    @Transactional(readOnly = true)
-    public D2LogicalModel findActive(final int activeInPastHours,
-                                     final SituationType...situationTypes) {
+    // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> findActive(final int activeInPastHours,
+                                                                           final SituationType...situationTypes) {
         final List<Datex2> allActive = datex2Repository.findAllActiveBySituationType(activeInPastHours, typesAsStrings(situationTypes));
-        return v2Datex2DataService.convertToD2LogicalModel(allActive);
+        final Instant lastModified = getLastModified(allActive, situationTypes);
+        return ResponseEntityWithLastModifiedHeader.of(v2Datex2DataService.convertToD2LogicalModel(allActive), lastModified);
     }
 
-    @Transactional(readOnly = true)
+    // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, final boolean includeAreaGeometry, boolean latest) {
         final List<Datex2> datex2s = datex2Repository.findBySituationIdWithJson(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
         }
+
+        final SituationType[] situationTypes = getSituationTypes(datex2s);
+        final Instant lastModified = getLastModified(datex2s, situationTypes);
+
         if (latest) {
-            return convertToFeatureCollection(datex2s.subList(0,1), includeAreaGeometry);
+            return convertToFeatureCollection(datex2s.subList(0,1), includeAreaGeometry, lastModified);
         }
-        return convertToFeatureCollection(datex2s, includeAreaGeometry);
+        return convertToFeatureCollection(datex2s, includeAreaGeometry, lastModified);
     }
 
-    @Transactional(readOnly = true)
-    public D2LogicalModel findBySituationId(final String situationId, final boolean latest) {
+    // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> findBySituationId(final String situationId, final boolean latest) {
         final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
         }
+
+        final SituationType[] situationTypes = getSituationTypes(datex2s);
+        final Instant lastModified = getLastModified(datex2s, situationTypes);
+
         if (latest) {
-            return v2Datex2DataService.convertToD2LogicalModel(datex2s.subList(0,1));
+            return ResponseEntityWithLastModifiedHeader.of(v2Datex2DataService.convertToD2LogicalModel(datex2s.subList(0,1)), lastModified);
         }
-        return v2Datex2DataService.convertToD2LogicalModel(datex2s);
+        return ResponseEntityWithLastModifiedHeader.of(v2Datex2DataService.convertToD2LogicalModel(datex2s), lastModified);
+    }
+
+    private SituationType[] getSituationTypes(final List<Datex2> datex2s) {
+        return datex2s.stream().map(s -> SituationType.fromValue(s.getSituationType().value())).distinct().toArray(SituationType[]::new);
+    }
+
+    private Instant getLastModified(final List<Datex2> datex2s, final SituationType[] situationTypes) {
+        return datex2s.stream()
+            .map(Datex2::getModified)
+            .max(Comparator.naturalOrder())
+            .orElse(datex2Repository.getLastModified(typesAsStrings(situationTypes)));
     }
 
     /**
@@ -99,8 +119,8 @@ public class V1TrafficMessageDataService {
         return Arrays.stream(situationTypes).map(Enum::name).toArray(String[]::new);
     }
 
-    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s, boolean includeAreaGeometry) {
-        final ZonedDateTime lastUpdated = dataStatusService.findDataUpdatedTime(TRAFFIC_MESSAGES_DATA);
+    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s, boolean includeAreaGeometry,
+                                                                            final Instant lastModified) {
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()
             .map(d2 -> {
@@ -108,7 +128,9 @@ public class V1TrafficMessageDataService {
                     return datex2JsonConverterV1.convertToFeatureJsonObject_V1(d2.getJsonMessage(),
                                                                                d2.getSituationType(),
                                                                                d2.getTrafficAnnouncementType(),
-                                                                               includeAreaGeometry);
+                                                                               includeAreaGeometry,
+                                                                               d2.getModified());
+
                 } catch (final Exception e) {
                     log.error(String.format("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3 datex2.id: %s", d2.getId()), e);
                     return null;
@@ -118,6 +140,7 @@ public class V1TrafficMessageDataService {
             .filter(Objects::nonNull)
             .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())
             .collect(Collectors.toList());
-        return new TrafficAnnouncementFeatureCollection(DateHelper.toZonedDateTimeAtUtc(lastUpdated), DateHelper.getZonedDateTimeNowAtUtc(), features);
+
+        return new TrafficAnnouncementFeatureCollection(lastModified, features);
     }
 }

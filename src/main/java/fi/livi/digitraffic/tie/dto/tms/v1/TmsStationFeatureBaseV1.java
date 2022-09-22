@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureV1;
+import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureWithIdV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "Tms GeoJSON feature object base")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
-public class TmsStationFeatureBaseV1<TmsStationPropertiesType extends RoadStationPropertiesSimpleV1<Long>> extends FeatureV1<Point, TmsStationPropertiesType> {
+public class TmsStationFeatureBaseV1<TmsStationPropertiesType extends RoadStationPropertiesSimpleV1<Long>> extends FeatureWithIdV1<Point, TmsStationPropertiesType> {
 
     @Schema(description = "Id of the road station", required = true)
     public final Long id;
