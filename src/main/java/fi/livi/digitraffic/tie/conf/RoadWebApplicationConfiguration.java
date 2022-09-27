@@ -109,6 +109,8 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         LocaleChangeInterceptor localeChangeInterceptor = applicationContext.getBean(LocaleChangeInterceptor.class);
         Assert.notNull(localeChangeInterceptor, "LocaleChangeInterceptor cannot be null");
         registry.addInterceptor(localeChangeInterceptor);
+
+        registry.addInterceptor(new DeprecationInterceptor());
     }
 
     /**
