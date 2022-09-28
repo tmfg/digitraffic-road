@@ -9,26 +9,30 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import fi.livi.digitraffic.tie.annotation.Sunset;
+
 public class DeprecationInterceptor implements HandlerInterceptor {
 
-    private static Logger log = LoggerFactory.getLogger(DeprecationInterceptor.class);
+    private final static Logger log = LoggerFactory.getLogger(DeprecationInterceptor.class);
 
     @Override
     public void postHandle(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        Object handler,
-        ModelAndView modelAndView) throws Exception {
+        final HttpServletRequest request,
+        final HttpServletResponse response,
+        final Object handler,
+        final ModelAndView modelAndView) throws Exception {
 
-        HandlerMethod hm;
+        final HandlerMethod hm;
 
         try {
             hm = (HandlerMethod) handler;
             if (hm.getMethod().isAnnotationPresent(Deprecated.class)) {
                 response.addHeader("Deprecation", hm.getMethod().getAnnotation(Deprecated.class).since());
-                response.addHeader("Sunset", "2022-12-31");
             }
-        } catch (ClassCastException error) {
+            if (hm.getMethod().isAnnotationPresent(Sunset.class)) {
+                response.addHeader("Sunset", hm.getMethod().getAnnotation(Sunset.class).date());
+            }
+        } catch (final ClassCastException error) {
             log.error(error.getMessage());
         }
 
