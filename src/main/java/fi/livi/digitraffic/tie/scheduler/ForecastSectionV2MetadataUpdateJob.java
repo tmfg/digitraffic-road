@@ -11,7 +11,7 @@ public class ForecastSectionV2MetadataUpdateJob extends SimpleUpdateJob {
     private V2ForecastSectionMetadataUpdater v2ForecastSectionMetadataUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) {
+    protected void doExecute(final JobExecutionContext context) {
         v2ForecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
     }
 }

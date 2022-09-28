@@ -2,17 +2,15 @@ package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
@@ -22,28 +20,20 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
 
 /**
- * Samples from https://en.wikipedia.org/wiki/GeoJSON
+ * Samples from <a href="https://en.wikipedia.org/wiki/GeoJSON">GeoJSON</a>
  */
-public class GeometryJacksonDeserializerTest extends AbstractDaemonTest {
+public class GeometryJacksonDeserializerTest extends AbstractTest {
     private static final Logger log = LoggerFactory.getLogger(GeometryJacksonDeserializerTest.class);
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectReader geoJsonGeometryReader = new ObjectMapper().readerFor(Geometry.class);
 
-    private ObjectReader geoJsonGeometryReader;
-
-    @BeforeEach
-    public void initReader() {
-        geoJsonGeometryReader = objectMapper.readerFor(Geometry.class);
-    }
-
-    private static final String POINT =
+    public static final String POINT =
             "{\n" +
             "    \"type\": \"Point\", \n" +
             "    \"coordinates\": [30, 10]\n" +
             "}";
 
-    private static final String LINE_STRING =
+    public static final String LINE_STRING =
             "{\n" +
             "    \"type\": \"LineString\", \n" +
             "    \"coordinates\": [\n" +
@@ -51,7 +41,7 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTest {
             "    ]\n" +
             "}";
 
-    private static final String MULTI_LINE_STRING =
+    public static final String MULTI_LINE_STRING =
             "{\n" +
             "    \"type\": \"MultiLineString\", \n" +
             "    \"coordinates\": [\n" +
@@ -60,7 +50,7 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTest {
             "    ]\n" +
             "}";
 
-    private static final String POLYGON =
+    public static final String POLYGON =
             "{\n" +
             "    \"type\": \"Polygon\", \n" +
             "    \"coordinates\": [\n" +
@@ -68,7 +58,7 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTest {
             "    ]\n" +
             "}";
 
-    private static String POLYGON_WITH_INTERNAL_POLYGON =
+    public static final String POLYGON_WITH_INTERNAL_POLYGON =
             "{\n" +
             "    \"type\": \"Polygon\", \n" +
             "    \"coordinates\": [\n" +
@@ -77,7 +67,7 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTest {
             "    ]\n" +
             "}";
 
-    private static final String MULTI_POINT =
+    public static final String MULTI_POINT =
             "{\n" +
             "    \"type\": \"MultiPoint\", \n" +
             "    \"coordinates\": [\n" +
@@ -85,7 +75,7 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTest {
             "    ]\n" +
             "}";
 
-    private static final String MULTI_POLYGON =
+    public static final String MULTI_POLYGON =
             "{\n" +
             "    \"type\": \"MultiPolygon\", \n" +
             "    \"coordinates\": [\n" +
@@ -98,7 +88,7 @@ public class GeometryJacksonDeserializerTest extends AbstractDaemonTest {
             "    ]\n" +
             "}";
 
-    private static final String MULTI_POLYGON_WITH_INNER_POLYGON =
+    public static final String MULTI_POLYGON_WITH_INNER_POLYGON =
             "{\n" +
             "    \"type\": \"MultiPolygon\", \n" +
             "    \"coordinates\": [\n" +

@@ -13,7 +13,7 @@ public class ForecastSectionV1MetadataUpdateJob extends SimpleUpdateJob {
     private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) {
+    protected void doExecute(final JobExecutionContext context) {
         forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
     }
 }

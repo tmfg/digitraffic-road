@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +16,8 @@ public class MultiLineString extends Geometry<List<List<Double>>> {
         super(Type.MultiLineString, new ArrayList<>());
     }
 
-    public MultiLineString(final List<List<List<Double>>> coordinates) {
+    public MultiLineString(@JsonProperty("coordinates")
+                           final List<List<List<Double>>> coordinates) {
         super(Type.MultiLineString, coordinates);
     }
 

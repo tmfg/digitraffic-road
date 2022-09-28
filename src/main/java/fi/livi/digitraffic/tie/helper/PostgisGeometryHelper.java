@@ -2,11 +2,13 @@ package fi.livi.digitraffic.tie.helper;
 
 import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -16,24 +18,45 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
+import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 
+/**
+ * Uses 6 digits precision for coordinates. That gives about 5 cm accuracy at Finland (lat 60°)
+ * @see <a href="https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Geographical_coordinates#Precision">Wikipedia:WikiProject Geographical coordinates - Precision</a>
+ */
 public class PostgisGeometryHelper {
 
-    public static final PrecisionModel PRECISION_MODEL = new PrecisionModel(10);
+    // TODO rename attributes and methods
+    private static final Logger log = LoggerFactory.getLogger(PostgisGeometryHelper.class);
+    public static final PrecisionModel PRECISION_MODEL = new PrecisionModel(1000000); // 6 decimals
     public static final int SRID = 4326; // = WGS84 http://www.epsg-registry.org/
     public static final GeometryFactory GF = new GeometryFactory(PRECISION_MODEL, SRID);
     private static double EARTH_RADIUS_KM = 6371;
 
-    private static final GeoJsonWriter geoJsonWriter = new GeoJsonWriter();
+    private static final GeoJsonWriter geoJsonWriter = new GeoJsonWriter(6); // 6 decimals
     private static final GeoJsonReader geoJsonReader = new GeoJsonReader(GF);
+
+    private static final WKBReader dbGeometryReader = new WKBReader(GF);
+
+    private static final WKTReader wktReader = new WKTReader(GF);
+
+    private static final ObjectReader dtGeoJsonGeometryObjectReader;
 
     static {
         geoJsonWriter.setEncodeCRS(false);
+        dtGeoJsonGeometryObjectReader = new ObjectMapper().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
     }
 
     public static Coordinate createCoordinateWithZ(final double x, final double y, final Double z) {
@@ -52,6 +75,11 @@ public class PostgisGeometryHelper {
         if (lineStringCoordinates.size() < 2) {
             throw new IllegalArgumentException("LineString need at least two points, was " + lineStringCoordinates.size());
         }
+        lineStringCoordinates.forEach(c -> {
+            if (!Double.isFinite(c.getZ())) {
+                c.setZ(0.0);
+            }
+        });
         return GF.createLineString(lineStringCoordinates.toArray(new Coordinate[0]));
     }
 
@@ -60,7 +88,7 @@ public class PostgisGeometryHelper {
     }
 
     public static Polygon createSquarePolygonFromMinMax(final double xMin, final double xMax,
-                                                 final double yMin, final double yMax) {
+                                                        final double yMin, final double yMax) {
         final Coordinate[] coordinates = new Coordinate[] {
             new Coordinate(xMin, yMin, 0), new Coordinate(xMin, yMax, 0),
             new Coordinate(xMax, yMax, 0), new Coordinate(xMax, yMin, 0),
@@ -77,7 +105,12 @@ public class PostgisGeometryHelper {
 
     public static List<List<Double>> convertToGeoJSONGeometryCoordinates(final LineString lineString) {
         return Arrays.stream(lineString.getCoordinates())
-            .map(c -> Arrays.asList(c.getX(), c.getY(), c.getZ()))
+            .map(c -> {
+                if (Double.isFinite(c.getZ())) {
+                    return Arrays.asList(c.getX(), c.getY(), c.getZ());
+                }
+                return Arrays.asList(c.getX(), c.getY());
+            })
             .collect(Collectors.toList());
     }
 
@@ -86,21 +119,42 @@ public class PostgisGeometryHelper {
         return Arrays.asList(c.getX(), c.getY(), c.getZ());
     }
 
-    public static fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> convertToGeoJSONGeometry(final Geometry geometry)
+    public static fi.livi.digitraffic.tie.metadata.geojson.LineString convertToGeoJSONLineString(final Geometry geometry)
         throws IllegalArgumentException {
-        if (geometry.getNumPoints() > 1) {
-            return new fi.livi.digitraffic.tie.metadata.geojson.LineString(convertToGeoJSONGeometryCoordinates((LineString)geometry));
-        } else if (geometry.getNumPoints() == 1) {
-            return new fi.livi.digitraffic.tie.metadata.geojson.Point(convertToGeoJSONGeometryCoordinates((Point) geometry));
+        if (geometry.getGeometryType().equals(Geometry.TYPENAME_LINESTRING)) {
+            return convertToGeoJSONGeometry(geometry);
         }
-        throw new IllegalArgumentException("Geometry must be LineString or Point");
+        throw new IllegalArgumentException("Geometry must be LineString, but was " + geometry.getGeometryType() + ". Had coordinate count of " + geometry.getNumPoints());
+    }
+
+    public static fi.livi.digitraffic.tie.metadata.geojson.MultiLineString convertToGeoJSONMultiLineLineString(final Geometry geometry)
+        throws IllegalArgumentException {
+        if (geometry.getGeometryType().equals(Geometry.TYPENAME_MULTILINESTRING)) {
+            return convertToGeoJSONGeometry(geometry);
+        }
+        throw new IllegalArgumentException("Geometry must be MultiLineString, but was " + geometry.getGeometryType() + ". Had coordinate count of " + geometry.getNumPoints());
+    }
+
+    public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertToGeoJSONGeometry(final org.locationtech.jts.geom.Geometry geometry) {
+        final String geoJson = geoJsonWriter.write(geometry);
+        return convertFromGeoJSONStringToGeoJSON(geoJson);
+    }
+
+    public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertFromGeoJSONStringToGeoJSON(final String geoJSON) {
+        try {
+            return dtGeoJsonGeometryObjectReader.readValue(geoJSON);
+        } catch (final JsonProcessingException e) {
+            log.error(MessageFormat.format("method=convertFromGeoJSONStringToGeoJSON Failed to convert {0} to GeoJSON", geoJSON), e);
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Returns the distance between this and given GeoJSON point in kilometers. Doesn't take in account altitude.
      * Based on the following Stack Overflow question:
-     * http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula,
-     * which is based on https://en.wikipedia.org/wiki/Haversine_formula (error rate: ~0.55%).
+     * <a href="http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula">
+     * Stackoverflow: Calculate distance between two latitude-longitude points? (Haversine formula)</a>,
+     * which is based on <a href="https://en.wikipedia.org/wiki/Haversine_formula">Wikipedia: Haversine formula</a> (error rate: ~0.55%).
      */
     public static double distanceBetweenWGS84PointsInKm(final Point from, final Point to) {
         return distanceBetweenWGS84PointsInKm(from.getX(), from.getY(), to.getX(), to.getY());
@@ -134,7 +188,13 @@ public class PostgisGeometryHelper {
     }
 
     public static Geometry parseGeometryFromJson(final String geometryJson) throws ParseException {
+        try {
             return geoJsonReader.read(geometryJson);
+        } catch (final ParseException e) {
+            log.error("Failed to parse geometry: " + geometryJson, e);
+            throw e;
+        }
+
     }
 
     public static Geometry fixGeometry(final Geometry geometry) {
@@ -154,11 +214,41 @@ public class PostgisGeometryHelper {
         return g;
     }
 
+
+
     public static Geometry simplify(final Geometry geometry) {
         return DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
     }
 
     public static String toGeoJson(final Geometry geometry) {
         return geoJsonWriter.write(geometry);
+    }
+
+    public static Geometry convertWKBToGeometry(final byte[] wkbBytes) throws ParseException {
+        return dbGeometryReader.read(wkbBytes);
+    }
+
+    public static String getWktPolygon(final Double xMin, final Double xMax, final Double yMin, final Double yMax) {
+        if( xMin != null &&
+            xMax != null &&
+            yMin != null &&
+            yMax != null) {
+
+            final String[] names  = new String[] { "xMin", "xMax", "yMin", "yMax" };
+            final String[] values = new String[] { xMin.toString(), xMax.toString(), yMin.toString(), yMax.toString() };
+
+            return StringUtils.replaceEach("POLYGON((xMin yMin, xMax yMin, xMax yMax, xMin yMax, xMin yMin))", names, values);
+        }
+
+        return null;
+    }
+
+    public static Geometry convertWktGeometryToGeomety(final String wktGeometry) {
+        try {
+            return wktReader.read(wktGeometry);
+        } catch (ParseException e) {
+            log.error("method=convertWktGeometryToGeomety Failed to parse wktGeometry: " + wktGeometry, e);
+            throw new RuntimeException(e);
+        }
     }
 }

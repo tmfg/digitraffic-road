@@ -1,21 +1,18 @@
 package fi.livi.digitraffic.tie.converter.feature;
 
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionProperties;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionCoordinate;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionCoordinateList;
 
 @Component
 public class ForecastSectionV1ToFeatureConverter extends AbstractMetadataToFeatureConverter {
@@ -35,16 +32,8 @@ public class ForecastSectionV1ToFeatureConverter extends AbstractMetadataToFeatu
     }
 
     private ForecastSectionFeature convert(final ForecastSection fs) {
-        final List<ForecastSectionCoordinate> collect = fs.getForecastSectionCoordinateLists().stream()
-            .map(ForecastSectionCoordinateList::getForecastSectionCoordinates)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList());
-
-        final List<List<Double>> coordinates =
-            collect.stream().map(c -> Arrays.asList(c.getLongitude().doubleValue(), c.getLatitude().doubleValue()))
-                                                       .collect(Collectors.toList());
-
-        return new ForecastSectionFeature(fs.getId(), new LineString(coordinates), createProperties(fs));
+        final LineString lineString = PostgisGeometryHelper.convertToGeoJSONLineString(fs.getGeometry());
+        return new ForecastSectionFeature(fs.getId(), lineString, createProperties(fs));
     }
 
     private ForecastSectionProperties createProperties(ForecastSection fs) {

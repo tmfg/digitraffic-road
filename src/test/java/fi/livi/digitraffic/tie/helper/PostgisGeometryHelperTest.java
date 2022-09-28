@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.helper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 
@@ -11,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.livi.digitraffic.tie.AbstractTest;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.metadata.geojson.converter.GeometryJacksonDeserializerTest;
 
 public class PostgisGeometryHelperTest extends AbstractTest {
 
@@ -77,6 +80,86 @@ public class PostgisGeometryHelperTest extends AbstractTest {
         double speed = PostgisGeometryHelper.speedBetweenWGS84PointsInKmH(tampere, kuopio, TAMPERE_KUOPIO_SECONDS_WITH_SPEED_100_KM_H);
         log.info("Calculated speed {} km/h", speed);
         assertEquals(100.0, speed, ALLOWED_DELTA_IN_KM);
+    }
+
+    @Test
+    public void point() {
+        final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
+            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POINT);
+        assertNotNull(geom);
+        assertFalse(geom.getCoordinates().isEmpty());
+        assertEquals(Geometry.Type.Point, geom.getType());
+        log.info(geom.toString());
+    }
+
+    @Test
+    public void lineString() {
+        final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
+            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.LINE_STRING);
+        assertNotNull(geom);
+        assertFalse(geom.getCoordinates().isEmpty());
+        assertEquals(Geometry.Type.LineString, geom.getType());
+        log.info(geom.toString());
+    }
+
+    @Test
+    public void multiLineString() {
+        final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
+            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_LINE_STRING);
+        assertNotNull(geom);
+        assertFalse(geom.getCoordinates().isEmpty());
+        assertEquals(Geometry.Type.MultiLineString, geom.getType());
+        log.info(geom.toString());
+    }
+
+    @Test
+    public void polygon() {
+        final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
+            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON);
+        assertNotNull(geom);
+        assertFalse(geom.getCoordinates().isEmpty());
+        assertEquals(Geometry.Type.Polygon, geom.getType());
+        log.info(geom.toString());
+    }
+
+    @Test
+    public void polygonWithInternalPolygon() {
+        final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
+            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON_WITH_INTERNAL_POLYGON);
+        assertNotNull(geom);
+        assertFalse(geom.getCoordinates().isEmpty());
+        assertEquals(Geometry.Type.Polygon, geom.getType());
+        log.info(geom.toString());
+    }
+
+    @Test
+    public void multiPoint() {
+        final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
+            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POINT);
+        assertNotNull(geom);
+        assertFalse(geom.getCoordinates().isEmpty());
+        assertEquals(Geometry.Type.MultiPoint, geom.getType());
+        log.info(geom.toString());
+    }
+
+    @Test
+    public void multiPolygon() {
+        final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
+            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON);
+        assertNotNull(geom);
+        assertFalse(geom.getCoordinates().isEmpty());
+        assertEquals(Geometry.Type.MultiPolygon, geom.getType());
+        log.info(geom.toString());
+    }
+
+    @Test
+    public void multiPolygonWithInnerPolygon() {
+        final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
+            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON_WITH_INNER_POLYGON);
+        assertNotNull(geom);
+        assertFalse(geom.getCoordinates().isEmpty());
+        assertEquals(Geometry.Type.MultiPolygon, geom.getType());
+        log.info(geom.toString());
     }
 
     private void checkCoordinate(Coordinate coordinate, final double x, final double y, final double z) {

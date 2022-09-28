@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.metadata.geojson;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,11 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "type", "coordinates" })
 public class Polygon extends Geometry<List<List<Double>>> {
 
-    public Polygon() {
-        super(Type.Polygon, new ArrayList<>());
-    }
-
-    public Polygon(final List<List<List<Double>>> coordinates) {
+    public Polygon(@JsonProperty("coordinates")
+                   final List<List<List<Double>>> coordinates) {
         super(Type.Polygon, coordinates);
     }
 

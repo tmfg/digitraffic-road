@@ -1,0 +1,2 @@
+drop table forecast_section_coordinate;
+drop table forecast_section_coordinate_list;

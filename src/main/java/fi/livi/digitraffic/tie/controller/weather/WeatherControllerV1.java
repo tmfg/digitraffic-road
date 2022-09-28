@@ -5,12 +5,26 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.WEATHER_BETA_TAG;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.RANGE_X_TXT;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.RANGE_Y_TXT;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MAX;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MIN;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
+import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 
+import java.util.Collections;
+import java.util.List;
+
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +39,12 @@ import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureCollectionSim
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureDetailedV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationsDataDtoV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionSimpleV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
+import fi.livi.digitraffic.tie.service.weather.v1.forecast.ForecastWebDataServiceV1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -45,6 +62,8 @@ public class WeatherControllerV1 {
     private final WeatherStationMetadataWebServiceV1 weatherStationMetadataWebServiceV1;
     private final RoadStationSensorServiceV1 roadStationSensorServiceV1;
 
+    private final ForecastWebDataServiceV1 forecastWebDataServiceV1;
+
     /**
      * API paths:
      *
@@ -53,9 +72,15 @@ public class WeatherControllerV1 {
      * /api/weather/v/stations/{id} (detailed)
      * /api/weather/v/sensors/ (sensors metadata)
      *
+     * /api/weather/v/forecast-sections";
+     * /api/weather/v/forecast-sections-simple";
+
      * Data
      * /api/weather/v/stations/data (all)
      * /api/weather/v/stations/{id}/data (one station)
+     *
+     * /api/weather/v/forecast-sections/forecasts";
+     * /api/weather/v/forecast-sections-simple/forecasts";
      */
 
     public static final String API_WEATHER_BETA = API_WEATHER + BETA;
@@ -65,12 +90,19 @@ public class WeatherControllerV1 {
     public static final String SENSORS = "/sensors";
     public static final String DATA = "/data";
 
+    public static final String FORECAST_SECTIONS = "/forecast-sections";
+    public static final String FORECAST_SECTIONS_SIMPLE = "/forecast-sections-simple";
+    public static final String FORECASTS = "/forecasts"; // TODO
+
+
     public WeatherControllerV1(final WeatherDataWebServiceV1 weatherDataWebServiceV1,
                                final WeatherStationMetadataWebServiceV1 weatherStationMetadataWebServiceV1,
-                               final RoadStationSensorServiceV1 roadStationSensorServiceV1) {
+                               final RoadStationSensorServiceV1 roadStationSensorServiceV1,
+                               final ForecastWebDataServiceV1 forecastWebDataServiceV1) {
         this.weatherDataWebServiceV1 = weatherDataWebServiceV1;
         this.weatherStationMetadataWebServiceV1 = weatherStationMetadataWebServiceV1;
         this.roadStationSensorServiceV1 = roadStationSensorServiceV1;
+        this.forecastWebDataServiceV1 = forecastWebDataServiceV1;
     }
 
     /* METADATA */
@@ -152,6 +184,103 @@ public class WeatherControllerV1 {
         final long id) {
         return weatherDataWebServiceV1.findPublishableWeatherData(id);
     }
+
+    /* FORECASTS */
+
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE,
+                    produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
+    @Operation(summary = "The static information of simple weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of simple forecast sections") })
+    public ForecastSectionFeatureCollectionSimpleV1 forecastSectionsSimple(
+        @Parameter(description = "If parameter is given result will only contain update status.")
+        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+        final boolean lastUpdated,
+
+        @Parameter(description = "List of forecast section indices")
+        @RequestParam(value = "naturalId", required = false)
+        final List<String> naturalId,
+
+        @Parameter(description = "Road number")
+        @RequestParam(value = "roadNumber", required = false)
+        final Integer roadNumber,
+
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MIN, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
+        final double xMin,
+
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MIN, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
+        final double yMin,
+
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MAX, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
+        final double xMax,
+
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MAX, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
+        final double yMax) {
+
+        return forecastWebDataServiceV1.findSimpleForecastSections(lastUpdated, roadNumber,
+                                                                   xMin, yMin, xMax, yMax,
+                                                                   ObjectUtils.firstNonNull(naturalId, Collections.emptyList()));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS,
+                    produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
+    @Operation(summary = "The static information of weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
+    public ForecastSectionFeatureCollectionV1 forecastSections(
+
+        @Parameter(description = "If parameter is given result will only contain update status.")
+        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+        final boolean lastUpdated,
+
+        @Parameter(description = "List of forecast section indices")
+        @RequestParam(value = "naturalId", required = false)
+        final List<String> naturalId,
+
+        @Parameter(description = "Road number")
+        @RequestParam(value = "roadNumber", required = false)
+        final Integer roadNumber,
+
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MIN, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
+        final double xMin,
+
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MIN, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
+        final double yMin,
+
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MAX, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
+        final double xMax,
+
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MAX, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
+        final double yMax) {
+
+        return forecastWebDataServiceV1.findForecastSections(lastUpdated, roadNumber,
+                                                                    xMin, yMin, xMax, yMax,
+                                                                    ObjectUtils.firstNonNull(naturalId, Collections.emptyList()));
+    }
+
+
 
 }
 

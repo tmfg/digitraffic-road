@@ -33,7 +33,7 @@ public class TransactionLoggerAspect {
             final long tookMs = stopWatch.getTime();
 
             if(tookMs > limit) {
-                log.info("Transaction jobName={}.{} tookMs={}", className, methodName, tookMs);
+                log.info("Transaction method={}.{} tookMs={}", className, methodName, tookMs);
             }
         }
     }

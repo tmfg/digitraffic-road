@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -8,26 +7,23 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.livi.digitraffic.tie.helper.DaoUtils;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadSegment;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.Coordinate;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.ForecastSectionV2FeatureDto;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.RoadSegmentDto;
 
@@ -38,22 +34,14 @@ public class V2ForecastSectionMetadataDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     private static final String INSERT_FORECAST_SECTION =
-        "INSERT INTO forecast_section(id, natural_id, description, length, version) " +
-        "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version) " +
+        "INSERT INTO forecast_section(id, natural_id, description, length, version, geometry) " +
+        "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version, ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), 4326))) " +
         "ON CONFLICT ON CONSTRAINT forecast_section_unique " +
         "DO NOTHING ";
 
     private static final String UPDATE_FORECAST_SECTION =
-        "UPDATE forecast_section SET description = :description, length = :length " +
+        "UPDATE forecast_section SET description = :description, length = :length, geometry = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), 4326))" +
         "WHERE natural_id = :naturalId AND version = :version AND obsolete_date IS null";
-
-    private static final String INSERT_COORDINATE_LIST =
-        "INSERT INTO forecast_section_coordinate_list(forecast_section_id, order_number) " +
-        "VALUES((SELECT id FROM forecast_Section WHERE natural_id = :naturalId and version = :version), :orderNumber)";
-
-    private static final String INSERT_COORDINATE =
-        "INSERT INTO forecast_section_coordinate(forecast_section_id, list_order_number, order_number, longitude, latitude) " +
-        "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :listOrderNumber, :orderNumber, :longitude, :latitude)";
 
     private static final String SELECT_ALL =
         "SELECT rs.order_number as rs_order_number, " +
@@ -61,29 +49,18 @@ public class V2ForecastSectionMetadataDao {
         "rs.end_distance as rs_end_distance, " +
         "rs.carriageway as rs_carriageway," +
         "li.order_number as li_order_number, " +
-        "f.natural_id as natural_id, f.id as forecast_section_id, description, road_number, road_section_number, length, link_id\n" +
-        "FROM forecast_section f " +
-        "          LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
-        "          LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
-        "WHERE f.version = 2 " +
-        "AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber) " +
-        "COORDINATES_LIMIT " +
+        "f.natural_id as natural_id, f.id as forecast_section_id, description, road_number, road_section_number, length, link_id, " +
+        "ST_AsBinary(f.geometry) as geometry\n" + // WKB
+        "FROM forecast_section f\n" +
+        "LEFT OUTER JOIN road_segment rs ON rs.forecast_section_id = f.id\n" +
+        "LEFT OUTER JOIN link_id li ON li.forecast_section_id = f.id\n" +
+        "WHERE f.version = 2\n" +
+        "AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber)\n" +
         "AND (:naturalIdsIsEmpty IS TRUE OR f.natural_id IN (:naturalIds))\n" +
+        "INTERSECTS_AREA" +
         "ORDER BY f.natural_id";
 
-    private static final String COORDINATES_LIMIT = "AND f.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
-        "   WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude) ";
-
-    private static final String SELECT_COORDINATES =
-        "SELECT f.natural_id, c.list_order_number, '[' || array_to_string(array_agg('['|| c.longitude ||','|| c.latitude ||']' ORDER BY c.order_number), ',') || ']' AS coordinates\n" +
-        "FROM forecast_section_coordinate c INNER JOIN forecast_section f ON c.forecast_section_id = f.id\n" +
-        "WHERE f.version = 2 " +
-        "AND (:roadNumber IS NULL OR f.road_number::integer = :roadNumber) " +
-        "COORDINATES_LIMIT " +
-        "AND (:naturalIdsIsEmpty IS TRUE OR f.natural_id IN (:naturalIds))\n" +
-        "GROUP BY f.natural_id, c.list_order_number\n" +
-        "ORDER BY f.natural_id, c.list_order_number";
-
+    private static final String INTERSECTS_AREA  = "AND ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), 4326), f.geometry) = TRUE\n";
     private static final String INSERT_ROAD_SEGMENT =
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :startDistance, :endDistance, :carriageway)";
@@ -98,7 +75,7 @@ public class V2ForecastSectionMetadataDao {
     }
 
     public void upsertForecastSections(final List<ForecastSectionV2FeatureDto> features) {
-        final MapSqlParameterSource sources[] = new MapSqlParameterSource[features.size()];
+        final MapSqlParameterSource[] sources = new MapSqlParameterSource[features.size()];
         int i = 0;
         for (final ForecastSectionV2FeatureDto feature : features) {
             sources[i] = forecastSectionParameterSource(feature);
@@ -116,37 +93,15 @@ public class V2ForecastSectionMetadataDao {
         args.put("description", feature.getProperties().getDescription());
         args.put("length", feature.getProperties().getTotalLengthKm() * 1000);
         args.put("version", 2);
-        return new MapSqlParameterSource(args);
-    }
 
-    public void insertCoordinates(final List<ForecastSectionV2FeatureDto> features) {
-        final int listCount = features.stream().mapToInt(f -> f.getGeometry().getCoordinates().size()).sum();
-        final MapSqlParameterSource listSources[] = new MapSqlParameterSource[listCount];
-
-        final int coordinateCount = features.stream().mapToInt(f -> f.getGeometry().getCoordinates().stream().mapToInt(l -> l.size()).sum()).sum();
-        final MapSqlParameterSource coordinateSources[] = new MapSqlParameterSource[coordinateCount];
-
-        int listNumber = 0;
-        int coordinateNumber = 0;
-        for (final ForecastSectionV2FeatureDto feature : features) {
-
-            int listOrderNumber = 1;
-            for (final List<Coordinate> coordinates : feature.getGeometry().getCoordinates()) {
-                listSources[listNumber] = coordinateListParameterSource(feature.getProperties().getId(), listOrderNumber);
-
-                int coordinateOrderNumber = 1;
-                for (final Coordinate coordinate : coordinates) {
-                    coordinateSources[coordinateNumber] = coordinateParameterSource(feature.getProperties().getId(), listOrderNumber, coordinateOrderNumber, coordinate);
-                    coordinateOrderNumber++;
-                    coordinateNumber++;
-                }
-                listNumber++;
-                listOrderNumber++;
-            }
+        try {
+            final String json = feature.getGeometry().toJsonString();
+            final Geometry geometry = PostgisGeometryHelper.parseGeometryFromJson(json);
+            args.put("geometry", geometry.toText());
+        } catch (final Exception e) {
+            log.error("Failed to convert ForecastSectionV2FeatureDto geometry", e);
         }
-
-        jdbcTemplate.batchUpdate(INSERT_COORDINATE_LIST, listSources);
-        jdbcTemplate.batchUpdate(INSERT_COORDINATE, coordinateSources);
+        return new MapSqlParameterSource(args);
     }
 
     public List<ForecastSectionV2Feature> findForecastSectionV2Features(final Integer roadNumber, final Double minLongitude, final Double minLatitude,
@@ -159,19 +114,11 @@ public class V2ForecastSectionMetadataDao {
             .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
             .addValue("naturalIds", naturalIds);
 
-        final String selectSql;
-        final String selectCoordinatesSql;
-        if(minLongitude != null && minLatitude != null && maxLongitude != null && maxLatitude != null) {
-                paramSource.addValue("minLongitude", minLongitude, Types.DOUBLE)
-                .addValue("minLatitude", minLatitude, Types.DOUBLE)
-                .addValue("maxLongitude", maxLongitude, Types.DOUBLE)
-                .addValue("maxLatitude", maxLatitude, Types.DOUBLE);
-
-                selectSql = SELECT_ALL.replace("COORDINATES_LIMIT", COORDINATES_LIMIT);
-                selectCoordinatesSql = SELECT_COORDINATES.replace("COORDINATES_LIMIT", COORDINATES_LIMIT);
-        } else {
-            selectSql = SELECT_ALL.replace("COORDINATES_LIMIT", "");
-            selectCoordinatesSql = SELECT_COORDINATES.replace("COORDINATES_LIMIT", "");
+        final String wktPolygon = PostgisGeometryHelper.getWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
+        final String selectSql = SELECT_ALL.replace("INTERSECTS_AREA",
+                                                    wktPolygon != null ? INTERSECTS_AREA : "");
+        if (wktPolygon != null) {
+            paramSource.addValue("area", wktPolygon, Types.VARCHAR);
         }
 
         jdbcTemplate.query(selectSql, paramSource, rs -> {
@@ -183,26 +130,32 @@ public class V2ForecastSectionMetadataDao {
             setLinkId(rs, featureMap.get(naturalId));
         });
 
-        jdbcTemplate.query(selectCoordinatesSql, paramSource, rs -> {
-            final TypeReference<List<List<Double>>> typeReference = new TypeReference<>() {};
-            List coordinates = new ArrayList();
-            try {
-                coordinates = new ObjectMapper().readValue(rs.getString("coordinates"), typeReference);
-            } catch (final IOException e) {
-                log.error("method=findForecastSectionV2Features coordinates objectMapper readValue error");
-            }
-            final ForecastSectionV2Feature feature = featureMap.get(rs.getString("natural_id"));
-            feature.getGeometry().getCoordinates().add(coordinates);
-        });
-
         return featureMap.values().stream()
             .sorted(Comparator.comparing(f -> f.getProperties().getNaturalId())).collect(Collectors.toList());
     }
 
+//    public static String getIntersectsWktPolygon(final Double xMin, final Double xMax, final Double yMin, final Double yMax) {
+//        if( xMin != null &&
+//            xMax != null &&
+//            yMin != null &&
+//            yMax != null) {
+//
+//            final String[] names  = new String[] { "xMin", "xMax", "yMin", "yMax" };
+//            final String[] values = new String[] { xMin.toString(), xMax.toString(), yMin.toString(), yMax.toString() };
+//
+//            return StringUtils.replaceEach("POLYGON((xMin yMin, xMax yMin, xMax yMax, xMin yMax, xMin yMin))", names, values);
+//        }
+//
+//        return null;
+//    }
+
     private ForecastSectionV2Feature convert(final String naturalId, final ResultSet rs) {
         try {
+            final byte[] wkbBytes = rs.getBytes("geometry");
+            final Geometry g = PostgisGeometryHelper.convertWKBToGeometry(wkbBytes);
+            final MultiLineString multiLineString = PostgisGeometryHelper.convertToGeoJSONMultiLineLineString(g);
             return new ForecastSectionV2Feature(rs.getLong("forecast_section_id"),
-                new MultiLineString(),
+                multiLineString,
                 new ForecastSectionV2Properties(naturalId,
                     rs.getString("description"),
                     Integer.parseInt(rs.getString("road_number")),
@@ -213,6 +166,9 @@ public class V2ForecastSectionMetadataDao {
         } catch (final SQLException e) {
             log.error("convert exception", e);
             return null;
+        } catch (final ParseException e) {
+            log.error("Geometry convert exception", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -237,23 +193,6 @@ public class V2ForecastSectionMetadataDao {
         roadSegment.setStartDistance(rs.getInt("rs_start_distance"));
         roadSegment.setEndDistance(rs.getInt("rs_end_distance"));
         roadSegment.setCarriageway(DaoUtils.findInteger(rs, "rs_carriageway"));
-    }
-
-    private static MapSqlParameterSource coordinateParameterSource(final String naturalId, final int listOrderNumber, final int coordinateOrderNumber,
-                                                                   final Coordinate coordinate) {
-        return new MapSqlParameterSource()
-            .addValue("naturalId", naturalId)
-            .addValue("listOrderNumber", listOrderNumber)
-            .addValue("orderNumber", coordinateOrderNumber)
-            .addValue("longitude", coordinate.longitude)
-            .addValue("latitude", coordinate.latitude);
-    }
-
-    private static MapSqlParameterSource coordinateListParameterSource(final String naturalId, final int orderNumber) {
-        return new MapSqlParameterSource()
-            .addValue("naturalId", naturalId)
-            .addValue("orderNumber", orderNumber)
-            .addValue("version", 2);
     }
 
     public void insertRoadSegments(final List<ForecastSectionV2FeatureDto> features) {

@@ -20,23 +20,20 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.locationtech.jts.geom.Geometry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import fi.livi.digitraffic.tie.model.v1.Road;
 import fi.livi.digitraffic.tie.model.v1.RoadSection;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionNaturalIdHelper;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.Coordinate;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @DynamicUpdate
-public class ForecastSection {
-
-    private static final Logger log = LoggerFactory.getLogger(ForecastSection.class);
+public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
     @GenericGenerator(name = "SEQ_FORECAST_SECTION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
@@ -108,10 +105,6 @@ public class ForecastSection {
     @Fetch(FetchMode.JOIN)
     private RoadSection endRoadSection;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionCoordinateListPK.forecastSectionId", cascade = CascadeType.ALL)
-    @OrderBy("forecastSectionCoordinateListPK.orderNumber")
-    private List<ForecastSectionCoordinateList> forecastSectionCoordinateLists = new ArrayList<>();
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("time")
     private List<ForecastSectionWeather> forecastSectionWeatherList = new ArrayList<>();
@@ -123,6 +116,8 @@ public class ForecastSection {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "linkIdPK.forecastSectionId", cascade = CascadeType.ALL)
     @OrderBy("linkIdPK.orderNumber")
     private List<LinkId> linkIds = new ArrayList<>();
+
+    private Geometry geometry;
 
     public ForecastSection() {
     }
@@ -138,7 +133,6 @@ public class ForecastSection {
             this.roadSectionVersionNumber = 0;
         }
         this.description = description;
-        this.forecastSectionCoordinateLists = new ArrayList<>();
         this.forecastSectionWeatherList = new ArrayList<>();
         this.obsoleteDate = null;
     }
@@ -255,40 +249,12 @@ public class ForecastSection {
         return forecastSectionWeatherList;
     }
 
-    public List<ForecastSectionCoordinateList> getForecastSectionCoordinateLists() {
-        return forecastSectionCoordinateLists;
-    }
-
     public List<RoadSegment> getRoadSegments() {
         return roadSegments;
     }
 
     public List<LinkId> getLinkIds() {
         return linkIds;
-    }
-
-    public void removeCoordinateLists() {
-        forecastSectionCoordinateLists.forEach(l -> l.removeCoordinates());
-        forecastSectionCoordinateLists.clear();
-    }
-
-    public void addCoordinates(final List<Coordinate> coordinates) {
-        forecastSectionCoordinateLists = new ArrayList<>();
-
-        final List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
-
-        // FIXME: Move to V1MetadataUpdater
-        long orderNumber = 1;
-        for (final Coordinate coordinate : coordinates) {
-            if (!coordinate.isValid()) {
-                log.info("Invalid coordinates for forecast section " + getNaturalId() + ". Coordinates were: " + coordinate.toString());
-            } else {
-                coordinateList.add(new ForecastSectionCoordinate(
-                    new ForecastSectionCoordinatePK(id, 1L, orderNumber), coordinate.longitude, coordinate.latitude));
-                orderNumber++;
-            }
-        }
-        forecastSectionCoordinateLists.add(new ForecastSectionCoordinateList(new ForecastSectionCoordinateListPK(id, 1L), coordinateList));
     }
 
     @Override
@@ -307,7 +273,14 @@ public class ForecastSection {
                ", road=" + road +
                ", startRoadSection=" + startRoadSection +
                ", endRoadSection=" + endRoadSection +
-               ", forecastSectionCoordinateLists=" + forecastSectionCoordinateLists +
                '}';
+    }
+
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(final Geometry geometry) {
+        this.geometry = geometry;
     }
 }
