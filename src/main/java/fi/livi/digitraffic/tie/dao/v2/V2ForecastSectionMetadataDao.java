@@ -34,13 +34,16 @@ public class V2ForecastSectionMetadataDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     private static final String INSERT_FORECAST_SECTION =
-        "INSERT INTO forecast_section(id, natural_id, description, length, version, geometry) " +
-        "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version, ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), 4326))) " +
+        "INSERT INTO forecast_section(id, natural_id, description, length, version, geometry, geometry_simplified) " +
+        "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version, " +
+        "       ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), 4326)), ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), 4326))) " +
         "ON CONFLICT ON CONSTRAINT forecast_section_unique " +
         "DO NOTHING ";
 
     private static final String UPDATE_FORECAST_SECTION =
-        "UPDATE forecast_section SET description = :description, length = :length, geometry = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), 4326))" +
+        "UPDATE forecast_section SET description = :description, length = :length, " +
+        " geometry = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), 4326)), " +
+        " geometry_simplified = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), 4326))" +
         "WHERE natural_id = :naturalId AND version = :version AND obsolete_date IS null";
 
     private static final String SELECT_ALL =
@@ -97,7 +100,9 @@ public class V2ForecastSectionMetadataDao {
         try {
             final String json = feature.getGeometry().toJsonString();
             final Geometry geometry = PostgisGeometryHelper.parseGeometryFromJson(json);
+            final Geometry simplifiedGeometry = PostgisGeometryHelper.simplify(geometry);
             args.put("geometry", geometry.toText());
+            args.put("geometrySimplified", simplifiedGeometry.toText());
         } catch (final Exception e) {
             log.error("Failed to convert ForecastSectionV2FeatureDto geometry", e);
         }

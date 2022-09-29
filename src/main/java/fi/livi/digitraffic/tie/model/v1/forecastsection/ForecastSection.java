@@ -119,6 +119,8 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
 
     private Geometry geometry;
 
+    private Geometry geometrySimplified;
+
     public ForecastSection() {
     }
 
@@ -282,5 +284,13 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
 
     public void setGeometry(final Geometry geometry) {
         this.geometry = geometry;
+    }
+
+    public Geometry getGeometrySimplified() {
+        return geometrySimplified;
+    }
+
+    public void setGeometrySimplified(final Geometry geometrySimplified) {
+        this.geometrySimplified = geometrySimplified;
     }
 }

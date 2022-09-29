@@ -54,6 +54,8 @@ public interface ForecastSectionDto {
 
     String getGeometryAsGeoJsonString();
 
+    String getGeometrySimplifiedAsGeoJsonString();
+
     String getRoadSegmentsAsJsonString();
 
     Instant getModified();
@@ -69,6 +71,9 @@ public interface ForecastSectionDto {
         return PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(getGeometryAsGeoJsonString());
     }
 
+    default Geometry<?> getGeometrySimplified() {
+        return PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(getGeometrySimplifiedAsGeoJsonString());
+    }
 
 
 

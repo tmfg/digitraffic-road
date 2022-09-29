@@ -40,14 +40,14 @@ public class ForecastSectionPropertiesV1 extends PropertiesV1 {
     public final List<RoadSegmentDtoV1> roadSegments;
 
     @Schema(description = "Forecast section link indices. Refers to https://aineistot.vayla.fi/digiroad/")
-    public final List<Long> linkIdList;
+    public final List<Long> linkIds;
 
     @Schema(description = "Data last updated date time", required = true)
     public final Instant dataUpdatedTime;
 
     public ForecastSectionPropertiesV1(final String id, final String description, final int roadSectionNumber,
                                        final int roadNumber, final Integer length,
-                                       final List<RoadSegmentDtoV1> roadSegments, final List<Long> linkIdList,
+                                       final List<RoadSegmentDtoV1> roadSegments, final List<Long> linkIds,
                                        final Instant dataUpdatedTime) {
         this.id = id;
         this.description = description;
@@ -55,7 +55,7 @@ public class ForecastSectionPropertiesV1 extends PropertiesV1 {
         this.roadNumber = roadNumber;
         this.length = length;
         this.roadSegments = roadSegments;
-        this.linkIdList = linkIdList;
+        this.linkIds = linkIds;
         this.dataUpdatedTime = dataUpdatedTime;
     }
 

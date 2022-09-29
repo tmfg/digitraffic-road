@@ -68,7 +68,8 @@ public class ForecastWebDataServiceV1 {
 
 
     @Transactional(readOnly = true)
-    public ForecastSectionFeatureCollectionV1 findForecastSections(final boolean lastUpdated, final Integer roadNumber,
+    public ForecastSectionFeatureCollectionV1 findForecastSections(final boolean lastUpdated, final boolean simplified,
+                                                                   final Integer roadNumber,
                                                                    final Double xMin, final Double yMin,
                                                                    final Double xMax, final Double yMax,
                                                                    final List<String> naturalIds) {
@@ -86,7 +87,8 @@ public class ForecastWebDataServiceV1 {
         dbTime.stop();
 
         final StopWatch convertTime = StopWatch.createStarted();
-        final ForecastSectionFeatureCollectionV1 featureCollection = forecastSectionToFeatureCollectionConverterV1.convertToFeatureCollection(forecastSections, lastModified);
+        final ForecastSectionFeatureCollectionV1 featureCollection =
+            forecastSectionToFeatureCollectionConverterV1.convertToFeatureCollection(forecastSections, lastModified, simplified);
         convertTime.stop();
 
         log.debug("method=findForecastSections resultSize:{}, dbTookMs:{}, convertTookMs:{} tookMs={}",

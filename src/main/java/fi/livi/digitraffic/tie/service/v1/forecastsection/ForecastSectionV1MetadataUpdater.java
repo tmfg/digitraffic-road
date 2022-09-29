@@ -115,11 +115,14 @@ public class ForecastSectionV1MetadataUpdater {
                                                                    Objects.requireNonNull(c.latitude).doubleValue()))
                 .collect(Collectors.toList());
             if (dbCoords.isEmpty()) {
-              forecastSection.setGeometry(null);
+                forecastSection.setGeometry(null);
+                forecastSection.setGeometrySimplified(forecastSection.getGeometry());
             } else if (dbCoords.size() == 1) {
                 forecastSection.setGeometry(PostgisGeometryHelper.createPointWithZ(dbCoords.get(0)));
+                forecastSection.setGeometrySimplified(forecastSection.getGeometry());
             } else {
                 forecastSection.setGeometry(PostgisGeometryHelper.createLineStringWithZ(dbCoords));
+                forecastSection.setGeometrySimplified(PostgisGeometryHelper.simplify(forecastSection.getGeometry()));
             }
         } else {
             forecastSection.setGeometry(null);

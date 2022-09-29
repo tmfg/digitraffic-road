@@ -21,7 +21,6 @@ import fi.livi.digitraffic.tie.dto.weather.v1.forecast.RoadSegmentDtoV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
-import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
 
@@ -59,18 +58,17 @@ public class ForecastSectionToFeatureCollectionConverterV1 extends AbstractMetad
             );
     }
 
-    public ForecastSectionFeatureCollectionV1 convertToFeatureCollection(final List<ForecastSectionDto> forecastSections, final Instant lastModifiedFallback) {
+    public ForecastSectionFeatureCollectionV1 convertToFeatureCollection(final List<ForecastSectionDto> forecastSections, final Instant lastModifiedFallback, final boolean simplified) {
         final List<ForecastSectionFeatureV1> features =
             forecastSections.stream()
-                .map(this::convertToFeature)
+                .map((ForecastSectionDto fs) -> convertToFeature(fs, simplified))
                 .collect(Collectors.toList());
         final Instant lastModified = getLastModified(features, lastModifiedFallback);
         return new ForecastSectionFeatureCollectionV1(lastModified, features);
     }
 
-    private ForecastSectionFeatureV1 convertToFeature(final ForecastSectionDto fs) {
-        final MultiLineString multiLineString = (MultiLineString) fs.getGeometry();
-        return new ForecastSectionFeatureV1(multiLineString, createProperties(fs));
+    private ForecastSectionFeatureV1 convertToFeature(final ForecastSectionDto fs, final boolean simplified) {
+        return new ForecastSectionFeatureV1(simplified ? fs.getGeometrySimplified() : fs.getGeometry(), createProperties(fs));
     }
 
     private ForecastSectionPropertiesV1 createProperties(final ForecastSectionDto fs) {

@@ -57,6 +57,7 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "     , f.road_section_number as roadSectionNumber\n" +
         "     , f.modified as modified\n" +
         "     , ST_AsGeoJSON(f.geometry) as geometryAsGeoJsonString\n" +
+            "     , ST_AsGeoJSON(f.geometry_simplified) as geometrySimplifiedAsGeoJsonString\n" +
         "     , li.linkIdsAsString\n" +
         "     , rs.roadSegmentsAsJsonString\n" +
         "from forecast_section f\n" +

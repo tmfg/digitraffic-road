@@ -243,6 +243,10 @@ public class WeatherControllerV1 {
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated,
 
+        @Parameter(description = "If parameter is given with true value, result geometry will be smaller in size.")
+        @RequestParam(value = "simplified", required = false, defaultValue = "false")
+        final boolean simplified,
+
         @Parameter(description = "List of forecast section indices")
         @RequestParam(value = "naturalId", required = false)
         final List<String> naturalId,
@@ -275,9 +279,9 @@ public class WeatherControllerV1 {
         @DecimalMax(Y_MAX)
         final double yMax) {
 
-        return forecastWebDataServiceV1.findForecastSections(lastUpdated, roadNumber,
-                                                                    xMin, yMin, xMax, yMax,
-                                                                    ObjectUtils.firstNonNull(naturalId, Collections.emptyList()));
+        return forecastWebDataServiceV1.findForecastSections(lastUpdated, simplified, roadNumber,
+                                                             xMin, yMin, xMax, yMax,
+                                                             ObjectUtils.firstNonNull(naturalId, Collections.emptyList()));
     }
 
 
