@@ -47,9 +47,14 @@ public class ForecastMetadataControllerRestWebTest extends AbstractRestWebTest {
 
     @BeforeEach
     public void initData() throws IOException {
-        final RestTemplateGzipService restTemplateGzipService = beanFactory.createBean(RestTemplateGzipService.class);
-        beanFactory.registerSingleton(restTemplateGzipService.getClass().getCanonicalName(), restTemplateGzipService);
-        final ForecastSectionTestHelper forecastSectionTestHelper = beanFactory.createBean(ForecastSectionTestHelper.class);
+        if (!isBeanRegistered(RestTemplateGzipService.class)) {
+            final RestTemplateGzipService restTemplateGzipService = beanFactory.createBean(RestTemplateGzipService.class);
+            beanFactory.registerSingleton(restTemplateGzipService.getClass().getCanonicalName(), restTemplateGzipService);
+        }
+        final ForecastSectionTestHelper forecastSectionTestHelper =
+            isBeanRegistered(ForecastSectionTestHelper.class) ?
+                beanFactory.getBean(ForecastSectionTestHelper.class) :
+                beanFactory.createBean(ForecastSectionTestHelper.class);
 
         final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient();
 

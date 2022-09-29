@@ -8,7 +8,9 @@ import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
@@ -39,6 +41,12 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 @Transactional
 public abstract class AbstractSpringJUnitTest extends AbstractTest {
 
+    @Autowired
+    protected EntityManager entityManager;
+
+    @Autowired
+    protected ConfigurableListableBeanFactory beanFactory;
+
     /**
      * Calls {@linkplain AopTestUtils#getTargetObject(Object)} }
      *
@@ -52,13 +60,17 @@ public abstract class AbstractSpringJUnitTest extends AbstractTest {
      * @return the target object or the {@code candidate} (never {@code null})
      * @throws IllegalStateException if an error occurs while unwrapping a proxy
      */
-    public static <T> T getTargetObject(Object candidate) {
+    public static <T> T getTargetObject(final Object candidate) {
         return AopTestUtils.getTargetObject(candidate);
     }
 
-    @Autowired
-    protected EntityManager entityManager;
-
+    protected boolean isBeanRegistered(final Class<?> c) {
+        try {
+            return beanFactory.getBean(c) != null;
+        } catch (final NoSuchBeanDefinitionException e) {
+            return false;
+        }
+    }
     public Instant getTransactionTimestamp() {
         final Timestamp value =
             (Timestamp) entityManager.createNativeQuery("select now()").getSingleResult();

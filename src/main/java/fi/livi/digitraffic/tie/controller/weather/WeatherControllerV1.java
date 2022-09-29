@@ -19,12 +19,10 @@ import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 
 import java.util.Collections;
-import java.util.List;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -187,6 +185,12 @@ public class WeatherControllerV1 {
 
     /* FORECASTS */
 
+    // TODO id query by /forecast-sections/{id} & /forecast-sections-simple/{id}
+    // TODO data query /forecast-sections/forecasts /forecast-sections/{id}/forecasts & /forecast-sections-simple/forecasts /forecast-sections-simple/{id}/forecasts
+    //  @Parameter(description = "List of forecast section indices")
+    //        @RequestParam(value = "naturalId", required = false)
+    //        final List<String> naturalId,
+
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "The static information of simple weather forecast sections")
@@ -195,10 +199,6 @@ public class WeatherControllerV1 {
         @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
         final boolean lastUpdated,
-
-        @Parameter(description = "List of forecast section indices")
-        @RequestParam(value = "naturalId", required = false)
-        final List<String> naturalId,
 
         @Parameter(description = "Road number")
         @RequestParam(value = "roadNumber", required = false)
@@ -230,7 +230,7 @@ public class WeatherControllerV1 {
 
         return forecastWebDataServiceV1.findSimpleForecastSections(lastUpdated, roadNumber,
                                                                    xMin, yMin, xMax, yMax,
-                                                                   ObjectUtils.firstNonNull(naturalId, Collections.emptyList()));
+                                                                   Collections.emptyList());
     }
 
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS,
@@ -246,10 +246,6 @@ public class WeatherControllerV1 {
         @Parameter(description = "If parameter is given with true value, result geometry will be smaller in size.")
         @RequestParam(value = "simplified", required = false, defaultValue = "false")
         final boolean simplified,
-
-        @Parameter(description = "List of forecast section indices")
-        @RequestParam(value = "naturalId", required = false)
-        final List<String> naturalId,
 
         @Parameter(description = "Road number")
         @RequestParam(value = "roadNumber", required = false)
@@ -281,7 +277,7 @@ public class WeatherControllerV1 {
 
         return forecastWebDataServiceV1.findForecastSections(lastUpdated, simplified, roadNumber,
                                                              xMin, yMin, xMax, yMax,
-                                                             ObjectUtils.firstNonNull(naturalId, Collections.emptyList()));
+                                                             null);
     }
 
 

@@ -15,9 +15,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,24 +43,18 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    private ConfigurableListableBeanFactory beanFactory;
 
-    private boolean isNotRegistered(final Class<?> c) {
-        try {
-            return beanFactory.getBean(c) == null;
-        } catch (final NoSuchBeanDefinitionException e) {
-            return true;
-        }
-    }
 
     @BeforeEach
     public void initData() throws IOException {
-        if (isNotRegistered(RestTemplateGzipService.class)) {
+        if (!isBeanRegistered(RestTemplateGzipService.class)) {
             final RestTemplateGzipService restTemplateGzipService = beanFactory.createBean(RestTemplateGzipService.class);
             beanFactory.registerSingleton(restTemplateGzipService.getClass().getCanonicalName(), restTemplateGzipService);
         }
-        final ForecastSectionTestHelper forecastSectionTestHelper = beanFactory.createBean(ForecastSectionTestHelper.class);
+        final ForecastSectionTestHelper forecastSectionTestHelper =
+            isBeanRegistered(ForecastSectionTestHelper.class) ?
+                beanFactory.getBean(ForecastSectionTestHelper.class) :
+                beanFactory.createBean(ForecastSectionTestHelper.class);
 
         final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient();
 
