@@ -42,7 +42,7 @@ public class ForecastSectionToFeatureCollectionConverterV1 extends AbstractMetad
     }
 
 
-    private ForecastSectionFeatureSimpleV1 convertToSimpleFeature(final ForecastSection fs) {
+    public ForecastSectionFeatureSimpleV1 convertToSimpleFeature(final ForecastSection fs) {
         final LineString lineString = PostgisGeometryHelper.convertToGeoJSONLineString(fs.getGeometry());
         return new ForecastSectionFeatureSimpleV1(lineString, createSimpleProperties(fs));
     }
@@ -67,7 +67,7 @@ public class ForecastSectionToFeatureCollectionConverterV1 extends AbstractMetad
         return new ForecastSectionFeatureCollectionV1(lastModified, features);
     }
 
-    private ForecastSectionFeatureV1 convertToFeature(final ForecastSectionDto fs, final boolean simplified) {
+    public ForecastSectionFeatureV1 convertToFeature(final ForecastSectionDto fs, final boolean simplified) {
         return new ForecastSectionFeatureV1(simplified ? fs.getGeometrySimplified() : fs.getGeometry(), createProperties(fs));
     }
 

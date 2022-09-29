@@ -18,8 +18,6 @@ import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUN
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 
-import java.util.Collections;
-
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 
@@ -39,6 +37,8 @@ import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureSimpleV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
@@ -229,10 +229,24 @@ public class WeatherControllerV1 {
         final double yMax) {
 
         return forecastWebDataServiceV1.findSimpleForecastSections(lastUpdated, roadNumber,
-                                                                   xMin, yMin, xMax, yMax,
-                                                                   Collections.emptyList());
+                                                                   xMin, yMin, xMax, yMax);
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE + "/{id}",
+                    produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
+    @Operation(summary = "The static information of simple weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of simple forecast sections") })
+    public ForecastSectionFeatureSimpleV1 forecastSectionSimpleById(
+        @Parameter(description = "If parameter is given result will only contain update status.")
+        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+        final boolean lastUpdated,
+
+        @Parameter(description = "Section id", required = true)
+        @PathVariable(value = "id")
+        final String id) {
+
+        return forecastWebDataServiceV1.getSimpleForecastSectionById(lastUpdated, id);
+    }
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "The static information of weather forecast sections")
@@ -276,11 +290,26 @@ public class WeatherControllerV1 {
         final double yMax) {
 
         return forecastWebDataServiceV1.findForecastSections(lastUpdated, simplified, roadNumber,
-                                                             xMin, yMin, xMax, yMax,
-                                                             null);
+                                                             xMin, yMin, xMax, yMax);
     }
 
 
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS + "/{id}",
+                    produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
+    @Operation(summary = "The static information of weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
+    public ForecastSectionFeatureV1 forecastSectionById(
+
+        @Parameter(description = "If parameter is given with true value, result geometry will be smaller in size.")
+        @RequestParam(value = "simplified", required = false, defaultValue = "false")
+        final boolean simplified,
+
+        @Parameter(description = "Section id", required = true)
+        @PathVariable(value = "id")
+        final String id) {
+
+        return forecastWebDataServiceV1.getForecastSectionById(simplified, id);
+    }
 
 }
 

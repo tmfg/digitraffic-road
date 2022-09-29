@@ -12,4 +12,10 @@ public final class ControllerConstants {
     public static final String Y_MIN = "59.0";
     public static final String Y_MAX = "72.0";
 
+    public static final double X_MIN_DOUBLE = 19.0;
+    public static final double X_MAX_DOUBLE = 32.0;
+    public static final double Y_MIN_DOUBLE = 59.0;
+    public static final double Y_MAX_DOUBLE = 72.0;
+
+
 }

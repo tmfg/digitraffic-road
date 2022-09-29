@@ -29,15 +29,16 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "select f\n" +
         "from ForecastSection f\n" +
         "where f.version = 1\n" +
-        " AND (:roadNumber IS NULL OR f.roadNumber = :roadNumber)\n" +
-        " AND (:area IS NULL OR ST_INTERSECTS(:area, f.geometry) = TRUE)\n" +
-        " AND ( :#{#naturalIds.size()} = 0 OR f.naturalId IN (:naturalIds))\n" +
+        " AND (cast(:roadNumber as integer) IS NULL OR f.roadNumber = :roadNumber)\n" +
+        // cast to geometry not working, so use text
+        " AND (cast(:area as text) IS NULL OR ST_INTERSECTS(:area, f.geometry) = TRUE)\n" +
+        " AND (cast(:id as text) IS NULL OR f.naturalId = cast(:id as text))\n" +
+        //" AND ( :#{#naturalIds.size()} = 0 OR f.naturalId IN (:naturalIds))\n" +
         "  AND f.obsoleteDate IS NULL\n" +
-"order by f.naturalId")
+        "order by f.naturalId")
     List<ForecastSection> findForecastSectionsV1OrderByNaturalIdAsc(final Integer roadNumber,
                                                                     final Geometry area,
-                                                                    final List<String> naturalIds
-    );
+                                                                    final String id);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value =
@@ -66,13 +67,14 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "where f.version = 2\n" +
         "  AND (cast(:area as geometry) IS NULL OR ST_INTERSECTS(cast(:area as geometry), f.geometry) = TRUE)\n" +
         "  AND (cast(:roadNumber as numeric) IS NULL OR f.road_number = cast(:roadNumber as numeric))\n" +
-        "  AND (coalesce(array_length(cast('{' || :naturalIds || '}' as varchar[]), 1), 0) = 0 OR f.natural_id IN (:naturalIds))\n" +
+        "  AND (:id IS NULL OR f.natural_id = :id)\n" +
+        //"  AND (coalesce(array_length(cast('{' || :naturalIds || '}' as varchar[]), 1), 0) = 0 OR f.natural_id IN (:naturalIds))\n" +
         "  AND obsolete_date IS NULL\n" +
         "order by f.natural_id",
         nativeQuery = true)
     List<ForecastSectionDto> findForecastSectionsV2OrderByNaturalIdAsc(final Integer roadNumber,
                                                                        final Geometry area,
-                                                                       final List<String> naturalIds);
+                                                                       final String id);
 
     @Modifying
     @Query(value = "DELETE FROM road_segment WHERE forecast_section_id IN " +
@@ -95,7 +97,7 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "    FROM forecast_section f\n" +
         "    WHERE version = :version\n" +
         "      AND (cast(:area as geometry) IS NULL OR ST_INTERSECTS(cast(:area as geometry), f.geometry) = TRUE)\n" +
-        "      AND (coalesce(array_length(cast('{' || :naturalIds || '}' as varchar[]), 1), 0) = 0 OR f.natural_id IN (:naturalIds))\n" +
+        "      AND (:id IS NULL OR f.natural_id = :id)\n" +
         "), max_from_all as (\n" +
         "    SELECT max(f.modified) as modified FROM forecast_section f WHERE version = :version\n" +
         ")\n" +
@@ -104,6 +106,6 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         nativeQuery = true) // don't filter with "obsolete_date IS NULL" as if updated to obsoleted -> data is modified
     Instant getLastModified(final int version,
                             final Geometry area,
-                            final List<String> naturalIds);
+                            final String id);
 
 }

@@ -43,8 +43,6 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Autowired
     private RestTemplate restTemplate;
 
-
-
     @BeforeEach
     public void initData() throws IOException {
         if (!isBeanRegistered(RestTemplateGzipService.class)) {
@@ -106,6 +104,29 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     }
 
     @Test
+    public void forecastSectionsSimpleById() throws Exception {
+        final String id = "00001_001_000_0";
+        final String response =
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + "/" + id)).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+
+        mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + "/" + id))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+            .andExpect(jsonPath("$.geometry.type", is("LineString")))
+            .andExpect(jsonPath("$.geometry.coordinates", hasSize(greaterThan(1))))
+            .andExpect(jsonPath("$.type", is("Feature")))
+            .andExpect(jsonPath("$.id", is(id)))
+            .andExpect(jsonPath("$.properties.id", is(id)))
+            .andExpect(jsonPath("$.properties.description", isA(String.class)))
+            .andExpect(jsonPath("$.properties.roadSectionNumber", isA(Integer.class)))
+            .andExpect(jsonPath("$.properties.roadNumber", isA(Integer.class)))
+            .andExpect(jsonPath("$.properties.roadSectionVersionNumber", isA(Integer.class)))
+            .andExpect(jsonPath("$.properties.dataUpdatedTime", isA(String.class)))
+        ;
+    }
+
+    @Test
     public void forecastSections() throws Exception {
         final String response =
             mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS)).andReturn().getResponse().getContentAsString();
@@ -131,6 +152,34 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.features[0].properties.roadSegments", hasSize(greaterThanOrEqualTo(1))))
             .andExpect(jsonPath("$.features[0].properties.roadSegments[0].startDistance", isA(Integer.class)))
             .andExpect(jsonPath("$.features[0].properties.roadSegments[0].endDistance", isA(Integer.class)))
+        ;
+    }
+
+    @Test
+    public void forecastSectionById() throws Exception {
+        final String id = "00003_218_04302_0_0";
+        final String response =
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + "/" + id)).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+
+        mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + "/" + id))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+            .andExpect(jsonPath("$.geometry.type", is("MultiLineString")))
+            .andExpect(jsonPath("$.geometry.coordinates", hasSize(greaterThan(1))))
+            .andExpect(jsonPath("$.type", is("Feature")))
+            .andExpect(jsonPath("$.id", is(id)))
+
+            .andExpect(jsonPath("$.properties.id", is(id)))
+            .andExpect(jsonPath("$.properties.description", isA(String.class)))
+            .andExpect(jsonPath("$.properties.roadSectionNumber", isA(Integer.class)))
+            .andExpect(jsonPath("$.properties.roadNumber", isA(Integer.class)))
+            .andExpect(jsonPath("$.properties.length", isA(Integer.class)))
+            .andExpect(jsonPath("$.properties.linkIds", hasSize(greaterThan(1))))
+            .andExpect(jsonPath("$.properties.dataUpdatedTime", isA(String.class)))
+            .andExpect(jsonPath("$.properties.roadSegments", hasSize(greaterThanOrEqualTo(1))))
+            .andExpect(jsonPath("$.properties.roadSegments[0].startDistance", isA(Integer.class)))
+            .andExpect(jsonPath("$.properties.roadSegments[0].endDistance", isA(Integer.class)))
         ;
     }
 }
