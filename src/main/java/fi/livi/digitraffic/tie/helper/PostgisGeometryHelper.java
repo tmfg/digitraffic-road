@@ -122,7 +122,7 @@ public class PostgisGeometryHelper {
     public static fi.livi.digitraffic.tie.metadata.geojson.LineString convertToGeoJSONLineString(final Geometry geometry)
         throws IllegalArgumentException {
         if (geometry.getGeometryType().equals(Geometry.TYPENAME_LINESTRING)) {
-            return convertToGeoJSONGeometry(geometry);
+            return convertGeometryToGeoJSONGeometry(geometry);
         }
         throw new IllegalArgumentException("Geometry must be LineString, but was " + geometry.getGeometryType() + ". Had coordinate count of " + geometry.getNumPoints());
     }
@@ -130,21 +130,21 @@ public class PostgisGeometryHelper {
     public static fi.livi.digitraffic.tie.metadata.geojson.MultiLineString convertToGeoJSONMultiLineLineString(final Geometry geometry)
         throws IllegalArgumentException {
         if (geometry.getGeometryType().equals(Geometry.TYPENAME_MULTILINESTRING)) {
-            return convertToGeoJSONGeometry(geometry);
+            return convertGeometryToGeoJSONGeometry(geometry);
         }
         throw new IllegalArgumentException("Geometry must be MultiLineString, but was " + geometry.getGeometryType() + ". Had coordinate count of " + geometry.getNumPoints());
     }
 
-    public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertToGeoJSONGeometry(final org.locationtech.jts.geom.Geometry geometry) {
+    public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeometryToGeoJSONGeometry(final org.locationtech.jts.geom.Geometry geometry) {
         final String geoJson = geoJsonWriter.write(geometry);
-        return convertFromGeoJSONStringToGeoJSON(geoJson);
+        return convertGeoJSONStringToGeoJSON(geoJson);
     }
 
-    public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertFromGeoJSONStringToGeoJSON(final String geoJSON) {
+    public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeoJSONStringToGeoJSON(final String geoJsonString) {
         try {
-            return dtGeoJsonGeometryObjectReader.readValue(geoJSON);
+            return dtGeoJsonGeometryObjectReader.readValue(geoJsonString);
         } catch (final JsonProcessingException e) {
-            log.error(MessageFormat.format("method=convertFromGeoJSONStringToGeoJSON Failed to convert {0} to GeoJSON", geoJSON), e);
+            log.error(MessageFormat.format("method=convertFromGeoJSONStringToGeoJSON Failed to convert {0} to GeoJSON", geoJsonString), e);
             throw new RuntimeException(e);
         }
     }
@@ -187,7 +187,7 @@ public class PostgisGeometryHelper {
         return GF.buildGeometry(geometryCollection).union();
     }
 
-    public static Geometry parseGeometryFromJson(final String geometryJson) throws ParseException {
+    public static Geometry convertGeoJsonGeometryToGeometry(final String geometryJson) throws ParseException {
         try {
             return geoJsonReader.read(geometryJson);
         } catch (final ParseException e) {
@@ -220,7 +220,7 @@ public class PostgisGeometryHelper {
         return DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
     }
 
-    public static String toGeoJson(final Geometry geometry) {
+    public static String convertGeometryToGeoJsonString(final Geometry geometry) {
         return geoJsonWriter.write(geometry);
     }
 
@@ -228,7 +228,7 @@ public class PostgisGeometryHelper {
         return dbGeometryReader.read(wkbBytes);
     }
 
-    public static String getWktPolygon(final Double xMin, final Double xMax, final Double yMin, final Double yMax) {
+    public static String convertBoundsCoordinatesToWktPolygon(final Double xMin, final Double xMax, final Double yMin, final Double yMax) {
         if( xMin != null &&
             xMax != null &&
             yMin != null &&
@@ -243,12 +243,17 @@ public class PostgisGeometryHelper {
         return null;
     }
 
-    public static Geometry convertWktGeometryToGeomety(final String wktGeometry) {
+    public static Geometry convertWktToGeomety(final String wktGeometry) {
         try {
             return wktReader.read(wktGeometry);
         } catch (ParseException e) {
             log.error("method=convertWktGeometryToGeomety Failed to parse wktGeometry: " + wktGeometry, e);
             throw new RuntimeException(e);
         }
+    }
+
+    public static fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> convertWktToGeoJSON(final String geometryWkt) {
+        final Geometry geometry = convertWktToGeomety(geometryWkt);
+        return convertGeometryToGeoJSONGeometry(geometry);
     }
 }

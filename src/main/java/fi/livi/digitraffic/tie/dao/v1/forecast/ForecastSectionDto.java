@@ -68,14 +68,12 @@ public interface ForecastSectionDto {
     }
 
     default Geometry<?> getGeometry() {
-        return PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(getGeometryAsGeoJsonString());
+        return PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(getGeometryAsGeoJsonString());
     }
 
     default Geometry<?> getGeometrySimplified() {
-        return PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(getGeometrySimplifiedAsGeoJsonString());
+        return PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(getGeometrySimplifiedAsGeoJsonString());
     }
-
-
 
     default List<RoadSegmentDto> getRoadSegments()  {
         try {
@@ -84,7 +82,4 @@ public interface ForecastSectionDto {
             throw new RuntimeException(e);
         }
     }
-
-
-
 }

@@ -85,7 +85,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void point() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POINT);
+            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POINT);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.Point, geom.getType());
@@ -95,7 +95,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void lineString() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.LINE_STRING);
+            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.LINE_STRING);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.LineString, geom.getType());
@@ -105,7 +105,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void multiLineString() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_LINE_STRING);
+            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_LINE_STRING);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.MultiLineString, geom.getType());
@@ -115,7 +115,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void polygon() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON);
+            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.Polygon, geom.getType());
@@ -125,7 +125,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void polygonWithInternalPolygon() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON_WITH_INTERNAL_POLYGON);
+            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON_WITH_INTERNAL_POLYGON);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.Polygon, geom.getType());
@@ -135,7 +135,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void multiPoint() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POINT);
+            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POINT);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.MultiPoint, geom.getType());
@@ -145,7 +145,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void multiPolygon() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON);
+            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.MultiPolygon, geom.getType());
@@ -155,7 +155,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void multiPolygonWithInnerPolygon() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertFromGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON_WITH_INNER_POLYGON);
+            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON_WITH_INNER_POLYGON);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.MultiPolygon, geom.getType());

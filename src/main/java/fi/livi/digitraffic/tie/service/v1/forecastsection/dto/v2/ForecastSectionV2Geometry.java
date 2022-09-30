@@ -26,10 +26,6 @@ public class ForecastSectionV2Geometry {
         this.type = type;
     }
 
-//    public List<List<Coordinate>> getCoordinates() {
-//        return coordinates.stream().map(list -> list.stream().map(c -> new Coordinate(c)).collect(Collectors.toList())).collect(Collectors.toList());
-//    }
-
     public List<List<List<BigDecimal>>> getCoordinates() {
         return coordinates;
     }

@@ -99,7 +99,7 @@ public class V2ForecastSectionMetadataDao {
 
         try {
             final String json = feature.getGeometry().toJsonString();
-            final Geometry geometry = PostgisGeometryHelper.parseGeometryFromJson(json);
+            final Geometry geometry = PostgisGeometryHelper.convertGeoJsonGeometryToGeometry(json);
             final Geometry simplifiedGeometry = PostgisGeometryHelper.simplify(geometry);
             args.put("geometry", geometry.toText());
             args.put("geometrySimplified", simplifiedGeometry.toText());
@@ -119,7 +119,7 @@ public class V2ForecastSectionMetadataDao {
             .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
             .addValue("naturalIds", naturalIds);
 
-        final String wktPolygon = PostgisGeometryHelper.getWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
+        final String wktPolygon = PostgisGeometryHelper.convertBoundsCoordinatesToWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
         final String selectSql = SELECT_ALL.replace("INTERSECTS_AREA",
                                                     wktPolygon != null ? INTERSECTS_AREA : "");
         if (wktPolygon != null) {
@@ -138,21 +138,6 @@ public class V2ForecastSectionMetadataDao {
         return featureMap.values().stream()
             .sorted(Comparator.comparing(f -> f.getProperties().getNaturalId())).collect(Collectors.toList());
     }
-
-//    public static String getIntersectsWktPolygon(final Double xMin, final Double xMax, final Double yMin, final Double yMax) {
-//        if( xMin != null &&
-//            xMax != null &&
-//            yMin != null &&
-//            yMax != null) {
-//
-//            final String[] names  = new String[] { "xMin", "xMax", "yMin", "yMax" };
-//            final String[] values = new String[] { xMin.toString(), xMax.toString(), yMin.toString(), yMax.toString() };
-//
-//            return StringUtils.replaceEach("POLYGON((xMin yMin, xMax yMin, xMax yMax, xMin yMax, xMin yMin))", names, values);
-//        }
-//
-//        return null;
-//    }
 
     private ForecastSectionV2Feature convert(final String naturalId, final ResultSet rs) {
         try {

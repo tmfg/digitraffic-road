@@ -69,7 +69,7 @@ public class ForecastSectionWeatherDao {
             .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
             .addValue("naturalIds", naturalIds);
 
-        final String wktPolygon = PostgisGeometryHelper.getWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
+        final String wktPolygon = PostgisGeometryHelper.convertBoundsCoordinatesToWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
         final String selectSql = SELECT_ALL.replace("INTERSECTS_AREA",
                                                     wktPolygon != null ? INTERSECTS_AREA :  "");
         if (wktPolygon != null) {
