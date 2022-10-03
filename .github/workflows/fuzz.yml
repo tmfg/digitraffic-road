@@ -10,7 +10,7 @@ jobs:
       - name: Fuzz
         uses: mprencipe/waggers-action@v3
         with:
-          url: https://tie-test.digitraffic.fi/swagger/swagger-spec.json
+          url: https://tie-test.digitraffic.fi/swagger/openapi.json
           fuzzcount: 5
           headers: 'digitraffic-user:internal-digitraffic-fuzz'
       - name: Notify Slack
