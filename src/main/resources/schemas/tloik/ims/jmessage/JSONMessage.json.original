@@ -372,8 +372,7 @@
                     },
                     "required": [
                         "locationCode",
-                        "name",
-                        "distance"
+                        "name"
                     ]
                 }
             },
