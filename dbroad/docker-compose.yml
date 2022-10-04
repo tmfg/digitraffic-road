@@ -6,7 +6,9 @@ networks:
 
 services:
   db:
-    image: postgres:12.9-alpine
+    build:
+      context: ./postgis
+      dockerfile: Dockerfile_postgis
     restart: always
     environment:
       POSTGRES_USER: road
@@ -17,9 +19,6 @@ services:
     ports:
       - 54322:5432
     command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all -c max_connections=200
-    build:
-      context: ./postgis
-      dockerfile: Dockerfile_postgis
 
   db-init:
     image: flyway/flyway:9.3-alpine
