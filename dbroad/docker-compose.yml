@@ -22,15 +22,15 @@ services:
       dockerfile: Dockerfile_postgis
 
   db-init:
-    build: .
+    image: flyway/flyway:9.3-alpine
     networks:
       - dnet1
     volumes:
-      - "./sql:/sql"
-      - "~/.m2:/root/.m2"
+      - "./sql:/flyway/sql"
+      - "./files:/flyway/conf"
     links:
       - "db:db"
-    command: ["./init-db.sh"]
+    command: "migrate"
     depends_on:
       - db
 
