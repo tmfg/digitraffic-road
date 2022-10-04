@@ -13,7 +13,7 @@ ALTER TABLE WORK_MACHINE_OBSERVATION_COORDINATE
             ON DELETE CASCADE;
 
 ALTER TABLE WORK_MACHINE_TASK
-    DROP CONSTRAINT work_machine_task_work_machine_coordinate_observation_id_fkey,
+    DROP CONSTRAINT work_machine_task_work_machine_coordinate_observation_id_w_fkey,
     ADD CONSTRAINT work_machine_task_work_machine_coordinate_observation_id_fkey
         FOREIGN KEY (WORK_MACHINE_COORDINATE_OBSERVATION_ID, WORK_MACHINE_COORDINATE_ORDER_NUMBER)
             REFERENCES WORK_MACHINE_OBSERVATION_COORDINATE (WORK_MACHINE_OBSERVATION_ID, ORDER_NUMBER)
