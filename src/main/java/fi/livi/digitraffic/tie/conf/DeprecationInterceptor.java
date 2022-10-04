@@ -22,17 +22,23 @@ public class DeprecationInterceptor implements HandlerInterceptor {
         final Object handler,
         final ModelAndView modelAndView) throws Exception {
 
-        final HandlerMethod hm;
+        final HandlerMethod handlerMethod;
 
         try {
-            hm = (HandlerMethod) handler;
-            if (hm.getMethod().isAnnotationPresent(Deprecated.class)) {
-                response.addHeader("Deprecation", hm.getMethod().getAnnotation(Deprecated.class).since());
+            handlerMethod = (HandlerMethod) handler;
+
+            if (handlerMethod.getMethod().isAnnotationPresent(Deprecated.class)
+                || handlerMethod.getMethod().isAnnotationPresent(Sunset.class)) {
+                if (handlerMethod.getMethod().isAnnotationPresent(Deprecated.class)
+                    && handlerMethod.getMethod().isAnnotationPresent(Sunset.class)) {
+                    response.addHeader("Deprecation", "true");
+                    response.addHeader("Sunset", handlerMethod.getMethod().getAnnotation(Sunset.class).date());
+                }
+                else {
+                    throw new Exception("Deprecated handler " +  handlerMethod.getMethod().getName() + " is missing either a @Deprecated or @Sunset annotation");
+                }
             }
-            if (hm.getMethod().isAnnotationPresent(Sunset.class)) {
-                response.addHeader("Sunset", hm.getMethod().getAnnotation(Sunset.class).date());
-            }
-        } catch (final ClassCastException error) {
+        } catch (final Exception error) {
             log.error(error.getMessage());
         }
 
