@@ -15,7 +15,6 @@ reindex (VERBOSE) table datex2_situation;
 reindex (VERBOSE) table datex2_situation_record;
 reindex (VERBOSE) table device_data;
 reindex (VERBOSE) table forecast_condition_reason;
-reindex (VERBOSE) table forecast_section_coordinate_list;
 reindex (VERBOSE) table forecast_section_weather;
 reindex (VERBOSE) table forecast_section;
 reindex (VERBOSE) table link_id;

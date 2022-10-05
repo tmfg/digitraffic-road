@@ -80,7 +80,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
         final ForecastSectionV2FeatureCollection featureCollection =
             v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null,
                                                                           null);
-        final Instant now = Instant.now();
+
         assertEquals(updated, featureCollection.dataUpdatedTime.toInstant());
         assertEquals(lastChecked.getEpochSecond(), featureCollection.dataLastCheckedTime.toEpochSecond(), 2);
 
@@ -160,7 +160,7 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     }
 
     private void assertCoordinates(final double expected, final double actual) {
-        assertEquals(expected, actual, 0.00000001);
+        assertEquals(expected, actual, 0.000001); // 6 digits
     }
 
 }

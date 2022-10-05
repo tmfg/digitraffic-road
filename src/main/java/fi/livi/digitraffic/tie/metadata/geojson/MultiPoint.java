@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "type", "coordinates"})
 public class MultiPoint extends Geometry<List<Double>> {
 
-    @JsonCreator
-    public MultiPoint(List<List<Double>> coordinates) {
+    public MultiPoint(@JsonProperty("coordinates")
+                      final List<List<Double>> coordinates) {
         super(Type.MultiPoint, coordinates);
     }
 

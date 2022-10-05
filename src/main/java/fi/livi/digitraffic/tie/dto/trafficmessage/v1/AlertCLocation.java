@@ -4,7 +4,6 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -24,12 +23,11 @@ public class AlertCLocation extends JsonAdditionalProperties {
     @NotNull
     public Integer locationCode;
 
-    @Schema(description = "Location point name")
+    @Schema(description = "Location point name", required = true)
     @NotNull
     public String name;
 
-    @JsonPropertyDescription("Distance of the road point from the AlertC location point")
-    @NotNull
+    @Schema(description = "Distance of the road point from the AlertC location point")
     public Integer distance;
 
     public AlertCLocation() {

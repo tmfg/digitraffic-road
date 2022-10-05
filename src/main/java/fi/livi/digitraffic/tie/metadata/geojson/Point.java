@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,8 +21,8 @@ public class Point extends Geometry<Double> implements Serializable {
     /**
      * @param coordinates Array in order: longitude, latitude, [altitude].
      */
-    @JsonCreator
-    public Point(final List<Double> coordinates) {
+    public Point(@JsonProperty("coordinates")
+                 final List<Double> coordinates) {
         super(Type.Point, coordinates);
     }
 

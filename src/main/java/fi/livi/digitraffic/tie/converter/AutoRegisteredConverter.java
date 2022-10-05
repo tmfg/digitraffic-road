@@ -18,8 +18,4 @@ public abstract class AutoRegisteredConverter<S, T> implements Converter<S, T> {
     private void register() {
         conversionService.addConverter(this);
     }
-
-    public <TT> TT convert(final Object source, final Class<TT> targetType) {
-        return conversionService.convert(source, targetType);
-    }
 }

@@ -26,8 +26,7 @@ public class AlertCLocation extends JsonAdditionalProperties {
     @NotNull
     public String name;
 
-    @Schema(description = "Distance of the road point from the AlertC location point", required = true)
-    @NotNull
+    @Schema(description = "Distance of the road point from the AlertC location point")
     public Integer distance;
 
     public AlertCLocation() {

@@ -99,9 +99,8 @@ public class RoadApplicationConfiguration {
 
     @Bean("conversionService")
     public ConversionService getConversionService() {
-        ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
+        final ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
         bean.afterPropertiesSet();
-        ConversionService object = bean.getObject();
-        return object;
+        return bean.getObject();
     }
 }

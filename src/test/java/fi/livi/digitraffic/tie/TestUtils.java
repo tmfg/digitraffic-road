@@ -437,15 +437,19 @@ public class TestUtils {
     }
 
     public static void commitAndEndTransactionAndStartNew() {
-        TestTransaction.flagForCommit();
-        try {
-            TestTransaction.end();
-        } catch (final UnexpectedRollbackException e) {
-            // Don't care as now transaction is rolled back and ended
-            // This sometimes happens in test cleanup as the transaction is marked as roll back only and is ok
+        if (!TestTransaction.isActive()) {
+            TestTransaction.start();
+        } else {
+            TestTransaction.flagForCommit();
+            try {
+                TestTransaction.end();
+            } catch (final UnexpectedRollbackException e) {
+                // Don't care as now transaction is rolled back and ended
+                // This sometimes happens in test cleanup as the transaction is marked as roll back only and is ok
+            }
+            TestTransaction.start();
+            TestTransaction.flagForCommit();
         }
-        TestTransaction.start();
-        TestTransaction.flagForCommit();
     }
 
     public static void entityManagerFlushAndClear(final EntityManager entityManager) {

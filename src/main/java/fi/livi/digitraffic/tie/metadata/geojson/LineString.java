@@ -2,17 +2,17 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "GeoJson LineString Geometry Object")
 @JsonPropertyOrder({ "type", "coordinates"})
-    public class LineString extends Geometry<List<Double>> {
+public class LineString extends Geometry<List<Double>> {
 
-    @JsonCreator
-    public LineString(List<List<Double>> coordinates) {
+    public LineString(@JsonProperty("coordinates")
+                      final List<List<Double>> coordinates) {
         super(Type.LineString, coordinates);
     }
 

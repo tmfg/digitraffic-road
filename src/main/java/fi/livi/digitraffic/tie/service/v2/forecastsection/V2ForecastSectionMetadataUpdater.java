@@ -16,13 +16,10 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionClient;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.ForecastSectionV2Dto;
-import reactor.util.Logger;
-import reactor.util.Loggers;
 
 @ConditionalOnNotWebApplication
 @Service
 public class V2ForecastSectionMetadataUpdater {
-    private final static Logger log = Loggers.getLogger(V2ForecastSectionMetadataUpdater.class);
 
     private final ForecastSectionClient forecastSectionClient;
 
@@ -52,9 +49,6 @@ public class V2ForecastSectionMetadataUpdater {
         forecastSectionRepository.deleteAllNotIn(naturalIds, ForecastSectionApiVersion.V2.getVersion());
 
         v2ForecastSectionMetadataDao.upsertForecastSections(metadata.getFeatures());
-
-        forecastSectionRepository.deleteCoordinates(ForecastSectionApiVersion.V2.getVersion());
-        v2ForecastSectionMetadataDao.insertCoordinates(metadata.getFeatures());
 
         forecastSectionRepository.deleteRoadSegments(ForecastSectionApiVersion.V2.getVersion());
         v2ForecastSectionMetadataDao.insertRoadSegments(metadata.getFeatures());

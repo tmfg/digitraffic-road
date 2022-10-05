@@ -193,10 +193,10 @@ public class V2Datex2UpdateService {
             return null;
         }
         try {
-            final Geometry geometry = PostgisGeometryHelper.parseGeometryFromJson(geometryNode.toPrettyString());
+            final Geometry geometry = PostgisGeometryHelper.convertGeoJsonGeometryToGeometry(geometryNode.toPrettyString());
             if (!geometry.isValid()) {
                 final Geometry fixedGeometry = PostgisGeometryHelper.fixGeometry(geometry);
-                final String fixedGeoJsonGeometry = PostgisGeometryHelper.toGeoJson(fixedGeometry);
+                final String fixedGeoJsonGeometry = PostgisGeometryHelper.convertGeometryToGeoJsonString(fixedGeometry);
                 return imsJsonConverter.replaceFeatureJsonGeometry(geoJsonFeature, fixedGeoJsonGeometry);
             }
             return null;

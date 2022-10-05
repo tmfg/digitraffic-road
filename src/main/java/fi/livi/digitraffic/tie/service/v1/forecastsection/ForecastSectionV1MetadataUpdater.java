@@ -1,15 +1,15 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionCoordinate;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionCoordinateList;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionCoordinateListPK;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionCoordinatePK;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.Coordinate;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v1.ForecastSectionCoordinatesDto;
@@ -98,51 +95,59 @@ public class ForecastSectionV1MetadataUpdater {
             final ForecastSectionCoordinatesDto forecastSection = fs.getValue();
 
             final ForecastSection newForecastSection = new ForecastSection(forecastSection.getNaturalId(), 1, forecastSection.getName());
-            forecastSectionRepository.saveAndFlush(newForecastSection);
-            newForecastSection.addCoordinates( forecastSection.getCoordinates());
+            updateGeometry(newForecastSection, fs.getValue().getCoordinates());
             forecastSectionRepository.saveAndFlush(newForecastSection);
             forecastSections.put(fs.getValue().getNaturalId(), newForecastSection);
         }
+    }
+
+    /**
+     *
+     * @param forecastSection which geometry to update
+     * @param coordinates coordinates to use as geometry
+     * @return true if geometry was updated
+     */
+    private boolean updateGeometry(final ForecastSection forecastSection, final List<Coordinate> coordinates) {
+        final Geometry oldGeometry = forecastSection.getGeometry();
+        if (coordinates != null && !coordinates.isEmpty()) {
+            final List<org.locationtech.jts.geom.Coordinate> dbCoords = coordinates.stream().filter(Coordinate::isValid)
+                .map(c -> new org.locationtech.jts.geom.Coordinate(Objects.requireNonNull(c.longitude).doubleValue(),
+                                                                   Objects.requireNonNull(c.latitude).doubleValue()))
+                .collect(Collectors.toList());
+            if (dbCoords.isEmpty()) {
+                forecastSection.setGeometry(null);
+                forecastSection.setGeometrySimplified(forecastSection.getGeometry());
+            } else if (dbCoords.size() == 1) {
+                forecastSection.setGeometry(PostgisGeometryHelper.createPointWithZ(dbCoords.get(0)));
+                forecastSection.setGeometrySimplified(forecastSection.getGeometry());
+            } else {
+                forecastSection.setGeometry(PostgisGeometryHelper.createLineStringWithZ(dbCoords));
+                forecastSection.setGeometrySimplified(PostgisGeometryHelper.simplify(forecastSection.getGeometry()));
+            }
+        } else {
+            forecastSection.setGeometry(null);
+        }
+        return !Objects.equals(oldGeometry, forecastSection.getGeometry());
     }
 
     private boolean updateForecastSections(final Map<String, ForecastSection> forecastSections, final Map<String, ForecastSectionCoordinatesDto> forecastSectionsToUpdate) {
 
         boolean updated = false;
         for (final Map.Entry<String, ForecastSectionCoordinatesDto> fs : forecastSectionsToUpdate.entrySet()) {
-            final ForecastSection forecastSection = forecastSections.get(fs.getValue().getNaturalId());
+            final ForecastSection to = forecastSections.get(fs.getValue().getNaturalId());
+            final ForecastSectionCoordinatesDto from = fs.getValue();
 
-            if (!corresponds(forecastSection, fs.getValue())) {
-                log.info("Updating forecastSection=" + forecastSection.toString() + " with forecastSectionData=" + fs.toString());
+            to.setDescription(from.getName());
+            to.setObsoleteDate(null);
+
+            final boolean changed = updateGeometry(to, from.getCoordinates());
+            if ( changed || !Objects.equals(from.getName(), to.getDescription()) ) {
+                log.info("Updating forecastSection: " + to + " with forecastSectionData: " + fs);
                 updated = true;
             }
-            forecastSection.setDescription(fs.getValue().getName());
-            forecastSection.setObsoleteDate(null);
-
-            forecastSection.removeCoordinateLists();
-            forecastSectionRepository.saveAndFlush(forecastSection);
-
-            addCoordinates(forecastSection, fs.getValue().getCoordinates());
-            forecastSectionRepository.saveAndFlush(forecastSection);
+            forecastSectionRepository.saveAndFlush(to);
         }
         return updated;
-    }
-
-    private void addCoordinates(final ForecastSection forecastSection, final List<Coordinate> coordinates) {
-        final List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
-
-        long orderNumber = 1;
-        for (final Coordinate coordinate : coordinates) {
-            if (!coordinate.isValid()) {
-                log.info("Invalid coordinates for forecastSection=" + forecastSection.getNaturalId() + " . coordinates=" + coordinate.toString());
-            } else {
-                coordinateList.add(new ForecastSectionCoordinate(
-                    new ForecastSectionCoordinatePK(forecastSection.getId(), 1L, orderNumber), coordinate.longitude, coordinate.latitude));
-                orderNumber++;
-            }
-        }
-        final ForecastSectionCoordinateList list =
-            new ForecastSectionCoordinateList(new ForecastSectionCoordinateListPK(forecastSection.getId(), 1L), coordinateList);
-        forecastSection.getForecastSectionCoordinateLists().add(list);
     }
 
     private void markForecastSectionsObsolete(final Map<String, ForecastSection> forecastSections, final Map<String, ForecastSection> forecastSectionsToDelete) {
@@ -153,51 +158,12 @@ public class ForecastSectionV1MetadataUpdater {
         }
     }
 
-    public static boolean corresponds(final ForecastSection forecastSection, final ForecastSectionCoordinatesDto value) {
-        if (value.getName().equals(forecastSection.getDescription()) && coordinatesCorrespond(forecastSection, value.getCoordinates())) {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean coordinatesCorrespond(final ForecastSection forecastSection, final List<Coordinate> coordinates) {
-
-        List<ForecastSectionCoordinate> coordinateList = new ArrayList<>();
-        if (!forecastSection.getForecastSectionCoordinateLists().isEmpty()) {
-            coordinateList = forecastSection.getForecastSectionCoordinateLists().get(0).getForecastSectionCoordinates();
-        }
-
-        if (coordinateList.size() != coordinates.size()) return false;
-
-        final List<Coordinate> sorted1 = coordinateList.stream().sorted((a, b) -> {
-            if (a.getLongitude().equals(b.getLongitude())) {
-                return a.getLatitude().compareTo(b.getLatitude());
-            }
-            return a.getLongitude().compareTo(b.getLongitude());
-        }).map(c -> new Coordinate(Arrays.asList(c.getLongitude(), c.getLatitude()))).collect(Collectors.toList());
-
-        final List<Coordinate> sorted2 = coordinates.stream().sorted((a, b) -> {
-            if (a.longitude.equals(b.longitude)) {
-                return a.latitude.compareTo(b.latitude);
-            }
-            return a.longitude.compareTo(b.longitude);
-        }).collect(Collectors.toList());
-
-        for (int i = 0; i < coordinateList.size(); ++i) {
-            if (sorted1.get(i).longitude.compareTo(sorted2.get(i).longitude) != 0 ||
-                sorted1.get(i).latitude.compareTo(sorted2.get(i).latitude) != 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private void printLogInfo(final List<ForecastSectionCoordinatesDto> roadSectionCoordinates, final List<ForecastSection> forecastSections) {
 
         log.info(String.format("Updating forecast sections. existingForecastSections=%s receivedForecastSections=%s",
                                forecastSections.size(), roadSectionCoordinates.size()));
-        final List<String> externalNaturalIds = roadSectionCoordinates.stream().map(c -> c.getNaturalId()).collect(Collectors.toList());
-        final List<String> existingNaturalIds = forecastSections.stream().map(f -> f.getNaturalId()).collect(Collectors.toList());
+        final List<String> externalNaturalIds = roadSectionCoordinates.stream().map(ForecastSectionCoordinatesDto::getNaturalId).collect(Collectors.toList());
+        final List<String> existingNaturalIds = forecastSections.stream().map(ForecastSection::getNaturalId).collect(Collectors.toList());
         final List<String> newForecastSectionNaturalIds = externalNaturalIds.stream().filter(n -> !existingNaturalIds.contains(n)).collect(Collectors.toList());
         final List<String> missingForecastSectionNaturalIds = existingNaturalIds.stream().filter(n -> !externalNaturalIds.contains(n)).collect(Collectors.toList());
         log.info(String.format("newForecastSections=%s with naturalIds=%s deletedForecastSections=%s with naturalIds=%s",

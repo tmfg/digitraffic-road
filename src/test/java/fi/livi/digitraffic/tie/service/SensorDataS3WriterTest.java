@@ -130,7 +130,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         final List<ZonedDateTime> missingWindows = new ArrayList<>();
 
         // Create some test keys for missing time windows.
-        while (windowLoop.isBefore(currentTimeWindow)) {
+        while (missingWindows.size() < 8) {
             if (windowLoop.getHour() % 3 == 0) {
                 missingWindows.add(windowLoop);
             }

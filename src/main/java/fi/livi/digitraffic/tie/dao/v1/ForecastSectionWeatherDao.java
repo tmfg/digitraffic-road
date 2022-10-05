@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastConditionReasonDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.helper.DaoUtils;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.OverallRoadCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.PrecipitationCondition;
@@ -32,6 +33,25 @@ import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVers
 public class ForecastSectionWeatherDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
+    private final static String SELECT_ALL =
+        "SELECT fs.natural_id, fsw.forecast_name, fsw.time, fsw.daylight, fsw.overall_road_condition, fsw.reliability, " +
+        "fsw.road_temperature, fsw.temperature, fsw.weather_symbol, fsw.wind_direction, fsw.wind_speed, fsw.type, " +
+        "fcr.precipitation_condition, fcr.road_condition, fcr.wind_condition, fcr.freezing_rain_condition, fcr.freezing_rain_condition, " +
+        "fcr.winter_slipperiness, fcr.visibility_condition, fcr.friction_condition " +
+        "FROM FORECAST_SECTION_WEATHER fsw " +
+        "LEFT OUTER JOIN FORECAST_CONDITION_REASON fcr ON fsw.forecast_section_id = fcr.forecast_section_id AND fsw.forecast_name = fcr.forecast_name " +
+        "LEFT OUTER JOIN FORECAST_SECTION fs ON fsw.forecast_section_id = fs.id " +
+        "WHERE fs.version = :version\n" +
+        "  AND (:roadNumber IS NULL OR fs.road_number::integer = :roadNumber)\n" +
+        "  AND (:naturalIdsIsEmpty IS TRUE OR fs.natural_id IN (:naturalIds))\n" +
+        "INTERSECTS_AREA" +
+        "ORDER BY fs.natural_id, fsw.time";
+
+    private final static String INTERSECTS_AREA =
+        "  AND fs.id IN (SELECT id\n" +
+        "                FROM forecast_section f\n" +
+        "                WHERE ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), 4326), f.geometry) = TRUE)\n";
+
     @Autowired
     public ForecastSectionWeatherDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -43,30 +63,22 @@ public class ForecastSectionWeatherDao {
                                                                              final List<String> naturalIds) {
         final HashMap<String, List<RoadConditionDto>> res = new HashMap<>();
 
+        final MapSqlParameterSource paramSource = new MapSqlParameterSource()
+            .addValue("version", version.getVersion(), Types.INTEGER)
+            .addValue("roadNumber", roadNumber, Types.INTEGER)
+            .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
+            .addValue("naturalIds", naturalIds);
+
+        final String wktPolygon = PostgisGeometryHelper.convertBoundsCoordinatesToWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
+        final String selectSql = SELECT_ALL.replace("INTERSECTS_AREA",
+                                                    wktPolygon != null ? INTERSECTS_AREA :  "");
+        if (wktPolygon != null) {
+            paramSource.addValue("area", wktPolygon, Types.VARCHAR);
+        }
+
         jdbcTemplate.query(
-            "SELECT fs.natural_id, fsw.forecast_name, fsw.time, fsw.daylight, fsw.overall_road_condition, fsw.reliability, " +
-            "fsw.road_temperature, fsw.temperature, fsw.weather_symbol, fsw.wind_direction, fsw.wind_speed, fsw.type, " +
-            "fcr.precipitation_condition, fcr.road_condition, fcr.wind_condition, fcr.freezing_rain_condition, fcr.freezing_rain_condition, " +
-            "fcr.winter_slipperiness, fcr.visibility_condition, fcr.friction_condition " +
-            "FROM FORECAST_SECTION_WEATHER fsw " +
-            "LEFT OUTER JOIN FORECAST_CONDITION_REASON fcr ON fsw.forecast_section_id = fcr.forecast_section_id AND fsw.forecast_name = fcr.forecast_name " +
-            "LEFT OUTER JOIN FORECAST_SECTION fs ON fsw.forecast_section_id = fs.id " +
-            "WHERE fs.version = :version " +
-            "AND (:roadNumber IS NULL OR fs.road_number::integer = :roadNumber)\n" +
-            "AND (:minLongitude IS NULL OR :minLatitude IS NULL OR :maxLongitude IS NULL OR :maxLatitude IS NULL " +
-            "     OR fs.id IN (SELECT forecast_section_id FROM forecast_section_coordinate co " +
-            "                 WHERE :minLongitude <= co.longitude AND co.longitude <= :maxLongitude AND :minLatitude <= co.latitude AND co.latitude <= :maxLatitude)) \n" +
-            "AND (:naturalIdsIsEmpty IS TRUE OR fs.natural_id IN (:naturalIds))\n" +
-            "ORDER BY fs.natural_id, fsw.time",
-            new MapSqlParameterSource()
-                .addValue("version", version.getVersion(), Types.INTEGER)
-                .addValue("roadNumber", roadNumber, Types.INTEGER)
-                .addValue("minLongitude", minLongitude, Types.DOUBLE)
-                .addValue("minLatitude", minLatitude, Types.DOUBLE)
-                .addValue("maxLongitude", maxLongitude, Types.DOUBLE)
-                .addValue("maxLatitude", maxLatitude, Types.DOUBLE)
-                .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
-                .addValue("naturalIds", naturalIds),
+            selectSql,
+            paramSource,
             rs -> {
                 final String forecastSectionNaturalId = rs.getString("natural_id");
 

@@ -38,7 +38,7 @@ public abstract class Geometry<T> extends JsonAdditionalProperties implements Se
     public static final String COORD_FORMAT_WGS84_LONG = "Coordinates are in WGS84 format in decimal degrees: [LONGITUDE, LATITUDE, {ALTITUDE}].";
     public static final String COORD_FORMAT_WGS84_LONG_INC_ALT = COORD_FORMAT_WGS84_LONG + " Altitude is optional and measured in meters.";
 
-    private Type type;
+    private final Type type;
 
     private final List<T> coordinates;
 
@@ -47,6 +47,8 @@ public abstract class Geometry<T> extends JsonAdditionalProperties implements Se
         this.type = type;
         this.coordinates = coordinates;
     }
+
+    @SafeVarargs
 
     public Geometry(final Type type, final T...coordinates) {
         this.type = type;
