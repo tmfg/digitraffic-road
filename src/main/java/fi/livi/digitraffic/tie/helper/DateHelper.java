@@ -7,6 +7,8 @@ import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -231,5 +233,13 @@ public final class DateHelper {
             return null;
         }
         return Instant.ofEpochSecond(from.getEpochSecond() + (from.getNano() >= 500000000 ? 1 : 0));
+    }
+
+    public static String isoToHttpDate(String yearMonthDayIso) throws ParseException {
+        SimpleDateFormat yearMonthDayFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat httpDate = new SimpleDateFormat(
+            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        httpDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return httpDate.format(yearMonthDayFormat.parse(yearMonthDayIso));
     }
 }

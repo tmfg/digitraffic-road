@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
+import static fi.livi.digitraffic.tie.helper.DateHelper.isoToHttpDate;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,11 +33,12 @@ public class DeprecationInterceptor implements HandlerInterceptor {
                 || handlerMethod.getMethod().isAnnotationPresent(Sunset.class)) {
                 if (handlerMethod.getMethod().isAnnotationPresent(Deprecated.class)
                     && handlerMethod.getMethod().isAnnotationPresent(Sunset.class)) {
+                    String sunsetHttpDate = isoToHttpDate(handlerMethod.getMethod().getAnnotation(Sunset.class).date());
                     response.addHeader("Deprecation", "true");
-                    response.addHeader("Sunset", handlerMethod.getMethod().getAnnotation(Sunset.class).date());
+                    response.addHeader("Sunset", sunsetHttpDate);
                 }
                 else {
-                    throw new Exception("Deprecated handler " +  handlerMethod.getMethod().getName() + " is missing either a @Deprecated or @Sunset annotation");
+                    throw new Exception("Deprecated handler " + handlerMethod.getMethod().getName() + " is missing either a @Deprecated or @Sunset annotation");
                 }
             }
         } catch (final Exception error) {
