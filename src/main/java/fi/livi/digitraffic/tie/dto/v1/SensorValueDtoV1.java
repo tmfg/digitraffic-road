@@ -69,6 +69,6 @@ public interface SensorValueDtoV1 {
         if (sensorValues != null && !sensorValues.isEmpty()) {
             return sensorValues.get(0).getStationLatestMeasuredTime();
         }
-        return null;
+        return Instant.EPOCH;
     }
 }
