@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.controller.v3;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2022_11_01;
-import static fi.livi.digitraffic.tie.controller.ApiDeprecations.SINCE_2022_11_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
@@ -50,6 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import fi.livi.digitraffic.tie.annotation.Sunset;
 import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
@@ -158,7 +158,8 @@ public class V3DataController {
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
     }
 
-    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data. " + API_NOTE_2022_11_01))
@@ -173,7 +174,8 @@ public class V3DataController {
         }
     }
 
-    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
@@ -181,7 +183,8 @@ public class V3DataController {
         return v2VariableSignDataService.listLatestValue(deviceId);
     }
 
-    @Deprecated(forRemoval = true, since = ApiDeprecations.SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "List the history of variable sign data. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
@@ -302,7 +305,8 @@ public class V3DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Active traffic messages as Datex2. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
@@ -317,7 +321,8 @@ public class V3DataController {
         return v3Datex2DataService.findActive(inactiveHours, situationType);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Traffic messages history by situation as Datex2. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
@@ -332,7 +337,8 @@ public class V3DataController {
         return v3Datex2DataService.findBySituationId(situationId, latest);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Active traffic messages as simple JSON. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH, produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
@@ -351,7 +357,8 @@ public class V3DataController {
         return v3Datex2DataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Traffic messages history by situation id as simple JSON. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH + "/{situationId}", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
@@ -370,7 +377,8 @@ public class V3DataController {
         return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Traffic messages geometries for regions. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_PATH + "/area-geometries", produces = { APPLICATION_JSON_VALUE})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
@@ -389,7 +397,8 @@ public class V3DataController {
         return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, effectiveDate != null ? effectiveDate.toInstant() : null, id);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Road maintenance tracking data latest points. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
@@ -434,7 +443,8 @@ public class V3DataController {
         return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Road maintenance tracking data. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
@@ -486,7 +496,8 @@ public class V3DataController {
             xMin, yMin, xMax, yMax, taskIds, null);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Road maintenance tracking data with tracking id. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
@@ -494,7 +505,8 @@ public class V3DataController {
         return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     @Operation(summary = "Road maintenance tracking tasks. " + API_NOTE_2022_11_01)
     @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking tasks"))
@@ -505,7 +517,8 @@ public class V3DataController {
             .collect(Collectors.toList());
     }
 
-    @Deprecated(forRemoval = true, since = SINCE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
     // This is only for internal debugging and not for the public.
     @Hidden
     @Operation(summary = "Road maintenance tracking source data")
