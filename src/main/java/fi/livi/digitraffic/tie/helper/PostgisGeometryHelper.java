@@ -48,9 +48,13 @@ public class PostgisGeometryHelper {
     private static final GeoJsonWriter geoJsonWriter = new GeoJsonWriter(6); // 6 decimals
     private static final GeoJsonReader geoJsonReader = new GeoJsonReader(GF);
 
-    private static final WKBReader dbGeometryReader = new WKBReader(GF);
+    // Thread local variable containing WKBReader for each thread as it's not thread safe
+    private static final ThreadLocal<WKBReader> wkbReader =
+        ThreadLocal.withInitial(() -> new WKBReader(GF));
 
-    private static final WKTReader wktReader = new WKTReader(GF);
+    // Thread local variable containing WKTReader for each thread as it's not thread safe
+    private static final ThreadLocal<WKTReader> wktReader =
+        ThreadLocal.withInitial(() -> new WKTReader(GF));
 
     private static final ObjectReader dtGeoJsonGeometryObjectReader;
 
@@ -225,7 +229,7 @@ public class PostgisGeometryHelper {
     }
 
     public static Geometry convertWKBToGeometry(final byte[] wkbBytes) throws ParseException {
-        return dbGeometryReader.read(wkbBytes);
+        return wkbReader.get().read(wkbBytes);
     }
 
     public static String convertBoundsCoordinatesToWktPolygon(final Double xMin, final Double xMax, final Double yMin, final Double yMax) {
@@ -245,7 +249,7 @@ public class PostgisGeometryHelper {
 
     public static Geometry convertWktToGeomety(final String wktGeometry) {
         try {
-            return wktReader.read(wktGeometry);
+            return wktReader.get().read(wktGeometry);
         } catch (ParseException e) {
             log.error("method=convertWktGeometryToGeomety Failed to parse wktGeometry: " + wktGeometry, e);
             throw new RuntimeException(e);

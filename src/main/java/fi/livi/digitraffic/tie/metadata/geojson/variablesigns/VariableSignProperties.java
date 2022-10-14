@@ -1,30 +1,27 @@
 package fi.livi.digitraffic.tie.metadata.geojson.variablesigns;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.commons.lang3.StringUtils;
+
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-
 @Schema(name = "Properties", description = "Variable Sign properties")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VariableSignProperties {
-    // device properties
-    // TODO @Schema(description = "TODO")
+    @Schema(description = "Id")
     public final String id;
 
-    @Schema(description = "Variable sign type")
+    @Schema(description = "Type")
     public final SignType type;
 
-    // TODO @Schema(description = "TODO")
+    @Schema(description = "Sign location as road address")
     public final String roadAddress;
 
-    @Schema(description = "Direction of variable sign, increasing or decreasing road address")
+    @Schema(description = "Direction of variable sign, increasing or decreasing road address", nullable = true)
     public final Direction direction;
 
     @Schema(description = "Variable sign placement:\n" +
@@ -35,22 +32,24 @@ public class VariableSignProperties {
     public final Carriageway carriageway;
 
     // data properties
-    // TODO @Schema(description = "TODO")
+    @Schema(description = "Value that is displayed on the device")
     public final String displayValue;
 
-    // TODO @Schema(description = "TODO")
+    @Schema(description = "Additional information displayed on the device", nullable = true)
     public final String additionalInformation;
 
     @Schema(description = "Information is effect after this date")
     public final ZonedDateTime effectDate;
 
-    // TODO @Schema(description = "TODO")
+    @Schema(description = "Cause for changing the sign:\n" +
+                          "Automaatti = Automatic\n" +
+                          "Käsiohjaus = By hand", nullable = true)
     public final String cause;
 
     @Schema(description = "Variable sign reliability")
     public final Reliability reliability;
 
-    // TODO @Schema(description = "TODO")
+    @Schema(description = "Text rows if sign contains a screen")
     public final List<SignTextRow> textRows;
 
     public VariableSignProperties(final String id, final SignType type, final String roadAddress, final Direction direction,

@@ -154,10 +154,10 @@ public class V2ForecastSectionMetadataDao {
                     new ArrayList<>(),
                     new ArrayList<>()));
         } catch (final SQLException e) {
-            log.error("convert exception", e);
+            log.error("convert exception naturalId: " + naturalId, e);
             return null;
         } catch (final ParseException e) {
-            log.error("Geometry convert exception", e);
+            log.error("Geometry convert exception naturalId: " + naturalId, e);
             throw new RuntimeException(e);
         }
     }
