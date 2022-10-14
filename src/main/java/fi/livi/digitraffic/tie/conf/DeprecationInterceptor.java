@@ -21,12 +21,10 @@ public class DeprecationInterceptor implements HandlerInterceptor {
     public boolean preHandle(
         final HttpServletRequest request,
         final HttpServletResponse response,
-        final Object handler) throws Exception {
-
-        final HandlerMethod handlerMethod;
+        final Object handler) {
 
         try {
-            handlerMethod = (HandlerMethod) handler;
+            final HandlerMethod handlerMethod = (HandlerMethod) handler;
 
             if (handlerMethod.getMethod().isAnnotationPresent(Deprecated.class)
                 || handlerMethod.getMethod().isAnnotationPresent(Sunset.class)) {
@@ -42,11 +40,10 @@ public class DeprecationInterceptor implements HandlerInterceptor {
                     response.addHeader("Sunset", sunsetHeaderContent);
 
                 } else {
-                    throw new Exception(
-                        "Deprecated handler " + handlerMethod.getMethod().getName() + " is missing either a @Deprecated or @Sunset annotation");
+                    log.error("Deprecated handler {} is missing either a @Deprecated or @Sunset annotation", handlerMethod.getMethod().getName());
                 }
             }
-        } catch (final Exception error) {
+        } catch (final ClassCastException error) {
             log.error(error.getMessage());
         }
         return true;
