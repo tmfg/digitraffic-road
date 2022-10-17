@@ -103,10 +103,6 @@ public class WeathercamControllerV1 {
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Success") })
     public WeathercamStationFeatureV1Detailed weathercamStation(
-// TODO: Should this be implemented too?
-//        @Parameter(description = "If parameter is given result will only contain update status.")
-//        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-//        final boolean lastUpdated,
         @Parameter(description = "Weathercam station id", required = true)
         @PathVariable
         final String id) {

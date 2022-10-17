@@ -1,8 +1,10 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
+import static fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition.API_DESCRIPTION;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "The state of the road")
+@Schema(description = API_DESCRIPTION)
 public enum RoadCondition {
 
     DRY(1),
@@ -13,6 +15,8 @@ public enum RoadCondition {
     PARTLY_ICY(6),
     ICE(7),
     SNOW(8);
+
+    public static final String API_DESCRIPTION = "The state of the road";
 
     private final int value;
 

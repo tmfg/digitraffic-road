@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * GeoJSON ForecastSectionFeature Object
  */
-@Schema(description = "GeoJSON Feature Object of forecast section")
+@Schema(description = "GeoJSON feature object of simple forecast section")
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class ForecastSectionFeatureSimpleV1 extends FeatureV1<LineString, ForecastSectionPropertiesSimpleV1> {
 

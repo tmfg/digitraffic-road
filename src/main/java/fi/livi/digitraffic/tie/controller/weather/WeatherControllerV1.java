@@ -39,7 +39,10 @@ import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCol
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionWeatherDtoV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionsWeatherDtoV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.forecast.ForecastWebDataServiceV1;
@@ -50,7 +53,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = WEATHER_BETA_TAG, description = "TMS Controller")
+@Tag(name = WEATHER_BETA_TAG, description = "Weather Controller")
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -64,19 +67,17 @@ public class WeatherControllerV1 {
 
     /**
      * API paths:
-     *
-     * Metadata
+     * Weather stations metadata
      * /api/weather/v/stations (simple)
      * /api/weather/v/stations/{id} (detailed)
      * /api/weather/v/sensors/ (sensors metadata)
-     *
+     * Forecasts metadata
      * /api/weather/v/forecast-sections";
      * /api/weather/v/forecast-sections-simple";
-
-     * Data
+     * Weather stations data
      * /api/weather/v/stations/data (all)
      * /api/weather/v/stations/{id}/data (one station)
-     *
+     * Forecasts data
      * /api/weather/v/forecast-sections/forecasts";
      * /api/weather/v/forecast-sections-simple/forecasts";
      */
@@ -90,7 +91,7 @@ public class WeatherControllerV1 {
 
     public static final String FORECAST_SECTIONS = "/forecast-sections";
     public static final String FORECAST_SECTIONS_SIMPLE = "/forecast-sections-simple";
-    public static final String FORECASTS = "/forecasts"; // TODO
+    public static final String FORECASTS = "/forecasts";
 
 
     public WeatherControllerV1(final WeatherDataWebServiceV1 weatherDataWebServiceV1,
@@ -117,12 +118,11 @@ public class WeatherControllerV1 {
         @RequestParam(value = LAST_UPDATED_PARAM, required = false, defaultValue = "false")
         final boolean lastUpdated,
         @Parameter(description = "Return weather stations of given state.", required = true)
-        @RequestParam(value = "roadStationState",
-                      required = false,
+        @RequestParam(required = false,
                       defaultValue = "ACTIVE")
-        final RoadStationState roadStationState) {
+        final RoadStationState state) {
 
-        return weatherStationMetadataWebServiceV1.findAllPublishableWeatherStationsAsSimpleFeatureCollection(lastUpdated, roadStationState);
+        return weatherStationMetadataWebServiceV1.findAllPublishableWeatherStationsAsSimpleFeatureCollection(lastUpdated, state);
     }
 
     @Operation(summary = "The static information of one weather station")
@@ -184,12 +184,6 @@ public class WeatherControllerV1 {
     }
 
     /* FORECASTS */
-
-    // TODO id query by /forecast-sections/{id} & /forecast-sections-simple/{id}
-    // TODO data query /forecast-sections/forecasts /forecast-sections/{id}/forecasts & /forecast-sections-simple/forecasts /forecast-sections-simple/{id}/forecasts
-    //  @Parameter(description = "List of forecast section indices")
-    //        @RequestParam(value = "naturalId", required = false)
-    //        final List<String> naturalId,
 
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
@@ -308,5 +302,104 @@ public class WeatherControllerV1 {
         return forecastWebDataServiceV1.getForecastSectionById(simplified, id);
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE + FORECASTS,
+                    produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
+    @Operation(summary = "Current data of simple weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
+    public ForecastSectionsWeatherDtoV1 forecastSectionsSimpleForecasts(
+
+        @Parameter(description = "If parameter is given result will only contain update status.")
+        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+        final boolean lastUpdated,
+
+        @Parameter(description = "Road number")
+        @RequestParam(value = "roadNumber", required = false)
+        final Integer roadNumber,
+
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MIN, required = false)
+        final @DecimalMin(X_MIN) @DecimalMax(X_MAX) double xMin,
+
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MIN, required = false)
+        final @DecimalMin(Y_MIN) @DecimalMax(Y_MAX) double yMin,
+
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MAX, required = false)
+        final @DecimalMin(X_MIN) @DecimalMax(X_MAX) double xMax,
+
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MAX, required = false)
+        final @DecimalMin(Y_MIN) @DecimalMax(Y_MAX) double yMax) {
+
+        return forecastWebDataServiceV1.getForecastSectionWeatherData(
+            ForecastSectionApiVersion.V1,
+            lastUpdated,
+            roadNumber,
+            xMin, yMin, xMax, yMax);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS + FORECASTS,
+                    produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
+    @Operation(summary = "Current data of detailed weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
+    public ForecastSectionsWeatherDtoV1 forecastSectionsForecasts(
+
+        @Parameter(description = "If parameter is given result will only contain update status.")
+        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
+        final boolean lastUpdated,
+
+        @Parameter(description = "Road number")
+        @RequestParam(value = "roadNumber", required = false)
+        final Integer roadNumber,
+
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MIN, required = false)
+        final @DecimalMin(X_MIN) @DecimalMax(X_MAX) double xMin,
+
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MIN, required = false)
+        final @DecimalMin(Y_MIN) @DecimalMax(Y_MAX) double yMin,
+
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MAX, required = false)
+        final @DecimalMin(X_MIN) @DecimalMax(X_MAX) double xMax,
+
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MAX, required = false)
+        final @DecimalMin(Y_MIN) @DecimalMax(Y_MAX) double yMax) {
+
+        return forecastWebDataServiceV1.getForecastSectionWeatherData(
+            ForecastSectionApiVersion.V2,
+            lastUpdated,
+            roadNumber,
+            xMin, yMin, xMax, yMax);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE + "/{id}" + FORECASTS,
+                    produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
+    @Operation(summary = "Current data of simple weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
+    public ForecastSectionWeatherDtoV1 forecastSectionSimpleForecastsById(
+
+        @Parameter(description = "Section id", required = true)
+        @PathVariable(value = "id")
+        final String id) {
+
+        return forecastWebDataServiceV1.getForecastSectionWeatherDataById(ForecastSectionApiVersion.V1, id);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS + "/{id}" + FORECASTS,
+                    produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
+    @Operation(summary = "Current data of weather forecast sections")
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
+    public ForecastSectionWeatherDtoV1 forecastSectionForecastsById(
+
+        @Parameter(description = "Section id", required = true)
+        @PathVariable(value = "id")
+        final String id) {
+
+        return forecastWebDataServiceV1.getForecastSectionWeatherDataById(ForecastSectionApiVersion.V2, id);
+    }
 }
 

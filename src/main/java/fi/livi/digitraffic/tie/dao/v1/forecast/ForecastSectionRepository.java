@@ -15,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Repository
 public interface ForecastSectionRepository extends JpaRepository<ForecastSection, Long> {
@@ -36,9 +37,22 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         //" AND ( :#{#naturalIds.size()} = 0 OR f.naturalId IN (:naturalIds))\n" +
         "  AND f.obsoleteDate IS NULL\n" +
         "order by f.naturalId")
-    List<ForecastSection> findForecastSectionsV1OrderByNaturalIdAsc(final Integer roadNumber,
-                                                                    final Geometry area,
-                                                                    final String id);
+    List<ForecastSection> findForecastSectionsOrderByNaturalIdAsc(final Geometry area,
+                                                                  final Integer roadNumber,
+                                                                  final String id);
+
+    default List<ForecastSection> findForecastSectionsOrderById(final Geometry area,
+                                                                final Integer roadNumber) {
+        return findForecastSectionsOrderByNaturalIdAsc(area, roadNumber, null);
+    }
+
+    default ForecastSection getForecastSection(final String id) {
+        final List<ForecastSection> sections = findForecastSectionsOrderByNaturalIdAsc(null, null, id);
+        if (sections.size() != 1) {
+            throw new ObjectNotFoundException("ForecastSection", id);
+        }
+        return sections.get(0);
+    }
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value =
@@ -74,9 +88,24 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "  AND obsolete_date IS NULL\n" +
         "order by f.natural_id",
         nativeQuery = true)
-    List<ForecastSectionDto> findForecastSectionsV2OrderByNaturalIdAsc(final Integer roadNumber,
-                                                                       final Geometry area,
+    List<ForecastSectionDto> findForecastSectionsV2OrderByNaturalIdAsc(final Geometry area,
+                                                                       final Integer roadNumber,
                                                                        final String id);
+
+    default List<ForecastSectionDto> findForecastSectionsV2OrderById(final Geometry area,
+                                                                                final Integer roadNumber) {
+        return findForecastSectionsV2OrderByNaturalIdAsc(area, roadNumber, null);
+    }
+
+    default ForecastSectionDto getForecastSectionV2(final String id) {
+        final List<fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionDto> sections =
+            findForecastSectionsV2OrderByNaturalIdAsc(null, null, id);
+        if (sections.size() != 1) {
+            throw new ObjectNotFoundException("ForecastSection", id);
+        }
+        return sections.get(0);
+    }
+
 
     @Modifying
     @Query(value = "DELETE FROM road_segment WHERE forecast_section_id IN " +
@@ -100,6 +129,7 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "    WHERE version = :version\n" +
         "      AND (cast(:area as geometry) IS NULL OR ST_INTERSECTS(cast(:area as geometry), f.geometry) = TRUE)\n" +
         "      AND (:id IS NULL OR f.natural_id = :id)\n" +
+        "      AND (:roadNumber IS NULL OR f.road_number = :roadNumber)\n" +
         "), max_from_all as (\n" +
         "    SELECT max(f.modified) as modified FROM forecast_section f WHERE version = :version\n" +
         ")\n" +
@@ -108,6 +138,18 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         nativeQuery = true) // don't filter with "obsolete_date IS NULL" as if updated to obsoleted -> data is modified
     Instant getLastModified(final int version,
                             final Geometry area,
+                            final Integer roadNumber,
                             final String id);
+
+    default Instant getLastModified(final int version,
+                                    final Geometry area,
+                                    final Integer roadNumber) {
+        return getLastModified(version, area, roadNumber,  null);
+    }
+
+    default Instant getLastModified(final int version,
+                                    final String id) {
+        return getLastModified(version, null,null, id);
+    }
 
 }

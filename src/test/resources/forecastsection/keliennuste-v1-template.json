@@ -1,10 +1,10 @@
 {
-  "messageTimestamp": "2022-10-13T11:46:35+03:00",
+  "messageTimestamp": "TIME_0",
   "roadConditions": [
     {
       "roadId": "00001_001_000_0",
       "observation": {
-        "Time": "2022-10-13T11:25:00+03:00",
+        "Time": "TIME_0",
         "daylight": true,
         "overallRoadCondition": 1,
         "reliability": 0,
@@ -20,7 +20,7 @@
       "forecast": [
         {
           "forecastName": "2h",
-          "Time": "2022-10-13T13:00:00+03:00",
+          "Time": "TIME_2",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -35,7 +35,7 @@
         },
         {
           "forecastName": "4h",
-          "Time": "2022-10-13T15:00:00+03:00",
+          "Time": "TIME_4",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -50,7 +50,7 @@
         },
         {
           "forecastName": "6h",
-          "Time": "2022-10-13T17:00:00+03:00",
+          "Time": "TIME_6",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -65,7 +65,7 @@
         },
         {
           "forecastName": "12h",
-          "Time": "2022-10-13T23:00:00+03:00",
+          "Time": "TIME_12",
           "daylight": false,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -83,7 +83,7 @@
     {
       "roadId": "00001_006_000_0",
       "observation": {
-        "Time": "2022-10-13T11:25:00+03:00",
+        "Time": "TIME_0",
         "daylight": true,
         "overallRoadCondition": 1,
         "reliability": 0,
@@ -99,7 +99,7 @@
       "forecast": [
         {
           "forecastName": "2h",
-          "Time": "2022-10-13T13:00:00+03:00",
+          "Time": "TIME_2",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -114,7 +114,7 @@
         },
         {
           "forecastName": "4h",
-          "Time": "2022-10-13T15:00:00+03:00",
+          "Time": "TIME_4",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -129,7 +129,7 @@
         },
         {
           "forecastName": "6h",
-          "Time": "2022-10-13T17:00:00+03:00",
+          "Time": "TIME_6",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -144,7 +144,7 @@
         },
         {
           "forecastName": "12h",
-          "Time": "2022-10-13T23:00:00+03:00",
+          "Time": "TIME_12",
           "daylight": false,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -162,7 +162,7 @@
     {
       "roadId": "00001_009_000_0",
       "observation": {
-        "Time": "2022-10-13T11:25:00+03:00",
+        "Time": "TIME_0",
         "daylight": true,
         "overallRoadCondition": 1,
         "reliability": 0,
@@ -178,7 +178,7 @@
       "forecast": [
         {
           "forecastName": "2h",
-          "Time": "2022-10-13T13:00:00+03:00",
+          "Time": "TIME_2",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -193,7 +193,7 @@
         },
         {
           "forecastName": "4h",
-          "Time": "2022-10-13T15:00:00+03:00",
+          "Time": "TIME_4",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -208,7 +208,7 @@
         },
         {
           "forecastName": "6h",
-          "Time": "2022-10-13T17:00:00+03:00",
+          "Time": "TIME_6",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -223,7 +223,7 @@
         },
         {
           "forecastName": "12h",
-          "Time": "2022-10-13T23:00:00+03:00",
+          "Time": "TIME_12",
           "daylight": false,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -241,7 +241,7 @@
     {
       "roadId": "00002_001_000_0",
       "observation": {
-        "Time": "2022-10-13T11:25:00+03:00",
+        "Time": "TIME_0",
         "daylight": true,
         "overallRoadCondition": 1,
         "reliability": 0,
@@ -257,7 +257,7 @@
       "forecast": [
         {
           "forecastName": "2h",
-          "Time": "2022-10-13T13:00:00+03:00",
+          "Time": "TIME_4",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -272,7 +272,7 @@
         },
         {
           "forecastName": "4h",
-          "Time": "2022-10-13T15:00:00+03:00",
+          "Time": "TIME_4",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -287,7 +287,7 @@
         },
         {
           "forecastName": "6h",
-          "Time": "2022-10-13T17:00:00+03:00",
+          "Time": "TIME_6",
           "daylight": true,
           "overallRoadCondition": 1,
           "reliability": 1,
@@ -302,7 +302,7 @@
         },
         {
           "forecastName": "12h",
-          "Time": "2022-10-13T23:00:00+03:00",
+          "Time": "TIME_12",
           "daylight": false,
           "overallRoadCondition": 1,
           "reliability": 1,
