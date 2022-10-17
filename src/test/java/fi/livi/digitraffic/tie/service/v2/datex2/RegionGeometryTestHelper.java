@@ -17,11 +17,12 @@ import org.locationtech.jts.io.geojson.GeoJsonReader;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 
 public class RegionGeometryTestHelper {
 
-    private static final GeoJsonReader GEOJSON_READER = new GeoJsonReader();
+    private static final GeoJsonReader GEOJSON_READER = new GeoJsonReader(GeometryConstants.JTS_GEOMETRY_FACTORY);
 
     public static String getGeneratedGeoJsonPolygon(int seed) {
         // Generates x bewteen 27 +/- 4 and y in range 65 +/- 5

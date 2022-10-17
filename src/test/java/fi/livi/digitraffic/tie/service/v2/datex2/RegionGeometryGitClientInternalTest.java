@@ -14,7 +14,7 @@ import org.springframework.test.annotation.Rollback;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -66,7 +66,7 @@ public class RegionGeometryGitClientInternalTest extends AbstractDaemonTest {
 //        final RegionGeometry locationHaapajarvi = Lists.reverse(all).stream().filter(e -> e.getLocationCode().equals(56)).findFirst().orElseThrow();
 //        PostgisGeometryHelper.union(Arrays.asList(locationRaahe.getGeometry(), locationHaapajarvi.getGeometry()));
 
-        PostgisGeometryHelper.union(all.stream().map(RegionGeometry::getGeometry).collect(Collectors.toList()));
+        PostgisGeometryUtils.union(all.stream().map(RegionGeometry::getGeometry).collect(Collectors.toList()));
     }
 
 

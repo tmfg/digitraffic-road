@@ -36,6 +36,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.old.region.RegionGeometryFeatu
 import fi.livi.digitraffic.tie.dto.trafficmessage.old.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.old.region.RegionGeometryProperties;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
@@ -58,7 +59,7 @@ public class V3RegionGeometryDataService {
     private RegionStatus regionStatus = new RegionStatus();
 
     static {
-        geoJsonWriter = new GeoJsonWriter();
+        geoJsonWriter = new GeoJsonWriter(GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
         // Don't add crs to geometries as it's always EPSG:4326
         geoJsonWriter.setEncodeCRS(false);
         geometryReader = new ObjectMapper().readerFor(Geometry.class);

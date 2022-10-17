@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCol
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureV1;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
@@ -40,18 +40,7 @@ public class ForecastWebDataServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public ForecastSectionFeatureCollectionSimpleV1 findSimpleForecastSections(final boolean lastUpdated, final Integer roadNumber,
-                                                                               final Double xMin, final Double yMin,
-                                                                               final Double xMax, final Double yMax) {
-        return findSimpleForecastSections(lastUpdated, roadNumber,
-                                          xMin, yMin,
-                                          xMax, yMax,
-                                          null);
-    }
-
-    @Transactional(readOnly = true)
-    public ForecastSectionFeatureSimpleV1 getSimpleForecastSectionById(final boolean lastUpdated,
-                                                                       final String id) {
+    public ForecastSectionFeatureSimpleV1 getSimpleForecastSectionById(final String id) {
         final List<ForecastSection> forecastSections =
             forecastSectionRepository.findForecastSectionsV1OrderByNaturalIdAsc(null, null, id);
         if (forecastSections.isEmpty()) {
@@ -63,14 +52,14 @@ public class ForecastWebDataServiceV1 {
         return forecastSectionToFeatureCollectionConverterV1.convertToSimpleFeature(forecastSections.get(0));
     }
 
-    private ForecastSectionFeatureCollectionSimpleV1 findSimpleForecastSections(final boolean lastUpdated, final Integer roadNumber,
+    @Transactional(readOnly = true)
+    public ForecastSectionFeatureCollectionSimpleV1 findSimpleForecastSections(final boolean lastUpdated, final Integer roadNumber,
                                                                                final Double xMin, final Double yMin,
-                                                                               final Double xMax, final Double yMax,
-                                                                               final String id) {
+                                                                               final Double xMax, final Double yMax) {
 
         final StopWatch dbTime = StopWatch.createStarted();
-        final Geometry area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
-        final Instant lastModified = forecastSectionRepository.getLastModified(1, area, id);
+        final Geometry area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
+        final Instant lastModified = forecastSectionRepository.getLastModified(1, area, null);
 
         if (lastUpdated) {
             return new ForecastSectionFeatureCollectionSimpleV1(lastModified);
@@ -78,7 +67,7 @@ public class ForecastWebDataServiceV1 {
 
         final List<ForecastSection> forecastSections = forecastSectionRepository.findForecastSectionsV1OrderByNaturalIdAsc(roadNumber
                                                                                                                          , area
-                                                                                                                         , id
+                                                                                                                         , null
         );
         dbTime.stop();
         final StopWatch convertTime = StopWatch.createStarted();
@@ -111,30 +100,17 @@ public class ForecastWebDataServiceV1 {
                                                                    final Integer roadNumber,
                                                                    final Double xMin, final Double yMin,
                                                                    final Double xMax, final Double yMax) {
-        return findForecastSections(lastUpdated, simplified,
-                                    roadNumber,
-                                    xMin, yMin,
-                                    xMax, yMax,
-                                    null);
-    }
-
-
-    private ForecastSectionFeatureCollectionV1 findForecastSections(final boolean lastUpdated, final boolean simplified,
-                                                                   final Integer roadNumber,
-                                                                   final Double xMin, final Double yMin,
-                                                                   final Double xMax, final Double yMax,
-                                                                   final String id) {
 
         final StopWatch dbTime = StopWatch.createStarted();
-        final Geometry area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
-        final Instant lastModified = forecastSectionRepository.getLastModified(2, area, id);
+        final Geometry area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
+        final Instant lastModified = forecastSectionRepository.getLastModified(2, area, null);
 
         if (lastUpdated) {
             return new ForecastSectionFeatureCollectionV1(lastModified);
         }
 
         final List<ForecastSectionDto> forecastSections =
-            forecastSectionRepository.findForecastSectionsV2OrderByNaturalIdAsc(roadNumber, area, id);
+            forecastSectionRepository.findForecastSectionsV2OrderByNaturalIdAsc(roadNumber, area, null);
         dbTime.stop();
 
         final StopWatch convertTime = StopWatch.createStarted();

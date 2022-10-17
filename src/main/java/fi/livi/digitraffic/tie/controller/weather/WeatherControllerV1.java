@@ -237,15 +237,12 @@ public class WeatherControllerV1 {
     @Operation(summary = "The static information of simple weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of simple forecast sections") })
     public ForecastSectionFeatureSimpleV1 forecastSectionSimpleById(
-        @Parameter(description = "If parameter is given result will only contain update status.")
-        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-        final boolean lastUpdated,
 
         @Parameter(description = "Section id", required = true)
         @PathVariable(value = "id")
         final String id) {
 
-        return forecastWebDataServiceV1.getSimpleForecastSectionById(lastUpdated, id);
+        return forecastWebDataServiceV1.getSimpleForecastSectionById(id);
     }
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })

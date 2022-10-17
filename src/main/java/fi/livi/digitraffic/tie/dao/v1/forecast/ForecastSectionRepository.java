@@ -43,11 +43,13 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value =
         "with link_ids as (\n" +
-        "    select li.forecast_section_id, string_agg(cast(li.link_id as text), ',' ORDER BY li.order_number) as linkIdsAsString\n" +
+        "    select li.forecast_section_id" +
+        "         , string_agg(cast(li.link_id as text), ',' ORDER BY li.order_number) as linkIdsAsString\n" +
         "    from link_id li\n" +
         "    group by li.forecast_section_id\n" +
         "), road_segments as (\n" +
-        "    select rs.forecast_section_id, cast(json_agg(json_build_object('startDistance', rs.start_distance, 'endDistance', rs.end_distance, 'carriageway', rs.carriageway) order by rs.order_number) as text) as roadSegmentsAsJsonString\n" +
+        "    select rs.forecast_section_id" +
+        "         , cast(json_agg(json_build_object('startDistance', rs.start_distance, 'endDistance', rs.end_distance, 'carriageway', rs.carriageway) order by rs.order_number) as text) as roadSegmentsAsJsonString\n" +
         "    from road_segment rs\n" +
         "    group by rs.forecast_section_id\n" +
         ")\n" +

@@ -33,7 +33,7 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatu
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestPropertiesV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingPropertiesV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingDto;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
@@ -74,7 +74,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
         final List<String> realDomains = convertToRealDomainNames(domains);
         final Instant lastUpdated = DateHelper.withoutNanos(v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains));
 
-        final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
+        final Polygon area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingDto> found =
@@ -102,7 +102,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
         final List<String> realDomains = convertToRealDomainNames(domains);
         final Instant lastUpdated = v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains);
 
-        final Polygon area = PostgisGeometryHelper.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
+        final Polygon area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingDto> found =

@@ -27,7 +27,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData;
 
@@ -222,7 +222,7 @@ public class MaintenanceTracking {
     }
 
     public void appendGeometry(final Geometry geometryToAppend, final ZonedDateTime geometryObservationTime, final BigDecimal direction) {
-        final LineString result = PostgisGeometryHelper.combineToLinestringWithZ(getCurrentGeometry(), geometryToAppend);
+        final LineString result = PostgisGeometryUtils.combineToLinestringWithZ(getCurrentGeometry(), geometryToAppend);
         setLineString(result);
         setLastPoint(result.getEndPoint());
         setEndTime(geometryObservationTime);

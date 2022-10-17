@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
 
 @ConditionalOnNotWebApplication
@@ -49,7 +50,7 @@ public class RegionGeometryGitClient {
     private final String gitUrl;
     private final String gitPath;
     private final ObjectReader genericJsonReader;
-    private final GeoJsonReader geoJsonReader = new GeoJsonReader();
+    private final GeoJsonReader geoJsonReader = new GeoJsonReader(GeometryConstants.JTS_GEOMETRY_FACTORY);
 
     public RegionGeometryGitClient(@Value("${dt.traffic-messages.git-repo.url}")
                                    final String gitUrl,

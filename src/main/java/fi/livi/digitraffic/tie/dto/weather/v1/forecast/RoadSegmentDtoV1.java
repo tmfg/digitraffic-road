@@ -18,7 +18,7 @@ public class RoadSegmentDtoV1 {
     public final Integer carriageway;
 
     public RoadSegmentDtoV1(final Integer startDistance, final Integer endDistance,
-                            Integer carriageway) {
+                            final Integer carriageway) {
         this.startDistance = startDistance;
         this.endDistance = endDistance;
         this.carriageway = carriageway;
