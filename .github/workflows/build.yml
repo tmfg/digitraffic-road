@@ -22,8 +22,6 @@ jobs:
           cache: maven
       - name: Compile
         run: mvn install -T1.5C git-commit-id:revision install -e -U -DskipTests=true
-      - name: Create Docker network
-        run: docker network create dnet1
       - name: Setup database
         working-directory: dbroad
         run: docker-compose rm db && docker-compose up -d
