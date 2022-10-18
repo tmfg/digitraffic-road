@@ -339,7 +339,17 @@ public class WazeDatex2MessageConverter {
             .map(x -> x > 0 ? String.format("Temporary speed limit of %d km/h", x) : null);
     }
     private Optional<String> accept(final TransitInformation transitInformation) {
-        return Optional.empty();
+        return Optional.ofNullable(transitInformation)
+            .map((transitInformation1) -> {
+                final String type = transitInformation1.getTransitServiceType().toString().toLowerCase().replace("_", " ");
+                final String info = transitInformation1.getTransitServiceInformation().toString().toLowerCase().replace("_", " ");
+                return String.format("%s: %s", type, info);
+            })
+            .map((s -> {
+                final String firstLetter = s.substring(0, 1);
+                final String rest = s.substring(1);
+                return firstLetter.toUpperCase() + rest;
+            }));
     }
     private Optional<String> accept(final VehicleObstruction vehicleObstruction) {
 

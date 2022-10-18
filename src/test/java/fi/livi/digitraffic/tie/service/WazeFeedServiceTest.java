@@ -185,23 +185,23 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     @Test
     public void datex2MessageConversion() throws IOException {
         final String situationId = "GUID10004";
-        final String datex2MessageA = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementAndSpeedManagement.xml");
-        final String datex2MessageB = readDatex2MessageFromFile("TrafficSituationEquipmentOrSystemFault.xml");
-        final String datex2MessageC = readDatex2MessageFromFile("TrafficSituationVehicleObstructionAndRoadOrCarriagewayOrLaneManagement.xml");
-        final String datex2MessageD = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementWithReroutingManagement.xml");
-        final String datex2MessageF = readDatex2MessageFromFile("TrafficSituationIceRoadClosed.xml");
-        final String datex2MessageG = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementAndWeatherCondition.xml");
+        final String datex2Message_1 = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementAndSpeedManagement.xml");
+        final String datex2Message_2 = readDatex2MessageFromFile("TrafficSituationEquipmentOrSystemFault.xml");
+        final String datex2Message_3 = readDatex2MessageFromFile("TrafficSituationVehicleObstructionAndRoadOrCarriagewayOrLaneManagement.xml");
+        final String datex2Message_4 = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementWithReroutingManagement.xml");
+        final String datex2Message_5 = readDatex2MessageFromFile("TrafficSituationIceRoadClosed.xml");
+        final String datex2Message_6 = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementAndWeatherCondition.xml");
+        final String datex2Message_7 = readDatex2MessageFromFile("TrafficSituationAccidentAndRoadOrCarriagewayOrLaneManagement.xml");
+        final String datex2Message_8 = readDatex2MessageFromFile("TrafficSituationTransitInformation.xml");
 
-        // TODO add missing types
-        final String datex2MessageH = readDatex2MessageFromFile("TrafficSituationAccidentAndRoadOrCarriagewayOrLaneManagement.xml");
-
-        assertEquals("Lanes deviated. Temporary speed limit of 50 km/h.", wazeDatex2MessageConverter.export(situationId, datex2MessageA));
-        assertEquals("Traffic light sets out of service.", wazeDatex2MessageConverter.export(situationId, datex2MessageB));
-        assertEquals("Vehicle obstruction: vehicle on fire. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2MessageC));
-        assertEquals("Road closed. Follow diversion signs.", wazeDatex2MessageConverter.export(situationId, datex2MessageD));
-        assertEquals("Ice road closed.", wazeDatex2MessageConverter.export(situationId, datex2MessageF));
-        assertEquals("Surface water. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2MessageG));
-        assertEquals("Accident involving multiple vehicles. Lane closures. Traffic building up. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2MessageH));
+        assertEquals("Lanes deviated. Temporary speed limit of 50 km/h.", wazeDatex2MessageConverter.export(situationId, datex2Message_1));
+        assertEquals("Traffic light sets out of service.", wazeDatex2MessageConverter.export(situationId, datex2Message_2));
+        assertEquals("Vehicle obstruction: vehicle on fire. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2Message_3));
+        assertEquals("Road closed. Follow diversion signs.", wazeDatex2MessageConverter.export(situationId, datex2Message_4));
+        assertEquals("Ice road closed.", wazeDatex2MessageConverter.export(situationId, datex2Message_5));
+        assertEquals("Surface water. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2Message_6));
+        assertEquals("Accident involving multiple vehicles. Lane closures. Traffic building up. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_7));
+        assertEquals("Underground metro: load capacity changed.", wazeDatex2MessageConverter.export(situationId, datex2Message_8));
     }
 
     @Test
