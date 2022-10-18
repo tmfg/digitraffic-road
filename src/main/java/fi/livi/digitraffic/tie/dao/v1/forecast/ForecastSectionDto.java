@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -68,11 +68,11 @@ public interface ForecastSectionDto {
     }
 
     default Geometry<?> getGeometry() {
-        return PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(getGeometryAsGeoJsonString());
+        return PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(getGeometryAsGeoJsonString());
     }
 
     default Geometry<?> getGeometrySimplified() {
-        return PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(getGeometrySimplifiedAsGeoJsonString());
+        return PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(getGeometrySimplifiedAsGeoJsonString());
     }
 
     default List<RoadSegmentDto> getRoadSegments()  {

@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = RoadSegmentDtoV1.API_DESCRIPTION)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoadSegmentDtoV1 {
 
+    public static final String API_DESCRIPTION = "Forecast section road segments. Refers to https://aineistot.vayla.fi/digiroad/";
 
     @Schema(description = "Road segment start distance")
     public final Integer startDistance;
@@ -18,7 +20,7 @@ public class RoadSegmentDtoV1 {
     public final Integer carriageway;
 
     public RoadSegmentDtoV1(final Integer startDistance, final Integer endDistance,
-                            Integer carriageway) {
+                            final Integer carriageway) {
         this.startDistance = startDistance;
         this.endDistance = endDistance;
         this.carriageway = carriageway;

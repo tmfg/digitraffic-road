@@ -36,7 +36,8 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProperties;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
@@ -57,7 +58,7 @@ public class RegionGeometryDataServiceV1 {
     private RegionStatus regionStatus = new RegionStatus();
 
     static {
-        geoJsonWriter = new GeoJsonWriter();
+        geoJsonWriter = new GeoJsonWriter(GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
         // Don't add crs to geometries as it's always EPSG:4326
         geoJsonWriter.setEncodeCRS(false);
         geometryReader = new ObjectMapper().readerFor(Geometry.class);
@@ -157,7 +158,7 @@ public class RegionGeometryDataServiceV1 {
                 }
             }
         }
-        final org.locationtech.jts.geom.Geometry union = PostgisGeometryHelper.union(geometryCollection);
+        final org.locationtech.jts.geom.Geometry union = PostgisGeometryUtils.union(geometryCollection);
         return convertToGeojson(union);
     }
 

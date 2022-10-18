@@ -58,7 +58,7 @@ import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ViivageometriasijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
@@ -148,9 +148,9 @@ public class V3MaintenanceTrackingServiceTestHelper {
     }
 
     public static List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
-        final Point start = PostgisGeometryHelper.createPointWithZ(new Coordinate(x, minY));
-        final Point end = PostgisGeometryHelper.createPointWithZ(new Coordinate(x, maxY));
-        final double dist = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(start, end);
+        final Point start = PostgisGeometryUtils.createPointWithZ(new Coordinate(x, minY));
+        final Point end = PostgisGeometryUtils.createPointWithZ(new Coordinate(x, maxY));
+        final double dist = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(start, end);
         final int minCountOfPoints = (int)Math.ceil((dist/maxLineStringGapInKilometers));
         double increment = (maxY-minY)/minCountOfPoints;
 

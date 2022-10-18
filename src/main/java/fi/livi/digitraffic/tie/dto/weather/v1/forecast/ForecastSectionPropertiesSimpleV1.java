@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Forecast Section Properties")
+@Schema(description = "Simple forecast section properties")
 @JsonPropertyOrder({ "id", "description", "roadSectionNumber", "roadNumber", "roadSectionVersionNumber", "startDistance",
                      "endDistance", "length", "road", "startRoadSection", "endRoadSection" })
 public class ForecastSectionPropertiesSimpleV1 extends PropertiesV1 {

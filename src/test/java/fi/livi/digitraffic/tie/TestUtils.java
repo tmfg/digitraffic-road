@@ -416,6 +416,7 @@ public class TestUtils {
 
     public static void truncateWeatherData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE weather_station DISABLE TRIGGER trg_weather_station_delete").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id > " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id >= " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();

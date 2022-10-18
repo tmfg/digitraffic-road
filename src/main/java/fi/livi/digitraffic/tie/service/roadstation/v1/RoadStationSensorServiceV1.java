@@ -73,7 +73,6 @@ public class RoadStationSensorServiceV1 {
         return roadStationSensorRepository.findDistinctByRoadStationType(roadStationType);
     }
 
-    // TODO use in weather apis
     @Transactional(readOnly = true)
     public WeatherStationSensorsDtoV1 findWeatherRoadStationsSensorsMetadata(final boolean onlyUpdateInfo) {
         return new WeatherStationSensorsDtoV1(

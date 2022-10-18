@@ -1,8 +1,10 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
+import static fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition.API_DESCRIPTION;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "The amount of friction on the road")
+@Schema(description = API_DESCRIPTION)
 public enum FrictionCondition {
 
     @Schema(description = "Friction < 0.4")
@@ -10,6 +12,7 @@ public enum FrictionCondition {
     @Schema(description = "Friction < 0.2")
     VERY_SLIPPERY(2);
 
+    public static final String API_DESCRIPTION = "The amount of friction on the road";
     private final int value;
 
     FrictionCondition(final int value) {

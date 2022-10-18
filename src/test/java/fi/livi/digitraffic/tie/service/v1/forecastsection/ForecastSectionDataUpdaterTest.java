@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +87,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
                                                                                                             null, null,
                                                                                                             null);
 
-        assertEquals(3, data.weatherData.size());
+        assertEquals(4, data.weatherData.size());
         assertEquals("00001_001_000_0", data.weatherData.get(0).naturalId);
         assertEquals(5, data.weatherData.get(0).roadConditions.size());
         assertEquals("0h", data.weatherData.get(0).roadConditions.get(0).getForecastName());
@@ -119,17 +118,17 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
                                                                                                             null);
 
         assertNotNull(data);
-        assertEquals("00003_226_00000_0_0", data.weatherData.get(0).naturalId);
+        assertEquals("00004_229_00307_1_0", data.weatherData.get(0).naturalId);
         assertEquals(5, data.weatherData.get(0).roadConditions.size());
         assertEquals("0h", data.weatherData.get(0).roadConditions.get(0).getForecastName());
-        assertEquals(ZonedDateTime.parse("2018-11-14T14:00+02:00[Europe/Helsinki]").toInstant(), data.weatherData.get(0).roadConditions.get(0).getTime().toInstant());
-        assertEquals("+4.2", data.weatherData.get(0).roadConditions.get(0).getTemperature());
+        assertEquals(ForecastSectionTestHelper.TIMES[0], data.weatherData.get(0).roadConditions.get(0).getTime().toInstant().toString());
+        assertEquals("+5.7", data.weatherData.get(0).roadConditions.get(0).getTemperature());
         assertEquals("12h", data.weatherData.get(0).roadConditions.get(4).getForecastName());
-        assertEquals(RoadCondition.MOIST, data.weatherData.get(0).roadConditions.get(4).getForecastConditionReason().getRoadCondition());
+        assertEquals(RoadCondition.WET, data.weatherData.get(0).roadConditions.get(4).getForecastConditionReason().getRoadCondition());
 
-        assertEquals("00009_216_03050_0_0", data.weatherData.get(1).naturalId);
+        assertEquals("00409_001_01796_0_0", data.weatherData.get(1).naturalId);
         assertEquals(5, data.weatherData.get(1).roadConditions.size());
-        assertEquals("2h", data.weatherData.get(0).roadConditions.get(1).getForecastName());
-        assertEquals("+3", data.weatherData.get(0).roadConditions.get(4).getRoadTemperature());
+        assertEquals("2h", data.weatherData.get(1).roadConditions.get(1).getForecastName());
+        assertEquals("+6", data.weatherData.get(1).roadConditions.get(4).getRoadTemperature());
     }
 }

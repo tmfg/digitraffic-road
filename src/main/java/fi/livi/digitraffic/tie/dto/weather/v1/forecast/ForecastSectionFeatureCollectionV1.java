@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureCollectionV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "GeoJSON Feature Collection of forecast sections")
+@Schema(description = "GeoJSON feature collection of forecast sections")
 @JsonPropertyOrder({ "type", "dataUpdatedTime", "features" })
 public class ForecastSectionFeatureCollectionV1 extends FeatureCollectionV1<ForecastSectionFeatureV1> {
 

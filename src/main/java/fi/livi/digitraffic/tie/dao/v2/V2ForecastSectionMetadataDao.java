@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.helper.DaoUtils;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
@@ -99,8 +99,8 @@ public class V2ForecastSectionMetadataDao {
 
         try {
             final String json = feature.getGeometry().toJsonString();
-            final Geometry geometry = PostgisGeometryHelper.convertGeoJsonGeometryToGeometry(json);
-            final Geometry simplifiedGeometry = PostgisGeometryHelper.simplify(geometry);
+            final Geometry geometry = PostgisGeometryUtils.convertGeoJsonGeometryToGeometry(json);
+            final Geometry simplifiedGeometry = PostgisGeometryUtils.simplify(geometry);
             args.put("geometry", geometry.toText());
             args.put("geometrySimplified", simplifiedGeometry.toText());
         } catch (final Exception e) {
@@ -119,7 +119,7 @@ public class V2ForecastSectionMetadataDao {
             .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
             .addValue("naturalIds", naturalIds);
 
-        final String wktPolygon = PostgisGeometryHelper.convertBoundsCoordinatesToWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
+        final String wktPolygon = PostgisGeometryUtils.convertBoundsCoordinatesToWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
         final String selectSql = SELECT_ALL.replace("INTERSECTS_AREA",
                                                     wktPolygon != null ? INTERSECTS_AREA : "");
         if (wktPolygon != null) {
@@ -142,8 +142,8 @@ public class V2ForecastSectionMetadataDao {
     private ForecastSectionV2Feature convert(final String naturalId, final ResultSet rs) {
         try {
             final byte[] wkbBytes = rs.getBytes("geometry");
-            final Geometry g = PostgisGeometryHelper.convertWKBToGeometry(wkbBytes);
-            final MultiLineString multiLineString = PostgisGeometryHelper.convertToGeoJSONMultiLineLineString(g);
+            final Geometry g = PostgisGeometryUtils.convertWKBToGeometry(wkbBytes);
+            final MultiLineString multiLineString = PostgisGeometryUtils.convertToGeoJSONMultiLineLineString(g);
             return new ForecastSectionV2Feature(rs.getLong("forecast_section_id"),
                 multiLineString,
                 new ForecastSectionV2Properties(naturalId,
@@ -154,11 +154,11 @@ public class V2ForecastSectionMetadataDao {
                     new ArrayList<>(),
                     new ArrayList<>()));
         } catch (final SQLException e) {
-            log.error("convert exception", e);
+            log.error("method=convert SQLException naturalId: " + naturalId, e);
             return null;
         } catch (final ParseException e) {
-            log.error("Geometry convert exception", e);
-            throw new RuntimeException(e);
+            log.error("method=convert Geometry convert exception naturalId: " + naturalId, e);
+            return null;
         }
     }
 

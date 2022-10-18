@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -118,11 +118,11 @@ public class ForecastSectionV1MetadataUpdater {
                 forecastSection.setGeometry(null);
                 forecastSection.setGeometrySimplified(forecastSection.getGeometry());
             } else if (dbCoords.size() == 1) {
-                forecastSection.setGeometry(PostgisGeometryHelper.createPointWithZ(dbCoords.get(0)));
+                forecastSection.setGeometry(PostgisGeometryUtils.createPointWithZ(dbCoords.get(0)));
                 forecastSection.setGeometrySimplified(forecastSection.getGeometry());
             } else {
-                forecastSection.setGeometry(PostgisGeometryHelper.createLineStringWithZ(dbCoords));
-                forecastSection.setGeometrySimplified(PostgisGeometryHelper.simplify(forecastSection.getGeometry()));
+                forecastSection.setGeometry(PostgisGeometryUtils.createLineStringWithZ(dbCoords));
+                forecastSection.setGeometrySimplified(PostgisGeometryUtils.simplify(forecastSection.getGeometry()));
             }
         } else {
             forecastSection.setGeometry(null);

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,7 +50,7 @@ import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSc
 import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
@@ -174,7 +175,7 @@ public class V3MaintenanceTrackingUpdateService {
                     // This happens only when task changes for same work machine or trakcing is continuation for previous tracking.
                     updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isNextInsideLimits());
 
-                    final Geometry simplifiedGeometry = PostgisGeometryHelper.simplify(geometry);
+                    final Geometry simplifiedGeometry = PostgisGeometryUtils.simplify(geometry);
                     if (geometry.getNumPoints() != simplifiedGeometry.getNumPoints()) {
                         log.debug("method=handleRoute geometry simplified from {} points to {} points", geometry.getNumPoints() , simplifiedGeometry.getNumPoints());
                     }
@@ -255,7 +256,7 @@ public class V3MaintenanceTrackingUpdateService {
 
         // With linestrings we can't count speed so check distance
         if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString) {
-            final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
+            final double km = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
             if (km > distinctLineStringObservationGapKm) {
                 return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
             }
@@ -287,7 +288,7 @@ public class V3MaintenanceTrackingUpdateService {
         if (nextGeometry != null) {
             final long diffInSeconds = getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(previousTracking, havaintoaika);
             final Point nextPoint = resolveFirstPoint(nextGeometry);
-            final double speedKmH = PostgisGeometryHelper.speedBetweenWGS84PointsInKmH(previousTracking.getLastPoint(), nextPoint, diffInSeconds);
+            final double speedKmH = PostgisGeometryUtils.speedBetweenWGS84PointsInKmH(previousTracking.getLastPoint(), nextPoint, diffInSeconds);
             if (log.isDebugEnabled()) {
                 log.debug("method=resolveSpeedInKmHNullSafe Speed {} km/h", speedKmH);
             }
@@ -381,7 +382,7 @@ public class V3MaintenanceTrackingUpdateService {
             return Collections.emptyList();
         }
         if (coordinates.size() == 1) { // Point
-            return Collections.singletonList(PostgisGeometryHelper.createPointWithZ(coordinates.get(0)));
+            return Collections.singletonList(PostgisGeometryUtils.createPointWithZ(coordinates.get(0)));
         }
 
         return splitLineStringsWithGaps(coordinates, havainto, kirjausOtsikkoJson);
@@ -403,7 +404,7 @@ public class V3MaintenanceTrackingUpdateService {
         final StringBuilder sb = new StringBuilder();
         for (int i = 1; i < coordinates.size(); i++) {
             final Coordinate next = coordinates.get(i);
-            final double km = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(tmpCoordinates.get(tmpCoordinates.size()-1), next);
+            final double km = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(tmpCoordinates.get(tmpCoordinates.size()-1), next);
             if (km > distinctLineStringObservationGapKm) {
                 sb.append(String.format("[%d]: %s and [%d]: %s is %s km. ", i-1, coordinates.get(i-1).toString(), i, coordinates.get(i).toString(), km));
                 geometries.add(createGeometry(tmpCoordinates));
@@ -431,9 +432,9 @@ public class V3MaintenanceTrackingUpdateService {
 
     private static Geometry createGeometry(final List<Coordinate> coordinates) {
         if (coordinates.size() == 1) {
-            return PostgisGeometryHelper.createPointWithZ(coordinates.get(0));
+            return PostgisGeometryUtils.createPointWithZ(coordinates.get(0));
         }
-        return PostgisGeometryHelper.createLineStringWithZ(coordinates);
+        return PostgisGeometryUtils.createLineStringWithZ(coordinates);
     }
 
     private static List<Coordinate> resolveCoordinatesAsWGS84(final GeometriaSijaintiSchema sijainti) {
@@ -444,12 +445,12 @@ public class V3MaintenanceTrackingUpdateService {
                     final double x = ((Number) point.get(0)).doubleValue();
                     final double y = ((Number) point.get(1)).doubleValue();
                     final double z = point.size() > 2 ? ((Number) point.get(2)).doubleValue() : 0.0;
-                    final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
+                    final Coordinate coordinate = PostgisGeometryUtils.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                     if (log.isDebugEnabled()) {
                         log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
                             x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
                     }
-                    return PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
+                    return PostgisGeometryUtils.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
                 } catch (Exception e) {
                     e.printStackTrace();
                     throw e;
@@ -464,7 +465,7 @@ public class V3MaintenanceTrackingUpdateService {
             return resultLineString;
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
-            final Coordinate coordinate = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
+            final Coordinate coordinate = PostgisGeometryUtils.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());
             if (log.isDebugEnabled()) {
                 log.debug("From ETRS89: [{}, {}, {}] -> WGS84: [{}, {}, {}}",
                           koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ(),
@@ -530,8 +531,7 @@ public class V3MaintenanceTrackingUpdateService {
         if (previousTracking != null) {
             final Set<MaintenanceTrackingTask> previousTasks = previousTracking.getTasks();
             final boolean bothNullsOrEmpty = (newTasks == null || newTasks.isEmpty()) && (previousTasks == null || previousTasks.isEmpty());
-
-            final boolean changed = !bothNullsOrEmpty && !newTasks.equals(previousTasks);
+            final boolean changed = !bothNullsOrEmpty && !Objects.equals(newTasks, previousTasks);
 
             if (changed && log.isDebugEnabled()) {
                 log.debug("WorkMachineTrackingTask changed from {} to {} for {}",

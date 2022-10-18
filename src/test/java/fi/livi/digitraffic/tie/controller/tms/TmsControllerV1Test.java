@@ -28,6 +28,7 @@ import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -91,7 +92,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
         this.tmsStation = entityManager.find(TmsStation.class, tms.getId());
         // Db modified field is current transaction timestamp, so it's same for all objects saved here
-        this.lastModifiedMillis = tmsStation.getRoadStation().getModified().toEpochMilli();
+        this.lastModifiedMillis = DateHelper.roundToSeconds(tmsStation.getRoadStation().getModified()).toEpochMilli();
     }
 
     /* METADATA */

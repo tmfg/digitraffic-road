@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastConditionReasonDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.helper.DaoUtils;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.OverallRoadCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.PrecipitationCondition;
@@ -69,7 +69,7 @@ public class ForecastSectionWeatherDao {
             .addValue("naturalIdsIsEmpty", naturalIds == null || naturalIds.isEmpty())
             .addValue("naturalIds", naturalIds);
 
-        final String wktPolygon = PostgisGeometryHelper.convertBoundsCoordinatesToWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
+        final String wktPolygon = PostgisGeometryUtils.convertBoundsCoordinatesToWktPolygon(minLongitude, maxLongitude, minLatitude, maxLatitude);
         final String selectSql = SELECT_ALL.replace("INTERSECTS_AREA",
                                                     wktPolygon != null ? INTERSECTS_AREA :  "");
         if (wktPolygon != null) {
