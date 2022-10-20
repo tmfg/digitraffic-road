@@ -29,7 +29,7 @@ public class InfoControllerV1 {
     public static final String API_INFO_BETA = API_INFO + BETA;
     public static final String API_INFO_V1 = API_INFO + V1;
 
-    public static final String INFO = "/info";
+    public static final String API_UPDATES = "/api-updates";
 
     private final DataStatusService dataStatusService;
 
@@ -41,28 +41,11 @@ public class InfoControllerV1 {
 
     @Operation(summary = "Infos about apis data update times")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_INFO_BETA + INFO,
+                    path = API_INFO_BETA + API_UPDATES,
                     produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather Station Feature Collections"))
     public UpdateInfosDtoV1 dataUpdatedInfos() {
         return dataStatusService.getUpdatedInfos();
     }
-//
-//    @Operation(summary = "The static information of one weather station")
-//    @RequestMapping(method = RequestMethod.GET,
-//                    path = API_INFO_BETA + STATIONS + "/{id}",
-//                    produces = { APPLICATION_JSON_VALUE,
-//                                 APPLICATION_GEO_JSON_VALUE,
-//                                 APPLICATION_VND_GEO_JSON_VALUE })
-//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-//                                 description = "Successful retrieval of weather Station Feature"),
-//                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
-//                                 description = "Road Station not found",
-//                                 content = @Content) })
-//    public WeatherStationFeatureDetailedV1 weatherStationByRoadStationId(
-//        @PathVariable("id")
-//        final Long id) {
-//        return weatherStationMetadataWebServiceV1.getWeatherStationById(id);
-//    }
 }
 

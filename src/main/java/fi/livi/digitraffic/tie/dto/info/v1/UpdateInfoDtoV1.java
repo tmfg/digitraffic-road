@@ -5,19 +5,19 @@ import java.time.Instant;
 import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Info about API's data update times")
+@Schema(description = "Info about API's data updates")
 public class UpdateInfoDtoV1 implements DataUpdatedSupportV1 {
 
-    @Schema(description = "Api url")
+    @Schema(description = "Url of the API")
     final public String api;
 
-    @Schema(description = "More spesific info about api. (ie domain info)")
+    @Schema(description = "More specific info about API. Ie. domain info.")
     final public String subtype;
 
-    @Schema(description = "Data last updated time", required = true)
+    @Schema(description = "Latest update of data", required = true)
     private final Instant dataUpdatedTime;
 
-    @Schema(description = "Data last checked time for updates", required = true)
+    @Schema(description = "Latest check for updates", required = true)
     public final Instant dataCheckedTime;
 
     public UpdateInfoDtoV1(final String api,
