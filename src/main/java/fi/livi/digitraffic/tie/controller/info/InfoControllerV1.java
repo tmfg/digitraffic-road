@@ -29,7 +29,7 @@ public class InfoControllerV1 {
     public static final String API_INFO_BETA = API_INFO + BETA;
     public static final String API_INFO_V1 = API_INFO + V1;
 
-    public static final String API_UPDATES = "/api-updates";
+    public static final String UPDATE_TIMES = "/update-times";
 
     private final DataStatusService dataStatusService;
 
@@ -41,7 +41,7 @@ public class InfoControllerV1 {
 
     @Operation(summary = "Infos about apis data update times")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_INFO_BETA + API_UPDATES,
+                    path = API_INFO_BETA + UPDATE_TIMES,
                     produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather Station Feature Collections"))
     public UpdateInfosDtoV1 dataUpdatedInfos() {
