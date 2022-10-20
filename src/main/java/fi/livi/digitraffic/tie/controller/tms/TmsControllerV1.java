@@ -91,9 +91,8 @@ public class TmsControllerV1 {
         @Parameter(description = "If parameter is given result will only contain update status.")
         @RequestParam(value = LAST_UPDATED_PARAM, required = false, defaultValue = "false")
         final boolean lastUpdated,
-        @Parameter(description = "Return TMS stations of given state.", required = true)
-        @RequestParam(required = false,
-                      defaultValue = "ACTIVE")
+        @Parameter(description = "Return TMS stations of given state.")
+        @RequestParam(required = false, defaultValue = "ACTIVE")
         final RoadStationState state) {
         return tmsStationMetadataWebServiceV1.findAllPublishableTmsStationsAsSimpleFeatureCollection(lastUpdated, state);
     }

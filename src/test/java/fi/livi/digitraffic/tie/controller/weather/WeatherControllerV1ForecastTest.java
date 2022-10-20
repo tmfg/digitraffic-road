@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -23,7 +22,6 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -85,15 +83,9 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
         v2ForecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
         forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V1);
         forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V2);
-        TestUtils.commitAndEndTransactionAndStartNew();
+        entityManager.flush();
+        entityManager.clear();
         log.info("Init data tookMs={}", start.getTime());
-    }
-
-    @AfterEach
-    public void after() {
-        TestUtils.commitAndEndTransactionAndStartNew();
-        forecastSectionRepository.deleteAllInBatch();
-        TestUtils.commitAndEndTransactionAndStartNew();
     }
 
     @Test

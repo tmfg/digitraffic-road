@@ -77,7 +77,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
 
         final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V1);
 
-        final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA).toInstant();
+        final Instant lastUpdated = dataStatusService.findDataUpdatedInstant(DataType.FORECAST_SECTION_WEATHER_DATA);
 
         assertEquals(dataUpdated, lastUpdated);
 
@@ -106,8 +106,8 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
 
         final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V2);
 
-        final Instant metadataLastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA).toInstant();
-        final Instant dataLastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_WEATHER_DATA).toInstant();
+        final Instant metadataLastUpdated = dataStatusService.findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA);
+        final Instant dataLastUpdated = dataStatusService.findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_WEATHER_DATA);
 
         assertEquals(metadataUpdated, metadataLastUpdated);
         assertEquals(dataUpdated, dataLastUpdated);

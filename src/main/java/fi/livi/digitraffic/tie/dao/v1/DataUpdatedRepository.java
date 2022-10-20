@@ -55,4 +55,19 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
            "  ON CONFLICT (data_type, subtype)\n" +
            "  DO UPDATE SET updated = :updated", nativeQuery = true)
     void upsertDataUpdated(final DataType dataType, final String subtype, final Instant updated);
+
+    @Query(value =
+       "select max(added_timestamp)\n" +
+       "from counting_site_counter", nativeQuery = true)
+    Instant getCountingSiteCounterLastUpdated();
+
+    @Query(value =
+       "select max(added_timestamp)\n" +
+       "from counting_site_domain", nativeQuery = true)
+    Instant getCountingSiteDomainLastUpdated();
+
+    @Query(value =
+       "select max(data_timestamp)\n" +
+       "from counting_site_data", nativeQuery = true)
+    Instant getCountingSiteDataLastUpdated();
 }

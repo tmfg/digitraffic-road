@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public interface DataUpdatedSupportV1 extends LastModifiedSupport {
 
-    @Schema(description = "Data last updated date time", required = true)
+    @Schema(description = "Data last updated time", required = true)
     Instant getDataUpdatedTime();
 
     @Override

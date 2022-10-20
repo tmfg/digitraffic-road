@@ -126,11 +126,8 @@ public class WeathercamControllerV1 {
     public WeathercamStationDataV1 weathercamDatasByStationId(
         @Parameter(description = "Camera station id", required = true)
         @PathVariable
-        final String id,
-        @Parameter(description = "If parameter is given result will only contain update status.")
-        @RequestParam(value = LAST_UPDATED_PARAM, required = false, defaultValue = "false")
-        final boolean lastUpdated) {
-        return weathercamDataWebServiceV1.findPublishableWeathercamStationData(id, lastUpdated);
+        final String id) {
+        return weathercamDataWebServiceV1.findPublishableWeathercamStationData(id);
     }
 
     /* History APIs */
