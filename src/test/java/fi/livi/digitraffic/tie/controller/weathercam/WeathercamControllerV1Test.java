@@ -81,8 +81,8 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
         preset1 = entityManager.find(CameraPreset.class, preset1.getId());
         preset2 = entityManager.find(CameraPreset.class, preset2.getId());
 
-        stationModified = DateHelper.getNewest(preset1.getRoadStation().getModified(),
-                                               DateHelper.getNewest(preset1.getModified(), preset2.getModified()));
+        stationModified = DateHelper.getGreatest(preset1.getRoadStation().getModified(),
+                                               DateHelper.getGreatest(preset1.getModified(), preset2.getModified()));
 
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA, metadataUpdateTime);
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK, metadataCheckedTime);

@@ -67,12 +67,12 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
                         convertToSimpleFeature(cp);
                 weathercamFeatureMappedByCameraId.put(cp.getCameraId(), weathercamStationFeatureSimpleV1);
                 weathercamStationFeatureSimpleV1.getProperties().addPreset(convertToSimplePreset(cp));
-                lastModified.updateAndGet(current -> DateHelper.getNewest(current, weathercamStationFeatureSimpleV1.getLastModified()));
+                lastModified.updateAndGet(current -> DateHelper.getGreatest(current, weathercamStationFeatureSimpleV1.getLastModified()));
             });
 
         final List<WeathercamStationFeatureSimpleV1> sortedById =
             weathercamFeatureMappedByCameraId.values().stream().sorted(Comparator.comparing(o -> o.id)).collect(Collectors.toList());
-        return new WeathercamStationFeatureCollectionSimpleV1(DateHelper.getNewest(dataLastUpdated, lastModified.get()), sortedById);
+        return new WeathercamStationFeatureCollectionSimpleV1(DateHelper.getGreatest(dataLastUpdated, lastModified.get()), sortedById);
     }
 
     private WeathercamPresetSimpleV1 convertToSimplePreset(final CameraPreset cp) {

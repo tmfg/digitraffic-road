@@ -1,14 +1,18 @@
 package fi.livi.digitraffic.tie.dao.v1;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import fi.livi.digitraffic.tie.dto.info.v1.DataSourceInfoDtoV1;
+import fi.livi.digitraffic.tie.model.DataSource;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.DataUpdated;
 
@@ -70,4 +74,19 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
        "select max(data_timestamp)\n" +
        "from counting_site_data", nativeQuery = true)
     Instant getCountingSiteDataLastUpdated();
+
+    @Query(value =
+           "select si.id, si.source, si.update_interval as updateInterval\n" +
+           "from data_source_info si\n" +
+           "WHERE id = :#{#dataSource.name()}\n" +
+           "order by id", nativeQuery = true)
+    DataSourceInfoDtoV1 getSourceInfo(final DataSource dataSource);
+
+    default Duration getSourceUpdateInterval(final DataSource dataSource) {
+        return Optional.ofNullable(getSourceInfo(dataSource))
+            .flatMap(dataSourceInfoDtoV1 -> Optional.ofNullable(dataSourceInfoDtoV1 != null ?
+                                                                dataSourceInfoDtoV1.getUpdateInterval() :
+                                                                null))
+            .orElse(null);
+    }
 }

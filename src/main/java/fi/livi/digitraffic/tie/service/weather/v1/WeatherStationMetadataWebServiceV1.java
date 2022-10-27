@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.weather.v1;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getNewest;
+import static fi.livi.digitraffic.tie.helper.DateHelper.getGreatest;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -76,12 +76,12 @@ public class WeatherStationMetadataWebServiceV1 {
     private Instant getMetadataLastUpdated() {
         final Instant sensorsUpdated = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA);
         final Instant stationsUpdated = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_METADATA);
-        return getNewest(sensorsUpdated, stationsUpdated);
+        return getGreatest(sensorsUpdated, stationsUpdated);
     }
 
     private Instant getMetadataLastChecked() {
         final Instant sensorsUpdated = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
         final Instant stationsUpdated = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_METADATA_CHECK);
-        return getNewest(sensorsUpdated, stationsUpdated);
+        return getGreatest(sensorsUpdated, stationsUpdated);
     }
 }

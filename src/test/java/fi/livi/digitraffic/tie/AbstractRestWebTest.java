@@ -22,6 +22,8 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -58,6 +60,16 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     protected void assertTimesFormatMatchesIsoDateTimeWithZ(final String content) {
         assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(content));
         assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(content));
+    }
+
+    protected ResultActions executeGet(final String url) throws Exception {
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
+        get.contentType(MediaType.APPLICATION_JSON);
+        return mockMvc.perform(get);
+    }
+
+    protected ResultActions expectOk(final ResultActions rs) throws Exception {
+        return rs.andExpect(status().isOk());
     }
 
     protected ResultActions expectOkFeatureCollectionWithSize(final ResultActions rs, final int featuresSize) throws Exception {

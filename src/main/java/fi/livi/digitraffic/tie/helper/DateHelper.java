@@ -30,10 +30,10 @@ public final class DateHelper {
 
 
     // Tue, 03 Sep 2019 13:56:36 GMT
-    private final static ZoneId GMT = ZoneId.of("GMT");
+    private final static ZoneId GMT_ZONE = ZoneId.of("GMT");
     public static final String LAST_MODIFIED_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final DateTimeFormatter LAST_MODIFIED_FORMATTER =
-        DateTimeFormatter.ofPattern(LAST_MODIFIED_FORMAT, Locale.US).withZone(GMT);
+        DateTimeFormatter.ofPattern(LAST_MODIFIED_FORMAT, Locale.US).withZone(GMT_ZONE);
 
     public static final DateTimeFormatter ISO_DATE_TIME_WITH_MILLIS_AT_UTC;
     static {
@@ -59,7 +59,7 @@ public final class DateHelper {
         return LAST_MODIFIED_FORMATTER.format(instant);
     }
 
-    public static ZonedDateTime getNewestAtUtc(final ZonedDateTime first, final ZonedDateTime second) {
+    public static ZonedDateTime getGreatestAtUtc(final ZonedDateTime first, final ZonedDateTime second) {
         if (first == null) {
             return toZonedDateTimeAtUtc(second);
         } else if(second == null || first.isAfter(second)) {
@@ -68,7 +68,7 @@ public final class DateHelper {
         return toZonedDateTimeAtUtc(second);
     }
 
-    public static Instant getNewest(final Instant first, final Instant second) {
+    public static Instant getGreatest(final Instant first, final Instant second) {
         if (first == null) {
             return second;
         } else if(second == null || first.isAfter(second)) {

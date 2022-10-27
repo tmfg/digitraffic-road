@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.tms;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getNewestAtUtc;
+import static fi.livi.digitraffic.tie.helper.DateHelper.getGreatestAtUtc;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -249,12 +249,12 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     ZonedDateTime getMetadataLastUpdated() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_METADATA);
-        return getNewestAtUtc(sensorsUpdated, stationsUpdated);
+        return getGreatestAtUtc(sensorsUpdated, stationsUpdated);
     }
 
     private ZonedDateTime getMetadataLastChecked() {
         final ZonedDateTime sensorsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
         final ZonedDateTime stationsUpdated = dataStatusService.findDataUpdatedTime(DataType.TMS_STATION_METADATA_CHECK);
-        return getNewestAtUtc(sensorsUpdated, stationsUpdated);
+        return getGreatestAtUtc(sensorsUpdated, stationsUpdated);
     }
 }

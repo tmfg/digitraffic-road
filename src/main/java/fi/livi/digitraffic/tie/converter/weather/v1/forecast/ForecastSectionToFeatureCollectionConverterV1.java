@@ -94,7 +94,7 @@ public class ForecastSectionToFeatureCollectionConverterV1 extends AbstractMetad
     }
 
     private Instant getLastModified(final List<? extends LastModifiedSupport> features, final Instant lastModifiedFallback) {
-        return DateHelper.getNewest(
+        return DateHelper.getGreatest(
             features.stream().map(LastModifiedSupport::getLastModified).max(Comparator.naturalOrder()).orElse(null),
             lastModifiedFallback);
     }

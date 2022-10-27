@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_METADATA;
 import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_METADATA_CHECK;
 import static fi.livi.digitraffic.tie.model.DataType.WEATHER_STATION_METADATA_CHECK;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -36,11 +37,13 @@ import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3CodeDescriptionRepository;
+import fi.livi.digitraffic.tie.dto.info.v1.DataSourceInfoDtoV1;
 import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfoDtoV1;
 import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfosDtoV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.model.DataSource;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
@@ -136,7 +139,7 @@ public class DataStatusService {
 
         final Instant max =
             updatedInfos.stream()
-                .map(updateInfoDtoV1 -> DateHelper.getNewest(updateInfoDtoV1.getDataUpdatedTime(), updateInfoDtoV1.dataCheckedTime))
+                .map(updateInfoDtoV1 -> DateHelper.getGreatest(updateInfoDtoV1.getDataUpdatedTime(), updateInfoDtoV1.dataCheckedTime))
                 .filter(Objects::nonNull)
                 .max(Instant::compareTo)
                 .orElse(Instant.EPOCH);
@@ -145,107 +148,156 @@ public class DataStatusService {
 
     private List<UpdateInfoDtoV1> getMaintenanceUpdateInfos() {
         final List<MaintenanceTrackingDomainDtoV1> domains = v2MaintenanceTrackingRepository.getDomains();
-
+        final Duration stateInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING);
+        final Duration municipalityInterval =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY);
         return domains.stream().map(d -> {
-                final List<String> domain = Collections.singletonList(d.getName());
-                final Instant updated = v2MaintenanceTrackingRepository.findLastUpdatedForDomain(domain);
-                final Instant checked = findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, domain);
-                return new UpdateInfoDtoV1(MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_ROUTES, d.getName(), updated, checked);
+                final String domain = d.getName();
+                final Duration updateInterval = domain.contains("state") ? stateInterval : municipalityInterval;
+                final Instant updated = v2MaintenanceTrackingRepository.findLastUpdatedForDomain(Collections.singletonList(domain));
+                final Instant checked = findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, Collections.singletonList(domain));
+                return new UpdateInfoDtoV1(MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_ROUTES, d.getName(), updated, checked, updateInterval);
             }).collect(Collectors.toList());
     }
 
     private List<UpdateInfoDtoV1> getTrafficMessageInfos() {
+        final Duration updateInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.TRAFFIC_MESSAGE);
         final List<UpdateInfoDtoV1> trafficMessageInfos =
             Arrays.stream(SituationType.values())
                 .map(situationType -> {
                     final Instant updated = datex2Repository.getLastModified(situationType.name());
-                    return new UpdateInfoDtoV1(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES, situationType.name(), updated, null);
+                    return new UpdateInfoDtoV1(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES, situationType.name(), updated, null, updateInterval);
                 })
                 .collect(Collectors.toList());
 
         // /api/traffic-message/v1/area-geometries
+        final Duration areaUpdateInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.TRAFFIC_MESSAGE_AREA);
         final Instant regionsUpdated = findDataUpdatedInstant(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA);
         final Instant regionsChecked = findDataUpdatedInstant(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK);
-        trafficMessageInfos.add(new UpdateInfoDtoV1(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES, regionsUpdated, regionsChecked));
+        trafficMessageInfos.add(new UpdateInfoDtoV1(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES, regionsUpdated, regionsChecked, areaUpdateInterval));
+
+        // TODO TRAFFIC_MESSAGE_LOCATION
 
         return trafficMessageInfos;
     }
 
     private List<UpdateInfoDtoV1> getVariableSignInfos() {
-        final Instant jsonDataUpdated = DateHelper.getNewest(v2DeviceRepository.getLastUpdated(), v2DeviceDataRepository.getLastUpdated());
+        final Duration metadataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.VARIABLE_SIGN);
+        final Duration updateInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.VARIABLE_SIGN_DATA);
+        final Instant jsonDataUpdated = DateHelper.getGreatest(v2DeviceRepository.getLastUpdated(), v2DeviceDataRepository.getLastUpdated());
         final Instant datex2DataUpdated = v2DeviceDataRepository.getDatex2LastUpdated();
         final Instant codeDescriptionDataUpdated = v3CodeDescriptionRepository.getLastUpdated();
         return Arrays.asList(
-            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS, jsonDataUpdated),
-            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_DATEX2, datex2DataUpdated),
-            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_CODE_DESCRIPTIONS, codeDescriptionDataUpdated));
+            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS, jsonDataUpdated, updateInterval),
+            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_DATEX2, datex2DataUpdated, updateInterval),
+            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_CODE_DESCRIPTIONS, codeDescriptionDataUpdated, metadataInterval));
     }
 
     private List<UpdateInfoDtoV1> getCoungingSiteInfos() {
+        // meta: user-types, domains, directions ja counters, user-types and directions are static
+        // data: values
+        final Duration metadataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.COUNTING_SITE);
+        final Duration dataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.COUNTING_SITE_DATA);
         return Arrays.asList(
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_DOMAIN, dataUpdatedRepository.getCountingSiteDomainLastUpdated()),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_VALUES, dataUpdatedRepository.getCountingSiteDataLastUpdated()),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_COUNTERS, dataUpdatedRepository.getCountingSiteCounterLastUpdated()));
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_COUNTERS, dataUpdatedRepository.getCountingSiteCounterLastUpdated(), metadataInterval),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_DIRECTIONS, null, null),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_DOMAIN, dataUpdatedRepository.getCountingSiteDomainLastUpdated(), metadataInterval),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_USER_TYPES, null, null),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_VALUES, dataUpdatedRepository.getCountingSiteDataLastUpdated(), dataInterval)
+        );
     }
 
 
     private List<UpdateInfoDtoV1> getTmsInfos() {
+        final Duration metadataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.TMS_STATION);
+        final Duration dataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.TMS_STATION_DATA);
         final UpdateInfoDtoV1 stationsInfo =
             new UpdateInfoDtoV1(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS,
                                 tmsStationRepository.getLastUpdated(),
-                                findDataUpdatedInstant(DataType.TMS_STATION_METADATA_CHECK));
+                                findDataUpdatedInstant(DataType.TMS_STATION_METADATA_CHECK),
+                                metadataInterval);
 
         final UpdateInfoDtoV1 sensorsInfo =
             new UpdateInfoDtoV1(TmsControllerV1.API_TMS_BETA + TmsControllerV1.SENSORS,
                                 findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA),
-                                findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA_CHECK));
+                                findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA_CHECK),
+                                metadataInterval);
 
         final UpdateInfoDtoV1 sensorConstantsInfo =
             new UpdateInfoDtoV1( TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS,
                                 findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_CONSTANT_METADATA),
-                                findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_CONSTANT_METADATA_CHECK));
+                                findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_CONSTANT_METADATA_CHECK),
+                                metadataInterval);
 
         final UpdateInfoDtoV1 stationsDatasInfo =
             new UpdateInfoDtoV1( TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + TmsControllerV1.DATA,
-                                sensorValueRepository.getLastModified(RoadStationType.TMS_STATION));
+                                sensorValueRepository.getLastModified(RoadStationType.TMS_STATION),
+                                dataInterval);
 
         return Arrays.asList(stationsInfo, sensorsInfo, sensorConstantsInfo, stationsDatasInfo);
     }
 
     private List<UpdateInfoDtoV1> getWeatherInfos() {
+        final Duration metadataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.WEATHER_STATION);
+        final Duration dataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.WEATHER_STATION_DATA);
 
         final UpdateInfoDtoV1 stationsInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.STATIONS,
-                weatherStationRepository.getLastUpdated(), findDataUpdatedInstant(WEATHER_STATION_METADATA_CHECK));
-
-        final UpdateInfoDtoV1 stationsDatasInfo =
-            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA,
-                                sensorValueRepository.getLastModified(RoadStationType.WEATHER_STATION));
+                weatherStationRepository.getLastUpdated(), findDataUpdatedInstant(WEATHER_STATION_METADATA_CHECK),
+                metadataInterval);
 
         final UpdateInfoDtoV1 sensorsInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.SENSORS,
                                 findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA),
-                                findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK));
+                                findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK),
+                                metadataInterval);
+
+        final UpdateInfoDtoV1 stationsDatasInfo =
+            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA,
+                sensorValueRepository.getLastModified(RoadStationType.WEATHER_STATION),
+                dataInterval);
+
+
+        final Duration forecastSectionInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.FORECAST_SECTION);
+        final Duration forecastSectionsForecastInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.FORECAST_SECTION_FORECAST);
+
 
         final UpdateInfoDtoV1 forecastSectionsSimpleInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE,
                                 findDataUpdatedInstant(DataType.FORECAST_SECTION_METADATA),
-                                findDataUpdatedInstant(DataType.FORECAST_SECTION_METADATA_CHECK));
+                                findDataUpdatedInstant(DataType.FORECAST_SECTION_METADATA_CHECK),
+                                forecastSectionInterval);
 
         final UpdateInfoDtoV1 forecastSectionsSimpleForecastsInfo =
             new UpdateInfoDtoV1( WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS,
                                 forecastSectionWeatherRepository.getLastModified(ForecastSectionApiVersion.V1.getVersion(), null, null),
-                                findDataUpdatedInstant(DataType.FORECAST_SECTION_WEATHER_DATA_CHECK));
+                                findDataUpdatedInstant(DataType.FORECAST_SECTION_WEATHER_DATA_CHECK),
+                                forecastSectionsForecastInterval);
 
         final UpdateInfoDtoV1 forecastSectionsInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS,
                                 findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA),
-                                findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA_CHECK));
+                                findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA_CHECK),
+                                forecastSectionInterval);
 
         final UpdateInfoDtoV1 forecastSectionsForecastsInfo =
             new UpdateInfoDtoV1( WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + WeatherControllerV1.FORECASTS,
                                 forecastSectionWeatherRepository.getLastModified(ForecastSectionApiVersion.V2.getVersion(), null, null),
-                                findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_WEATHER_DATA_CHECK));
+                                findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_WEATHER_DATA_CHECK),
+                                forecastSectionsForecastInterval);
 
         return Arrays.asList(stationsInfo, sensorsInfo, stationsDatasInfo,
                              forecastSectionsSimpleInfo, forecastSectionsSimpleForecastsInfo,
@@ -253,17 +305,33 @@ public class DataStatusService {
     }
 
     private List<UpdateInfoDtoV1> getWeathercamInfos() {
+        final Duration metadataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.WEATHERCAM_STATION);
+        final Duration dataInterval  =
+            dataUpdatedRepository.getSourceUpdateInterval(DataSource.WEATHERCAM_STATION_DATA);
+
         final Instant stationsUpdated = findDataUpdatedInstant(CAMERA_STATION_METADATA);
         final Instant stationsChecked = findDataUpdatedInstant(CAMERA_STATION_METADATA_CHECK);
+
         final UpdateInfoDtoV1 stationsInfo =
             new UpdateInfoDtoV1(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS,
-                                stationsUpdated, stationsChecked);
+                                stationsUpdated, stationsChecked, metadataInterval);
 
         final Instant dataUpdated = findDataUpdatedInstant(CAMERA_STATION_IMAGE_UPDATED);
         final UpdateInfoDtoV1 stationsDatasInfo =
             new UpdateInfoDtoV1( WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + WeathercamControllerV1.DATA,
-                                dataUpdated);
+                                dataUpdated, dataInterval);
 
         return Arrays.asList(stationsInfo, stationsDatasInfo);
+    }
+
+    @Transactional(readOnly = true)
+    public DataSourceInfoDtoV1 getSourceInfo(final DataSource dataSource) {
+        return dataUpdatedRepository.getSourceInfo(dataSource);
+    }
+
+    @Transactional(readOnly = true)
+    public Duration getSourceUpdateInterval(final DataSource dataSource) {
+        return dataUpdatedRepository.getSourceUpdateInterval(dataSource);
     }
 }

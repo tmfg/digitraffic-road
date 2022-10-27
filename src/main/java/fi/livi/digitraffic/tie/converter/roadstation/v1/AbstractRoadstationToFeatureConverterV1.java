@@ -26,7 +26,7 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
         properties.setName(roadStation.getName());
         properties.setCollectionStatus(roadStation.getCollectionStatus());
         properties.setState(roadStation.getState());
-        properties.setDataUpdatedTime(DateHelper.getNewest(roadStation.getModified(), childModified));
+        properties.setDataUpdatedTime(DateHelper.getGreatest(roadStation.getModified(), childModified));
     }
 
     protected static void setRoadStationPropertiesDetailed(final RoadStationPropertiesDetailedV1<?> properties,
