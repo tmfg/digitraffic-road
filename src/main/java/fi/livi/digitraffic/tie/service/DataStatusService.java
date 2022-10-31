@@ -149,9 +149,9 @@ public class DataStatusService {
     private List<UpdateInfoDtoV1> getMaintenanceUpdateInfos() {
         final List<MaintenanceTrackingDomainDtoV1> domains = v2MaintenanceTrackingRepository.getDomains();
         final Duration stateInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING);
         final Duration municipalityInterval =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY);
         return domains.stream().map(d -> {
                 final String domain = d.getName();
                 final Duration updateInterval = domain.contains("state") ? stateInterval : municipalityInterval;
@@ -163,7 +163,7 @@ public class DataStatusService {
 
     private List<UpdateInfoDtoV1> getTrafficMessageInfos() {
         final Duration updateInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.TRAFFIC_MESSAGE);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.TRAFFIC_MESSAGE);
         final List<UpdateInfoDtoV1> trafficMessageInfos =
             Arrays.stream(SituationType.values())
                 .map(situationType -> {
@@ -174,7 +174,7 @@ public class DataStatusService {
 
         // /api/traffic-message/v1/area-geometries
         final Duration areaUpdateInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.TRAFFIC_MESSAGE_AREA);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.TRAFFIC_MESSAGE_AREA);
         final Instant regionsUpdated = findDataUpdatedInstant(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA);
         final Instant regionsChecked = findDataUpdatedInstant(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK);
         trafficMessageInfos.add(new UpdateInfoDtoV1(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES, regionsUpdated, regionsChecked, areaUpdateInterval));
@@ -186,9 +186,9 @@ public class DataStatusService {
 
     private List<UpdateInfoDtoV1> getVariableSignInfos() {
         final Duration metadataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.VARIABLE_SIGN);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.VARIABLE_SIGN);
         final Duration updateInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.VARIABLE_SIGN_DATA);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.VARIABLE_SIGN_DATA);
         final Instant jsonDataUpdated = DateHelper.getGreatest(v2DeviceRepository.getLastUpdated(), v2DeviceDataRepository.getLastUpdated());
         final Instant datex2DataUpdated = v2DeviceDataRepository.getDatex2LastUpdated();
         final Instant codeDescriptionDataUpdated = v3CodeDescriptionRepository.getLastUpdated();
@@ -202,9 +202,9 @@ public class DataStatusService {
         // meta: user-types, domains, directions ja counters, user-types and directions are static
         // data: values
         final Duration metadataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.COUNTING_SITE);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.COUNTING_SITE);
         final Duration dataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.COUNTING_SITE_DATA);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.COUNTING_SITE_DATA);
         return Arrays.asList(
             new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_COUNTERS, dataUpdatedRepository.getCountingSiteCounterLastUpdated(), metadataInterval),
             new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_DIRECTIONS, null, null),
@@ -217,9 +217,9 @@ public class DataStatusService {
 
     private List<UpdateInfoDtoV1> getTmsInfos() {
         final Duration metadataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.TMS_STATION);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.TMS_STATION);
         final Duration dataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.TMS_STATION_DATA);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.TMS_STATION_DATA);
         final UpdateInfoDtoV1 stationsInfo =
             new UpdateInfoDtoV1(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS,
                                 tmsStationRepository.getLastUpdated(),
@@ -248,9 +248,9 @@ public class DataStatusService {
 
     private List<UpdateInfoDtoV1> getWeatherInfos() {
         final Duration metadataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.WEATHER_STATION);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.WEATHER_STATION);
         final Duration dataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.WEATHER_STATION_DATA);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.WEATHER_STATION_DATA);
 
         final UpdateInfoDtoV1 stationsInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.STATIONS,
@@ -270,9 +270,9 @@ public class DataStatusService {
 
 
         final Duration forecastSectionInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.FORECAST_SECTION);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.FORECAST_SECTION);
         final Duration forecastSectionsForecastInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.FORECAST_SECTION_FORECAST);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.FORECAST_SECTION_FORECAST);
 
 
         final UpdateInfoDtoV1 forecastSectionsSimpleInfo =
@@ -306,9 +306,9 @@ public class DataStatusService {
 
     private List<UpdateInfoDtoV1> getWeathercamInfos() {
         final Duration metadataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.WEATHERCAM_STATION);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.WEATHERCAM_STATION);
         final Duration dataInterval  =
-            dataUpdatedRepository.getSourceUpdateInterval(DataSource.WEATHERCAM_STATION_DATA);
+            dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.WEATHERCAM_STATION_DATA);
 
         final Instant stationsUpdated = findDataUpdatedInstant(CAMERA_STATION_METADATA);
         final Instant stationsChecked = findDataUpdatedInstant(CAMERA_STATION_METADATA_CHECK);
@@ -326,12 +326,12 @@ public class DataStatusService {
     }
 
     @Transactional(readOnly = true)
-    public DataSourceInfoDtoV1 getSourceInfo(final DataSource dataSource) {
-        return dataUpdatedRepository.getSourceInfo(dataSource);
+    public DataSourceInfoDtoV1 getDataSourceInfo(final DataSource dataSource) {
+        return dataUpdatedRepository.getDataSourceInfo(dataSource);
     }
 
     @Transactional(readOnly = true)
-    public Duration getSourceUpdateInterval(final DataSource dataSource) {
-        return dataUpdatedRepository.getSourceUpdateInterval(dataSource);
+    public Duration getDataSourceUpdateInterval(final DataSource dataSource) {
+        return dataUpdatedRepository.getDataSourceUpdateInterval(dataSource);
     }
 }

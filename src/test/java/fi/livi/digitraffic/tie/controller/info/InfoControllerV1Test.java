@@ -19,8 +19,8 @@ public class InfoControllerV1Test extends AbstractRestWebTest {
     @Test
     public void updateTimes() throws Exception {
 
-        final String stateInterval = dataStatusService.getSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING).toString();
-        final String mi = dataStatusService.getSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY).toString();
+        final String stateInterval = dataStatusService.getDataSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING).toString();
+        final String mi = dataStatusService.getDataSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY).toString();
 
         final ResultActions response =
             logDebugResponse(

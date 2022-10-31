@@ -80,10 +80,10 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
            "from data_source_info si\n" +
            "WHERE id = :#{#dataSource.name()}\n" +
            "order by id", nativeQuery = true)
-    DataSourceInfoDtoV1 getSourceInfo(final DataSource dataSource);
+    DataSourceInfoDtoV1 getDataSourceInfo(final DataSource dataSource);
 
-    default Duration getSourceUpdateInterval(final DataSource dataSource) {
-        return Optional.ofNullable(getSourceInfo(dataSource))
+    default Duration getDataSourceUpdateInterval(final DataSource dataSource) {
+        return Optional.ofNullable(getDataSourceInfo(dataSource))
             .flatMap(dataSourceInfoDtoV1 -> Optional.ofNullable(dataSourceInfoDtoV1 != null ?
                                                                 dataSourceInfoDtoV1.getUpdateInterval() :
                                                                 null))
