@@ -43,7 +43,7 @@ public class CameraImageUpdateManager {
 
     @Autowired
     CameraImageUpdateManager(@Value("${camera-image-uploader.imageUpdateTimeout}")
-                                   final int imageUpdateTimeout,
+                             final int imageUpdateTimeout,
                              final CameraImageUpdateHandler cameraImageUpdateHandler,
                              final DataStatusService dataStatusService) {
         this.imageUpdateTimeout = imageUpdateTimeout;
@@ -126,6 +126,9 @@ public class CameraImageUpdateManager {
         private UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateHandler cameraImageUpdateHandler, final long timeout) {
             this.timeout = timeout;
             this.task = new ImageUpdateTask(kuva, cameraImageUpdateHandler);
+            if ( 270L == kuva.getEsiasentoId() ) {
+                log.info("method=UpdateJobManager Kuva: {}", ToStringHelper.toStringFull(kuva));
+            }
         }
 
         @Override
