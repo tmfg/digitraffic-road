@@ -1,6 +1,9 @@
 package fi.livi.digitraffic.tie.dao.v2;
 
+import java.time.Instant;
 import java.util.List;
+
+import javax.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,8 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.model.v2.variablesign.DeviceData;
-
-import javax.persistence.QueryHint;
 
 @Repository
 public interface V2DeviceDataRepository extends JpaRepository<DeviceData, Long> {
@@ -35,4 +36,14 @@ public interface V2DeviceDataRepository extends JpaRepository<DeviceData, Long> 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @EntityGraph(attributePaths = "rows")
     List<TrafficSignHistory> getDeviceDataByDeviceIdOrderByEffectDateDesc(final String deviceId);
+
+    @Query(value =
+       "select max(created_date)\n" +
+       "from device_data", nativeQuery = true)
+    Instant getLastUpdated();
+
+    @Query(value =
+       "select max(updated_timestamp)\n" +
+       "from device_data_datex2", nativeQuery = true)
+    Instant getDatex2LastUpdated();
 }

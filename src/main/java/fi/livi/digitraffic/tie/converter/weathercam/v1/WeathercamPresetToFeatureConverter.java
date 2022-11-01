@@ -1,11 +1,12 @@
 package fi.livi.digitraffic.tie.converter.weathercam.v1;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
 
         // Cameras mapped with cameraId
         final Map<String, WeathercamStationFeatureSimpleV1> weathercamFeatureMappedByCameraId = new HashMap<>();
-        final List<WeathercamStationFeatureSimpleV1> weathercamStationFeatureSimpleV1s = new ArrayList<>();
+//        final List<WeathercamStationFeatureSimpleV1> weathercamStationFeatureSimpleV1s = new ArrayList<>();
         //final Map<String, Long> weatherStationsIdsMapByCameraId = cameraPresetService.getNearestWeatherStationNaturalIdMappedByCameraId();
         // CameraPreset contains camera and preset informations and
         // camera info is duplicated on every preset db line
@@ -60,17 +61,18 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
         final AtomicReference<Instant> lastModified = new AtomicReference<>();
         cameraPresets
             .forEach(cp -> {
-                WeathercamStationFeatureSimpleV1 weathercamStationFeatureSimpleV1 = weathercamFeatureMappedByCameraId.get(cp.getCameraId());
-                if (weathercamStationFeatureSimpleV1 == null) {
-                    weathercamStationFeatureSimpleV1 = convertToSimpleFeature(cp);
-                    weathercamFeatureMappedByCameraId.put(cp.getCameraId(), weathercamStationFeatureSimpleV1);
-                    weathercamStationFeatureSimpleV1s.add(weathercamStationFeatureSimpleV1);
-                }
+                final WeathercamStationFeatureSimpleV1 weathercamStationFeatureSimpleV1 =
+                    weathercamFeatureMappedByCameraId.containsKey(cp.getCameraId()) ?
+                        weathercamFeatureMappedByCameraId.get(cp.getCameraId()) :
+                        convertToSimpleFeature(cp);
+                weathercamFeatureMappedByCameraId.put(cp.getCameraId(), weathercamStationFeatureSimpleV1);
                 weathercamStationFeatureSimpleV1.getProperties().addPreset(convertToSimplePreset(cp));
-                lastModified.set(DateHelper.getNewest(weathercamStationFeatureSimpleV1.getLastModified(), lastModified.get()));
+                lastModified.updateAndGet(current -> DateHelper.getGreatest(current, weathercamStationFeatureSimpleV1.getLastModified()));
             });
 
-        return new WeathercamStationFeatureCollectionSimpleV1(DateHelper.getNewest(dataLastUpdated, lastModified.get()), weathercamStationFeatureSimpleV1s);
+        final List<WeathercamStationFeatureSimpleV1> sortedById =
+            weathercamFeatureMappedByCameraId.values().stream().sorted(Comparator.comparing(o -> o.id)).collect(Collectors.toList());
+        return new WeathercamStationFeatureCollectionSimpleV1(DateHelper.getGreatest(dataLastUpdated, lastModified.get()), sortedById);
     }
 
     private WeathercamPresetSimpleV1 convertToSimplePreset(final CameraPreset cp) {

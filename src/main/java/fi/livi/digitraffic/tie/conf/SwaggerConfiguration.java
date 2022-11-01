@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.List;
 
 import org.springdoc.core.GroupedOpenApi;
 import org.springdoc.core.SwaggerUiConfigProperties;
@@ -29,7 +29,6 @@ import io.swagger.v3.oas.models.servers.Server;
 })
 public class SwaggerConfiguration {
 
-    private final RoadApiInfoGetter roadApiInfoGetter;
     private final RoadApiInfo roadApiInfo;
 
     private final String API_PATHS = ApiConstants.API + "/**";
@@ -40,7 +39,6 @@ public class SwaggerConfiguration {
     @Autowired
     public SwaggerConfiguration(final RoadApiInfoGetter roadApiInfoGetter,
                                 final @Value("${dt.domain.url}") String domainUrl) throws URISyntaxException {
-        this.roadApiInfoGetter = roadApiInfoGetter;
         this.roadApiInfo = roadApiInfoGetter.getApiInfo();
 
         URI uri = new URI(domainUrl);
@@ -80,6 +78,7 @@ public class SwaggerConfiguration {
         config.setDefaultModelRendering("model");
         config.setDefaultModelExpandDepth(6);
         config.setTagsSorter("alpha");
+        config.setOperationsSorter("alpha");
         return config;
     }
 
@@ -98,7 +97,7 @@ public class SwaggerConfiguration {
             final String url = scheme + "://" + host;
             server.setUrl(url);
 
-            openApi.setServers(Arrays.asList(server));
+            openApi.setServers(List.of(server));
         };
     }
 

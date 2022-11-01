@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.helper;
 
 import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
+import static fi.livi.digitraffic.tie.helper.GeometryConstants.JTS_GEOMETRY_FACTORY;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -11,11 +12,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
@@ -36,31 +35,27 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
  * Uses 6 digits precision for coordinates. That gives about 5 cm accuracy at Finland (lat 60°)
  * @see <a href="https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Geographical_coordinates#Precision">Wikipedia:WikiProject Geographical coordinates - Precision</a>
  */
-public class PostgisGeometryHelper {
+public class PostgisGeometryUtils {
 
-    // TODO rename attributes and methods
-    private static final Logger log = LoggerFactory.getLogger(PostgisGeometryHelper.class);
-    public static final PrecisionModel PRECISION_MODEL = new PrecisionModel(1000000); // 6 decimals
-    public static final int SRID = 4326; // = WGS84 http://www.epsg-registry.org/
-    public static final GeometryFactory GF = new GeometryFactory(PRECISION_MODEL, SRID);
-    private static double EARTH_RADIUS_KM = 6371;
+    private static final Logger log = LoggerFactory.getLogger(PostgisGeometryUtils.class);
 
-    private static final GeoJsonWriter geoJsonWriter = new GeoJsonWriter(6); // 6 decimals
-    private static final GeoJsonReader geoJsonReader = new GeoJsonReader(GF);
+    private static final ThreadLocal<GeoJsonWriter> geoJsonWriter =
+        ThreadLocal.withInitial(() -> new GeoJsonWriter(GeometryConstants.COORDINATE_DECIMALS_6_DIGITS));
 
-    // Thread local variable containing WKBReader for each thread as it's not thread safe
-    private static final ThreadLocal<WKBReader> wkbReader =
-        ThreadLocal.withInitial(() -> new WKBReader(GF));
+    private static final ThreadLocal<GeoJsonReader> geoJsonReader =
+        ThreadLocal.withInitial(() -> new GeoJsonReader(JTS_GEOMETRY_FACTORY));
 
-    // Thread local variable containing WKTReader for each thread as it's not thread safe
-    private static final ThreadLocal<WKTReader> wktReader =
-        ThreadLocal.withInitial(() -> new WKTReader(GF));
+    private static final ThreadLocal<WKBReader> wkbGeometryReader =
+        ThreadLocal.withInitial(() -> new WKBReader(JTS_GEOMETRY_FACTORY));
 
-    private static final ObjectReader dtGeoJsonGeometryObjectReader;
+    private static final ThreadLocal<WKTReader> wktGeometryReader =
+        ThreadLocal.withInitial(() -> new WKTReader(JTS_GEOMETRY_FACTORY));
+
+    private static final ObjectReader dtGeoJsonReader;
 
     static {
-        geoJsonWriter.setEncodeCRS(false);
-        dtGeoJsonGeometryObjectReader = new ObjectMapper().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
+        geoJsonWriter.get().setEncodeCRS(false);
+        dtGeoJsonReader = new ObjectMapper().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
     }
 
     public static Coordinate createCoordinateWithZ(final double x, final double y, final Double z) {
@@ -84,11 +79,11 @@ public class PostgisGeometryHelper {
                 c.setZ(0.0);
             }
         });
-        return GF.createLineString(lineStringCoordinates.toArray(new Coordinate[0]));
+        return JTS_GEOMETRY_FACTORY.createLineString(lineStringCoordinates.toArray(new Coordinate[0]));
     }
 
     public static Point createPointWithZ(final Coordinate coordinate) {
-        return GF.createPoint(coordinate);
+        return JTS_GEOMETRY_FACTORY.createPoint(coordinate);
     }
 
     public static Polygon createSquarePolygonFromMinMax(final double xMin, final double xMax,
@@ -99,7 +94,7 @@ public class PostgisGeometryHelper {
             new Coordinate(xMin, yMin, 0)
         };
 
-        return GF.createPolygon(coordinates);
+        return JTS_GEOMETRY_FACTORY.createPolygon(coordinates);
     }
 
     public static LineString combineToLinestringWithZ(final Geometry firstGeometry, final Geometry secondGeometry) {
@@ -140,13 +135,13 @@ public class PostgisGeometryHelper {
     }
 
     public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeometryToGeoJSONGeometry(final org.locationtech.jts.geom.Geometry geometry) {
-        final String geoJson = geoJsonWriter.write(geometry);
+        final String geoJson = geoJsonWriter.get().write(geometry);
         return convertGeoJSONStringToGeoJSON(geoJson);
     }
 
     public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeoJSONStringToGeoJSON(final String geoJsonString) {
         try {
-            return dtGeoJsonGeometryObjectReader.readValue(geoJsonString);
+            return dtGeoJsonReader.readValue(geoJsonString);
         } catch (final JsonProcessingException e) {
             log.error(MessageFormat.format("method=convertFromGeoJSONStringToGeoJSON Failed to convert {0} to GeoJSON", geoJsonString), e);
             throw new RuntimeException(e);
@@ -178,7 +173,7 @@ public class PostgisGeometryHelper {
                 Math.cos(Math.toRadians(fromYLat)) * Math.cos(Math.toRadians(toYLat)) *
                     Math.sin(diffLon / 2) * Math.sin(diffLon / 2);
         final double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return EARTH_RADIUS_KM * c;
+        return GeometryConstants.EARTH_RADIUS_KM * c;
     }
 
     public static double speedBetweenWGS84PointsInKmH(final Point from, final Point to, final long diffInSeconds) {
@@ -188,12 +183,12 @@ public class PostgisGeometryHelper {
     }
 
     public static Geometry union(final List<Geometry> geometryCollection) {
-        return GF.buildGeometry(geometryCollection).union();
+        return JTS_GEOMETRY_FACTORY.buildGeometry(geometryCollection).union();
     }
 
     public static Geometry convertGeoJsonGeometryToGeometry(final String geometryJson) throws ParseException {
         try {
-            return geoJsonReader.read(geometryJson);
+            return geoJsonReader.get().read(geometryJson);
         } catch (final ParseException e) {
             log.error("Failed to parse geometry: " + geometryJson, e);
             throw e;
@@ -218,18 +213,16 @@ public class PostgisGeometryHelper {
         return g;
     }
 
-
-
     public static Geometry simplify(final Geometry geometry) {
         return DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
     }
 
     public static String convertGeometryToGeoJsonString(final Geometry geometry) {
-        return geoJsonWriter.write(geometry);
+        return geoJsonWriter.get().write(geometry);
     }
 
     public static Geometry convertWKBToGeometry(final byte[] wkbBytes) throws ParseException {
-        return wkbReader.get().read(wkbBytes);
+        return wkbGeometryReader.get().read(wkbBytes);
     }
 
     public static String convertBoundsCoordinatesToWktPolygon(final Double xMin, final Double xMax, final Double yMin, final Double yMax) {
@@ -247,16 +240,11 @@ public class PostgisGeometryHelper {
         return null;
     }
 
-    public static Geometry convertWktToGeomety(final String wktGeometry) {
-        try {
-            return wktReader.get().read(wktGeometry);
-        } catch (ParseException e) {
-            log.error("method=convertWktGeometryToGeomety Failed to parse wktGeometry: " + wktGeometry, e);
-            throw new RuntimeException(e);
-        }
+    public static Geometry convertWktToGeomety(final String wktGeometry) throws ParseException {
+            return wktGeometryReader.get().read(wktGeometry);
     }
 
-    public static fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> convertWktToGeoJSON(final String geometryWkt) {
+    public static fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> convertWktToGeoJSON(final String geometryWkt) throws ParseException {
         final Geometry geometry = convertWktToGeomety(geometryWkt);
         return convertGeometryToGeoJSONGeometry(geometry);
     }

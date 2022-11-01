@@ -1,0 +1,341 @@
+{
+  "messageTimestamp": "TIME_0",
+  "roadConditions": [
+    {
+      "roadId": "00429_003_00000_0_0",
+      "observation": {
+        "Time": "TIME_0",
+        "daylight": true,
+        "overallRoadCondition": 1,
+        "reliability": 0,
+        "roadTemperature": "+5.5",
+        "temperature": "+4.8",
+        "weatherSymbol": "d100",
+        "windDirection": 197,
+        "windSpeed": 3,
+        "conditionReason": {
+          "roadCondition": 1,
+          "precipitationCondition": 1
+        }
+      },
+      "forecast": [
+        {
+          "forecastName": "2h",
+          "Time": "TIME_2",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+10",
+          "temperature": "+8",
+          "weatherSymbol": "d400",
+          "windDirection": 190,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "4h",
+          "Time": "TIME_4",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+12",
+          "temperature": "+9",
+          "weatherSymbol": "d300",
+          "windDirection": 190,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "6h",
+          "Time": "TIME_6",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+11",
+          "temperature": "+9",
+          "weatherSymbol": "d300",
+          "windDirection": 191,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "12h",
+          "Time": "TIME_12",
+          "daylight": false,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+5",
+          "temperature": "+8",
+          "weatherSymbol": "n300",
+          "windDirection": 212,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 3,
+            "precipitationCondition": 1
+          }
+        }
+      ]
+    },
+    {
+      "roadId": "00945_014_00000_0_0",
+      "observation": {
+        "Time": "TIME_0",
+        "daylight": true,
+        "overallRoadCondition": 1,
+        "reliability": 1,
+        "roadTemperature": "+3",
+        "temperature": "+3",
+        "weatherSymbol": "d400",
+        "windDirection": 206,
+        "windSpeed": 5,
+        "conditionReason": {
+          "roadCondition": 3,
+          "precipitationCondition": 1
+        }
+      },
+      "forecast": [
+        {
+          "forecastName": "2h",
+          "Time": "TIME_2",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+5",
+          "temperature": "+4",
+          "weatherSymbol": "d400",
+          "windDirection": 205,
+          "windSpeed": 5,
+          "conditionReason": {
+            "roadCondition": 3,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "4h",
+          "Time": "TIME_4",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+6",
+          "temperature": "+4",
+          "weatherSymbol": "d400",
+          "windDirection": 205,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 2,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "6h",
+          "Time": "TIME_6",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+5",
+          "temperature": "+4",
+          "weatherSymbol": "d410",
+          "windDirection": 199,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 3,
+            "precipitationCondition": 2
+          }
+        },
+        {
+          "forecastName": "12h",
+          "Time": "TIME_12",
+          "daylight": false,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+5",
+          "temperature": "+6",
+          "weatherSymbol": "n400",
+          "windDirection": 214,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 3,
+            "precipitationCondition": 1
+          }
+        }
+      ]
+    },
+    {
+      "roadId": "00409_001_01796_0_0",
+      "observation": {
+        "Time": "TIME_0",
+        "daylight": true,
+        "overallRoadCondition": 1,
+        "reliability": 1,
+        "roadTemperature": "+7",
+        "temperature": "+4",
+        "weatherSymbol": "d100",
+        "windDirection": 203,
+        "windSpeed": 2,
+        "conditionReason": {
+          "roadCondition": 1,
+          "precipitationCondition": 1
+        }
+      },
+      "forecast": [
+        {
+          "forecastName": "2h",
+          "Time": "TIME_2",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+12",
+          "temperature": "+8",
+          "weatherSymbol": "d200",
+          "windDirection": 199,
+          "windSpeed": 3,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "4h",
+          "Time": "TIME_4",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+13",
+          "temperature": "+10",
+          "weatherSymbol": "d300",
+          "windDirection": 199,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "6h",
+          "Time": "TIME_6",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+11",
+          "temperature": "+9",
+          "weatherSymbol": "d300",
+          "windDirection": 197,
+          "windSpeed": 3,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "12h",
+          "Time": "TIME_12",
+          "daylight": false,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+6",
+          "temperature": "+8",
+          "weatherSymbol": "n400",
+          "windDirection": 212,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 2,
+            "precipitationCondition": 1
+          }
+        }
+      ]
+    },
+    {
+      "roadId": "00004_229_00307_1_0",
+      "observation": {
+        "Time": "TIME_0",
+        "daylight": true,
+        "overallRoadCondition": 1,
+        "reliability": 0,
+        "roadTemperature": "+5.2",
+        "temperature": "+5.7",
+        "weatherSymbol": "d300",
+        "windDirection": 193,
+        "windSpeed": 3,
+        "conditionReason": {
+          "roadCondition": 1,
+          "precipitationCondition": 1
+        }
+      },
+      "forecast": [
+        {
+          "forecastName": "2h",
+          "Time": "TIME_2",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+9",
+          "temperature": "+8",
+          "weatherSymbol": "d400",
+          "windDirection": 190,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "4h",
+          "Time": "TIME_4",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+12",
+          "temperature": "+9",
+          "weatherSymbol": "d300",
+          "windDirection": 190,
+          "windSpeed": 5,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "6h",
+          "Time": "TIME_6",
+          "daylight": true,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+11",
+          "temperature": "+9",
+          "weatherSymbol": "d300",
+          "windDirection": 196,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 1,
+            "precipitationCondition": 1
+          }
+        },
+        {
+          "forecastName": "12h",
+          "Time": "TIME_12",
+          "daylight": false,
+          "overallRoadCondition": 1,
+          "reliability": 1,
+          "roadTemperature": "+5",
+          "temperature": "+8",
+          "weatherSymbol": "n400",
+          "windDirection": 211,
+          "windSpeed": 4,
+          "conditionReason": {
+            "roadCondition": 3,
+            "precipitationCondition": 1
+          }
+        }
+      ]
+    }
+  ]
+}

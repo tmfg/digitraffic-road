@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionProperties
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionPropertiesV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.RoadSegmentDtoV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
@@ -43,7 +43,7 @@ public class ForecastSectionToFeatureCollectionConverterV1 extends AbstractMetad
 
 
     public ForecastSectionFeatureSimpleV1 convertToSimpleFeature(final ForecastSection fs) {
-        final LineString lineString = PostgisGeometryHelper.convertToGeoJSONLineString(fs.getGeometry());
+        final LineString lineString = PostgisGeometryUtils.convertToGeoJSONLineString(fs.getGeometry());
         return new ForecastSectionFeatureSimpleV1(lineString, createSimpleProperties(fs));
     }
 
@@ -94,7 +94,7 @@ public class ForecastSectionToFeatureCollectionConverterV1 extends AbstractMetad
     }
 
     private Instant getLastModified(final List<? extends LastModifiedSupport> features, final Instant lastModifiedFallback) {
-        return DateHelper.getNewest(
+        return DateHelper.getGreatest(
             features.stream().map(LastModifiedSupport::getLastModified).max(Comparator.naturalOrder()).orElse(null),
             lastModifiedFallback);
     }

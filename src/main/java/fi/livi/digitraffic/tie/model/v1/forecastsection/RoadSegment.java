@@ -40,8 +40,8 @@ public class RoadSegment {
     public RoadSegment() {
     }
 
-    public RoadSegment(RoadSegmentPK roadSegmentPK, Integer startDistance, Integer endDistance,
-                       Integer carriageway, ForecastSection forecastSection) {
+    public RoadSegment(final RoadSegmentPK roadSegmentPK, final Integer startDistance, final Integer endDistance,
+                       final Integer carriageway, final ForecastSection forecastSection) {
         this.roadSegmentPK = roadSegmentPK;
         this.startDistance = startDistance;
         this.endDistance = endDistance;
@@ -53,7 +53,7 @@ public class RoadSegment {
         return roadSegmentPK;
     }
 
-    public void setRoadSegmentPK(RoadSegmentPK roadSegmentPK) {
+    public void setRoadSegmentPK(final RoadSegmentPK roadSegmentPK) {
         this.roadSegmentPK = roadSegmentPK;
     }
 
@@ -61,7 +61,7 @@ public class RoadSegment {
         return startDistance;
     }
 
-    public void setStartDistance(Integer startDistance) {
+    public void setStartDistance(final Integer startDistance) {
         this.startDistance = startDistance;
     }
 
@@ -69,7 +69,7 @@ public class RoadSegment {
         return endDistance;
     }
 
-    public void setEndDistance(Integer endDistance) {
+    public void setEndDistance(final Integer endDistance) {
         this.endDistance = endDistance;
     }
 
@@ -77,7 +77,7 @@ public class RoadSegment {
         return carriageway;
     }
 
-    public void setCarriageway(Integer carriageway) {
+    public void setCarriageway(final Integer carriageway) {
         this.carriageway = carriageway;
     }
 
@@ -85,7 +85,7 @@ public class RoadSegment {
         return forecastSection;
     }
 
-    public void setForecastSection(ForecastSection forecastSection) {
+    public void setForecastSection(final ForecastSection forecastSection) {
         this.forecastSection = forecastSection;
     }
 }

@@ -59,7 +59,7 @@ public abstract class AbstractMqttSensorConfiguration extends AbstractMqttConfig
     }
 
     private DataMessage createDataMessage(final SensorValueDto sv) {
-        return new DataMessage(DateHelper.getNewestAtUtc(getLastUpdated(), sv.getUpdatedTime()),
+        return new DataMessage(DateHelper.getGreatestAtUtc(getLastUpdated(), sv.getUpdatedTime()),
             getTopic(sv.getRoadStationNaturalId(), sv.getSensorNaturalId()),
             sv);
     }

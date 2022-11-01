@@ -39,7 +39,7 @@ import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.LoggerHelper;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
@@ -193,10 +193,10 @@ public class V2Datex2UpdateService {
             return null;
         }
         try {
-            final Geometry geometry = PostgisGeometryHelper.convertGeoJsonGeometryToGeometry(geometryNode.toPrettyString());
+            final Geometry geometry = PostgisGeometryUtils.convertGeoJsonGeometryToGeometry(geometryNode.toPrettyString());
             if (!geometry.isValid()) {
-                final Geometry fixedGeometry = PostgisGeometryHelper.fixGeometry(geometry);
-                final String fixedGeoJsonGeometry = PostgisGeometryHelper.convertGeometryToGeoJsonString(fixedGeometry);
+                final Geometry fixedGeometry = PostgisGeometryUtils.fixGeometry(geometry);
+                final String fixedGeoJsonGeometry = PostgisGeometryUtils.convertGeometryToGeoJsonString(fixedGeometry);
                 return imsJsonConverter.replaceFeatureJsonGeometry(geoJsonFeature, fixedGeoJsonGeometry);
             }
             return null;

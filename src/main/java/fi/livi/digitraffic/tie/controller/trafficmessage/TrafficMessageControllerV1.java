@@ -165,7 +165,7 @@ public class TrafficMessageControllerV1 {
                     @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Geometry not not found", content = @Content) })
     public RegionGeometryFeatureCollection areaLocationRegions(
         @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
-        @RequestParam(defaultValue = "true")
+        @RequestParam(defaultValue = "false")
         final boolean lastUpdated,
         @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
         @RequestParam(defaultValue = "false")

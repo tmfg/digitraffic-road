@@ -22,8 +22,6 @@ jobs:
           cache: maven
       - name: Compile
         run: mvn install -T1.5C git-commit-id:revision install -e -U -DskipTests=true
-      - name: Create Docker network
-        run: docker network create dnet1
       - name: Setup database
         working-directory: dbroad
         run: docker-compose rm db && docker-compose up -d
@@ -36,7 +34,7 @@ jobs:
         run: |
           mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -e -U -Dmaven.gitcommitid.skip=true -Dspring.jdbc.getParameterType.ignore=true -Dspring.profiles.active=ci -Dquartz.enabled=false -Droad.datasource.url=jdbc:postgresql://${{ env.db_addr }}:5432/road
       - name: Publish test results
-        uses: dorny/test-reporter@0d00bb14cb0cc2c9b8985df6e81dd333188224e1
+        uses: dorny/test-reporter@v1.6.0
         if: success() || failure()
         with:
           name: jUnit tests

@@ -1,14 +1,17 @@
 package fi.livi.digitraffic.tie.model.v1.forecastsection;
 
+import static fi.livi.digitraffic.tie.model.v1.forecastsection.WindCondition.API_DESCRIPTION;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "The strength of wind")
+@Schema(description = API_DESCRIPTION)
 public enum WindCondition {
 
     WEAK(1),
     MEDIUM(2),
     STRONG(3);
 
+    public static final String API_DESCRIPTION = "The strength of wind";
     private final int value;
 
     WindCondition(final int value) {

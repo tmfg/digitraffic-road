@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.helper.PostgisGeometryHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionFeature;
@@ -32,7 +32,7 @@ public class ForecastSectionV1ToFeatureConverter extends AbstractMetadataToFeatu
     }
 
     private ForecastSectionFeature convert(final ForecastSection fs) {
-        final LineString lineString = PostgisGeometryHelper.convertToGeoJSONLineString(fs.getGeometry());
+        final LineString lineString = PostgisGeometryUtils.convertToGeoJSONLineString(fs.getGeometry());
         return new ForecastSectionFeature(fs.getId(), lineString, createProperties(fs));
     }
 

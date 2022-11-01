@@ -11,9 +11,14 @@ public final class ApiConstants {
 
     public static final String LAST_UPDATED_PARAM = "lastUpdated";
 
-    /**
+    /*
      * API data types
      */
+
+    /** Info api */
+
+    public static final String INFO_BETA_TAG = "Info (BETA)";
+    public static final String API_INFO = API + "/info";
 
     /** Traffic messages */
     public static final String TRAFFIC_MESSAGE_TAG = "Traffic message";
@@ -44,8 +49,18 @@ public final class ApiConstants {
     public static final String VARIABLE_SIGN_V1_TAG = "Variable Sign V1";
     public static final String API_VS_V1 = API + "/variable-sign/v1";
     public static final String API_SIGNS = "/signs";
+    public static final String API_SIGNS_DATEX2 = "/signs.datex2";
     public static final String API_SIGNS_HISTORY = API_SIGNS + "/history";
     public static final String API_SIGNS_CODE_DESCRIPTIONS = API_SIGNS + "/code-descriptions";
+
+    /* Counting site */
+    public static final String API_COUNTING_SITE_V1 = API + "/counting-site/v1";
+    public static final String API_COUNTING_SITE_V1_COUNTERS = API_COUNTING_SITE_V1 + "/counters";
+    public static final String API_COUNTING_SITE_V1_DIRECTIONS = API_COUNTING_SITE_V1 + "/directions";
+    public static final String API_COUNTING_SITE_V1_DOMAIN = API_COUNTING_SITE_V1 + "/domain";
+    public static final String API_COUNTING_SITE_V1_USER_TYPES = API_COUNTING_SITE_V1 + "/user-types";
+    public static final String API_COUNTING_SITE_V1_VALUES = API_COUNTING_SITE_V1 + "/values";
+
 
     private ApiConstants() {}
 }

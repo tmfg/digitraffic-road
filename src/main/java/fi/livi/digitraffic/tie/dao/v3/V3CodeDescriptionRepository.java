@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dao.v3;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,9 @@ public interface V3CodeDescriptionRepository extends SqlRepository {
         "from code_description where domain = 'VARIABLE_SIGN'",
         nativeQuery = true)
     List<V3CodeDescription> listAllVariableSignTypes();
+
+    @Query(value =
+       "select max(modified)\n" +
+       "from code_description", nativeQuery = true)
+    Instant getLastUpdated();
 }

@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.time.StopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
@@ -25,15 +22,12 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 @ConditionalOnWebApplication
 @Component
 public class WeathercamDataConverter {
-    private static final Logger log = LoggerFactory.getLogger(WeathercamDataConverter.class);
-
     @Autowired
     public WeathercamDataConverter() {
     }
 
     public WeathercamStationsDataV1 convert(final List<CameraPreset> cameraPresets,
                                             final Instant updated) {
-        final StopWatch start = StopWatch.createStarted();
         final Map<String, List<WeathercamPresetDataV1>> cameraIdToPresetDataMap =
             cameraPresets.stream()
                 .map(cp -> new AbstractMap.SimpleEntry<>(
@@ -50,7 +44,7 @@ public class WeathercamDataConverter {
         return new WeathercamStationsDataV1(updated, stationsDatas);
     }
 
-    public WeathercamStationDataV1 convertSingleStationData(final List<CameraPreset> data, final boolean onlyUpdateInfo) {
+    public WeathercamStationDataV1 convertSingleStationData(final List<CameraPreset> data) {
         final List<WeathercamPresetDataV1> presetsDatas = data.stream()
             .map(cp -> new WeathercamPresetDataV1(cp.getPresetId(), DateHelper.toInstantWithOutMillis(cp.getPictureLastModified())))
             .collect(toList());

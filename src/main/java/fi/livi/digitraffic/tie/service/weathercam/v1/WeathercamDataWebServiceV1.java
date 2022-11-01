@@ -48,13 +48,13 @@ public class WeathercamDataWebServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public WeathercamStationDataV1 findPublishableWeathercamStationData(final String cameraId, final boolean onlyUpdateInfo) {
+    public WeathercamStationDataV1 findPublishableWeathercamStationData(final String cameraId) {
         final List<CameraPreset> data = cameraPresetRepository
                 .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(cameraId);
 
         if (data.isEmpty()) {
             throw new ObjectNotFoundException("CameraStation", cameraId);
         }
-        return weathercamDataConverter.convertSingleStationData(data, onlyUpdateInfo);
+        return weathercamDataConverter.convertSingleStationData(data);
     }
 }

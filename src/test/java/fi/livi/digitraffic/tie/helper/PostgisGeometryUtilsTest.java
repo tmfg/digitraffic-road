@@ -17,34 +17,30 @@ import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.GeometryJacksonDeserializerTest;
 
-public class PostgisGeometryHelperTest extends AbstractTest {
+public class PostgisGeometryUtilsTest extends AbstractTest {
 
-    private static final Logger log = LoggerFactory.getLogger(PostgisGeometryHelperTest.class);
+    private static final Logger log = LoggerFactory.getLogger(PostgisGeometryUtilsTest.class);
     // Coordinates https://fi.wikipedia.org/wiki/Luettelo_Suomen_kuntien_koordinaateista
     // Distance https://www.nhc.noaa.gov/gccalc.shtml
     private final double TAMPERE_WGS84_X = 23.761290078;
     private final double TAMPERE_WGS84_Y = 61.497742570;
-    private final double TAMPERE_TM35FIN_X = 327630;
-    private final double TAMPERE_TM35FIN_Y = 6822512;
     private final double Z = 6821211;
-    private final double ALLOWED_COORDINATE_DELTA = 0.00002;
 
     private final double KUOPIO_WGS84_X = 27.688935;
     private final double KUOPIO_WGS84_Y = 62.892983;
-    private final double TAMPERE_KUOPIO_DISTANCE_KM = 255.8;
-    private final double ALLOWED_DELTA_IN_KM = 0.5;
-    private final double ALLOWED_DELTA_IN_KM_H = 1.0;
-    private final int TAMPERE_KUOPIO_SECONDS_WITH_SPEED_100_KM_H = (int)(2.5682 * 60 * 60); // 256.82 km / 100 km/h = 2,5682 h
 
     @Test
     public void createCoordinateWithZFromETRS89ToWGS84() {
-        final Coordinate created = PostgisGeometryHelper.createCoordinateWithZFromETRS89ToWGS84(TAMPERE_TM35FIN_X, TAMPERE_TM35FIN_Y, Z);
+        final double TAMPERE_TM35FIN_X = 327630;
+        final double TAMPERE_TM35FIN_Y = 6822512;
+
+        final Coordinate created = PostgisGeometryUtils.createCoordinateWithZFromETRS89ToWGS84(TAMPERE_TM35FIN_X, TAMPERE_TM35FIN_Y, Z);
         checkCoordinate(created, TAMPERE_WGS84_X, TAMPERE_WGS84_Y, Z);
     }
 
     @Test
     public void createCoordinateWithZ() {
-        final Coordinate created = PostgisGeometryHelper.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, Z);
+        final Coordinate created = PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, Z);
         checkCoordinate(created, TAMPERE_WGS84_X, TAMPERE_WGS84_Y, Z);
     }
 
@@ -53,11 +49,11 @@ public class PostgisGeometryHelperTest extends AbstractTest {
         final double diff_1 = 1.1;
         final double diff_2 = 2.2;
         final ArrayList<Coordinate> coords = new ArrayList<>();
-        coords.add(PostgisGeometryHelper.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, Z));
-        coords.add(PostgisGeometryHelper.createCoordinateWithZ(TAMPERE_WGS84_X + diff_1, TAMPERE_WGS84_Y + diff_1, Z + diff_1));
-        coords.add(PostgisGeometryHelper.createCoordinateWithZ(TAMPERE_WGS84_X + diff_2, TAMPERE_WGS84_Y + diff_2, Z + diff_2));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X + diff_1, TAMPERE_WGS84_Y + diff_1, Z + diff_1));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X + diff_2, TAMPERE_WGS84_Y + diff_2, Z + diff_2));
 
-        final LineString lineString = PostgisGeometryHelper.createLineStringWithZ(coords);
+        final LineString lineString = PostgisGeometryUtils.createLineStringWithZ(coords);
         checkCoordinate(lineString.getCoordinateN(0), TAMPERE_WGS84_X, TAMPERE_WGS84_Y, Z);
         checkCoordinate(lineString.getCoordinateN(1), TAMPERE_WGS84_X + diff_1, TAMPERE_WGS84_Y + diff_1, Z + diff_1);
         checkCoordinate(lineString.getCoordinateN(2), TAMPERE_WGS84_X + diff_2, TAMPERE_WGS84_Y + diff_2, Z + diff_2);
@@ -65,9 +61,12 @@ public class PostgisGeometryHelperTest extends AbstractTest {
 
     @Test
     public void distanceBetweenWGS84PointsInKm() {
-        final Point tampere =  PostgisGeometryHelper.createPointWithZ(PostgisGeometryHelper.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, 0.0));
-        final Point kuopio = PostgisGeometryHelper.createPointWithZ(PostgisGeometryHelper.createCoordinateWithZ(KUOPIO_WGS84_X, KUOPIO_WGS84_Y, 0.0));
-        double dist = PostgisGeometryHelper.distanceBetweenWGS84PointsInKm(tampere, kuopio);
+        final double TAMPERE_KUOPIO_DISTANCE_KM = 255.8;
+        final double ALLOWED_DELTA_IN_KM_H = 1.0;
+
+        final Point tampere =  PostgisGeometryUtils.createPointWithZ(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, 0.0));
+        final Point kuopio = PostgisGeometryUtils.createPointWithZ(PostgisGeometryUtils.createCoordinateWithZ(KUOPIO_WGS84_X, KUOPIO_WGS84_Y, 0.0));
+        double dist = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(tampere, kuopio);
         log.info("Calculated distance {} km", dist);
         assertEquals(TAMPERE_KUOPIO_DISTANCE_KM, dist, ALLOWED_DELTA_IN_KM_H);
     }
@@ -75,9 +74,13 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void speedBetweenWGS84PointsInKmH() {
         // 100 km/h
-        final Point tampere =  PostgisGeometryHelper.createPointWithZ(PostgisGeometryHelper.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, 0.0));
-        final Point kuopio = PostgisGeometryHelper.createPointWithZ(PostgisGeometryHelper.createCoordinateWithZ(KUOPIO_WGS84_X, KUOPIO_WGS84_Y, 0.0));
-        double speed = PostgisGeometryHelper.speedBetweenWGS84PointsInKmH(tampere, kuopio, TAMPERE_KUOPIO_SECONDS_WITH_SPEED_100_KM_H);
+        // 256.82 km / 100 km/h = 2,5682 h
+        final int TAMPERE_KUOPIO_SECONDS_WITH_SPEED_100_KM_H = (int) (2.5682 * 60 * 60);
+        final double ALLOWED_DELTA_IN_KM = 0.5;
+
+        final Point tampere =  PostgisGeometryUtils.createPointWithZ(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, 0.0));
+        final Point kuopio = PostgisGeometryUtils.createPointWithZ(PostgisGeometryUtils.createCoordinateWithZ(KUOPIO_WGS84_X, KUOPIO_WGS84_Y, 0.0));
+        final double speed = PostgisGeometryUtils.speedBetweenWGS84PointsInKmH(tampere, kuopio, TAMPERE_KUOPIO_SECONDS_WITH_SPEED_100_KM_H);
         log.info("Calculated speed {} km/h", speed);
         assertEquals(100.0, speed, ALLOWED_DELTA_IN_KM);
     }
@@ -85,7 +88,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void point() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POINT);
+            PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POINT);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.Point, geom.getType());
@@ -95,7 +98,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void lineString() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.LINE_STRING);
+            PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.LINE_STRING);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.LineString, geom.getType());
@@ -105,7 +108,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void multiLineString() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_LINE_STRING);
+            PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_LINE_STRING);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.MultiLineString, geom.getType());
@@ -115,7 +118,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void polygon() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON);
+            PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.Polygon, geom.getType());
@@ -125,7 +128,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void polygonWithInternalPolygon() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON_WITH_INTERNAL_POLYGON);
+            PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.POLYGON_WITH_INTERNAL_POLYGON);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.Polygon, geom.getType());
@@ -135,7 +138,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void multiPoint() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POINT);
+            PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POINT);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.MultiPoint, geom.getType());
@@ -145,7 +148,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void multiPolygon() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON);
+            PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.MultiPolygon, geom.getType());
@@ -155,7 +158,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     @Test
     public void multiPolygonWithInnerPolygon() {
         final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> geom =
-            PostgisGeometryHelper.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON_WITH_INNER_POLYGON);
+            PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(GeometryJacksonDeserializerTest.MULTI_POLYGON_WITH_INNER_POLYGON);
         assertNotNull(geom);
         assertFalse(geom.getCoordinates().isEmpty());
         assertEquals(Geometry.Type.MultiPolygon, geom.getType());
@@ -163,6 +166,7 @@ public class PostgisGeometryHelperTest extends AbstractTest {
     }
 
     private void checkCoordinate(Coordinate coordinate, final double x, final double y, final double z) {
+        final double ALLOWED_COORDINATE_DELTA = 0.00002;
         assertEquals(x, coordinate.getX(), ALLOWED_COORDINATE_DELTA);
         assertEquals(y, coordinate.getY(), ALLOWED_COORDINATE_DELTA);
         assertEquals(z, coordinate.getZ(), ALLOWED_COORDINATE_DELTA);

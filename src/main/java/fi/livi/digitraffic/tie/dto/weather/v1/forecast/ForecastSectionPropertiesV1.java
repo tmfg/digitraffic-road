@@ -36,7 +36,7 @@ public class ForecastSectionPropertiesV1 extends PropertiesV1 {
     @Schema(description = "Forecast section length in meters")
     public final Integer length;
 
-    @Schema(description = "Forecast section road segments. Refers to https://aineistot.vayla.fi/digiroad/")
+    @Schema(description = RoadSegmentDtoV1.API_DESCRIPTION)
     public final List<RoadSegmentDtoV1> roadSegments;
 
     @Schema(description = "Forecast section link indices. Refers to https://aineistot.vayla.fi/digiroad/")

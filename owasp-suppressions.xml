@@ -5,14 +5,40 @@
         Temporary suppressions, check and update these periodically
     -->
 
-    <suppress until="2022-10-13">
+    <suppress until="2022-12-01">
+        <!-- We are not using the vulnerable http-invoker -->
+        <notes><![CDATA[file name: spring-*-5.3.22.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@.*$</packageUrl>
+        <cve>CVE-2016-1000027</cve>
+    </suppress>
+
+    <suppress until="2022-12-01">
+        <!-- Vulnerable features are not enabled -->
+        <notes><![CDATA[file name: jackson-databind-2.13.3.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-42004</cve>
+    </suppress>
+
+    <suppress until="2022-12-01">
+        <!-- We don't directly use common-text -->
+        <notes><![CDATA[file name: commons-text-1.9.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-text@.*$</packageUrl>
+        <vulnerabilityName>CVE-2022-42889</vulnerabilityName>
+    </suppress>
+
+    <suppress until="2022-12-01">
         <!-- Requires update in upstream org.springframework.boot/spring-boot-starter-parent -->
         <notes><![CDATA[file name: snakeyaml-1.30.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
         <cve>CVE-2022-25857</cve>
+        <cve>CVE-2022-38749</cve>
+        <cve>CVE-2022-38750</cve>
+        <cve>CVE-2022-38751</cve>
+        <cve>CVE-2022-38752</cve>
     </suppress>
 
-    <suppress until="2022-10-13Z">
+    <suppress until="2022-12-01Z">
         <!-- We don't use com.amazonaws.services.s3.transfer.TransferManager::downloadDirectory -->
         <notes><![CDATA[file name: aws-java-sdk-(secretsmanager|ec2).jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.amazonaws/(aws\-java\-sdk\-secretsmanager|aws\-java\-sdk\-ec2)@.*$</packageUrl>
@@ -20,18 +46,14 @@
     </suppress>
 
     <suppress until="2022-10-13Z">
-        <notes><![CDATA[
-   file name: spring-*.jar
-   ]]></notes>
+        <notes><![CDATA[file name: spring-*.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework.*$</packageUrl>
         <!-- RCE through deserialization vulnerability, not using vulnerable version of Spring -->
         <cve>CVE-2016-1000027</cve>
     </suppress>
 
-    <suppress until="2022-10-13Z">
-        <notes><![CDATA[
-   file name: spring-security-crypto-*.jar
-   ]]></notes>
+    <suppress until="2022-12-01">
+        <notes><![CDATA[file name: spring-security-crypto-*.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
 
         <!-- Crypto vulnerability, not using vulnerable version of Spring Security -->
@@ -44,7 +66,7 @@
         <cve>CVE-2022-22978</cve>
     </suppress>
 
-    <suppress until="2022-10-13">
+    <suppress until="2022-12-01">
         <!-- This is a false positive. This vulnerability is for "Caoyongqi912/Fan_Platform" and we are not using it.
              See: https://github.com/github/securitylab/issues/669#issuecomment-1189616056 -->
         <notes><![CDATA[file name: junit-platform-commons-1.8.2.jar]]></notes>
@@ -58,18 +80,14 @@
 
     <!-- Not using Spring Security authorization -->
     <suppress>
-        <notes><![CDATA[
-   file name: spring-security-rsa-*.jar
-   ]]></notes>
+        <notes><![CDATA[file name: spring-security-rsa-*.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.*$</packageUrl>
         <cve>CVE-2022-22978</cve>
     </suppress>
 
     <!-- Not using BCrypt -->
     <suppress>
-        <notes><![CDATA[
-   file name: spring-security-rsa-*.jar
-   ]]></notes>
+        <notes><![CDATA[file name: spring-security-rsa-*.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.*$</packageUrl>
         <cve>CVE-2022-22976</cve>
     </suppress>

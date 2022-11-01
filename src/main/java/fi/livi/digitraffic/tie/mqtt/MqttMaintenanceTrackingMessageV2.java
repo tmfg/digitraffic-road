@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureV1;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingForMqttV2;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 
@@ -18,19 +18,11 @@ public class MqttMaintenanceTrackingMessageV2 {
     public final double x;
     public final double y;
 
-    public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingLatestFeatureV1 f) {
-        this.time = f.getProperties().getTime().getEpochSecond();
-        this.source = f.getProperties().source;
-        this.tasks = f.getProperties().tasks;
-        this.x = roundToScale((double)f.getGeometry().getCoordinates().get(0), 6);
-        this.y = roundToScale((double)f.getGeometry().getCoordinates().get(1), 6);
-    }
-
     public MqttMaintenanceTrackingMessageV2(final MaintenanceTrackingForMqttV2 tracking) {
         this.time = tracking.getEndTime().getEpochSecond();
         this.source = tracking.getSource();
         this.tasks = tracking.getTasks();
-        this.x = roundToScale(tracking.getX(), 6);
-        this.y = roundToScale(tracking.getY(), 6);
+        this.x = roundToScale(tracking.getX(), GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
+        this.y = roundToScale(tracking.getY(), GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
     }
 }

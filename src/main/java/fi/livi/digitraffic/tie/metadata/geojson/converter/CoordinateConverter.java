@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
@@ -31,10 +32,10 @@ public class CoordinateConverter {
         final CRSFactory crsFactory = new CRSFactory();
 
         // WGS84: http://spatialreference.org/ref/epsg/4326/ -> Proj4
-        final CoordinateReferenceSystem wgs84 = crsFactory.createFromName("EPSG:4326");
+        final CoordinateReferenceSystem wgs84 = crsFactory.createFromName(GeometryConstants.EPSG_ID_FOR_WGS84);
 
         // ETRS89-TM35FIN/EUREF-FIN http://spatialreference.org/ref/epsg/etrs89-etrs-tm35fin/ -> Proj4
-        final CoordinateReferenceSystem etrs89tm35fin = crsFactory.createFromName("EPSG:3067");
+        final CoordinateReferenceSystem etrs89tm35fin = crsFactory.createFromName(GeometryConstants.EPSG_ID_FOR_3067);
 
         final CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
 
@@ -66,7 +67,7 @@ public class CoordinateConverter {
         }
     }
 
-    public static Point convertFromWGS84ToETRS89(Point fromWGS84) {
+    public static Point convertFromWGS84ToETRS89(final Point fromWGS84) {
         CoordinateTransform transformer = null;
         try {
             // Take/wait transformer from the queue
@@ -84,7 +85,7 @@ public class CoordinateConverter {
     }
 
     // TODO: change List<List<Double>> to List<List<Integer>> and remove int->double conversion from HavaintoToObservationFeatureConverter and do it here.
-    public static LineString convertLineStringFromETRS89ToWGS84(List<List<Double>> fromETRS89Coordinates) {
+    public static LineString convertLineStringFromETRS89ToWGS84(final List<List<Double>> fromETRS89Coordinates) {
         List<List<Double>> coords =
             fromETRS89Coordinates.stream()
                 .map(l -> (List<Double>) new ArrayList<>(convertFromETRS89ToWGS84(new Point(l)).getCoordinates()))
@@ -103,7 +104,7 @@ public class CoordinateConverter {
     }
 
     private static Point convert(final Point fromPoint, final CoordinateTransform transformer) {
-        ProjCoordinate to = new ProjCoordinate();
+        final ProjCoordinate to = new ProjCoordinate();
         ProjCoordinate from = new ProjCoordinate(fromPoint.getLongitude(),
                                                  fromPoint.getLatitude());
         // CoordinateTransform is not thread safe and this can be called from multiple threads

@@ -85,29 +85,29 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
         assertEquals(lastChecked.getEpochSecond(), featureCollection.dataLastCheckedTime.toEpochSecond(), 2);
 
         final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
-        assertEquals(3, featureCollection.getFeatures().size());
-        assertEquals("00003_218_04302_0_0", feature.getProperties().getNaturalId());
+        assertEquals(11, featureCollection.getFeatures().size());
+        assertEquals("00004_229_00307_1_0", feature.getProperties().getNaturalId());
 
         final List<List<List<Double>>> coordinates = feature.getGeometry().getCoordinates();
-        assertEquals(9, coordinates.get(0).size());
+        assertEquals(2, coordinates.get(0).size());
 
-        assertCoordinates(22.9983705, coordinates.get(0).get(0).get(0));
-        assertCoordinates(62.1215860, coordinates.get(0).get(0).get(1));
-        assertCoordinates(22.9980918, coordinates.get(0).get(1).get(0));
-        assertCoordinates(62.1217175, coordinates.get(0).get(1).get(1));
-        assertEquals(2, coordinates.get(15).size());
-        assertCoordinates(22.9800960, coordinates.get(15).get(0).get(0));
-        assertCoordinates(62.1412124, coordinates.get(15).get(0).get(1));
-        assertCoordinates(22.9800859, coordinates.get(15).get(1).get(0));
-        assertCoordinates(62.1414056, coordinates.get(15).get(1).get(1));
+        assertCoordinates(25.9564265, coordinates.get(0).get(0).get(0));
+        assertCoordinates(62.1203392, coordinates.get(0).get(0).get(1));
+        assertCoordinates(25.9563029, coordinates.get(0).get(1).get(0));
+        assertCoordinates(62.1203895, coordinates.get(0).get(1).get(1));
+        assertEquals(76, coordinates.get(15).size());
+        assertCoordinates(25.9721482, coordinates.get(15).get(0).get(0));
+        assertCoordinates(62.1119208, coordinates.get(15).get(0).get(1));
+        assertCoordinates(25.9564265, coordinates.get(15).get(75).get(0));
+        assertCoordinates(62.1203392, coordinates.get(15).get(75).get(1));
 
-        assertEquals(1, feature.getProperties().getRoadSegments().size());
-        assertEquals(4302, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());
-        assertEquals(6829, feature.getProperties().getRoadSegments().get(0).getEndDistance().intValue());
+        assertEquals(2, feature.getProperties().getRoadSegments().size());
+        assertEquals(307, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());
+        assertEquals(2830, feature.getProperties().getRoadSegments().get(0).getEndDistance().intValue());
 
-        assertEquals(16, feature.getProperties().getLinkIdList().size());
-        assertEquals(3878918L, feature.getProperties().getLinkIdList().get(0).longValue());
-        assertEquals(3879183L, feature.getProperties().getLinkIdList().get(15).longValue());
+        assertEquals(13, feature.getProperties().getLinkIdList().size());
+        assertEquals(5742592L, feature.getProperties().getLinkIdList().get(0).longValue());
+        assertEquals(12471709L, feature.getProperties().getLinkIdList().get(12).longValue());
     }
 
     @Test
@@ -117,30 +117,26 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
         forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
 
-        final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, 3,
+        final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, 941,
                                                                                                                                    null, null,
                                                                                                                                    null, null,
                                                                                                                                    null);
 
-        assertEquals(2, featureCollection.getFeatures().size());
+        assertEquals(1, featureCollection.getFeatures().size());
 
         final ForecastSectionV2Feature feature1 = featureCollection.getFeatures().get(0);
-        final ForecastSectionV2Feature feature2 = featureCollection.getFeatures().get(1);
 
-        assertEquals("00003_218_04302_0_0", feature1.getProperties().getNaturalId());
-        assertEquals("Vaasantie 3.218", feature1.getProperties().getDescription());
+        assertEquals("00941_010_00000_0_0", feature1.getProperties().getNaturalId());
+        assertEquals("Posiontie, Ranuantie 941.10", feature1.getProperties().getDescription());
         assertEquals(1, feature1.getProperties().getRoadSegments().size());
-        assertEquals(16, feature1.getProperties().getLinkIdList().size());
+        assertEquals(9, feature1.getProperties().getLinkIdList().size());
         assertEquals(Geometry.Type.MultiLineString, feature1.getGeometry().getType());
-        assertEquals(16, feature1.getGeometry().getCoordinates().size());
-        assertEquals(9, feature1.getGeometry().getCoordinates().get(0).size());
-        assertCoordinates(22.9983705, feature1.getGeometry().getCoordinates().get(0).get(0).get(0));
-        assertCoordinates(62.1215860, feature1.getGeometry().getCoordinates().get(0).get(0).get(1));
-        assertCoordinates(22.9800960, feature1.getGeometry().getCoordinates().get(14).get(2).get(0));
-        assertCoordinates(62.1412124, feature1.getGeometry().getCoordinates().get(14).get(2).get(1));
-
-        assertEquals("00003_226_00000_0_0", feature2.getProperties().getNaturalId());
-        assertEquals("Tampereentie 3.226", feature2.getProperties().getDescription());
+        assertEquals(11, feature1.getGeometry().getCoordinates().size());
+        assertEquals(22, feature1.getGeometry().getCoordinates().get(0).size());
+        assertCoordinates(27.3965783, feature1.getGeometry().getCoordinates().get(0).get(0).get(0));
+        assertCoordinates(65.9882322, feature1.getGeometry().getCoordinates().get(0).get(0).get(1));
+        assertCoordinates(27.4148914, feature1.getGeometry().getCoordinates().get(10).get(18).get(0));
+        assertCoordinates(65.9934206, feature1.getGeometry().getCoordinates().get(10).get(18).get(1));
     }
 
     @Test
@@ -153,10 +149,10 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
         final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null,
                                                                                                                                    null, null,
                                                                                                                                    null, null,
-                                                                                                                                   List.of("00009_216_03050_0_0"));
+                                                                                                                                   List.of("00941_010_00000_0_0"));
 
         assertEquals(1, featureCollection.getFeatures().size());
-        assertEquals("00009_216_03050_0_0", featureCollection.getFeatures().get(0).getProperties().getNaturalId());
+        assertEquals("00941_010_00000_0_0", featureCollection.getFeatures().get(0).getProperties().getNaturalId());
     }
 
     private void assertCoordinates(final double expected, final double actual) {

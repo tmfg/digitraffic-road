@@ -16,7 +16,7 @@ import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 
 /**
- * https://www.archunit.org/userguide/html/000_Index.html
+ * <a href="https://www.archunit.org/userguide/html/000_Index.html">ArchUnit User Guide</a>
  */
 public class ArchitectureTest extends AbstractTest {
     private static final Logger log = LoggerFactory.getLogger(ArchitectureTest.class);

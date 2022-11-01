@@ -45,7 +45,7 @@ public class WeathercamStationPropertiesDetailedV1 extends RoadStationProperties
 
     public void addPreset(final WeathercamPresetDetailedV1 preset) {
         this.presets.add(preset);
-        setDataUpdatedTime(DateHelper.getNewest(getDataUpdatedTime(), preset.getModified()));
+        setDataUpdatedTime(DateHelper.getGreatest(getDataUpdatedTime(), preset.getModified()));
         Collections.sort(this.presets);
     }
 

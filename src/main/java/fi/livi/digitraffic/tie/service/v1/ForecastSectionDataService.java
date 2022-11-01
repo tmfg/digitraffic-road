@@ -37,7 +37,7 @@ public class ForecastSectionDataService {
                                                                        final Double minLongitude, final Double minLatitude,
                                                                        final Double maxLongitude, final Double maxLatitude,
                                                                        final List<String> naturalIds) {
-        final ZonedDateTime updatedTime = dataStatusService.findDataUpdatedTime(getDataType(version));
+        final ZonedDateTime updatedTime = dataStatusService.findDataUpdatedTime(getDataUpdatedDataType(version));
 
         if (onlyUpdateInfo) {
             return new ForecastSectionWeatherRootDto(updatedTime);
@@ -57,11 +57,19 @@ public class ForecastSectionDataService {
             .collect(Collectors.toList());
     }
 
-    public static DataType getDataType(final ForecastSectionApiVersion version) {
+    public static DataType getDataUpdatedDataType(final ForecastSectionApiVersion version) {
         switch (version) {
             case V1: return DataType.FORECAST_SECTION_WEATHER_DATA;
             case V2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
             default: throw new IllegalArgumentException("Unknown ForecastSectionApiVersion " + version);
+        }
+    }
+
+    public static DataType getDataCheckDataType(final ForecastSectionApiVersion version) {
+        switch (version) {
+        case V1: return DataType.FORECAST_SECTION_WEATHER_DATA_CHECK;
+        case V2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA_CHECK;
+        default: throw new IllegalArgumentException("Unknown ForecastSectionApiVersion " + version);
         }
     }
 }

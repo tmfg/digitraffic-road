@@ -77,6 +77,6 @@ public class TmsStationSensorConstantService {
     public Instant getLatestMeasurementTime() {
         final Instant dataUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
         final Instant metadataUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_METADATA);
-        return DateHelper.getNewest(dataUpdated, metadataUpdated);
+        return DateHelper.getGreatest(dataUpdated, metadataUpdated);
     }
 }

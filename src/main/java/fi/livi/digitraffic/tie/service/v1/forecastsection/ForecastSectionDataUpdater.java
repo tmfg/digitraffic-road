@@ -48,9 +48,10 @@ public class ForecastSectionDataUpdater {
     public Instant updateForecastSectionWeatherData(final ForecastSectionApiVersion version) {
         final ForecastSectionDataDto data = forecastSectionClient.getRoadConditions(version.getVersion());
 
+        dataStatusService.updateDataUpdated(ForecastSectionDataService.getDataCheckDataType(version));
         final Instant messageTimestamp = data.messageTimestamp.toInstant();
-        final DataType dataType = ForecastSectionDataService.getDataType(version);
-        final ZonedDateTime previousTimestamp = dataStatusService.findDataUpdatedTime(dataType);
+        final DataType updateDataType = ForecastSectionDataService.getDataUpdatedDataType(version);
+        final ZonedDateTime previousTimestamp = dataStatusService.findDataUpdatedTime(updateDataType);
         if (previousTimestamp != null && previousTimestamp.toInstant().isAfter(messageTimestamp)) {
             log.warn("method=updateForecastSectionWeatherData timestamp warning: apiVersion={} previousTimestamp={} > latestTimestamp={}. " +
                      "Not updating forecast section weather data",
@@ -80,7 +81,7 @@ public class ForecastSectionDataUpdater {
             return null;
         }
 
-        dataStatusService.updateDataUpdated(dataType, messageTimestamp);
+        dataStatusService.updateDataUpdated(updateDataType, messageTimestamp);
 
         return messageTimestamp;
     }

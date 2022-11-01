@@ -14,9 +14,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description =
-    "Forecast that is used is Foreca’s weather forecast which is initialised from the weather model that performs best " +
+    "Forecast that is used is Vaisala’s weather forecast which is initialised from the weather model that performs best " +
     "for Finland for a period under study. Majority of the times the initialisation is done from ECMWF model data. " +
-    "Then Foreca meteorologists also manually edit the data to fix certain known errors in the model.", name = "ForecastConditionReason")
+    "Then Vaisala meteorologists also manually edit the data to fix certain known errors in the model.", name = "ForecastConditionReason")
 public class ForecastConditionReasonDto {
     @Enumerated(EnumType.STRING)
     /* Schema in {@link PrecipitationCondition} */
@@ -42,8 +42,8 @@ public class ForecastConditionReasonDto {
     private final FrictionCondition frictionCondition;
 
     public ForecastConditionReasonDto(final PrecipitationCondition precipitationCondition, final RoadCondition roadCondition,
-        final WindCondition windCondition, final Boolean freezingRainCondition, final Boolean winterSlipperiness,
-        final VisibilityCondition visibilityCondition, final FrictionCondition frictionCondition) {
+                                      final WindCondition windCondition, final Boolean freezingRainCondition, final Boolean winterSlipperiness,
+                                      final VisibilityCondition visibilityCondition, final FrictionCondition frictionCondition) {
         this.precipitationCondition = precipitationCondition;
         this.roadCondition = roadCondition;
         this.windCondition = windCondition;
