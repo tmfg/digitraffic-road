@@ -2,8 +2,6 @@ package fi.livi.digitraffic.tie.conf;
 
 import static fi.livi.digitraffic.tie.helper.DateHelper.isoLocalDateToHttpDateTime;
 
-import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,29 +24,25 @@ public class DeprecationInterceptor implements HandlerInterceptor {
         final Object handler) {
 
         try {
-            final Optional<HandlerMethod> handlerMethodOptional = getHandlerMethod(handler);
+            final HandlerMethod handlerMethod = getHandlerMethod(handler);
 
-            if (handlerMethodOptional.isPresent()) {
-
-                final HandlerMethod handlerMethod = handlerMethodOptional.get();
+            if (handlerMethod != null) {
 
                 if (handlerMethod.getMethod().isAnnotationPresent(Deprecated.class)
+                    && handlerMethod.getMethod().isAnnotationPresent(Sunset.class)) {
+                    final String sunsetHeaderContent = handlerMethod.getMethod().getAnnotation(Sunset.class).tbd() ?
+                                                       ApiDeprecations.SUNSET_FUTURE :
+                                                       isoLocalDateToHttpDateTime(handlerMethod.getMethod().getAnnotation(Sunset.class).date());
+
+                    response.addHeader("Deprecation", "true");
+                    response.addHeader("Sunset", sunsetHeaderContent);
+
+                } else if (handlerMethod.getMethod().isAnnotationPresent(Deprecated.class)
                     || handlerMethod.getMethod().isAnnotationPresent(Sunset.class)) {
 
-                    if (handlerMethod.getMethod().isAnnotationPresent(Deprecated.class)
-                        && handlerMethod.getMethod().isAnnotationPresent(Sunset.class)) {
-
-                        final String sunsetHeaderContent = handlerMethod.getMethod().getAnnotation(Sunset.class).tbd() ?
-                                                           ApiDeprecations.SUNSET_FUTURE :
-                                                           isoLocalDateToHttpDateTime(handlerMethod.getMethod().getAnnotation(Sunset.class).date());
-
-                        response.addHeader("Deprecation", "true");
-                        response.addHeader("Sunset", sunsetHeaderContent);
-
-                    } else {
-                        log.error("Deprecated handler {} is missing either a @Deprecated or @Sunset annotation", handlerMethod.getMethod().getName());
-                    }
+                    log.error("Deprecated handler {} is missing either a @Deprecated or @Sunset annotation", handlerMethod.getMethod().getName());
                 }
+
             }
         } catch (final Exception error) {
             log.error(error.getMessage(), error);
@@ -57,11 +51,11 @@ public class DeprecationInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private Optional<HandlerMethod> getHandlerMethod(final Object handler) {
+    private HandlerMethod getHandlerMethod(final Object handler) {
         if (handler instanceof HandlerMethod) {
-            return Optional.of((HandlerMethod) handler);
+            return (HandlerMethod) handler;
         }
-        return Optional.empty();
+        return null;
     }
 
 }
