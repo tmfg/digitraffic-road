@@ -23,10 +23,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.release>11</maven.compiler.release>
-        <com.google.protobuf.version>3.21.7</com.google.protobuf.version>
-        <org.apache.cxf.version>3.5.3</org.apache.cxf.version>
+        <com.google.protobuf.version>3.21.9</com.google.protobuf.version>
+        <org.apache.cxf.version>3.5.4</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>3.0.3</org.glassfish.metro.ws.version>
-        <spring.cloud.version>3.1.3</spring.cloud.version>
+        <spring.cloud.version>3.1.4</spring.cloud.version>
     </properties>
 
     <profiles>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>3.1.3</version>
+            <version>${spring.cloud.version}</version>
         </dependency>
 
         <dependency>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>com.amazonaws.secretsmanager</groupId>
             <artifactId>aws-secretsmanager-jdbc</artifactId>
-            <version>1.0.8</version>
+            <version>1.0.9</version>
         </dependency>
 
         <dependency>
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.1.0.202203080745-r</version>
+            <version>6.3.0.202209071007-r</version>
         </dependency>
 
         <!-- google protobuf -->
@@ -211,6 +211,12 @@
 
         <!-- Helpers and others -->
         <!-- Web Service dependencies-->
+
+        <!--
+            Cannot be updated beyond version 3.* before
+            org.apache.cxf.* is updated to support jakarta.* package names
+            https://issues.apache.org/jira/browse/CXF-8371
+        -->
         <dependency>
             <groupId>org.glassfish.metro</groupId>
             <artifactId>wsit-api</artifactId>
@@ -257,7 +263,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.9</version>
+            <version>1.6.12</version>
         </dependency>
 
         <!-- Static Reader of META-INF/MANIFEST.MF Files -->
@@ -271,7 +277,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.4.1</version>
+            <version>42.5.0</version>
         </dependency>
 
         <dependency>
@@ -301,7 +307,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.6</version>
+            <version>5.7.1</version>
         </dependency>
 
         <dependency>
@@ -321,7 +327,7 @@
         <dependency>
             <groupId>com.vladmihalcea</groupId>
             <artifactId>hibernate-types-55</artifactId>
-            <version>2.17.3</version>
+            <version>2.20.0</version>
         </dependency>
 
         <!-- Library to transform GeoJSON <-> jts Geometry.
@@ -347,7 +353,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.276</version>
+            <version>1.12.333</version>
         </dependency>
 
         <dependency>
@@ -413,14 +419,14 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.21</version>
+            <version>1.22</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>0.23.1</version>
+            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
