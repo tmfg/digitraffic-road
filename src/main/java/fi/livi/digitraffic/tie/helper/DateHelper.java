@@ -8,6 +8,7 @@ import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,6 +35,8 @@ public final class DateHelper {
     public static final String LAST_MODIFIED_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final DateTimeFormatter LAST_MODIFIED_FORMATTER =
         DateTimeFormatter.ofPattern(LAST_MODIFIED_FORMAT, Locale.US).withZone(GMT_ZONE);
+    public static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    public static final DateTimeFormatter HTTP_DATE_FORMATTER = DateTimeFormatter.RFC_1123_DATE_TIME;
 
     public static final DateTimeFormatter ISO_DATE_TIME_WITH_MILLIS_AT_UTC;
     static {
@@ -231,5 +234,13 @@ public final class DateHelper {
             return null;
         }
         return Instant.ofEpochSecond(from.getEpochSecond() + (from.getNano() >= 500000000 ? 1 : 0));
+    }
+
+    /**
+     * Convert from "YYYY-MM-DD" to "EEE, dd MMM yyyy HH:mm:ss z"
+     */
+    public static String isoLocalDateToHttpDateTime(final String isoLocalDate) {
+        final LocalDate parsedDate = LocalDate.parse(isoLocalDate, ISO_DATE_FORMATTER);
+        return HTTP_DATE_FORMATTER.format(parsedDate.atStartOfDay(GMT_ZONE));
     }
 }
