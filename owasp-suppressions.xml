@@ -4,6 +4,22 @@
     <!--
         Temporary suppressions, check and update these periodically
     -->
+    <suppress until="2022-12-01">
+        <!-- There are multiple criteria that needs to match for this to become a problem.
+             At least this does not match:
+             "The application uses the AuthorizationFilter either manually or via the authorizeHttpRequests() method."
+             -->
+        <notes><![CDATA[file name: spring-security-crypto-5.7.4.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
+        <cve>CVE-2022-31692</cve>
+    </suppress>
+
+    <suppress until="2022-12-01">
+        <!-- We don't use oauth2 access tokens, so this shouldn't be a problem. -->
+        <notes><![CDATA[file name: spring-security-crypto-5.7.4.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
+        <cve>CVE-2022-31690</cve>
+    </suppress>
 
     <suppress until="2022-12-01">
         <!-- We are not using the vulnerable http-invoker -->
