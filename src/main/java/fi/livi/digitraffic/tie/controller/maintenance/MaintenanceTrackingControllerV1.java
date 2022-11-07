@@ -137,16 +137,16 @@ public class MaintenanceTrackingControllerV1 {
 
     @Parameter(description = "Task ids to include. Any route containing one of the selected tasks will be returned.")
     @RequestParam(value = "taskId", required = false)
-    final List<MaintenanceTrackingTask> taskIds,
+    final List<MaintenanceTrackingTask> taskId,
 
     @Parameter(description = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
     @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
-    final List<String> domains) {
+    final List<String> domain) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
 
-        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, domains);
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskId, domain);
     }
 
     @Operation(summary = "Road maintenance tracking routes")
@@ -200,17 +200,18 @@ public class MaintenanceTrackingControllerV1 {
 
         @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
         @RequestParam(value = "taskId", required = false)
-        final List<MaintenanceTrackingTask> taskIds,
+        final List<MaintenanceTrackingTask> taskId,
 
         @Parameter(description = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
         @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
-        final List<String> domains) {
+        final List<String> domain) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, endBefore, 24, END_TIME);
         validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
 
-        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax, taskIds, domains);
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax,
+            taskId, domain);
     }
 
     @Operation(summary = "Road maintenance tracking route with tracking id")

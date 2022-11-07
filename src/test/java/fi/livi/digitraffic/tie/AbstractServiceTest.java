@@ -36,6 +36,7 @@ import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.location.LocationWebServiceV1;
 import fi.livi.digitraffic.tie.service.v1.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.service.v1.TmsDataService;
@@ -63,37 +64,37 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServi
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
 
 @Import({// configurations
-          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
-          Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
+         AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
+         Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
 
-          // services
-          LocationService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
-          RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
-          TmsDataService.class, CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class, FileHttpGetClient.class,
-          CameraPresetHistoryUpdateService.class, FlywayService.class,
-          WeatherService.class, SensorDataUpdateService.class,
-          ImsJsonConverter.class, V2Datex2UpdateService.class,
-          V2Datex2JsonConverter.class,
-          V3RegionGeometryUpdateService.class,
-          V3MaintenanceTrackingUpdateService.class,
-          LocationTypeUpdater.class, LocationMetadataUpdater.class, LocationUpdater.class, LocationSubtypeUpdater.class,
-          MetadataFileFetcher.class, ClusteredLocker.class, LockingServiceInternal.class,
-          V3RegionGeometryDataService.class, V2MaintenanceTrackingDataService.class,
+         // services
+         LocationService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
+         RoadStationService.class, FreeFlowSpeedService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
+         TmsDataService.class, CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class, FileHttpGetClient.class,
+         CameraPresetHistoryUpdateService.class, FlywayService.class,
+         WeatherService.class, SensorDataUpdateService.class,
+         ImsJsonConverter.class, V2Datex2UpdateService.class,
+         V2Datex2JsonConverter.class,
+         V3RegionGeometryUpdateService.class,
+         V3MaintenanceTrackingUpdateService.class,
+         LocationTypeUpdater.class, LocationMetadataUpdater.class, LocationUpdater.class, LocationSubtypeUpdater.class,
+         MetadataFileFetcher.class, ClusteredLocker.class, LockingServiceInternal.class,
+         V3RegionGeometryDataService.class, V2MaintenanceTrackingDataService.class,
 
-          // V1 services
-          RoadStationSensorServiceV1.class, TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class,
-          MaintenanceTrackingMqttDataService.class,
+         // V1 services
+         RoadStationSensorServiceV1.class, TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class,
+         MaintenanceTrackingMqttDataService.class, LocationWebServiceV1.class,
 
-          // converters
-          TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverterService.class,
-          ObjectMapper.class,
+         // converters
+         TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverterService.class,
+         ObjectMapper.class,
 
-          // daos
-          TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
-          LockingDao.class,
+         // daos
+         TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
+         LockingDao.class,
 
-          // Test services etc.
-          TrafficMessageTestHelper.class, V3MaintenanceTrackingServiceTestHelper.class, TmsTestHelper.class
+         // Test services etc.
+         TrafficMessageTestHelper.class, V3MaintenanceTrackingServiceTestHelper.class, TmsTestHelper.class
 })
 public abstract class AbstractServiceTest extends AbstractJpaTest {
 

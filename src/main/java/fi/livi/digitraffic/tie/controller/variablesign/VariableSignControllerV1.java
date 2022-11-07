@@ -1,4 +1,24 @@
-package fi.livi.digitraffic.tie.controller;
+package fi.livi.digitraffic.tie.controller.variablesign;
+
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS_CODE_DESCRIPTIONS;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS_HISTORY;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_VS_V1;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.VARIABLE_SIGN_V1_TAG;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
+
+import java.util.List;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.dto.v1.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
@@ -9,25 +29,15 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-import static fi.livi.digitraffic.tie.controller.ApiConstants.*;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DESCRIPTIONS;
-import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
-import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
 @Tag(name = VARIABLE_SIGN_V1_TAG)
 @RestController
 @Validated
 @ConditionalOnWebApplication
-public class VariableSignController {
+public class VariableSignControllerV1 {
     private final V2VariableSignDataService v2VariableSignDataService;
 
-    public VariableSignController(final V2VariableSignDataService v2VariableSignDataService) {
+    public VariableSignControllerV1(final V2VariableSignDataService v2VariableSignDataService) {
         this.v2VariableSignDataService = v2VariableSignDataService;
     }
 

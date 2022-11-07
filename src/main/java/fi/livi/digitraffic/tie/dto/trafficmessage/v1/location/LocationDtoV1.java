@@ -1,6 +1,6 @@
-package fi.livi.digitraffic.tie.dto.v1.location;
+package fi.livi.digitraffic.tie.dto.trafficmessage.v1.location;
 
-public interface LocationJson {
+public interface LocationDtoV1 {
     int getLocationCode();
 
     String getSubtypeCode();

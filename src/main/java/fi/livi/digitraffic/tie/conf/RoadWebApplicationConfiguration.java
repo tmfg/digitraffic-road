@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.util.Assert;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
@@ -33,7 +32,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.resource.TransformedResource;
 
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2D2LogicalModelHttpMessageConverter;
@@ -47,8 +45,6 @@ import fi.livi.digitraffic.tie.converter.Datex2MessagetypeParameterStringToEnumC
 public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     private static final Logger log = getLogger(RoadWebApplicationConfiguration.class);
 
-    private final ConfigurableApplicationContext applicationContext;
-
     // Match when there is no http in location start
     private final static String SCHEMA_LOCATION_REGEXP = "schemaLocation=\"((?!http))";
     private final static String SCHEMA_PATH = "/schemas/datex2/";
@@ -57,7 +53,6 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     @Autowired
     public RoadWebApplicationConfiguration(final ConfigurableApplicationContext applicationContext,
                                            final @Value("${dt.domain.url}") String schemaDomainUrl) {
-        this.applicationContext = applicationContext;
         this.schemaDomainUrlAndPath = schemaDomainUrl + SCHEMA_PATH;
     }
 
@@ -106,10 +101,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        LocaleChangeInterceptor localeChangeInterceptor = applicationContext.getBean(LocaleChangeInterceptor.class);
-        Assert.notNull(localeChangeInterceptor, "LocaleChangeInterceptor cannot be null");
-        registry.addInterceptor(localeChangeInterceptor);
-
+        registry.addInterceptor(new AllowedParameterInterceptor());
         registry.addInterceptor(new DeprecationInterceptor());
     }
 
@@ -129,7 +121,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         configurer.defaultContentType(DtMediaType.APPLICATION_JSON);
     }
 
-    private class CustomHeaderContentNegotiationStrategy implements ContentNegotiationStrategy {
+    private static class CustomHeaderContentNegotiationStrategy implements ContentNegotiationStrategy {
 
         // Spring default implementation uses only HeaderContentNegotiationStrategy
         private final HeaderContentNegotiationStrategy headerStragegy = new HeaderContentNegotiationStrategy();
@@ -156,8 +148,9 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         }
 
         boolean containsJson(final List<MediaType> mediaTypes ) {
-            return mediaTypes.stream().filter(mediaType -> mediaType.getType().equals(DtMediaType.APPLICATION_JSON.getType()) &&
-                   mediaType.getSubtype().equals(DtMediaType.APPLICATION_JSON.getSubtype())).findAny().isPresent();
+            return mediaTypes.stream()
+                .anyMatch(mediaType -> mediaType.getType().equals(DtMediaType.APPLICATION_JSON.getType()) &&
+                                       mediaType.getSubtype().equals(DtMediaType.APPLICATION_JSON.getSubtype()));
         }
     }
 }

@@ -40,7 +40,11 @@ public class PostgisGeometryUtils {
     private static final Logger log = LoggerFactory.getLogger(PostgisGeometryUtils.class);
 
     private static final ThreadLocal<GeoJsonWriter> geoJsonWriter =
-        ThreadLocal.withInitial(() -> new GeoJsonWriter(GeometryConstants.COORDINATE_DECIMALS_6_DIGITS));
+        ThreadLocal.withInitial(() -> {
+            final GeoJsonWriter writer = new GeoJsonWriter(GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
+            writer.setEncodeCRS(false); // We use always EPSG:4326 = WGS84 - World Geodetic System 1984
+            return writer;
+        });
 
     private static final ThreadLocal<GeoJsonReader> geoJsonReader =
         ThreadLocal.withInitial(() -> new GeoJsonReader(JTS_GEOMETRY_FACTORY));
@@ -51,12 +55,7 @@ public class PostgisGeometryUtils {
     private static final ThreadLocal<WKTReader> wktGeometryReader =
         ThreadLocal.withInitial(() -> new WKTReader(JTS_GEOMETRY_FACTORY));
 
-    private static final ObjectReader dtGeoJsonReader;
-
-    static {
-        geoJsonWriter.get().setEncodeCRS(false);
-        dtGeoJsonReader = new ObjectMapper().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
-    }
+    private static final ObjectReader dtGeoJsonReader = new ObjectMapper().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
 
     public static Coordinate createCoordinateWithZ(final double x, final double y, final Double z) {
         // PostGIS PointZ can't have null Z-coordinate

@@ -336,8 +336,9 @@ public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegi
     }
 
     private static String getTrafficMessageUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
-        return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES + (json ? "" : TrafficMessageControllerV1.DATEX2) +
-               "?lastUpdated=false&inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
+        return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES +
+               (json ? "" : TrafficMessageControllerV1.DATEX2) +
+               "?inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry) {

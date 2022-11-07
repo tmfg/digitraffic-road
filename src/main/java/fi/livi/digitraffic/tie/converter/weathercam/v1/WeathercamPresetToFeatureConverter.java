@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.converter.roadstation.v1.AbstractRoadstationToFeatureConverterV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDetailedV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetSimpleV1;
+import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureBaseV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureSimpleV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detailed;
@@ -53,8 +54,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
 
         // Cameras mapped with cameraId
         final Map<String, WeathercamStationFeatureSimpleV1> weathercamFeatureMappedByCameraId = new HashMap<>();
-//        final List<WeathercamStationFeatureSimpleV1> weathercamStationFeatureSimpleV1s = new ArrayList<>();
-        //final Map<String, Long> weatherStationsIdsMapByCameraId = cameraPresetService.getNearestWeatherStationNaturalIdMappedByCameraId();
+
         // CameraPreset contains camera and preset informations and
         // camera info is duplicated on every preset db line
         // So we take camera only once and append presets to it
@@ -71,7 +71,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
             });
 
         final List<WeathercamStationFeatureSimpleV1> sortedById =
-            weathercamFeatureMappedByCameraId.values().stream().sorted(Comparator.comparing(o -> o.id)).collect(Collectors.toList());
+            weathercamFeatureMappedByCameraId.values().stream().sorted(Comparator.comparing(WeathercamStationFeatureBaseV1::getId)).collect(Collectors.toList());
         return new WeathercamStationFeatureCollectionSimpleV1(DateHelper.getGreatest(dataLastUpdated, lastModified.get()), sortedById);
     }
 

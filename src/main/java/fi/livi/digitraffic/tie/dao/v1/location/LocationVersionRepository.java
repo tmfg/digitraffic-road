@@ -8,8 +8,10 @@ import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
 
 @Repository
 public interface LocationVersionRepository extends JpaRepository<LocationVersion, String> {
-    @Query(value = "select version,updated from (select version, updated, first_value(version) over (order by updated desc) m "
-            + "from location_version) mm "
-            + "where version = m", nativeQuery = true)
+    @Query(value =
+        "select version, created, modified\n" +
+        "from location_version\n" +
+        "order by created desc\n" +
+        "limit 1", nativeQuery = true)
     LocationVersion findLatestVersion();
 }

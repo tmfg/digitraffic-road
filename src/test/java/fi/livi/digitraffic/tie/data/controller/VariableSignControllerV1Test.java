@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 
-public class VariableSignControllerTest extends AbstractRestWebTest {
+public class VariableSignControllerV1Test extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
         return getJson(API_V2_BASE_PATH + API_DATA_PART_PATH, url);
     }
