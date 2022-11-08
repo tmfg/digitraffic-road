@@ -1,6 +1,6 @@
 # https://github.com/appropriate/docker-postgis
 
-FROM postgres:12.9
+FROM postgres:12.11
 
 ENV POSTGIS_MAJOR 3
 ENV POSTGIS_VERSION 3.3.2+dfsg-1.pgdg110+1
