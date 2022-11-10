@@ -88,9 +88,9 @@ public class CameraImageUpdateHandler {
 
             if (transferInfo.isSuccess()) {
                 log.info("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +
-                        "readTookMs={} writeTooksMs={} tookMs={} " +
-                        "downloadImageUrl={} sizeBytes={} " +
-                        "s3VersionId=\"{}\" imageTimestamp={} imageTimeInPastSeconds={}",
+                         "readTookMs={} writeTooksMs={} tookMs={} " +
+                         "downloadImageUrl={} sizeBytes={} " +
+                         "s3VersionId=\"{}\" imageTimestamp={} imageTimeInPastSeconds={}",
                     presetId, imageKey, transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
                     transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(),
                     transferInfo.getDurationMs(), transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(), transferInfo.getVersionId(),

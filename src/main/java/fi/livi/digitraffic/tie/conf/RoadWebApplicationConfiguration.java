@@ -13,6 +13,7 @@ import org.apache.commons.lang3.RegExUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -56,9 +57,13 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         this.schemaDomainUrlAndPath = schemaDomainUrl + SCHEMA_PATH;
     }
 
+    /** Support for etag and conditional HTTP-requests */
+    @ConditionalOnProperty(value = "etags.enabled", havingValue = "true")
     @Bean
     public Filter ShallowEtagHeaderFilter() {
-        return new ShallowEtagHeaderFilter();
+        final ShallowEtagHeaderFilter shallowEtagHeaderFilter = new ShallowEtagHeaderFilter();
+        shallowEtagHeaderFilter.setWriteWeakETag(true);
+        return shallowEtagHeaderFilter;
     }
 
     @Override
