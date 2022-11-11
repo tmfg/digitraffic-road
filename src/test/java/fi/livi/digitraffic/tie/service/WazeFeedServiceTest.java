@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -66,6 +67,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled
     public void getAListOfWazeAnnouncements() {
         wazeFeedServiceTestHelper.insertSituation();
 
@@ -76,6 +78,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled
     public void announcementIsProperlyFormatted() {
         final String situationId = "GUID12345";
         final ZonedDateTime startTime = ZonedDateTime.parse("2021-07-28T13:09:47.470Z");
@@ -100,6 +103,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled
     public void pointInAnnouncement() {
         final Point point = new Point(25.182835, 61.575153);
 
@@ -127,6 +131,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled
     public void onewayDirectionInAccidents() {
         wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.POS);
         wazeFeedServiceTestHelper.insertSituation("GUID1235", RoadAddressLocation.Direction.NEG);
@@ -140,6 +145,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled
     public void unsupportedGeometryTypesAreFilteredFromResults() {
         final List<List<Double>> coords = List.of(List.of(25.180874, 61.569262), List.of(25.180826, 61.569394));
         final MultiLineString geometry = new MultiLineString();
@@ -158,6 +164,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled
     public void bothDirectionsCoordinatesAreReturnedAsProperlyFormattedPolyline() {
         final MultiLineString geometry = new MultiLineString();
         geometry.addLineString(List.of(List.of(25.180874, 61.569262), List.of(25.180826, 61.569394)));
@@ -175,6 +182,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled
     public void noIncidents() {
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
@@ -276,6 +284,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled
     public void filterPreliminaryAccidentReports() {
         final WazeFeedServiceTestHelper.SituationParams params = new WazeFeedServiceTestHelper.SituationParams();
         params.situationId = wazeFeedServiceTestHelper.nextSituationRecord();
@@ -292,5 +301,4 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(0, incidents.size());
     }
-
 }
