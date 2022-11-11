@@ -73,6 +73,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.sun.xml.ws.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -345,11 +346,7 @@ public class WazeDatex2MessageConverter {
                 final String info = transitInformation1.getTransitServiceInformation().toString().toLowerCase().replace("_", " ");
                 return String.format("%s: %s", type, info);
             })
-            .map((s -> {
-                final String firstLetter = s.substring(0, 1);
-                final String rest = s.substring(1);
-                return firstLetter.toUpperCase() + rest;
-            }));
+            .map(StringUtils::capitalize);
     }
     private Optional<String> accept(final VehicleObstruction vehicleObstruction) {
 
