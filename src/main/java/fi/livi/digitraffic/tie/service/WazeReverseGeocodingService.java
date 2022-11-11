@@ -80,7 +80,7 @@ public class WazeReverseGeocodingService {
         final Double latitude = point.getLatitude();
         final Double longitude = point.getLongitude();
 
-        logger.info(String.format(Locale.US, "Get reverse geocoding for lat: %f, lon: %f", latitude, longitude));
+        logger.info(String.format(Locale.US, "method=fetch Get reverse geocoding for lat: %f, lon: %f", latitude, longitude));
         return wazeReverseGeocodingApi
             .fetch(latitude, longitude)
             .flatMap(this::parseReverseGeocodeJson);

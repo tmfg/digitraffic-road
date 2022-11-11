@@ -120,7 +120,7 @@ import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshall
 
 @Component
 public class WazeDatex2MessageConverter {
-    private static final Logger logger = LoggerFactory.getLogger(WazeDatex2JsonConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(WazeDatex2MessageConverter.class);
 
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 

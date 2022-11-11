@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.converter;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +39,8 @@ import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverte
 public class WazeDatex2JsonConverter {
     private static final Logger logger = LoggerFactory.getLogger(WazeDatex2JsonConverter.class);
 
+    private static final DateTimeFormatter wazeDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx");
+
     private final TrafficMessageJsonConverterV1 datex2JsonConverterV1;
 
     private final WazeDatex2MessageConverter wazeDatex2MessageConverter;
@@ -60,7 +64,7 @@ public class WazeDatex2JsonConverter {
             feature = datex2JsonConverterV1.convertToFeatureJsonObjectV3(
                 jsonMessage,
                 SituationType.TRAFFIC_ANNOUNCEMENT,
-                TrafficAnnouncementType.ACCIDENT_REPORT,
+                datex2.getTrafficAnnouncementType(),
                 false
             );
         } catch (final JsonProcessingException e) {
@@ -71,12 +75,10 @@ public class WazeDatex2JsonConverter {
 
         final TrafficAnnouncementProperties properties = feature.getProperties();
         final String situationId = properties.situationId;
-        final Optional<WazeFeedIncidentDto.Type> maybeType = Optional.ofNullable(properties.getTrafficAnnouncementType()).flatMap(this::convertToWazeType);
+        final Optional<WazeFeedIncidentDto.Type> maybeType = this.convertToWazeType(properties.getTrafficAnnouncementType());
 
         final TrafficAnnouncement announcement = properties.announcements.get(0);
         final Optional<Geometry<?>> maybeGeometry = Optional.ofNullable(feature.getGeometry());
-
-        final String id = properties.situationId;
 
         final String description = wazeDatex2MessageConverter.export(situationId, datex2.getMessage());
 
@@ -88,10 +90,17 @@ public class WazeDatex2JsonConverter {
 
         final Optional<String> maybeStreet = maybeGeometry.flatMap(wazeReverseGeocodingService::getStreetName);
 
+        final String starttime = Optional.ofNullable(announcement.timeAndDuration.startTime)
+            .map(ts -> ts.format(wazeDateTimeFormatter))
+            .orElse(null);
+        final String endtime = Optional.ofNullable(announcement.timeAndDuration.endTime)
+            .map(ts -> ts.format(wazeDateTimeFormatter))
+            .orElse(null);
+
         return maybePolyline.flatMap(polyline ->
             maybeStreet.flatMap(street ->
                 maybeType.map(type ->
-                    new WazeFeedIncidentDto(id, street, description, direction, polyline, type))));
+                    new WazeFeedIncidentDto(situationId, street, description, direction, polyline, type, starttime, endtime))));
     }
 
     private Optional<WazeFeedIncidentDto.Type> convertToWazeType(final TrafficAnnouncementType trafficAnnouncementType) {
@@ -101,6 +110,7 @@ public class WazeDatex2JsonConverter {
 
         switch (trafficAnnouncementType) {
         case ACCIDENT_REPORT:
+        case PRELIMINARY_ACCIDENT_REPORT:
             return Optional.of(WazeFeedIncidentDto.Type.ACCIDENT);
         case GENERAL:
             return Optional.of(WazeFeedIncidentDto.Type.HAZARD);
