@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller.v2;
 
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2022_11_01;
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_01_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
@@ -153,8 +154,8 @@ public class V2DataController {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2022_11_01)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2023_01_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
     public VariableSignFeatureCollection variableSigns(
@@ -169,8 +170,8 @@ public class V2DataController {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2022_11_01)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+    @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2023_01_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
     public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
@@ -178,8 +179,8 @@ public class V2DataController {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2022_11_01)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public List<TrafficSignHistory> variableSignHistory(
@@ -190,8 +191,8 @@ public class V2DataController {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2022_11_01)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
     @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
