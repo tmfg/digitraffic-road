@@ -36,7 +36,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Metadata v2", description = "Metadata for Digitraffic services (Api version 2)")
+@Deprecated(forRemoval = true)
+@Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+@Tag(name = "Metadata v2", description = "Metadata for Digitraffic services (Api version 2). " + API_NOTE_2023_06_01)
 @RestController
 @RequestMapping(API_V2_BASE_PATH + API_METADATA_PART_PATH)
 @ConditionalOnWebApplication

@@ -58,7 +58,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Data v1", description = "Data of Digitraffic services (Api version 1)")
+@Deprecated(forRemoval = true)
+@Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+@Tag(name = "Data v1", description = "Data of Digitraffic services (Api version 1). " + API_NOTE_2023_06_01)
 @RestController
 @Validated
 @RequestMapping(API_V1_BASE_PATH + API_DATA_PART_PATH)
