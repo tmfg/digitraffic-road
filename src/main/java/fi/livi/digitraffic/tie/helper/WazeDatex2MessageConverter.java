@@ -73,6 +73,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.sun.xml.ws.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,7 @@ import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshall
 
 @Component
 public class WazeDatex2MessageConverter {
-    private static final Logger logger = LoggerFactory.getLogger(WazeDatex2JsonConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(WazeDatex2MessageConverter.class);
 
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
@@ -339,7 +340,13 @@ public class WazeDatex2MessageConverter {
             .map(x -> x > 0 ? String.format("Temporary speed limit of %d km/h", x) : null);
     }
     private Optional<String> accept(final TransitInformation transitInformation) {
-        return Optional.empty();
+        return Optional.ofNullable(transitInformation)
+            .map((transitInformation1) -> {
+                final String type = transitInformation1.getTransitServiceType().toString().toLowerCase().replace("_", " ");
+                final String info = transitInformation1.getTransitServiceInformation().toString().toLowerCase().replace("_", " ");
+                return String.format("%s: %s", type, info);
+            })
+            .map(StringUtils::capitalize);
     }
     private Optional<String> accept(final VehicleObstruction vehicleObstruction) {
 
