@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.controller.weathercam;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_WEATHERCAM;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
@@ -39,7 +39,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = ApiConstants.WEATHERCAM_BETA_TAG, description = "Weathercam Controller (BETA)")
+@Tag(name = ApiConstants.WEATHERCAM_TAG_V1)
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -62,17 +62,16 @@ public class WeathercamControllerV1 {
      *
      */
 
-//    private static final String API_WEATHERCAM_V1 = API_WEATHERCAM + V1;
-    private static final String API_WEATHERCAM_BETA = API_WEATHERCAM + BETA;
+    private static final String API_WEATHERCAM_V1 = API_WEATHERCAM + V1;
+    // private static final String API_WEATHERCAM_BETA = API_WEATHERCAM + BETA;
 
     private static final String STATIONS = "/stations";
     private static final String PUBLICITIES = "/publicities";
     public static final String DATA = "/data";
     public static final String HISTORY = "/history";
 
-    /** TODO change beta when going to production */
-    public static final String API_WEATHERCAM_V1_STATIONS = API_WEATHERCAM_BETA + STATIONS;
-    public static final String API_WEATHERCAM_V1_PUBLICITIES = API_WEATHERCAM_BETA + PUBLICITIES;
+    public static final String API_WEATHERCAM_V1_STATIONS = API_WEATHERCAM_V1 + STATIONS;
+    public static final String API_WEATHERCAM_V1_PUBLICITIES = API_WEATHERCAM_V1 + PUBLICITIES;
 
     private final WeathercamMetadataWebServiceV1 weathercamMetadataWebServiceV1;
     private final WeathercamDataWebServiceV1 weathercamDataWebServiceV1;

@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.controller.v2;
 
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2022_11_01;
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_01_01;
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_06_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
@@ -110,7 +111,9 @@ public class V2DataController {
         this.weatherService = weatherService;
     }
 
-    @Operation(summary = "Current data of Weather Forecast Sections V2")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of Weather Forecast Sections V2. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
@@ -125,7 +128,9 @@ public class V2DataController {
             naturalIds);
     }
 
-    @Operation(summary = "Current data of Weather Forecast Sections V2 by road number")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of Weather Forecast Sections V2 by road number. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{roadNumber}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Forecast Section V2 data"))
     public ForecastSectionWeatherRootDto roadConditions(
@@ -136,7 +141,9 @@ public class V2DataController {
             null);
     }
 
-    @Operation(summary = "Current data of Weather Forecast Sections V2 by bounding box")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of Weather Forecast Sections V2 by bounding box. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH + "/{minLongitude}/{minLatitude}/{maxLongitude}/{maxLatitude}",
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Forecast Section V2 data"))
@@ -203,6 +210,7 @@ public class V2DataController {
     //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
     //@ApiResponses({@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"),
     //               @ApiResponse(responseCode = SC_BAD_REQUEST, description = "Invalid parameter(s)")})
+    // TODO ???
     public List<WeatherSensorValueHistoryDto> weatherDataHistory(
         @Parameter(description = "Weather station id", required = true)
         @PathVariable
@@ -225,6 +233,7 @@ public class V2DataController {
     //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}/{sensorId}", produces = APPLICATION_JSON_VALUE)
     //@ApiResponses({@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"),
     //              @ApiResponse(responseCode = SC_BAD_REQUEST, description = "Invalid parameter")})
+    // TODO ???
     public List<WeatherSensorValueHistoryDto> weatherDataHistory(
         @Parameter(description = "Weather Station id", required = true)
         @PathVariable final long stationId,
@@ -240,7 +249,9 @@ public class V2DataController {
         return weatherService.findWeatherHistoryData(stationId, sensorId, from);
     }
 
-    @Operation(summary = "Weather camera history for given camera or preset")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Weather camera history for given camera or preset. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/history", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of camera images history"))
     public List<CameraHistoryDto> getCameraOrPresetHistory(
@@ -258,8 +269,10 @@ public class V2DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetPublicHistory(cameraOrPresetIds, at);
     }
 
-    @Operation(summary = "Find weather camera history presences",
-                  description = "History presence tells if history exists for given time interval.")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Find weather camera history presences. " + API_NOTE_2023_06_01,
+               description = "History presence tells if history exists for given time interval.")
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/presences", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of camera images history"))
     public CameraHistoryPresencesDto getCameraOrPresetHistoryPresences(
@@ -281,7 +294,9 @@ public class V2DataController {
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryPresences(cameraOrPresetId, from, to);
     }
 
-    @Operation(summary = "Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields. " + API_NOTE_2022_11_01)
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Weather camera history changes after given time. Result is in ascending order by presetId and lastModified -fields. . " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_HISTORY_PATH + "/changes", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of camera history changes"))
     public CameraHistoryChangesDto getCameraOrPresetHistoryChanges(

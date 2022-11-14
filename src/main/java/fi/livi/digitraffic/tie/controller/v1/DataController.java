@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller.v1;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_06_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_DATA_PATH;
@@ -112,7 +113,9 @@ public class DataController {
         return freeFlowSpeedService.listTmsPublicFreeFlowSpeeds(id);
     }
 
-    @Operation(summary = "Current data of cameras")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of cameras. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of camera station data"))
     public CameraRootDataObjectDto cameraData(
@@ -122,7 +125,9 @@ public class DataController {
         return cameraDataService.findPublishableCameraStationsData(lastUpdated);
     }
 
-    @Operation(summary = "Current data of camera")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of cameras. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of camera station data"))
     public CameraRootDataObjectDto cameraDataById(
@@ -132,7 +137,9 @@ public class DataController {
         return cameraDataService.findPublishableCameraStationsData(id);
     }
 
-    @Operation(summary = "Current data of TMS Stations (Traffic Measurement System / LAM)")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of TMS Stations (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station data"))
     public TmsRootDataObjectDto tmsData(
@@ -142,7 +149,9 @@ public class DataController {
         return tmsDataService.findPublishableTmsData(lastUpdated);
     }
 
-    @Operation(summary = "Current data of TMS station (Traffic Measurement System / LAM)")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of TMS station (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = TMS_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"))
     public TmsRootDataObjectDto tmsDataById(
@@ -152,7 +161,9 @@ public class DataController {
         return tmsDataService.findPublishableTmsData(id);
     }
 
-    @Operation(summary = "Current data of Weather Stations")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of Weather Stations. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Station data"))
     public WeatherRootDataObjectDto weatherData(
@@ -162,7 +173,9 @@ public class DataController {
         return weatherService.findPublishableWeatherData(lastUpdated);
     }
 
-    @Operation(summary = "Current data of Weather Station")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of Weather Station. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"))
     public WeatherRootDataObjectDto weatherDataById(
@@ -172,7 +185,9 @@ public class DataController {
         return weatherService.findPublishableWeatherData(id);
     }
 
-    @Operation(summary = "Current data of Weather Forecast Sections")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current data of Weather Forecast Sections. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTION_WEATHER_DATA_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Forecast Section data"))
     public ForecastSectionWeatherRootDto roadConditions(
@@ -319,7 +334,9 @@ public class DataController {
         return datex2DataService.findWeightRestrictions(situationId, year, month);
     }
 
-    @Operation(summary = "Current sensor constants and values of TMS station (Traffic Measurement System / LAM)")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "Current sensor constants and values of TMS station (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = TMS_SENSOR_CONSTANTS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of sensor constants and values"))
     public TmsSensorConstantRootDto tmsSensorConstants(

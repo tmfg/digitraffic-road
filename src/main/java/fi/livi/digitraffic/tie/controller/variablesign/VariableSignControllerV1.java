@@ -4,7 +4,7 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS_CODE_DESCRIPTIONS;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS_HISTORY;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_VS_V1;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.VARIABLE_SIGN_V1_TAG;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.VARIABLE_SIGN_TAG_V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = VARIABLE_SIGN_V1_TAG)
+@Tag(name = VARIABLE_SIGN_TAG_V1)
 @RestController
 @Validated
 @ConditionalOnWebApplication

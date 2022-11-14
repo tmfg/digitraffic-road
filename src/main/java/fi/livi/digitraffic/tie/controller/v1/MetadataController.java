@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.controller.v1;
 
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_06_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_STATIONS_PATH;
@@ -35,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import fi.livi.digitraffic.tie.annotation.Sunset;
+import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.dto.v1.ForecastSectionsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
@@ -90,7 +93,9 @@ public class MetadataController {
         this.locationService = locationService;
     }
 
-    @Operation(summary = "The static information of TMS stations (Traffic Measurement System / LAM)")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of TMS stations (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                        APPLICATION_GEO_JSON_VALUE,
                                                                                        APPLICATION_VND_GEO_JSON_VALUE })
@@ -110,7 +115,9 @@ public class MetadataController {
         return tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(lastUpdated, state);
     }
 
-    @Operation(summary = "The static information of one TMS station (Traffic Measurement System / LAM).")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of one TMS station (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_TMS_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                 APPLICATION_GEO_JSON_VALUE,
                                                                                                                 APPLICATION_VND_GEO_JSON_VALUE })
@@ -120,7 +127,9 @@ public class MetadataController {
         return tmsStationService.getTmsStationByLamId(tmsNumber);
     }
 
-    @Operation(summary = "The static information of TMS stations of given road (Traffic Measurement System / LAM).")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of TMS stations of given road (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_NUMBER_PATH + "/{number}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -138,7 +147,9 @@ public class MetadataController {
         return tmsStationService.listTmsStationsByRoadNumber(roadNumber, state);
     }
 
-    @Operation(summary = "The static information of one TMS station (Traffic Measurement System / LAM).")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of one TMS station (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_ROAD_STATION_ID_PATH + "/{id}", produces = { APPLICATION_JSON_VALUE,
                                                                                                                  APPLICATION_GEO_JSON_VALUE,
                                                                                                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -150,7 +161,9 @@ public class MetadataController {
         return tmsStationService.getTmsStationByRoadStationId(id);
     }
 
-    @Operation(summary = "The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of available sensors of TMS stations (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = TMS_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({     @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Station Sensors") })
     public TmsRoadStationsSensorsMetadata tmsSensors(
@@ -162,7 +175,9 @@ public class MetadataController {
         return roadStationSensorService.findTmsRoadStationsSensorsMetadata(lastUpdated);
     }
 
-    @Operation(summary = "The static information of weather camera presets")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of weather camera presets. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = CAMERA_STATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                           APPLICATION_GEO_JSON_VALUE,
                                                                                           APPLICATION_VND_GEO_JSON_VALUE })
@@ -174,7 +189,9 @@ public class MetadataController {
         return cameraWebService.findAllPublishableCameraStationsAsFeatureCollection(lastUpdated);
     }
 
-    @Operation(summary = "The static information of weather stations")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of weather stations. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                            APPLICATION_GEO_JSON_VALUE,
                                                                                            APPLICATION_VND_GEO_JSON_VALUE })
@@ -186,7 +203,9 @@ public class MetadataController {
         return weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(lastUpdated);
     }
 
-    @Operation(summary = "The static information of available sensors of weather stations")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of available sensors of weather stations. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = WEATHER_STATIONS_AVAILABLE_SENSORS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Weather Station Sensors") })
     public WeatherRoadStationsSensorsMetadata weatherSensors(
@@ -196,7 +215,9 @@ public class MetadataController {
         return roadStationSensorService.findWeatherRoadStationsSensorsMetadata(lastUpdated);
     }
 
-    @Operation(summary = "List available location versions")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "List available location versions. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_VERSIONS_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location versions") })
     public List<LocationVersion> locationVersions () {
@@ -204,7 +225,9 @@ public class MetadataController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = APPLICATION_JSON_VALUE)
-    @Operation(summary = "The static information of weather forecast sections")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of weather forecast sections. " + API_NOTE_2023_06_01)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
     public ForecastSectionsMetadata forecastSections(
             @Parameter(description = "If parameter is given result will only contain update status.")
@@ -213,7 +236,9 @@ public class MetadataController {
         return forecastSectionService.findForecastSectionsV1Metadata(lastUpdated);
     }
 
-    @Operation(summary = "The static information of locations")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of locations. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                     APPLICATION_GEO_JSON_VALUE,
                                                                                     APPLICATION_VND_GEO_JSON_VALUE })
@@ -230,7 +255,9 @@ public class MetadataController {
         return locationService.findLocationsMetadata(lastUpdated, version);
     }
 
-    @Operation(summary = "The static information of location types and locationsubtypes")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of location types and locationsubtypes. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = LOCATION_TYPES_PATH, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location types and location subtypes") })
     public LocationTypesMetadata locationTypes(
@@ -244,7 +271,9 @@ public class MetadataController {
         return locationService.findLocationSubtypes(lastUpdated, version);
     }
 
-    @Operation(summary = "The static information of one location")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of one location. " + API_NOTE_2023_06_01)
     @RequestMapping(method = RequestMethod.GET, path = LOCATIONS_PATH + "/{id}", produces = { APPLICATION_JSON_VALUE,
                                                                                               APPLICATION_GEO_JSON_VALUE,
                                                                                               APPLICATION_VND_GEO_JSON_VALUE })

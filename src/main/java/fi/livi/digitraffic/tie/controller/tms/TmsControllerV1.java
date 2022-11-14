@@ -1,9 +1,8 @@
 package fi.livi.digitraffic.tie.controller.tms;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TMS;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.TMS_BETA_TAG;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.TMS_TAG_V1;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
@@ -37,7 +36,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = TMS_BETA_TAG, description = "TMS Controller")
+@Tag(name = TMS_TAG_V1)
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -62,7 +61,7 @@ public class TmsControllerV1 {
      * /api/tms/v/stations/{id}/sensor-constants
      */
 
-    public static final String API_TMS_BETA = API_TMS + BETA;
+    // public static final String API_TMS_BETA = API_TMS + BETA;
     public static final String API_TMS_V1 = API_TMS + V1;
 
     public static final String STATIONS = "/stations";
@@ -82,7 +81,7 @@ public class TmsControllerV1 {
 
     @Operation(summary = "The static information of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_TMS_BETA + STATIONS,
+                    path = API_TMS_V1 + STATIONS,
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -99,7 +98,7 @@ public class TmsControllerV1 {
 
     @Operation(summary = "The static information of one TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_TMS_BETA + STATIONS + "/{id}",
+                    path = API_TMS_V1 + STATIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -116,7 +115,7 @@ public class TmsControllerV1 {
 
     @Operation(summary = "The static information of available sensors of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET,
-                    path =  API_TMS_BETA + SENSORS,
+                    path =  API_TMS_V1 + SENSORS,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of TMS station sensors") })
@@ -131,7 +130,7 @@ public class TmsControllerV1 {
 
     @Operation(summary = "Current data of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_TMS_BETA + STATIONS + DATA,
+                    path = API_TMS_V1 + STATIONS + DATA,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS station data"))
     public TmsStationsDataDtoV1 tmsData(
@@ -145,7 +144,7 @@ public class TmsControllerV1 {
 
     @Operation(summary = "Current data of one TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_TMS_BETA + STATIONS + "/{id}" + DATA,
+                    path = API_TMS_V1 + STATIONS + "/{id}" + DATA,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS station data"))
     public TmsStationDataDtoV1 tmsDataById(
@@ -157,7 +156,7 @@ public class TmsControllerV1 {
 
     @Operation(summary = "Current sensor constants and values of TMS stations (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_TMS_BETA + STATIONS + SENSOR_CONSTANTS,
+                    path = API_TMS_V1 + STATIONS + SENSOR_CONSTANTS,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of sensor constants and values"))
     public TmsStationsSensorConstantsDataDtoV1 tmsSensorConstants(
@@ -171,7 +170,7 @@ public class TmsControllerV1 {
 
     @Operation(summary = "Current sensor constants and values of one TMS station (Traffic Measurement System / LAM)")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_TMS_BETA + STATIONS + "/{id}" + SENSOR_CONSTANTS,
+                    path = API_TMS_V1 + STATIONS + "/{id}" + SENSOR_CONSTANTS,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of sensor constants and values"))
     public TmsStationSensorConstantDtoV1 tmsSensorConstantsByStationId(

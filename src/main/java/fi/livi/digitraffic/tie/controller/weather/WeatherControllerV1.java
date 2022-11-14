@@ -1,10 +1,9 @@
 package fi.livi.digitraffic.tie.controller.weather;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_WEATHER;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.WEATHER_BETA_TAG;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.WEATHER_TAG_V1;
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.RANGE_X_TXT;
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.RANGE_Y_TXT;
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MAX;
@@ -53,7 +52,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = WEATHER_BETA_TAG, description = "Weather Controller")
+@Tag(name = WEATHER_TAG_V1)
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -82,7 +81,7 @@ public class WeatherControllerV1 {
      * /api/weather/v/forecast-sections-simple/forecasts";
      */
 
-    public static final String API_WEATHER_BETA = API_WEATHER + BETA;
+    // public static final String API__WEATHER_BETA = API_WEATHER + BETA;
     public static final String API_WEATHER_V1 = API_WEATHER + V1;
 
     public static final String STATIONS = "/stations";
@@ -108,7 +107,7 @@ public class WeatherControllerV1 {
 
     @Operation(summary = "The static information of weather stations")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_WEATHER_BETA + STATIONS,
+                    path = API_WEATHER_V1 + STATIONS,
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -126,7 +125,7 @@ public class WeatherControllerV1 {
 
     @Operation(summary = "The static information of one weather station")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_WEATHER_BETA + STATIONS + "/{id}",
+                    path = API_WEATHER_V1 + STATIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -143,7 +142,7 @@ public class WeatherControllerV1 {
 
     @Operation(summary = "The static information of available sensors of weather stations")
     @RequestMapping(method = RequestMethod.GET,
-                    path =  API_WEATHER_BETA + SENSORS,
+                    path =  API_WEATHER_V1 + SENSORS,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of weather station sensors") })
@@ -158,7 +157,7 @@ public class WeatherControllerV1 {
 
     @Operation(summary = "Current data of weather stations")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_WEATHER_BETA + STATIONS + DATA,
+                    path = API_WEATHER_V1 + STATIONS + DATA,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"))
     public WeatherStationsDataDtoV1 weatherData(
@@ -172,7 +171,7 @@ public class WeatherControllerV1 {
 
     @Operation(summary = "Current data of one weather station")
     @RequestMapping(method = RequestMethod.GET,
-                    path = API_WEATHER_BETA + STATIONS + "/{id}" + DATA,
+                    path = API_WEATHER_V1 + STATIONS + "/{id}" + DATA,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"))
     public WeatherStationDataDtoV1 weatherDataById(
@@ -184,7 +183,7 @@ public class WeatherControllerV1 {
 
     /* FORECASTS */
 
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE,
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS_SIMPLE,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "The static information of simple weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of simple forecast sections") })
@@ -225,7 +224,7 @@ public class WeatherControllerV1 {
                                                                    xMin, yMin, xMax, yMax);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE + "/{id}",
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS_SIMPLE + "/{id}",
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "The static information of simple weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of simple forecast sections") })
@@ -237,7 +236,7 @@ public class WeatherControllerV1 {
 
         return forecastWebDataServiceV1.getSimpleForecastSectionById(id);
     }
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS,
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "The static information of weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
@@ -284,7 +283,7 @@ public class WeatherControllerV1 {
     }
 
 
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS + "/{id}",
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "The static information of weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
@@ -301,7 +300,7 @@ public class WeatherControllerV1 {
         return forecastWebDataServiceV1.getForecastSectionById(simplified, id);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE + FORECASTS,
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS_SIMPLE + FORECASTS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "Current data of simple weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
@@ -338,7 +337,7 @@ public class WeatherControllerV1 {
             xMin, yMin, xMax, yMax);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS + FORECASTS,
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS + FORECASTS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "Current data of detailed weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
@@ -375,7 +374,7 @@ public class WeatherControllerV1 {
             xMin, yMin, xMax, yMax);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS_SIMPLE + "/{id}" + FORECASTS,
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS_SIMPLE + "/{id}" + FORECASTS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "Current data of simple weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
@@ -388,7 +387,7 @@ public class WeatherControllerV1 {
         return forecastWebDataServiceV1.getForecastSectionWeatherDataById(ForecastSectionApiVersion.V1, id);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_BETA + FORECAST_SECTIONS + "/{id}" + FORECASTS,
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS + "/{id}" + FORECASTS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "Current data of weather forecast sections")
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })

@@ -90,7 +90,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
 
     @Test
     public void forecastSectionsSimple() throws Exception {
-        logDebugResponse(mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE)))
+        logDebugResponse(mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.type", is("FeatureCollection")))
@@ -110,7 +110,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
 
     @Test
     public void forecastSectionsSimpleByRoadNumber() throws Exception {
-        logDebugResponse(mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + "?roadNumber=1")))
+        logDebugResponse(mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + "?roadNumber=1")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.type", is("FeatureCollection")))
@@ -123,7 +123,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     public void forecastSectionsSimpleById() throws Exception {
         final String id = "00001_001_000_0";
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + "/" + id)))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + "/" + id)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.geometry.type", is("LineString")))
@@ -142,7 +142,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Test
     public void forecastSections() throws Exception {
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS)))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.type", is("FeatureCollection")))
@@ -168,7 +168,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Test
     public void forecastSectionsByRoadNumber() throws Exception {
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + "?roadNumber=429")))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS + "?roadNumber=429")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.type", is("FeatureCollection")))
@@ -180,7 +180,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     public void forecastSectionById() throws Exception {
         final String id = "00004_229_00307_1_0";
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + "/" + id)))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS + "/" + id)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.geometry.type", is("MultiLineString")))
@@ -204,7 +204,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Test
     public void forecastSectionsForecastsSimple() throws Exception {
         logInfoResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS)))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.dataUpdatedTime", isA(String.class)))
@@ -232,7 +232,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Test
     public void forecastSectionsForecastsSimpleByRoadNumber() throws Exception {
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS + "?roadNumber=2")))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS + "?roadNumber=2")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.dataUpdatedTime", isA(String.class)))
@@ -245,7 +245,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     public void forecastSectionsForecastsSimpleById() throws Exception {
         final String id = "00001_001_000_0";
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + "/" + id + WeatherControllerV1.FORECASTS)))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + "/" + id + WeatherControllerV1.FORECASTS)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.dataUpdatedTime", isA(String.class)))
@@ -269,7 +269,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Test
     public void forecastSectionsForecasts() throws Exception {
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + WeatherControllerV1.FORECASTS)))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS + WeatherControllerV1.FORECASTS)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.dataUpdatedTime", isA(String.class)))
@@ -298,7 +298,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Test
     public void forecastSectionsForecastsByRoadNumber() throws Exception {
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + WeatherControllerV1.FORECASTS + "?roadNumber=4")))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS + WeatherControllerV1.FORECASTS + "?roadNumber=4")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.dataUpdatedTime", isA(String.class)))
@@ -310,7 +310,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     public void forecastSectionsForecastsById() throws Exception {
         final String id = "00004_229_00307_1_0";
         logDebugResponse(
-            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + "/" + id + WeatherControllerV1.FORECASTS)))
+            mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS + "/" + id + WeatherControllerV1.FORECASTS)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.dataUpdatedTime", isA(String.class)))

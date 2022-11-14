@@ -221,25 +221,25 @@ public class DataStatusService {
         final Duration dataInterval  =
             dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.TMS_STATION_DATA);
         final UpdateInfoDtoV1 stationsInfo =
-            new UpdateInfoDtoV1(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS,
+            new UpdateInfoDtoV1(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS,
                                 tmsStationRepository.getLastUpdated(),
                                 findDataUpdatedInstant(DataType.TMS_STATION_METADATA_CHECK),
                                 metadataInterval);
 
         final UpdateInfoDtoV1 sensorsInfo =
-            new UpdateInfoDtoV1(TmsControllerV1.API_TMS_BETA + TmsControllerV1.SENSORS,
+            new UpdateInfoDtoV1(TmsControllerV1.API_TMS_V1 + TmsControllerV1.SENSORS,
                                 findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA),
                                 findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA_CHECK),
                                 metadataInterval);
 
         final UpdateInfoDtoV1 sensorConstantsInfo =
-            new UpdateInfoDtoV1( TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS,
+            new UpdateInfoDtoV1( TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS,
                                 findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_CONSTANT_METADATA),
                                 findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_CONSTANT_METADATA_CHECK),
                                 metadataInterval);
 
         final UpdateInfoDtoV1 stationsDatasInfo =
-            new UpdateInfoDtoV1( TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + TmsControllerV1.DATA,
+            new UpdateInfoDtoV1( TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA,
                                 sensorValueRepository.getLastModified(RoadStationType.TMS_STATION),
                                 dataInterval);
 
@@ -253,18 +253,18 @@ public class DataStatusService {
             dataUpdatedRepository.getDataSourceUpdateInterval(DataSource.WEATHER_STATION_DATA);
 
         final UpdateInfoDtoV1 stationsInfo =
-            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.STATIONS,
+            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS,
                 weatherStationRepository.getLastUpdated(), findDataUpdatedInstant(WEATHER_STATION_METADATA_CHECK),
                 metadataInterval);
 
         final UpdateInfoDtoV1 sensorsInfo =
-            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.SENSORS,
+            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.SENSORS,
                                 findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA),
                                 findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK),
                                 metadataInterval);
 
         final UpdateInfoDtoV1 stationsDatasInfo =
-            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA,
+            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA,
                 sensorValueRepository.getLastModified(RoadStationType.WEATHER_STATION),
                 dataInterval);
 
@@ -276,25 +276,25 @@ public class DataStatusService {
 
 
         final UpdateInfoDtoV1 forecastSectionsSimpleInfo =
-            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE,
+            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE,
                                 findDataUpdatedInstant(DataType.FORECAST_SECTION_METADATA),
                                 findDataUpdatedInstant(DataType.FORECAST_SECTION_METADATA_CHECK),
                                 forecastSectionInterval);
 
         final UpdateInfoDtoV1 forecastSectionsSimpleForecastsInfo =
-            new UpdateInfoDtoV1( WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS,
+            new UpdateInfoDtoV1( WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS,
                                 forecastSectionWeatherRepository.getLastModified(ForecastSectionApiVersion.V1.getVersion(), null, null),
                                 findDataUpdatedInstant(DataType.FORECAST_SECTION_WEATHER_DATA_CHECK),
                                 forecastSectionsForecastInterval);
 
         final UpdateInfoDtoV1 forecastSectionsInfo =
-            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS,
+            new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS,
                                 findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA),
                                 findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA_CHECK),
                                 forecastSectionInterval);
 
         final UpdateInfoDtoV1 forecastSectionsForecastsInfo =
-            new UpdateInfoDtoV1( WeatherControllerV1.API_WEATHER_BETA + WeatherControllerV1.FORECAST_SECTIONS + WeatherControllerV1.FORECASTS,
+            new UpdateInfoDtoV1( WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS + WeatherControllerV1.FORECASTS,
                                 forecastSectionWeatherRepository.getLastModified(ForecastSectionApiVersion.V2.getVersion(), null, null),
                                 findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_WEATHER_DATA_CHECK),
                                 forecastSectionsForecastInterval);

@@ -24,7 +24,7 @@ public class InfoControllerV1Test extends AbstractRestWebTest {
 
         final ResultActions response =
             logDebugResponse(
-                executeGet(InfoControllerV1.API_INFO_BETA + InfoControllerV1.UPDATE_TIMES));
+                executeGet(InfoControllerV1.API_INFO_V1 + InfoControllerV1.UPDATE_TIMES));
         expectOk(response)
             .andExpect(jsonPath("updateTimes[*].api").exists())
             .andExpect(jsonPath("updateTimes[*].subtype").exists())

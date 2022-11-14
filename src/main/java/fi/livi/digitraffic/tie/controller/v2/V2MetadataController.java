@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.controller.v2;
 
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_01_01;
+import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_06_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTIONS_PATH;
@@ -52,7 +54,9 @@ public class V2MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH, produces = { APPLICATION_JSON_VALUE,
                                                                                             APPLICATION_GEO_JSON_VALUE,
                                                                                             APPLICATION_VND_GEO_JSON_VALUE })
-    @Operation(summary = "The static information of weather forecast sections V2")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of weather forecast sections V2. " + API_NOTE_2023_06_01)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @Parameter(description = "If parameter is given result will only contain update status.")
@@ -68,7 +72,9 @@ public class V2MetadataController {
     @RequestMapping(method = RequestMethod.GET, path = FORECAST_SECTIONS_PATH + "/{roadNumber}", produces = { APPLICATION_JSON_VALUE,
                                                                                                               APPLICATION_GEO_JSON_VALUE,
                                                                                                               APPLICATION_VND_GEO_JSON_VALUE })
-    @Operation(summary = "The static information of weather forecast sections V2 by road number")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of weather forecast sections V2 by road number. " + API_NOTE_2023_06_01)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @PathVariable("roadNumber") final int roadNumber) {
@@ -80,7 +86,9 @@ public class V2MetadataController {
         APPLICATION_JSON_VALUE,
         APPLICATION_GEO_JSON_VALUE,
         APPLICATION_VND_GEO_JSON_VALUE })
-    @Operation(summary = "The static information of weather forecast sections V2 by bounding box")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
+    @Operation(summary = "The static information of weather forecast sections V2 by bounding box. " + API_NOTE_2023_06_01)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections V2") })
     public ForecastSectionV2FeatureCollection forecastSections(
         @Parameter(description = "Minimum longitude. " + COORD_FORMAT_WGS84)
@@ -96,8 +104,8 @@ public class V2MetadataController {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Return all code descriptions.")
+    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+    @Operation(summary = "Return all code descriptions. " + API_NOTE_2023_01_01)
     @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public VariableSignDescriptions listCodeDescriptions() {

@@ -19,8 +19,10 @@ public final class ApiDeprecations {
     public static final String SUNSET_FUTURE = "TBD";
     public static final String SUNSET_2022_11_01 = "2022-11-01";
     public static final String SUNSET_2023_01_01 = "2023-01-01";
+    public static final String SUNSET_2023_06_01 = "2023-06-01";
     public static final String API_NOTE_2022_11_01 = SUNSET_TEXT + SUNSET_2022_11_01;
     public static final String API_NOTE_2023_01_01 = SUNSET_TEXT + SUNSET_2023_01_01;
+    public static final String API_NOTE_2023_06_01 = SUNSET_TEXT + SUNSET_2023_06_01;
     public static final String API_NOTE_FUTURE = "Will be removed in the future";
 
     private ApiDeprecations() {}

@@ -52,7 +52,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = ApiConstants.MAINTENANCE_TAG, description = "Maintenance Tracking V1")
+@Tag(name = ApiConstants.MAINTENANCE_TAG_V1)
 @RestController
 @Validated
 @ConditionalOnWebApplication

@@ -1,8 +1,7 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGE;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TAG;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TAG_V1;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
@@ -43,7 +42,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = TRAFFIC_MESSAGE_TAG, description = "Traffic Message Controller")
+@Tag(name = TRAFFIC_MESSAGE_TAG_V1)
 @RestController
 @Validated
 @ConditionalOnWebApplication
@@ -67,7 +66,7 @@ public class TrafficMessageControllerV1 {
      * /api/traffic-message/v/locations/types
      * /api/traffic-message/v/locations/versions
      */
-    private static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
+    // private static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
     public static final String API_TRAFFIC_MESSAGE_V1 = API_TRAFFIC_MESSAGE + V1;
 
     private static final String MESSAGES = "/messages";
@@ -77,7 +76,7 @@ public class TrafficMessageControllerV1 {
     public static final String VERSIONS = "/versions";
     public static final String TYPES = "/types";
 
-    public static final String API_TRAFFIC_MESSAGE_BETA_LOCATIONS = API_TRAFFIC_MESSAGE_BETA + LOCATIONS;
+    public static final String API_TRAFFIC_MESSAGE_V1_LOCATIONS = API_TRAFFIC_MESSAGE_V1 + LOCATIONS;
     public static final String API_TRAFFIC_MESSAGE_V1_MESSAGES = API_TRAFFIC_MESSAGE_V1 + MESSAGES;
 
     public static final String DATEX2 = ".datex2";
@@ -214,7 +213,7 @@ public class TrafficMessageControllerV1 {
     /* Alert-C -locations */
 
     @Operation(summary = "The static information of locations")
-    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_BETA_LOCATIONS,
+    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS,
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -232,7 +231,7 @@ public class TrafficMessageControllerV1 {
     }
 
     @Operation(summary = "The static information of one location")
-    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_BETA_LOCATIONS + "/{id}",
+    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
@@ -247,14 +246,14 @@ public class TrafficMessageControllerV1 {
     }
 
     @Operation(summary = "List available location versions")
-    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_BETA_LOCATIONS + VERSIONS, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + VERSIONS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location versions") })
     public List<LocationVersionDtoV1> locationVersions () {
         return locationWebServiceV1.findLocationVersions();
     }
 
     @Operation(summary = "The static information of location types and locationsubtypes")
-    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_BETA_LOCATIONS + TYPES, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + TYPES, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location types and location subtypes") })
     public LocationTypesDtoV1 locationTypes(
         @Parameter(description = "If parameter is given use this version.")

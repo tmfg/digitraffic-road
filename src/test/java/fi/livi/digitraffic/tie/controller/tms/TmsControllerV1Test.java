@@ -105,7 +105,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     @Test
     public void tmsStationsRestApi() throws Exception {
 
-        mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS))
+        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
@@ -140,7 +140,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio2, vvapaas2Arvo);
 
 
-        mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId()))
+        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("Feature")))
@@ -188,7 +188,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void tmsSensorsRestApi() throws Exception {
-        mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.SENSORS))
+        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.SENSORS))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.sensors[0].id", isA(Integer.class)))
@@ -213,7 +213,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     @Test
     public void tmsDataRestApi() throws Exception {
         final ResultActions tmp =
-            mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + TmsControllerV1.DATA));
+            mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA));
         System.out.println(tmp.andReturn().getResponse().getContentAsString());
         tmp
             .andExpect(status().isOk())
@@ -239,7 +239,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void tmsDataByIdRestApi() throws Exception {
-        mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + "/" + TmsControllerV1.DATA))
+        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + "/" + TmsControllerV1.DATA))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
@@ -269,7 +269,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio, vakioArvo);
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
 
-        mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS))
+        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.stations[0].id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
@@ -295,8 +295,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio, vakioArvo);
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
 
-        System.out.println(mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS)).andReturn().getResponse().getContentAsString());
-        mockMvc.perform(get(TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS))
+        System.out.println(mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS)).andReturn().getResponse().getContentAsString());
+        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
