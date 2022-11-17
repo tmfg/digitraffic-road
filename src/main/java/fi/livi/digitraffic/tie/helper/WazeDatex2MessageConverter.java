@@ -1,14 +1,6 @@
 package fi.livi.digitraffic.tie.helper;
 
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.ACCIDENT_INVOLVING_BUSES;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.ACCIDENT_INVOLVING_HAZARDOUS_MATERIALS;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.ACCIDENT_INVOLVING_HEAVY_LORRIES;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.EARLIER_ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.MULTIVEHICLE_ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.OVERTURNED_HEAVY_LORRY;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.REAR_COLLISION;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.VEHICLE_SPUN_AROUND;
+import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.*;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.NOT_WORKING;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.OUT_OF_SERVICE;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.WORKING_INCORRECTLY;
@@ -157,6 +149,7 @@ public class WazeDatex2MessageConverter {
         accidentTypeMap.put(OVERTURNED_HEAVY_LORRY, "Overturned heavy lorry");
         accidentTypeMap.put(REAR_COLLISION, "Rear collision");
         accidentTypeMap.put(VEHICLE_SPUN_AROUND, "Vehicle spun around");
+        accidentTypeMap.put(OTHER, "Accident");
 
         equipmentOrSystemTypeMap.put(TRAFFIC_LIGHT_SETS, "Traffic light sets");
         equipmentOrSystemTypeMap.put(VARIABLE_MESSAGE_SIGNS, "Variable message signs");
