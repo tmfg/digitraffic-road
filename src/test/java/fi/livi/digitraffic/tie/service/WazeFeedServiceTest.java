@@ -202,6 +202,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final String datex2Message_07 = readDatex2MessageFromFile("TrafficSituationAccidentAndRoadOrCarriagewayOrLaneManagement.xml");
         final String datex2Message_08 = readDatex2MessageFromFile("TrafficSituationTransitInformation.xml");
         final String datex2Message_09 = readDatex2MessageFromFile("TrafficSituationGeneralAccidentOtherAndUnprotectedAccidentArea.xml");
+        final String datex2Message_10 = readDatex2MessageFromFile("TrafficSituationGeneralNetworkManagement.xml");
 
         assertEquals("Lanes deviated. Temporary speed limit of 50 km/h.", wazeDatex2MessageConverter.export(situationId, datex2Message_01));
         assertEquals("Traffic light sets out of service.", wazeDatex2MessageConverter.export(situationId, datex2Message_02));
@@ -209,9 +210,10 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertEquals("Road closed. Follow diversion signs.", wazeDatex2MessageConverter.export(situationId, datex2Message_04));
         assertEquals("Ice road closed.", wazeDatex2MessageConverter.export(situationId, datex2Message_05));
         assertEquals("Surface water. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2Message_06));
-        assertEquals("Accident involving multiple vehicles. Lane closures. Traffic building up. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_07));
+        assertEquals("Accident involving multiple vehicles. Lane closures. Traffic building up. Accident. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_07));
         assertEquals("Underground metro: load capacity changed.", wazeDatex2MessageConverter.export(situationId, datex2Message_08));
         assertEquals("Accident. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_09));
+        assertEquals("Accident. Road closed. General network management: traffic being manually directed. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_10));
     }
 
     @Test
