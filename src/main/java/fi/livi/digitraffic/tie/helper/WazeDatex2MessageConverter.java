@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.helper;
 
 import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.*;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.OTHER;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.NOT_WORKING;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.OUT_OF_SERVICE;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.WORKING_INCORRECTLY;
@@ -84,16 +83,16 @@ public class WazeDatex2MessageConverter {
 
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
-    private final Map<TrafficTrendTypeEnum, String> abnormalTrafficTypeMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
+    private final Map<ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum, String> extendedRoadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
     private final Map<GeneralNetworkManagementTypeEnum, String> generalNetworkManagementTypeEnumStringMap = new HashMap<>();
     private final Map<ObstructionTypeEnum, String> obstructionTypeMap = new HashMap<>();
     private final Map<PublicEventTypeEnum, String> publicEventTypeEnumStringMap = new HashMap<>();
     private final Map<ReroutingManagementTypeEnum, String> reroutingManagementTypeMap = new HashMap<>();
-    private final Map<ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum, String> extendedRoadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
     private final Map<RoadOrCarriagewayOrLaneManagementTypeEnum, String> roadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
+    private final Map<TrafficTrendTypeEnum, String> trafficTrendTypeEnumMap = new HashMap<>();
     private final Map<VehicleObstructionTypeEnum, String> vehicleObstructionTypeMap = new HashMap<>();
     private final Map<WeatherRelatedRoadConditionTypeEnum, String> weatherRelatedRoadConditionTypeMap = new HashMap<>();
 
@@ -105,10 +104,6 @@ public class WazeDatex2MessageConverter {
     }
 
     private void constructMaps() {
-        abnormalTrafficTypeMap.put(TRAFFIC_EASING, "Traffic easing");
-        abnormalTrafficTypeMap.put(TRAFFIC_BUILDING_UP, "Traffic building up");
-        abnormalTrafficTypeMap.put(TRAFFIC_STABLE, "Traffic stable");
-
         accidentTypeMap.put(ACCIDENT, "Accident");
         accidentTypeMap.put(ACCIDENT_INVOLVING_BUSES, "Accident involving busses");
         accidentTypeMap.put(ACCIDENT_INVOLVING_HAZARDOUS_MATERIALS, "Accident involving hazardous materials");
@@ -128,6 +123,9 @@ public class WazeDatex2MessageConverter {
         equipmentOrSystemFaultTypeMap.put(OUT_OF_SERVICE, "out of service");
         equipmentOrSystemFaultTypeMap.put(WORKING_INTERMITTENTLY, "working intermittently");
         equipmentOrSystemFaultTypeMap.put(WORKING_INCORRECTLY, "working incorrectly");
+
+        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_OPEN, "Ice road open");
+        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_CLOSED, "Ice road closed");
 
         generalNetworkManagementTypeEnumStringMap.put(BRIDGE_SWING_IN_OPERATION, "bridge swing in operation");
         generalNetworkManagementTypeEnumStringMap.put(CONVOY_SERVICE, "convoy service");
@@ -200,9 +198,6 @@ public class WazeDatex2MessageConverter {
         reroutingManagementTypeMap.put(FOLLOW_DIVERSION_SIGNS, "Follow diversion signs");
         reroutingManagementTypeMap.put(FOLLOW_LOCAL_DIVERSION, "Follow local diversion");
 
-        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_OPEN, "Ice road open");
-        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_CLOSED, "Ice road closed");
-
         roadOrCarriagewayOrLaneManagementTypeMap.put(LANE_CLOSURES, "Lane closures");
         roadOrCarriagewayOrLaneManagementTypeMap.put(NARROW_LANES, "Narrow lanes");
         roadOrCarriagewayOrLaneManagementTypeMap.put(CONTRAFLOW, "Contraflow");
@@ -212,6 +207,10 @@ public class WazeDatex2MessageConverter {
         roadOrCarriagewayOrLaneManagementTypeMap.put(LANES_DEVIATED, "Lanes deviated");
         roadOrCarriagewayOrLaneManagementTypeMap.put(ROAD_CLOSED, "Road closed");
         roadOrCarriagewayOrLaneManagementTypeMap.put(CARRIAGEWAY_CLOSURES, "Carriageway closures");
+
+        trafficTrendTypeEnumMap.put(TRAFFIC_EASING, "Traffic easing");
+        trafficTrendTypeEnumMap.put(TRAFFIC_BUILDING_UP, "Traffic building up");
+        trafficTrendTypeEnumMap.put(TRAFFIC_STABLE, "Traffic stable");
 
         vehicleObstructionTypeMap.put(VEHICLE_ON_WRONG_CARRIAGEWAY, "vehicle on wrong carriageway");
         vehicleObstructionTypeMap.put(ABNORMAL_LOAD, "abnormal load");
@@ -275,7 +274,7 @@ public class WazeDatex2MessageConverter {
         // TODO handle abnormalTrafficType, trafficFlowCharacteristics and abnormalTrafficExtension
 
         return Optional.ofNullable(abnormalTraffic.getTrafficTrendType())
-            .map(x -> abnormalTrafficTypeMap.getOrDefault(x, null));
+            .map(x -> trafficTrendTypeEnumMap.getOrDefault(x, null));
     }
 
     private Optional<String> accept(final Accident accident) {
