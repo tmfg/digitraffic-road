@@ -20,6 +20,7 @@ import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SEVERE_FROST_DA
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SHED_LOAD;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SPILLAGE_OCCURRING_FROM_MOVING_VEHICLE;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.UNPROTECTED_ACCIDENT_AREA;
+import static fi.livi.digitraffic.tie.datex2.PublicEventTypeEnum.*;
 import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.FOLLOW_DIVERSION_SIGNS;
 import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.FOLLOW_LOCAL_DIVERSION;
 import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.CARRIAGEWAY_CLOSURES;
@@ -89,6 +90,7 @@ public class WazeDatex2MessageConverter {
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
     private final Map<GeneralNetworkManagementTypeEnum, String> generalNetworkManagementTypeEnumStringMap = new HashMap<>();
     private final Map<ObstructionTypeEnum, String> obstructionTypeMap = new HashMap<>();
+    private final Map<PublicEventTypeEnum, String> publicEventTypeEnumStringMap = new HashMap<>();
     private final Map<ReroutingManagementTypeEnum, String> reroutingManagementTypeMap = new HashMap<>();
     private final Map<ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum, String> extendedRoadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
     private final Map<RoadOrCarriagewayOrLaneManagementTypeEnum, String> roadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
@@ -145,6 +147,55 @@ public class WazeDatex2MessageConverter {
         obstructionTypeMap.put(SHED_LOAD, "Shed load");
         obstructionTypeMap.put(SPILLAGE_OCCURRING_FROM_MOVING_VEHICLE, "Spillage occurring from moving vehicle");
         obstructionTypeMap.put(UNPROTECTED_ACCIDENT_AREA, "Unprotected accident area");
+
+        publicEventTypeEnumStringMap.put(AGRICULTURAL_SHOW, "agricultural show");
+        publicEventTypeEnumStringMap.put(AIR_SHOW, "air show");
+        publicEventTypeEnumStringMap.put(ATHLETICS_MEETING, "athletics meeting");
+        publicEventTypeEnumStringMap.put(COMMERCIAL_EVENT, "commercial event");
+        publicEventTypeEnumStringMap.put(CULTURAL_EVENT, "cultural event");
+        publicEventTypeEnumStringMap.put(BALL_GAME, "ball game");
+        publicEventTypeEnumStringMap.put(BASEBALL_GAME, "baseball game");
+        publicEventTypeEnumStringMap.put(BASKETBALL_GAME, "basketball game");
+        publicEventTypeEnumStringMap.put(BICYCLE_RACE, "bicycle race");
+        publicEventTypeEnumStringMap.put(BOAT_RACE, "boat race");
+        publicEventTypeEnumStringMap.put(BOAT_SHOW, "boat show");
+        publicEventTypeEnumStringMap.put(BOXING_TOURNAMENT, "boxing tournament");
+        publicEventTypeEnumStringMap.put(BULL_FIGHT, "bull fight");
+        publicEventTypeEnumStringMap.put(CEREMONIAL_EVENT, "ceremonial event");
+        publicEventTypeEnumStringMap.put(CONCERT, "concert");
+        publicEventTypeEnumStringMap.put(CRICKET_MATCH, "cricket match");
+        publicEventTypeEnumStringMap.put(EXHIBITION, "exhibition");
+        publicEventTypeEnumStringMap.put(FAIR, "fair");
+        publicEventTypeEnumStringMap.put(FESTIVAL, "festival");
+        publicEventTypeEnumStringMap.put(FILM_TV_MAKING, "film or tv making");
+        publicEventTypeEnumStringMap.put(FOOTBALL_MATCH, "football match");
+        publicEventTypeEnumStringMap.put(FUNFAIR, "funfair");
+        publicEventTypeEnumStringMap.put(GARDENING_OR_FLOWER_SHOW, "gardening or flower show");
+        publicEventTypeEnumStringMap.put(GOLF_TOURNAMENT, "golf tournament");
+        publicEventTypeEnumStringMap.put(HOCKEY_GAME, "hockey game");
+        publicEventTypeEnumStringMap.put(HORSE_RACE_MEETING, "horse race meeting");
+        publicEventTypeEnumStringMap.put(INTERNATIONAL_SPORTS_MEETING, "international sports meeting");
+        publicEventTypeEnumStringMap.put(MAJOR_EVENT, "major event");
+        publicEventTypeEnumStringMap.put(MARATHON, "marathon");
+        publicEventTypeEnumStringMap.put(MARKET, "market");
+        publicEventTypeEnumStringMap.put(MATCH, "match");
+        publicEventTypeEnumStringMap.put(MOTOR_SHOW, "motor show");
+        publicEventTypeEnumStringMap.put(MOTOR_SPORT_RACE_MEETING, "motor sport race meeting");
+        publicEventTypeEnumStringMap.put(PARADE, "parade");
+        publicEventTypeEnumStringMap.put(PROCESSION, "procession");
+        publicEventTypeEnumStringMap.put(RACE_MEETING, "race meeting");
+        publicEventTypeEnumStringMap.put(RUGBY_MATCH, "rugby match");
+        publicEventTypeEnumStringMap.put(SEVERAL_MAJOR_EVENTS, "several major events");
+        publicEventTypeEnumStringMap.put(SHOW, "show");
+        publicEventTypeEnumStringMap.put(SHOW_JUMPING, "show jumping");
+        publicEventTypeEnumStringMap.put(SPORTS_MEETING, "sports meeting");
+        publicEventTypeEnumStringMap.put(STATE_OCCASION, "state occasion");
+        publicEventTypeEnumStringMap.put(TENNIS_TOURNAMENT, "tennis tournament");
+        publicEventTypeEnumStringMap.put(TOURNAMENT, "tournament");
+        publicEventTypeEnumStringMap.put(TRADE_FAIR, "trade fair");
+        publicEventTypeEnumStringMap.put(WATER_SPORTS_MEETING, "water sports meeting");
+        publicEventTypeEnumStringMap.put(WINTER_SPORTS_MEETING, "winter sports meeting");
+        publicEventTypeEnumStringMap.put(PublicEventTypeEnum.OTHER, "other");
 
         reroutingManagementTypeMap.put(FOLLOW_DIVERSION_SIGNS, "Follow diversion signs");
         reroutingManagementTypeMap.put(FOLLOW_LOCAL_DIVERSION, "Follow local diversion");
@@ -286,9 +337,14 @@ public class WazeDatex2MessageConverter {
     private Optional<String> accept(final PoorEnvironmentConditions poorEnvironmentConditions) {
         return Optional.empty();
     }
+
     private Optional<String> accept(final PublicEvent publicEvent) {
-        return Optional.empty();
+        final Optional<PublicEventTypeEnum> publicEventOptional = Optional.ofNullable(publicEvent.getPublicEventType());
+        return publicEventOptional
+            .map(x -> publicEventTypeEnumStringMap.getOrDefault(x, null))
+            .map(x -> String.format("Public event: %s", x));
     }
+
     private Optional<String> accept(final ReroutingManagement reroutingManagement) {
         return reroutingManagement.getReroutingManagementTypes()
             .stream()
