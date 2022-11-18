@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.helper;
 
+import static fi.livi.digitraffic.tie.datex2.AbnormalTrafficTypeEnum.*;
 import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.*;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.NOT_WORKING;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.OUT_OF_SERVICE;
@@ -83,6 +84,7 @@ public class WazeDatex2MessageConverter {
 
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
+    private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
@@ -104,6 +106,13 @@ public class WazeDatex2MessageConverter {
     }
 
     private void constructMaps() {
+        abnormalTrafficTypeEnumStringMap.put(STATIONARY_TRAFFIC, "stationary traffic");
+        abnormalTrafficTypeEnumStringMap.put(QUEUING_TRAFFIC, "queuing traffic");
+        abnormalTrafficTypeEnumStringMap.put(SLOW_TRAFFIC, "slow traffic");
+        abnormalTrafficTypeEnumStringMap.put(HEAVY_TRAFFIC, "heavy traffic");
+        abnormalTrafficTypeEnumStringMap.put(UNSPECIFIED_ABNORMAL_TRAFFIC, "unspecified");
+        abnormalTrafficTypeEnumStringMap.put(AbnormalTrafficTypeEnum.OTHER, "unspecified");
+
         accidentTypeMap.put(ACCIDENT, "Accident");
         accidentTypeMap.put(ACCIDENT_INVOLVING_BUSES, "Accident involving busses");
         accidentTypeMap.put(ACCIDENT_INVOLVING_HAZARDOUS_MATERIALS, "Accident involving hazardous materials");
@@ -271,10 +280,16 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final AbnormalTraffic abnormalTraffic) {
-        // TODO handle abnormalTrafficType, trafficFlowCharacteristics and abnormalTrafficExtension
-
-        return Optional.ofNullable(abnormalTraffic.getTrafficTrendType())
+        final Optional<String> trafficTrendTypeOptional = Optional.ofNullable(abnormalTraffic.getTrafficTrendType())
             .map(x -> trafficTrendTypeEnumMap.getOrDefault(x, null));
+
+        final Optional<String> abnormalTrafficTypeOptional = Optional.ofNullable(abnormalTraffic.getAbnormalTrafficType())
+            .map(x -> abnormalTrafficTypeEnumStringMap.getOrDefault(x, null))
+            .map(x -> String.format("Abnormal traffic: %s", x));
+
+        return trafficTrendTypeOptional.isPresent()
+            ? trafficTrendTypeOptional
+            : abnormalTrafficTypeOptional;
     }
 
     private Optional<String> accept(final Accident accident) {

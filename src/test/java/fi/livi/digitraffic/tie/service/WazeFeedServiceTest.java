@@ -204,6 +204,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final String datex2Message_09 = readDatex2MessageFromFile("TrafficSituationGeneralAccidentOtherAndUnprotectedAccidentArea.xml");
         final String datex2Message_10 = readDatex2MessageFromFile("TrafficSituationGeneralNetworkManagement.xml");
         final String datex2Message_11 = readDatex2MessageFromFile("TrafficSituationPublicEvent.xml");
+        final String datex2Message_12 = readDatex2MessageFromFile("TrafficSituationAbnormalTraffic.xml");
 
         assertEquals("Lanes deviated. Temporary speed limit of 50 km/h.", wazeDatex2MessageConverter.export(situationId, datex2Message_01));
         assertEquals("Traffic light sets out of service.", wazeDatex2MessageConverter.export(situationId, datex2Message_02));
@@ -216,6 +217,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertEquals("Accident. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_09));
         assertEquals("Accident. Road closed. General network management: traffic being manually directed. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_10));
         assertEquals("Public event: fair. Traffic building up.", wazeDatex2MessageConverter.export(situationId, datex2Message_11));
+        assertEquals("Accident. Lane closures. Abnormal traffic: queuing traffic.", wazeDatex2MessageConverter.export(situationId, datex2Message_12));
     }
 
     @Test
