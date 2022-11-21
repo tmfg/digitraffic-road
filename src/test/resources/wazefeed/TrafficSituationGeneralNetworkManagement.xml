@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>2022-11-17T23:11:52.217Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50406791" version="23">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="Accident" id="GUID5040791201" version="23">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T23:11:51.850Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T23:11:29.793Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>suspended</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                        <overallEndTime>2022-11-17T23:11:29.793Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 4, Jyväskylä. Liikennetiedote onnettomuudesta. Tilanne ohi.
+
+                                Tie 4 välillä Jyväskylä - Oulu, Jyväskylä.
+                                Tarkempi paikka: Välillä Lohikosken liittymä - Palokan liittymä.
+
+
+                                Ajankohta: 17.11. klo 21:19 - 18.11.2022 klo 01:11.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Tampere
+                                Puh: 02002100
+                                Sähköposti: tampere.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>negative</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1099</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1100</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <management>
+                    <lifeCycleManagement>
+                        <end>true</end>
+                    </lifeCycleManagement>
+                </management>
+                <accidentType>other</accidentType>
+            </situationRecord>
+        </situation>
+        <situation id="GUID50406791" version="11">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="Accident" id="GUID5040791201" version="11">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T20:43:28.819Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T20:42:18.485Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 4, Jyväskylä. Liikennetiedote onnettomuudesta. Tilanne jatkuu.
+
+                                Tie 4 välillä Jyväskylä - Oulu, Jyväskylä.
+                                Tarkempi paikka: Välillä Lohikosken liittymä - Palokan liittymä. Haittaa ajosuunnassa Jyväskylä.
+
+                                Onnettomuus.
+                                Tie on suljettu liikenteeltä.
+                                Tapahtumapaikalla liikenteenohjaus.
+
+                                Ajankohta: 17.11.2022 klo 21:19 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Tampere
+                                Puh: 02002100
+                                Sähköposti: tampere.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>negative</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1099</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1100</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <accidentType>accident</accidentType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5040791202" version="11">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T20:43:28.819Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T20:42:18.485Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="GeneralNetworkManagement" id="GUID5040791203" version="11">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T20:43:28.819Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T20:42:18.485Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <generalNetworkManagementType>trafficBeingManuallyDirected</generalNetworkManagementType>
+            </situationRecord>
+        </situation>
+        <situation id="GUID50406791" version="6">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="Accident" id="GUID5040791201" version="6">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T19:43:14.765Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T19:38:02.275Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 4, Jyväskylä. Liikennetiedote onnettomuudesta.
+
+                                Tie 4 välillä Jyväskylä - Oulu, Jyväskylä.
+                                Tarkempi paikka: Välillä Lohikosken liittymä - Palokan liittymä. Haittaa ajosuunnassa Jyväskylä.
+
+                                Onnettomuus.
+                                Tie on suljettu liikenteeltä.
+                                Tapahtumapaikalla liikenteenohjaus.
+
+                                Ajankohta: 17.11.2022 klo 21:19 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Tampere
+                                Puh: 02002100
+                                Sähköposti: tampere.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>negative</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1099</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1100</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <accidentType>accident</accidentType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5040791202" version="6">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T19:43:14.765Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T19:38:02.275Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="GeneralNetworkManagement" id="GUID5040791203" version="6">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T19:43:14.765Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T19:38:02.275Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <generalNetworkManagementType>trafficBeingManuallyDirected</generalNetworkManagementType>
+            </situationRecord>
+        </situation>
+        <situation id="GUID50406791" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="Accident" id="GUID5040791201" version="1">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T19:19:42.243Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T19:19:32.058Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                        <overallEndTime>2022-11-17T19:49:42.251Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 4, Jyväskylä. Ensitiedote liikenneonnettomuudesta.
+
+                                Tie 4 välillä Jyväskylä - Oulu, Jyväskylä.
+                                Tarkempi paikka: Välillä Lohikosken liittymä - Palokan liittymä.
+
+
+                                Ajankohta: 17.11.2022 klo 21:19.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Tampere
+                                Puh: 02002100
+                                Sähköposti: tampere.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1099</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1100</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <accidentType>other</accidentType>
+            </situationRecord>
+            <situationRecord xsi:type="GeneralObstruction" id="GUID5040791202" version="1">
+                <situationRecordCreationTime>2022-11-17T19:19:42.304Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-17T19:19:42.243Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-17T19:19:32.058Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
+                        <overallEndTime>2022-11-17T19:49:42.251Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <obstructionType>unprotectedAccidentArea</obstructionType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

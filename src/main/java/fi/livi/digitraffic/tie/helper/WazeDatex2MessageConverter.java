@@ -1,14 +1,7 @@
 package fi.livi.digitraffic.tie.helper;
 
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.ACCIDENT_INVOLVING_BUSES;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.ACCIDENT_INVOLVING_HAZARDOUS_MATERIALS;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.ACCIDENT_INVOLVING_HEAVY_LORRIES;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.EARLIER_ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.MULTIVEHICLE_ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.OVERTURNED_HEAVY_LORRY;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.REAR_COLLISION;
-import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.VEHICLE_SPUN_AROUND;
+import static fi.livi.digitraffic.tie.datex2.AbnormalTrafficTypeEnum.*;
+import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.*;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.NOT_WORKING;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.OUT_OF_SERVICE;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.WORKING_INCORRECTLY;
@@ -18,6 +11,7 @@ import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum.TRAFFIC_L
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum.VARIABLE_MESSAGE_SIGNS;
 import static fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_CLOSED;
 import static fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_OPEN;
+import static fi.livi.digitraffic.tie.datex2.GeneralNetworkManagementTypeEnum.*;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.CRANE_OPERATING;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.OBJECT_ON_THE_ROAD;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.OBSTRUCTION_ON_THE_ROAD;
@@ -26,6 +20,7 @@ import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SEVERE_FROST_DA
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SHED_LOAD;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.SPILLAGE_OCCURRING_FROM_MOVING_VEHICLE;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.UNPROTECTED_ACCIDENT_AREA;
+import static fi.livi.digitraffic.tie.datex2.PublicEventTypeEnum.*;
 import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.FOLLOW_DIVERSION_SIGNS;
 import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.FOLLOW_LOCAL_DIVERSION;
 import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.CARRIAGEWAY_CLOSURES;
@@ -74,49 +69,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.sun.xml.ws.util.StringUtils;
+import fi.livi.digitraffic.tie.datex2.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.UnmarshallingFailureException;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
-import fi.livi.digitraffic.tie.datex2.AbnormalTraffic;
-import fi.livi.digitraffic.tie.datex2.Accident;
-import fi.livi.digitraffic.tie.datex2.AccidentTypeEnum;
-import fi.livi.digitraffic.tie.datex2.AnimalPresenceObstruction;
-import fi.livi.digitraffic.tie.datex2.AuthorityOperation;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.DisturbanceActivity;
-import fi.livi.digitraffic.tie.datex2.EnvironmentalObstruction;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFault;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultExtensionType;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ExtendedEquipmentOrSystemFaultTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.GeneralNetworkManagement;
-import fi.livi.digitraffic.tie.datex2.GeneralObstruction;
-import fi.livi.digitraffic.tie.datex2.InfrastructureDamageObstruction;
-import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditions;
-import fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.PoorEnvironmentConditions;
-import fi.livi.digitraffic.tie.datex2.PublicEvent;
-import fi.livi.digitraffic.tie.datex2.ReroutingManagement;
-import fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagement;
-import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementExtensionType;
-import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.Situation;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.datex2.SpeedManagement;
-import fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum;
-import fi.livi.digitraffic.tie.datex2.TransitInformation;
-import fi.livi.digitraffic.tie.datex2.VehicleObstruction;
-import fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditions;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 @Component
@@ -125,14 +84,17 @@ public class WazeDatex2MessageConverter {
 
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
-    private final Map<TrafficTrendTypeEnum, String> abnormalTrafficTypeMap = new HashMap<>();
+    private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
-    private final Map<ObstructionTypeEnum, String> obstructionTypeMap = new HashMap<>();
-    private final Map<ReroutingManagementTypeEnum, String> reroutingManagementTypeMap = new HashMap<>();
     private final Map<ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum, String> extendedRoadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
+    private final Map<GeneralNetworkManagementTypeEnum, String> generalNetworkManagementTypeEnumStringMap = new HashMap<>();
+    private final Map<ObstructionTypeEnum, String> obstructionTypeMap = new HashMap<>();
+    private final Map<PublicEventTypeEnum, String> publicEventTypeEnumStringMap = new HashMap<>();
+    private final Map<ReroutingManagementTypeEnum, String> reroutingManagementTypeMap = new HashMap<>();
     private final Map<RoadOrCarriagewayOrLaneManagementTypeEnum, String> roadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
+    private final Map<TrafficTrendTypeEnum, String> trafficTrendTypeEnumMap = new HashMap<>();
     private final Map<VehicleObstructionTypeEnum, String> vehicleObstructionTypeMap = new HashMap<>();
     private final Map<WeatherRelatedRoadConditionTypeEnum, String> weatherRelatedRoadConditionTypeMap = new HashMap<>();
 
@@ -144,9 +106,12 @@ public class WazeDatex2MessageConverter {
     }
 
     private void constructMaps() {
-        abnormalTrafficTypeMap.put(TRAFFIC_EASING, "Traffic easing");
-        abnormalTrafficTypeMap.put(TRAFFIC_BUILDING_UP, "Traffic building up");
-        abnormalTrafficTypeMap.put(TRAFFIC_STABLE, "Traffic stable");
+        abnormalTrafficTypeEnumStringMap.put(STATIONARY_TRAFFIC, "stationary traffic");
+        abnormalTrafficTypeEnumStringMap.put(QUEUING_TRAFFIC, "queuing traffic");
+        abnormalTrafficTypeEnumStringMap.put(SLOW_TRAFFIC, "slow traffic");
+        abnormalTrafficTypeEnumStringMap.put(HEAVY_TRAFFIC, "heavy traffic");
+        abnormalTrafficTypeEnumStringMap.put(UNSPECIFIED_ABNORMAL_TRAFFIC, "unspecified");
+        abnormalTrafficTypeEnumStringMap.put(AbnormalTrafficTypeEnum.OTHER, "unspecified");
 
         accidentTypeMap.put(ACCIDENT, "Accident");
         accidentTypeMap.put(ACCIDENT_INVOLVING_BUSES, "Accident involving busses");
@@ -157,6 +122,7 @@ public class WazeDatex2MessageConverter {
         accidentTypeMap.put(OVERTURNED_HEAVY_LORRY, "Overturned heavy lorry");
         accidentTypeMap.put(REAR_COLLISION, "Rear collision");
         accidentTypeMap.put(VEHICLE_SPUN_AROUND, "Vehicle spun around");
+        accidentTypeMap.put(AccidentTypeEnum.OTHER, "Accident");
 
         equipmentOrSystemTypeMap.put(TRAFFIC_LIGHT_SETS, "Traffic light sets");
         equipmentOrSystemTypeMap.put(VARIABLE_MESSAGE_SIGNS, "Variable message signs");
@@ -167,6 +133,19 @@ public class WazeDatex2MessageConverter {
         equipmentOrSystemFaultTypeMap.put(WORKING_INTERMITTENTLY, "working intermittently");
         equipmentOrSystemFaultTypeMap.put(WORKING_INCORRECTLY, "working incorrectly");
 
+        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_OPEN, "Ice road open");
+        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_CLOSED, "Ice road closed");
+
+        generalNetworkManagementTypeEnumStringMap.put(BRIDGE_SWING_IN_OPERATION, "bridge swing in operation");
+        generalNetworkManagementTypeEnumStringMap.put(CONVOY_SERVICE, "convoy service");
+        generalNetworkManagementTypeEnumStringMap.put(OBSTACLE_SIGNALLING, "obstacle signaling");
+        generalNetworkManagementTypeEnumStringMap.put(RAMP_METERING_IN_OPERATION, "ramp metering in operation");
+        generalNetworkManagementTypeEnumStringMap.put(TEMPORARY_TRAFFIC_LIGHTS, "temporary traffic lights");
+        generalNetworkManagementTypeEnumStringMap.put(TOLL_GATES_OPEN, "toll gates open");
+        generalNetworkManagementTypeEnumStringMap.put(TRAFFIC_BEING_MANUALLY_DIRECTED, "traffic being manually directed");
+        generalNetworkManagementTypeEnumStringMap.put(TRAFFIC_HELD, "traffic held");
+        generalNetworkManagementTypeEnumStringMap.put(GeneralNetworkManagementTypeEnum.OTHER, "unspecified");
+
         obstructionTypeMap.put(CRANE_OPERATING, "Crane operating");
         obstructionTypeMap.put(OBJECT_ON_THE_ROAD, "Object on the road");
         obstructionTypeMap.put(OBSTRUCTION_ON_THE_ROAD, "Obstruction on the road");
@@ -176,11 +155,57 @@ public class WazeDatex2MessageConverter {
         obstructionTypeMap.put(SPILLAGE_OCCURRING_FROM_MOVING_VEHICLE, "Spillage occurring from moving vehicle");
         obstructionTypeMap.put(UNPROTECTED_ACCIDENT_AREA, "Unprotected accident area");
 
+        publicEventTypeEnumStringMap.put(AGRICULTURAL_SHOW, "agricultural show");
+        publicEventTypeEnumStringMap.put(AIR_SHOW, "air show");
+        publicEventTypeEnumStringMap.put(ATHLETICS_MEETING, "athletics meeting");
+        publicEventTypeEnumStringMap.put(COMMERCIAL_EVENT, "commercial event");
+        publicEventTypeEnumStringMap.put(CULTURAL_EVENT, "cultural event");
+        publicEventTypeEnumStringMap.put(BALL_GAME, "ball game");
+        publicEventTypeEnumStringMap.put(BASEBALL_GAME, "baseball game");
+        publicEventTypeEnumStringMap.put(BASKETBALL_GAME, "basketball game");
+        publicEventTypeEnumStringMap.put(BICYCLE_RACE, "bicycle race");
+        publicEventTypeEnumStringMap.put(BOAT_RACE, "boat race");
+        publicEventTypeEnumStringMap.put(BOAT_SHOW, "boat show");
+        publicEventTypeEnumStringMap.put(BOXING_TOURNAMENT, "boxing tournament");
+        publicEventTypeEnumStringMap.put(BULL_FIGHT, "bull fight");
+        publicEventTypeEnumStringMap.put(CEREMONIAL_EVENT, "ceremonial event");
+        publicEventTypeEnumStringMap.put(CONCERT, "concert");
+        publicEventTypeEnumStringMap.put(CRICKET_MATCH, "cricket match");
+        publicEventTypeEnumStringMap.put(EXHIBITION, "exhibition");
+        publicEventTypeEnumStringMap.put(FAIR, "fair");
+        publicEventTypeEnumStringMap.put(FESTIVAL, "festival");
+        publicEventTypeEnumStringMap.put(FILM_TV_MAKING, "film or tv making");
+        publicEventTypeEnumStringMap.put(FOOTBALL_MATCH, "football match");
+        publicEventTypeEnumStringMap.put(FUNFAIR, "funfair");
+        publicEventTypeEnumStringMap.put(GARDENING_OR_FLOWER_SHOW, "gardening or flower show");
+        publicEventTypeEnumStringMap.put(GOLF_TOURNAMENT, "golf tournament");
+        publicEventTypeEnumStringMap.put(HOCKEY_GAME, "hockey game");
+        publicEventTypeEnumStringMap.put(HORSE_RACE_MEETING, "horse race meeting");
+        publicEventTypeEnumStringMap.put(INTERNATIONAL_SPORTS_MEETING, "international sports meeting");
+        publicEventTypeEnumStringMap.put(MAJOR_EVENT, "major event");
+        publicEventTypeEnumStringMap.put(MARATHON, "marathon");
+        publicEventTypeEnumStringMap.put(MARKET, "market");
+        publicEventTypeEnumStringMap.put(MATCH, "match");
+        publicEventTypeEnumStringMap.put(MOTOR_SHOW, "motor show");
+        publicEventTypeEnumStringMap.put(MOTOR_SPORT_RACE_MEETING, "motor sport race meeting");
+        publicEventTypeEnumStringMap.put(PARADE, "parade");
+        publicEventTypeEnumStringMap.put(PROCESSION, "procession");
+        publicEventTypeEnumStringMap.put(RACE_MEETING, "race meeting");
+        publicEventTypeEnumStringMap.put(RUGBY_MATCH, "rugby match");
+        publicEventTypeEnumStringMap.put(SEVERAL_MAJOR_EVENTS, "several major events");
+        publicEventTypeEnumStringMap.put(SHOW, "show");
+        publicEventTypeEnumStringMap.put(SHOW_JUMPING, "show jumping");
+        publicEventTypeEnumStringMap.put(SPORTS_MEETING, "sports meeting");
+        publicEventTypeEnumStringMap.put(STATE_OCCASION, "state occasion");
+        publicEventTypeEnumStringMap.put(TENNIS_TOURNAMENT, "tennis tournament");
+        publicEventTypeEnumStringMap.put(TOURNAMENT, "tournament");
+        publicEventTypeEnumStringMap.put(TRADE_FAIR, "trade fair");
+        publicEventTypeEnumStringMap.put(WATER_SPORTS_MEETING, "water sports meeting");
+        publicEventTypeEnumStringMap.put(WINTER_SPORTS_MEETING, "winter sports meeting");
+        publicEventTypeEnumStringMap.put(PublicEventTypeEnum.OTHER, "other");
+
         reroutingManagementTypeMap.put(FOLLOW_DIVERSION_SIGNS, "Follow diversion signs");
         reroutingManagementTypeMap.put(FOLLOW_LOCAL_DIVERSION, "Follow local diversion");
-
-        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_OPEN, "Ice road open");
-        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_CLOSED, "Ice road closed");
 
         roadOrCarriagewayOrLaneManagementTypeMap.put(LANE_CLOSURES, "Lane closures");
         roadOrCarriagewayOrLaneManagementTypeMap.put(NARROW_LANES, "Narrow lanes");
@@ -191,6 +216,10 @@ public class WazeDatex2MessageConverter {
         roadOrCarriagewayOrLaneManagementTypeMap.put(LANES_DEVIATED, "Lanes deviated");
         roadOrCarriagewayOrLaneManagementTypeMap.put(ROAD_CLOSED, "Road closed");
         roadOrCarriagewayOrLaneManagementTypeMap.put(CARRIAGEWAY_CLOSURES, "Carriageway closures");
+
+        trafficTrendTypeEnumMap.put(TRAFFIC_EASING, "Traffic easing");
+        trafficTrendTypeEnumMap.put(TRAFFIC_BUILDING_UP, "Traffic building up");
+        trafficTrendTypeEnumMap.put(TRAFFIC_STABLE, "Traffic stable");
 
         vehicleObstructionTypeMap.put(VEHICLE_ON_WRONG_CARRIAGEWAY, "vehicle on wrong carriageway");
         vehicleObstructionTypeMap.put(ABNORMAL_LOAD, "abnormal load");
@@ -251,10 +280,16 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final AbnormalTraffic abnormalTraffic) {
-        // TODO handle abnormalTrafficType, trafficFlowCharacteristics and abnormalTrafficExtension
+        final Optional<String> trafficTrendTypeOptional = Optional.ofNullable(abnormalTraffic.getTrafficTrendType())
+            .map(x -> trafficTrendTypeEnumMap.getOrDefault(x, null));
 
-        return Optional.ofNullable(abnormalTraffic.getTrafficTrendType())
-            .map(x -> abnormalTrafficTypeMap.getOrDefault(x, null));
+        final Optional<String> abnormalTrafficTypeOptional = Optional.ofNullable(abnormalTraffic.getAbnormalTrafficType())
+            .map(x -> abnormalTrafficTypeEnumStringMap.getOrDefault(x, null))
+            .map(x -> String.format("Abnormal traffic: %s", x));
+
+        return trafficTrendTypeOptional.isPresent()
+            ? trafficTrendTypeOptional
+            : abnormalTrafficTypeOptional;
     }
 
     private Optional<String> accept(final Accident accident) {
@@ -293,15 +328,20 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final GeneralNetworkManagement generalNetworkManagement) {
-        return Optional.empty();
-    }
-    private Optional<String> accept(final GeneralObstruction generalObstruction) {
+        final Optional<GeneralNetworkManagementTypeEnum> generalNetworkManagementTypeEnumOptional = Optional.ofNullable(generalNetworkManagement.getGeneralNetworkManagementType());
 
+        return generalNetworkManagementTypeEnumOptional
+            .map(x -> generalNetworkManagementTypeEnumStringMap.getOrDefault(x, null))
+            .map(x -> String.format("General network management: %s", x));
+    }
+
+    private Optional<String> accept(final GeneralObstruction generalObstruction) {
         return generalObstruction.getObstructionTypes()
             .stream()
             .findFirst()
             .map(x -> obstructionTypeMap.getOrDefault(x, null));
     }
+
     private Optional<String> accept(final InfrastructureDamageObstruction infrastructureDamageObstruction) {
         return Optional.empty();
     }
@@ -311,11 +351,15 @@ public class WazeDatex2MessageConverter {
     private Optional<String> accept(final PoorEnvironmentConditions poorEnvironmentConditions) {
         return Optional.empty();
     }
-    private Optional<String> accept(final PublicEvent publicEvent) {
-        return Optional.empty();
-    }
-    private Optional<String> accept(final ReroutingManagement reroutingManagement) {
 
+    private Optional<String> accept(final PublicEvent publicEvent) {
+        final Optional<PublicEventTypeEnum> publicEventOptional = Optional.ofNullable(publicEvent.getPublicEventType());
+        return publicEventOptional
+            .map(x -> publicEventTypeEnumStringMap.getOrDefault(x, null))
+            .map(x -> String.format("Public event: %s", x));
+    }
+
+    private Optional<String> accept(final ReroutingManagement reroutingManagement) {
         return reroutingManagement.getReroutingManagementTypes()
             .stream()
             .findFirst()
@@ -339,6 +383,7 @@ public class WazeDatex2MessageConverter {
             .map(Math::round)
             .map(x -> x > 0 ? String.format("Temporary speed limit of %d km/h", x) : null);
     }
+
     private Optional<String> accept(final TransitInformation transitInformation) {
         return Optional.ofNullable(transitInformation)
             .map((transitInformation1) -> {
@@ -348,6 +393,7 @@ public class WazeDatex2MessageConverter {
             })
             .map(StringUtils::capitalize);
     }
+
     private Optional<String> accept(final VehicleObstruction vehicleObstruction) {
 
         // skip obstructingVehicle and numberOfObstructions
@@ -355,6 +401,7 @@ public class WazeDatex2MessageConverter {
             .map(x -> vehicleObstructionTypeMap.getOrDefault(x, null))
             .map(x -> "Vehicle obstruction: " + x);
     }
+
     private Optional<String> accept(final WeatherRelatedRoadConditions weatherRelatedRoadConditions) {
         return weatherRelatedRoadConditions.getWeatherRelatedRoadConditionTypes()
             .stream()

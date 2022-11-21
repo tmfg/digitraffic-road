@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>2022-11-18T08:06:11.014Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50406810" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="PublicEvent" id="GUID5040793101" version="1">
+                <situationRecordCreationTime>2022-11-18T08:06:09.645Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-18T08:06:09.610Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-18T08:04:25.731Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-18T08:04:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 3, Tampere. Liikennetiedote.
+
+                                Tie 3 välillä Hämeenlinna - Tampere, Tampere.
+                                Tarkempi paikka: Välillä Tampereen eteläinen liittymä - Sarankulman liittymä. Haittaa ajosuunnassa Vaasa.
+
+                                Messutapahtuma.
+                                Liikenne ruuhkautuu.
+
+                                Ajankohta: 18.11.2022 klo 10:04 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Tampere
+                                Puh: 02002100
+                                Sähköposti: tampere.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>positive</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>990</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>991</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <publicEventType>fair</publicEventType>
+            </situationRecord>
+            <situationRecord xsi:type="AbnormalTraffic" id="GUID5040793102" version="1">
+                <situationRecordCreationTime>2022-11-18T08:06:09.645Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-11-18T08:06:09.610Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-11-18T08:04:25.731Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-11-18T08:04:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <trafficTrendType>trafficBuildingUp</trafficTrendType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
