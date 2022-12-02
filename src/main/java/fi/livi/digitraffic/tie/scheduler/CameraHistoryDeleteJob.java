@@ -16,7 +16,7 @@ public class CameraHistoryDeleteJob extends SimpleUpdateJob {
 
     @Override
     protected void doExecute(final JobExecutionContext context) {
-        // Keep 1 week history
-        cameraPresetHistoryUpdateService.deleteOlderThanHoursHistory(24*7);
+        // Keep 25h history
+        cameraPresetHistoryUpdateService.deleteOlderThanHoursHistory(25);
     }
 }
