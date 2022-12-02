@@ -50,7 +50,7 @@ public class DefaultExceptionHandler {
 
     // no need to log these exceptions at all
     private static final Set<Class<?>> nonLoggableExceptions = Set.of(
-        ObjectNotFoundException.class
+        ObjectNotFoundException.class, BadRequestException.class
     );
 
     public DefaultExceptionHandler(final Logger exceptionHandlerLogger) {

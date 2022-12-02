@@ -90,7 +90,7 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
 
     @Test
     public void badRequestException() throws Exception {
-        testException(BadRequestException.class, 400, LogMode.INFO);
+        testException(BadRequestException.class, 400, LogMode.NONE);
     }
 
     @Test

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.dto.info.v1.DataSourceInfoDtoV1;
 import fi.livi.digitraffic.tie.model.DataSource;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
@@ -19,8 +20,8 @@ public class InfoControllerV1Test extends AbstractRestWebTest {
     @Test
     public void updateTimes() throws Exception {
 
-        final String stateInterval = dataStatusService.getDataSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING).toString();
-        final String mi = dataStatusService.getDataSourceUpdateInterval(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY).toString();
+        final DataSourceInfoDtoV1 stateInfo = dataStatusService.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING);
+        final DataSourceInfoDtoV1 municipalityInfo = dataStatusService.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY);
 
         final ResultActions response =
             logDebugResponse(
@@ -31,9 +32,11 @@ public class InfoControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("updateTimes[*].dataUpdatedTime").exists())
             .andExpect(jsonPath("updateTimes[*].dataCheckedTime").exists())
             .andExpect(jsonPath("updateTimes[*].dataUpdateInterval").exists())
-            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype=='state-roads')].dataUpdateInterval").value(stateInterval))
-            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].dataUpdateInterval", Matchers.hasItem(mi)))
-            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].dataUpdateInterval", Matchers.not(Matchers.hasItem(stateInterval))))
+            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype=='state-roads')].dataUpdateInterval").value(stateInfo.getUpdateInterval()))
+            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype=='state-roads')].recommendedFetchInterval").value(stateInfo.getRecommendedFetchInterval()))
+            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].dataUpdateInterval", Matchers.hasItem(municipalityInfo.getUpdateInterval())))
+            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].recommendedFetchInterval", Matchers.hasItem(municipalityInfo.getRecommendedFetchInterval())))
+            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].dataUpdateInterval", Matchers.not(Matchers.hasItem(stateInfo.getUpdateInterval()))))
             ;
     }
 }

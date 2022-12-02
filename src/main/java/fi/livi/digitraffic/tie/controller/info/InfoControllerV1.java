@@ -38,7 +38,10 @@ public class InfoControllerV1 {
 
     /* METADATA */
 
-    @Operation(summary = "Infos about apis data update times")
+    @Operation(summary = "Infos about apis data update times",
+               description = "This API returns info about data update intervals, when data is last updated and how often should API to be called by client. \n" +
+                             "For `dataUpdateInterval` field the `P0S` value has special meaning that data is updated nearly in real time. \n" +
+                            "`null` value indicates static data and it is only updated when needed." )
     @RequestMapping(method = RequestMethod.GET,
                     path = API_INFO_V1 + UPDATE_TIMES,
                     produces = { APPLICATION_JSON_VALUE })

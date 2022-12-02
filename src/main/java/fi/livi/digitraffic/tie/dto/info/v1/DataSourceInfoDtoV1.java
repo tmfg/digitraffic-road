@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.dto.info.v1;
 
-import java.time.Duration;
-
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
@@ -24,5 +22,9 @@ public interface DataSourceInfoDtoV1 {
     String getSource();
 
     @Schema(description = "Data update interval")
-    Duration getUpdateInterval();
+    String getUpdateInterval();
+
+    @Schema(description = "Recommended fetch interval for clients")
+    String getRecommendedFetchInterval();
+
 }

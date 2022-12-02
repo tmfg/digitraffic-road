@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.dao.v1;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -76,16 +75,26 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
     Instant getCountingSiteDataLastUpdated();
 
     @Query(value =
-           "select si.id, si.source, si.update_interval as updateInterval\n" +
+           "select si.id, si.source" +
+           "     , si.update_interval as updateInterval" +
+           "     , si.recommended_fetch_interval as recommendedFetchInterval\n" +
            "from data_source_info si\n" +
            "WHERE id = :#{#dataSource.name()}\n" +
            "order by id", nativeQuery = true)
     DataSourceInfoDtoV1 getDataSourceInfo(final DataSource dataSource);
 
-    default Duration getDataSourceUpdateInterval(final DataSource dataSource) {
+    default String getDataSourceUpdateInterval(final DataSource dataSource) {
         return Optional.ofNullable(getDataSourceInfo(dataSource))
             .flatMap(dataSourceInfoDtoV1 -> Optional.ofNullable(dataSourceInfoDtoV1 != null ?
                                                                 dataSourceInfoDtoV1.getUpdateInterval() :
+                                                                null))
+            .orElse(null);
+    }
+
+    default String getDataSourceRecommendedFetchInterval(final DataSource dataSource) {
+        return Optional.ofNullable(getDataSourceInfo(dataSource))
+            .flatMap(dataSourceInfoDtoV1 -> Optional.ofNullable(dataSourceInfoDtoV1 != null ?
+                                                                dataSourceInfoDtoV1.getRecommendedFetchInterval() :
                                                                 null))
             .orElse(null);
     }
