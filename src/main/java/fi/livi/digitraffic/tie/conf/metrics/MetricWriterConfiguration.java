@@ -36,6 +36,7 @@ public class MetricWriterConfiguration {
 
     private final List<LoggableMetric> metricsToLog = Arrays.asList(
         LoggableMetric.of("process.cpu.usage"),
+        LoggableMetric.of("system.cpu.count"),
         LoggableMetric.of("jvm.memory.used").withTag("area"),
         LoggableMetric.of(CONNECTIONS_MAX).withTag(TAG_POOL).noMin(),
         LoggableMetric.of(CONNECTIONS_PENDING).withTag(TAG_POOL),
