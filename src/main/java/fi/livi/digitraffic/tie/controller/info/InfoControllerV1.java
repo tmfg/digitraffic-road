@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = INFO_TAG_V1, description = "Weather Controller")
+@Tag(name = INFO_TAG_V1)
 @RestController
 @Validated
 @ConditionalOnWebApplication
