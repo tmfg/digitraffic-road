@@ -111,13 +111,10 @@ public class MaintenanceTrackingWebDataServiceV1 {
                 toZonedDateTimeAtUtc(createdAfter), toZonedDateTimeAtUtc(createdBefore),
                 area, convertTasksToStringArrayOrNull(taskIds), realDomains);
 
-        log.info("method=findMaintenanceTrackingsV1 with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
+        log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
             xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
 
-        final StopWatch startConvert = StopWatch.createStarted();
         final List<MaintenanceTrackingFeatureV1> features = convertToTrackingFeatures(found);
-        log.info("method=findMaintenanceTrackingsV1-convert with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
-            xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), startConvert.getTime());
 
         return new MaintenanceTrackingFeatureCollectionV1(lastUpdated, features);
     }
@@ -206,14 +203,23 @@ public class MaintenanceTrackingWebDataServiceV1 {
     }
 
     private static List<MaintenanceTrackingFeatureV1> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {
-        return trackings.stream().map(MaintenanceTrackingWebDataServiceV1::convertToTrackingFeature).collect(Collectors.toList());
+        final StopWatch startConvert = StopWatch.createStarted();
+        final List<MaintenanceTrackingFeatureV1> tmp =
+            trackings.parallelStream().map(MaintenanceTrackingWebDataServiceV1::convertToTrackingFeature).collect(Collectors.toList());
+        log.info("method=convertToTrackingFeatures tookMs={} count={}", startConvert.getTime(), trackings.size());
+        return tmp;
     }
 
     private static List<MaintenanceTrackingLatestFeatureV1> convertToTrackingLatestFeatures(final List<MaintenanceTrackingDto> trackings) {
-        return trackings.stream().map(MaintenanceTrackingWebDataServiceV1::convertToTrackingLatestFeature).collect(Collectors.toList());
+        final StopWatch startConvert = StopWatch.createStarted();
+        final List<MaintenanceTrackingLatestFeatureV1> tmp =
+            trackings.parallelStream().map(MaintenanceTrackingWebDataServiceV1::convertToTrackingLatestFeature).collect(Collectors.toList());
+        log.info("method=convertToTrackingLatestFeatures tookMs={} count={}", startConvert.getTime(), trackings.size());
+        return tmp;
     }
 
     private static MaintenanceTrackingFeatureV1 convertToTrackingFeature(final MaintenanceTrackingDto tracking) {
+//        final StopWatch starGeoJSON = StopWatch.createStarted();
         final Geometry<?> geometry = convertToGeoJSONGeometry(tracking, false);
         final MaintenanceTrackingPropertiesV1 properties =
             new MaintenanceTrackingPropertiesV1(
@@ -228,6 +234,10 @@ public class MaintenanceTrackingWebDataServiceV1 {
                 tracking.getDomain(),
                 tracking.getSource(),
                 tracking.getModified());
+
+//        if (starGeoJSON.getTime() > 1 && log.isDebugEnabled()) {
+//            log.debug("method=convertToTrackingFeature tookMs={} geomSize={}", starGeoJSON.getTime(), geometry.getCoordinates().size());
+//        }
         return new MaintenanceTrackingFeatureV1(geometry, properties, tracking.getModified());
     }
 
