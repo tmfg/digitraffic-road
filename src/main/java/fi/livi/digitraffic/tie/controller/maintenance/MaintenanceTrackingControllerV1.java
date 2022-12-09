@@ -101,10 +101,10 @@ public class MaintenanceTrackingControllerV1 {
         this.maintenanceTrackingWebDataServiceV1 = maintenanceTrackingWebDataServiceV1;
     }
 
-    @Operation(summary = "Road maintenance tracking routes latest points")
-    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
+    @Operation(summary = "Road maintenance tracking routes latest points", hidden = true)
+    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST + "_", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking latest routes"))
-    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(
+    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings_(
 
     @Parameter(description = "Return routes which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
     @RequestParam(required = false)
@@ -146,7 +146,120 @@ public class MaintenanceTrackingControllerV1 {
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
 
-        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskId, domain);
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackingsSlow(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskId, domain);
+    }
+
+    @Operation(summary = "Road maintenance tracking routes latest points")
+    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking latest routes"))
+    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(
+
+        @Parameter(description = "Return routes which have completed onwards from the given time (inclusive). Default is -1h from now and maximum -24h.")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final Instant endFrom,
+
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MIN, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
+        final double xMin,
+
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MIN, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
+        final double yMin,
+
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MAX, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
+        final double xMax,
+
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MAX, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
+        final double yMax,
+
+        @Parameter(description = "Task ids to include. Any route containing one of the selected tasks will be returned.")
+        @RequestParam(value = "taskId", required = false)
+        final List<MaintenanceTrackingTask> taskId,
+
+        @Parameter(description = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
+        @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
+        final List<String> domain) {
+
+        validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
+        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
+
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackingsFast(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskId, domain);
+    }
+
+    @Operation(summary = "Road maintenance tracking routes", hidden = true)
+    @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES + "_", produces = APPLICATION_JSON_VALUE)
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking routes"))
+    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings_(
+
+        @Parameter(description = "Return routes which have completed onwards from the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final Instant endFrom,
+
+        @Parameter(description = "Return routes which have completed before the given end time (exclusive). Default is now and maximum interval between from and to is 24h.")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final Instant endBefore,
+
+        @Parameter(description = "Return routes which have been created after the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final Instant createdAfter,
+
+        @Parameter(description = "Return routes which have been created before the given time (exclusive). Maximum interval between createdFrom and createdTo is 24h.")
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        final Instant createdBefore,
+
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MIN, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
+        final double xMin,
+
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MIN, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
+        final double yMin,
+
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @RequestParam(defaultValue = X_MAX, required = false)
+        @DecimalMin(X_MIN)
+        @DecimalMax(X_MAX)
+        final double xMax,
+
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @RequestParam(defaultValue = Y_MAX, required = false)
+        @DecimalMin(Y_MIN)
+        @DecimalMax(Y_MAX)
+        final double yMax,
+
+        @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
+        @RequestParam(value = "taskId", required = false)
+        final List<MaintenanceTrackingTask> taskId,
+
+        @Parameter(description = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
+        @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
+        final List<String> domain) {
+
+        validateTimeBetweenFromAndToMaxHours(endFrom, endBefore, 24, END_TIME);
+        validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
+        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
+
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingsSlow(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax,
+            taskId, domain);
     }
 
     @Operation(summary = "Road maintenance tracking routes")
@@ -210,10 +323,9 @@ public class MaintenanceTrackingControllerV1 {
         validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
 
-        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax,
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingsFast(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax,
             taskId, domain);
     }
-
     @Operation(summary = "Road maintenance tracking route with tracking id")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES + "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking routes"))

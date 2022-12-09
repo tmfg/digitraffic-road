@@ -701,7 +701,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractWebServiceT
 
     private MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
                                                                                       final MaintenanceTrackingTask...tasks) {
-        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackingsFast(
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
@@ -732,7 +732,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractWebServiceT
                                                                           final Instant changeAfter, final Instant changeBefore,
                                                                           final List<String> domains,
                                                                           final MaintenanceTrackingTask...tasks) {
-        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingsFast(
             endFrom, endBefore, changeAfter, changeBefore,
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),

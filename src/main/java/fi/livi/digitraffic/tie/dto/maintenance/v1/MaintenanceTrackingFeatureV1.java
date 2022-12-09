@@ -13,11 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "type", "properties", "geometry" })
 public class MaintenanceTrackingFeatureV1 extends Feature<Geometry<?>, MaintenanceTrackingPropertiesV1> implements LastModifiedSupport {
 
-    private final Instant lastModified;
-
-    public MaintenanceTrackingFeatureV1(final Geometry<?> geometry, final MaintenanceTrackingPropertiesV1 properties, final Instant lastModified) {
+    public MaintenanceTrackingFeatureV1(final Geometry<?> geometry, final MaintenanceTrackingPropertiesV1 properties) {
         super(geometry, properties);
-        this.lastModified = lastModified;
     }
 
     @Schema(description = "GeoJSON Feature Object", required = true, allowableValues = "Feature")
@@ -35,6 +32,6 @@ public class MaintenanceTrackingFeatureV1 extends Feature<Geometry<?>, Maintenan
 
     @Override
     public Instant getLastModified() {
-        return lastModified;
+        return getProperties().getLastModified();
     }
 }

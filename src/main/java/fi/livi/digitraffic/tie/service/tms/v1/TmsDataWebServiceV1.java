@@ -107,6 +107,7 @@ public class TmsDataWebServiceV1 {
 
     @Transactional(readOnly = true)
     public TmsStationSensorConstantDtoV1 findPublishableSensorConstantsForStation(final long roadStationNaturalId) {
+        roadStationRepository.checkIsPublishableTmsRoadStation(roadStationNaturalId);
         final List<TmsSensorConstantValueDto> values =
             tmsSensorConstantValueDtoRepository.findPublishableSensorConstantValueForStation(roadStationNaturalId);
 

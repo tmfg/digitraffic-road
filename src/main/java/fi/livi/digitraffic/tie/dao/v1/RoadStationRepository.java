@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Repository
 public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
@@ -40,4 +41,13 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
            "FROM RoadStation rs\n" +
            "WHERE rs.naturalId = :naturalId")
     Optional<Long> findByRoadStationId(@Param("naturalId") final long naturalId);
+
+    default void checkIsPublishableRoadStation(final long roadStationNaturalId, final RoadStationType type) {
+        if ( !isPublishableRoadStation(roadStationNaturalId, type) ) {
+            throw new ObjectNotFoundException(type.name(), roadStationNaturalId);
+        }
+    }
+    default void checkIsPublishableTmsRoadStation(final long roadStationNaturalId) {
+        checkIsPublishableRoadStation(roadStationNaturalId, RoadStationType.TMS_STATION);
+    }
 }

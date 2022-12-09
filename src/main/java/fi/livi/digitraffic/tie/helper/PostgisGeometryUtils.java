@@ -138,6 +138,10 @@ public class PostgisGeometryUtils {
         return convertGeoJSONStringToGeoJSON(geoJson);
     }
 
+    public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeoJSONStringToGeoJSONFirstValid(final String...geoJsonString) {
+        return (T) Arrays.stream(geoJsonString).filter(json -> json != null).map(j -> convertGeoJSONStringToGeoJSON(j)).filter(g -> !((fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>) g).getCoordinates().isEmpty()).findFirst().orElse(null);
+    }
+
     public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeoJSONStringToGeoJSON(final String geoJsonString) {
         try {
             return dtGeoJsonReader.readValue(geoJsonString);

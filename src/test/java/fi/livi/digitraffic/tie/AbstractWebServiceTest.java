@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConve
 import fi.livi.digitraffic.tie.converter.feature.WeatherStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.converter.tms.v1.TmsStationToFeatureConverterV1;
 import fi.livi.digitraffic.tie.converter.weather.v1.WeatherStationToFeatureConverterV1;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
@@ -65,7 +66,7 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
          V3RegionGeometryDataService.class, V3Datex2DataService.class, V2Datex2DataService.class, WeatherStationService.class,
 
          // Repositories and daos
-         TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class,
+         TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, MaintenanceTrackingDaoV1.class,
 
          // Conveters
          TmsStationMetadata2FeatureConverter.class, TmsStationToFeatureConverterV1.class,
