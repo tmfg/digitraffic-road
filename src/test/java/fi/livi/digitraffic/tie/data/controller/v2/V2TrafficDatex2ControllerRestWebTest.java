@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
@@ -94,6 +95,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void datex2incident() throws Exception {
         final String url = getUrl(TRAFFIC_INCIDENT, false, 0);
         final String xml = getResponse(url);
@@ -106,6 +108,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void datex2incidentInPast() throws Exception {
         final String url = getUrl(TRAFFIC_INCIDENT, false, 200000);
         final String xml = getResponse(url);
@@ -117,6 +120,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void datex2roadwork() throws Exception {
         final String url = getUrl(ROADWORK, false, 0);
         final String xml = getResponse(url);
@@ -129,6 +133,7 @@ public class V2TrafficDatex2ControllerRestWebTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void datex2weightRestriction() throws Exception {
         final String url = getUrl(WEIGHT_RESTRICTION, false, 0);
         final String xml = getResponse(url);

@@ -6,24 +6,12 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTION_WEATHER_DATA_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.FREE_FLOW_SPEEDS_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.ROADWORKS_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_DATA_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_SENSOR_CONSTANTS;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_DATA_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.WEIGHT_RESTRICTIONS_DATEX2_PATH;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
-import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
-import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_BAD_REQUEST;
-import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
@@ -35,12 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.annotation.Sunset;
 import fi.livi.digitraffic.tie.controller.ApiDeprecations;
-import fi.livi.digitraffic.tie.datex2.response.RoadworksDatex2Response;
-import fi.livi.digitraffic.tie.datex2.response.TrafficDisordersDatex2Response;
-import fi.livi.digitraffic.tie.datex2.response.WeightRestrictionsDatex2Response;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.dto.v1.freeflowspeed.FreeFlowSpeedRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantRootDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
@@ -53,7 +37,6 @@ import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -89,31 +72,31 @@ public class DataController {
         this.datex2DataService = datex2DataService;
     }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Current free flow speeds. This API is deprecated, use tms-sensor-constants and values VVAPAAS1 & VVAPAAS2. " +
-                  ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of free flow speeds"))
-    public FreeFlowSpeedRootDataObjectDto freeFlowSpeeds(
-            @Parameter(description = "If parameter is given result will only contain update status")
-            @RequestParam(value= LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
-            boolean lastUpdated) {
-        return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(lastUpdated);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Current free flow speeds. This API is deprecated, use tms-sensor-constants and values VVAPAAS1 & VVAPAAS2. " +
+//                  ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH, produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of free flow speeds"))
+//    public FreeFlowSpeedRootDataObjectDto freeFlowSpeeds(
+//            @Parameter(description = "If parameter is given result will only contain update status")
+//            @RequestParam(value= LAST_UPDATED_PARAM, required = false, defaultValue = "false") final
+//            boolean lastUpdated) {
+//        return freeFlowSpeedService.listLinksPublicFreeFlowSpeeds(lastUpdated);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Current free flow speeds of TMS station (Traffic Measurement System / LAM). " +
-                  "This API is deprecated, use tms-sensor-constants and values VVAPAAS1 & VVAPAAS2. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/tms/{id}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of free flow speeds"))
-    public FreeFlowSpeedRootDataObjectDto freeFlowSpeedsOfTmsById(
-            @Parameter(description = "TMS station id", required = true)
-            @PathVariable
-            final long id) {
-        return freeFlowSpeedService.listTmsPublicFreeFlowSpeeds(id);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Current free flow speeds of TMS station (Traffic Measurement System / LAM). " +
+//                  "This API is deprecated, use tms-sensor-constants and values VVAPAAS1 & VVAPAAS2. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = FREE_FLOW_SPEEDS_PATH + "/tms/{id}", produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of free flow speeds"))
+//    public FreeFlowSpeedRootDataObjectDto freeFlowSpeedsOfTmsById(
+//            @Parameter(description = "TMS station id", required = true)
+//            @PathVariable
+//            final long id) {
+//        return freeFlowSpeedService.listTmsPublicFreeFlowSpeeds(id);
+//    }
 
     @Deprecated(forRemoval = true)
     @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
@@ -201,140 +184,140 @@ public class DataController {
                                                                         null);
     }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Active traffic disorders Datex2 messages. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"))
-    public TrafficDisordersDatex2Response trafficDisordersDatex2(
-        @Parameter(description = "Return traffic disorders from given amount of hours in the past.")
-        @RequestParam(defaultValue = "0")
-        @Range(min = 0)
-        final int inactiveHours) {
-        return datex2DataService.findActiveTrafficDisorders(inactiveHours);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Active traffic disorders Datex2 messages. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"))
+//    public TrafficDisordersDatex2Response trafficDisordersDatex2(
+//        @Parameter(description = "Return traffic disorders from given amount of hours in the past.")
+//        @RequestParam(defaultValue = "0")
+//        @Range(min = 0)
+//        final int inactiveHours) {
+//        return datex2DataService.findActiveTrafficDisorders(inactiveHours);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Traffic disorder Datex2 messages by situation id. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"),
-                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
-    public TrafficDisordersDatex2Response trafficDisordersDatex2BySituationId(
-            @Parameter(description = "Situation id.", required = true)
-            @PathVariable final String situationId) {
-        return datex2DataService.getAllTrafficDisordersBySituationId(situationId);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Traffic disorder Datex2 messages by situation id. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"),
+//                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
+//    public TrafficDisordersDatex2Response trafficDisordersDatex2BySituationId(
+//            @Parameter(description = "Situation id.", required = true)
+//            @PathVariable final String situationId) {
+//        return datex2DataService.getAllTrafficDisordersBySituationId(situationId);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Traffic disorder Datex2 messages disorders history. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses(      {   @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"),
-                            @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter", content = @Content),
-                            @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
-    public TrafficDisordersDatex2Response trafficDisordersDatex2OfHistory(
-            @Parameter(description = "Situation id")
-            @RequestParam(required = false)
-            final String situationId,
-            @Parameter(description = "Year (>2014)", required = true)
-            @RequestParam @Min(2015) @Max(9999)
-            final int year,
-            @Parameter(description = "Month (1-12)", required = true)
-            @RequestParam @Range(min = 1, max = 12)
-            final int month) {
-        return datex2DataService.findTrafficDisorders(situationId, year, month);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Traffic disorder Datex2 messages disorders history. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_DISORDERS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses(      {   @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"),
+//                            @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter", content = @Content),
+//                            @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
+//    public TrafficDisordersDatex2Response trafficDisordersDatex2OfHistory(
+//            @Parameter(description = "Situation id")
+//            @RequestParam(required = false)
+//            final String situationId,
+//            @Parameter(description = "Year (>2014)", required = true)
+//            @RequestParam @Min(2015) @Max(9999)
+//            final int year,
+//            @Parameter(description = "Month (1-12)", required = true)
+//            @RequestParam @Range(min = 1, max = 12)
+//            final int month) {
+//        return datex2DataService.findTrafficDisorders(situationId, year, month);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Active roadwork Datex2 messages. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of roadworks"))
-    public RoadworksDatex2Response roadworksDatex2(
-        @Parameter(description = "Return roadworks from given amount of hours in the past.")
-        @RequestParam(defaultValue = "0")
-        @Range(min = 0)
-        final int inactiveHours) {
-        return datex2DataService.findActiveRoadworks(inactiveHours);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Active roadwork Datex2 messages. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of roadworks"))
+//    public RoadworksDatex2Response roadworksDatex2(
+//        @Parameter(description = "Return roadworks from given amount of hours in the past.")
+//        @RequestParam(defaultValue = "0")
+//        @Range(min = 0)
+//        final int inactiveHours) {
+//        return datex2DataService.findActiveRoadworks(inactiveHours);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Roadwork Datex2 messages by situation id. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"),
-        @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
-    public RoadworksDatex2Response roadworksDatex2BySituationId(
-        @Parameter(description = "Situation id.", required = true)
-        @PathVariable final String situationId) {
-        return datex2DataService.getAllRoadworksBySituationId(situationId);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Roadwork Datex2 messages by situation id. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"),
+//        @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
+//    public RoadworksDatex2Response roadworksDatex2BySituationId(
+//        @Parameter(description = "Situation id.", required = true)
+//        @PathVariable final String situationId) {
+//        return datex2DataService.getAllRoadworksBySituationId(situationId);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Roadwork Datex2 messages history. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"),
-        @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter", content = @Content),
-        @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content)})
-    public RoadworksDatex2Response roadworksDatex2OfHistory(
-        @Parameter(description = "Situation id")
-        @RequestParam(required = false)
-        final String situationId,
-        @Parameter(description = "Year (>2014)", required = true)
-        @RequestParam @Valid @Min(2014)
-        final int year,
-        @Parameter(description = "Month (1-12)", required = true)
-        @RequestParam @Valid @Range(min = 1, max = 12)
-        final int month) {
-        return datex2DataService.findRoadworks(situationId, year, month);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Roadwork Datex2 messages history. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = ROADWORKS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic disorders"),
+//        @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter", content = @Content),
+//        @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content)})
+//    public RoadworksDatex2Response roadworksDatex2OfHistory(
+//        @Parameter(description = "Situation id")
+//        @RequestParam(required = false)
+//        final String situationId,
+//        @Parameter(description = "Year (>2014)", required = true)
+//        @RequestParam @Valid @Min(2014)
+//        final int year,
+//        @Parameter(description = "Month (1-12)", required = true)
+//        @RequestParam @Valid @Range(min = 1, max = 12)
+//        final int month) {
+//        return datex2DataService.findRoadworks(situationId, year, month);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Active weight restrictions Datex2 messages. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weight restrictions"))
-    public WeightRestrictionsDatex2Response weightRestrictionsDatex2(
-        @Parameter(description = "Return weight restrictions from given amount of hours in the past.")
-        @RequestParam(defaultValue = "0")
-        @Range(min = 0)
-        final int inactiveHours) {
-        return datex2DataService.findActiveWeightRestrictions(inactiveHours);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Active weight restrictions Datex2 messages. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weight restrictions"))
+//    public WeightRestrictionsDatex2Response weightRestrictionsDatex2(
+//        @Parameter(description = "Return weight restrictions from given amount of hours in the past.")
+//        @RequestParam(defaultValue = "0")
+//        @Range(min = 0)
+//        final int inactiveHours) {
+//        return datex2DataService.findActiveWeightRestrictions(inactiveHours);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Weight restrictions Datex2 messages by situation id. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weight restrictions"),
-        @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
-    public WeightRestrictionsDatex2Response weightRestrictionsDatex2BySituationId(
-        @Parameter(description = "Situation id.", required = true)
-        @PathVariable final String situationId) {
-        return datex2DataService.getAllWeightRestrictionsBySituationId(situationId);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Weight restrictions Datex2 messages by situation id. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weight restrictions"),
+//        @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
+//    public WeightRestrictionsDatex2Response weightRestrictionsDatex2BySituationId(
+//        @Parameter(description = "Situation id.", required = true)
+//        @PathVariable final String situationId) {
+//        return datex2DataService.getAllWeightRestrictionsBySituationId(situationId);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-    @Operation(summary = "Weight restriction Datex2 messages history. " + ApiDeprecations.API_NOTE_2022_11_01)
-    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weight restrictions"),
-        @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter", content = @Content),
-        @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content)})
-    public WeightRestrictionsDatex2Response weightRestrictionsDatex2OfHistory(
-        @Parameter(description = "Situation id")
-        @RequestParam(required = false)
-        final String situationId,
-        @Parameter(description = "Year (>2014)", required = true)
-        @RequestParam @Valid @Min(2014)
-        final int year,
-        @Parameter(description = "Month (1-12)", required = true)
-        @RequestParam @Valid @Range(min = 1, max = 12)
-        final int month) {
-        return datex2DataService.findWeightRestrictions(situationId, year, month);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
+//    @Operation(summary = "Weight restriction Datex2 messages history. " + ApiDeprecations.API_NOTE_2022_11_01)
+//    @RequestMapping(method = RequestMethod.GET, path = WEIGHT_RESTRICTIONS_DATEX2_PATH + "/history", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
+//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weight restrictions"),
+//        @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter", content = @Content),
+//        @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content)})
+//    public WeightRestrictionsDatex2Response weightRestrictionsDatex2OfHistory(
+//        @Parameter(description = "Situation id")
+//        @RequestParam(required = false)
+//        final String situationId,
+//        @Parameter(description = "Year (>2014)", required = true)
+//        @RequestParam @Valid @Min(2014)
+//        final int year,
+//        @Parameter(description = "Month (1-12)", required = true)
+//        @RequestParam @Valid @Range(min = 1, max = 12)
+//        final int month) {
+//        return datex2DataService.findWeightRestrictions(situationId, year, month);
+//    }
 
     @Deprecated(forRemoval = true)
     @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)

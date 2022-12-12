@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void assertNoWorkMachineIdInResult() throws Exception {
         final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
@@ -126,6 +128,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void findMaintenanceTrackingsWithinTime() throws Exception {
         final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
@@ -160,6 +163,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void findMaintenanceTrackingsWithTasks() throws Exception {
         final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
@@ -197,6 +201,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void findLatestMaintenanceTrackings() throws Exception {
         final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
@@ -258,6 +263,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void findLatestMaintenanceTrackingsWithTask() throws Exception {
         final ZonedDateTime start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
@@ -290,6 +296,7 @@ public class MaintenanceTrackingsControllerTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void findWithBoundingBox() throws Exception {
         final ZonedDateTime now = getStartTimeOneHourInPast();
 
