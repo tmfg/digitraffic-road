@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
      * Test all Ims Xml Versions and all message types to be returned by the controller
      */
     @Test
+    @Disabled("API Removed")
     public void getJsonAndXmlCurrentlyActive() throws Exception {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
@@ -121,6 +123,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
      * Test all Ims Xml Versions and all message types to be returned by the controller when they are inactive and inside inactive hours parameter
      */
     @Test
+    @Disabled("API Removed")
     public void getJsonAndXmlCurrentlyInactiveWithInactiveHours() throws Exception {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
@@ -148,6 +151,7 @@ public class V3TrafficMessagesControllerTest extends AbstractRestWebTestWithRegi
      * Tests all Ims Xml Versions and all message types to not be returned by the controller when they are passive.
      */
     @Test
+    @Disabled("API Removed")
     public void getJsonAndXmlCurrentlyInactive() throws Exception {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -75,6 +76,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     }
 
     @Test
+    @Disabled("API Removed")
     public void datex2incident() throws Exception {
         final String xml = getResponse(getUrl(TRAFFIC_INCIDENT, false, 0));
         final String json = getResponse(getUrl(TRAFFIC_INCIDENT, true, 0));
@@ -99,6 +101,7 @@ public class V2TrafficDatex2ControllerWithJsonRestWebTest extends AbstractRestWe
     }
 
     @Test
+    @Disabled("API Removed")
     public void datex2incidentInPast() throws Exception {
         final String xml = getResponse(getUrl(TRAFFIC_INCIDENT, false, 200000));
         final String json = getResponse(getUrl(TRAFFIC_INCIDENT, true, 200000));

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -71,6 +72,7 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
 
     @Transactional(propagation=Propagation.REQUIRES_NEW)
     @Test
+    @Disabled("API Removed")
     public void testFreeFlowSpeedDataRestApi() throws Exception {
 
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + FREE_FLOW_SPEEDS_PATH))
@@ -87,6 +89,7 @@ public class FreeFlowSpeedRestWebTest extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("API Removed")
     public void testFreeFlowSpeedDataRestApiByTmsId() throws Exception {
         mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + FREE_FLOW_SPEEDS_PATH + "/tms/" + tmsId))
                 .andExpect(status().isOk())
