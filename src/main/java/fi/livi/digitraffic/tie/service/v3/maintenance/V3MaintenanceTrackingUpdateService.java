@@ -42,11 +42,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
-import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
-import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
@@ -166,14 +164,14 @@ public class V3MaintenanceTrackingUpdateService {
                     log.debug("method=handleRoute WorkMachine tracking in transition");
                     // Mark found one to finished as the work machine is in transition after that
                     // Append first point of next tracking as the last point of the previous tracking (without the task) if it's inside time limits.
-                    updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime,  status.isNextInsideLimits());
+                    updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime,  status.isInsideLimitsForCombiningWithPrevious());
 
                 // If previous is finished or tasks has changed or time gap is too long, we create new tracking for the machine
                 } else if (status.is(NEW) || status.is(SAME)) {
 
                     // Append first point of next tracking as the last point of the previous tracking (without the task) if it's inside time limits.
                     // This happens only when task changes for same work machine or trakcing is continuation for previous tracking.
-                    updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isNextInsideLimits());
+                    updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isInsideLimitsForCombiningWithPrevious());
 
                     final Geometry simplifiedGeometry = PostgisGeometryUtils.simplify(geometry);
                     if (geometry.getNumPoints() != simplifiedGeometry.getNumPoints()) {
@@ -226,10 +224,6 @@ public class V3MaintenanceTrackingUpdateService {
         }
     }
 
-    private static boolean isLineString(final Geometry geometry) {
-        return geometry.getNumPoints() > 1;
-    }
-
     private static BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {
         if (havainto.getSuunta() != null) {
             final BigDecimal value = BigDecimal.valueOf(havainto.getSuunta());
@@ -248,47 +242,47 @@ public class V3MaintenanceTrackingUpdateService {
 
         final Set<MaintenanceTrackingTask> performedTasks = getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
         final ZonedDateTime harjaObservationTime = havainto.getHavaintoaika();
-        final boolean isNextInsideTheTimeLimit = isNextCoordinateTimeInsideTheLimitNullSafe(harjaObservationTime, previousTracking);
-        final boolean isNextTimeSameOrAfter = isNextCoordinateTimeSameOrAfterPreviousNullSafe(harjaObservationTime, previousTracking);
+        final Point nextTrackingFirstPoint = resolveFirstPoint(nextGeometry);
+        final boolean isInsideLimitsToCombine = isInsideTheLimitsForCombiningToPreviousTracking(previousTracking, harjaObservationTime, nextTrackingFirstPoint);
         final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, previousTracking);
         final boolean isTransition = isTransition(performedTasks);
-        final boolean isLineString = isLineString(nextGeometry);
-
-        // With linestrings we can't count speed so check distance
-        if (!isTransition && previousTracking != null && !previousTracking.isFinished() && isLineString) {
-            final double km = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), resolveFirstPoint(nextGeometry));
-            if (km > distinctLineStringObservationGapKm) {
-                return new NextObservationStatus(NEW, false, isNextTimeSameOrAfter, true);
-            }
-        }
-
-        final double speedInKmH = resolveSpeedInKmHNullSafe(previousTracking, havainto.getHavaintoaika(), nextGeometry);
-        final boolean overspeed = speedInKmH >= 140.0;
 
         if (isTransition) {
-            return new NextObservationStatus(TRANSITION, isNextInsideTheTimeLimit, isNextTimeSameOrAfter, overspeed);
-        } else if ( previousTracking == null ||
-                    previousTracking.isFinished() ||
-                    isTasksChanged ||
-                    !isNextInsideTheTimeLimit ||
-                    !isNextTimeSameOrAfter ||
-                    overspeed) {
-            return new NextObservationStatus(NEW, isNextInsideTheTimeLimit, isNextTimeSameOrAfter, overspeed);
+            return new NextObservationStatus(TRANSITION, isInsideLimitsToCombine);
+        } else if ( isTasksChanged ||
+                    !isInsideLimitsToCombine) {
+            return new NextObservationStatus(NEW, isInsideLimitsToCombine);
         } else {
-            return new NextObservationStatus(SAME, isNextInsideTheTimeLimit, isNextTimeSameOrAfter, overspeed);
+            return new NextObservationStatus(SAME, isInsideLimitsToCombine);
         }
     }
 
+    private static boolean isInsideTheLimitsForCombiningToPreviousTracking(final MaintenanceTracking previousTracking,
+                                                                           final ZonedDateTime nextTrackingTime,
+                                                                           final Point nextTrackingFirstPoint) {
+        return
+            previousTracking != null &&
+            !previousTracking.isFinished() &&
+            isNextCoordinateTimeSameOrAfterPreviousNullSafe(nextTrackingTime, previousTracking) &&
+            isNextCoordinateTimeInsideTheLimitNullSafe(nextTrackingTime, previousTracking) &&
+            isDistanceFromPreviousTrackingInsideDistanceLimit(previousTracking, nextTrackingFirstPoint) &&
+            resolveSpeedInKmHNullSafe(previousTracking, nextTrackingTime, nextTrackingFirstPoint) < 140.0;
+    }
+
+    private static boolean isDistanceFromPreviousTrackingInsideDistanceLimit(final MaintenanceTracking previousTracking,
+                                                                             final Point nextTrackingFirstPoint) {
+        return PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), nextTrackingFirstPoint) < distinctLineStringObservationGapKm;
+    }
+
     private static double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime havaintoaika,
-                                                    final Geometry nextGeometry) {
+                                                    final Point nextTrackingFirstPoint) {
         if (previousTracking == null) {
             return 0.0;
         }
 
-        if (nextGeometry != null) {
+        if (nextTrackingFirstPoint != null) {
             final long diffInSeconds = getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(previousTracking, havaintoaika);
-            final Point nextPoint = resolveFirstPoint(nextGeometry);
-            final double speedKmH = PostgisGeometryUtils.speedBetweenWGS84PointsInKmH(previousTracking.getLastPoint(), nextPoint, diffInSeconds);
+            final double speedKmH = PostgisGeometryUtils.speedBetweenWGS84PointsInKmH(previousTracking.getLastPoint(), nextTrackingFirstPoint, diffInSeconds);
             if (log.isDebugEnabled()) {
                 log.debug("method=resolveSpeedInKmHNullSafe Speed {} km/h", speedKmH);
             }
@@ -324,20 +318,16 @@ public class V3MaintenanceTrackingUpdateService {
      * @param direction Direction of the machine
      * @param latestGeometryOservationTime Time of the observation
      * @param appendLatestPoint Should the latest point be appended to the geometry
-     * @return true if the latest point was appended to tracking
      */
-    private static boolean updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Point latestPoint,
-                                                                         final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
-                                                                         final boolean appendLatestPoint) {
-        boolean geometryAppended = false;
+    private static void updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Point latestPoint,
+                                                                      final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
+                                                                      final boolean appendLatestPoint) {
         if (trackingToFinish != null && !trackingToFinish.isFinished()) {
             if (appendLatestPoint) {
                 trackingToFinish.appendGeometry(latestPoint, latestGeometryOservationTime, direction);
-                geometryAppended = true;
             }
             trackingToFinish.setFinished();
         }
-        return geometryAppended;
     }
 
     /**
@@ -536,20 +526,12 @@ public class V3MaintenanceTrackingUpdateService {
             if (changed && log.isDebugEnabled()) {
                 log.debug("WorkMachineTrackingTask changed from {} to {} for {}",
                           previousTasks.stream().map(Object::toString).collect(Collectors.joining(",")),
-                          newTasks.stream().map(Object::toString).collect(Collectors.joining(",")),
+                          newTasks != null ? newTasks.stream().map(Object::toString).collect(Collectors.joining(",")) : null,
                           previousTracking.toStringTiny());
             }
             return changed;
         }
         return false;
-    }
-
-    /**
-     * Gets all trackings from the given tracking record
-     * @return trackings of the given record
-     */
-    private static List<Havainto> getHavaintos(final TyokoneenseurannanKirjausRequestSchema kirjaus) {
-        return kirjaus.getHavainnot().stream().map(Havainnot::getHavainto).collect(Collectors.toList());
     }
 
     static class NextObservationStatus {
@@ -561,36 +543,20 @@ public class V3MaintenanceTrackingUpdateService {
         }
 
         private final Status status;
-        private final boolean nextInsideTheTimeLimit;
-        private final boolean nextTimeSameOrAfterPrevious;
-        private final boolean overspeed;
+        private final boolean insideLimitsForCombiningWithPrevious;
 
         private NextObservationStatus(
-            final Status status, final boolean nextInsideTheTimeLimit, final boolean nextTimeSameOrAfterPrevious, final boolean overspeed) {
+            final Status status, final boolean insideLimitsForCombiningWithPrevious) {
             this.status = status;
-            this.nextInsideTheTimeLimit = nextInsideTheTimeLimit;
-            this.nextTimeSameOrAfterPrevious = nextTimeSameOrAfterPrevious;
-            this.overspeed = overspeed;
+            this.insideLimitsForCombiningWithPrevious = insideLimitsForCombiningWithPrevious;
         }
 
         public Status getStatus() {
             return status;
         }
 
-        public boolean isNextInsideTheTimeLimit() {
-            return nextInsideTheTimeLimit;
-        }
-
-        public boolean isNextTimeSameOrAfterPrevious() {
-            return nextTimeSameOrAfterPrevious;
-        }
-
-        public boolean isOverspeed() {
-            return overspeed;
-        }
-
-        public boolean isNextInsideLimits() {
-            return nextInsideTheTimeLimit && nextTimeSameOrAfterPrevious && !overspeed;
+        public boolean isInsideLimitsForCombiningWithPrevious() {
+            return insideLimitsForCombiningWithPrevious;// && nextTimeSameOrAfterPrevious && !overspeed;
         }
 
         public boolean is(final Status isStatus) {

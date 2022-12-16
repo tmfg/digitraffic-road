@@ -300,10 +300,11 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final int jobId = 1;
         // Last point will be startTime + 9 min
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime, observationCountPerTracking, jobId, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime, observationCountPerTracking, 1, jobId, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // First point will be just 5 min from previous tracking last point -> should combine as same tracking
+        // ordinal 1 -> 2 makes next tracking points continue from the end of the previous one
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime.plusMinutes((observationCountPerTracking-1) + maxGapInMinutes), observationCountPerTracking, jobId, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime.plusMinutes((observationCountPerTracking-1) + maxGapInMinutes), observationCountPerTracking, 2, jobId, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
 
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
