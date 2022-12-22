@@ -1,14 +1,14 @@
 package fi.livi.digitraffic.tie.service;
 
+import static fi.livi.digitraffic.tie.service.WazeFeedServiceTestHelper.readDatex2MessageFromFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static fi.livi.digitraffic.tie.service.WazeFeedServiceTestHelper.readDatex2MessageFromFile;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,9 @@ import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
+import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
 import fi.livi.digitraffic.tie.helper.WazeDatex2MessageConverter;
 import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
@@ -193,31 +193,48 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     @Test
     public void datex2MessageConversion() throws IOException {
         final String situationId = "GUID10004";
+
+        final long hour = 60 * 60;
+
+        // Valid time range
+        final var overallStartTime = Instant.now().minusSeconds(hour);
+        final var overallEndTime = Instant.now().plusSeconds(hour);
+
         final String datex2Message_01 = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementAndSpeedManagement.xml");
         final String datex2Message_02 = readDatex2MessageFromFile("TrafficSituationEquipmentOrSystemFault.xml");
         final String datex2Message_03 = readDatex2MessageFromFile("TrafficSituationVehicleObstructionAndRoadOrCarriagewayOrLaneManagement.xml");
-        final String datex2Message_04 = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementWithReroutingManagement.xml");
+        final String datex2Message_04 = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementWithReroutingManagement.xml")
+                .replaceAll("OVERALL_START_TIME", overallStartTime.toString())
+                .replaceAll("OVERALL_END_TIME", overallEndTime.toString());
         final String datex2Message_05 = readDatex2MessageFromFile("TrafficSituationIceRoadClosed.xml");
         final String datex2Message_06 = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementAndWeatherCondition.xml");
-        final String datex2Message_07 = readDatex2MessageFromFile("TrafficSituationAccidentAndRoadOrCarriagewayOrLaneManagement.xml");
+        final String datex2Message_07 = readDatex2MessageFromFile("TrafficSituationAccidentAndRoadOrCarriagewayOrLaneManagement.xml")
+                .replaceAll("OVERALL_START_TIME", overallStartTime.toString())
+                .replaceAll("OVERALL_END_TIME", overallEndTime.toString());
         final String datex2Message_08 = readDatex2MessageFromFile("TrafficSituationTransitInformation.xml");
-        final String datex2Message_09 = readDatex2MessageFromFile("TrafficSituationGeneralAccidentOtherAndUnprotectedAccidentArea.xml");
-        final String datex2Message_10 = readDatex2MessageFromFile("TrafficSituationGeneralNetworkManagement.xml");
+        final String datex2Message_09 = readDatex2MessageFromFile("TrafficSituationGeneralAccidentOtherAndUnprotectedAccidentArea.xml")
+                .replaceAll("OVERALL_START_TIME", overallStartTime.toString())
+                .replaceAll("OVERALL_END_TIME", overallEndTime.toString());
+        final String datex2Message_10 = readDatex2MessageFromFile("TrafficSituationGeneralNetworkManagement.xml")
+                .replaceAll("OVERALL_START_TIME", overallStartTime.toString())
+                .replaceAll("OVERALL_END_TIME", overallEndTime.toString());
         final String datex2Message_11 = readDatex2MessageFromFile("TrafficSituationPublicEvent.xml");
         final String datex2Message_12 = readDatex2MessageFromFile("TrafficSituationAbnormalTraffic.xml");
+        final String datex2Message_13 = readDatex2MessageFromFile("TrafficSituationInfrastructureDamageObstruction.xml");
 
         assertEquals("Lanes deviated. Temporary speed limit of 50 km/h.", wazeDatex2MessageConverter.export(situationId, datex2Message_01));
         assertEquals("Traffic light sets out of service.", wazeDatex2MessageConverter.export(situationId, datex2Message_02));
-        assertEquals("Vehicle obstruction: vehicle on fire. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2Message_03));
+        assertEquals("Vehicle on fire. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2Message_03));
         assertEquals("Road closed. Follow diversion signs.", wazeDatex2MessageConverter.export(situationId, datex2Message_04));
         assertEquals("Ice road closed.", wazeDatex2MessageConverter.export(situationId, datex2Message_05));
         assertEquals("Surface water. Lane closures.", wazeDatex2MessageConverter.export(situationId, datex2Message_06));
         assertEquals("Accident involving multiple vehicles. Lane closures. Traffic building up. Accident. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_07));
         assertEquals("Underground metro: load capacity changed.", wazeDatex2MessageConverter.export(situationId, datex2Message_08));
         assertEquals("Accident. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_09));
-        assertEquals("Accident. Road closed. General network management: traffic being manually directed. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_10));
+        assertEquals("Accident. Road closed. Traffic being manually directed. Unprotected accident area.", wazeDatex2MessageConverter.export(situationId, datex2Message_10));
         assertEquals("Public event: fair. Traffic building up.", wazeDatex2MessageConverter.export(situationId, datex2Message_11));
-        assertEquals("Accident. Lane closures. Abnormal traffic: queuing traffic.", wazeDatex2MessageConverter.export(situationId, datex2Message_12));
+        assertEquals("Accident. Lane closures. Queuing traffic.", wazeDatex2MessageConverter.export(situationId, datex2Message_12));
+        assertEquals("Fallen power cables. Traffic building up.", wazeDatex2MessageConverter.export(situationId, datex2Message_13));
     }
 
     @Test

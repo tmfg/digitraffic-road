@@ -26,8 +26,8 @@
                 <validity>
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
-                        <overallStartTime>2021-09-06T03:00:00.000Z</overallStartTime>
-                        <overallEndTime>2021-09-12T20:59:00.000Z</overallEndTime>
+                        <overallStartTime>OVERALL_START_TIME</overallStartTime>
+                        <overallEndTime>OVERALL_END_TIME</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
@@ -94,8 +94,8 @@
                 <validity>
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
-                        <overallStartTime>2021-09-06T03:00:00.000Z</overallStartTime>
-                        <overallEndTime>2021-09-12T20:59:00.000Z</overallEndTime>
+                        <overallStartTime>OVERALL_START_TIME</overallStartTime>
+                        <overallEndTime>OVERALL_END_TIME</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <groupOfLocations xsi:type="Point"/>
