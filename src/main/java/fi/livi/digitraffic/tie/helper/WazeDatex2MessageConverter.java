@@ -200,7 +200,6 @@ import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum
 import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.WET_AND_ICY_ROAD;
 import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.WET_ICY_PAVEMENT;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -217,6 +216,7 @@ import org.springframework.stereotype.Component;
 
 import com.sun.xml.ws.util.StringUtils;
 
+import fi.livi.digitraffic.tie.converter.WazeDatex2Converter;
 import fi.livi.digitraffic.tie.datex2.AbnormalTraffic;
 import fi.livi.digitraffic.tie.datex2.AbnormalTrafficExtensionType;
 import fi.livi.digitraffic.tie.datex2.AbnormalTrafficTypeEnum;
@@ -241,7 +241,6 @@ import fi.livi.digitraffic.tie.datex2.InfrastructureDamageObstruction;
 import fi.livi.digitraffic.tie.datex2.InfrastructureDamageTypeEnum;
 import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditions;
 import fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.OverallPeriod;
 import fi.livi.digitraffic.tie.datex2.PoorEnvironmentConditions;
 import fi.livi.digitraffic.tie.datex2.PublicEvent;
 import fi.livi.digitraffic.tie.datex2.PublicEventTypeEnum;
@@ -256,7 +255,6 @@ import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.SpeedManagement;
 import fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum;
 import fi.livi.digitraffic.tie.datex2.TransitInformation;
-import fi.livi.digitraffic.tie.datex2.ValidityStatusEnum;
 import fi.livi.digitraffic.tie.datex2.VehicleObstruction;
 import fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum;
@@ -521,10 +519,14 @@ public class WazeDatex2MessageConverter {
         try {
             d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2Message);
         } catch (UnmarshallingFailureException e) {
-            logger.warn("method=export situation {} did not have a proper datex2 message, error: {}", situationId, e.getMessage());
+            logger.error("method=export situation {} did not have a proper datex2 message, error: {}", situationId, e.getMessage());
             return "";
         }
 
+        return export(situationId, d2LogicalModel);
+    }
+
+    public String export(final String situationId, final D2LogicalModel d2LogicalModel) {
         final SituationPublication situationPublication = (SituationPublication) d2LogicalModel.getPayloadPublication();
         if (situationPublication == null) {
             logger.info("method=export situation {} did not have a situation publication payload", situationId);
@@ -540,7 +542,7 @@ public class WazeDatex2MessageConverter {
         return situations.stream()
             .map(Situation::getSituationRecords)
             .flatMap(Collection::stream)
-            .filter(this::isActiveSituationRecord)
+            .filter(WazeDatex2Converter::isActiveSituationRecord)
             .flatMap(sr -> accept(situationId, sr).stream())
             .distinct()
             .collect(Collectors.joining(". ", "", "."));
@@ -749,22 +751,5 @@ public class WazeDatex2MessageConverter {
         }
 
         return result;
-    }
-
-    private boolean isActiveSituationRecord(final SituationRecord situationRecord) {
-        final ValidityStatusEnum validityStatus = situationRecord.getValidity().getValidityStatus();
-
-        switch (validityStatus) {
-        case ACTIVE:
-            return true;
-        case DEFINED_BY_VALIDITY_TIME_SPEC:
-            final OverallPeriod validityTimeSpec = situationRecord.getValidity().getValidityTimeSpecification();
-            final Instant now = Instant.now();
-            final Instant overallEndTime = validityTimeSpec.getOverallEndTime();
-            return now.isAfter(validityTimeSpec.getOverallStartTime()) &&
-                    overallEndTime == null || now.isBefore(overallEndTime);
-        }
-
-        return false;
     }
 }

@@ -59,7 +59,7 @@ public class WazeDatex2JsonConverter {
         final TrafficAnnouncement announcement = properties.announcements.get(0);
         final Optional<Geometry<?>> maybeGeometry = Optional.ofNullable(feature.getGeometry());
 
-        final String description = wazeDatex2MessageConverter.export(situationId, datex2.getMessage());
+        final String description = wazeDatex2MessageConverter.export(situationId, wazeDatex2FeatureDto.d2LogicalModel);
 
         final WazeFeedLocationDto.Direction direction = maybeGeometry.flatMap(geometry ->
             convertDirection(announcement.locationDetails.roadAddressLocation.direction, geometry))
