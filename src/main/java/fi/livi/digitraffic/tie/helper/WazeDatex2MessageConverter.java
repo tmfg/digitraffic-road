@@ -207,6 +207,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,6 +218,7 @@ import org.springframework.stereotype.Component;
 import com.sun.xml.ws.util.StringUtils;
 
 import fi.livi.digitraffic.tie.datex2.AbnormalTraffic;
+import fi.livi.digitraffic.tie.datex2.AbnormalTrafficExtensionType;
 import fi.livi.digitraffic.tie.datex2.AbnormalTrafficTypeEnum;
 import fi.livi.digitraffic.tie.datex2.Accident;
 import fi.livi.digitraffic.tie.datex2.AccidentTypeEnum;
@@ -231,6 +233,7 @@ import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum;
 import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum;
 import fi.livi.digitraffic.tie.datex2.ExtendedEquipmentOrSystemFaultTypeEnum;
 import fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum;
+import fi.livi.digitraffic.tie.datex2.ExtendedTrafficTrendTypeEnum;
 import fi.livi.digitraffic.tie.datex2.GeneralNetworkManagement;
 import fi.livi.digitraffic.tie.datex2.GeneralNetworkManagementTypeEnum;
 import fi.livi.digitraffic.tie.datex2.GeneralObstruction;
@@ -267,6 +270,7 @@ public class WazeDatex2MessageConverter {
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
     private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
+    private final Map<AbnormalTrafficExtensionType, String> abnormalTrafficExtensionTypeStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
@@ -550,9 +554,13 @@ public class WazeDatex2MessageConverter {
         final Optional<String> abnormalTrafficTypeOptional = Optional.ofNullable(abnormalTraffic.getAbnormalTrafficType())
             .map(x -> abnormalTrafficTypeEnumStringMap.getOrDefault(x, null));
 
-        return trafficTrendTypeOptional.isPresent()
-            ? trafficTrendTypeOptional
-            : abnormalTrafficTypeOptional;
+        final Optional<String> extendedTrafficTrendType = Optional.ofNullable(abnormalTraffic.getAbnormalTrafficExtension())
+                .map(AbnormalTrafficExtensionType::getTrafficTrendType)
+                .map(x -> x.equals(ExtendedTrafficTrendTypeEnum.TRAFFIC_MAY_BUILD_UP) ? "Traffic may build up" : null);
+
+        return Stream.of(trafficTrendTypeOptional, abnormalTrafficTypeOptional, extendedTrafficTrendType)
+                .flatMap(Optional::stream)
+                .findFirst();
     }
 
     private Optional<String> accept(final Accident accident) {

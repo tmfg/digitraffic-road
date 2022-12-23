@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <publicationTime>2022-12-20T13:47:19.003Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50408192" version="6">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="Accident" id="GUID5040932201" version="6">
+                <situationRecordCreationTime>2022-12-20T13:28:24.036Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-12-20T13:47:16.275Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-12-20T13:46:03.761Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-12-20T13:28:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 8, Mustasaari. Liikennetiedote onnettomuudesta.
+
+                                Tie 8 välillä Vaasa - Kokkola, Mustasaari.
+                                Tarkempi paikka: Välillä Koivulahti - Vassorinlahti.
+
+                                Onnettomuus.
+                                Ajokaista suljettu liikenteeltä.
+                                Liikenne saattaa ruuhkautua.
+
+                                Ajankohta: 20.12.2022 klo 15:28 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Turku
+                                Puh: 02002100
+                                Sähköposti: turku.liikennekeskus@fintraffic.fi
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1669</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1670</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <accidentType>accident</accidentType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5040932202" version="6">
+                <situationRecordCreationTime>2022-12-20T13:28:24.036Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-12-20T13:47:16.275Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-12-20T13:46:03.761Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-12-20T13:28:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="AbnormalTraffic" id="GUID5040932203" version="6">
+                <situationRecordCreationTime>2022-12-20T13:28:24.036Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2022-12-20T13:47:16.275Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-12-20T13:46:03.761Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-12-20T13:28:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <abnormalTrafficExtension>
+                    <trafficTrendType>trafficMayBuildUp</trafficTrendType>
+                </abnormalTrafficExtension>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
