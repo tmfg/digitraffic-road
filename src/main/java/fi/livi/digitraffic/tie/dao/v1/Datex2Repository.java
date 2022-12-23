@@ -12,7 +12,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 
 @Repository
 public interface Datex2Repository extends JpaRepository<Datex2, Long> {
@@ -88,10 +87,6 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
     @Query(value = FIND_ALL_ACTIVE_SITUATION_TYPES_AS_D_WITH_JSON + FIND_ALL_ACTIVE_ORDER_BY, nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Datex2> findAllActiveBySituationTypeWithJson(int activeInPastHours, final String... situationTypes);
-
-    @Query(value = FIND_ALL_ACTIVE_SITUATION_TYPES_AS_D_WITH_JSON + FIND_ALL_ACTIVE_ORDER_BY, nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findAllActiveBySituationTypeWithJson(int activeInPastHours, final SituationType... situationTypes);
 
     @Query(value =
         "SELECT d.*\n" +

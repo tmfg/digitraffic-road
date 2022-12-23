@@ -36,7 +36,7 @@ public class WazeFeedService {
 
     @Transactional(readOnly = true)
     public WazeFeedAnnouncementDto findActive() {
-        final List<Datex2> activeIncidents = datex2Repository.findAllActiveBySituationTypeWithJson(1, SituationType.TRAFFIC_ANNOUNCEMENT);
+        final List<Datex2> activeIncidents = datex2Repository.findAllActiveBySituationTypeWithJson(1, SituationType.TRAFFIC_ANNOUNCEMENT.toString());
 
         final List<WazeFeedIncidentDto> incidents = activeIncidents.stream()
             .map(this.wazeDatex2Converter::convertToWazeDatex2FeatureDto)
