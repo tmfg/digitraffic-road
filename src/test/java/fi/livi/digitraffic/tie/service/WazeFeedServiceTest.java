@@ -197,8 +197,8 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final long hour = 60 * 60;
 
         // Valid time range
-        final var overallStartTime = Instant.now().minusSeconds(hour);
-        final var overallEndTime = Instant.now().plusSeconds(hour);
+        final Instant overallStartTime = Instant.now().minusSeconds(hour);
+        final Instant overallEndTime = Instant.now().plusSeconds(hour);
 
         final String datex2Message_01 = readDatex2MessageFromFile("TrafficSituationRoadOrCarriagewayOrLaneManagementAndSpeedManagement.xml");
         final String datex2Message_02 = readDatex2MessageFromFile("TrafficSituationEquipmentOrSystemFault.xml");

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.dto.weather.v1.WazeDatex2FeatureDto;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
@@ -45,5 +45,9 @@ public class WazeDatex2Converter {
 
         return Optional.of(new WazeDatex2FeatureDto(datex2, feature));
 
+    }
+
+    public static boolean hasGeometry(final WazeDatex2FeatureDto wazeDatex2FeatureDto) {
+        return wazeDatex2FeatureDto.feature.getGeometry() != null;
     }
 }

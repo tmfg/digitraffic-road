@@ -753,7 +753,9 @@ public class WazeDatex2MessageConverter {
         case DEFINED_BY_VALIDITY_TIME_SPEC:
             final OverallPeriod validityTimeSpec = situationRecord.getValidity().getValidityTimeSpecification();
             final Instant now = Instant.now();
-            return now.isAfter(validityTimeSpec.getOverallStartTime()) && now.isBefore(validityTimeSpec.getOverallEndTime());
+            final Instant overallEndTime = validityTimeSpec.getOverallEndTime();
+            return now.isAfter(validityTimeSpec.getOverallStartTime()) &&
+                    overallEndTime == null || now.isBefore(overallEndTime);
         }
 
         return false;

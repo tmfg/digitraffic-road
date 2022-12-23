@@ -14,7 +14,6 @@ import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
-import fi.livi.digitraffic.tie.dto.weather.v1.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 
@@ -37,20 +36,16 @@ public class WazeFeedService {
 
     @Transactional(readOnly = true)
     public WazeFeedAnnouncementDto findActive() {
-        final List<Datex2> activeIncidents = datex2Repository.findAllActiveBySituationTypeWithJson(1, SituationType.TRAFFIC_ANNOUNCEMENT.toString());
+        final List<Datex2> activeIncidents = datex2Repository.findAllActiveBySituationTypeWithJson(1, SituationType.TRAFFIC_ANNOUNCEMENT);
 
         final List<WazeFeedIncidentDto> incidents = activeIncidents.stream()
             .map(this.wazeDatex2Converter::convertToWazeDatex2FeatureDto)
             .flatMap(Optional::stream)
-            .filter(this::hasGeometry)
+            .filter(WazeDatex2Converter::hasGeometry)
             .map(this.wazeDatex2JsonConverter::convertToWazeFeedAnnouncementDto)
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
 
         return new WazeFeedAnnouncementDto(incidents);
-    }
-
-    private boolean hasGeometry(WazeDatex2FeatureDto wazeDatex2FeatureDto) {
-        return wazeDatex2FeatureDto.feature.getGeometry() != null;
     }
 }

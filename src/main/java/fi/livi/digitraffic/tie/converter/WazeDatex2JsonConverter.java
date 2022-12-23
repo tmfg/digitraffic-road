@@ -19,9 +19,9 @@ import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLoc
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.wazefeed.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
-import fi.livi.digitraffic.tie.dto.weather.v1.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.helper.WazeDatex2MessageConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;

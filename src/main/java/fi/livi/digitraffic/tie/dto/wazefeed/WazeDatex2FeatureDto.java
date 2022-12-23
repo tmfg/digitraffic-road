@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.dto.weather.v1;
+package fi.livi.digitraffic.tie.dto.wazefeed;
 
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
