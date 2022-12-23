@@ -333,8 +333,8 @@
                 <validity>
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
-                        <overallStartTime>2022-11-17T19:19:00.000Z</overallStartTime>
-                        <overallEndTime>2022-11-17T19:49:42.251Z</overallEndTime>
+                        <overallStartTime>OVERALL_START_TIME</overallStartTime>
+                        <overallEndTime>OVERALL_END_TIME</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <groupOfLocations xsi:type="Point"/>
