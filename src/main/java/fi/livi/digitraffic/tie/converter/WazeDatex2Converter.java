@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.converter;
 
+import static fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_OPEN;
+
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +18,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.OverallPeriod;
+import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagement;
+import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementExtensionType;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
@@ -122,5 +126,17 @@ public class WazeDatex2Converter {
                 .map(Situation::getSituationRecords)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    public static boolean hasIceRoadOpenRecord(final WazeDatex2FeatureDto wazeDatex2FeatureDto) {
+        final String situationId = wazeDatex2FeatureDto.feature.getProperties().situationId;
+        return getSituationRecords(situationId, wazeDatex2FeatureDto.d2LogicalModel)
+                .stream()
+                .filter(sr -> sr instanceof RoadOrCarriagewayOrLaneManagement)
+                .anyMatch(sr -> Optional.of((RoadOrCarriagewayOrLaneManagement) sr)
+                        .map(RoadOrCarriagewayOrLaneManagement::getRoadOrCarriagewayOrLaneManagementExtension)
+                        .map(RoadOrCarriagewayOrLaneManagementExtensionType::getRoadOrCarriagewayOrLaneManagementType)
+                        .map(x -> x.equals(ICE_ROAD_OPEN))
+                        .orElse(false));
     }
 }

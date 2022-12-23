@@ -43,6 +43,7 @@ public class WazeFeedService {
             .flatMap(Optional::stream)
             .filter(WazeDatex2Converter::hasGeometry)
             .filter(WazeDatex2Converter::hasActiveSituationRecords)
+            .filter(x -> !WazeDatex2Converter.hasIceRoadOpenRecord(x))
             .map(this.wazeDatex2JsonConverter::convertToWazeFeedAnnouncementDto)
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
