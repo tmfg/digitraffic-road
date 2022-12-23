@@ -270,7 +270,6 @@ public class WazeDatex2MessageConverter {
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
     private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
-    private final Map<AbnormalTrafficExtensionType, String> abnormalTrafficExtensionTypeStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
