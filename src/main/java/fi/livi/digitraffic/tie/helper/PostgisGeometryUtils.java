@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.helper;
 
 import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
 import static fi.livi.digitraffic.tie.helper.GeometryConstants.JTS_GEOMETRY_FACTORY;
+import static fi.livi.digitraffic.tie.helper.GeometryConstants.MIN_LENGTH_KM_FOR_LINESTRING;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -217,7 +218,14 @@ public class PostgisGeometryUtils {
     }
 
     public static Geometry simplify(final Geometry geometry) {
-        return DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
+        final Geometry simple = DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
+
+        // If geometry is not linestring or it is long enough for linestring, then return it
+        if (!Geometry.TYPENAME_LINESTRING.equals(simple.getGeometryType()) || PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(((LineString)simple).getStartPoint(), (((LineString)simple).getEndPoint())) >= MIN_LENGTH_KM_FOR_LINESTRING ) {
+            return simple;
+        }
+        // If geometry is too short linestring, return the start point
+        return ((LineString)simple).getStartPoint();
     }
 
     public static String convertGeometryToGeoJsonString(final Geometry geometry) {

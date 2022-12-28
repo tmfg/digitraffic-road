@@ -186,7 +186,7 @@ public class V3MaintenanceTrackingUpdateService {
 
                     final MaintenanceTracking created =
                         new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
-                            harjaObservationTime, harjaObservationTime, lastPoint, simplifiedGeometry.getLength() > 0.0 ? (LineString) simplifiedGeometry : null,
+                            harjaObservationTime, harjaObservationTime, lastPoint, Geometry.TYPENAME_LINESTRING.equals(simplifiedGeometry.getGeometryType()) ? (LineString) simplifiedGeometry : null,
                             performedTasks, direction, STATE_ROADS_DOMAIN);
 
                     // Mark new tracking to follow previous tracking
