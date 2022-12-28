@@ -26,6 +26,7 @@ public class TransactionLoggerAspect {
         final MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
         final String className = methodSignature.getDeclaringType().getSimpleName();
         final String methodName = methodSignature.getName();
+        final Object[] args = pjp.getArgs();
 
         try {
             return pjp.proceed();
@@ -33,7 +34,9 @@ public class TransactionLoggerAspect {
             final long tookMs = stopWatch.getTime();
 
             if(tookMs > limit) {
-                log.info("Transaction method={}.{} tookMs={}", className, methodName, tookMs);
+                final StringBuilder arguments = new StringBuilder(100);
+                PerformanceMonitorAspect.buildValueToString(arguments, args);
+                log.info("Transaction method={}.{} arguments={} tookMs={}", className, methodName, arguments, tookMs);
             }
         }
     }

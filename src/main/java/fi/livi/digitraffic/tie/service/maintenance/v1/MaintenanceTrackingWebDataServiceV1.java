@@ -71,41 +71,11 @@ public class MaintenanceTrackingWebDataServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackingsSlow(final Instant endTimefrom, final Instant endTimeto,
-                                                                                           final double xMin, final double yMin,
-                                                                                           final double xMax, final double yMax,
-                                                                                           final List<MaintenanceTrackingTask> taskIds,
-                                                                                           final List<String> domains) {
-        final List<String> realDomains = convertToRealDomainNames(domains);
-        final Instant lastUpdated = DateHelper.withoutNanos(v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains));
-
-        final Polygon area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
-
-        final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceTrackingDto> found =
-            v2MaintenanceTrackingRepository.findLatestByAgeAndBoundingBoxAndTasks(
-                toZonedDateTimeAtUtc(endTimefrom),
-                toZonedDateTimeAtUtc(endTimeto),
-                area,
-                convertTasksToStringArrayOrNull(taskIds),
-                realDomains);
-
-        log.info("method=findLatestMaintenanceTrackingsSlow-db with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
-                 xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
-
-        final List<MaintenanceTrackingLatestFeatureV1> features = convertToTrackingLatestFeatures(found);
-
-        log.info("method=findLatestMaintenanceTrackingsSlow with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
-                 xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimefrom), toZonedDateTimeAtUtc(endTimeto), found.size(), start.getTime());
-        return new MaintenanceTrackingLatestFeatureCollectionV1(lastUpdated, features);
-    }
-
-    @Transactional(readOnly = true)
-    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackingsFast(final Instant endTimeFrom, final Instant endTimeTo,
-                                                                                           final double xMin, final double yMin,
-                                                                                           final double xMax, final double yMax,
-                                                                                           final List<MaintenanceTrackingTask> taskIds,
-                                                                                           final List<String> domains) {
+    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeTo,
+                                                                                       final double xMin, final double yMin,
+                                                                                       final double xMax, final double yMax,
+                                                                                       final List<MaintenanceTrackingTask> taskIds,
+                                                                                       final List<String> domains) {
         final List<String> realDomains = convertToRealDomainNames(domains);
         final Instant lastUpdated = DateHelper.withoutNanos(v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains));
 
@@ -120,49 +90,20 @@ public class MaintenanceTrackingWebDataServiceV1 {
                 convertTasksToStringArrayOrNull(taskIds),
                 realDomains);
 
-        log.info("method=findLatestMaintenanceTrackingsFast with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
+        log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
                  xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), start.getTime());
 
         return new MaintenanceTrackingLatestFeatureCollectionV1(lastUpdated, found);
     }
 
-    @Transactional(readOnly = true)
-    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackingsSlow(final Instant endTimeFrom, final Instant endTimeBefore,
-                                                                               final Instant createdAfter, final Instant createdBefore,
-                                                                               final double xMin, final double yMin,
-                                                                               final double xMax, final double yMax,
-                                                                               final List<MaintenanceTrackingTask> taskIds,
-                                                                               final List<String> domains) {
-        final List<String> realDomains = convertToRealDomainNames(domains);
-        final Instant lastUpdated = v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains);
-
-        final Polygon area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
-
-        final StopWatch start = StopWatch.createStarted();
-        final List<MaintenanceTrackingDto> found =
-            v2MaintenanceTrackingRepository.findByAgeAndBoundingBoxAndTasks(
-                toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeBefore),
-                toZonedDateTimeAtUtc(createdAfter), toZonedDateTimeAtUtc(createdBefore),
-                area, convertTasksToStringArrayOrNull(taskIds), realDomains);
-
-        log.info("method=findMaintenanceTrackingsSlow-db with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
-            xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
-
-        final List<MaintenanceTrackingFeatureV1> features = convertToTrackingFeatures(found);
-
-        log.info("method=findMaintenanceTrackingsSlow with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
-                 xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
-
-        return new MaintenanceTrackingFeatureCollectionV1(lastUpdated, features);
-    }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackingsFast(final Instant endTimeFrom, final Instant endTimeBefore,
-                                                                               final Instant createdAfter, final Instant createdBefore,
-                                                                               final double xMin, final double yMin,
-                                                                               final double xMax, final double yMax,
-                                                                               final List<MaintenanceTrackingTask> taskIds,
-                                                                               final List<String> domains) {
+    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeBefore,
+                                                                           final Instant createdAfter, final Instant createdBefore,
+                                                                           final double xMin, final double yMin,
+                                                                           final double xMax, final double yMax,
+                                                                           final List<MaintenanceTrackingTask> taskIds,
+                                                                           final List<String> domains) {
         final List<String> realDomains = convertToRealDomainNames(domains);
         final Instant lastUpdated = v2MaintenanceTrackingRepository.findLastUpdatedForDomain(realDomains);
 
@@ -175,7 +116,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
                 createdAfter, createdBefore,
                 area, convertTasksToStringArrayOrNull(taskIds), realDomains);
 
-        log.info("method=findMaintenanceTrackingsFast with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
+        log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
                  xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
 
         return new MaintenanceTrackingFeatureCollectionV1(lastUpdated, found);
@@ -187,7 +128,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
                                                                            final double xMax, final double yMax,
                                                                            final List<MaintenanceTrackingTask> taskIds,
                                                                            final List<String> domains) {
-        return findMaintenanceTrackingsFast(endTimeFrom, DateHelper.appendMillis(endTimeTo, 1), null, null, xMin, yMin, xMax, yMax, taskIds, domains);
+        return findMaintenanceTrackings(endTimeFrom, DateHelper.appendMillis(endTimeTo, 1), null, null, xMin, yMin, xMax, yMax, taskIds, domains);
     }
 
     /**

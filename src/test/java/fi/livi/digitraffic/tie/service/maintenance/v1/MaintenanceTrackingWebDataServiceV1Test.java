@@ -700,8 +700,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractWebServiceT
     }
 
     private MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
-                                                                                      final MaintenanceTrackingTask...tasks) {
-        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackingsFast(
+                                                                                        final MaintenanceTrackingTask...tasks) {
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(
             start.toInstant(), end.toInstant(),
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
@@ -729,10 +729,10 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractWebServiceT
     }
 
     private MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings(final Instant endFrom, final Instant endBefore,
-                                                                          final Instant changeAfter, final Instant changeBefore,
-                                                                          final List<String> domains,
-                                                                          final MaintenanceTrackingTask...tasks) {
-        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingsFast(
+                                                                            final Instant changeAfter, final Instant changeBefore,
+                                                                            final List<String> domains,
+                                                                            final MaintenanceTrackingTask...tasks) {
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
             endFrom, endBefore, changeAfter, changeBefore,
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
