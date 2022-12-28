@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.controller.v3;
 
-import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_01_01;
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_06_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
@@ -14,7 +13,6 @@ import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_ROAD_NUMBER_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_ROAD_STATION_ID_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_TMS_NUMBER_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DESCRIPTIONS;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_AVAILABLE_SENSORS_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHER_STATIONS_PATH;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
@@ -29,12 +27,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.annotation.Sunset;
@@ -51,14 +47,12 @@ import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
-import fi.livi.digitraffic.tie.model.v3.V3VariableSignDescriptions;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraWebService;
 import fi.livi.digitraffic.tie.service.v1.location.LocationService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
-import fi.livi.digitraffic.tie.service.v3.V3VariableSignService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -75,7 +69,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ConditionalOnWebApplication
 public class V3MetadataController {
     private final V2ForecastSectionMetadataService v2ForecastSectionMetadataService;
-    private final V3VariableSignService v3VariableSignService;
     private final TmsStationService tmsStationService;
     private final RoadStationSensorService roadStationSensorService;
     private final CameraWebService cameraWebService;
@@ -84,11 +77,10 @@ public class V3MetadataController {
 
     @Autowired
     public V3MetadataController(final V2ForecastSectionMetadataService v2ForecastSectionMetadataService,
-        final V3VariableSignService v3VariableSignService, final TmsStationService tmsStationService,
+        final TmsStationService tmsStationService,
         final RoadStationSensorService roadStationSensorService, final CameraWebService cameraWebService,
         final WeatherStationService weatherStationService, final LocationService locationService) {
         this.v2ForecastSectionMetadataService = v2ForecastSectionMetadataService;
-        this.v3VariableSignService = v3VariableSignService;
         this.tmsStationService = tmsStationService;
         this.roadStationSensorService = roadStationSensorService;
         this.cameraWebService = cameraWebService;
@@ -147,14 +139,14 @@ public class V3MetadataController {
             maxLongitude, maxLatitude, null);
     }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "Return all code descriptions. " + API_NOTE_2023_01_01)
-    @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public V3VariableSignDescriptions listCodeDescriptions() {
-        return new V3VariableSignDescriptions(v3VariableSignService.listVariableSignTypes());
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "Return all code descriptions. " + API_NOTE_2023_01_01)
+//    @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
+//    @ResponseBody
+//    public V3VariableSignDescriptions listCodeDescriptions() {
+//        return new V3VariableSignDescriptions(v3VariableSignService.listVariableSignTypes());
+//    }
 
     @Deprecated(forRemoval = true)
     @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)

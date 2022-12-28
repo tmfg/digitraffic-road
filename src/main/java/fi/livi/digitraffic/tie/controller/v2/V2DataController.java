@@ -1,12 +1,10 @@
 package fi.livi.digitraffic.tie.controller.v2;
 
-import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_01_01;
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_06_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTION_WEATHER_DATA_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
@@ -33,15 +31,11 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
-import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
-import fi.livi.digitraffic.tie.service.v2.V2VariableSignDataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -57,23 +51,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ConditionalOnWebApplication
 public class V2DataController {
     private final ForecastSectionDataService forecastSectionDataService;
-    private final V2VariableSignDataService v2VariableSignDataService;
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
     private final WeatherService weatherService;
     private final V2Datex2DataService v2Datex2DataService;
-    private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
 
     public V2DataController(final ForecastSectionDataService forecastSectionDataService,
-                            final V2VariableSignDataService v2VariableSignDataService,
                             final CameraPresetHistoryDataService cameraPresetHistoryDataService,
                             final V2Datex2DataService v2Datex2DataService,
-                            final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService,
                             final  WeatherService weatherService) {
         this.forecastSectionDataService = forecastSectionDataService;
-        this.v2VariableSignDataService = v2VariableSignDataService;
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
         this.v2Datex2DataService = v2Datex2DataService;
-        this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
         this.weatherService = weatherService;
     }
 
@@ -126,51 +114,51 @@ public class V2DataController {
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
     }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2023_01_01)
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
-    public VariableSignFeatureCollection variableSigns(
-        @Parameter(description = "If parameter is given list only latest value of given sign")
-        @RequestParam(value = "deviceId", required = false)
-        final String deviceId) {
-        if(deviceId != null) {
-            return v2VariableSignDataService.listLatestValue(deviceId);
-        } else {
-            return v2VariableSignDataService.listLatestValues();
-        }
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2023_01_01)
+//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
+//    public VariableSignFeatureCollection variableSigns(
+//        @Parameter(description = "If parameter is given list only latest value of given sign")
+//        @RequestParam(value = "deviceId", required = false)
+//        final String deviceId) {
+//        if(deviceId != null) {
+//            return v2VariableSignDataService.listLatestValue(deviceId);
+//        } else {
+//            return v2VariableSignDataService.listLatestValues();
+//        }
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2023_01_01)
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
-    public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
-        return v2VariableSignDataService.listLatestValue(deviceId);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2023_01_01)
+//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
+//    public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
+//        return v2VariableSignDataService.listLatestValue(deviceId);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
-    public List<TrafficSignHistory> variableSignHistory(
-        @Parameter(description = "List history data of given sign")
-        @RequestParam(value = "deviceId")
-        final String deviceId) {
-        return v2VariableSignDataService.listVariableSignHistory(deviceId);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
+//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
+//    public List<TrafficSignHistory> variableSignHistory(
+//        @Parameter(description = "List history data of given sign")
+//        @RequestParam(value = "deviceId")
+//        final String deviceId) {
+//        return v2VariableSignDataService.listVariableSignHistory(deviceId);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
-    public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
-        return v2VariableSignDataService.listVariableSignHistory(deviceId);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
+//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
+//    public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
+//        return v2VariableSignDataService.listVariableSignHistory(deviceId);
+//    }
 
     //@Operation(summary = "List the history of sensor values from the weather road station")
     //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
