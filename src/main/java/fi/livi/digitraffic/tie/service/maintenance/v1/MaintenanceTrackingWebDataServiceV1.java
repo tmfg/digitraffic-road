@@ -71,7 +71,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeTo,
+    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final Instant endFrom, final Instant endTo,
                                                                                        final double xMin, final double yMin,
                                                                                        final double xMax, final double yMax,
                                                                                        final List<MaintenanceTrackingTask> taskIds,
@@ -84,21 +84,21 @@ public class MaintenanceTrackingWebDataServiceV1 {
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingLatestFeatureV1> found =
             maintenanceTrackingDaoV1.findLatestByAgeAndBoundingBoxAndTasks(
-                endTimeFrom,
-                endTimeTo,
+                endFrom,
+                endTo,
                 area,
                 convertTasksToStringArrayOrNull(taskIds),
                 realDomains);
 
-        log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} fromTime={} toTime={} foundCount={} tookMs={}",
-                 xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endTimeFrom), toZonedDateTimeAtUtc(endTimeTo), found.size(), start.getTime());
+        log.info("method=findLatestMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} endFrom={} endTo={} foundCount={} tookMs={}",
+                 xMin, xMax, yMin, yMax, toZonedDateTimeAtUtc(endFrom), toZonedDateTimeAtUtc(endTo), found.size(), start.getTime());
 
         return new MaintenanceTrackingLatestFeatureCollectionV1(lastUpdated, found);
     }
 
 
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings(final Instant endTimeFrom, final Instant endTimeBefore,
+    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings(final Instant endFrom, final Instant endBefore,
                                                                            final Instant createdAfter, final Instant createdBefore,
                                                                            final double xMin, final double yMin,
                                                                            final double xMax, final double yMax,
@@ -112,12 +112,12 @@ public class MaintenanceTrackingWebDataServiceV1 {
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingFeatureV1> found =
             maintenanceTrackingDaoV1.findByAgeAndBoundingBoxAndTasks(
-                endTimeFrom, endTimeBefore,
+                endFrom, endBefore,
                 createdAfter, createdBefore,
                 area, convertTasksToStringArrayOrNull(taskIds), realDomains);
 
-        log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} endTimeFrom {} endTimeBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
-                 xMin, xMax, yMin, yMax, endTimeFrom, endTimeBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
+        log.info("method=findMaintenanceTrackings with params xMin {}, xMax {}, yMin {}, yMax {} endFrom {} endBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
+                 xMin, xMax, yMin, yMax, endFrom, endBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
 
         return new MaintenanceTrackingFeatureCollectionV1(lastUpdated, found);
     }
