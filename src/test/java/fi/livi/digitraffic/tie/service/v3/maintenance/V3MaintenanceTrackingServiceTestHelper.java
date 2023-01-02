@@ -145,6 +145,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     public void clearDb() {
         v2MaintenanceTrackingRepository.deleteAllInBatch();
         v3MaintenanceTrackingObservationDataRepository.deleteAllInBatch();
+        v2MaintenanceTrackingWorkMachineRepository.deleteAllInBatch();
     }
 
     public static List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
@@ -524,7 +525,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
 
     public MaintenanceTrackingWorkMachine createAndSaveWorkMachine() {
         final MaintenanceTrackingWorkMachine wm =
-            new MaintenanceTrackingWorkMachine(TestUtils.getRandomId(1, 100), TestUtils.getRandomId(1, 100), "TEST");
+            new MaintenanceTrackingWorkMachine(TestUtils.getRandomId(1, 100000), TestUtils.getRandomId(1, 100000), "TEST");
         v2MaintenanceTrackingWorkMachineRepository.save(wm);
         return wm;
     }
