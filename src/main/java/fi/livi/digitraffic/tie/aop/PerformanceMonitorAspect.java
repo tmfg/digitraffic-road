@@ -93,14 +93,14 @@ public class PerformanceMonitorAspect {
     }
 
     private static String getMethodWithClass(final MethodSignature methodSignature) {
-        return methodSignature.getDeclaringType().getName() + "#" + methodSignature.getName();
+        return methodSignature.getDeclaringType().getSimpleName() + "." + methodSignature.getName();
     }
 
     private String buildMessage(final String invocationName,
                                 final Object[] args,
                                 final long executionTimeMs) {
         final StringBuilder builder = new StringBuilder(100)
-            .append("invocation=").append(invocationName)
+            .append("method=").append(invocationName)
             .append(" tookMs=").append(executionTimeMs);
 
         if (args != null && args.length > 0) {
@@ -111,7 +111,7 @@ public class PerformanceMonitorAspect {
         return StringUtils.truncate(builder.toString(), 1000);
     }
 
-    private void buildValueToString(final StringBuilder builder, final Object value) {
+    public static void buildValueToString(final StringBuilder builder, final Object value) {
         if (value == null) {
             builder.append("null");
             return;
@@ -121,9 +121,9 @@ public class PerformanceMonitorAspect {
             try {
                 final Object[] objects = (Object[]) value;
                 buildArrayToString(builder, objects);
-            } catch (ClassCastException e) {
-                log.debug("buildArrayToString Error", e);
-                builder.append("[").append(value).append("]");
+            } catch (final ClassCastException e) {
+                log.debug("buildArrayToString error", e);
+                builder.append("[").append(value.toString().replace(' ', '_')).append("]");
             }
         } else if (value instanceof Collection<?>) {
             final Collection<?> values = (Collection<?>) value;
@@ -134,13 +134,13 @@ public class PerformanceMonitorAspect {
         }
     }
 
-    private void buildArrayToString(final StringBuilder builder, final Object[] objects) {
+    private static void buildArrayToString(final StringBuilder builder, final Object[] objects) {
         builder.append("[");
         for (int index = 0;
             index < objects.length && index < 5;
             index++) {
             if(index > 0) {
-                builder.append(", ");
+                builder.append(";");
             }
             buildValueToString(builder, objects[index]);
         }
