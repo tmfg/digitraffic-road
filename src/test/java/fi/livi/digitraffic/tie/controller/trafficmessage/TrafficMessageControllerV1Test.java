@@ -75,8 +75,8 @@ import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 
-public class TrafficMessagesControllerV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
-    private static final Logger log = getLogger(TrafficMessagesControllerV1Test.class);
+public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
+    private static final Logger log = getLogger(TrafficMessageControllerV1Test.class);
 
     @Autowired
     protected Datex2DataService datex2DataService;
