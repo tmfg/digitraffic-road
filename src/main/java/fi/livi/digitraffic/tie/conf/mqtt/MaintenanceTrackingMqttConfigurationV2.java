@@ -31,8 +31,8 @@ import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 @Component
 public class MaintenanceTrackingMqttConfigurationV2 {
     // maintenance-v2/trackings/{domain}
-    public static final String MAINTENANCE_TRACKING_V2_TOPIC = "maintenance-v2/trackings/%s";
-    private static final String MAINTENANCE_TRACKING_V2_STATUS_TOPIC = "maintenance-v2/trackings/status";
+    public static final String MAINTENANCE_TRACKING_V2_TOPIC = "maintenance-v2/routes/%s";
+    private static final String MAINTENANCE_TRACKING_V2_STATUS_TOPIC = "maintenance-v2/status";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MaintenanceTrackingMqttConfigurationV2.class);
 
