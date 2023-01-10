@@ -39,6 +39,7 @@ public class GeometryConstants {
 
     public static final GeometryFactory JTS_GEOMETRY_FACTORY = new GeometryFactory(JTS_PRECISION_MODEL, SRID);
 
+    public static final double MIN_LENGTH_KM_FOR_LINESTRING = 0.00002; // 2 cm
     private GeometryConstants() {
         // not possible to make instance
     }

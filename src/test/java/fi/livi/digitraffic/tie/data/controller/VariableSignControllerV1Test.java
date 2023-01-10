@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,6 +45,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("2023-01-01")
     public void noData() throws Exception {
         getJson(VARIABLE_SIGNS_PATH)
             .andExpect(status().isOk())
@@ -52,12 +54,14 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("2023-01-01")
     public void notExists() throws Exception {
         getJson(VARIABLE_SIGNS_PATH + "/unknown")
             .andExpect(status().isNotFound());
     }
 
     @Test
+    @Disabled("2023-01-01")
     public void deviceWithData() throws Exception {
         insertTestData();
 
@@ -68,6 +72,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("2023-01-01")
     public void historyNotExists() throws Exception {
         getJson(VARIABLE_SIGNS_PATH + "/history/unknown")
             .andExpect(status().isOk())
@@ -75,6 +80,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("2023-01-01")
     public void historyExists() throws Exception {
         insertTestData();
 
@@ -85,6 +91,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
 
 
     @Test
+    @Disabled("2023-01-01")
     public void codeDescriptions() throws Exception {
         getJson(API_V2_BASE_PATH + API_METADATA_PART_PATH, VARIABLE_SIGNS_CODE_DESCRIPTIONS)
             .andExpect(status().isOk())
@@ -94,6 +101,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
+    @Disabled("2023-01-01")
     public void codeDescriptionsV3() throws Exception {
         getJson(API_V3_BASE_PATH + API_METADATA_PART_PATH, VARIABLE_SIGNS_CODE_DESCRIPTIONS)
             .andExpect(status().isOk())

@@ -105,7 +105,7 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
 
     @Test
     public void constraintViolationException() throws Exception {
-        testException(ConstraintViolationException.class, 400, LogMode.ERROR);
+        testException(ConstraintViolationException.class, 400, LogMode.INFO);
     }
 
     @Test

@@ -60,6 +60,19 @@ public class PostgisGeometryUtilsTest extends AbstractTest {
     }
 
     @Test
+    public void simplifyToPointIfTooShort() {
+        final ArrayList<Coordinate> coords = new ArrayList<>();
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100, 1, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.0000000, 1.0000001, Z));
+
+        final LineString lineString = PostgisGeometryUtils.createLineStringWithZ(coords);
+        final org.locationtech.jts.geom.Geometry simplifiedGeometry = PostgisGeometryUtils.simplify(lineString);
+        assertEquals(1, simplifiedGeometry.getNumPoints());
+        assertEquals(org.locationtech.jts.geom.Geometry.TYPENAME_POINT, simplifiedGeometry.getGeometryType());
+
+    }
+
+    @Test
     public void distanceBetweenWGS84PointsInKm() {
         final double TAMPERE_KUOPIO_DISTANCE_KM = 255.8;
         final double ALLOWED_DELTA_IN_KM_H = 1.0;

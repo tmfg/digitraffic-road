@@ -16,7 +16,9 @@ public final class ApiPaths {
     public static final String API_DATA_PART_PATH = "/data";
     public static final String API_WORK_MACHINE_PART_PATH = "/work-machine";
     public static final String API_VARIABLE_SIGN_UPDATE_PART_PATH = "/variable-sign-update";
+    @Deprecated
     public static final String VARIABLE_SIGNS_PATH = "/variable-signs";
+    @Deprecated
     public static final String VARIABLE_SIGNS_CODE_DESCRIPTIONS = VARIABLE_SIGNS_PATH + "/code-descriptions";
 
     public static final String WEATHERCAM_PATH = "/weathercam";
@@ -61,7 +63,6 @@ public final class ApiPaths {
 
     // Maintenance trackings
     public static final String MAINTENANCE_TRACKINGS_PATH = "/maintenance/trackings";
-    public static final String MAINTENANCE_TRACKINGS_JSON_DATA_PATH = MAINTENANCE_TRACKINGS_PATH + API_DATA_PART_PATH;
 
     private ApiPaths() {}
 }

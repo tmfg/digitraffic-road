@@ -45,12 +45,12 @@ public class DefaultExceptionHandler {
     // log these exceptions with error
     private static final Set<Class<?>> errorLoggableExceptions = Set.of(
         NullPointerException.class,
-        ConstraintViolationException.class,
         ResourceAccessException.class);
 
     // no need to log these exceptions at all
     private static final Set<Class<?>> nonLoggableExceptions = Set.of(
-        ObjectNotFoundException.class, BadRequestException.class
+        ObjectNotFoundException.class,
+        BadRequestException.class
     );
 
     public DefaultExceptionHandler(final Logger exceptionHandlerLogger) {

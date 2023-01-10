@@ -86,7 +86,7 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
 
     @Query(value = FIND_ALL_ACTIVE_SITUATION_TYPES_AS_D_WITH_JSON + FIND_ALL_ACTIVE_ORDER_BY, nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<Datex2> findAllActiveBySituationTypeWithJson(int activeInPastHours, final String...situationTypes);
+    List<Datex2> findAllActiveBySituationTypeWithJson(int activeInPastHours, final String... situationTypes);
 
     @Query(value =
         "SELECT d.*\n" +

@@ -30,9 +30,9 @@ import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 @ConditionalOnNotWebApplication
 @Component
 public class MaintenanceTrackingMqttConfigurationV2 {
-    // maintenance-v2/trackings/{domain}/{trackingId}
-    public static final String MAINTENANCE_TRACKING_V2_TOPIC = "maintenance-v2/trackings/%s/%d";
-    private static final String MAINTENANCE_TRACKING_V2_STATUS_TOPIC = "maintenance-v2/trackings/status";
+    // maintenance-v2/trackings/{domain}
+    public static final String MAINTENANCE_TRACKING_V2_TOPIC = "maintenance-v2/routes/%s";
+    private static final String MAINTENANCE_TRACKING_V2_STATUS_TOPIC = "maintenance-v2/status";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MaintenanceTrackingMqttConfigurationV2.class);
 
@@ -71,7 +71,7 @@ public class MaintenanceTrackingMqttConfigurationV2 {
     }
 
     private MqttDataMessageV2 createMqttDataMessage(final MaintenanceTrackingForMqttV2 tracking) {
-        final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_V2_TOPIC, tracking.getDomain(), tracking.getId());
+        final String topic = MqttUtil.getTopicForMessage(MAINTENANCE_TRACKING_V2_TOPIC, tracking.getDomain());
 
         return new MqttDataMessageV2(topic, new MqttMaintenanceTrackingMessageV2(tracking));
     }

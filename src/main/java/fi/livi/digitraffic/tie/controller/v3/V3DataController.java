@@ -1,14 +1,11 @@
 package fi.livi.digitraffic.tie.controller.v3;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
-import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2022_11_01;
-import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_01_01;
 import static fi.livi.digitraffic.tie.controller.ApiDeprecations.API_NOTE_2023_06_01;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.CAMERA_HISTORY_PATH;
 import static fi.livi.digitraffic.tie.controller.ApiPaths.FORECAST_SECTION_WEATHER_DATA_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
@@ -36,17 +33,11 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.dto.v1.trafficsigns.TrafficSignHistory;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.metadata.geojson.variablesigns.VariableSignFeatureCollection;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
-import fi.livi.digitraffic.tie.service.v2.V2VariableSignDataService;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -62,26 +53,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @ConditionalOnWebApplication
 public class V3DataController {
     private final ForecastSectionDataService forecastSectionDataService;
-    private final V2VariableSignDataService v2VariableSignDataService;
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
     private final WeatherService weatherService;
-    private final V3Datex2DataService v3Datex2DataService;
-    private final V3RegionGeometryDataService v3RegionGeometryDataService;
-    private final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService;
-
     public V3DataController(final ForecastSectionDataService forecastSectionDataService,
-                            final V2VariableSignDataService v2VariableSignDataService,
                             final CameraPresetHistoryDataService cameraPresetHistoryDataService,
-                            final V3Datex2DataService v3Datex2DataService,
-                            final V3RegionGeometryDataService v3RegionGeometryDataService,
-                            final V2MaintenanceTrackingDataService v2MaintenanceTrackingDataService,
                             final  WeatherService weatherService) {
         this.forecastSectionDataService = forecastSectionDataService;
-        this.v2VariableSignDataService = v2VariableSignDataService;
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
-        this.v3Datex2DataService = v3Datex2DataService;
-        this.v3RegionGeometryDataService = v3RegionGeometryDataService;
-        this.v2MaintenanceTrackingDataService = v2MaintenanceTrackingDataService;
         this.weatherService = weatherService;
     }
 
@@ -134,51 +112,51 @@ public class V3DataController {
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
     }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2023_01_01)
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data. " + API_NOTE_2022_11_01))
-    public VariableSignFeatureCollection variableSigns(
-        @Parameter(description = "If parameter is given list only latest value of given sign")
-        @RequestParam(value = "deviceId", required = false)
-        final String deviceId) {
-        if(deviceId != null) {
-            return v2VariableSignDataService.listLatestValue(deviceId);
-        } else {
-            return v2VariableSignDataService.listLatestValues();
-        }
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2023_01_01)
+//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data. " + API_NOTE_2023_01_01))
+//    public VariableSignFeatureCollection variableSigns(
+//        @Parameter(description = "If parameter is given list only latest value of given sign")
+//        @RequestParam(value = "deviceId", required = false)
+//        final String deviceId) {
+//        if(deviceId != null) {
+//            return v2VariableSignDataService.listLatestValue(deviceId);
+//        } else {
+//            return v2VariableSignDataService.listLatestValues();
+//        }
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2023_01_01)
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
-    public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
-        return v2VariableSignDataService.listLatestValue(deviceId);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2023_01_01)
+//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
+//    public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
+//        return v2VariableSignDataService.listLatestValue(deviceId);
+//    }
+//
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
+//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
+//    public List<TrafficSignHistory> variableSignHistory(
+//        @Parameter(description = "List history data of given sign")
+//        @RequestParam(value = "deviceId")
+//        final String deviceId) {
+//        return v2VariableSignDataService.listVariableSignHistory(deviceId);
+//    }
 
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
-    public List<TrafficSignHistory> variableSignHistory(
-        @Parameter(description = "List history data of given sign")
-        @RequestParam(value = "deviceId")
-        final String deviceId) {
-        return v2VariableSignDataService.listVariableSignHistory(deviceId);
-    }
-
-    @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
-    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
-    public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
-        return v2VariableSignDataService.listVariableSignHistory(deviceId);
-    }
+//    @Deprecated(forRemoval = true)
+//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
+//    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
+//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
+//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
+//    public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
+//        return v2VariableSignDataService.listVariableSignHistory(deviceId);
+//    }
 
     //@Operation(summary = "List the history of sensor values from the weather road station")
     //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
@@ -290,229 +268,6 @@ public class V3DataController {
 
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
     }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Active traffic messages as Datex2. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE })
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
-//    public D2LogicalModel trafficMessageDatex2(
-//        @Parameter(description = "Return traffic messages from given amount of hours in the past.")
-//        @RequestParam(defaultValue = "0")
-//        @Range(min = 0)
-//        final int inactiveHours,
-//        @Parameter(description = "Situation type.")
-//        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
-//        final SituationType... situationType) {
-//        return v3Datex2DataService.findActive(inactiveHours, situationType);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Traffic messages history by situation as Datex2. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_DATEX2_PATH + "/{situationId}", produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE})
-//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
-//                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
-//    public D2LogicalModel trafficMessageDatex2BySituationId(
-//        @Parameter(description = "Situation id.", required = true)
-//        @PathVariable
-//        final String situationId,
-//        @Parameter(description = "If the parameter value is true, then only the latest message will be returned")
-//        @RequestParam(defaultValue = "false")
-//        final boolean latest) {
-//        return v3Datex2DataService.findBySituationId(situationId, latest);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Active traffic messages as simple JSON. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH, produces = { APPLICATION_JSON_VALUE })
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
-//    public TrafficAnnouncementFeatureCollection trafficMessageSimple(
-//        @Parameter(description = "Return traffic messages from given amount of hours in the past.")
-//        @RequestParam(defaultValue = "0")
-//        @Range(min = 0)
-//        final int inactiveHours,
-//        @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-//            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
-//        @RequestParam(defaultValue = "false")
-//        final boolean includeAreaGeometry,
-//        @Parameter(description = "Situation type.")
-//        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
-//        final SituationType...situationType) {
-//        return v3Datex2DataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Traffic messages history by situation id as simple JSON. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_SIMPLE_PATH + "/{situationId}", produces = { APPLICATION_JSON_VALUE})
-//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
-//                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
-//    public TrafficAnnouncementFeatureCollection trafficMessageSimpleBySituationId(
-//        @Parameter(description = "Situation id.", required = true)
-//        @PathVariable
-//        final String situationId,
-//        @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-//            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
-//        @RequestParam(defaultValue = "false")
-//        final boolean includeAreaGeometry,
-//        @Parameter(description = "If the parameter value is true, then only the latest message will be returned")
-//        @RequestParam(defaultValue = "false")
-//        final boolean latest) {
-//        return v3Datex2DataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Traffic messages geometries for regions. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = TRAFFIC_MESSAGES_PATH + "/area-geometries", produces = { APPLICATION_JSON_VALUE})
-//    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
-//                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
-//    public RegionGeometryFeatureCollection areaLocationRegions(
-//        @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
-//        @RequestParam(defaultValue = "true")
-//        final boolean lastUpdated,
-//        @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
-//        @RequestParam(required = false)
-//        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//        final ZonedDateTime effectiveDate,
-//        @Parameter(description = "Location code id.")
-//        @RequestParam(required = false)
-//        final Integer...id) {
-//        return v3RegionGeometryDataService.findAreaLocationRegions(lastUpdated, effectiveDate != null ? effectiveDate.toInstant() : null, id);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Road maintenance tracking data latest points. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/latest", produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
-//    public MaintenanceTrackingLatestFeatureCollection findLatestMaintenanceTrackings(
-//
-//    @Parameter(description = "Return trackings which have completed after the given time (inclusive). Default is -1h from now and maximum -24h.")
-//    @RequestParam(required = false)
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    final ZonedDateTime from,
-//
-//    @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-//    @RequestParam(defaultValue = X_MIN, required = false)
-//    @DecimalMin(X_MIN)
-//    @DecimalMax(X_MAX)
-//    final double xMin,
-//
-//    @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-//    @RequestParam(defaultValue = Y_MIN, required = false)
-//    @DecimalMin(Y_MIN)
-//    @DecimalMax(Y_MAX)
-//    final double yMin,
-//
-//    @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-//    @RequestParam(defaultValue = X_MAX, required = false)
-//    @DecimalMin(X_MIN)
-//    @DecimalMax(X_MAX)
-//    final double xMax,
-//
-//    @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-//    @RequestParam(defaultValue = Y_MAX, required = false)
-//    @DecimalMin(Y_MIN)
-//    @DecimalMax(Y_MAX)
-//    final double yMax,
-//
-//    @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
-//    @RequestParam(value = "taskId", required = false)
-//    final List<MaintenanceTrackingTask> taskIds) {
-//
-//        MaintenanceTrackingControllerV1.validateTimeBetweenFromAndToMaxHours(from, null, 24);
-//        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, 1);
-//
-//        return v2MaintenanceTrackingDataService.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskIds, null);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Road maintenance tracking data. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH, produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
-//    public MaintenanceTrackingFeatureCollection findMaintenanceTrackings(
-//
-//        @Parameter(description = "Return trackings which have completed after the given time (inclusive). Default is 24h in past and maximum interval between from and to is 24h.")
-//        @RequestParam(required = false)
-//        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//        final ZonedDateTime from,
-//
-//        @Parameter(description = "Return trackings which have completed before the given time (inclusive). Default is now and maximum interval between from and to is 24h.")
-//        @RequestParam(required = false)
-//        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//        final ZonedDateTime to,
-//
-//        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-//        @RequestParam(defaultValue = X_MIN, required = false)
-//        @DecimalMin(X_MIN)
-//        @DecimalMax(X_MAX)
-//        final double xMin,
-//
-//        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-//        @RequestParam(defaultValue = Y_MIN, required = false)
-//        @DecimalMin(Y_MIN)
-//        @DecimalMax(Y_MAX)
-//        final double yMin,
-//
-//        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
-//        @RequestParam(defaultValue = X_MAX, required = false)
-//        @DecimalMin(X_MIN)
-//        @DecimalMax(X_MAX)
-//        final double xMax,
-//
-//        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
-//        @RequestParam(defaultValue = Y_MAX, required = false)
-//        @DecimalMin(Y_MIN)
-//        @DecimalMax(Y_MAX)
-//        final double yMax,
-//
-//        @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
-//        @RequestParam(value = "taskId", required = false)
-//        final List<MaintenanceTrackingTask> taskIds) {
-//
-//        MaintenanceTrackingControllerV1.validateTimeBetweenFromAndToMaxHours(from, to, 24);
-//        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(from, to, 24);
-//
-//        return v2MaintenanceTrackingDataService.findMaintenanceTrackings(
-//            fromTo.getLeft(), fromTo.getRight(),
-//            xMin, yMin, xMax, yMax, taskIds, null);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Road maintenance tracking data with tracking id. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking data"))
-//    public MaintenanceTrackingFeature getMaintenanceTracking(@Parameter(description = "Tracking id") @PathVariable(value = "id") final long id) {
-//        return v2MaintenanceTrackingDataService.getMaintenanceTrackingById(id);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    @Operation(summary = "Road maintenance tracking tasks. " + API_NOTE_2022_11_01)
-//    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_PATH + "/tasks", produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking tasks"))
-//    public List<MaintenanceTrackingTaskDto> getMaintenanceTrackingTasks() {
-//        return Stream.of(MaintenanceTrackingTask.values())
-//            .sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
-//            .map(t -> new MaintenanceTrackingTaskDto(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn()))
-//            .collect(Collectors.toList());
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2022_11_01)
-//    // This is only for internal debugging and not for the public.
-//    @Hidden
-//    @Operation(summary = "Road maintenance tracking source data")
-//    @RequestMapping(method = RequestMethod.GET, path = MAINTENANCE_TRACKINGS_JSON_DATA_PATH + "/{id}", produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance trackings data"))
-//    public List<JsonNode> findMaintenanceTrackingDataJsonByTrackingId(@Parameter(description = "Tracking id") @PathVariable(value = "id") final long id) {
-//        return v2MaintenanceTrackingDataService.findTrackingDataJsonsByTrackingId(id);
-//    }
 
     public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final ZonedDateTime from, final ZonedDateTime to, final int defaultHoursOfHistory) {
         return getFromAndToParamsIfNotSetWithHoursOfHistory(DateHelper.toInstant(from), DateHelper.toInstant(to), defaultHoursOfHistory);
