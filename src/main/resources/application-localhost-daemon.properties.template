@@ -75,7 +75,8 @@ dt.amazon.s3.sensordata.userSecretKey =
 # JMS settings
 
 # Sonja - disable by commenting url out
-#jms.connectionUrls=
+# use SSM forwarding to connect locally
+#jms.connectionUrls=tcp://localhost:20002,tcp://localhost:20003
 jms.userId=
 jms.password=
 
@@ -105,6 +106,12 @@ mqtt.tms.enabled=true
 mqtt.weather.enabled=true
 # Is maintenane tracking messages available
 mqtt.maintenance.tracking.enabled=true
+
+# Road conditions / Forecast sections
+roadConditions.baseUrl=
+roadConditions.suid=
+roadConditions.user=
+roadConditions.pass=
 
 # Developer life improvements
 logging.level.root=INFO
