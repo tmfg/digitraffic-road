@@ -95,13 +95,4 @@ public class V2MetadataController {
         return v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, minLongitude, minLatitude,
             maxLongitude, maxLatitude, null);
     }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-//    @Operation(summary = "Return all code descriptions. " + API_NOTE_2023_01_01)
-//    @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
-//    @ResponseBody
-//    public VariableSignDescriptions listCodeDescriptions() {
-//        return new VariableSignDescriptions(v2VariableSignDataService.listVariableSignTypes());
-//    }
 }

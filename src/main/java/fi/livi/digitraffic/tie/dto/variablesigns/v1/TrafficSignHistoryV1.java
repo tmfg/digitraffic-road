@@ -1,16 +1,16 @@
-package fi.livi.digitraffic.tie.dto.v1.trafficsigns;
+package fi.livi.digitraffic.tie.dto.variablesigns.v1;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public interface TrafficSignHistory {
+public interface TrafficSignHistoryV1 {
     @JsonInclude
     String getDisplayValue();
     String getAdditionalInformation();
-    ZonedDateTime getEffectDate();
+    Instant getEffectDate();
     String getCause();
-    List<HistoryTextRow> getRows();
+    List<HistoryTextRowV1> getRows();
 }

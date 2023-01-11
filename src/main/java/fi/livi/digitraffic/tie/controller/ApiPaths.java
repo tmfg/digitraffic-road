@@ -10,16 +10,9 @@ public final class ApiPaths {
     public static final String API_V2_BASE_PATH = "/api/v2";
     public static final String API_V3_BASE_PATH = "/api/v3";
     public static final String API_BETA_BASE_PATH = "/api/beta";
-    public static final String API_INTEGRATIONS_BASE_PATH = "/api/integrations";
 
     public static final String API_METADATA_PART_PATH = "/metadata";
     public static final String API_DATA_PART_PATH = "/data";
-    public static final String API_WORK_MACHINE_PART_PATH = "/work-machine";
-    public static final String API_VARIABLE_SIGN_UPDATE_PART_PATH = "/variable-sign-update";
-    @Deprecated
-    public static final String VARIABLE_SIGNS_PATH = "/variable-signs";
-    @Deprecated
-    public static final String VARIABLE_SIGNS_CODE_DESCRIPTIONS = VARIABLE_SIGNS_PATH + "/code-descriptions";
 
     public static final String WEATHERCAM_PATH = "/weathercam";
 
@@ -43,14 +36,11 @@ public final class ApiPaths {
     public static final String WEATHER_DATA_PATH = "/weather-data";
     public static final String WEATHER_HISTORY_DATA_PATH = "/weather-history-data";
     public static final String TMS_SENSOR_CONSTANTS = "/tms-sensor-constants";
-    public static final String FREE_FLOW_SPEEDS_PATH = "/free-flow-speeds";
     public static final String FORECAST_SECTION_WEATHER_DATA_PATH = "/road-conditions";
-
     public static final String CAMERA_HISTORY_PATH = "/camera-history";
 
     // traffic-messages / datex2
     public static final String TRAFFIC_MESSAGES_PATH = "/traffic-messages";
-    public static final String TRAFFIC_MESSAGES_SIMPLE_PATH = TRAFFIC_MESSAGES_PATH + "/simple";
     public static final String TRAFFIC_MESSAGES_DATEX2_PATH = TRAFFIC_MESSAGES_PATH + "/datex2";
     @Deprecated
     public static final String TRAFFIC_DATEX2_PATH = "/traffic-datex2";
@@ -60,9 +50,6 @@ public final class ApiPaths {
     public static final String ROADWORKS_DATEX2_PATH = "/roadworks-datex2";
     @Deprecated
     public static final String WEIGHT_RESTRICTIONS_DATEX2_PATH = "/weight-restrictions-datex2";
-
-    // Maintenance trackings
-    public static final String MAINTENANCE_TRACKINGS_PATH = "/maintenance/trackings";
 
     private ApiPaths() {}
 }

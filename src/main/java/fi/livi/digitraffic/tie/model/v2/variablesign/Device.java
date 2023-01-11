@@ -1,23 +1,22 @@
 package fi.livi.digitraffic.tie.model.v2.variablesign;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 
-import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Immutable;
 
 @Entity
-@DynamicUpdate
+@Immutable
 public class Device {
     @Id
     private String id;
 
-    private ZonedDateTime updatedDate;
+    private Instant updatedDate;
 
-    private ZonedDateTime deletedDate;
+    private Instant deletedDate;
 
     private String type;
 
@@ -73,11 +72,11 @@ public class Device {
         this.etrsTm35FinY = etrsTm35FinY;
     }
 
-    public ZonedDateTime getUpdatedDate() {
+    public Instant getUpdatedDate() {
         return updatedDate;
     }
 
-    public void setUpdatedDate(final ZonedDateTime updatedDate) {
+    public void setUpdatedDate(final Instant updatedDate) {
         this.updatedDate = updatedDate;
     }
 
@@ -97,17 +96,11 @@ public class Device {
         this.carriageway = carriageway;
     }
 
-    public ZonedDateTime getDeletedDate() {
+    public Instant getDeletedDate() {
         return deletedDate;
     }
 
-    public void setDeletedDate(ZonedDateTime deletedDate) {
+    public void setDeletedDate(Instant deletedDate) {
         this.deletedDate = deletedDate;
-    }
-
-    @PreUpdate
-    @PrePersist
-    public void updateUpdatedDate() {
-        setUpdatedDate(ZonedDateTime.now());
     }
 }

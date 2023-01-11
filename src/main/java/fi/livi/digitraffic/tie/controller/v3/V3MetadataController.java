@@ -139,15 +139,6 @@ public class V3MetadataController {
             maxLongitude, maxLatitude, null);
     }
 
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-//    @Operation(summary = "Return all code descriptions. " + API_NOTE_2023_01_01)
-//    @GetMapping(path = VARIABLE_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
-//    @ResponseBody
-//    public V3VariableSignDescriptions listCodeDescriptions() {
-//        return new V3VariableSignDescriptions(v3VariableSignService.listVariableSignTypes());
-//    }
-
     @Deprecated(forRemoval = true)
     @Sunset(date = ApiDeprecations.SUNSET_2023_06_01)
     @Operation(summary = "The static information of TMS stations (Traffic Measurement System / LAM). " + API_NOTE_2023_06_01)

@@ -33,7 +33,6 @@ import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryChangesDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.CameraHistoryPresencesDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
@@ -111,52 +110,6 @@ public class V3DataController {
         return forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false, null,
             minLongitude, minLatitude, maxLongitude, maxLatitude, null);
     }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-//    @Operation(summary = "List the latest data of variable signs. " + API_NOTE_2023_01_01)
-//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH, produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data. " + API_NOTE_2023_01_01))
-//    public VariableSignFeatureCollection variableSigns(
-//        @Parameter(description = "If parameter is given list only latest value of given sign")
-//        @RequestParam(value = "deviceId", required = false)
-//        final String deviceId) {
-//        if(deviceId != null) {
-//            return v2VariableSignDataService.listLatestValue(deviceId);
-//        } else {
-//            return v2VariableSignDataService.listLatestValues();
-//        }
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-//    @Operation(summary = "List the latest value of a variable sign. " + API_NOTE_2023_01_01)
-//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/{deviceId}", produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign data"))
-//    public VariableSignFeatureCollection variableSignByPath(@PathVariable("deviceId") final String deviceId) {
-//        return v2VariableSignDataService.listLatestValue(deviceId);
-//    }
-//
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-//    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
-//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history", produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
-//    public List<TrafficSignHistory> variableSignHistory(
-//        @Parameter(description = "List history data of given sign")
-//        @RequestParam(value = "deviceId")
-//        final String deviceId) {
-//        return v2VariableSignDataService.listVariableSignHistory(deviceId);
-//    }
-
-//    @Deprecated(forRemoval = true)
-//    @Sunset(date = ApiDeprecations.SUNSET_2023_01_01)
-//    @Operation(summary = "List the history of variable sign data. " + API_NOTE_2023_01_01)
-//    @RequestMapping(method = RequestMethod.GET, path = VARIABLE_SIGNS_PATH + "/history/{deviceId}", produces = APPLICATION_JSON_VALUE)
-//    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
-//    public List<TrafficSignHistory> variableSignHistoryByPath(@PathVariable("deviceId") final String deviceId) {
-//        return v2VariableSignDataService.listVariableSignHistory(deviceId);
-//    }
 
     //@Operation(summary = "List the history of sensor values from the weather road station")
     //@RequestMapping(method = RequestMethod.GET, path = WEATHER_HISTORY_DATA_PATH + "/{stationId}", produces = APPLICATION_JSON_VALUE)
@@ -267,10 +220,6 @@ public class V3DataController {
         }
 
         return cameraPresetHistoryDataService.findCameraOrPresetHistoryChangesAfter(after, cameraOrPresetIds == null ? Collections.emptyList() : cameraOrPresetIds);
-    }
-
-    public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final ZonedDateTime from, final ZonedDateTime to, final int defaultHoursOfHistory) {
-        return getFromAndToParamsIfNotSetWithHoursOfHistory(DateHelper.toInstant(from), DateHelper.toInstant(to), defaultHoursOfHistory);
     }
 
     public static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final Instant to, final int defaultHoursOfHistory) {

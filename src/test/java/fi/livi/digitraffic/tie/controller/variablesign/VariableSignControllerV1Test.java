@@ -1,33 +1,23 @@
-package fi.livi.digitraffic.tie.data.controller;
+package fi.livi.digitraffic.tie.controller.variablesign;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V2_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V3_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_CODE_DESCRIPTIONS;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.VARIABLE_SIGNS_PATH;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS_CODE_DESCRIPTIONS;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS_HISTORY;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.controller.ApiConstants;
 
 public class VariableSignControllerV1Test extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
-        return getJson(API_V2_BASE_PATH + API_DATA_PART_PATH, url);
-    }
-
-    private ResultActions getJson(final String basePath, final String url) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get( basePath + url);
-        get.contentType(MediaType.APPLICATION_JSON);
-        return mockMvc.perform(get);
+        final ResultActions response = executeGet(ApiConstants.API_VS_V1 + url);
+        logInfoResponse(response);
+        return response;
     }
 
     private void insertTestData() {
@@ -45,68 +35,51 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
-    @Disabled("2023-01-01")
     public void noData() throws Exception {
-        getJson(VARIABLE_SIGNS_PATH)
+        getJson(API_SIGNS)
             .andExpect(status().isOk())
             .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
             .andExpect(jsonPath("features", Matchers.empty()));
     }
 
     @Test
-    @Disabled("2023-01-01")
     public void notExists() throws Exception {
-        getJson(VARIABLE_SIGNS_PATH + "/unknown")
+        getJson(API_SIGNS + "/unknown")
             .andExpect(status().isNotFound());
     }
 
     @Test
-    @Disabled("2023-01-01")
     public void deviceWithData() throws Exception {
         insertTestData();
 
-        getJson(VARIABLE_SIGNS_PATH + "/ID1")
+        getJson(API_SIGNS + "/ID1")
             .andExpect(status().isOk())
             .andExpect(jsonPath("features", Matchers.hasSize(1)))
             .andExpect(jsonPath("features[0].properties.displayValue", Matchers.equalTo("80")));
     }
 
     @Test
-    @Disabled("2023-01-01")
     public void historyNotExists() throws Exception {
-        getJson(VARIABLE_SIGNS_PATH + "/history/unknown")
+        getJson(API_SIGNS_HISTORY + "?deviceId=unknown")
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.empty()));
     }
 
     @Test
-    @Disabled("2023-01-01")
     public void historyExists() throws Exception {
         insertTestData();
 
-        getJson(VARIABLE_SIGNS_PATH + "/history/ID1")
+        getJson(API_SIGNS_HISTORY + "?deviceId=ID1")
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }
 
-
     @Test
-    @Disabled("2023-01-01")
-    public void codeDescriptions() throws Exception {
-        getJson(API_V2_BASE_PATH + API_METADATA_PART_PATH, VARIABLE_SIGNS_CODE_DESCRIPTIONS)
+    public void codeDescriptionsV3() throws Exception {
+        getJson(API_SIGNS_CODE_DESCRIPTIONS)
             .andExpect(status().isOk())
             .andExpect(jsonPath("signTypes", Matchers.hasSize(12)))
             .andExpect(jsonPath("signTypes[0].description", Matchers.notNullValue()))
-            ;
-    }
-
-    @Test
-    @Disabled("2023-01-01")
-    public void codeDescriptionsV3() throws Exception {
-        getJson(API_V3_BASE_PATH + API_METADATA_PART_PATH, VARIABLE_SIGNS_CODE_DESCRIPTIONS)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("signTypes", Matchers.hasSize(12)))
-            .andExpect(jsonPath("signTypes[0].descriptionFi", Matchers.notNullValue()))
             .andExpect(jsonPath("signTypes[0].descriptionEn", Matchers.notNullValue()))
         ;
     }

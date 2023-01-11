@@ -74,7 +74,7 @@ public final class DateHelper {
     public static Instant getGreatest(final Instant first, final Instant second) {
         if (first == null) {
             return second;
-        } else if(second == null || first.isAfter(second)) {
+        } else if (second == null || first.isAfter(second)) {
             return first;
         }
         return second;

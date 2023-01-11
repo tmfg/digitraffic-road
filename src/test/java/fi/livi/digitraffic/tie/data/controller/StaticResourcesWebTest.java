@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.data.controller;
 import static fi.livi.digitraffic.tie.TestUtils.loadResource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
 
@@ -32,8 +30,7 @@ public class StaticResourcesWebTest extends AbstractRestWebTest {
         final String expectedOriginalLocationValue = "DATEXIISchema_2_2_3_with_definitions_FI.xsd";
         assertEquals(expectedOriginalLocationValue, originallocation.substring(0, expectedOriginalLocationValue.length()));
 
-        MvcResult result = mockMvc.perform(get("/schemas/datex2/DATEXIIResponseSchema_1_1.xsd"))
-            .andExpect(status().isOk()).andReturn();
+        final MvcResult result = expectOk(executeGet("/schemas/datex2/DATEXIIResponseSchema_1_1.xsd")).andReturn();
         final String content = result.getResponse().getContentAsString();
 
         final String location = StringUtils.substringAfter(content, "schemaLocation=\"");

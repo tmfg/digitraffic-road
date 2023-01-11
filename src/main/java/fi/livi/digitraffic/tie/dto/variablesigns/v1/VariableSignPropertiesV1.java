@@ -1,17 +1,20 @@
-package fi.livi.digitraffic.tie.metadata.geojson.variablesigns;
+package fi.livi.digitraffic.tie.dto.variablesigns.v1;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.v3.oas.annotations.media.Schema;
-import org.apache.commons.lang3.StringUtils;
-
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@Schema(name = "Properties", description = "Variable Sign properties")
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Variable Sign properties")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class VariableSignProperties {
+public class VariableSignPropertiesV1 extends PropertiesV1 {
     @Schema(description = "Id")
     public final String id;
 
@@ -39,7 +42,7 @@ public class VariableSignProperties {
     public final String additionalInformation;
 
     @Schema(description = "Information is effect after this date")
-    public final ZonedDateTime effectDate;
+    public final Instant effectDate;
 
     @Schema(description = "Cause for changing the sign:\n" +
                           "Automaatti = Automatic\n" +
@@ -50,11 +53,12 @@ public class VariableSignProperties {
     public final Reliability reliability;
 
     @Schema(description = "Text rows if sign contains a screen")
-    public final List<SignTextRow> textRows;
+    public final List<SignTextRowV1> textRows;
+    private final Instant lastModified;
 
-    public VariableSignProperties(final String id, final SignType type, final String roadAddress, final Direction direction,
-                                  final Carriageway carriageway, final String displayValue, final String additionalInformation, final ZonedDateTime effectDate,
-                                  final String cause, final Reliability reliability, final List<SignTextRow> textRows) {
+    public VariableSignPropertiesV1(final String id, final SignType type, final String roadAddress, final Direction direction,
+                                    final Carriageway carriageway, final String displayValue, final String additionalInformation, final Instant effectDate,
+                                    final String cause, final Reliability reliability, final List<SignTextRowV1> textRows, final Instant lastModified) {
         this.id = id;
         this.type = type;
         this.roadAddress = roadAddress;
@@ -66,6 +70,12 @@ public class VariableSignProperties {
         this.cause = cause;
         this.reliability = reliability;
         this.textRows = textRows;
+        this.lastModified = lastModified;
+    }
+
+    @Override
+    public Instant getLastModified() {
+        return lastModified;
     }
 
     @Schema

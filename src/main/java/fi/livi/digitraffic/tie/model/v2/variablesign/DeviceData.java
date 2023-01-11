@@ -2,8 +2,9 @@ package fi.livi.digitraffic.tie.model.v2.variablesign;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,14 +23,14 @@ public class DeviceData {
     @GeneratedValue(strategy = IDENTITY)
     private long id;
 
-    private ZonedDateTime createdDate;
+    private Instant createdDate;
 
     private String deviceId; // this is a foreign key
 
     private String displayValue;
     private String additionalInformation;
 
-    private ZonedDateTime effectDate;
+    private Instant effectDate;
 
     private String cause;
     private String reliability;
@@ -55,11 +56,11 @@ public class DeviceData {
         this.additionalInformation = additionalInformation;
     }
 
-    public ZonedDateTime getEffectDate() {
+    public Instant getEffectDate() {
         return effectDate;
     }
 
-    public void setEffectDate(final ZonedDateTime effectDate) {
+    public void setEffectDate(final Instant effectDate) {
         this.effectDate = effectDate;
     }
 
@@ -87,11 +88,11 @@ public class DeviceData {
         this.deviceId = deviceId;
     }
 
-    public ZonedDateTime getCreatedDate() {
+    public Instant getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(final ZonedDateTime createdDate) {
+    public void setCreatedDate(final Instant createdDate) {
         this.createdDate = createdDate;
     }
 

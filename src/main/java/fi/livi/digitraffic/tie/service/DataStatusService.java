@@ -34,10 +34,10 @@ import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
 import fi.livi.digitraffic.tie.dao.v1.location.LocationVersionRepository;
 import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2DeviceDataRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2DeviceRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
-import fi.livi.digitraffic.tie.dao.v3.V3CodeDescriptionRepository;
+import fi.livi.digitraffic.tie.dao.variablesign.v1.CodeDescriptionRepositoryV1;
+import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceDataRepositoryV1;
+import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceRepositoryV1;
 import fi.livi.digitraffic.tie.dto.info.v1.DataSourceInfoDtoV1;
 import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfoDtoV1;
 import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfosDtoV1;
@@ -61,9 +61,9 @@ public class DataStatusService {
     private final WeatherStationRepository weatherStationRepository;
     private final SensorValueRepository sensorValueRepository;
     private final ForecastSectionWeatherRepository forecastSectionWeatherRepository;
-    private final V2DeviceRepository v2DeviceRepository;
-    private final V2DeviceDataRepository v2DeviceDataRepository;
-    private final V3CodeDescriptionRepository v3CodeDescriptionRepository;
+    private final DeviceRepositoryV1 deviceRepositoryV1;
+    private final DeviceDataRepositoryV1 deviceDataRepositoryV1;
+    private final CodeDescriptionRepositoryV1 codeDescriptionRepositoryV1;
 
     private final LocationVersionRepository locationVersionRepository;
 
@@ -75,9 +75,9 @@ public class DataStatusService {
                              final WeatherStationRepository weatherStationRepository,
                              final SensorValueRepository sensorValueRepository,
                              final ForecastSectionWeatherRepository forecastSectionWeatherRepository,
-                             final V2DeviceRepository v2DeviceRepository,
-                             final V2DeviceDataRepository v2DeviceDataRepository,
-                             final V3CodeDescriptionRepository v3CodeDescriptionRepository,
+                             final DeviceRepositoryV1 deviceRepositoryV1,
+                             final DeviceDataRepositoryV1 deviceDataRepositoryV1,
+                             final CodeDescriptionRepositoryV1 codeDescriptionRepositoryV1,
                              final LocationVersionRepository locationVersionRepository) {
         this.dataUpdatedRepository = dataUpdatedRepository;
         this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
@@ -86,9 +86,9 @@ public class DataStatusService {
         this.weatherStationRepository = weatherStationRepository;
         this.sensorValueRepository = sensorValueRepository;
         this.forecastSectionWeatherRepository = forecastSectionWeatherRepository;
-        this.v2DeviceRepository = v2DeviceRepository;
-        this.v2DeviceDataRepository = v2DeviceDataRepository;
-        this.v3CodeDescriptionRepository = v3CodeDescriptionRepository;
+        this.deviceRepositoryV1 = deviceRepositoryV1;
+        this.deviceDataRepositoryV1 = deviceDataRepositoryV1;
+        this.codeDescriptionRepositoryV1 = codeDescriptionRepositoryV1;
         this.locationVersionRepository = locationVersionRepository;
     }
 
@@ -197,9 +197,9 @@ public class DataStatusService {
     private List<UpdateInfoDtoV1> getVariableSignInfos() {
         final DataSourceInfoDtoV1 metadataInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.VARIABLE_SIGN);
         final DataSourceInfoDtoV1 singsInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.VARIABLE_SIGN_DATA);
-        final Instant jsonDataUpdated = DateHelper.getGreatest(v2DeviceRepository.getLastUpdated(), v2DeviceDataRepository.getLastUpdated());
-        final Instant datex2DataUpdated = v2DeviceDataRepository.getDatex2LastUpdated();
-        final Instant codeDescriptionDataUpdated = v3CodeDescriptionRepository.getLastUpdated();
+        final Instant jsonDataUpdated = DateHelper.getGreatest(deviceRepositoryV1.getLastUpdated(), deviceDataRepositoryV1.getLastUpdated());
+        final Instant datex2DataUpdated = deviceDataRepositoryV1.getDatex2LastUpdated();
+        final Instant codeDescriptionDataUpdated = codeDescriptionRepositoryV1.getLastUpdated();
         return Arrays.asList(
             new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS, jsonDataUpdated, singsInfo.getUpdateInterval(),
                                 singsInfo.getRecommendedFetchInterval()),
