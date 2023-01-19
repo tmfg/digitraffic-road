@@ -338,7 +338,7 @@ public class WazeDatex2MessageConverter {
         environmentalObstructionTypeEnumStringMap.put(GRASS_FIRE, "Grassfire");
         environmentalObstructionTypeEnumStringMap.put(LANDSLIPS, "Landslips");
         environmentalObstructionTypeEnumStringMap.put(MUD_SLIDE, "Mud slide");
-        environmentalObstructionTypeEnumStringMap.put(SEWER_OVERFLOW, "Sever overflow");
+        environmentalObstructionTypeEnumStringMap.put(SEWER_OVERFLOW, "Sewer overflow");
         environmentalObstructionTypeEnumStringMap.put(ROCKFALLS, "Rockfalls");
         environmentalObstructionTypeEnumStringMap.put(SERIOUS_FIRE, "Serious fire");
         environmentalObstructionTypeEnumStringMap.put(SMOKE_OR_FUMES, "Smoke or fumes");
