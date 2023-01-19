@@ -14,6 +14,23 @@ import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.MULTIVEHICLE_ACCID
 import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.OVERTURNED_HEAVY_LORRY;
 import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.REAR_COLLISION;
 import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.VEHICLE_SPUN_AROUND;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.AVALANCHES;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.EARTHQUAKE_DAMAGE;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.FALLEN_TREES;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.FALLING_ICE;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.FALLING_LIGHT_ICE_OR_SNOW;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.FLASH_FLOODS;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.FLOODING;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.FOREST_FIRE;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.GRASS_FIRE;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.LANDSLIPS;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.MUD_SLIDE;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.ROCKFALLS;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.SERIOUS_FIRE;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.SEWER_OVERFLOW;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.SMOKE_OR_FUMES;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.STORM_DAMAGE;
+import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.SUBSIDENCE;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.NOT_WORKING;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.OUT_OF_SERVICE;
 import static fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum.WORKING_INCORRECTLY;
@@ -227,6 +244,7 @@ import fi.livi.digitraffic.tie.datex2.AuthorityOperation;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.DisturbanceActivity;
 import fi.livi.digitraffic.tie.datex2.EnvironmentalObstruction;
+import fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFault;
 import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultExtensionType;
 import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum;
@@ -269,6 +287,7 @@ public class WazeDatex2MessageConverter {
 
     private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
+    private final Map<EnvironmentalObstructionTypeEnum, String> environmentalObstructionTypeEnumStringMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
     private final Map<ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum, String> extendedRoadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
@@ -307,6 +326,25 @@ public class WazeDatex2MessageConverter {
         accidentTypeMap.put(REAR_COLLISION, "Rear collision");
         accidentTypeMap.put(VEHICLE_SPUN_AROUND, "Vehicle spun around");
         accidentTypeMap.put(AccidentTypeEnum.OTHER, "Accident");
+
+        environmentalObstructionTypeEnumStringMap.put(AVALANCHES, "Avalanches");
+        environmentalObstructionTypeEnumStringMap.put(EARTHQUAKE_DAMAGE, "Earthquake damage");
+        environmentalObstructionTypeEnumStringMap.put(FALLEN_TREES, "Fallen trees");
+        environmentalObstructionTypeEnumStringMap.put(FALLING_ICE, "Falling ice");
+        environmentalObstructionTypeEnumStringMap.put(FALLING_LIGHT_ICE_OR_SNOW, "Falling light ice or snow");
+        environmentalObstructionTypeEnumStringMap.put(FLASH_FLOODS, "Flash floods");
+        environmentalObstructionTypeEnumStringMap.put(FLOODING, "Flooding");
+        environmentalObstructionTypeEnumStringMap.put(FOREST_FIRE, "Forest fire");
+        environmentalObstructionTypeEnumStringMap.put(GRASS_FIRE, "Grassfire");
+        environmentalObstructionTypeEnumStringMap.put(LANDSLIPS, "Landslips");
+        environmentalObstructionTypeEnumStringMap.put(MUD_SLIDE, "Mud slide");
+        environmentalObstructionTypeEnumStringMap.put(SEWER_OVERFLOW, "Sever overflow");
+        environmentalObstructionTypeEnumStringMap.put(ROCKFALLS, "Rockfalls");
+        environmentalObstructionTypeEnumStringMap.put(SERIOUS_FIRE, "Serious fire");
+        environmentalObstructionTypeEnumStringMap.put(SMOKE_OR_FUMES, "Smoke or fumes");
+        environmentalObstructionTypeEnumStringMap.put(STORM_DAMAGE, "Storm damage");
+        environmentalObstructionTypeEnumStringMap.put(SUBSIDENCE, "Subsidence");
+        environmentalObstructionTypeEnumStringMap.put(EnvironmentalObstructionTypeEnum.OTHER, "Environmental Obstruction");
 
         equipmentOrSystemTypeMap.put(ANPR_CAMERAS, "ANPR Cameras");
         equipmentOrSystemTypeMap.put(AUTOMATED_TOLL_SYSTEM, "Automated toll system");
@@ -582,7 +620,8 @@ public class WazeDatex2MessageConverter {
         return Optional.empty();
     }
     private Optional<String> accept(final EnvironmentalObstruction environmentalObstruction) {
-        return Optional.empty();
+        final Optional<EnvironmentalObstructionTypeEnum> environmentalObstructionTypeEnumOptional = Optional.ofNullable(environmentalObstruction.getEnvironmentalObstructionType());
+        return environmentalObstructionTypeEnumOptional.map(x -> environmentalObstructionTypeEnumStringMap.getOrDefault(x, null));
     }
 
     private Optional<String> accept(final EquipmentOrSystemFault equipmentOrSystemFault) {
