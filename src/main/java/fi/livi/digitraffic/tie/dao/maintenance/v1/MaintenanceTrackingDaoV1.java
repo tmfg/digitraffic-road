@@ -68,9 +68,12 @@ public class MaintenanceTrackingDaoV1 {
         this.jdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    final static String AREA_POINT_QUERY = "  AND ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), 4326), t.last_point) = TRUE";
-    final static String AREA_QUERY = "  AND (ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), 4326), tracking.last_point) = TRUE OR \n" +
-                                     "       ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), 4326), tracking.line_string) = TRUE)";
+    final static String AREA_POINT_QUERY = "  AND (ST_SetSRID(ST_GeomFromText(:area), 4326) && t.last_point) = TRUE";
+    final static String AREA_QUERY = "  AND ( (ST_SetSRID(ST_GeomFromText(:area), 4326) && tracking.last_point) = TRUE OR \n" +
+                                     "        (ST_SetSRID(ST_GeomFromText(:area), 4326) && tracking.line_string) = TRUE )";
+
+    final static String CREATED_AFTER_QUERY = "  AND cast(:createdAfter as TIMESTAMP) < tracking.created"; // exclusive
+    final static String CREATED_BEFORE_QUERY = "  AND tracking.created < cast(:createdBefore as TIMESTAMP)"; // exclusive
 
     final String TASK_QUERY = "  AND (\n" +
         "    EXISTS (\n" +
@@ -85,8 +88,8 @@ public class MaintenanceTrackingDaoV1 {
         DTO_LINESTRING_SQL +
         "WHERE cast(coalesce(cast(:endFrom AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) <= tracking.end_time\n" + // inclusive
         "  AND tracking.end_time < cast(coalesce(cast(:endBefore AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP)\n" + // exclusive
-        "  AND cast(coalesce(cast(:createdAfter AS TEXT), '" + MIN_TIMESTAMP + "') as TIMESTAMP) < tracking.created \n" + // exclusive
-        "  AND tracking.created < cast(coalesce(cast(:createdBefore AS TEXT), '" + MAX_TIMESTAMP + "') as TIMESTAMP)\n" + // exclusive
+        "  CREATED_AFTER_QUERY\n" +
+        "  CREATED_BEFORE_QUERY\n" +
         "  AREA_QUERY\n" +
         "  TASK_QUERY\n" +
         "  AND tracking.domain IN (:domains)\n" +
@@ -116,9 +119,14 @@ public class MaintenanceTrackingDaoV1 {
         final MapSqlParameterSource paramSource = new MapSqlParameterSource()
             .addValue("endFrom", toTimestamp(endFrom), Types.TIMESTAMP)
             .addValue("endBefore", toTimestamp(endBefore), Types.TIMESTAMP)
-            .addValue("createdAfter", toTimestamp(createdAfter), Types.TIMESTAMP)
-            .addValue("createdBefore", toTimestamp(createdBefore), Types.TIMESTAMP)
             .addValue("domains", domains);
+
+        if (createdBefore != null) {
+            paramSource.addValue("createdBefore", toTimestamp(createdBefore), Types.TIMESTAMP);
+        }
+        if (createdAfter != null) {
+            paramSource.addValue("createdAfter", toTimestamp(createdAfter), Types.TIMESTAMP);
+        }
 
         final boolean areaSet = area != null;
         final boolean tasksSet = tasks != null && !tasks.isEmpty();
@@ -133,7 +141,9 @@ public class MaintenanceTrackingDaoV1 {
         final String QUERY_SQL =
             TRACKINGS_SQL
                 .replace("AREA_QUERY", areaSet ? AREA_QUERY : "")
-                .replace("TASK_QUERY", tasksSet ? TASK_QUERY : "");
+                .replace("TASK_QUERY", tasksSet ? TASK_QUERY : "")
+                .replace("CREATED_AFTER_QUERY", createdAfter != null ? CREATED_AFTER_QUERY : "")
+                .replace("CREATED_BEFORE_QUERY", createdBefore != null ? CREATED_BEFORE_QUERY : "");
 
         return jdbcTemplate.query(QUERY_SQL, paramSource, (rs, rowNum) -> {
 
