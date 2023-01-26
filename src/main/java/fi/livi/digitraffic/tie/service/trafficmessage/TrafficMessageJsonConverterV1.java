@@ -16,7 +16,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,7 +36,6 @@ import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServi
  * In this java class V2 and V3 refers to old controller and api path hierarchy
  * and _V1 refers to new api paths versions.
  */
-@ConditionalOnWebApplication
 @Component
 public class TrafficMessageJsonConverterV1 {
     private static final Logger log = LoggerFactory.getLogger(TrafficMessageJsonConverterV1.class);

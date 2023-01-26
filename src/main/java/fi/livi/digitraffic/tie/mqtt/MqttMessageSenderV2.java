@@ -61,11 +61,12 @@ public class MqttMessageSenderV2 {
 
     private void doSendMqttMessage(final MqttDataMessageV2 message) {
         try {
-            log.debug("method=sendMqttMessage {}", message);
-            mqttRelay.queueMqttMessage(message.getTopic(), objectMapper.writeValueAsString(message.getData()), statisticsType);
+            log.debug("method=doSendMqttMessage {}", message);
+            final String payload = message.getData() instanceof String ? message.getData().toString() : objectMapper.writeValueAsString(message.getData());
+            mqttRelay.queueMqttMessage(message.getTopic(), payload, statisticsType);
         } catch (final JsonProcessingException e) {
             setLastError(Instant.now());
-            log.error("method=sendMqttMessage Error sending message", e);
+            log.error("method=doSendMqttMessage Error sending message", e);
         }
     }
 

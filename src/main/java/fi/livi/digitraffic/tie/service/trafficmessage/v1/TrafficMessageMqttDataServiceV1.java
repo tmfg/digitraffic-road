@@ -1,0 +1,78 @@
+package fi.livi.digitraffic.tie.service.trafficmessage.v1;
+
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
+
+/**
+ * This service returns traffic messages data for public use in MQTT
+ *
+ * @see fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService
+ * @see <a href="https://github.com/finnishtransportagency/harja">https://github.com/finnishtransportagency/harja</a>
+ */
+@ConditionalOnNotWebApplication
+@Service
+public class TrafficMessageMqttDataServiceV1 {
+    private static final Logger log = LoggerFactory.getLogger(TrafficMessageMqttDataServiceV1.class);
+
+    private final Datex2Repository datex2Repository;
+    private TrafficMessageJsonConverterV1 trafficMessageJsonConverterV1;
+
+    @Autowired
+    public TrafficMessageMqttDataServiceV1(final Datex2Repository datex2Repository,
+                                           final TrafficMessageJsonConverterV1 trafficMessageJsonConverterV1) {
+        this.datex2Repository = datex2Repository;
+        this.trafficMessageJsonConverterV1 = trafficMessageJsonConverterV1;
+    }
+
+    /**
+     *
+     * @param from
+     * @return Pair<latestCreated, trafficMessages>
+     */
+    @Transactional(readOnly = true)
+    public Pair<Instant , List<TrafficAnnouncementFeature>> findTrackingsForMqttCreatedAfter(final Instant from) {
+
+        final List<Datex2> datex2s = datex2Repository.findByCreatedIsAfter(from);
+        final Instant latestCreated = datex2s.stream()
+            .map(Datex2::getCreated)
+            .max(Comparator.naturalOrder())
+            .orElse(null);
+
+        return Pair.of(
+            latestCreated,
+            datex2s.stream()
+                .map(d2 -> {
+                    try {
+                        return trafficMessageJsonConverterV1.convertToFeatureJsonObject_V1(d2.getJsonMessage(),
+                            d2.getSituationType(),
+                            d2.getTrafficAnnouncementType(),
+                            true,
+                            d2.getModified());
+                    } catch (final Exception e) {
+                        log.error(String.format("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3 datex2.id: %s", d2.getId()), e);
+                        return null;
+                    }
+                })
+                // Filter invalid jsons
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())
+                .collect(Collectors.toList())
+        );
+    }
+}

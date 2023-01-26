@@ -21,7 +21,6 @@ import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +43,6 @@ import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeomet
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
-@ConditionalOnWebApplication
 @Service
 public class RegionGeometryDataServiceV1 {
     private static final Logger log = LoggerFactory.getLogger(RegionGeometryDataServiceV1.class);

@@ -206,4 +206,6 @@ public interface Datex2Repository extends JpaRepository<Datex2, Long> {
                "FROM datex2 d\n" +
                "WHERE situation_type in (:situationTypes)", nativeQuery = true)
     Instant getLastModified(final String...situationTypes);
+
+    List<Datex2> findByCreatedIsAfter(final Instant createdAfter);
 }

@@ -106,6 +106,8 @@ mqtt.tms.v2.enabled=true
 mqtt.weather.v2.enabled=true
 # Is maintenane tracking messages available
 mqtt.maintenance.v2.tracking.enabled=true
+# Is traffic messages available
+mqtt.trafficMessage.v2.enabled=true
 
 # Road conditions / Forecast sections
 roadConditions.baseUrl=
