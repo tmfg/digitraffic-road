@@ -27,6 +27,7 @@
         <org.apache.cxf.version>3.5.4</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>3.0.3</org.glassfish.metro.ws.version>
         <spring.cloud.version>3.1.4</spring.cloud.version>
+        <proj4j.version>1.2.3</proj4j.version>
     </properties>
 
     <profiles>
@@ -316,7 +317,13 @@
         <dependency>
             <groupId>org.locationtech.proj4j</groupId>
             <artifactId>proj4j</artifactId>
-            <version>1.1.5</version>
+            <version>${proj4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.locationtech.proj4j</groupId>
+            <artifactId>proj4j-epsg</artifactId>
+            <version>${proj4j.version}</version>
         </dependency>
 
         <dependency>
