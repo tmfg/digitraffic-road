@@ -31,8 +31,22 @@ jobs:
       with:
         languages: ${{ matrix.language }}
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+    - name: Checkout dependencies
+      uses: actions/checkout@v3
+      with:
+        repository: tmfg/digitraffic-build-dependencies
+        ssh-key: ${{ secrets.DEPENDENCY_SSH_KEY }}
+        path: digitraffic-build-dependencies
+    - name: Setup dependencies
+      run: cp -R digitraffic-build-dependencies/ ~/.m2/
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: 11
+        distribution: corretto
+        cache: maven
+    - name: Compile
+      run: mvn install -T1.5C git-commit-id:revision install -e -U -DskipTests=true
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
