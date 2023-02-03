@@ -25,6 +25,7 @@ on:
           - 'true'
 jobs:
   log-parameters:
+    if: github.repository != 'tmfg/digitraffic-road'
     runs-on: ubuntu-20.04
     steps:
       -   name: Checkout
@@ -48,6 +49,7 @@ jobs:
             COMMIT_MESSAGE: "Upload parameters.txt for install #${{ github.run_number }}"
             LINK_TEXT: parameters.txt
   build:
+    if: github.repository != 'tmfg/digitraffic-road'
     runs-on: ubuntu-20.04
     permissions:
       id-token: write
@@ -107,6 +109,7 @@ jobs:
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
   images:
+    if: github.repository != 'tmfg/digitraffic-road'
     needs: build
     strategy:
       matrix:
@@ -176,6 +179,7 @@ jobs:
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
   install:
+    if: github.repository != 'tmfg/digitraffic-road'
     needs: [images, build]
     strategy:
       matrix:
@@ -212,6 +216,7 @@ jobs:
           id: revision
           run: echo "::set-output name=revision_${{ matrix.app }}::${{ steps.update.outputs.revision }}"
   stop-services:
+    if: github.repository != 'tmfg/digitraffic-road'
     needs: install
     if: github.event.inputs.db-install == 'true'
     strategy:
@@ -239,6 +244,7 @@ jobs:
             cluster-name: ${{ secrets.CLUSTER_NAME }}
             desired-count: 0
   update-db:
+    if: github.repository != 'tmfg/digitraffic-road'
     needs: stop-services
     permissions:
       id-token: write
@@ -263,7 +269,7 @@ jobs:
             network-config: ${{ secrets.NETWORK_CONFIG }}
   deploy:
     needs: [ install, update-db ]
-    if: ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    if: github.repository != 'tmfg/digitraffic-road' && ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
     strategy:
       matrix:
         app: [ daemon, web ]
