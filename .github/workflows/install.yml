@@ -216,9 +216,8 @@ jobs:
           id: revision
           run: echo "::set-output name=revision_${{ matrix.app }}::${{ steps.update.outputs.revision }}"
   stop-services:
-    if: github.repository != 'tmfg/digitraffic-road'
     needs: install
-    if: github.event.inputs.db-install == 'true'
+    if: github.repository != 'tmfg/digitraffic-road' && github.event.inputs.db-install == 'true'
     strategy:
       matrix:
         app: [ daemon, web ]
