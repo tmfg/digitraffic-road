@@ -22,7 +22,7 @@ public interface MaintenanceTrackingDto {
 
     Instant getCreated();
 
-    String getLineStringJson();
+    String getGeometryStringJson();
 
     String getLastPointJson();
 
@@ -43,6 +43,6 @@ public interface MaintenanceTrackingDto {
     }
 
     default String toStringTiny() {
-        return ToStringHelper.toStringExcluded(this, "lineString");
+        return ToStringHelper.toStringExcluded(this, "geometryStringJson");
     }
 }

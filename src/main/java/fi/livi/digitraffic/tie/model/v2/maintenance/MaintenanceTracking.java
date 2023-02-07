@@ -61,7 +61,7 @@ public class MaintenanceTracking {
     private Point lastPoint;
 
     @Column
-    private LineString lineString;
+    private Geometry geometry;
 
     @Column
     private BigDecimal direction;
@@ -105,28 +105,28 @@ public class MaintenanceTracking {
 
     public MaintenanceTracking(final V3MaintenanceTrackingObservationData maintenanceTrackingObservationData, final MaintenanceTrackingWorkMachine workMachine,
                                final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                               final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
+                               final Point lastPoint, final Geometry geometry, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
                                final String domain) {
-        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, lineString, tasks, direction, domain);
+        this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, geometry, tasks, direction, domain);
         this.maintenanceTrackingObservationDatas.add(maintenanceTrackingObservationData);
     }
 
     private MaintenanceTracking(final MaintenanceTrackingWorkMachine workMachine,
                                 final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
-                                final Point lastPoint, final LineString lineString, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
+                                final Point lastPoint, final Geometry geometry, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
                                 final String domain) {
+        checkGeometry(geometry);
         this.workMachine = workMachine;
         this.sendingSystem = sendingSystem;
         this.sendingTime = sendingTime;
         this.startTime = startTime;
         this.endTime = endTime;
         this.lastPoint = lastPoint;
-        this.lineString = lineString;
+        this.geometry = geometry;
         this.tasks.addAll(tasks);
         this.direction = direction;
         this.domain = domain;
     }
-
 
     public Long getId() {
         return id;
@@ -160,12 +160,13 @@ public class MaintenanceTracking {
         this.endTime = endTime;
     }
 
-    public LineString getLineString() {
-        return lineString;
+    public Geometry getGeometry() {
+        return geometry;
     }
 
-    public void setLineString(final LineString lineString) {
-        this.lineString = lineString;
+    public void setGeometry(final Geometry geometry) {
+        checkGeometry(geometry);
+        this.geometry = geometry;
     }
 
     public ZonedDateTime getCreated() {
@@ -184,7 +185,7 @@ public class MaintenanceTracking {
         return direction;
     }
 
-    public void setDirection(BigDecimal direction) {
+    public void setDirection(final BigDecimal direction) {
         this.direction = direction;
     }
 
@@ -222,21 +223,18 @@ public class MaintenanceTracking {
     }
 
     public void appendGeometry(final Geometry geometryToAppend, final ZonedDateTime geometryObservationTime, final BigDecimal direction) {
-        final LineString result = PostgisGeometryUtils.combineToLinestringWithZ(getCurrentGeometry(), geometryToAppend);
-        setLineString(result);
-        setLastPoint(result.getEndPoint());
+        final LineString result = PostgisGeometryUtils.combineToLinestringWithZ(getGeometry(), geometryToAppend);
+        final Geometry simpleSnapped = PostgisGeometryUtils.snapToGrid(PostgisGeometryUtils.simplify(result));
+        setGeometry(simpleSnapped);
+        setLastPoint(PostgisGeometryUtils.getEndPoint(simpleSnapped));
         setEndTime(geometryObservationTime);
         setDirection(direction);
     }
 
-    /**
-     * Returns the LineString if it exists or last Point if not.
-     * @return Point or LineString
-     */
-    private Geometry getCurrentGeometry() {
-        if (getLineString() != null) {
-            return getLineString();
+    private void checkGeometry(final Geometry geometry) {
+        if (!Geometry.TYPENAME_LINESTRING.equals(geometry.getGeometryType()) &&
+            !Geometry.TYPENAME_POINT.equals(geometry.getGeometryType()) ) {
+            throw new IllegalArgumentException("Only Point and LineString geometries are supported. Geometry was of type " + geometry.getGeometryType());
         }
-        return lastPoint;
     }
 }

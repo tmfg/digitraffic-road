@@ -12,7 +12,6 @@ import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALL
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;
-import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.BRUSHING;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.CRACK_FILLING;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PAVING;
 import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.PLOUGHING_AND_SLUSH_REMOVAL;
@@ -40,7 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
@@ -581,8 +579,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         testHelper.insertDomain(DOMAIN_WITH_SOURCE, "Foo/Bar");
         testHelper.insertDomain(DOMAIN_WITHOUT_SOURCE, null);
         commitAndEndTransactionAndStartNew();
-        final long trackingId1 = insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
-        final long trackingId2 = insertTrackingForDomain(DOMAIN_WITHOUT_SOURCE, wm2.getId());
+        final long trackingId1 = testHelper.insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
+        final long trackingId2 = testHelper.insertTrackingForDomain(DOMAIN_WITHOUT_SOURCE, wm2.getId());
         flushCommitEndTransactionAndStartNew(entityManager);
 
         // Tracking for domain with source should be found
@@ -609,8 +607,8 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         final MaintenanceTrackingWorkMachine wm1 = testHelper.createAndSaveWorkMachine();
         testHelper.insertDomain(DOMAIN_WITH_SOURCE, "Foo/Bar");
         commitAndEndTransactionAndStartNew();
-        insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
-        insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
+        testHelper.insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
+        testHelper.insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
         flushCommitEndTransactionAndStartNew(entityManager);
 
         final List<MaintenanceTracking> all = v2MaintenanceTrackingRepository.findAll();
@@ -673,12 +671,12 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
         testHelper.insertDomain(secondDomain, "Foo/Bar");
 
         // tracking for firstDomain
-        insertTrackingForDomain(firstDomain, wm1.getId());
+        testHelper.insertTrackingForDomain(firstDomain, wm1.getId());
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, firstDomain);
         sleep(2000); // delay creation with 2 s
         // tracking for secondDomain 2 s later
         flushCommitEndTransactionAndStartNew(entityManager);
-        insertTrackingForDomain(secondDomain, wm2.getId());
+        testHelper.insertTrackingForDomain(secondDomain, wm2.getId());
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, secondDomain);
         flushCommitEndTransactionAndStartNew(entityManager);
 
@@ -757,26 +755,6 @@ public class V2MaintenanceTrackingDataServiceTest extends AbstractServiceTest {
             RANGE_X_MIN, RANGE_Y_MIN, RANGE_X_MAX, RANGE_Y_MAX,
             asList(tasks),
             domains);
-    }
-
-    private long insertTrackingForDomain(final String domain, final long workMachineId) {
-        entityManager.flush();
-        entityManager.createNativeQuery(
-                "INSERT INTO maintenance_tracking(id, domain, last_point, work_machine_id, sending_system, sending_time, start_time, end_time, finished)\n" +
-                         "VALUES (nextval('SEQ_MAINTENANCE_TRACKING'), '" + domain + "', ST_PointFromText('POINT(20.0 64.0 0)', 4326), " +
-                                  workMachineId + ", 'dummy', now(), now(), now(), true)" )
-            .executeUpdate();
-        final long id = ((BigInteger) entityManager.createNativeQuery(
-            "select id " +
-                "from road.public.maintenance_tracking " +
-                "where domain = '" + domain + "' " +
-                "order by id desc " +
-                "limit 1").getSingleResult()).longValue();
-        entityManager.createNativeQuery(
-                "INSERT INTO road.public.maintenance_tracking_task(maintenance_tracking_id, task)\n" +
-                    "VALUES (" + id + ", '" + BRUSHING.name() + "')")
-            .executeUpdate();
-        return id;
     }
 
     private LinkedHashMap<Long, List<MaintenanceTrackingProperties>> groupTrackingsByStartId(final List<MaintenanceTrackingFeature> trackings) {

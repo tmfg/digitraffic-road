@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.helper.DaoUtils;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
@@ -36,14 +37,14 @@ public class V2ForecastSectionMetadataDao {
     private static final String INSERT_FORECAST_SECTION =
         "INSERT INTO forecast_section(id, natural_id, description, length, version, geometry, geometry_simplified) " +
         "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version, " +
-        "       ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), 4326)), ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), 4326))) " +
+        "       ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), " + GeometryConstants.SRID + ")), ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), " + GeometryConstants.SRID + "))) " +
         "ON CONFLICT ON CONSTRAINT forecast_section_unique " +
         "DO NOTHING ";
 
     private static final String UPDATE_FORECAST_SECTION =
         "UPDATE forecast_section SET description = :description, length = :length, " +
-        " geometry = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), 4326)), " +
-        " geometry_simplified = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), 4326))" +
+        " geometry = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), " + GeometryConstants.SRID + ")), " +
+        " geometry_simplified = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), " + GeometryConstants.SRID + "))" +
         "WHERE natural_id = :naturalId AND version = :version AND obsolete_date IS null";
 
     private static final String SELECT_ALL =
@@ -63,7 +64,7 @@ public class V2ForecastSectionMetadataDao {
         "INTERSECTS_AREA" +
         "ORDER BY f.natural_id";
 
-    private static final String INTERSECTS_AREA  = "AND ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), 4326), f.geometry) = TRUE\n";
+    private static final String INTERSECTS_AREA  = "AND ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), " + GeometryConstants.SRID + "), f.geometry) = TRUE\n";
     private static final String INSERT_ROAD_SEGMENT =
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
         "VALUES((SELECT id FROM forecast_section WHERE natural_id = :naturalId), :orderNumber, :startDistance, :endDistance, :carriageway)";
@@ -100,7 +101,7 @@ public class V2ForecastSectionMetadataDao {
         try {
             final String json = feature.getGeometry().toJsonString();
             final Geometry geometry = PostgisGeometryUtils.convertGeoJsonGeometryToGeometry(json);
-            final Geometry simplifiedGeometry = PostgisGeometryUtils.simplify(geometry);
+            final Geometry simplifiedGeometry = PostgisGeometryUtils.snapToGrid(PostgisGeometryUtils.simplify(geometry));
             args.put("geometry", geometry.toText());
             args.put("geometrySimplified", simplifiedGeometry.toText());
         } catch (final Exception e) {

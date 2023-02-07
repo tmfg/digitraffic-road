@@ -25,7 +25,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +48,7 @@ import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils.GeometryType;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
@@ -159,7 +159,7 @@ public class V3MaintenanceTrackingUpdateService {
                 final ZonedDateTime harjaObservationTime = DateHelper.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
 
                 final BigDecimal direction = getDirection(havainto, trackingData.getId());
-                final Point firstPoint = resolveFirstPoint(geometry);
+                final Point firstPoint = (Point) PostgisGeometryUtils.snapToGrid(PostgisGeometryUtils.getStartPoint(geometry));
                 if (status.is(TRANSITION)) {
                     log.debug("method=handleRoute WorkMachine tracking in transition");
                     // Mark found one to finished as the work machine is in transition after that
@@ -173,20 +173,24 @@ public class V3MaintenanceTrackingUpdateService {
                     // This happens only when task changes for same work machine or trakcing is continuation for previous tracking.
                     updateAsFinishedNullSafeAndAppendLastGeometry(previousTracking, firstPoint, direction, harjaObservationTime, status.isInsideLimitsForCombiningWithPrevious());
 
-                    final Geometry simplifiedGeometry = PostgisGeometryUtils.simplify(geometry);
-                    if (geometry.getNumPoints() != simplifiedGeometry.getNumPoints()) {
-                        log.debug("method=handleRoute geometry simplified from {} points to {} points", geometry.getNumPoints() , simplifiedGeometry.getNumPoints());
+                    // Simplify to reduce size of the geometry
+                    // Snap to grid to remove illegal LineStrings and convert almost a Point LineString to a Point
+                    final Geometry simpleSnapped =
+                        PostgisGeometryUtils.checkTypeInAndReturn(PostgisGeometryUtils.snapToGrid(PostgisGeometryUtils.simplify(geometry)),
+                                                                  GeometryType.LINESTRING, GeometryType.POINT);
+                    if (!geometry.getGeometryType().equals(simpleSnapped.getGeometryType())) {
+                        log.info("method=handleRoute geometry simplified and snapped from {} to {} geometry type", geometry.getGeometryType() , simpleSnapped.getGeometryType());
                     }
 
                     final MaintenanceTrackingWorkMachine workMachine =
                         getOrCreateWorkMachine(harjaWorkMachineId, harjaContractId, harjaWorkMachine.getTyokonetyyppi());
-                    final Point lastPoint = resolveLastPoint(simplifiedGeometry);
+                    final Point lastPoint = PostgisGeometryUtils.getEndPoint(simpleSnapped);
                     final Set<MaintenanceTrackingTask> performedTasks =
                         getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
 
                     final MaintenanceTracking created =
                         new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
-                            harjaObservationTime, harjaObservationTime, lastPoint, Geometry.TYPENAME_LINESTRING.equals(simplifiedGeometry.getGeometryType()) ? (LineString) simplifiedGeometry : null,
+                            harjaObservationTime, harjaObservationTime, lastPoint, simpleSnapped,
                             performedTasks, direction, STATE_ROADS_DOMAIN);
 
                     // Mark new tracking to follow previous tracking
@@ -242,7 +246,7 @@ public class V3MaintenanceTrackingUpdateService {
 
         final Set<MaintenanceTrackingTask> performedTasks = getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
         final ZonedDateTime harjaObservationTime = havainto.getHavaintoaika();
-        final Point nextTrackingFirstPoint = resolveFirstPoint(nextGeometry);
+        final Point nextTrackingFirstPoint = PostgisGeometryUtils.getStartPoint(nextGeometry);
         final boolean isInsideLimitsToCombine = isInsideTheLimitsForCombiningToPreviousTracking(previousTracking, harjaObservationTime, nextTrackingFirstPoint);
         final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, previousTracking);
         final boolean isTransition = isTransition(performedTasks);
@@ -271,7 +275,11 @@ public class V3MaintenanceTrackingUpdateService {
 
     private static boolean isDistanceFromPreviousTrackingInsideDistanceLimit(final MaintenanceTracking previousTracking,
                                                                              final Point nextTrackingFirstPoint) {
-        return PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), nextTrackingFirstPoint) < distinctLineStringObservationGapKm;
+        final double distanceBetween = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(previousTracking.getLastPoint(), nextTrackingFirstPoint);
+        log.debug("method=isDistanceFromPreviousTrackingInsideDistanceLimit {} < {} = {}",
+                  distanceBetween, distinctLineStringObservationGapKm,
+                  distanceBetween < distinctLineStringObservationGapKm);
+        return distanceBetween < distinctLineStringObservationGapKm;
     }
 
     private static double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime havaintoaika,
@@ -328,34 +336,6 @@ public class V3MaintenanceTrackingUpdateService {
             }
             trackingToFinish.setFinished();
         }
-    }
-
-    /**
-     * @param geometry Must be either Point or LineString
-     * @return Point it self or LineString's last point
-     */
-    private static Point resolveLastPoint(final Geometry geometry) {
-        if (geometry.getNumPoints() > 1) {
-            final LineString lineString = (LineString) geometry;
-            return lineString.getEndPoint();
-        } else if (geometry.getNumPoints() == 1) {
-            return (Point)geometry;
-        }
-        throw new IllegalArgumentException("Geometry " + geometry + " is not LineString of Point");
-    }
-
-    /**
-     * @param geometry Must be either Point or LineString
-     * @return Point it self or LineString's first point
-     */
-    private static Point resolveFirstPoint(final Geometry geometry) {
-        if (geometry.getNumPoints() > 1) {
-            final LineString lineString = (LineString) geometry;
-            return lineString.getStartPoint();
-        } else if (geometry.getNumPoints() == 1) {
-            return (Point)geometry;
-        }
-        throw new IllegalArgumentException("Geometry " + geometry + " is not LineString of Point");
     }
 
     /**
@@ -430,7 +410,7 @@ public class V3MaintenanceTrackingUpdateService {
     private static List<Coordinate> resolveCoordinatesAsWGS84(final GeometriaSijaintiSchema sijainti) {
         if (sijainti.getViivageometria() != null) {
             final List<List<Object>> lineStringCoords = sijainti.getViivageometria().getCoordinates();
-            final List<Coordinate> resultLineString = lineStringCoords.stream().map(point -> {
+            return lineStringCoords.stream().map(point -> {
                 try {
                     final double x = ((Number) point.get(0)).doubleValue();
                     final double y = ((Number) point.get(1)).doubleValue();
@@ -446,13 +426,6 @@ public class V3MaintenanceTrackingUpdateService {
                     throw e;
                 }
             }).collect(Collectors.toList());
-            if (resultLineString.size() == 1) {
-                // As we are handling LineString, there should be at least two points. In reality they should be distinct points, but here
-                // we fool a little and just duplicate the only point int the geometry to make it "LineString". This causes coordinates
-                // to be handled like LineString and not as a single Point.
-                resultLineString.add(resultLineString.get(0));
-            }
-            return resultLineString;
         } else if (sijainti.getKoordinaatit() != null) {
             final KoordinaattisijaintiSchema koordinaatit = sijainti.getKoordinaatit();
             final Coordinate coordinate = PostgisGeometryUtils.createCoordinateWithZFromETRS89ToWGS84(koordinaatit.getX(), koordinaatit.getY(), koordinaatit.getZ());

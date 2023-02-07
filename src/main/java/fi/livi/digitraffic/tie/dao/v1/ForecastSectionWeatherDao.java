@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastConditionReasonDto;
 import fi.livi.digitraffic.tie.dto.v1.forecast.RoadConditionDto;
 import fi.livi.digitraffic.tie.helper.DaoUtils;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.OverallRoadCondition;
@@ -50,7 +51,7 @@ public class ForecastSectionWeatherDao {
     private final static String INTERSECTS_AREA =
         "  AND fs.id IN (SELECT id\n" +
         "                FROM forecast_section f\n" +
-        "                WHERE ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), 4326), f.geometry) = TRUE)\n";
+        "                WHERE ST_INTERSECTS(ST_SetSRID(ST_GeomFromText(:area), " + GeometryConstants.SRID + "), f.geometry) = TRUE)\n";
 
     @Autowired
     public ForecastSectionWeatherDao(final NamedParameterJdbcTemplate jdbcTemplate) {

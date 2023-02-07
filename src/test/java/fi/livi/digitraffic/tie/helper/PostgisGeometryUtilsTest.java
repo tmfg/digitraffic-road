@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.helper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,16 +62,31 @@ public class PostgisGeometryUtilsTest extends AbstractTest {
     }
 
     @Test
-    public void simplifyToPointIfTooShort() {
+    public void simplifyRemoveTooClosePoint() {
         final ArrayList<Coordinate> coords = new ArrayList<>();
-        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100, 1, Z));
-        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.0000000, 1.0000001, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.0000000, 1.0000000, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.0000001, 1.0000001, Z)); // This will be removed
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.0000100, 1.0000100, Z));
+
+        final LineString lineString = PostgisGeometryUtils.createLineStringWithZ(coords);
+        final org.locationtech.jts.geom.Geometry simplifiedGeometry = PostgisGeometryUtils.simplify(lineString);
+        assertEquals(2, simplifiedGeometry.getNumPoints());
+        assertEquals(org.locationtech.jts.geom.Geometry.TYPENAME_LINESTRING, simplifiedGeometry.getGeometryType());
+    }
+
+    @Test
+    public void simplifyToPointIfTooClose() {
+        final ArrayList<Coordinate> coords = new ArrayList<>(); // create a rectangle
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.000000, 1.000000, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.000000, 1.000010, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.000010, 1.000010, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.000010, 1.000000, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(100.000000, 1.000000, Z));
 
         final LineString lineString = PostgisGeometryUtils.createLineStringWithZ(coords);
         final org.locationtech.jts.geom.Geometry simplifiedGeometry = PostgisGeometryUtils.simplify(lineString);
         assertEquals(1, simplifiedGeometry.getNumPoints());
         assertEquals(org.locationtech.jts.geom.Geometry.TYPENAME_POINT, simplifiedGeometry.getGeometryType());
-
     }
 
     @Test
@@ -177,6 +194,57 @@ public class PostgisGeometryUtilsTest extends AbstractTest {
         assertEquals(Geometry.Type.MultiPolygon, geom.getType());
         log.info(geom.toString());
     }
+
+    @Test
+    public void checkTypeIn() {
+        final Point point =  PostgisGeometryUtils.createPointWithZ(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, 0.0));
+        final ArrayList<Coordinate> coords = new ArrayList<>();
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, Z));
+        coords.add(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X + 10, TAMPERE_WGS84_Y + 10, Z + 10));
+        final LineString lineString = PostgisGeometryUtils.createLineStringWithZ(coords);
+
+        assertThrows(IllegalArgumentException.class, () -> PostgisGeometryUtils.checkTypeInAndReturn(point, PostgisGeometryUtils.GeometryType.LINESTRING));
+
+        assertThrows(IllegalArgumentException.class, () -> PostgisGeometryUtils.checkTypeInAndReturn(lineString, PostgisGeometryUtils.GeometryType.POINT));
+
+        assertThrows(IllegalArgumentException.class, () -> PostgisGeometryUtils.checkTypeInAndReturn(lineString, (PostgisGeometryUtils.GeometryType)null));
+        assertThrows(IllegalArgumentException.class, () -> PostgisGeometryUtils.checkTypeInAndReturn(lineString, null));
+
+        assertEquals(point, PostgisGeometryUtils.checkTypeInAndReturn(point));
+        assertEquals(point, PostgisGeometryUtils.checkTypeInAndReturn(point, PostgisGeometryUtils.GeometryType.POINT));
+        assertEquals(point, PostgisGeometryUtils.checkTypeInAndReturn(point, PostgisGeometryUtils.GeometryType.LINESTRING, PostgisGeometryUtils.GeometryType.POINT));
+        assertEquals(lineString, PostgisGeometryUtils.checkTypeInAndReturn(lineString, PostgisGeometryUtils.GeometryType.LINESTRING, PostgisGeometryUtils.GeometryType.POINT));
+
+    }
+
+    @Test
+    public void snapToGrid() throws ParseException {
+        final org.locationtech.jts.geom.Geometry geometry =
+            PostgisGeometryUtils.convertWktToGeomety("LINESTRING(1.1234568 2.1234568, 1.1234567 2.1234567, 1.1234667 2.1234667)");
+        final org.locationtech.jts.geom.Geometry result = PostgisGeometryUtils.snapToGrid(geometry);
+        final org.locationtech.jts.geom.Geometry expected =
+            PostgisGeometryUtils.convertWktToGeomety("LINESTRING(1.123457 2.123457, 1.123467 2.123467)");
+        log.info("snapToGrid {} -> {}, expected: {}", geometry, result, expected);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void snapToGridResultEmptyLinestringReturnsPoint() throws ParseException {
+        // Sql equivivalents
+        // st_astext(ST_Snaptogrid(ST_GeomFromText('LINESTRING(1.1234568 2.1234568, 1.1234567 2.1234567, 1.1234667 2.1234667)'), 0.000001)) AS lineStringJson,
+        // st_astext(ST_Snaptogrid(ST_GeomFromText('POINT(1.1234568 2.1234568)'), 0.000001)) AS pointJson
+        final org.locationtech.jts.geom.Geometry geometry =
+            PostgisGeometryUtils.convertWktToGeomety("LINESTRING(1.1234568 2.1234568, 1.1234567 2.1234567, 1.1234570 2.1234574)");
+        final org.locationtech.jts.geom.Geometry result = PostgisGeometryUtils.snapToGrid(geometry);
+
+        final org.locationtech.jts.geom.Geometry expected =
+            PostgisGeometryUtils.convertWktToGeomety("POINT(1.123457 2.123457)");
+        log.info("snapToGrid {} -> {}, expected: {}", geometry, result, expected);
+        assertEquals(expected, result);
+    }
+
+
 
     private void checkCoordinate(Coordinate coordinate, final double x, final double y, final double z) {
         final double ALLOWED_COORDINATE_DELTA = 0.00002;

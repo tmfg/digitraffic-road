@@ -58,6 +58,7 @@ import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ViivageometriasijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
@@ -78,9 +79,6 @@ public class V3MaintenanceTrackingServiceTestHelper {
     private final EntityManager entityManager;
     private final ResourceLoader resourceLoader;
     private static double maxLineStringGapInKilometers;
-
-    public static final String COMPANY = "Tie huolto Oy";
-    public static final String COMPANY_ID = "8561566-0";
 
     public final static Pair<Double, Double> RANGE_X = Pair.of(19.0, 32.0);
     public final static Pair<Double, Double> RANGE_Y = Pair.of(59.0, 72.0);
@@ -161,7 +159,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     }
 
     public void checkCoordinateCount(final MaintenanceTracking tracking, final int count) {
-        assertEquals(count, tracking.getLineString().getCoordinates().length);
+        assertEquals(count, tracking.getGeometry().getCoordinates().length);
     }
 
     public void checkContainsOnlyTasksWithIds(final MaintenanceTracking tracking, final MaintenanceTrackingTask... tasks) {
@@ -552,8 +550,10 @@ public class V3MaintenanceTrackingServiceTestHelper {
     public long insertTrackingForDomain(final String domain, final long workMachineId) {
         entityManager.flush();
         entityManager.createNativeQuery(
-                "INSERT INTO maintenance_tracking(id, domain, last_point, work_machine_id, sending_system, sending_time, start_time, end_time, finished)\n" +
-                    "VALUES (nextval('SEQ_MAINTENANCE_TRACKING'), '" + domain + "', ST_PointFromText('POINT(20.0 64.0 0)', 4326), " +
+                "INSERT INTO maintenance_tracking(id, domain, last_point, geometry, work_machine_id, sending_system, sending_time, start_time, end_time, finished)\n" +
+                    "VALUES (nextval('SEQ_MAINTENANCE_TRACKING'), '" + domain +
+                    "', ST_PointFromText('POINT(20.0 64.0 0)', " + GeometryConstants.SRID + "), " +
+                    "ST_GeometryFromText('LINESTRING(20.10 64.10 0, 20.0 64.0 0)', " + GeometryConstants.SRID + "), " +
                     workMachineId + ", 'dummy', now(), now(), now(), true)" )
             .executeUpdate();
         final long id = ((BigInteger) entityManager.createNativeQuery(

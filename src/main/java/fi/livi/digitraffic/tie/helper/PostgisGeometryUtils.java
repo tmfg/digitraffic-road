@@ -1,12 +1,14 @@
 package fi.livi.digitraffic.tie.helper;
 
-import static fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
+import static fi.livi.digitraffic.tie.helper.GeometryConstants.COORDINATE_SCALE_6_DIGITS_JTS_PRECISION_MODEL;
+import static fi.livi.digitraffic.tie.helper.GeometryConstants.COORDINATE_SCALE_6_DIGITS_POSTGIS;
 import static fi.livi.digitraffic.tie.helper.GeometryConstants.JTS_GEOMETRY_FACTORY;
-import static fi.livi.digitraffic.tie.helper.GeometryConstants.MIN_LENGTH_KM_FOR_LINESTRING;
+import static fi.livi.digitraffic.tie.helper.GeometryConstants.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -16,12 +18,16 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
+import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +48,7 @@ public class PostgisGeometryUtils {
 
     private static final ThreadLocal<GeoJsonWriter> geoJsonWriter =
         ThreadLocal.withInitial(() -> {
-            final GeoJsonWriter writer = new GeoJsonWriter(GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
+            final GeoJsonWriter writer = new GeoJsonWriter(GeometryConstants.COORDINATE_SCALE_6_DIGITS);
             writer.setEncodeCRS(false); // We use always EPSG:4326 = WGS84 - World Geodetic System 1984
             return writer;
         });
@@ -53,8 +59,14 @@ public class PostgisGeometryUtils {
     private static final ThreadLocal<WKBReader> wkbGeometryReader =
         ThreadLocal.withInitial(() -> new WKBReader(JTS_GEOMETRY_FACTORY));
 
+    private static final ThreadLocal<WKBWriter> wkbGeometryWriter =
+        ThreadLocal.withInitial(() -> new WKBWriter(3));
     private static final ThreadLocal<WKTReader> wktGeometryReader =
         ThreadLocal.withInitial(() -> new WKTReader(JTS_GEOMETRY_FACTORY));
+
+    private static final ThreadLocal<WKTWriter> wktGeometryWriter =
+        ThreadLocal.withInitial(() -> new WKTWriter(3));
+
 
     private static final ObjectReader dtGeoJsonReader = new ObjectMapper().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
 
@@ -218,14 +230,20 @@ public class PostgisGeometryUtils {
     }
 
     public static Geometry simplify(final Geometry geometry) {
-        final Geometry simple = DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
+        final Geometry result = DouglasPeuckerSimplifier.simplify(geometry, SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE);
 
-        // If geometry is not linestring or it is long enough for linestring, then return it
-        if (!Geometry.TYPENAME_LINESTRING.equals(simple.getGeometryType()) || PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(((LineString)simple).getStartPoint(), (((LineString)simple).getEndPoint())) >= MIN_LENGTH_KM_FOR_LINESTRING ) {
-            return simple;
+        // Check if LineString is actually ~ point
+        if (isLineString(result) && result.getNumPoints() == 2) {
+            final LineString ls = ((LineString) result);
+            final Point start = ls.getStartPoint();
+            final Point end = ls.getEndPoint();
+
+            if (Math.abs(start.getX()-end.getX()) <= COORDINATE_SCALE_6_DIGITS_POSTGIS &&
+                Math.abs(start.getY()-end.getY()) <= COORDINATE_SCALE_6_DIGITS_POSTGIS) {
+                return ls.getStartPoint();
+            }
         }
-        // If geometry is too short linestring, return the start point
-        return ((LineString)simple).getStartPoint();
+        return result;
     }
 
     public static String convertGeometryToGeoJsonString(final Geometry geometry) {
@@ -258,5 +276,123 @@ public class PostgisGeometryUtils {
     public static fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> convertWktToGeoJSON(final String geometryWkt) throws ParseException {
         final Geometry geometry = convertWktToGeomety(geometryWkt);
         return convertGeometryToGeoJSONGeometry(geometry);
+    }
+
+    public static boolean isPoint(final Geometry geometry) {
+        return Geometry.TYPENAME_POINT.equals(geometry.getGeometryType());
+    }
+
+    public static boolean isLineString(final Geometry geometry) {
+        return Geometry.TYPENAME_LINESTRING.equals(geometry.getGeometryType());
+    }
+
+    /**
+     * @param geometry Must be either Point or LineString
+     * @return Point itself or LineString's last point
+     * @throws IllegalArgumentException if parameter is not Point or LineString
+     */
+
+    public static Point getEndPoint(final Geometry geometry) {
+        if (isPoint(geometry)) {
+            return (Point)geometry;
+        } else if (isLineString(geometry)) {
+            return ((LineString)geometry).getEndPoint();
+        }
+        throw new IllegalArgumentException("Only point and LineString are supported");
+    }
+
+    /**
+     * @param geometry Must be either Point or LineString
+     * @return Point itself or LineString's first point
+     */
+    public static Point getStartPoint(final Geometry geometry) {
+        if (isPoint(geometry)) {
+            return (Point)geometry;
+        } else if (isLineString(geometry)) {
+            return ((LineString)geometry).getStartPoint();
+        }
+        throw new IllegalArgumentException(String.format("Only point and LineString are supported was %s", geometry.getGeometryType()));
+    }
+
+    /**
+     * Snaps geometry to 6 digits precision
+     * @param geometry to be snapped
+     * @return snapped geometry
+     */
+    public static Geometry snapToGrid(final Geometry geometry) {
+        final Geometry result = snapToGridInternal(geometry);
+        // Can be empty LINESTRING EMPTY
+        if (isLineString(result) && result.getNumPoints() < 2) { // Invalid LineString (only one point or empty)
+            if (result.getNumPoints() == 1) {
+                return ((LineString)result).getStartPoint();
+            } else if (isLineString(geometry)) {
+                // source was a linestring and was snapped to empty linestring (points are closer than precision)
+                // -> take only the start point and snap it
+                final Point start = ((LineString) geometry).getStartPoint();
+                return snapToGrid(start);
+            }
+            log.error("method=snapToGrid Failed to snapToGrid geometry {} fall back to original", geometry);
+            return geometry; // failed
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param geometry which type to check
+     * @param allowedResultTypes allowed geometry types. If value is empty array, check will allow any geometry type.
+     * @return original geometry
+     *
+     * @throws IllegalArgumentException if geometry is not in given geometry types
+     */
+    public static Geometry checkTypeInAndReturn(final Geometry geometry, final GeometryType...allowedResultTypes) throws IllegalArgumentException {
+        if (allowedResultTypes == null || Arrays.stream(allowedResultTypes).anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("Parameter allowedResultTypes or elements cannot be null");
+        }
+        if (allowedResultTypes.length == 0) {
+            return geometry;
+        }
+        Arrays.stream(allowedResultTypes)
+            .filter(t -> t.typename.equals(geometry.getGeometryType()))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Geometry " + geometry.getGeometryType() + " type not in given types " +
+                               Arrays.stream(allowedResultTypes).collect(Collectors.toSet())) );
+        return geometry;
+    }
+
+    /**
+     *
+     * @param geometry Point or Linestring
+     * @return geometry snapped to {@link GeometryConstants#COORDINATE_SCALE_6_DIGITS_JTS_PRECISION_MODEL}
+     */
+    private static Geometry snapToGridInternal(final Geometry geometry) {
+        final PrecisionModel precisionModel = new PrecisionModel(COORDINATE_SCALE_6_DIGITS_JTS_PRECISION_MODEL);
+        final GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(precisionModel);
+        reducer.setPointwise(false); // Can reduce number of points
+        reducer.setChangePrecisionModel(true); // Change PrecisionModel to given model
+        reducer.setRemoveCollapsedComponents(true); // Removes duplicate points, can cause empty linestring
+        return reducer.reduce(geometry);
+    }
+
+    public enum GeometryType {
+        GEOMETRYCOLLECTION(Geometry.TYPENAME_GEOMETRYCOLLECTION),
+        LINEARRING(Geometry.TYPENAME_LINEARRING),
+        LINESTRING(Geometry.TYPENAME_LINESTRING),
+        MULTILINESTRING(Geometry.TYPENAME_MULTILINESTRING),
+        MULTIPOINT(Geometry.TYPENAME_MULTIPOINT),
+        MULTIPOLYGON(Geometry.TYPENAME_MULTIPOLYGON),
+        POINT(Geometry.TYPENAME_POINT),
+        POLYGON(Geometry.TYPENAME_POLYGON);
+
+        private final String typename;
+
+        GeometryType(final String typename) {
+            this.typename = typename;
+        }
+
+        @Override
+        public String toString() {
+            return typename;
+        }
     }
 }

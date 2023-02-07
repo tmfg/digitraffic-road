@@ -56,7 +56,7 @@ public class RegionGeometryDataServiceV1 {
     private RegionStatus regionStatus = new RegionStatus();
 
     static {
-        geoJsonWriter = new GeoJsonWriter(GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
+        geoJsonWriter = new GeoJsonWriter(GeometryConstants.COORDINATE_SCALE_6_DIGITS);
         // Don't add crs to geometries as it's always EPSG:4326
         geoJsonWriter.setEncodeCRS(false);
         geometryReader = new ObjectMapper().readerFor(Geometry.class);

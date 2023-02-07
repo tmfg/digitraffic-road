@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 
-public class MaintenanceTrackingDaoTest extends AbstractServiceTest {
+public class MaintenanceTrackingRepositoryTest extends AbstractServiceTest {
 
     @Autowired
     private V2MaintenanceTrackingRepository maintenanceTrackingRepository;

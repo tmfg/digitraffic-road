@@ -22,7 +22,7 @@ public class MqttMaintenanceTrackingMessageV2 {
         this.time = tracking.getEndTime().getEpochSecond();
         this.source = tracking.getSource();
         this.tasks = tracking.getTasks();
-        this.x = roundToScale(tracking.getX(), GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
-        this.y = roundToScale(tracking.getY(), GeometryConstants.COORDINATE_DECIMALS_6_DIGITS);
+        this.x = roundToScale(tracking.getX(), GeometryConstants.COORDINATE_SCALE_6_DIGITS);
+        this.y = roundToScale(tracking.getY(), GeometryConstants.COORDINATE_SCALE_6_DIGITS);
     }
 }

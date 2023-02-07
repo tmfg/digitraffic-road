@@ -16,14 +16,13 @@ import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureV1;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
 
 @Repository
 public class MaintenanceTrackingDaoV1 {
 
-    private static final double COORDINATE_PRECISION = 0.000001;
-    private static final double SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE = 0.00005;
     private static final String MIN_TIMESTAMP = "1971-01-01T00:00Z";
     private static final String MAX_TIMESTAMP = "2300-01-01T00:00Z";
 
@@ -34,7 +33,7 @@ public class MaintenanceTrackingDaoV1 {
         "     , tracking.start_time AS startTime\n" +
         "     , tracking.end_time AS endTime\n" +
         "     , tracking.created AS created\n" +
-        "     , ST_AsGeoJSON(ST_Snaptogrid(tracking.last_point, " + COORDINATE_PRECISION + ")) AS lastPointJson\n" +
+        "     , ST_AsGeoJSON(tracking.last_point) AS lastPointJson\n" +
         "     , tracking.direction\n" +
         "     , tracking.work_machine_id AS workMachineId\n" +
         "     , STRING_AGG(tasks.task, ',') AS tasksAsString\n" +
@@ -44,8 +43,7 @@ public class MaintenanceTrackingDaoV1 {
 
     private static final String DTO_SELECT_FIELDS_WITH_LINE_STRING =
         DTO_SELECT_FIELDS_WITHOUT_LINE_STRING +
-        // ST_Snaptogrid will convert linestring with only same locations ie. [ [a,b], [a,b]] to null -> returns only valid linestrings
-        "     , ST_AsGeoJSON(ST_Simplify(ST_Snaptogrid(tracking.line_string, " + COORDINATE_PRECISION + "), " + SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE + ", TRUE)) AS lineStringJson\n";
+        "     , ST_AsGeoJSON(tracking.geometry) AS geometryStringJson\n";
 
     private static final String DTO_TABLES =
         "FROM maintenance_tracking tracking\n" +
@@ -68,9 +66,8 @@ public class MaintenanceTrackingDaoV1 {
         this.jdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    final static String AREA_POINT_QUERY = "  AND (ST_SetSRID(ST_GeomFromText(:area), 4326) && t.last_point) = TRUE";
-    final static String AREA_QUERY = "  AND ( (ST_SetSRID(ST_GeomFromText(:area), 4326) && tracking.last_point) = TRUE OR \n" +
-                                     "        (ST_SetSRID(ST_GeomFromText(:area), 4326) && tracking.line_string) = TRUE )";
+    final static String AREA_POINT_QUERY = "  AND (ST_SetSRID(ST_GeomFromText(:area), " + GeometryConstants.SRID + ") && t.last_point) = TRUE";
+    final static String AREA_QUERY = "  AND ( (ST_SetSRID(ST_GeomFromText(:area), " + GeometryConstants.SRID + ") && tracking.geometry) = TRUE )";
 
     final static String CREATED_AFTER_QUERY = "  AND cast(:createdAfter as TIMESTAMP) < tracking.created"; // exclusive
     final static String CREATED_BEFORE_QUERY = "  AND tracking.created < cast(:createdBefore as TIMESTAMP)"; // exclusive
@@ -150,7 +147,7 @@ public class MaintenanceTrackingDaoV1 {
                 final Instant modified = rs.getObject("modified", OffsetDateTime.class).toInstant();
 
                 return new MaintenanceTrackingFeatureV1(
-                    convertToGeoJSONGeometry(rs.getString("lineStringJson"), rs.getString("lastPointJson")),
+                    PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(rs.getString("geometryStringJson")),
                     new fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingPropertiesV1(
                         rs.getLong("id"),
                         rs.getObject("previousId", Long.class),
@@ -209,18 +206,6 @@ public class MaintenanceTrackingDaoV1 {
                         modified)
                 );
             });
-    }
-
-    private static fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> convertToGeoJSONGeometry(final String geoJsonLineString, final String geoJsonPoint) {
-        if (geoJsonLineString == null) {
-            return PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(geoJsonPoint);
-        } else {
-            final fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> lineString =
-                PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(geoJsonLineString);
-            return lineString != null && lineString.getCoordinates().size() > 1 ?
-                    lineString :
-                    PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(geoJsonPoint);
-        }
     }
 
     private Timestamp toTimestamp(final Instant time) {

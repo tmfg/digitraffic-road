@@ -28,18 +28,23 @@ public class GeometryConstants {
     /**
      * Uses 6 digits precision for coordinates. That gives about 5 cm accuracy at Finland (lat 60°).
      */
-    public static final int COORDINATE_DECIMALS_6_DIGITS = 6;
+    public static final int COORDINATE_SCALE_6_DIGITS = 6;
     /**
      * Uses 6 digits precision for coordinates. That gives about 5 cm accuracy at Finland (lat 60°).
      * Amount by which to multiply a coordinate after subtracting the offset, to obtain a precise coordinate.
      * @see org.locationtech.jts.geom.PrecisionModel */
-    public static final int JTS_PRECISION_MODEL_SCALE_6_DIGITS = 1000000;
-
-    public static final PrecisionModel JTS_PRECISION_MODEL = new PrecisionModel(GeometryConstants.JTS_PRECISION_MODEL_SCALE_6_DIGITS); // 6 decimals
+    public static final int COORDINATE_SCALE_6_DIGITS_JTS_PRECISION_MODEL = 1000000;
+    public static final double COORDINATE_SCALE_6_DIGITS_POSTGIS = 0.000001;
+    public static final PrecisionModel JTS_PRECISION_MODEL = new PrecisionModel(GeometryConstants.COORDINATE_SCALE_6_DIGITS_JTS_PRECISION_MODEL); // 6 decimals
 
     public static final GeometryFactory JTS_GEOMETRY_FACTORY = new GeometryFactory(JTS_PRECISION_MODEL, SRID);
 
     public static final double MIN_LENGTH_KM_FOR_LINESTRING = 0.00002; // 2 cm
+
+    public static final double SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE = 0.00005;
+
+    public static final String POLYGON_OVER_FINLAND = "POLYGON((19.0 59.0, 32.0 59.0, 32.0 72.0, 19.0 72.0, 19.0 59.0))";
+
     private GeometryConstants() {
         // not possible to make instance
     }

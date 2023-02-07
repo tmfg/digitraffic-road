@@ -11,7 +11,7 @@ import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTracki
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneDayInPast;
 import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -52,6 +52,7 @@ import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
@@ -444,12 +445,13 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // First tracking has end poind added from second tracking first poing
         final MaintenanceTracking first = trackings.get(0);
         final MaintenanceTracking second = trackings.get(1);
-        assertEquals(3, first.getLineString().getNumPoints()); // Simplification takes points from 3 -> 2, but next tracking start point is appended so sum is 2+1
-        assertEquals(4, second.getLineString().getNumPoints()); // Simplification drops from 5 -> 4 points
-        assertEquals(first.getLastPoint(), second.getLineString().getStartPoint());
+        assertEquals(3, first.getGeometry().getNumPoints()); // Simplification takes points from 3 -> 2, but next tracking start point is appended so sum is 2+1
+        assertEquals(4, second.getGeometry().getNumPoints()); // Simplification drops from 5 -> 4 points
+        assertEquals(first.getLastPoint(), PostgisGeometryUtils.getStartPoint(second.getGeometry()));
     }
 
     @Test
+    @Rollback(value = false)
     public void singlePointLineStringsShouldBeHandledAsLineStringTrackings() throws IOException {
 
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/linestring/point-linestring-1.json");
@@ -458,13 +460,19 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
         log.info("Handled count={}", v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(100));
 
-        // 3 LineStrings with single point in each should be combined as one tracking
+        // 3 LineStrings with single point in each should be combined as one tracking group
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
         assertTrackingGroupsSize(1, trackings);
-        // single points are duplicated (not the starting one) as two same point linestring -> 1 + 2 + 2 = 5 points
-        assertEquals(2, trackings.get(0).getLineString().getNumPoints());
-        assertEquals(2, trackings.get(1).getLineString().getNumPoints());
-        assertNull(trackings.get(2).getLineString());
+        // Consecutive single point trackings are connected by adding next tracking first point as end point for previous tracking resulting:
+        // tracking[0]: [t1p1,t2p1] (t1 = tracking 1., p1 = point 1.)
+        // tracking[1]: [t2p1,t3p1],
+        // tracking[2]: [t3p1],
+        assertEquals(2, trackings.get(0).getGeometry().getNumPoints());
+        assertEquals(2, trackings.get(1).getGeometry().getNumPoints());
+        assertEquals(1, trackings.get(2).getGeometry().getNumPoints());
+        // previous tracking end point should be next tracking start point
+        assertEquals(trackings.get(1).getGeometry().getCoordinates()[0], trackings.get(0).getGeometry().getCoordinates()[1]);
+        assertEquals(trackings.get(2).getGeometry().getCoordinates()[0], trackings.get(1).getGeometry().getCoordinates()[1]);
         assertEquals(trackings.get(0).getId(), trackings.get(1).getPreviousTrackingId());
         assertEquals(trackings.get(1).getId(), trackings.get(2).getPreviousTrackingId());
     }
@@ -603,8 +611,10 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final List<MaintenanceTracking> firstGroup = iter.next();
         final MaintenanceTracking firstGroupEnd = firstGroup.get(firstGroup.size()-1);
         final MaintenanceTracking secondGroupStart = iter.next().get(0);
-        Assertions.assertNotEquals(firstGroupEnd.getEndTime(), secondGroupStart.getStartTime());
-        Assertions.assertNotEquals(firstGroupEnd.getLastPoint(), secondGroupStart.getLineString() != null ? secondGroupStart.getLineString().getStartPoint() : secondGroupStart.getLastPoint());
+        assertNotEquals(firstGroupEnd.getEndTime(), secondGroupStart.getStartTime());
+        assertNotEquals(firstGroupEnd.getLastPoint(),
+            secondGroupStart.getGeometry() != null ?
+            PostgisGeometryUtils.getStartPoint(secondGroupStart.getGeometry()) : secondGroupStart.getLastPoint());
     }
 
     private void assertFirstAndSecondGroupOverlaps(final List<MaintenanceTracking> trackings) {
@@ -614,7 +624,9 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         final MaintenanceTracking firstGroupEnd = firstGroup.get(firstGroup.size()-1);
         final MaintenanceTracking secondGroupStart = iter.next().get(0);
         assertEquals(firstGroupEnd.getEndTime(), secondGroupStart.getStartTime());
-        assertEquals(firstGroupEnd.getLastPoint(), secondGroupStart.getLineString() != null ? secondGroupStart.getLineString().getStartPoint() : secondGroupStart.getLastPoint());
+        assertEquals(firstGroupEnd.getLastPoint(),
+            secondGroupStart.getGeometry() != null ?
+            PostgisGeometryUtils.getStartPoint(secondGroupStart.getGeometry()) : secondGroupStart.getLastPoint());
     }
 
 }

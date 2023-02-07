@@ -264,15 +264,10 @@ public class MaintenanceTrackingWebDataServiceV1 {
      * @return either Point or LineString geometry
      */
     private static Geometry<?> convertToGeoJSONGeometry(final MaintenanceTrackingDto tracking, boolean latestPointGeometry) {
-        if (latestPointGeometry || tracking.getLineStringJson() == null) {
+        if (latestPointGeometry) {
             return readGeometry(tracking.getLastPointJson());
-        } else {
-            final Geometry<?> lineString = readGeometry(tracking.getLineStringJson());
-            if (lineString == null || lineString.getCoordinates().size() <= 1) {
-                return readGeometry(tracking.getLastPointJson());
-            }
-            return lineString;
         }
+        return readGeometry(tracking.getGeometryStringJson());
     }
 
     private static Geometry<?> readGeometry(final String json) {
