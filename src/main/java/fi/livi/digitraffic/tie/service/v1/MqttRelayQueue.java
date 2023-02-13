@@ -28,7 +28,7 @@ public class MqttRelayQueue {
     private final LongAdder addedMessagesAdder = new LongAdder();
     private long maxQueueLength = 0;
 
-    public enum StatisticsType {TMS, WEATHER, MAINTENANCE_TRACKING, TRAFFIC_MESSAGE, STATUS}
+    public enum StatisticsType {TMS, WEATHER, MAINTENANCE_TRACKING, TRAFFIC_MESSAGE, TRAFFIC_MESSAGE_DATEX, TRAFFIC_MESSAGE_SIMPLE, STATUS}
 
     private static final Integer QOS = 0;
 

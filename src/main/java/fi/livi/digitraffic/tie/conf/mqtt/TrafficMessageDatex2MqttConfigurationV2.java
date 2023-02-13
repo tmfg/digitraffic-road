@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.TRAFFIC_MESSAGE;
+import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.TRAFFIC_MESSAGE_DATEX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Instant;
@@ -46,7 +46,7 @@ public class TrafficMessageDatex2MqttConfigurationV2 {
                                                    final ObjectMapper objectMapper,
                                                    final ClusteredLocker clusteredLocker) {
         this.trafficMessageMqttDataServiceV1 = trafficMessageMqttDataServiceV1;
-        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TRAFFIC_MESSAGE, clusteredLocker);
+        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TRAFFIC_MESSAGE_DATEX, clusteredLocker);
 
         mqttMessageSender.setLastUpdated(Instant.now());
     }
