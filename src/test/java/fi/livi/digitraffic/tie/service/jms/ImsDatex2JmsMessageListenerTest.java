@@ -1,24 +1,20 @@
 package fi.livi.digitraffic.tie.service.jms;
 
+import static fi.livi.digitraffic.tie.TestUtils.entityManagerFlushAndClear;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
-import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.DateHelper.withoutMillis;
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.ROADWORK;
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.WEIGHT_RESTRICTION;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
-import static org.apache.commons.collections.CollectionUtils.union;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,14 +32,14 @@ import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1.ImsMessage;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 
 public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(ImsDatex2JmsMessageListenerTest.class);
@@ -72,54 +68,33 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         final JMSMessageListener<ExternalIMSMessage> jmsMessageListener = createImsJmsMessageListener();
 
         // Only V0_2_12 version is received at the moment
-        for (final ImsJsonVersion imsJsonVersion : List.of(ImsJsonVersion.V0_2_12)) {
+        for (final ImsJsonVersion imsJsonVersion : List.of(ImsJsonVersion.getLatestVersion())) {
             for(final SituationType type : SituationType.values()) {
                 cleanDb();
                 log.info("Run datex2ReceiveImsMessagesAllVersions with imsJsonVersion={}", imsJsonVersion);
                 sendJmsMessage(ImsXmlVersion.V1_2_1, type, imsJsonVersion, jmsMessageListener);
-                checkActiveSituations(getSituationIdForSituationType(type.name()));
+                entityManagerFlushAndClear(entityManager);
+                checkActiveSituations(type, getSituationIdForSituationType(type.name()));
             }
         }
     }
 
-    public static String readSimpleJsonMessageResourceContent(final ImsJsonVersion jsonVersion) throws IOException {
-        return readResourceContent("classpath:tloik/ims/Json" + jsonVersion + ".json");
-    }
+    private void checkActiveSituations(final SituationType type, final String...situationIdsToFind) {
+        final List<Situation> situations = getSituations(
+            Objects.requireNonNull(getV2Datex2DataService().findActive(0, type).getBody()));
 
-    private void checkActiveSituations(final String...situationIdsToFind) {
-        final List<Situation> situationIncidents = getSituations(getV2Datex2DataService().findActive(0, TRAFFIC_INCIDENT));
-        final List<Situation> situationRoadworks = getSituations(getV2Datex2DataService().findActive(0, ROADWORK));
-        final List<Situation> situationWeightRestrictions = getSituations(getV2Datex2DataService().findActive(0, WEIGHT_RESTRICTION));
-        final Collection<Situation> situations = union(union(situationIncidents, situationRoadworks), situationWeightRestrictions);
+        final List<TrafficAnnouncementFeature> features =
+            getV2Datex2DataService().findActiveJson(0, false, type).getFeatures();
 
-        final List<TrafficAnnouncementFeature> featureIncidents =
-            getV2Datex2DataService().findActiveJson(0, TRAFFIC_INCIDENT).getFeatures();
-        final List<TrafficAnnouncementFeature> featureRoadworks =
-            getV2Datex2DataService().findActiveJson(0, ROADWORK).getFeatures();
-        final List<TrafficAnnouncementFeature> featureWeightRestrictions =
-            getV2Datex2DataService().findActiveJson(0, WEIGHT_RESTRICTION).getFeatures();
-        final Collection<TrafficAnnouncementFeature> features = union(union(featureIncidents, featureRoadworks), featureWeightRestrictions);
-
-        assertCollectionSize("Situations size won't match.", situationIdsToFind.length, situations);
-        assertCollectionSize("GeoJSON features size won't match.", situationIdsToFind.length, features);
+        assertCollectionSize("Situations size won't match for type " + type, situationIdsToFind.length, situations);
+        assertCollectionSize("GeoJSON features size won't match for type " + type, situationIdsToFind.length, features);
 
         for (final String id : situationIdsToFind) {
             assertTrue(situations.stream().anyMatch(s -> s.getId().equals(id)), String.format("Situation %s not found in situations", id));
             assertTrue(features.stream().anyMatch(f -> f.getProperties().situationId.equals(id)), String.format("Situation %s not found in features", id));
         }
 
-        checkDatex2MatchJson(situationIncidents, featureIncidents);
-        for (final Situation s : situationIncidents) {
-            assertTrue(featureIncidents.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())), String.format("Incident situation %s not found in features.", s.getId()));
-        }
-
-        for (final Situation s : situationWeightRestrictions) {
-            assertTrue(featureWeightRestrictions.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())), String.format("Weight restrictions situation %s not found in features.", s.getId()));
-        }
-
-        for (final Situation s : situationRoadworks) {
-            assertTrue(featureRoadworks.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())), String.format("Roadwork situation %s not found in features.", s.getId()));
-        }
+        checkDatex2MatchJson(situations, features);
     }
 
     private List<Situation> getSituations(final D2LogicalModel d2) {
@@ -152,7 +127,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
             assertTrue(situationComment.contains(announcement.title),
                 String.format("Feature title \"%s\" should exist in situation comment \"%s\"", announcement.title, situationComment));
-            assertEquals(withoutMillis(announcement.timeAndDuration.startTime),
+            assertEquals(withoutMillis(announcement.timeAndDuration.startTime.toInstant()),
                          withoutMillis(situationRecord.getValidity().getValidityTimeSpecification().getOverallStartTime()));
         }
     }
@@ -179,7 +154,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         return result.toString();
     }
 
-    private V2Datex2DataService getV2Datex2DataService() {
-        return trafficMessageTestHelper.getV2Datex2DataService();
+    private TrafficMessageDataServiceV1 getV2Datex2DataService() {
+        return trafficMessageTestHelper.getTrafficMessageDataServiceV1();
     }
 }

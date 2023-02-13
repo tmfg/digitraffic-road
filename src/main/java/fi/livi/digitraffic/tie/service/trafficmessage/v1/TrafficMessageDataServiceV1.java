@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.service.v1.trafficmessages;
+package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -18,30 +18,31 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
+import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 
 @ConditionalOnWebApplication
 @Service
-public class V1TrafficMessageDataService {
-    private static final Logger log = LoggerFactory.getLogger(V1TrafficMessageDataService.class);
+public class TrafficMessageDataServiceV1 {
+    private static final Logger log = LoggerFactory.getLogger(TrafficMessageDataServiceV1.class);
 
     private final Datex2Repository datex2Repository;
+    private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
     private final TrafficMessageJsonConverterV1 datex2JsonConverterV1;
-    private final V2Datex2DataService v2Datex2DataService;
 
     @Autowired
-    public V1TrafficMessageDataService(final Datex2Repository datex2Repository,
-                                       final TrafficMessageJsonConverterV1 datex2JsonConverterV1,
-                                       final V2Datex2DataService v2Datex2DataService) {
+    public TrafficMessageDataServiceV1(final Datex2Repository datex2Repository,
+                                       final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
+                                       final TrafficMessageJsonConverterV1 datex2JsonConverterV1) {
         this.datex2Repository = datex2Repository;
+        this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
         this.datex2JsonConverterV1 = datex2JsonConverterV1;
-        this.v2Datex2DataService = v2Datex2DataService;
     }
 
     // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
@@ -59,7 +60,7 @@ public class V1TrafficMessageDataService {
                                                                            final SituationType...situationTypes) {
         final List<Datex2> allActive = datex2Repository.findAllActiveBySituationType(activeInPastHours, typesAsStrings(situationTypes));
         final Instant lastModified = getLastModified(allActive, situationTypes);
-        return ResponseEntityWithLastModifiedHeader.of(v2Datex2DataService.convertToD2LogicalModel(allActive), lastModified);
+        return ResponseEntityWithLastModifiedHeader.of(convertToD2LogicalModel(allActive), lastModified);
     }
 
     // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
@@ -91,9 +92,9 @@ public class V1TrafficMessageDataService {
         final Instant lastModified = getLastModified(datex2s, situationTypes);
 
         if (latest) {
-            return ResponseEntityWithLastModifiedHeader.of(v2Datex2DataService.convertToD2LogicalModel(datex2s.subList(0,1)), lastModified);
+            return ResponseEntityWithLastModifiedHeader.of(convertToD2LogicalModel(datex2s.subList(0,1)), lastModified);
         }
-        return ResponseEntityWithLastModifiedHeader.of(v2Datex2DataService.convertToD2LogicalModel(datex2s), lastModified);
+        return ResponseEntityWithLastModifiedHeader.of(convertToD2LogicalModel(datex2s), lastModified);
     }
 
     private SituationType[] getSituationTypes(final List<Datex2> datex2s) {
@@ -142,5 +143,38 @@ public class V1TrafficMessageDataService {
             .collect(Collectors.toList());
 
         return new TrafficAnnouncementFeatureCollection(lastModified, features);
+    }
+
+    private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
+
+        // conver Datex2s to D2LogicalModels
+        final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()
+            .map(datex2 -> datex2XmlStringToObjectMarshaller.convertToObject(datex2.getMessage()))
+            .filter(d2 -> d2.getPayloadPublication() != null)
+            .sorted(Comparator.comparing((D2LogicalModel d2) -> d2.getPayloadPublication().getPublicationTime()).reversed())
+            .collect(Collectors.toList());
+
+        if (modelsNewestFirst.isEmpty()) {
+            return new D2LogicalModel();
+        }
+
+        // Append all older situations to newest and return newest that combines all situations
+        final D2LogicalModel containerModel = modelsNewestFirst.remove(0);
+        final SituationPublication conainerSituationPublication = getSituationPublication(containerModel);
+        modelsNewestFirst.forEach(d2 -> {
+            final SituationPublication toAdd = getSituationPublication(d2);
+            conainerSituationPublication.getSituations().addAll(toAdd.getSituations());
+        });
+        return containerModel;
+    }
+
+    private static SituationPublication getSituationPublication(final D2LogicalModel model) {
+        if (model.getPayloadPublication() instanceof SituationPublication) {
+            return (SituationPublication) model.getPayloadPublication();
+        } else {
+            final String err = "Not SituationPublication available for " + model.getPayloadPublication().getClass();
+            log.error(err);
+            throw new RuntimeException(err);
+        }
     }
 }

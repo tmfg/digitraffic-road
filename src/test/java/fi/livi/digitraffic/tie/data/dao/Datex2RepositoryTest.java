@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -95,8 +97,11 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
 
     @Test
     public void activeInPastHours() {
+
+        final String[] array = Arrays.stream(SituationType.values()).map(t -> t.name()).toArray(String[]::new);
+
         final String pastSituationId = "GUID12345678";
-        final List<Datex2> beroreActive10Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 10);
+        final List<Datex2> beroreActive10Hours = datex2Repository.findAllActiveBySituationType(10, TRAFFIC_ANNOUNCEMENT.name());
         // Situation should not exist
         assertFalse(beroreActive10Hours.stream()
             .anyMatch(d -> d.getSituations() != null && d.getSituations().stream()
@@ -106,13 +111,13 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         createDatex2InPast2h(pastSituationId, SituationType.TRAFFIC_ANNOUNCEMENT, TrafficAnnouncementType.GENERAL);
 
         // Situation should be found >= 3 h
-        final List<Datex2> active3Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 3);
+        final List<Datex2> active3Hours = datex2Repository.findAllActiveBySituationType(3, TRAFFIC_ANNOUNCEMENT.name());
         assertTrue(active3Hours.stream()
             .anyMatch(d -> d.getSituations() != null && d.getSituations().stream()
                 .anyMatch(s -> s.getSituationId().equals(pastSituationId))));
 
         // 2 h in past wont find it as its little bit over 2 h old
-        final List<Datex2> afterActive2Hours = datex2Repository.findAllActive(TRAFFIC_INCIDENT.name(), 2);
+        final List<Datex2> afterActive2Hours = datex2Repository.findAllActiveBySituationType(2, TRAFFIC_ANNOUNCEMENT.name());
         assertFalse(afterActive2Hours.stream()
             .anyMatch(d -> d.getSituations() != null && d.getSituations().stream()
                 .anyMatch(s -> s.getSituationId().equals(pastSituationId))));

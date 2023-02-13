@@ -27,29 +27,27 @@ import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageMqttDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
-// TODO DPO-1332 remove this as it is replaced by TrafficMessageSimpleMqttConfigurationV2
-// Reserve it for short time to keep old topic still functional
-@ConditionalOnProperty("mqtt.trafficMessage.v2.enabled")
+@ConditionalOnProperty("mqtt.trafficMessage.simple.v2.enabled")
 @ConditionalOnNotWebApplication
 @Component
-public class TrafficMessageMqttConfigurationV2 {
-    private static final String TRAFFIC_MESSAGE_V2_ROOT_TOPIC = "traffic-message-v2";
+public class TrafficMessageSimpleMqttConfigurationV2 {
+    private static final String TRAFFIC_MESSAGE_SIMPLE_V2_ROOT_TOPIC = "traffic-message-v2/simple";
     // traffic-message-v2/{situationType}
-    public static final String TRAFFIC_MESSAGE_V2_TOPIC = TRAFFIC_MESSAGE_V2_ROOT_TOPIC + "/%s";
+    public static final String TRAFFIC_MESSAGE_SIMPLE_V2_TOPIC = TRAFFIC_MESSAGE_SIMPLE_V2_ROOT_TOPIC + "/%s";
     // traffic-message-v2/status
-    private static final String TRAFFIC_MESSAGE_V2_STATUS_TOPIC = TRAFFIC_MESSAGE_V2_ROOT_TOPIC + "/status";
+    private static final String TRAFFIC_MESSAGE_V2_STATUS_TOPIC = TRAFFIC_MESSAGE_SIMPLE_V2_ROOT_TOPIC + "/status";
 
-    private static final Logger LOGGER = getLogger(TrafficMessageMqttConfigurationV2.class);
+    private static final Logger LOGGER = getLogger(TrafficMessageSimpleMqttConfigurationV2.class);
 
     private final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1;
     private final ObjectMapper objectMapper;
     private final MqttMessageSenderV2 mqttMessageSender;
 
     @Autowired
-    public TrafficMessageMqttConfigurationV2(final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1,
-                                             final MqttRelayQueue mqttRelay,
-                                             final ObjectMapper objectMapper,
-                                             final ClusteredLocker clusteredLocker) {
+    public TrafficMessageSimpleMqttConfigurationV2(final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1,
+                                                   final MqttRelayQueue mqttRelay,
+                                                   final ObjectMapper objectMapper,
+                                                   final ClusteredLocker clusteredLocker) {
         this.trafficMessageMqttDataServiceV1 = trafficMessageMqttDataServiceV1;
         this.objectMapper = objectMapper;
         this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TRAFFIC_MESSAGE, clusteredLocker);
@@ -86,7 +84,7 @@ public class TrafficMessageMqttConfigurationV2 {
      * @return message or null if failed
      */
     private MqttDataMessageV2 createMqttDataMessage(final TrafficAnnouncementFeature trafficMessage) {
-        final String topic = MqttUtil.getTopicForMessage(TRAFFIC_MESSAGE_V2_TOPIC, trafficMessage.getProperties().getSituationType());
+        final String topic = MqttUtil.getTopicForMessage(TRAFFIC_MESSAGE_SIMPLE_V2_TOPIC, trafficMessage.getProperties().getSituationType());
         try {
             final String featureJson = objectMapper.writeValueAsString(trafficMessage);
             final String compressedBase64String = GZipUtils.compressToBase64String(featureJson);

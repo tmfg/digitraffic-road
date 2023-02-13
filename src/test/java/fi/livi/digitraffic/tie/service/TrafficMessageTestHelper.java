@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service;
 
-import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
+import static fi.livi.digitraffic.tie.TestUtils.entityManagerFlushAndClear;
 import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -21,16 +21,13 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.xml.transform.StringSource;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 
 @Service
 public class TrafficMessageTestHelper {
@@ -89,11 +86,9 @@ public class TrafficMessageTestHelper {
     protected EntityManager entityManager;
     @Autowired
     protected GenericApplicationContext applicationContext;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private V2Datex2UpdateService v2Datex2UpdateService;
-    private V2Datex2DataService v2Datex2DataService;
+    private TrafficMessageDataServiceV1 trafficMessageDataServiceV1;
 
     @Autowired
     private Datex2Repository datex2Repository;
@@ -113,22 +108,22 @@ public class TrafficMessageTestHelper {
         return v2Datex2UpdateService;
     }
 
-    public V2Datex2DataService getV2Datex2DataService() {
-        if (v2Datex2DataService == null) {
+    public TrafficMessageDataServiceV1 getTrafficMessageDataServiceV1() {
+        if (trafficMessageDataServiceV1 == null) {
             final RegionGeometryDataServiceV1 regionGeometryDataServiceV1 =
                 applicationContext.getAutowireCapableBeanFactory().createBean(RegionGeometryDataServiceV1.class);
             applicationContext.getBeanFactory().registerSingleton(
                 regionGeometryDataServiceV1.getClass().getCanonicalName(), regionGeometryDataServiceV1);
 
-            final V3RegionGeometryDataService v3RegionGeometryDataService =
-                applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryDataService.class);
-            v2Datex2DataService = new V2Datex2DataService(
+//            final V3RegionGeometryDataService v3RegionGeometryDataService =
+//                applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryDataService.class);
+            trafficMessageDataServiceV1 = new TrafficMessageDataServiceV1(
                 applicationContext.getBean(Datex2Repository.class),
                 applicationContext.getBean(Datex2XmlStringToObjectMarshaller.class),
-                new V2Datex2JsonConverter(objectMapper, v3RegionGeometryDataService),
-                applicationContext.getBean(DataStatusService.class));
+                applicationContext.getBean(TrafficMessageJsonConverterV1.class)
+            );
         }
-        return v2Datex2DataService;
+        return trafficMessageDataServiceV1;
     }
 
 
@@ -153,12 +148,14 @@ public class TrafficMessageTestHelper {
         final String rawWithJsonAndDatexOk = replaceDatex2Placeholders(rawWithJsonOk, startTime, endTime, jsonVersion.intVersion, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(rawWithJsonAndDatexOk));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        entityManagerFlushAndClear(entityManager);
     }
 
     public void initDataFromFile(final String file) throws IOException {
         final String xmlImsMessage = readResourceContent("classpath:tloik/ims/" + file);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        entityManagerFlushAndClear(entityManager);
     }
 
     public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion) throws IOException {
@@ -192,7 +189,7 @@ public class TrafficMessageTestHelper {
         final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationTypeName, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
-        commitAndEndTransactionAndStartNew();
+        entityManagerFlushAndClear(entityManager);
     }
 
     public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion, final String situationTypeName, final ImsJsonVersion jsonVersion,

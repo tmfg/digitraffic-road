@@ -36,12 +36,11 @@ import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2DataService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3Datex2DataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
 import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
@@ -59,11 +58,11 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
          // Services V1
          TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class, WeatherDataWebServiceV1.class, WeatherStationMetadataWebServiceV1.class,
          RoadStationSensorServiceV1.class, MaintenanceTrackingWebDataServiceV1.class, MaintenanceTrackingMqttDataService.class,
-         RegionGeometryDataServiceV1.class,
+         RegionGeometryDataServiceV1.class, TrafficMessageDataServiceV1.class,
 
          // Old Services
          TmsStationService.class, DataStatusService.class, TmsStationSensorConstantService.class, StationSensorConverterService.class,
-         V3RegionGeometryDataService.class, V3Datex2DataService.class, V2Datex2DataService.class, WeatherStationService.class,
+         V3RegionGeometryDataService.class, WeatherStationService.class,
 
          // Repositories and daos
          TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, MaintenanceTrackingDaoV1.class,

@@ -52,7 +52,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
@@ -73,16 +72,9 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 
 public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     private static final Logger log = getLogger(TrafficMessageControllerV1Test.class);
-
-    @Autowired
-    protected Datex2DataService datex2DataService;
-
-    @Autowired
-    protected Datex2Repository datex2Repository;
 
     @Autowired
     @Qualifier("datex2Jaxb2Marshaller")

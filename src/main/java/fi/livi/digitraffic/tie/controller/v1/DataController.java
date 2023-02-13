@@ -29,11 +29,9 @@ import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantRootDto;
 import fi.livi.digitraffic.tie.dto.v1.weather.WeatherRootDataObjectDto;
 import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
-import fi.livi.digitraffic.tie.service.v1.FreeFlowSpeedService;
 import fi.livi.digitraffic.tie.service.v1.TmsDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraDataService;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2DataService;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,25 +49,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class DataController {
 
     private final TmsDataService tmsDataService;
-    private final FreeFlowSpeedService freeFlowSpeedService;
     private final WeatherService weatherService;
     private final CameraDataService cameraDataService;
     private final ForecastSectionDataService forecastSectionDataService;
-    private final Datex2DataService datex2DataService;
-
     @Autowired
     public DataController(final TmsDataService tmsDataService,
-                          final FreeFlowSpeedService freeFlowSpeedService,
                           final WeatherService weatherService,
                           final CameraDataService cameraDataService,
-                          final ForecastSectionDataService forecastSectionDataService,
-                          final Datex2DataService datex2DataService) {
+                          final ForecastSectionDataService forecastSectionDataService) {
         this.tmsDataService = tmsDataService;
-        this.freeFlowSpeedService = freeFlowSpeedService;
         this.weatherService = weatherService;
         this.cameraDataService = cameraDataService;
         this.forecastSectionDataService = forecastSectionDataService;
-        this.datex2DataService = datex2DataService;
     }
 
     @Deprecated(forRemoval = true)

@@ -31,7 +31,7 @@ public class TrafficMessageMqttDataServiceV1 {
     private static final Logger log = LoggerFactory.getLogger(TrafficMessageMqttDataServiceV1.class);
 
     private final Datex2Repository datex2Repository;
-    private TrafficMessageJsonConverterV1 trafficMessageJsonConverterV1;
+    private final TrafficMessageJsonConverterV1 trafficMessageJsonConverterV1;
 
     @Autowired
     public TrafficMessageMqttDataServiceV1(final Datex2Repository datex2Repository,
@@ -42,13 +42,13 @@ public class TrafficMessageMqttDataServiceV1 {
 
     /**
      *
-     * @param from
-     * @return Pair<latestCreated, trafficMessages>
+     * @param after finds traffic messages created after given time
+     * @return Pair<latestCreated, trafficMessages> pair.getLeft() has the latest creation time of traffic messages returned on pair.getRight().
      */
     @Transactional(readOnly = true)
-    public Pair<Instant , List<TrafficAnnouncementFeature>> findTrackingsForMqttCreatedAfter(final Instant from) {
+    public Pair<Instant , List<TrafficAnnouncementFeature>> findSimpleTrafficMessagesForMqttCreatedAfter(final Instant after) {
 
-        final List<Datex2> datex2s = datex2Repository.findByCreatedIsAfter(from);
+        final List<Datex2> datex2s = datex2Repository.findByCreatedIsAfterOrderByCreated(after);
         final Instant latestCreated = datex2s.stream()
             .map(Datex2::getCreated)
             .max(Comparator.naturalOrder())
@@ -74,5 +74,23 @@ public class TrafficMessageMqttDataServiceV1 {
                 .sorted(Comparator.comparing((TrafficAnnouncementFeature json) -> json.getProperties().releaseTime).reversed())
                 .collect(Collectors.toList())
         );
+    }
+
+    /**
+     *
+     * @param after finds traffic messages created after given time
+     * @return Pair<latestCreated, trafficMessages> pair.getLeft() has the latest creation time of traffic messages returned on pair.getRight().
+     */
+    @Transactional(readOnly = true)
+    public Pair<Instant , List<Datex2>> findDatex2TrafficMessagesForMqttCreatedAfter(final Instant after) {
+
+        final List<Datex2> datex2s = datex2Repository.findByCreatedIsAfterOrderByCreated(after);
+        final Instant latestCreated = datex2s.stream()
+            .map(Datex2::getCreated)
+            .max(Comparator.naturalOrder())
+            .orElse(null);
+        return Pair.of(
+            latestCreated,
+            datex2s);
     }
 }

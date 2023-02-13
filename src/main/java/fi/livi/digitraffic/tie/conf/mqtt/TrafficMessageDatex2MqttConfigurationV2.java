@@ -5,7 +5,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,40 +17,35 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.helper.GZipUtils;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
+import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageMqttDataServiceV1;
 import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
-// TODO DPO-1332 remove this as it is replaced by TrafficMessageSimpleMqttConfigurationV2
-// Reserve it for short time to keep old topic still functional
-@ConditionalOnProperty("mqtt.trafficMessage.v2.enabled")
+@ConditionalOnProperty("mqtt.trafficMessage.datex2.v2.enabled")
 @ConditionalOnNotWebApplication
 @Component
-public class TrafficMessageMqttConfigurationV2 {
-    private static final String TRAFFIC_MESSAGE_V2_ROOT_TOPIC = "traffic-message-v2";
+public class TrafficMessageDatex2MqttConfigurationV2 {
+    private static final String TRAFFIC_MESSAGE_DATEX2_V2_ROOT_TOPIC = "traffic-message-v2/datex2";
     // traffic-message-v2/{situationType}
-    public static final String TRAFFIC_MESSAGE_V2_TOPIC = TRAFFIC_MESSAGE_V2_ROOT_TOPIC + "/%s";
+    public static final String TRAFFIC_MESSAGE_V2_TOPIC = TRAFFIC_MESSAGE_DATEX2_V2_ROOT_TOPIC + "/%s";
     // traffic-message-v2/status
-    private static final String TRAFFIC_MESSAGE_V2_STATUS_TOPIC = TRAFFIC_MESSAGE_V2_ROOT_TOPIC + "/status";
+    private static final String TRAFFIC_MESSAGE_V2_STATUS_TOPIC = TRAFFIC_MESSAGE_DATEX2_V2_ROOT_TOPIC + "/status";
 
-    private static final Logger LOGGER = getLogger(TrafficMessageMqttConfigurationV2.class);
+    private static final Logger LOGGER = getLogger(TrafficMessageDatex2MqttConfigurationV2.class);
 
     private final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1;
-    private final ObjectMapper objectMapper;
     private final MqttMessageSenderV2 mqttMessageSender;
 
     @Autowired
-    public TrafficMessageMqttConfigurationV2(final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1,
-                                             final MqttRelayQueue mqttRelay,
-                                             final ObjectMapper objectMapper,
-                                             final ClusteredLocker clusteredLocker) {
+    public TrafficMessageDatex2MqttConfigurationV2(final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1,
+                                                   final MqttRelayQueue mqttRelay,
+                                                   final ObjectMapper objectMapper,
+                                                   final ClusteredLocker clusteredLocker) {
         this.trafficMessageMqttDataServiceV1 = trafficMessageMqttDataServiceV1;
-        this.objectMapper = objectMapper;
         this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TRAFFIC_MESSAGE, clusteredLocker);
 
         mqttMessageSender.setLastUpdated(Instant.now());
@@ -62,13 +56,12 @@ public class TrafficMessageMqttConfigurationV2 {
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {
             try {
-                final Pair<Instant, List<TrafficAnnouncementFeature>> trafficMessagesPair =
-                    trafficMessageMqttDataServiceV1.findSimpleTrafficMessagesForMqttCreatedAfter(mqttMessageSender.getLastUpdated());
+                final Pair<Instant, List<Datex2>> trafficMessagesPair =
+                    trafficMessageMqttDataServiceV1.findDatex2TrafficMessagesForMqttCreatedAfter(mqttMessageSender.getLastUpdated());
 
                 if(!trafficMessagesPair.getRight().isEmpty()) {
                     final List<MqttDataMessageV2> dataMessages = trafficMessagesPair.getRight().stream()
                         .map(this::createMqttDataMessage)
-                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
                     mqttMessageSender.sendMqttMessages(trafficMessagesPair.getLeft(), dataMessages);
                 }
@@ -85,15 +78,13 @@ public class TrafficMessageMqttConfigurationV2 {
      * @param trafficMessage to convert
      * @return message or null if failed
      */
-    private MqttDataMessageV2 createMqttDataMessage(final TrafficAnnouncementFeature trafficMessage) {
-        final String topic = MqttUtil.getTopicForMessage(TRAFFIC_MESSAGE_V2_TOPIC, trafficMessage.getProperties().getSituationType());
+    private MqttDataMessageV2 createMqttDataMessage(final Datex2 trafficMessage) {
+        final String topic = MqttUtil.getTopicForMessage(TRAFFIC_MESSAGE_V2_TOPIC, trafficMessage.getSituationType());
         try {
-            final String featureJson = objectMapper.writeValueAsString(trafficMessage);
-            final String compressedBase64String = GZipUtils.compressToBase64String(featureJson);
-            LOGGER.debug("method=createMqttDataMessage compressed from {} to {} bytes. base64String: {}", featureJson.getBytes().length, compressedBase64String.getBytes().length, compressedBase64String);
-            return new MqttDataMessageV2(topic, compressedBase64String);
+            final String datex2 = trafficMessage.getMessage();
+            return new MqttDataMessageV2(topic, datex2);
         } catch (final Exception e) {
-            LOGGER.error(String.format("method=createMqttDataMessage failed situationId=%s version %s", trafficMessage.getProperties().situationId, trafficMessage.getProperties().version), e);
+            LOGGER.error(String.format("method=createMqttDataMessage failed situationId=%s versionTime: %s", trafficMessage.getSituations().get(0).getSituationId(), trafficMessage.getSituations().get(0).getVersionTime()), e);
             return null;
         }
 

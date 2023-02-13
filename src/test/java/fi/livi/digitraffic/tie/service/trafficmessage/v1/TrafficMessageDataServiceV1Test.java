@@ -1,8 +1,8 @@
-package fi.livi.digitraffic.tie.service.v3.datex2;
+package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 
 import static fi.livi.digitraffic.tie.TestUtils.getRandom;
-import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.TRAFFIC_ANNOUNCEMENT;
-import static fi.livi.digitraffic.tie.model.v1.datex2.SituationType.values;
+import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.values;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_ACTIVE_ANDPASSIVE_RECORD;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH_JSON;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
@@ -31,26 +32,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryServiceAndGitMock;
+import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuration;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeatureCollection;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TimeAndDuration;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
-public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeometryServiceAndGitMock {
-    private static final Logger log = getLogger(V3Datex2DataServiceTest.class);
+public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithRegionGeometryServiceAndGitMock {
+    private static final Logger log = getLogger(TrafficMessageDataServiceV1Test.class);
 
     @Autowired
-    private V3Datex2DataService v3Datex2DataService;
+    private TrafficMessageDataServiceV1 trafficMessageDataServiceV1;
 
     @Autowired
     private TrafficMessageTestHelper trafficMessageTestHelper;
@@ -130,6 +132,10 @@ public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeo
 
     @Test
     public void findActiveJsonWithoutPropertiesIsNotReturned() throws IOException {
+        // One not active to get last modified field from db
+        trafficMessageTestHelper.initDataFromStaticImsResourceContent(
+            ImsXmlVersion.getLatestVersion(), TRAFFIC_ANNOUNCEMENT.name(), ImsJsonVersion.getLatestVersion(),
+            ZonedDateTime.now().minusHours(2), ZonedDateTime.now().minusHours(1));
         // One active with json
         trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithNullProperties.xml");
         // Not found, as both must exist
@@ -159,7 +165,8 @@ public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeo
     public void invalidJsonMultiLineStringGeometryIsFixed() throws IOException {
         // Message guid GUID50390596 that has MultiLineString with valid LineString and invalid LineString with two equal points
         trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithInvalidMultiLineStringGeometry.xml");
-        final TrafficAnnouncementFeature feature = v3Datex2DataService.findBySituationIdJson("GUID50390596", false, true).getFeatures().get(0);
+        final TrafficAnnouncementFeature
+            feature = trafficMessageDataServiceV1.findBySituationIdJson("GUID50390596", false, true).getFeatures().get(0);
         // Result geometry should only have one linestring and the invalid LineString should have be removed
         assertEquals("LineString", feature.getGeometry().getType().toString());
         assertTrue(feature.getGeometry().getCoordinates().size() > 2);
@@ -169,7 +176,8 @@ public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeo
     public void invalidJsonMultiLineStringGeometryIsFixed2() throws IOException {
         // MultiLineString with single lineString and equal points
         trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithInvalidMultiLineStringGeometry2.xml");
-        final TrafficAnnouncementFeature feature = v3Datex2DataService.findBySituationIdJson("GUID50390964", false, true).getFeatures().get(0);
+        final TrafficAnnouncementFeature
+            feature = trafficMessageDataServiceV1.findBySituationIdJson("GUID50390964", false, true).getFeatures().get(0);
         // Result geometry should only have one linestring and the invalid LineString should have be removed
         assertEquals("Point", feature.getGeometry().getType().toString());
         assertTrue(feature.getGeometry().getCoordinates().size() > 1);
@@ -178,7 +186,7 @@ public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeo
     @Test
     public void invalidJsonMultiPolygonGeometryIsFixed() throws IOException {
         trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithInvalidMultiPolygonGeometry.xml");
-        final TrafficAnnouncementFeature feature = v3Datex2DataService.findBySituationIdJson("GUID50379978", false, true).getFeatures().get(0);
+        final TrafficAnnouncementFeature feature = trafficMessageDataServiceV1.findBySituationIdJson("GUID50379978", false, true).getFeatures().get(0);
         // Result geometry should only have one linestring and the invalid LineString should have be removed
         assertEquals("Polygon", feature.getGeometry().getType().toString());
         assertEquals(2, feature.getGeometry().getCoordinates().size());
@@ -206,12 +214,13 @@ public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeo
         final String situationId = getSituationIdForSituationType(TRAFFIC_ANNOUNCEMENT.name());
 
         // Make sure all versions are saved
-        assertEquals(count, v3Datex2DataService.findBySituationIdJson(situationId, false, false).getFeatures().size());
-        assertEquals(count, getSituationPublication(v3Datex2DataService.findBySituationId(situationId, false)).getSituations().size());
+        assertEquals(count, trafficMessageDataServiceV1.findBySituationIdJson(situationId, false, false).getFeatures().size());
+        assertEquals(count, getSituationPublication(
+            Objects.requireNonNull(trafficMessageDataServiceV1.findBySituationId(situationId, false).getBody())).getSituations().size());
 
         // Get latest versions
-        final TrafficAnnouncementFeatureCollection latestJson = v3Datex2DataService.findBySituationIdJson(situationId, false, true);
-        final D2LogicalModel latestDatex = v3Datex2DataService.findBySituationId(situationId, true);
+        final TrafficAnnouncementFeatureCollection latestJson = trafficMessageDataServiceV1.findBySituationIdJson(situationId, false, true);
+        final D2LogicalModel latestDatex = trafficMessageDataServiceV1.findBySituationId(situationId, true).getBody();
 
         // Make sure only the latest version is returned
         assertEquals(latestStart.get(), latestJson.getFeatures().get(0).getProperties().announcements.get(0).timeAndDuration.startTime);
@@ -226,11 +235,11 @@ public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeo
     }
 
     private void checkFindBySituationId(final String situationId) {
-        final D2LogicalModel d2 = v3Datex2DataService.findBySituationId(situationId, false);
+        final ResponseEntityWithLastModifiedHeader<D2LogicalModel> d2 = trafficMessageDataServiceV1.findBySituationId(situationId, false);
         final TrafficAnnouncementFeatureCollection jsons =
-            v3Datex2DataService.findBySituationIdJson(situationId, true, false);
+            trafficMessageDataServiceV1.findBySituationIdJson(situationId, true, false);
 
-        final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
+        final List<Situation> situations = ((SituationPublication) d2.getBody().getPayloadPublication()).getSituations();
 
         AssertHelper.assertCollectionSize(1, situations);
         AssertHelper.assertCollectionSize(1, jsons.getFeatures());
@@ -243,9 +252,9 @@ public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeo
 
     private void activeIncidentsDatex2AndJsonEquals(final SituationType situationType, final ImsJsonVersion imsJsonVersion, final String situationId,
                                                     final ZonedDateTime start, final ZonedDateTime end) {
-        final D2LogicalModel d2 = v3Datex2DataService.findActive(0, situationType);
-        final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
-        final TrafficAnnouncementFeatureCollection activeJsons = v3Datex2DataService.findActiveJson(0, true, situationType);
+        final ResponseEntityWithLastModifiedHeader<D2LogicalModel> d2 = trafficMessageDataServiceV1.findActive(0, situationType);
+        final List<Situation> activeSituations = ((SituationPublication) d2.getBody().getPayloadPublication()).getSituations();
+        final TrafficAnnouncementFeatureCollection activeJsons = trafficMessageDataServiceV1.findActiveJson(0, true, situationType);
 
         AssertHelper.assertCollectionSize(1, activeSituations);
         AssertHelper.assertCollectionSize(1, activeJsons.getFeatures());
@@ -284,9 +293,9 @@ public class V3Datex2DataServiceTest extends AbstractWebServiceTestWithRegionGeo
     }
 
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
-        final D2LogicalModel withOrWithoutJson = v3Datex2DataService.findActive(0);
-        final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
-        final TrafficAnnouncementFeatureCollection withJson = v3Datex2DataService.findActiveJson(0, true);
+        final ResponseEntityWithLastModifiedHeader<D2LogicalModel> withOrWithoutJson = trafficMessageDataServiceV1.findActive(0);
+        final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getBody().getPayloadPublication());
+        final TrafficAnnouncementFeatureCollection withJson = trafficMessageDataServiceV1.findActiveJson(0, true);
 
         if (foundInDatex2) {
             assertEquals(

@@ -33,8 +33,8 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationTypesDtoV1
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationVersionDtoV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.location.LocationWebServiceV1;
-import fi.livi.digitraffic.tie.service.v1.trafficmessages.V1TrafficMessageDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -49,7 +49,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class TrafficMessageControllerV1 {
 
     private final RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
-    private final V1TrafficMessageDataService v1TrafficMessageDataService;
+    private final TrafficMessageDataServiceV1 trafficMessageDataServiceV1;
     private final LocationWebServiceV1 locationWebServiceV1;
 
     /**
@@ -82,10 +82,10 @@ public class TrafficMessageControllerV1 {
     public static final String DATEX2 = ".datex2";
 
     public TrafficMessageControllerV1(final RegionGeometryDataServiceV1 regionGeometryDataServiceV1,
-                                      final V1TrafficMessageDataService v1TrafficMessageDataService,
+                                      final TrafficMessageDataServiceV1 trafficMessageDataServiceV1,
                                       final LocationWebServiceV1 locationWebServiceV1) {
         this.regionGeometryDataServiceV1 = regionGeometryDataServiceV1;
-        this.v1TrafficMessageDataService = v1TrafficMessageDataService;
+        this.trafficMessageDataServiceV1 = trafficMessageDataServiceV1;
         this.locationWebServiceV1 = locationWebServiceV1;
     }
 
@@ -101,7 +101,7 @@ public class TrafficMessageControllerV1 {
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
 
-        return v1TrafficMessageDataService.findActive(inactiveHours, situationType);
+        return trafficMessageDataServiceV1.findActive(inactiveHours, situationType);
     }
 
     @Operation(summary = "Traffic messages by situationId as Datex2")
@@ -116,7 +116,7 @@ public class TrafficMessageControllerV1 {
         @Parameter(description = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned")
         @RequestParam(defaultValue = "true")
         final boolean latest) {
-        return v1TrafficMessageDataService.findBySituationId(situationId, latest);
+        return trafficMessageDataServiceV1.findBySituationId(situationId, latest);
     }
 
     @Operation(summary = "Active traffic messages as simple JSON")
@@ -138,7 +138,7 @@ public class TrafficMessageControllerV1 {
         @Parameter(description = "Situation type.", required = true)
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType...situationType) {
-        return v1TrafficMessageDataService.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
+        return trafficMessageDataServiceV1.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
     @Operation(summary = "Traffic messages history by situation id as simple JSON")
@@ -160,7 +160,7 @@ public class TrafficMessageControllerV1 {
         @Parameter(description = "If the parameter value is true, then only the latest message will be returned")
         @RequestParam(defaultValue = "false")
         final boolean latest) {
-        return v1TrafficMessageDataService.findBySituationIdJson(situationId, includeAreaGeometry, latest);
+        return trafficMessageDataServiceV1.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
     @Operation(summary = "Traffic messages geometries for regions")
