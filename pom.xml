@@ -65,11 +65,6 @@
             <name>Spring Milestone Repository</name>
             <url>https://repo.spring.io/milestone</url>
         </repository>
-        <repository>
-            <id>jcenter</id>
-            <name>jcenter</name>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -439,13 +434,6 @@
             <version>1.0.1</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>de.adesso</groupId>
-            <artifactId>junit-insights</artifactId>
-            <version>1.1.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <!-- If you have access to scm then you can place actual url's.
@@ -549,7 +537,6 @@
                 <configuration>
                     <!-- <argLine>-Xms512m -Xmx1024M ${argLine}</argLine> -->
                     <systemPropertyVariables>
-                        <de.adesso.junitinsights.enabled>true</de.adesso.junitinsights.enabled>
                         <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
                     </systemPropertyVariables>
                 </configuration>
