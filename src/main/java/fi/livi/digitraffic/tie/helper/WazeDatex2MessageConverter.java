@@ -14,6 +14,9 @@ import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.MULTIVEHICLE_ACCID
 import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.OVERTURNED_HEAVY_LORRY;
 import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.REAR_COLLISION;
 import static fi.livi.digitraffic.tie.datex2.AccidentTypeEnum.VEHICLE_SPUN_AROUND;
+import static fi.livi.digitraffic.tie.datex2.AnimalPresenceTypeEnum.ANIMALS_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.AnimalPresenceTypeEnum.HERD_OF_ANIMALS_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.AnimalPresenceTypeEnum.LARGE_ANIMALS_ON_THE_ROAD;
 import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.AVALANCHES;
 import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.EARTHQUAKE_DAMAGE;
 import static fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum.FALLEN_TREES;
@@ -240,6 +243,7 @@ import fi.livi.digitraffic.tie.datex2.AbnormalTrafficTypeEnum;
 import fi.livi.digitraffic.tie.datex2.Accident;
 import fi.livi.digitraffic.tie.datex2.AccidentTypeEnum;
 import fi.livi.digitraffic.tie.datex2.AnimalPresenceObstruction;
+import fi.livi.digitraffic.tie.datex2.AnimalPresenceTypeEnum;
 import fi.livi.digitraffic.tie.datex2.AuthorityOperation;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.DisturbanceActivity;
@@ -287,6 +291,7 @@ public class WazeDatex2MessageConverter {
 
     private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
+    private final Map<AnimalPresenceTypeEnum, String> animalPresenceTypeEnumStringMap = new HashMap<>();
     private final Map<EnvironmentalObstructionTypeEnum, String> environmentalObstructionTypeEnumStringMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
@@ -326,6 +331,10 @@ public class WazeDatex2MessageConverter {
         accidentTypeMap.put(REAR_COLLISION, "Rear collision");
         accidentTypeMap.put(VEHICLE_SPUN_AROUND, "Vehicle spun around");
         accidentTypeMap.put(AccidentTypeEnum.OTHER, "Accident");
+
+        animalPresenceTypeEnumStringMap.put(ANIMALS_ON_THE_ROAD, "Animals on the road");
+        animalPresenceTypeEnumStringMap.put(HERD_OF_ANIMALS_ON_THE_ROAD, "Herd of animals on the road");
+        animalPresenceTypeEnumStringMap.put(LARGE_ANIMALS_ON_THE_ROAD, "Large animals on the road");
 
         environmentalObstructionTypeEnumStringMap.put(AVALANCHES, "Avalanches");
         environmentalObstructionTypeEnumStringMap.put(EARTHQUAKE_DAMAGE, "Earthquake damage");
@@ -611,8 +620,9 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final AnimalPresenceObstruction animalPresenceObstruction) {
-        return Optional.empty();
+        return Optional.of(animalPresenceTypeEnumStringMap.getOrDefault(animalPresenceObstruction.getAnimalPresenceType(), null));
     }
+
     private Optional<String> accept(final AuthorityOperation authorityOperation) {
         return Optional.empty();
     }
