@@ -8,6 +8,7 @@ import static fi.livi.digitraffic.tie.model.DataType.WEATHER_STATION_METADATA_CH
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -200,7 +201,7 @@ public class DataStatusService {
 
         final Instant jsonDataUpdated = DateHelper.getGreatest(deviceRepositoryV1.getLastUpdated(), deviceDataRepositoryV1.getLastUpdated());
         final Instant datex2DataUpdated = deviceDataRepositoryV1.getDatex2LastUpdated();
-        final Instant codeDescriptionsUpdated = Instant.from(LocalDate.of(2019, 10, 1));
+        final Instant codeDescriptionsUpdated = LocalDate.of(2019, 10, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 
         return Arrays.asList(
             new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS, jsonDataUpdated, singsInfo.getUpdateInterval(),
