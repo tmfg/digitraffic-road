@@ -110,7 +110,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         esiasento_T1_1.setNimiEsitys("Foo Bar");
         when(lotjuCameraStationMetadataClient.getKamera(kamera_T1.getId())).thenReturn(kamera_T1);
         when(lotjuCameraStationMetadataClient.getEsiasento(esiasento_T1_1.getId())).thenReturn(esiasento_T1_1);
-        sendMessage(getPresetUpdateMessageXml(UpdateType.UPDATE, esiasento_T1_1.getId()));
+        sendMessage(getPresetUpdateMessageXml(UpdateType.UPDATE, esiasento_T1_1.getId(), esiasento_T1_1.getKameraId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
@@ -130,7 +130,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         when(lotjuCameraStationMetadataClient.getKamera(kamera_T1.getId())).thenReturn(kamera_T1);
         when(lotjuCameraStationMetadataClient.getEsiasento(esiasento_T1_2.getId())).thenReturn(esiasento_T1_2);
         when(lotjuCameraStationMetadataClient.getEsiasentos(kamera_T1.getId())).thenReturn(esiasentos_T1);
-        sendMessage(getPresetUpdateMessageXml(UpdateType.INSERT, esiasento_T1_2.getId()));
+        sendMessage(getPresetUpdateMessageXml(UpdateType.INSERT, esiasento_T1_2.getId(), esiasento_T1_2.getKameraId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_2.getId()));
@@ -200,7 +200,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         final CameraPreset ps1 = presets.get(0);
         final CameraPreset ps2 = presets.get(1);
 
-        sendMessage(getPresetUpdateMessageXml(UpdateType.DELETE, presets.get(0).getLotjuId()));
+        sendMessage(getPresetUpdateMessageXml(UpdateType.DELETE, presets.get(0).getLotjuId(), presets.get(0).getCameraLotjuId()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         final CameraPreset preset1 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps1.getLotjuId());
@@ -215,7 +215,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         List<CameraPreset> presets = createAndSaveCameraPresets(2);
         final CameraPreset ps1 = presets.get(0);
         final CameraPreset ps2 = presets.get(1);
-
+        TestUtils.entityManagerFlushAndClear(entityManager);
         sendMessage(getCameraUpdateMessageXml(UpdateType.DELETE, ps1.getCameraLotjuId()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
@@ -256,35 +256,40 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         }).collect(Collectors.toList());
     }
 
-    private static String getUpdateMessageXml(final UpdateType tyyppi, final EntityType entiteetti, final long lotjuId) {
-
-        return String.format(
-            "<metatietomuutos tyyppi=\"%s\" aika=\"%s\" entiteetti=\"%s\" id=\"%d\">\n" +
-            "    <asemat />\n" +
-            "</metatietomuutos>",
-            tyyppi.getExternalValue(), Instant.now(), entiteetti.getExternalValue(), lotjuId);
-    }
-
-    private static String getRoadAddressUpdateMessageXml(final UpdateType tyyppi, final long...lotjuIds) {
-        StringBuilder ids = new StringBuilder();
-        for(long lotjuId : lotjuIds) {
-            ids.append("        <id>").append(lotjuId).append("</id>\n");
+    private static String getUpdateMessageXml(final UpdateType tyyppi, final EntityType entiteetti, final long lotjuId, final long...lotjuIds) {
+        final StringBuilder asemaIds = new StringBuilder();
+        for(long id : lotjuIds) {
+            asemaIds.append("        <id>").append(id).append("</id>\n");
         }
         return String.format(
-            "<metatietomuutos tyyppi=\"%s\" aika=\"%s\" entiteetti=\"TIEOSOITE\" id=\"-1\">\n" +
+            "<metatietomuutos tyyppi=\"%s\" aika=\"%s\" entiteetti=\"%s\" id=\"%d\">\n" +
+                "    <asemat>\n" +
+                "%s" +
+                "    </asemat>\n" +
+            "</metatietomuutos>",
+            tyyppi.getExternalValue(), Instant.now(), entiteetti.getExternalValue(), lotjuId, asemaIds);
+    }
+
+    private static String getRoadAddressUpdateMessageXml(final UpdateType tyyppi, final long lotjuId, final long...lotjuIds) {
+        final StringBuilder asemaIds = new StringBuilder();
+        for(long id : lotjuIds) {
+            asemaIds.append("        <id>").append(id).append("</id>\n");
+        }
+        return String.format(
+            "<metatietomuutos tyyppi=\"%s\" aika=\"%s\" entiteetti=\"TIEOSOITE\" id=\"%d\">\n" +
             "    <asemat>\n" +
             "%s" +
             "    </asemat>\n" +
             "</metatietomuutos>",
-            tyyppi.getExternalValue(), Instant.now(), ids);
+            tyyppi.getExternalValue(), Instant.now(), lotjuId, asemaIds);
     }
 
-    private static String getCameraUpdateMessageXml(final UpdateType updateType, final long lotjuId) {
-        return getUpdateMessageXml(updateType, EntityType.CAMERA, lotjuId);
+    private static String getCameraUpdateMessageXml(final UpdateType updateType, final long kameraLotjuId) {
+        return getUpdateMessageXml(updateType, EntityType.CAMERA, kameraLotjuId, kameraLotjuId);
     }
 
-    private static String getPresetUpdateMessageXml(final UpdateType updateType, final long lotjuId) {
-        return getUpdateMessageXml(updateType, EntityType.PRESET, lotjuId);
+    private static String getPresetUpdateMessageXml(final UpdateType updateType, final long esiasentoLotjuId, final long kameraLotjuId) {
+        return getUpdateMessageXml(updateType, EntityType.PRESET, esiasentoLotjuId, kameraLotjuId);
     }
 
     private void sendMessage(final String message) {

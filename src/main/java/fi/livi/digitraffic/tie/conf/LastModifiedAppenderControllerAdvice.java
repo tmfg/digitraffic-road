@@ -17,7 +17,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 /**
  * Appends Last-Modified -header to response if supported by returned object
@@ -42,10 +41,11 @@ public class LastModifiedAppenderControllerAdvice implements ResponseBodyAdvice<
                                   final ServerHttpRequest request, final ServerHttpResponse response) {
 
         if (ALLOWED_METHODS.contains(request.getMethod()) && body instanceof LastModifiedSupport) {
-            final Instant lastModified = ((LastModifiedSupport) body).getLastModified();
+            final LastModifiedSupport lms = ((LastModifiedSupport) body);
+            final Instant lastModified = lms.getLastModified();
             if (lastModified != null) {
                 response.getHeaders().add(LAST_MODIFIED_HEADER, DateHelper.getInLastModifiedHeaderFormat(lastModified));
-            } else {
+            } else if (lms.shouldContainLastModified()) {
                 log.error("Entity implementing LastModifiedSupport.getLastModified() should return non null value. Null value for request uri: " + request.getURI());
             }
         }

@@ -19,4 +19,9 @@ public class WeathercamStationPresetsPublicityHistoryV1 extends StationDataV1<St
         super(id, dataUpdatedTime);
         this.presets = presetsData;
     }
+
+    @Override
+    public boolean shouldContainLastModified() {
+        return presets != null && !presets.isEmpty();
+    }
 }

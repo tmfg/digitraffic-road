@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,12 +93,17 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
 
         // Force to reload updated timestamp from db
-        entityManager.flush();
-        entityManager.clear();
+        TestUtils.entityManagerFlushAndClear(entityManager);
 
         this.tmsStation = entityManager.find(TmsStation.class, tms.getId());
+        System.out.println("tms " + tmsStation.getModified() + " rs: " + tmsStation.getRoadStation().getModified());
         // Db modified field is current transaction timestamp, so it's same for all objects saved here
         this.lastModifiedMillis = DateHelper.roundToSeconds(tmsStation.getRoadStation().getModified()).toEpochMilli();
+    }
+
+    @AfterEach
+    public void clenDb() {
+        TestUtils.truncateTmsData(entityManager);
     }
 
     /* METADATA */

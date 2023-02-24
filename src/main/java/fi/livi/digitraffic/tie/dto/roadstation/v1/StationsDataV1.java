@@ -30,4 +30,9 @@ public abstract class StationsDataV1<ID_TYPE, StationsDataType extends StationDa
     public Instant getLastModified() {
         return dataUpdatedTime;
     }
+
+    @Override
+    public boolean shouldContainLastModified() {
+        return stations != null && !stations.isEmpty();
+    }
 }

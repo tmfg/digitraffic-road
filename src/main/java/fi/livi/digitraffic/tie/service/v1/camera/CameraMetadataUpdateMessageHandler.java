@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdated
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,19 +54,15 @@ public class CameraMetadataUpdateMessageHandler {
                 try {
                     switch (type) {
                     case CAMERA:
-                        if (cameraStationUpdater.updateCameraStation(message.getLotjuId(), updateType)) {
-                            updateCount++;
-                        }
+                        updateCount += updateStations(message.getAsemaLotjuIds(), message.getUpdateType());
+                        break;
+                    case ROAD_ADDRESS: // We don't update specific addresses but stations using them
+                        updateCount += updateStations(message.getAsemaLotjuIds());
                         break;
                     case PRESET:
                         if (cameraStationUpdater.updateCameraPreset(message.getLotjuId(), updateType)) {
                             updateCount++;
                         }
-                        break;
-                    case ROAD_ADDRESS:
-                        // Even in case of delete of the address the update type for station is UPDATE
-                        updateCount += message.getAsemaLotjuIds().stream()
-                            .filter(asemaId -> cameraStationUpdater.updateCameraStation(asemaId, UPDATE)).count();
                         break;
                     case MASTER_STORAGE:
                     case VIDEO_SERVER:
@@ -85,5 +82,13 @@ public class CameraMetadataUpdateMessageHandler {
             dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
         }
         return updateCount;
+    }
+
+    private int updateStations(final Set<Long> asemaLotjuIds) {
+        return updateStations(asemaLotjuIds, UPDATE);
+    }
+
+    private int updateStations(final Set<Long> asemaLotjuIds, UpdateType updateType) {
+        return (int) asemaLotjuIds.stream().filter(lotjuId -> cameraStationUpdater.updateCameraStation(lotjuId, updateType)).count();
     }
 }

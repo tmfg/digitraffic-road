@@ -153,7 +153,17 @@ public class MaintenanceTrackingWebDataServiceV1 {
         } else if (domainNameParameters.contains(V2MaintenanceTrackingRepository.GENERIC_MUNICIPALITY_DOMAINS)) {
             return getRealDomainNamesWithoutStateRoadsDomain();
         }
+        validateDomainParameters(domainNameParameters);
         return domainNameParameters;
+    }
+
+    private void validateDomainParameters(final List<String> domainNameParameters) {
+        final List<String> allValid = getDomainsWithGenerics().stream().map(MaintenanceTrackingDomainDtoV1::getName).collect(Collectors.toList());
+        domainNameParameters.forEach(param  -> {
+            if (!allValid.contains(param)) {
+                throw new IllegalArgumentException(String.format("Invalid domain %s. Allowed values are %s.", param, allValid));
+            }
+        } );
     }
 
     private List<String> getRealDomainNames() {
@@ -203,22 +213,6 @@ public class MaintenanceTrackingWebDataServiceV1 {
         return v2MaintenanceTrackingRepository.findTrackingsLatestPointsCreatedAfter(from).stream()
             .map(MaintenanceTrackingWebDataServiceV1::convertToTrackingLatestFeature)
             .collect(Collectors.toList());
-    }
-
-    private static List<MaintenanceTrackingFeatureV1> convertToTrackingFeatures(final List<MaintenanceTrackingDto> trackings) {
-        final StopWatch startConvert = StopWatch.createStarted();
-        final List<MaintenanceTrackingFeatureV1> tmp =
-            trackings.parallelStream().map(MaintenanceTrackingWebDataServiceV1::convertToTrackingFeature).collect(Collectors.toList());
-        log.info("method=convertToTrackingFeatures tookMs={} count={}", startConvert.getTime(), trackings.size());
-        return tmp;
-    }
-
-    private static List<MaintenanceTrackingLatestFeatureV1> convertToTrackingLatestFeatures(final List<MaintenanceTrackingDto> trackings) {
-        final StopWatch startConvert = StopWatch.createStarted();
-        final List<MaintenanceTrackingLatestFeatureV1> tmp =
-            trackings.parallelStream().map(MaintenanceTrackingWebDataServiceV1::convertToTrackingLatestFeature).collect(Collectors.toList());
-        log.info("method=convertToTrackingLatestFeatures tookMs={} count={}", startConvert.getTime(), trackings.size());
-        return tmp;
     }
 
     private static MaintenanceTrackingFeatureV1 convertToTrackingFeature(final MaintenanceTrackingDto tracking) {

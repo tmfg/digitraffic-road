@@ -403,6 +403,7 @@ public class TestUtils {
 
     public static void truncateTmsData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE tms_station DISABLE TRIGGER trg_lam_station_delete").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id not in (select natural_id from road_station_sensor where lotju_id <= 252 AND road_station_type = 'TMS_STATION') AND road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id > 252 AND road_station_type = 'TMS_STATION'").executeUpdate();
