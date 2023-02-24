@@ -208,8 +208,8 @@ public class DataStatusService {
                                 singsInfo.getRecommendedFetchInterval()),
             new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_DATEX2, datex2DataUpdated,
                                 singsInfo.getUpdateInterval(), singsInfo.getRecommendedFetchInterval()),
-            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_CODE_DESCRIPTIONS, codeDescriptionsUpdated, codeDescriptionsUpdated,
-                               null, null));
+            UpdateInfoDtoV1.staticData(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_CODE_DESCRIPTIONS, codeDescriptionsUpdated)
+        );
     }
 
     private List<UpdateInfoDtoV1> getCoungingSiteInfos() {
@@ -220,16 +220,21 @@ public class DataStatusService {
         final DataSourceInfoDtoV1 dataInfo  =
             dataUpdatedRepository.getDataSourceInfo(DataSource.COUNTING_SITE_DATA);
 
+        final Instant staticMetadataUpdated = LocalDate.of(2022, 3, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        final Instant countersUpdated = dataUpdatedRepository.findUpdatedTime(DataType.COUNTING_SITES_METADATA);
+        final Instant countersChecked = dataUpdatedRepository.findUpdatedTime(DataType.COUNTING_SITES_METADATA_CHECK);
+        final Instant domainsUpdated = dataUpdatedRepository.getCountingSiteDomainLastUpdated();
+        final Instant dataUpdated = dataUpdatedRepository.getCountingSiteDataLastUpdated();
+        final Instant dataChecked = dataUpdatedRepository.findUpdatedTime(DataType.COUNTING_SITES_DATA);
+
         return Arrays.asList(
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_COUNTERS, dataUpdatedRepository.getCountingSiteCounterLastUpdated(),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_COUNTERS, countersUpdated, countersChecked,
                                 metadataInfo.getUpdateInterval(), metadataInfo.getRecommendedFetchInterval()),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_DIRECTIONS, findDataUpdatedInstant(DataType.COUNTING_SITE_DIRECTION_DATA),
-                                null, metadataInfo.getRecommendedFetchInterval()),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_DOMAIN, dataUpdatedRepository.getCountingSiteDomainLastUpdated(),
+            UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V1_DIRECTIONS, staticMetadataUpdated),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_DOMAIN, domainsUpdated,
                                 metadataInfo.getUpdateInterval(), metadataInfo.getRecommendedFetchInterval()),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_USER_TYPES, findDataUpdatedInstant(DataType.COUNTING_SITE_USER_TYPE_DATA),
-                null, metadataInfo.getRecommendedFetchInterval()),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_VALUES, dataUpdatedRepository.getCountingSiteDataLastUpdated(),
+            UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V1_USER_TYPES, staticMetadataUpdated),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_VALUES, dataUpdated, dataChecked,
                 dataInfo.getUpdateInterval(), dataInfo.getRecommendedFetchInterval())
         );
     }

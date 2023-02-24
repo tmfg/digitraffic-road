@@ -62,6 +62,10 @@ public class UpdateInfoDtoV1 implements DataUpdatedSupportV1 {
         this(api, dataUpdatedTime, null, dataUpdateInterval, recommendedFetchInterval);
     }
 
+    public static UpdateInfoDtoV1 staticData(final String api, final Instant updatedTime) {
+        return new UpdateInfoDtoV1(api, updatedTime, null, null, null);
+    }
+
     @Override
     public Instant getDataUpdatedTime() {
         return dataUpdatedTime;

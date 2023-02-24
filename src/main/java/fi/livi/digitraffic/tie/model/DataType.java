@@ -54,10 +54,11 @@ public enum DataType {
     TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA,
     TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK,
 
-    COUNTING_SITE_USER_TYPE_DATA,
-    COUNTING_SITE_DIRECTION_DATA,
+    // counting site
+    COUNTING_SITES_METADATA,
+    COUNTING_SITES_METADATA_CHECK,
+    COUNTING_SITES_DATA,
     ;
-
 
     public static DataType getSensorMetadataTypeForRoadStationType(final RoadStationType roadStationType) {
         if (RoadStationType.TMS_STATION == roadStationType) {
