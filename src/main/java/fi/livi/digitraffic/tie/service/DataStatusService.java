@@ -7,6 +7,7 @@ import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_METADATA_CHE
 import static fi.livi.digitraffic.tie.model.DataType.WEATHER_STATION_METADATA_CHECK;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -195,18 +196,19 @@ public class DataStatusService {
     }
 
     private List<UpdateInfoDtoV1> getVariableSignInfos() {
-        final DataSourceInfoDtoV1 metadataInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.VARIABLE_SIGN);
         final DataSourceInfoDtoV1 singsInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.VARIABLE_SIGN_DATA);
+
         final Instant jsonDataUpdated = DateHelper.getGreatest(deviceRepositoryV1.getLastUpdated(), deviceDataRepositoryV1.getLastUpdated());
         final Instant datex2DataUpdated = deviceDataRepositoryV1.getDatex2LastUpdated();
-        final Instant codeDescriptionDataUpdated = codeDescriptionRepositoryV1.getLastUpdated();
+        final Instant codeDescriptionsUpdated = Instant.from(LocalDate.of(2019, 10, 1));
+
         return Arrays.asList(
             new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS, jsonDataUpdated, singsInfo.getUpdateInterval(),
                                 singsInfo.getRecommendedFetchInterval()),
             new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_DATEX2, datex2DataUpdated,
                                 singsInfo.getUpdateInterval(), singsInfo.getRecommendedFetchInterval()),
-            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_CODE_DESCRIPTIONS, codeDescriptionDataUpdated,
-                                metadataInfo.getUpdateInterval(), metadataInfo.getRecommendedFetchInterval()));
+            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_CODE_DESCRIPTIONS, codeDescriptionsUpdated, codeDescriptionsUpdated,
+                               null, null));
     }
 
     private List<UpdateInfoDtoV1> getCoungingSiteInfos() {
