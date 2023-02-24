@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdated
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +27,8 @@ import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdated
 public class WeatherMetadataUpdateMessageHandler {
     private static final Logger log = LoggerFactory.getLogger(WeatherMetadataUpdateMessageHandler.class);
 
-    private WeatherStationUpdater weatherStationUpdater;
-    private WeatherStationSensorUpdater weatherStationSensorUpdater;
+    private final WeatherStationUpdater weatherStationUpdater;
+    private final WeatherStationSensorUpdater weatherStationSensorUpdater;
 
     public WeatherMetadataUpdateMessageHandler(final WeatherStationUpdater weatherStationUpdater,
                                                final WeatherStationSensorUpdater weatherStationSensorUpdater) {
@@ -43,7 +44,6 @@ public class WeatherMetadataUpdateMessageHandler {
         for (WeatherMetadataUpdatedMessageDto message : weatherMetadataUpdates) {
             log.info("method=updateMetadataFromJms roadStationType={} data: {}", RoadStationType.WEATHER_STATION.name(), ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
-            final MetadataUpdatedMessageDto.UpdateType updateType = message.getUpdateType();
 
             // Skip messages that are older than 24 hours as metadata update job is running every 12 hours
             // so this could also be 12 h but for safety margin lets keep it in 24h. This could happen in case
@@ -52,34 +52,19 @@ public class WeatherMetadataUpdateMessageHandler {
                 try {
                     switch (type) {
                     case WEATHER_STATION:
-                        if (weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), updateType)) {
-                            updateCount++;
-                        }
+                        updateCount += updateStations(message.getAsemaLotjuIds(), message.getUpdateType());
                         break;
-                    case WEATHER_STATION_COMPUTATIONAL_SENSOR:
-                        if (updateType.isDelete()) {
-                            weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), UPDATE);
-                        } else if (weatherStationUpdater.updateWeatherStationAndSensors(message.getLotjuId(), updateType)) {
-                            updateCount++;
-                        }
+                    case WEATHER_STATION_COMPUTATIONAL_SENSOR: // Update sensors of stations
+                    case ROAD_ADDRESS: // We don't update specific addresses but stations using them
+                        updateCount += updateStations(message.getAsemaLotjuIds());
                         break;
-                    case WEATHER_COMPUTATIONAL_SENSOR:
-                        if (weatherStationSensorUpdater.updateWeatherSensor(message.getLotjuId(), updateType)) {
-                            updateCount++;
-                        }
-                        // Even when updateType would be delete, this means we also have to update the station
-                        updateCount += message.getAsemaLotjuIds().stream()
-                            .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
+                    case WEATHER_COMPUTATIONAL_SENSOR: // insert/delete/update of sensor
+                        // Update sensor
+                        weatherStationSensorUpdater.updateWeatherSensor(message.getLotjuId(), message.getUpdateType());
+                        // When we insert, update or delete sensors, we always call update for the affected stations. It will update stations sensors
+                        updateCount += updateStations(message.getAsemaLotjuIds());
                         break;
-                    case ROAD_ADDRESS:
-                        // All ROAD_ADDRESS update types just calls update for road station
-                        updateCount += message.getAsemaLotjuIds().stream()
-                            .filter(asemaId -> weatherStationUpdater.updateWeatherStationAndSensors(asemaId, UPDATE)).count();
-                        if (message.getAsemaLotjuIds().isEmpty()) {
-                            log.warn("method=updateWeatherMetadataFromJms message had no station id's {}", ToStringHelper.toStringFull(message));
-                        }
-                        break;
-
+                    // These we don't care as we don't use these
                     case WEATHER_SENSOR:
                     case WEATHER_SENSOR_TYPE:
                     case SENSOR_MESSAGE:
@@ -98,5 +83,12 @@ public class WeatherMetadataUpdateMessageHandler {
         }
 
         return updateCount;
+    }
+
+    private int updateStations(final Set<Long> asemaLotjuIds) {
+        return updateStations(asemaLotjuIds, UPDATE);
+    }
+    private int updateStations(final Set<Long> asemaLotjuIds, final MetadataUpdatedMessageDto.UpdateType updateType) {
+        return (int) asemaLotjuIds.stream().filter(lotjuId -> weatherStationUpdater.updateWeatherStationAndSensors(lotjuId, updateType)).count();
     }
 }

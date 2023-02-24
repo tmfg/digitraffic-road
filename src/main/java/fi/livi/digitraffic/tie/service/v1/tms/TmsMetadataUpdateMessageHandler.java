@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdated
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMessageDto.EntityType;
@@ -27,19 +27,16 @@ import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMess
 public class TmsMetadataUpdateMessageHandler {
     private static final Logger log = LoggerFactory.getLogger(TmsMetadataUpdateMessageHandler.class);
 
-    private TmsStationUpdater tmsStationUpdater;
-    private TmsSensorUpdater tmsSensorUpdater;
-    private TmsStationSensorConstantUpdater tmsStationSensorConstantUpdater;
-    private final DataStatusService dataStatusService;
+    private final TmsStationUpdater tmsStationUpdater;
+    private final TmsSensorUpdater tmsSensorUpdater;
+    private final TmsStationSensorConstantUpdater tmsStationSensorConstantUpdater;
 
     public TmsMetadataUpdateMessageHandler(final TmsStationUpdater tmsStationUpdater,
                                            final TmsSensorUpdater tmsSensorUpdater,
-                                           final TmsStationSensorConstantUpdater tmsStationSensorConstantUpdater,
-                                           final DataStatusService dataStatusService) {
+                                           final TmsStationSensorConstantUpdater tmsStationSensorConstantUpdater) {
         this.tmsStationUpdater = tmsStationUpdater;
         this.tmsSensorUpdater = tmsSensorUpdater;
         this.tmsStationSensorConstantUpdater = tmsStationSensorConstantUpdater;
-        this.dataStatusService = dataStatusService;
     }
 
     // Disable info logging as it can be normally over 1 s. Log only if over default warning level 5 s.
@@ -59,18 +56,18 @@ public class TmsMetadataUpdateMessageHandler {
                 try {
                     switch (type) {
                     case TMS_STATION:
-                        if (tmsStationUpdater.updateTmsStationAndSensors(message.getLotjuId(), updateType)) {
-                            updateCount++;
-                        }
+                        updateCount += updateStations(message.getAsemaLotjuIds(), message.getUpdateType());
+                        break;
+                    case ROAD_ADDRESS: // We don't update specific addresses but stations using them
+                        updateCount += updateStations(message.getAsemaLotjuIds());
                         break;
                     case TMS_COMPUTATIONAL_SENSOR:
                         // Contains also id's of the stations affected
                         if (tmsSensorUpdater.updateTmsSensor(message.getLotjuId(), updateType)) {
                             updateCount++;
                         }
-                        // Even when updateType would be delete, this means always update for station
-                        updateCount += message.getAsemaLotjuIds().stream()
-                            .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
+                        // Even when updateType would be to delete, this means we have to update the affected stations
+                        updateCount += updateStations(message.getAsemaLotjuIds());
                         break;
                     case TMS_SENSOR_CONSTANT:
                         if (tmsStationSensorConstantUpdater.updateTmsStationsSensorConstant(message.getLotjuId(), updateType)) {
@@ -81,11 +78,6 @@ public class TmsMetadataUpdateMessageHandler {
                         if (tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(message.getLotjuId(), updateType)) {
                             updateCount++;
                         }
-                        break;
-                    case ROAD_ADDRESS:
-                        // Always update
-                        updateCount += message.getAsemaLotjuIds().stream()
-                            .filter(asemaId -> tmsStationUpdater.updateTmsStationAndSensors(asemaId, UPDATE)).count();
                         break;
                     case TMS_SENSOR:
                         // no handle as TMS_SENSOR update won't affect us.
@@ -101,5 +93,12 @@ public class TmsMetadataUpdateMessageHandler {
         }
 
         return updateCount;
+    }
+
+    private int updateStations(final Set<Long> asemaLotjuIds) {
+        return updateStations(asemaLotjuIds, UPDATE);
+    }
+    private int updateStations(final Set<Long> asemaLotjuIds, final UpdateType updateType) {
+        return (int) asemaLotjuIds.stream().filter(lotjuId -> tmsStationUpdater.updateTmsStationAndSensors(lotjuId, updateType)).count();
     }
 }

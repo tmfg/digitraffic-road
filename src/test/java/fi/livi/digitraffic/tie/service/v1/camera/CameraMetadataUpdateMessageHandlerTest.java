@@ -75,19 +75,19 @@ public class CameraMetadataUpdateMessageHandlerTest extends AbstractMetadataUpda
 
     private void verifyMessageWontTriggersUpdate(final UpdateType updateType,
                                                  final EntityType entityType) {
-        cameraMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(getRandomLotjuId(), entityType, updateType));
+        cameraMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(getRandomLotjuId(), entityType, updateType, CAMERA_LOTJU_ID1, CAMERA_LOTJU_ID2));
         verifyNoInteractions(cameraStationUpdater);
     }
 
     private void verifyCameraMessageTriggersUpdate(final UpdateType updateType) {
         when(cameraStationUpdater.updateCameraStation(CAMERA_LOTJU_ID1, updateType)).thenReturn(true);
-        cameraMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(CAMERA_LOTJU_ID1, EntityType.CAMERA, updateType));
+        cameraMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(CAMERA_LOTJU_ID1, EntityType.CAMERA, updateType, CAMERA_LOTJU_ID1));
         verify(cameraStationUpdater, times(1)).updateCameraStation(eq(CAMERA_LOTJU_ID1), eq(updateType));
     }
 
     private void verifyPresetMessageTriggersUpdate(final UpdateType updateType) {
         when(cameraStationUpdater.updateCameraPreset(PRESET_LOTJU_ID, updateType)).thenReturn(true);
-        cameraMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(PRESET_LOTJU_ID, EntityType.PRESET, updateType));
+        cameraMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(PRESET_LOTJU_ID, EntityType.PRESET, updateType, CAMERA_LOTJU_ID1));
         verify(cameraStationUpdater, times(1)).updateCameraPreset(eq(PRESET_LOTJU_ID), eq(updateType));
     }
 
@@ -95,7 +95,7 @@ public class CameraMetadataUpdateMessageHandlerTest extends AbstractMetadataUpda
         // RoadAddress makes always UpdateType.UPDATE for stations
         when(cameraStationUpdater.updateCameraStation(CAMERA_LOTJU_ID1, UpdateType.UPDATE)).thenReturn(true);
         when(cameraStationUpdater.updateCameraStation(CAMERA_LOTJU_ID2, UpdateType.UPDATE)).thenReturn(true);
-        cameraMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(getRandomLotjuId(), EntityType.ROAD_ADDRESS, updateType));
+        cameraMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(getRandomLotjuId(), EntityType.ROAD_ADDRESS, updateType, CAMERA_LOTJU_ID1, CAMERA_LOTJU_ID2));
         verify(cameraStationUpdater, times(1)).updateCameraStation(eq(CAMERA_LOTJU_ID1), eq(UpdateType.UPDATE));
         verify(cameraStationUpdater, times(1)).updateCameraStation(eq(CAMERA_LOTJU_ID2), eq(UpdateType.UPDATE));
     }
@@ -103,5 +103,10 @@ public class CameraMetadataUpdateMessageHandlerTest extends AbstractMetadataUpda
     private List<CameraMetadataUpdatedMessageDto> createMessage(final long entityLotjuId, final EntityType entityType, final UpdateType updateType) {
         return Collections.singletonList(
             new CameraMetadataUpdatedMessageDto(entityLotjuId, Set.of(CAMERA_LOTJU_ID1, CAMERA_LOTJU_ID2), updateType, Instant.now(), entityType));
+    }
+
+    private List<CameraMetadataUpdatedMessageDto> createMessage(final long entityLotjuId, final EntityType entityType, final UpdateType updateType, final Long...cameraLotjuIds) {
+        return Collections.singletonList(
+            new CameraMetadataUpdatedMessageDto(entityLotjuId, Set.of(cameraLotjuIds), updateType, Instant.now(), entityType));
     }
 }

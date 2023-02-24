@@ -20,4 +20,8 @@ public class WeathercamPresetsHistoryDtoV1 extends StationDataV1<String> {
         this.presets = presetsHistory;
     }
 
+    @Override
+    public boolean shouldContainLastModified() {
+        return presets != null && !presets.isEmpty();
+    }
 }

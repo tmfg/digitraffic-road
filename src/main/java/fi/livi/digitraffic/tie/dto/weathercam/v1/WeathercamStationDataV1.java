@@ -19,4 +19,9 @@ public class WeathercamStationDataV1 extends StationDataV1<String> {
         super(id, dataUpdatedTime);
         this.presets = presetsData;
     }
+
+    @Override
+    public boolean shouldContainLastModified() {
+        return presets != null && !presets.isEmpty();
+    }
 }

@@ -89,7 +89,7 @@ public class TmsSensorConstantDao {
             paramMap);
     }
 
-    public int updateSensorConstants(List<LamAnturiVakioVO> allLamAnturiVakios) {
+    public int updateSensorConstants(final List<LamAnturiVakioVO> allLamAnturiVakios) {
 
         final ArrayList<Map<String, Object>> batchData = new ArrayList<>();
         allLamAnturiVakios.forEach(lamAnturiVakio -> {

@@ -51,6 +51,7 @@ public class WeatherMetadataUpdateMessageHandlerTest extends AbstractMetadataUpd
     public void weatherStationMessagesShouldTriggerUpdate() {
         for (final UpdateType updateType : UpdateType.values()) {
             verifyWeatherStationMessageTriggersUpdate(updateType);
+            verifyNoMoreInteractionsAndResetMocks();
         }
     }
 
@@ -66,11 +67,12 @@ public class WeatherMetadataUpdateMessageHandlerTest extends AbstractMetadataUpd
     public void tmsSensornMessagesShouldTriggerUpdate() {
         for (final UpdateType updateType : UpdateType.values()) {
             verifyWeatherStationComputationalSensorMessagesTriggersUpdate(updateType);
+            verifyNoMoreInteractionsAndResetMocks();
         }
     }
 
-    @Test // WEATHER_COMPUTATIONAL_SENSOR_FORMULA
-    public void otherEntitiesMessagesShouldTriggerUpdate() {
+    @Test
+    public void otherEntitiesMessagesShouldNotTriggerUpdate() {
         Set.of(WEATHER_SENSOR, WEATHER_SENSOR_TYPE, SENSOR_MESSAGE, PREPROSESSING, VALUE_EQUIVALENCE, WEATHER_COMPUTATIONAL_SENSOR_FORMULA)
             .forEach(entityType -> {
                 for (final UpdateType updateType : UpdateType.values()) {
@@ -98,12 +100,14 @@ public class WeatherMetadataUpdateMessageHandlerTest extends AbstractMetadataUpd
         when(weatherStationUpdater.updateWeatherStationAndSensors(STATION_LOTJU_ID1, updateType)).thenReturn(true);
         weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(STATION_LOTJU_ID1, EntityType.WEATHER_STATION, updateType));
         verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID1), eq(updateType));
+        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID2), eq(updateType));
     }
 
     private void verifyWeatherStationComputationalSensorMessagesTriggersUpdate(final UpdateType updateType) {
         when(weatherStationUpdater.updateWeatherStationAndSensors(STATION_LOTJU_ID1, updateType)).thenReturn(true);
         weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(STATION_LOTJU_ID1, EntityType.WEATHER_STATION, updateType));
         verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID1), eq(updateType));
+        verify(weatherStationUpdater, times(1)).updateWeatherStationAndSensors(eq(STATION_LOTJU_ID2), eq(updateType));
     }
 
     private void verifyWeatherComputationalSensorMessagesTriggersUpdate(final UpdateType updateType) {

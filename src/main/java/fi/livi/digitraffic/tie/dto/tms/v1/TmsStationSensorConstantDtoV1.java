@@ -32,4 +32,9 @@ public class TmsStationSensorConstantDtoV1 extends StationDataV1<Long> {
             .map(TmsSensorConstantValueDto::getModified)
             .max(Comparator.naturalOrder()).orElse(null);
     }
+
+    @Override
+    public boolean shouldContainLastModified() {
+        return sensorConstanValues != null && !sensorConstanValues.isEmpty();
+    }
 }
