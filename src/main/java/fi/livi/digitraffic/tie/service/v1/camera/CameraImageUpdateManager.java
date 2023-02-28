@@ -126,9 +126,6 @@ public class CameraImageUpdateManager {
         private UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateHandler cameraImageUpdateHandler, final long timeout) {
             this.timeout = timeout;
             this.task = new ImageUpdateTask(kuva, cameraImageUpdateHandler);
-            if ( 270L == kuva.getEsiasentoId() ) {
-                log.info("method=UpdateJobManager Kuva: {}", ToStringHelper.toStringFull(kuva));
-            }
         }
 
         @Override
