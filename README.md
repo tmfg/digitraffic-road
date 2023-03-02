@@ -1,7 +1,5 @@
 # digitraffic-road
 
-Test comment
-
 ## Development
 
 ### Preconditions
