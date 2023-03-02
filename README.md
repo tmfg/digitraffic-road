@@ -2,8 +2,6 @@
 
 ## Development
 
-Testikommentti
-
 ### Preconditions
 1. Java 11 JDK
 2. Maven
