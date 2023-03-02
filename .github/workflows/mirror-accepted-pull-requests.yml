@@ -1,6 +1,6 @@
 name: 'Mirror accepted pull requests to private'
 on:
-  pull_requests:
+  pull_request:
     types:
       - closed
 jobs:
