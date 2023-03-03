@@ -6,10 +6,13 @@ import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 import fi.livi.digitraffic.tie.helper.LocationUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.validation.constraints.NotNull;
+
 @Schema(description = "Location Version Object")
 public class LocationVersionDtoV1 implements DataUpdatedSupportV1, Comparable<LocationVersionDtoV1> {
 
-    @Schema(description = "Location version string")
+    @Schema(description = "Location version string", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     public final String version;
 
     private final Instant dataUpdatedTime;

@@ -7,13 +7,16 @@ import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.validation.constraints.NotNull;
+
 @Schema(description = "Location GeoJSON properties object")
 public class LocationPropertiesV1 extends PropertiesV1 implements DataUpdatedSupportV1 {
 
-    @Schema(description = "Unique locationCode for this location", required = true)
+    @Schema(description = "Unique locationCode for this location", requiredMode = Schema.RequiredMode.REQUIRED)
     public final int locationCode;
 
-    @Schema(description = "Code of location subtype", required = true)
+    @Schema(description = "Code of location subtype", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     public final String subtypeCode;
 
     @Schema(description = "Roadnumber for roads. Junctionno: the numbering of exits has only just begun on the very limited Finnish motorway network. The exit numbers will be included. NOTE: the roads, segments and points are not sorted in ascending order")
@@ -58,7 +61,8 @@ public class LocationPropertiesV1 extends PropertiesV1 implements DataUpdatedSup
     @Schema(description = "The order of point within line or segment feature")
     public final String orderOfPoint;
 
-    @Schema(description = "Data last updated date time", required = true)
+    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     public final Instant dataUpdatedTime;
 
     @Schema(description = "Location version")

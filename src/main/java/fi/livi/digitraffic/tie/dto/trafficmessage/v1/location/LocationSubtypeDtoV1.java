@@ -11,10 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "subtypeCode", "descriptionFi", "descriptionEn" })
 public interface LocationSubtypeDtoV1 extends Comparable<LocationSubtypeDtoV1> {
     @Value("#{target.id.subtypeCode}")
+    @Schema(description = "Code of location subtype", requiredMode = Schema.RequiredMode.REQUIRED)
     String getSubtypeCode();
 
+    @Schema(description = "Description of subtype in english", requiredMode = Schema.RequiredMode.REQUIRED)
     String getDescriptionEn();
 
+    @Schema(description = "Description of subtype in finnish", requiredMode = Schema.RequiredMode.REQUIRED)
     String getDescriptionFi();
 
     @Override

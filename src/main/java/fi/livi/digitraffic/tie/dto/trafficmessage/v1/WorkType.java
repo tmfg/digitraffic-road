@@ -21,11 +21,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class WorkType extends JsonAdditionalProperties {
 
-    @Schema(description = "Worktype", required = true)
+    @Schema(description = "Worktype", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public WorkType.Type type;
 
-    @Schema(description = "Description", required = true)
+    @Schema(description = "Description", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String description;
 

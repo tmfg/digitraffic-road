@@ -19,22 +19,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class RoadAddress extends JsonAdditionalProperties {
 
-    @Schema(description = "Number of the road", required = true)
+    @Schema(description = "Number of the road", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Integer road;
 
-    @Schema(description = "Number of the road section", required = true)
+    @Schema(description = "Number of the road section", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Integer roadSection;
 
-    @Schema(description = "Distance from the beginning of the road section.", required = true)
+    @Schema(description = "Distance from the beginning of the road section.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Integer distance;
 
     public RoadAddress() {
     }
 
-    public RoadAddress(Integer road, Integer roadSection, Integer distance) {
+    public RoadAddress(final Integer road, final Integer roadSection, final Integer distance) {
         super();
         this.road = road;
         this.roadSection = roadSection;

@@ -20,19 +20,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class Location extends JsonAdditionalProperties {
 
-    @Schema(description = "AlertC country code defined by RDS (IEC 62106)", required = true)
+    @Schema(description = "AlertC country code defined by RDS (IEC 62106)", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Integer countryCode;
 
-    @Schema(description = "AlertC location table number. Country code + location table number fully identifies the table.", required = true)
+    @Schema(description = "AlertC location table number. Country code + location table number fully identifies the table.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Integer locationTableNumber;
 
-    @Schema(description = "AlertC location table version number", required = true)
+    @Schema(description = "AlertC location table version number", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String locationTableVersion;
 
-    @Schema(description = "Textual representation of the location", required = true)    @NotNull
+    @Schema(description = "Textual representation of the location", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     public String description;
 
     public Location() {

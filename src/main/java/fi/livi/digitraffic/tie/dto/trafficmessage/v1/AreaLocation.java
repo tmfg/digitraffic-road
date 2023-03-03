@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class AreaLocation extends JsonAdditionalProperties {
 
-    @Schema(description = "List of areas", required = true)
+    @Schema(description = "List of areas", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public List<Area> areas = new ArrayList<>();
 

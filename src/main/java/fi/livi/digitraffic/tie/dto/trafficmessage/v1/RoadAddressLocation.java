@@ -20,14 +20,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class RoadAddressLocation extends JsonAdditionalProperties {
 
-    @Schema(description = "Primary road point", required = true)
+    @Schema(description = "Primary road point", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public RoadPoint primaryPoint;
 
     @Schema(description = "Secondary  road point")
     public RoadPoint secondaryPoint;
 
-    @Schema(description = "Affected road direction", required = true)
+    @Schema(description = "Affected road direction", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public RoadAddressLocation.Direction direction;
 
@@ -37,7 +37,7 @@ public class RoadAddressLocation extends JsonAdditionalProperties {
     public RoadAddressLocation() {
     }
 
-    public RoadAddressLocation(RoadPoint primaryPoint, RoadPoint secondaryPoint, Direction direction, String directionDescription) {
+    public RoadAddressLocation(final RoadPoint primaryPoint, final RoadPoint secondaryPoint, final Direction direction, final String directionDescription) {
         super();
         this.primaryPoint = primaryPoint;
         this.secondaryPoint = secondaryPoint;

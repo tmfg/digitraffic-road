@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class Feature extends JsonAdditionalProperties {
 
-    @Schema(description = "Feature name, e.g.black ice on road, or speed limit", required = true, example = "speed limit")
+    @Schema(description = "Feature name, e.g.black ice on road, or speed limit", example = "speed limit", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String name;
 

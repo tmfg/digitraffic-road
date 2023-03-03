@@ -31,11 +31,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class TrafficAnnouncement extends JsonAdditionalProperties {
 
-    @Schema(description = "Language of the announcement, always fi. A subset of ISO 639-1 in upper case.", required = true)
+    @Schema(description = "Language of the announcement, always fi. A subset of ISO 639-1 in upper case.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public TrafficAnnouncement.Language language;
 
-    @Schema(description = "Short description about the situation", required = true)
+    @Schema(description = "Short description about the situation", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String title;
 
@@ -68,7 +68,7 @@ public class TrafficAnnouncement extends JsonAdditionalProperties {
     @Schema(description = "Additional information.")
     public String additionalInformation;
 
-    @Schema(description = "Name of the sender", required = true)
+    @Schema(description = "Name of the sender", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String sender;
 

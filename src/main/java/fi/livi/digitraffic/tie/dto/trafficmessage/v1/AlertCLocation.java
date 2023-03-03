@@ -19,11 +19,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class AlertCLocation extends JsonAdditionalProperties {
 
-    @Schema(description = "AlertC location code. Number of the location point in AlertC location table", required = true)
+    @Schema(description = "AlertC location code. Number of the location point in AlertC location table", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Integer locationCode;
 
-    @Schema(description = "Location point name", required = true)
+    @Schema(description = "Location point name", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String name;
 

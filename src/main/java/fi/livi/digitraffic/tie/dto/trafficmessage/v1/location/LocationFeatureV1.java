@@ -13,12 +13,15 @@ import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureV1;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.validation.constraints.NotNull;
+
 @JsonPropertyOrder({ "type", "id"})
 @Schema(description = "Location GeoJSON feature object")
 public final class LocationFeatureV1 extends FeatureV1<Point, LocationPropertiesV1> implements Comparable<LocationFeatureV1> {
 
 
-    @Schema(description = "Unique locationCode for this location", required = true)
+    @Schema(description = "Unique locationCode for this location", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     public final int id;
 
     public LocationFeatureV1(final LocationDtoV1 l, final Instant dataUpdatedTime, final String locationVersion) {

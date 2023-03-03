@@ -31,7 +31,7 @@ public class EstimatedDuration extends JsonAdditionalProperties {
 
     @Pattern(regexp=DURATION_REGEXP, flags = Pattern.Flag.CASE_INSENSITIVE,
              message="Invalid minimum duration!")
-    @Schema(description = "Estimated minimum duration using ISO-8601 duration", required = true, example = "PT6H")
+    @Schema(description = "Estimated minimum duration using ISO-8601 duration", example = "PT6H", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String minimum;
 
@@ -40,7 +40,7 @@ public class EstimatedDuration extends JsonAdditionalProperties {
     @Schema(description = "Estimated maximum duration using ISO-8601 duration", type = "String", example = "PT8H")
     public String maximum;
 
-    @Schema(description = "Informal description e.g. 1 - 3 hours", required = true)
+    @Schema(description = "Informal description e.g. 1 - 3 hours", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String informal;
 

@@ -26,27 +26,27 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class TrafficAnnouncementProperties extends PropertiesV1 {
 
-    @Schema(description = "Situation id", required = true)
+    @Schema(description = "Situation id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public final String situationId;
 
-    @Schema(description = "Announcement version", required = true)
+    @Schema(description = "Announcement version", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public final Integer version;
 
-    @Schema(description = "The type of the situation", required = true)
+    @Schema(description = "The type of the situation", requiredMode = Schema.RequiredMode.REQUIRED)
     private SituationType situationType;
 
     @Schema(description = "The type of the traffic announcement. Omitted for other situation types. Note that ended and retracted are not actual types.")
     private TrafficAnnouncementType trafficAnnouncementType;
 
-    @Schema(description = "Annoucement release time", required = true)
+    @Schema(description = "Annoucement release time", requiredMode = Schema.RequiredMode.REQUIRED)
     public final ZonedDateTime releaseTime;
 
-    @Schema(description = "Annoucement version time", required = true)
+    @Schema(description = "Annoucement version time", requiredMode = Schema.RequiredMode.REQUIRED)
     public final ZonedDateTime versionTime;
 
-    @Schema(description = "Contains announcement's different language versions available.", required = true)
+    @Schema(description = "Contains announcement's different language versions available.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public final List<TrafficAnnouncement> announcements;
 
@@ -96,7 +96,7 @@ public class TrafficAnnouncementProperties extends PropertiesV1 {
         return trafficAnnouncementType;
     }
 
-    @Schema(description = "Data last updated date time", required = true)
+    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
     public Instant getDataUpdatedTime() {
         return getLastModified();
     }

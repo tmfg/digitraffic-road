@@ -11,10 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "typeCode", "descriptionFi", "descriptionEn" })
 public interface LocationTypeDtoV1 extends Comparable<LocationTypeDtoV1> {
     @Value("#{target.id.typeCode}")
+    @Schema(description = "Code of location type", requiredMode = Schema.RequiredMode.REQUIRED)
     String getTypeCode();
 
+    @Schema(description = "Description of type in english", requiredMode = Schema.RequiredMode.REQUIRED)
     String getDescriptionEn();
 
+    @Schema(description = "Description of type in finnish", requiredMode = Schema.RequiredMode.REQUIRED)
     String getDescriptionFi();
 
     @Override

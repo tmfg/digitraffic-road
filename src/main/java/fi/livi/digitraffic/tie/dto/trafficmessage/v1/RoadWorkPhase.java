@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class RoadWorkPhase extends JsonAdditionalProperties {
 
-    @Schema(description = "id", required = true)
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String id;
 
@@ -47,11 +47,11 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     public Boolean restrictionsLiftable;
 
     @Schema(description = "Severity of the disruption to traffic. How severely this road work phase disrupts traffic. LOW - no disruption, " +
-                               "HIGH - disruption, HIGHEST - significant disruption", required = true)
+                               "HIGH - disruption, HIGHEST - significant disruption", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Severity severity;
 
-    @Schema(description = "WorkingHours of an traffic situation announcement", required = true)
+    @Schema(description = "WorkingHours of an traffic situation announcement", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public List<WeekdayTimePeriod> workingHours = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     @Schema(description = "Free comment")
     public String comment;
 
-    @Schema(description = "Time and duration of an traffic situation announcement", required = true)
+    @Schema(description = "Time and duration of an traffic situation announcement", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public TimeAndDuration timeAndDuration;
 

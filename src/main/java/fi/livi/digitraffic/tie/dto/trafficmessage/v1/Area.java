@@ -19,15 +19,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class Area extends JsonAdditionalProperties {
 
-    @Schema(description = "The name of the area", required = true)
+    @Schema(description = "The name of the area", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String name;
 
-    @Schema(description = "Location code of the area, number of the road point in AlertC location table", required = true)
+    @Schema(description = "Location code of the area, number of the road point in AlertC location table", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Integer locationCode;
 
-    @Schema(description = "The type of the area", required = true, example = "MUNICIPALITY")
+    @Schema(description = "The type of the area", example = "MUNICIPALITY", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public AreaType type;
 

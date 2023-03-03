@@ -20,15 +20,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "startTime", "endTime", "legs" })
 public class LastActiveItinerarySegment extends JsonAdditionalProperties {
 
-    @Schema(description = "The time when the transport may start this segment.", required = true)
+    @Schema(description = "The time when the transport may start this segment.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public ZonedDateTime startTime;
 
-    @Schema(description = "Time by which the transport has finished this segment.", required = true)
+    @Schema(description = "Time by which the transport has finished this segment.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public ZonedDateTime endTime;
 
-    @Schema(description = "Route legs.", required = true)
+    @Schema(description = "Route legs.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public List<ItineraryLeg> legs = new ArrayList<>();
 

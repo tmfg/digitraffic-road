@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 })
 public class TimeAndDuration extends JsonAdditionalProperties {
 
-    @Schema(description = "Start time of the situation", required = true)
+    @Schema(description = "Start time of the situation", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public ZonedDateTime startTime;
 

@@ -31,14 +31,14 @@ public class RoadPoint extends JsonAdditionalProperties {
     @Schema(description = "Usually Finland, but may be something else eq. Sweden, Norway, Russia.")
     public String country;
 
-    @Schema(description = "Location in road address (road number + number of the road section + distance from the beginning of the road section.", required = true)
+    @Schema(description = "Location in road address (road number + number of the road section + distance from the beginning of the road section.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public RoadAddress roadAddress;
 
     @Schema(description = "Name of the road where the accident happened.")
     public String roadName;
 
-    @Schema(description = "AlertC location", required = true)
+    @Schema(description = "AlertC location", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public AlertCLocation alertCLocation;
 
