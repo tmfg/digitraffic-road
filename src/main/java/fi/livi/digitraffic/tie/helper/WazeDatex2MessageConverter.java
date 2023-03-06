@@ -191,6 +191,10 @@ import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTy
 import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.USE_SPECIFIED_LANES_OR_CARRIAGEWAYS;
 import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.VEHICLE_STORAGE_IN_OPERATION;
 import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.WEIGHT_RESTRICTION_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.TrafficFlowCharacteristicsEnum.ERRATIC_FLOW;
+import static fi.livi.digitraffic.tie.datex2.TrafficFlowCharacteristicsEnum.SMOOTH_FLOW;
+import static fi.livi.digitraffic.tie.datex2.TrafficFlowCharacteristicsEnum.STOP_AND_GO;
+import static fi.livi.digitraffic.tie.datex2.TrafficFlowCharacteristicsEnum.TRAFFIC_BLOCKED;
 import static fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum.TRAFFIC_BUILDING_UP;
 import static fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum.TRAFFIC_EASING;
 import static fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum.TRAFFIC_STABLE;
@@ -275,6 +279,7 @@ import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.SpeedManagement;
+import fi.livi.digitraffic.tie.datex2.TrafficFlowCharacteristicsEnum;
 import fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum;
 import fi.livi.digitraffic.tie.datex2.TransitInformation;
 import fi.livi.digitraffic.tie.datex2.VehicleObstruction;
@@ -302,6 +307,7 @@ public class WazeDatex2MessageConverter {
     private final Map<PublicEventTypeEnum, String> publicEventTypeEnumStringMap = new HashMap<>();
     private final Map<ReroutingManagementTypeEnum, String> reroutingManagementTypeMap = new HashMap<>();
     private final Map<RoadOrCarriagewayOrLaneManagementTypeEnum, String> roadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
+    private final Map<TrafficFlowCharacteristicsEnum, String> trafficFlowCharacteristicsEnumStringMap = new HashMap<>();
     private final Map<TrafficTrendTypeEnum, String> trafficTrendTypeEnumMap = new HashMap<>();
     private final Map<VehicleObstructionTypeEnum, String> vehicleObstructionTypeMap = new HashMap<>();
     private final Map<WeatherRelatedRoadConditionTypeEnum, String> weatherRelatedRoadConditionTypeMap = new HashMap<>();
@@ -528,6 +534,11 @@ public class WazeDatex2MessageConverter {
         roadOrCarriagewayOrLaneManagementTypeMap.put(WEIGHT_RESTRICTION_IN_OPERATION, "Weight restriction in operation");
         roadOrCarriagewayOrLaneManagementTypeMap.put(RoadOrCarriagewayOrLaneManagementTypeEnum.OTHER, "Road or carriageway or lane management");
 
+        trafficFlowCharacteristicsEnumStringMap.put(ERRATIC_FLOW, "Traffic flow is erratic");
+        trafficFlowCharacteristicsEnumStringMap.put(SMOOTH_FLOW, "Traffic flow is smooth");
+        trafficFlowCharacteristicsEnumStringMap.put(STOP_AND_GO, "Traffic flow is stop and go");
+        trafficFlowCharacteristicsEnumStringMap.put(TRAFFIC_BLOCKED, "Traffic flow is blocked");
+
         trafficTrendTypeEnumMap.put(TRAFFIC_EASING, "Traffic easing");
         trafficTrendTypeEnumMap.put(TRAFFIC_BUILDING_UP, "Traffic building up");
         trafficTrendTypeEnumMap.put(TRAFFIC_STABLE, "Traffic stable");
@@ -606,7 +617,10 @@ public class WazeDatex2MessageConverter {
                 .map(AbnormalTrafficExtensionType::getTrafficTrendType)
                 .map(x -> x.equals(ExtendedTrafficTrendTypeEnum.TRAFFIC_MAY_BUILD_UP) ? "Traffic may build up" : null);
 
-        return Stream.of(trafficTrendTypeOptional, abnormalTrafficTypeOptional, extendedTrafficTrendType)
+        final Optional<String> trafficFlowCharacteristicsOptional = Optional.ofNullable(abnormalTraffic.getTrafficFlowCharacteristics())
+            .map(x -> trafficFlowCharacteristicsEnumStringMap.getOrDefault(x, null));
+
+        return Stream.of(trafficTrendTypeOptional, abnormalTrafficTypeOptional, extendedTrafficTrendType, trafficFlowCharacteristicsOptional)
                 .flatMap(Optional::stream)
                 .findFirst();
     }
