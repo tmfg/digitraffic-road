@@ -4,46 +4,7 @@
     <!--
         Temporary suppressions, check and update these periodically
     -->
-    <suppress until="2022-12-01">
-        <!-- There are multiple criteria that needs to match for this to become a problem.
-             At least this does not match:
-             "The application uses the AuthorizationFilter either manually or via the authorizeHttpRequests() method."
-             -->
-        <notes><![CDATA[file name: spring-security-crypto-5.7.4.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
-        <cve>CVE-2022-31692</cve>
-    </suppress>
-
-    <suppress until="2022-12-01">
-        <!-- We don't use oauth2 access tokens, so this shouldn't be a problem. -->
-        <notes><![CDATA[file name: spring-security-crypto-5.7.4.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
-        <cve>CVE-2022-31690</cve>
-    </suppress>
-
-    <suppress until="2022-12-01">
-        <!-- We are not using the vulnerable http-invoker -->
-        <notes><![CDATA[file name: spring-*-5.3.22.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@.*$</packageUrl>
-        <cve>CVE-2016-1000027</cve>
-    </suppress>
-
-    <suppress until="2022-12-01">
-        <!-- Vulnerable features are not enabled -->
-        <notes><![CDATA[file name: jackson-databind-2.13.3.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cve>CVE-2022-42003</cve>
-        <cve>CVE-2022-42004</cve>
-    </suppress>
-
-    <suppress until="2022-12-01">
-        <!-- We don't directly use common-text -->
-        <notes><![CDATA[file name: commons-text-1.9.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-text@.*$</packageUrl>
-        <vulnerabilityName>CVE-2022-42889</vulnerabilityName>
-    </suppress>
-
-    <suppress until="2022-12-01">
+    <suppress until="2023-05-01">
         <!-- Requires update in upstream org.springframework.boot/spring-boot-starter-parent -->
         <notes><![CDATA[file name: snakeyaml-1.30.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
@@ -52,60 +13,58 @@
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38752</cve>
+        <cve>CVE-2022-1471</cve>
+        <cve>CVE-2022-41854</cve>
     </suppress>
 
-    <suppress until="2022-12-01Z">
+    <suppress until="2023-05-01">
+        <!-- Requires updating org.springframework.boot/spring-boot-starter-parent
+             fixed in spring-boot-starter-parent:2.7.9 which currently crashes build -->
+        <notes><![CDATA[file name: json-smart-2.4.8.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/net\.minidev/json\-smart@.*$</packageUrl>
+        <vulnerabilityName>CVE-2023-1370</vulnerabilityName>
+    </suppress>
+
+
+    <suppress until="2023-05-01Z">
         <!-- We don't use com.amazonaws.services.s3.transfer.TransferManager::downloadDirectory -->
         <notes><![CDATA[file name: aws-java-sdk-(secretsmanager|ec2).jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.amazonaws/(aws\-java\-sdk\-secretsmanager|aws\-java\-sdk\-ec2)@.*$</packageUrl>
         <cve>CVE-2022-31159</cve>
     </suppress>
 
-    <suppress until="2022-10-13Z">
+    <suppress until="2023-05-01Z">
         <notes><![CDATA[file name: spring-*.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework.*$</packageUrl>
-        <!-- RCE through deserialization vulnerability, not using vulnerable version of Spring -->
+        <!-- We are not using the vulnerable http-invoker -->
         <cve>CVE-2016-1000027</cve>
     </suppress>
 
-    <suppress until="2022-12-01">
+    <suppress until="2023-05-01">
         <notes><![CDATA[file name: spring-security-crypto-*.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
 
         <!-- Crypto vulnerability, not using vulnerable version of Spring Security -->
         <cve>CVE-2020-5408</cve>
-
-        <!-- BCrypt vulnerability, not used -->
-        <cve>CVE-2022-22976</cve>
-
-        <!-- Authorization not used -->
-        <cve>CVE-2022-22978</cve>
     </suppress>
 
-    <suppress until="2022-12-01">
-        <!-- This is a false positive. This vulnerability is for "Caoyongqi912/Fan_Platform" and we are not using it.
-             See: https://github.com/github/securitylab/issues/669#issuecomment-1189616056 -->
-        <notes><![CDATA[file name: junit-platform-commons-1.8.2.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.junit\.platform/junit\-platform\-commons@.*$</packageUrl>
-        <cve>CVE-2022-31514</cve>
+    <suppress until="2023-05-01">
+        <notes><![CDATA[file name: guava-31.1-jre.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
+
+        <!-- Currently not using vulnerability-creating method com.google.common.io.Files.createTempDir() -->
+        <cve>CVE-2020-8908</cve>
+    </suppress>
+
+    <suppress until="2023-05-01">
+        <notes><![CDATA[file name: woodstox-core-6.3.1.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.woodstox/woodstox\-core@.*$</packageUrl>
+        <!-- not parsing incoming DTDs -->
+        <cve>CVE-2022-40152</cve>
     </suppress>
 
     <!--
         Permanent suppressions
     -->
-
-    <!-- Not using Spring Security authorization -->
-    <suppress>
-        <notes><![CDATA[file name: spring-security-rsa-*.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.*$</packageUrl>
-        <cve>CVE-2022-22978</cve>
-    </suppress>
-
-    <!-- Not using BCrypt -->
-    <suppress>
-        <notes><![CDATA[file name: spring-security-rsa-*.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-rsa@.*$</packageUrl>
-        <cve>CVE-2022-22976</cve>
-    </suppress>
 
 </suppressions>
