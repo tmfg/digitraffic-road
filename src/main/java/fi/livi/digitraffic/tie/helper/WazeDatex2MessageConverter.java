@@ -80,6 +80,15 @@ import static fi.livi.digitraffic.tie.datex2.InfrastructureDamageTypeEnum.DAMAGE
 import static fi.livi.digitraffic.tie.datex2.InfrastructureDamageTypeEnum.FALLEN_POWER_CABLES;
 import static fi.livi.digitraffic.tie.datex2.InfrastructureDamageTypeEnum.GAS_LEAK;
 import static fi.livi.digitraffic.tie.datex2.InfrastructureDamageTypeEnum.WEAK_BRIDGE;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.DIESEL_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.LEAVES_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.LOOSE_CHIPPINGS;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.LOOSE_SAND_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.MUD_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.OIL_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.PETROL_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.ROAD_SURFACE_IN_POOR_CONDITION;
+import static fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum.SLIPPERY_ROAD;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.AIR_CRASH;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.CHILDREN_ON_ROADWAY;
 import static fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum.CLEARANCE_WORK;
@@ -265,6 +274,7 @@ import fi.livi.digitraffic.tie.datex2.GeneralNetworkManagementTypeEnum;
 import fi.livi.digitraffic.tie.datex2.GeneralObstruction;
 import fi.livi.digitraffic.tie.datex2.InfrastructureDamageObstruction;
 import fi.livi.digitraffic.tie.datex2.InfrastructureDamageTypeEnum;
+import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditions;
 import fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.PoorEnvironmentConditions;
@@ -298,11 +308,12 @@ public class WazeDatex2MessageConverter {
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
     private final Map<AnimalPresenceTypeEnum, String> animalPresenceTypeEnumStringMap = new HashMap<>();
     private final Map<EnvironmentalObstructionTypeEnum, String> environmentalObstructionTypeEnumStringMap = new HashMap<>();
-    private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
+    private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
     private final Map<ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum, String> extendedRoadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
     private final Map<GeneralNetworkManagementTypeEnum, String> generalNetworkManagementTypeEnumStringMap = new HashMap<>();
     private final Map<InfrastructureDamageTypeEnum, String> infrastructureDamageTypeEnumStringMap = new HashMap<>();
+    private final Map<NonWeatherRelatedRoadConditionTypeEnum, String> nonWeatherRelatedRoadConditionTypeEnumStringMap = new HashMap<>();
     private final Map<ObstructionTypeEnum, String> obstructionTypeMap = new HashMap<>();
     private final Map<PublicEventTypeEnum, String> publicEventTypeEnumStringMap = new HashMap<>();
     private final Map<ReroutingManagementTypeEnum, String> reroutingManagementTypeMap = new HashMap<>();
@@ -415,6 +426,17 @@ public class WazeDatex2MessageConverter {
         infrastructureDamageTypeEnumStringMap.put(GAS_LEAK, "Gas leak");
         infrastructureDamageTypeEnumStringMap.put(WEAK_BRIDGE, "Weak bridge");
         infrastructureDamageTypeEnumStringMap.put(InfrastructureDamageTypeEnum.OTHER, "Damage on infrastructure");
+
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(DIESEL_ON_ROAD, "Diesel on road");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(LEAVES_ON_ROAD, "Leaves on road");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(LOOSE_CHIPPINGS, "Loose chippings");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(LOOSE_SAND_ON_ROAD, "Loose sand on road");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(MUD_ON_ROAD, "Mud on road");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(OIL_ON_ROAD, "Oil on road");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(PETROL_ON_ROAD, "Petrol on road");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(ROAD_SURFACE_IN_POOR_CONDITION, "Road surface in poor condition");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(SLIPPERY_ROAD, "Slippery road");
+        nonWeatherRelatedRoadConditionTypeEnumStringMap.put(NonWeatherRelatedRoadConditionTypeEnum.OTHER, "Non weather related road condition");
 
         obstructionTypeMap.put(AIR_CRASH, "Air crash");
         obstructionTypeMap.put(CHILDREN_ON_ROADWAY, "Children on roadway");
@@ -681,8 +703,17 @@ public class WazeDatex2MessageConverter {
         return Optional.ofNullable(infrastructureDamageTypeEnumStringMap.getOrDefault(damageType, null));
     }
     private Optional<String> accept(final NonWeatherRelatedRoadConditions nonWeatherRelatedRoadConditions) {
-        return Optional.empty();
+        final String nonweatherRelatedRoadConditionTypes = nonWeatherRelatedRoadConditions.getNonWeatherRelatedRoadConditionTypes().stream()
+            .map(x -> nonWeatherRelatedRoadConditionTypeEnumStringMap.getOrDefault(x, null))
+            .collect(Collectors.joining(". "));
+
+        if (nonweatherRelatedRoadConditionTypes.equals("")) {
+            return Optional.empty();
+        }
+
+        return Optional.of(nonweatherRelatedRoadConditionTypes);
     }
+
     private Optional<String> accept(final PoorEnvironmentConditions poorEnvironmentConditions) {
         return Optional.empty();
     }
