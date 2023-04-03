@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <publicationTime>2023-03-07T12:14:13.766Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50410671" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="NonWeatherRelatedRoadConditions" id="GUID5041180901" version="1">
+                <situationRecordCreationTime>2023-03-07T12:14:12.654Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-03-07T12:14:12.649Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2023-03-07T12:11:43.886Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2023-03-07T12:11:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 120, eli Vihdintie, Helsinki. Liikennetiedote.
+
+                                Tie 120, eli Vihdintie, Helsinki.
+                                Tarkempi paikka: Välillä Pitäjänmäki - Haagan kiertoliittymä. Haittaa ajosuunnassa Hakamäentie.
+
+                                Öljyä tiellä.
+                                Ajokaista suljettu liikenteeltä.
+
+                                Ajankohta: 07.03.2023 klo 14:11 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Helsinki
+                                Puh: 02002100
+                                Sähköposti: helsinki.liikennekeskus@fintraffic.fi
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>negative</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>5085</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>3664</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <nonWeatherRelatedRoadConditionType>oilOnRoad</nonWeatherRelatedRoadConditionType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5041180902" version="1">
+                <situationRecordCreationTime>2023-03-07T12:14:12.654Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-03-07T12:14:12.649Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2023-03-07T12:11:43.886Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2023-03-07T12:11:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
