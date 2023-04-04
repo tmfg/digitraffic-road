@@ -214,7 +214,7 @@ jobs:
           ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
       - name: Set ${{ matrix.app }} output
         id: revision
-        run: echo "name=revision_${{ matrix.app }}=${{ steps.update.outputs.revision }}" >> $GITHUB_OUTPUT
+        run: echo "revision_${{ matrix.app }}=${{ steps.update.outputs.revision }}" >> $GITHUB_OUTPUT
   stop-services:
     needs: install
     if: github.repository != 'tmfg/digitraffic-road' && github.event.inputs.db-install == 'true'
