@@ -3,51 +3,51 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'Environment'
+        description: "Environment"
         required: true
         type: environment
-        default: 'test'
+        default: "test"
       ref:
-        description: 'Branch/tag/SHA of digitraffic-road-private'
+        description: "Branch/tag/SHA of digitraffic-road-private"
         required: true
-        default: 'master'
+        default: "master"
       config-repo-branch:
-        description: 'Branch or tag of CI-repo'
+        description: "Branch or tag of CI-repo"
         required: true
-        default: 'master'
+        default: "master"
       db-install:
-        description: 'Run flyway and update DB'
+        description: "Run flyway and update DB"
         required: true
         type: choice
-        default: 'false'
+        default: "false"
         options:
-          - 'false'
-          - 'true'
+          - "false"
+          - "true"
 jobs:
   log-parameters:
     if: github.repository != 'tmfg/digitraffic-road'
     runs-on: ubuntu-20.04
     steps:
-      -   name: Checkout
-          uses: actions/checkout@v3
-          with:
-            ref: ${{ github.event.inputs.ref }}
-      -   name: Create parameters.txt
-          run: |
-            export target_dir=install-${{ github.run_number }}
-            mkdir $target_dir
-            echo "User ${{ github.actor }} started install on $(date)" > $target_dir/parameters.txt
-            echo "Environment ${{ github.event.inputs.env }}" >> $target_dir/parameters.txt
-            echo "ref ${{ github.event.inputs.ref }}" >> $target_dir/parameters.txt
-            echo "config-repo-branch ${{ github.event.inputs.config-repo-branch }}" >> $target_dir/parameters.txt
-            echo "db-install ${{ github.event.inputs.db-install }}" >> $target_dir/parameters.txt
-      -   name: Upload parameters.txt to GitHub Pages
-          uses: tmfg/digitraffic-actions@gh-pages-publish/v1
-          with:
-            GH_PAGES_BRANCH: gh-pages
-            FILE_PATH: install-${{ github.run_number }}/parameters.txt
-            COMMIT_MESSAGE: "Upload parameters.txt for install #${{ github.run_number }}"
-            LINK_TEXT: parameters.txt
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.ref }}
+      - name: Create parameters.txt
+        run: |
+          export target_dir=install-${{ github.run_number }}
+          mkdir $target_dir
+          echo "User ${{ github.actor }} started install on $(date)" > $target_dir/parameters.txt
+          echo "Environment ${{ github.event.inputs.env }}" >> $target_dir/parameters.txt
+          echo "ref ${{ github.event.inputs.ref }}" >> $target_dir/parameters.txt
+          echo "config-repo-branch ${{ github.event.inputs.config-repo-branch }}" >> $target_dir/parameters.txt
+          echo "db-install ${{ github.event.inputs.db-install }}" >> $target_dir/parameters.txt
+      - name: Upload parameters.txt to GitHub Pages
+        uses: tmfg/digitraffic-actions@gh-pages-publish/v1
+        with:
+          GH_PAGES_BRANCH: gh-pages
+          FILE_PATH: install-${{ github.run_number }}/parameters.txt
+          COMMIT_MESSAGE: "Upload parameters.txt for install #${{ github.run_number }}"
+          LINK_TEXT: parameters.txt
   build:
     if: github.repository != 'tmfg/digitraffic-road'
     runs-on: ubuntu-20.04
@@ -59,55 +59,55 @@ jobs:
       git_sha: ${{ steps.git_sha.outputs.sha_short }}
     environment: ${{ github.event.inputs.env }}
     steps:
-      -   name: Checkout
-          uses: actions/checkout@v3
-          with:
-            ref: ${{ github.event.inputs.ref }}
-      -   name: Set git sha output
-          id: git_sha
-          run: |
-            GIT_SHA=$(git rev-parse --short HEAD)
-            echo "::set-output name=sha_short::$GIT_SHA"
-      -   name: Checkout dependencies
-          uses: actions/checkout@v3
-          with:
-            repository: tmfg/digitraffic-build-dependencies
-            ssh-key: ${{ secrets.DEPENDENCY_SSH_KEY }}
-            path: digitraffic-build-dependencies
-      -   name: Setup dependencies
-          run: cp -R digitraffic-build-dependencies/ ~/.m2/
-      -   name: Setup Java
-          uses: actions/setup-java@v3
-          with:
-            java-version: 11
-            distribution: corretto
-            cache: maven
-      -   name: Build package
-          run: |
-            mvn install -DskipTests=true -Ddependency-check.skip=true
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.ref }}
+      - name: Set git sha output
+        id: git_sha
+        run: |
+          GIT_SHA=$(git rev-parse --short HEAD)
+          echo "sha_short=$GIT_SHA" >> $GITHUB_STATE
+      - name: Checkout dependencies
+        uses: actions/checkout@v3
+        with:
+          repository: tmfg/digitraffic-build-dependencies
+          ssh-key: ${{ secrets.DEPENDENCY_SSH_KEY }}
+          path: digitraffic-build-dependencies
+      - name: Setup dependencies
+        run: cp -R digitraffic-build-dependencies/ ~/.m2/
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: corretto
+          cache: maven
+      - name: Build package
+        run: |
+          mvn install -DskipTests=true -Ddependency-check.skip=true
 
-            ls -la target/*.jar
+          ls -la target/*.jar
 
-            cp target/*.jar road.jar
-      -   name: Upload jar
-          uses: actions/upload-artifact@v3
-          with:
-            name: road.jar
-            path: road.jar
-      -   name: Upload sql
-          uses: actions/upload-artifact@v3
-          with:
-            name: sql
-            path: dbroad/sql
-      -   name: Notify Slack
-          if: failure()
-          uses: 8398a7/action-slack@v3
-          with:
-            status: failure
-            text: FAILED Road deploy/build
-            fields: repo, job, took
-          env:
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          cp target/*.jar road.jar
+      - name: Upload jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: road.jar
+          path: road.jar
+      - name: Upload sql
+        uses: actions/upload-artifact@v3
+        with:
+          name: sql
+          path: dbroad/sql
+      - name: Notify Slack
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: FAILED Road deploy/build
+          fields: repo, job, took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
   images:
     if: github.repository != 'tmfg/digitraffic-road'
     needs: build
@@ -121,63 +121,63 @@ jobs:
       actions: read
     environment: ${{ github.event.inputs.env }}
     steps:
-      -   name: Checkout CI-repo
-          uses: actions/checkout@v3
-          with:
-            repository: ${{ secrets.CONFIG_REPO_NAME }}
-            ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
-            ref: ${{ inputs.config-repo-branch }}
-            path: digitraffic-ci
-      -   name: Configure AWS credentials for ${{ matrix.app }}
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            role-to-assume: ${{ secrets.AWS_ROLE }}
-            role-session-name: gh-actions-install-image-road-${{ matrix.app }}-${{ github.event.inputs.env }}
-            aws-region: ${{ secrets.AWS_REGION }}
-      -   name: Login to Amazon ECR
-          uses: aws-actions/amazon-ecr-login@v1
-      -   name: Download jar
-          uses: actions/download-artifact@master
-          if: matrix.app != 'db'
-          with:
-            name: road.jar
-            path: digitraffic-ci/aws
-      -   name: Download sql
-          uses: actions/download-artifact@master
-          if: matrix.app == 'db'
-          with:
-            name: sql
-            path: digitraffic-ci/aws/db/sql
-      -   name: Build docker image for ${{ matrix.app }}
-          if: matrix.app != 'db'
-          run: |
-            cd digitraffic-ci/aws
+      - name: Checkout CI-repo
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ secrets.CONFIG_REPO_NAME }}
+          ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
+          ref: ${{ inputs.config-repo-branch }}
+          path: digitraffic-ci
+      - name: Configure AWS credentials for ${{ matrix.app }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: gh-actions-install-image-road-${{ matrix.app }}-${{ github.event.inputs.env }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Download jar
+        uses: actions/download-artifact@master
+        if: matrix.app != 'db'
+        with:
+          name: road.jar
+          path: digitraffic-ci/aws
+      - name: Download sql
+        uses: actions/download-artifact@master
+        if: matrix.app == 'db'
+        with:
+          name: sql
+          path: digitraffic-ci/aws/db/sql
+      - name: Build docker image for ${{ matrix.app }}
+        if: matrix.app != 'db'
+        run: |
+          cd digitraffic-ci/aws
 
-            docker build --no-cache \
-                --build-arg ENV=${{ github.event.inputs.env }} \
-                --build-arg JAR_FILE=road.jar \
-                --build-arg PROPERTY_FILE=conf/road-${{ github.event.inputs.env }}-${{ matrix.app }}.properties \
-                -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
-                --pull=true --file=Dockerfile-road .
-            docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
-      -   name: Build docker image for db
-          if: matrix.app == 'db'
-          run: |
-            cd digitraffic-ci/aws/db
+          docker build --no-cache \
+              --build-arg ENV=${{ github.event.inputs.env }} \
+              --build-arg JAR_FILE=road.jar \
+              --build-arg PROPERTY_FILE=conf/road-${{ github.event.inputs.env }}-${{ matrix.app }}.properties \
+              -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
+              --pull=true --file=Dockerfile-road .
+          docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
+      - name: Build docker image for db
+        if: matrix.app == 'db'
+        run: |
+          cd digitraffic-ci/aws/db
 
-            docker build --no-cache \
-                -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
-                --pull=true --file=Dockerfile .
-            docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
-      -   name: Notify Slack
-          if: failure()
-          uses: 8398a7/action-slack@v3
-          with:
-            status: failure
-            text: FAILED Road deploy/install
-            fields: repo, job, took
-          env:
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          docker build --no-cache \
+              -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
+              --pull=true --file=Dockerfile .
+          docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
+      - name: Notify Slack
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: FAILED Road deploy/install
+          fields: repo, job, took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
   install:
     if: github.repository != 'tmfg/digitraffic-road'
     needs: [images, build]
@@ -194,33 +194,33 @@ jobs:
       revision_daemon: ${{ steps.revision.outputs.revision_daemon }}
       revision_web: ${{ steps.revision.outputs.revision_web }}
     steps:
-      -   name: Configure AWS credentials for ${{ matrix.app }}
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            role-to-assume: ${{ secrets.AWS_ROLE }}
-            role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
-            aws-region: ${{ secrets.AWS_REGION }}
-      -   name: Update ${{ matrix.app }} task-def
-          id: update
-          uses: tmfg/digitraffic-actions@update-task-def/v1
-          with:
-            task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
-            family-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
-            image-arn: ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
-            aws-role: ${{ secrets.AWS_ROLE }}
-            aws-region: ${{ secrets.AWS_REGION }}
-            ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
-            ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
-            ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
-      -   name: Set ${{ matrix.app }} output
-          id: revision
-          run: echo "::set-output name=revision_${{ matrix.app }}::${{ steps.update.outputs.revision }}"
+      - name: Configure AWS credentials for ${{ matrix.app }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Update ${{ matrix.app }} task-def
+        id: update
+        uses: tmfg/digitraffic-actions@update-task-def/v1
+        with:
+          task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
+          family-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
+          image-arn: ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
+          aws-role: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
+          ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
+          ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
+      - name: Set ${{ matrix.app }} output
+        id: revision
+        run: echo "name=revision_${{ matrix.app }}=${{ steps.update.outputs.revision }}" >> $GITHUB_STATE
   stop-services:
     needs: install
     if: github.repository != 'tmfg/digitraffic-road' && github.event.inputs.db-install == 'true'
     strategy:
       matrix:
-        app: [ daemon, web ]
+        app: [daemon, web]
     permissions:
       id-token: write
       contents: read
@@ -228,20 +228,20 @@ jobs:
     runs-on: ubuntu-20.04
     environment: ${{ github.event.inputs.env }}
     steps:
-      -   name: Configure AWS credentials for ${{ matrix.app }}
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            role-to-assume: ${{ secrets.AWS_ROLE }}
-            role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
-            aws-region: ${{ secrets.AWS_REGION }}
-      -   name: Stop service
-          uses: tmfg/digitraffic-actions@ecs-service-update/v1
-          with:
-            aws-role: ${{ secrets.AWS_ROLE }}
-            aws-region: ${{ secrets.AWS_REGION }}
-            service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
-            cluster-name: ${{ secrets.CLUSTER_NAME }}
-            desired-count: 0
+      - name: Configure AWS credentials for ${{ matrix.app }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Stop service
+        uses: tmfg/digitraffic-actions@ecs-service-update/v1
+        with:
+          aws-role: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
+          cluster-name: ${{ secrets.CLUSTER_NAME }}
+          desired-count: 0
   update-db:
     if: github.repository != 'tmfg/digitraffic-road'
     needs: stop-services
@@ -252,26 +252,26 @@ jobs:
     runs-on: ubuntu-20.04
     environment: ${{ github.event.inputs.env }}
     steps:
-      -   name: Configure AWS credentials for ${{ matrix.app }}
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            role-to-assume: ${{ secrets.AWS_ROLE }}
-            role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
-            aws-region: ${{ secrets.AWS_REGION }}
-      -   name: Run flyway
-          uses: tmfg/digitraffic-actions@ecs-run-task/v1
-          with:
-            aws-role: ${{ secrets.AWS_ROLE }}
-            aws-region: ${{ secrets.AWS_REGION }}
-            task-definition: road-${{ github.event.inputs.env }}-db
-            cluster-name: ${{ secrets.CLUSTER_NAME }}
-            network-config: ${{ secrets.NETWORK_CONFIG }}
+      - name: Configure AWS credentials for ${{ matrix.app }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Run flyway
+        uses: tmfg/digitraffic-actions@ecs-run-task/v1
+        with:
+          aws-role: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          task-definition: road-${{ github.event.inputs.env }}-db
+          cluster-name: ${{ secrets.CLUSTER_NAME }}
+          network-config: ${{ secrets.NETWORK_CONFIG }}
   deploy:
-    needs: [ install, update-db ]
+    needs: [install, update-db]
     if: github.repository != 'tmfg/digitraffic-road' && ${{ always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
     strategy:
       matrix:
-        app: [ daemon, web ]
+        app: [daemon, web]
     permissions:
       id-token: write
       contents: read
@@ -279,21 +279,21 @@ jobs:
     runs-on: ubuntu-20.04
     environment: ${{ github.event.inputs.env }}
     steps:
-      -   name: Parameters ${{ matrix.ap  }}
-          id: revision
-          run: |
-            if [ "${{ matrix.app }}" == "web" ]
-            then
-                echo "::set-output name=revision::${{ needs.install.outputs.revision_web }}"
-            else
-                echo "::set-output name=revision::${{ needs.install.outputs.revision_daemon }}"
-            fi
-      -   name: Update ${{ matrix.app }} service
-          uses: tmfg/digitraffic-actions@ecs-service-update/v1
-          with:
-            aws-role: ${{ secrets.AWS_ROLE }}
-            aws-region: ${{ secrets.AWS_REGION }}
-            service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
-            cluster-name: ${{ secrets.CLUSTER_NAME }}
-            task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}:${{ steps.revision.outputs.revision }}
-            desired-count: 1
+      - name: Parameters ${{ matrix.ap  }}
+        id: revision
+        run: |
+          if [ "${{ matrix.app }}" == "web" ]
+          then
+              echo "revision=${{ needs.install.outputs.revision_web }}" >> $GITHUB_STATE
+          else
+              echo "revision=${{ needs.install.outputs.revision_daemon }}" >> $GITHUB_STATE
+          fi
+      - name: Update ${{ matrix.app }} service
+        uses: tmfg/digitraffic-actions@ecs-service-update/v1
+        with:
+          aws-role: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          service-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}-service
+          cluster-name: ${{ secrets.CLUSTER_NAME }}
+          task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}:${{ steps.revision.outputs.revision }}
+          desired-count: 1

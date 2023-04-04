@@ -3,12 +3,12 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'Environment'
+        description: "Environment"
         required: true
         type: environment
-        default: 'test'
+        default: "test"
       family-name:
-        description: 'Which service to update'
+        description: "Which service to update"
         required: true
         type: choice
         options:
@@ -16,20 +16,20 @@ on:
           - web
           - db
       revision:
-        description: 'Which revision to install'
+        description: "Which revision to install"
         type: string
         required: true
-        default: 'latest'
+        default: "latest"
       desired-count:
-        description: 'Desired count of services'
+        description: "Desired count of services"
         type: string
         required: true
-        default: '1'
+        default: "1"
 
 jobs:
   update:
     if: github.repository != 'tmfg/digitraffic-road'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ github.event.inputs.env }}
     permissions:
       id-token: write
@@ -44,4 +44,3 @@ jobs:
           cluster-name: ${{ secrets.CLUSTER_NAME }}
           aws-region: ${{ secrets.AWS_REGION }}
           desired-count: ${{ github.event.inputs.desired-count }}
-
