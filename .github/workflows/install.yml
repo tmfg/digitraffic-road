@@ -67,7 +67,7 @@ jobs:
         id: git_sha
         run: |
           GIT_SHA=$(git rev-parse --short HEAD)
-          echo "sha_short=$GIT_SHA" >> $GITHUB_STATE
+          echo "sha_short=$GIT_SHA" >> $GITHUB_OUTPUT
       - name: Checkout dependencies
         uses: actions/checkout@v3
         with:
