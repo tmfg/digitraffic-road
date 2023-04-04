@@ -202,7 +202,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Update ${{ matrix.app }} task-def
         id: update
-        uses: tmfg/digitraffic-actions@update-task-def/v1
+        uses: tmfg/digitraffic-actions@update-task-def/v2
         with:
           task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
           family-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
