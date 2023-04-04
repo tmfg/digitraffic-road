@@ -284,9 +284,9 @@ jobs:
         run: |
           if [ "${{ matrix.app }}" == "web" ]
           then
-              echo "revision=${{ needs.install.outputs.revision_web }}" >> $GITHUB_STATE
+              echo "revision=${{ needs.install.outputs.revision_web }}" >> $GITHUB_OUTPUT
           else
-              echo "revision=${{ needs.install.outputs.revision_daemon }}" >> $GITHUB_STATE
+              echo "revision=${{ needs.install.outputs.revision_daemon }}" >> $GITHUB_OUTPUT
           fi
       - name: Update ${{ matrix.app }} service
         uses: tmfg/digitraffic-actions@ecs-service-update/v1
