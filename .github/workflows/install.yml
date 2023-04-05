@@ -137,13 +137,13 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
       - name: Download jar
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v3
         if: matrix.app != 'db'
         with:
           name: road.jar
           path: digitraffic-ci/aws
       - name: Download sql
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v3
         if: matrix.app == 'db'
         with:
           name: sql
