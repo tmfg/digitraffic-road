@@ -69,7 +69,7 @@ jobs:
           docker push ${{ secrets.ECR_URL }}/dt-road-mqtt-repository:latest
       - name: Update road-mqtt task-def
         id: update
-        uses: tmfg/digitraffic-actions@update-task-def/v1
+        uses: tmfg/digitraffic-actions@update-task-def/v2
         with:
           task-def-file-name: road-${{ github.event.inputs.env }}-mqtt
           family-name: road-${{ github.event.inputs.env }}-mqtt
