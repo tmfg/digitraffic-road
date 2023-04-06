@@ -1,4 +1,4 @@
-name: 'Mirror accepted pull requests to private'
+name: "Mirror accepted pull requests to private"
 on:
   pull_request_target:
     types:
@@ -6,7 +6,7 @@ on:
 jobs:
   Mirror-action:
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master' && github.repository == 'tmfg/digitraffic-road'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Mirror
         uses: tmfg/digitraffic-actions@mirror/v2

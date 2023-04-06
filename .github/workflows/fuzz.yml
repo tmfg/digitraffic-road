@@ -1,19 +1,19 @@
 name: Fuzz
 on:
   schedule:
-    - cron: '0 8 * * *' # UTC
+    - cron: "0 8 * * *" # UTC
   workflow_dispatch:
 jobs:
   fuzz:
     if: github.repository != 'tmfg/digitraffic-road'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Fuzz
         uses: mprencipe/waggers-action@v3
         with:
           url: https://tie-test.digitraffic.fi/swagger/openapi.json
           fuzzcount: 5
-          headers: 'digitraffic-user:internal-digitraffic-fuzz'
+          headers: "digitraffic-user:internal-digitraffic-fuzz"
       - name: Notify Slack
         if: failure()
         uses: 8398a7/action-slack@v3
