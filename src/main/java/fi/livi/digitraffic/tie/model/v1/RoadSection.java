@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -41,10 +40,6 @@ public class RoadSection {
 
     @Schema(description = "Distance from the beginning to the end of the road section. (Length of the road section)")
     private Integer endDistance;
-
-    @Transient // Not loaded, always null for backward compatibility
-    @Schema(description = "District where road is located (or most of it), not use anymore")
-    private RoadDistrict roadDistrict;
 
     @ManyToOne
     @JoinColumn(name = "road_id")
@@ -80,14 +75,6 @@ public class RoadSection {
 
     public void setEndDistance(Integer endDistance) {
         this.endDistance = endDistance;
-    }
-
-    public RoadDistrict getRoadDistrict() {
-        return roadDistrict;
-    }
-
-    public void setRoadDistrict(RoadDistrict roadDistrict) {
-        this.roadDistrict = roadDistrict;
     }
 
     public Road getRoad() {
