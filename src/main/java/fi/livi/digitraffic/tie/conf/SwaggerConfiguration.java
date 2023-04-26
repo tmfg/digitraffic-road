@@ -5,18 +5,14 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.springdoc.core.GroupedOpenApi;
-import org.springdoc.core.SwaggerUiConfigProperties;
 import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
-import fi.livi.digitraffic.tie.controller.v1.DataController;
-import fi.livi.digitraffic.tie.controller.v1.MetadataController;
 import fi.livi.digitraffic.tie.documentation.RoadApiInfo;
 import fi.livi.digitraffic.tie.service.RoadApiInfoGetter;
 import io.swagger.v3.oas.models.info.Info;
@@ -24,9 +20,6 @@ import io.swagger.v3.oas.models.servers.Server;
 
 @ConditionalOnWebApplication
 @Configuration
-@ComponentScan(basePackageClasses = {
-    DataController.class, MetadataController.class
-})
 public class SwaggerConfiguration {
 
     private final RoadApiInfo roadApiInfo;
@@ -69,17 +62,6 @@ public class SwaggerConfiguration {
             .pathsToMatch(BETA_PATHS)
             .addOpenApiCustomiser(openApiConfig())
             .build();
-    }
-
-    @Bean
-    public SwaggerUiConfigProperties swaggerUiConfig() {
-        SwaggerUiConfigProperties config = new SwaggerUiConfigProperties();
-        config.setDocExpansion("none");
-        config.setDefaultModelRendering("model");
-        config.setDefaultModelExpandDepth(6);
-        config.setTagsSorter("alpha");
-        config.setOperationsSorter("alpha");
-        return config;
     }
 
     private OpenApiCustomiser openApiConfig() {
