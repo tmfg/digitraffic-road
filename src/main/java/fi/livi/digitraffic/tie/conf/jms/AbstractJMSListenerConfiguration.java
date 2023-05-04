@@ -113,6 +113,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
      * listening JMS-messages if lock is acquired for this
      * thread
      */
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${jms.connection.intervalMs}")
     public void connectAndListen() {
         if (shutdownCalled.get()) {
@@ -146,7 +147,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
                 // Calling stop multiple times is safe
                 closeConnectionQuietly();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("method=connectAndListen Error in connectAndListen", e);
             closeConnectionQuietly();
             clusteredLocker.unlock(jmsParameters.getLockInstanceName());
