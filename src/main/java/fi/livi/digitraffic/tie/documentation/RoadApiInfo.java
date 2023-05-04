@@ -1,16 +1,16 @@
 package fi.livi.digitraffic.tie.documentation;
 
-import fi.livi.digitraffic.tie.service.BuildVersionResolver;
+import fi.livi.digitraffic.tie.service.BuildVersionService;
 import fi.livi.digitraffic.tie.service.LocalizedMessageSource;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.License;
 
 public class RoadApiInfo {
 
-    private final BuildVersionResolver buildVersionResolver;
+    private final BuildVersionService buildVersionResolver;
     protected LocalizedMessageSource localizedMessageSource;
 
-    public RoadApiInfo(final LocalizedMessageSource localizedMessageSource, final BuildVersionResolver buildVersionResolver) {
+    public RoadApiInfo(final LocalizedMessageSource localizedMessageSource, final BuildVersionService buildVersionResolver) {
         this.localizedMessageSource = localizedMessageSource;
         this.buildVersionResolver = buildVersionResolver;
     }

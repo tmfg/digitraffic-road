@@ -10,11 +10,11 @@ public class RoadApiInfoGetter {
 
     private final LocalizedMessageSource localizedMessageSource;
 
-    private final BuildVersionResolver buildVersionResolver;
+    private final BuildVersionService buildVersionResolver;
 
     @Autowired
     public RoadApiInfoGetter(final LocalizedMessageSource localizedMessageSource,
-                             final BuildVersionResolver buildVersionResolver) {
+                             final BuildVersionService buildVersionResolver) {
         this.localizedMessageSource = localizedMessageSource;
         this.buildVersionResolver = buildVersionResolver;
     }

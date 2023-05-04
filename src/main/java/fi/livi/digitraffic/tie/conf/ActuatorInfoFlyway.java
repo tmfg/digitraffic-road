@@ -17,13 +17,13 @@ import fi.livi.digitraffic.tie.dto.v1.FlywayVersion;
 import fi.livi.digitraffic.tie.service.FlywayService;
 
 @Component
-public class ActuatorInfo implements InfoContributor {
+public class ActuatorInfoFlyway implements InfoContributor {
 
-    private static final Logger log = LoggerFactory.getLogger(ActuatorInfo.class);
+    private static final Logger log = LoggerFactory.getLogger(ActuatorInfoFlyway.class);
     private final FlywayService flywayService;
 
     @Autowired
-    public ActuatorInfo(final FlywayService flywayService) {
+    public ActuatorInfoFlyway(final FlywayService flywayService) {
         this.flywayService = flywayService;
     }
 

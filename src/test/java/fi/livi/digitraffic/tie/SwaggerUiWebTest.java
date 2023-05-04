@@ -18,12 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import fi.livi.digitraffic.tie.service.BuildVersionResolver;
+import fi.livi.digitraffic.tie.service.BuildVersionService;
 
 public class SwaggerUiWebTest extends AbstractRestWebTest {
 
     @Autowired
-    private BuildVersionResolver versionService;
+    private BuildVersionService versionService;
 
     private final MediaType restContentType = MediaType.APPLICATION_JSON;
 

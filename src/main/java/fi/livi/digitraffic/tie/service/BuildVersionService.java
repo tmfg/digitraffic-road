@@ -7,26 +7,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import com.jcabi.manifests.Manifests;
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 
-@Component
-public class BuildVersionResolver {
+@Service
+public class BuildVersionService {
 
-    private static final Logger log = LoggerFactory.getLogger(BuildVersionResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(BuildVersionService.class);
 
     private static final String GIT_PROPERTIES  = "git.properties";
     private static final String GIT_COMMIT_ID_HASH = "git.commit.id.abbrev";
     private static final String GIT_BUILD_TIME  = "git.build.time";
-    private static final String MANIFEST_APP_VERSION  = "RoadApplication-Version";
-
-
-    private String getAppVersion() {
-        if (Manifests.exists(MANIFEST_APP_VERSION)) {
-            return Manifests.read(MANIFEST_APP_VERSION);
-        }
-        return "DEV-BUILD";
-    }
+    private static final String GIT_TAGS  = "git.tags";
+    private static final String GIT_DIRTY  = "git.dirty";
 
     private String getAppBuildRevision() {
         final String tag = readProperty(GIT_COMMIT_ID_HASH);
@@ -44,8 +38,25 @@ public class BuildVersionResolver {
         return "?";
     }
 
+    private String getAppTags() {
+        final String tags = readProperty(GIT_TAGS);
+        if (StringUtils.isNotBlank(tags) && !StringUtils.contains(tags, "{")) {
+            return tags;
+        }
+        return "DEV";
+    }
+
+    private String getDirty() {
+        final String dirty = readProperty(GIT_DIRTY);
+        if (StringUtils.isNotBlank(dirty) && !StringUtils.contains(dirty, "{")) {
+            return "true".equals(dirty) ? "dirty" : "";
+        }
+        return "dirty";
+    }
+
+    @NotTransactionalServiceMethod
     public String getAppFullVersion() {
-        return String.format("%s#%s@%s", getAppVersion(), getAppBuildRevision(), getAppBuildTime());
+        return String.format("Tag: %s #%s %s @ %s", getAppTags(), getAppBuildRevision(), getDirty(), getAppBuildTime());
     }
 
     private String readProperty(final String property) {

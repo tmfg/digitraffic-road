@@ -66,6 +66,7 @@ jobs:
             --tag ${{ secrets.ECR_URL }}/dt-road-mqtt-repository:latest \
             --pull=true \
             --file=Dockerfile .          
+            
           docker push ${{ secrets.ECR_URL }}/dt-road-mqtt-repository:latest
       - name: Update road-mqtt task-def
         id: update

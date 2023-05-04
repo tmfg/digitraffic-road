@@ -128,6 +128,10 @@ jobs:
           ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
           ref: ${{ inputs.config-repo-branch }}
           path: digitraffic-ci
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
       - name: Configure AWS credentials for ${{ matrix.app }}
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -153,22 +157,21 @@ jobs:
         run: |
           cd digitraffic-ci/aws
 
-          docker build --no-cache \
-              --build-arg ENV=${{ github.event.inputs.env }} \
-              --build-arg JAR_FILE=road.jar \
-              --build-arg PROPERTY_FILE=conf/road-${{ github.event.inputs.env }}-${{ matrix.app }}.properties \
-              -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
-              --pull=true --file=Dockerfile-road .
+          docker buildx build \
+            --no-cache \
+            --build-arg ENV=${{ github.event.inputs.env }} \
+            --build-arg JAR_FILE=road.jar \
+            --build-arg PROPERTY_FILE=conf/road-${{ github.event.inputs.env }}-${{ matrix.app }}.properties \
+            --platform linux/arm64 \
+            --output type=docker \
+            --tag ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
+            --pull=true \
+            --file=Dockerfile-road .
           docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
       - name: Build docker image for db
         if: matrix.app == 'db'
         run: |
           cd digitraffic-ci/aws/db
-
-          docker build --no-cache \
-              -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
-              --pull=true --file=Dockerfile .
-          docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
       - name: Notify Slack
         if: failure()
         uses: 8398a7/action-slack@v3

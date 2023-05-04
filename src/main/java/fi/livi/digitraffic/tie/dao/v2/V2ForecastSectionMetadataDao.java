@@ -25,6 +25,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Properties;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadSegment;
+import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionNaturalIdHelper;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.ForecastSectionV2FeatureDto;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.dto.v2.RoadSegmentDto;
 
@@ -35,16 +36,23 @@ public class V2ForecastSectionMetadataDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     private static final String INSERT_FORECAST_SECTION =
-        "INSERT INTO forecast_section(id, natural_id, description, length, version, geometry, geometry_simplified) " +
+        "INSERT INTO forecast_section(id, natural_id, description, length, version, geometry, geometry_simplified," +
+        "                             road_number, road_section_number, road_section_version_number) " +
         "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version, " +
-        "       ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), " + GeometryConstants.SRID + ")), ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), " + GeometryConstants.SRID + "))) " +
+        "       ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), " + GeometryConstants.SRID + ")), ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), " + GeometryConstants.SRID + "))," +
+        "       :roadNumber, :roadSectionNumber, :roadSectionVersionNumber)" +
         "ON CONFLICT ON CONSTRAINT forecast_section_unique " +
         "DO NOTHING ";
 
     private static final String UPDATE_FORECAST_SECTION =
-        "UPDATE forecast_section SET description = :description, length = :length, " +
-        " geometry = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), " + GeometryConstants.SRID + ")), " +
-        " geometry_simplified = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), " + GeometryConstants.SRID + "))" +
+        "UPDATE forecast_section SET " +
+        "  description = :description," +
+        "  length = :length," +
+        "  geometry = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), " + GeometryConstants.SRID + "))," +
+        "  geometry_simplified = ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), " + GeometryConstants.SRID + "))," +
+        "  road_number = :roadNumber," +
+        "  road_section_number = :roadSectionNumber," +
+        "  road_section_version_number = :roadSectionVersionNumber " +
         "WHERE natural_id = :naturalId AND version = :version AND obsolete_date IS null";
 
     private static final String SELECT_ALL =
@@ -93,10 +101,15 @@ public class V2ForecastSectionMetadataDao {
 
     private static MapSqlParameterSource forecastSectionParameterSource(final ForecastSectionV2FeatureDto feature) {
         final HashMap<String, Object> args = new HashMap<>();
-        args.put("naturalId", feature.getProperties().getId());
+        final String naturalId = feature.getProperties().getId();
+        args.put("naturalId", naturalId);
         args.put("description", feature.getProperties().getDescription());
         args.put("length", feature.getProperties().getTotalLengthKm() * 1000);
         args.put("version", 2);
+
+        args.put("roadNumber", ForecastSectionNaturalIdHelper.getRoadNumber(naturalId));
+        args.put("roadSectionNumber", ForecastSectionNaturalIdHelper.getRoadSectionNumber(naturalId));
+        args.put("roadSectionVersionNumber", 0);
 
         try {
             final String json = feature.getGeometry().toJsonString();

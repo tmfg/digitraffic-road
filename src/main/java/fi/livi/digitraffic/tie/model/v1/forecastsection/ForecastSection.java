@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -67,15 +66,12 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
     private String description;
 
     @Schema(description = "Road section number")
-    @Column(insertable = false, updatable = false)
     private int roadSectionNumber;
 
     @Schema(description = "Forecast section road number")
-    @Column(insertable = false, updatable = false)
     private int roadNumber;
 
     @Schema(description = "Road section version number")
-    @Column(insertable = false, updatable = false)
     private int roadSectionVersionNumber;
 
     @Schema(description = "Forecast section start distance")
