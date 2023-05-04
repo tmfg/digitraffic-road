@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import fi.livi.digitraffic.tie.aop.NoJobLogging;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
@@ -97,6 +98,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     /**
      * Drain queue and calls handleData if data available.
      */
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${jms.queue.pollingIntervalMs}")
     public void drainQueueScheduled() {
         try {
