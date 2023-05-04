@@ -134,13 +134,14 @@ public interface V2MaintenanceTrackingRepository extends JpaRepository<Maintenan
     @Query(value =
        "select name\n" +
        "     , source\n" +
+       "     , modified as dataUpdatedTime\n" +
        "     , case when name = '" + STATE_ROADS_DOMAIN + "' then 0 else ROW_NUMBER() OVER (ORDER BY name) end AS rnum\n" +
        "from maintenance_tracking_domain\n" +
        "where source IS NOT NULL\n" +
        "UNION\n" +
-       "SELECT '" + GENERIC_ALL_DOMAINS + "', 'All domains', -2\n" +
+       "SELECT '" + GENERIC_ALL_DOMAINS + "', 'All domains', null, -2\n" +
        "UNION\n" +
-       "SELECT '" + GENERIC_MUNICIPALITY_DOMAINS + "', 'All municipality domains', -1\n" +
+       "SELECT '" + GENERIC_MUNICIPALITY_DOMAINS + "', 'All municipality domains', null, -1\n" +
        "order by rnum", nativeQuery = true)
     List<MaintenanceTrackingDomainDtoV1> getDomainsWithGenerics();
 

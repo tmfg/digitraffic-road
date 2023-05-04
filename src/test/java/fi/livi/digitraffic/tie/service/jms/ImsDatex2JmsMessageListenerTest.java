@@ -81,7 +81,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
     private void checkActiveSituations(final SituationType type, final String...situationIdsToFind) {
         final List<Situation> situations = getSituations(
-            Objects.requireNonNull(getV2Datex2DataService().findActive(0, type).getBody()));
+            Objects.requireNonNull(getV2Datex2DataService().findActive(0, type).getLeft()));
 
         final List<TrafficAnnouncementFeature> features =
             getV2Datex2DataService().findActiveJson(0, false, type).getFeatures();

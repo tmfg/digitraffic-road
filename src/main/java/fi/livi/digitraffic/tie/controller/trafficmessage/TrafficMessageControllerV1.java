@@ -10,9 +10,12 @@ import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VAL
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -101,7 +104,9 @@ public class TrafficMessageControllerV1 {
         @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
         final SituationType... situationType) {
 
-        return trafficMessageDataServiceV1.findActive(inactiveHours, situationType);
+        final Pair<D2LogicalModel, Instant> active =
+            trafficMessageDataServiceV1.findActive(inactiveHours, situationType);
+        return ResponseEntityWithLastModifiedHeader.of(active.getLeft(), active.getRight(), API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2);
     }
 
     @Operation(summary = "Traffic messages by situationId as Datex2")
@@ -116,7 +121,8 @@ public class TrafficMessageControllerV1 {
         @Parameter(description = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned")
         @RequestParam(defaultValue = "true")
         final boolean latest) {
-        return trafficMessageDataServiceV1.findBySituationId(situationId, latest);
+        final Pair<D2LogicalModel, Instant> situation = trafficMessageDataServiceV1.findBySituationId(situationId, latest);
+        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(), API_TRAFFIC_MESSAGE_V1_MESSAGES + "/" + situationId + DATEX2);
     }
 
     @Operation(summary = "Active traffic messages as simple JSON")
@@ -248,8 +254,12 @@ public class TrafficMessageControllerV1 {
     @Operation(summary = "List available location versions")
     @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + VERSIONS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location versions") })
-    public List<LocationVersionDtoV1> locationVersions () {
-        return locationWebServiceV1.findLocationVersions();
+    public ResponseEntityWithLastModifiedHeader<List<LocationVersionDtoV1>> locationVersions () {
+        final List<LocationVersionDtoV1> versions = locationWebServiceV1.findLocationVersions();
+        final Instant lastModified =
+            versions.stream().map(LocationVersionDtoV1::getLastModified).max(Comparator.naturalOrder()).orElse(null);
+        return ResponseEntityWithLastModifiedHeader.of(versions, lastModified, API_TRAFFIC_MESSAGE_V1_LOCATIONS + VERSIONS);
+
     }
 
     @Operation(summary = "The static information of location types and locationsubtypes")

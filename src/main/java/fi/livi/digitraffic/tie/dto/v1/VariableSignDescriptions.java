@@ -1,11 +1,21 @@
 package fi.livi.digitraffic.tie.dto.v1;
 
+import java.time.Instant;
 import java.util.List;
 
-public class VariableSignDescriptions {
-    public final List<CodeDescription> signTypes;
+import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 
-    public VariableSignDescriptions(final List<CodeDescription> signTypes) {
+public class VariableSignDescriptions implements DataUpdatedSupportV1 {
+    public final List<CodeDescription> signTypes;
+    private Instant dataUpdatedTime;
+
+    public VariableSignDescriptions(final List<CodeDescription> signTypes, final Instant dataUpdatedTime) {
         this.signTypes = signTypes;
+        this.dataUpdatedTime = dataUpdatedTime;
+    }
+
+    @Override
+    public Instant getDataUpdatedTime() {
+        return dataUpdatedTime;
     }
 }

@@ -216,11 +216,11 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         // Make sure all versions are saved
         assertEquals(count, trafficMessageDataServiceV1.findBySituationIdJson(situationId, false, false).getFeatures().size());
         assertEquals(count, getSituationPublication(
-            Objects.requireNonNull(trafficMessageDataServiceV1.findBySituationId(situationId, false).getBody())).getSituations().size());
+            Objects.requireNonNull(trafficMessageDataServiceV1.findBySituationId(situationId, false).getLeft())).getSituations().size());
 
         // Get latest versions
         final TrafficAnnouncementFeatureCollection latestJson = trafficMessageDataServiceV1.findBySituationIdJson(situationId, false, true);
-        final D2LogicalModel latestDatex = trafficMessageDataServiceV1.findBySituationId(situationId, true).getBody();
+        final D2LogicalModel latestDatex = trafficMessageDataServiceV1.findBySituationId(situationId, true).getLeft();
 
         // Make sure only the latest version is returned
         assertEquals(latestStart.get(), latestJson.getFeatures().get(0).getProperties().announcements.get(0).timeAndDuration.startTime);
@@ -235,11 +235,11 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
     }
 
     private void checkFindBySituationId(final String situationId) {
-        final ResponseEntityWithLastModifiedHeader<D2LogicalModel> d2 = trafficMessageDataServiceV1.findBySituationId(situationId, false);
+        final D2LogicalModel d2 = trafficMessageDataServiceV1.findBySituationId(situationId, false).getLeft();
         final TrafficAnnouncementFeatureCollection jsons =
             trafficMessageDataServiceV1.findBySituationIdJson(situationId, true, false);
 
-        final List<Situation> situations = ((SituationPublication) d2.getBody().getPayloadPublication()).getSituations();
+        final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
 
         AssertHelper.assertCollectionSize(1, situations);
         AssertHelper.assertCollectionSize(1, jsons.getFeatures());
@@ -252,8 +252,8 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
 
     private void activeIncidentsDatex2AndJsonEquals(final SituationType situationType, final ImsJsonVersion imsJsonVersion, final String situationId,
                                                     final ZonedDateTime start, final ZonedDateTime end) {
-        final ResponseEntityWithLastModifiedHeader<D2LogicalModel> d2 = trafficMessageDataServiceV1.findActive(0, situationType);
-        final List<Situation> activeSituations = ((SituationPublication) d2.getBody().getPayloadPublication()).getSituations();
+        final D2LogicalModel d2 = trafficMessageDataServiceV1.findActive(0, situationType).getLeft();
+        final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
         final TrafficAnnouncementFeatureCollection activeJsons = trafficMessageDataServiceV1.findActiveJson(0, true, situationType);
 
         AssertHelper.assertCollectionSize(1, activeSituations);
@@ -293,8 +293,8 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
     }
 
     private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
-        final ResponseEntityWithLastModifiedHeader<D2LogicalModel> withOrWithoutJson = trafficMessageDataServiceV1.findActive(0);
-        final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getBody().getPayloadPublication());
+        final D2LogicalModel withOrWithoutJson = trafficMessageDataServiceV1.findActive(0).getLeft();
+        final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
         final TrafficAnnouncementFeatureCollection withJson = trafficMessageDataServiceV1.findActiveJson(0, true);
 
         if (foundInDatex2) {

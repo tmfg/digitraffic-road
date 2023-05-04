@@ -17,7 +17,7 @@ import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.CodeDescriptionRepositoryV1;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceDataRepositoryV1;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceRepositoryV1;
-import fi.livi.digitraffic.tie.dto.v1.CodeDescription;
+import fi.livi.digitraffic.tie.dto.v1.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.SignTextRowV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureCollectionV1;
@@ -131,7 +131,8 @@ public class VariableSignDataServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public List<CodeDescription> listVariableSignTypes() {
-        return codeDescriptionRepositoryV1.listAllVariableSignTypes();
+    public VariableSignDescriptions getCodeDescriptions() {
+        final Instant lastModified = codeDescriptionRepositoryV1.getLastUpdated();
+        return new VariableSignDescriptions(codeDescriptionRepositoryV1.listAllVariableSignTypes(), lastModified);
     }
 }
