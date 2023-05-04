@@ -104,7 +104,7 @@ public class CameraPresetService {
         final EntityType<CameraPreset> rootModel = root.getModel();
         update.set("obsoleteDate", LocalDate.now());
 
-        List<Predicate> predicates = new ArrayList<>();
+        final List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))));
         for (List<Long> ids : Iterables.partition(camerasLotjuIds, 1000)) {
             predicates.add(cb.not(root.get("cameraLotjuId").in(ids)));
@@ -133,7 +133,7 @@ public class CameraPresetService {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                                         isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
-            log.info("method=updateCameraPresetAndHistoryWithLotjuId Save history with presetId={} s3VersionId=\"{}\" versionIdLenght={}",
+            log.debug("method=updateCameraPresetAndHistoryWithLotjuId Save history with presetId={} s3VersionId=\"{}\" versionIdLenght={}",
                      cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getVersionId().length());
             cameraPresetHistoryRepository.save(history);
         }
