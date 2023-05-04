@@ -233,18 +233,18 @@ public class TestUtils {
     }
 
     public static LamAsemaVO createLamAsema(final long lotjuId) {
-        final LamAsemaVO tsa = new LamAsemaVO();
-        tsa.setId(lotjuId);
-        tsa.setVanhaId(tsa.getId().intValue());
-        tsa.setJulkinen(true);
-        tsa.setNimi("Tiesääasema_" + lotjuId);
-        tsa.setNimiFi(tsa.getNimi());
-        tsa.setNimiEn(tsa.getNimi());
-        tsa.setNimiSe(tsa.getNimi());
-        tsa.setKeruunTila(fi.livi.digitraffic.tie.external.lotju.metadata.lam.KeruunTILA.KERUUSSA);
-        tsa.setJulkinen(true);
-        tsa.setTieosoite(createLamAsemanTieOsoite(lotjuId));
-        return tsa;
+        final LamAsemaVO lam = new LamAsemaVO();
+        lam.setId(lotjuId);
+        lam.setVanhaId(lam.getId().intValue());
+        lam.setJulkinen(true);
+        lam.setNimi("Tiesääasema_" + lotjuId);
+        lam.setNimiFi(lam.getNimi());
+        lam.setNimiEn(lam.getNimi());
+        lam.setNimiSe(lam.getNimi());
+        lam.setKeruunTila(fi.livi.digitraffic.tie.external.lotju.metadata.lam.KeruunTILA.KERUUSSA);
+        lam.setJulkinen(true);
+        lam.setTieosoite(createLamAsemanTieOsoite(lotjuId));
+        return lam;
     }
 
     private static fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TieosoiteVO createTiesaaAsemanTieOsoite(final long tieosoiteLotjuId) {

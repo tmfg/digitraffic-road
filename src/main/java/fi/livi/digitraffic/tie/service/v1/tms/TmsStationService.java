@@ -235,7 +235,9 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     private static Long convertToTmsNaturalId(final Integer roadStationVanhaId) {
-        return roadStationVanhaId == null ? null : roadStationVanhaId - 23000L;
+        return roadStationVanhaId == null ?
+               null :
+               roadStationVanhaId > 23000 ? roadStationVanhaId - 23000L : roadStationVanhaId;
     }
 
     private TmsStationFeature convert(final Long id, final TmsStation station) {
