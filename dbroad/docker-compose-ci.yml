@@ -2,9 +2,7 @@ version: '2.1'
 
 services:
   db:
-    build:
-      context: ./postgis
-      dockerfile: Dockerfile_postgis
+    image: postgis/postgis:13-3.3-alpine
     restart: always
     environment:
       POSTGRES_USER: road
