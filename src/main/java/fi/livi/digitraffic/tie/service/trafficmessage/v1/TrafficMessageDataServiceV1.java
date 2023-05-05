@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +57,11 @@ public class TrafficMessageDataServiceV1 {
 
     // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
-    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> findActive(final int activeInPastHours,
-                                                                           final SituationType...situationTypes) {
+    public Pair<D2LogicalModel, Instant> findActive(final int activeInPastHours,
+                                                    final SituationType...situationTypes) {
         final List<Datex2> allActive = datex2Repository.findAllActiveBySituationType(activeInPastHours, typesAsStrings(situationTypes));
         final Instant lastModified = getLastModified(allActive, situationTypes);
-        return ResponseEntityWithLastModifiedHeader.of(convertToD2LogicalModel(allActive), lastModified);
+        return Pair.of(convertToD2LogicalModel(allActive), lastModified);
     }
 
     // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
@@ -82,7 +83,7 @@ public class TrafficMessageDataServiceV1 {
 
     // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
-    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> findBySituationId(final String situationId, final boolean latest) {
+    public Pair<D2LogicalModel, Instant> findBySituationId(final String situationId, final boolean latest) {
         final List<Datex2> datex2s = datex2Repository.findBySituationId(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Datex2", situationId);
@@ -92,9 +93,9 @@ public class TrafficMessageDataServiceV1 {
         final Instant lastModified = getLastModified(datex2s, situationTypes);
 
         if (latest) {
-            return ResponseEntityWithLastModifiedHeader.of(convertToD2LogicalModel(datex2s.subList(0,1)), lastModified);
+            return Pair.of(convertToD2LogicalModel(datex2s.subList(0,1)), lastModified);
         }
-        return ResponseEntityWithLastModifiedHeader.of(convertToD2LogicalModel(datex2s), lastModified);
+        return Pair.of(convertToD2LogicalModel(datex2s), lastModified);
     }
 
     private SituationType[] getSituationTypes(final List<Datex2> datex2s) {

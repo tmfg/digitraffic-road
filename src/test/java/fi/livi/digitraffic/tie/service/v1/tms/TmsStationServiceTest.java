@@ -4,6 +4,7 @@ import static fi.livi.digitraffic.tie.controller.RoadStationState.ACTIVE;
 import static fi.livi.digitraffic.tie.controller.RoadStationState.ALL;
 import static fi.livi.digitraffic.tie.controller.RoadStationState.REMOVED;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
@@ -115,4 +117,19 @@ public class TmsStationServiceTest extends AbstractServiceTest {
         assertNotNull(tmsStation);
     }
 
+    @Test
+    public void tmsStationNaturalIdGeneration() {
+        // if roadStationId > 23000 ? roadStationId – 23000 : roadStationId
+        final long vanhaIdSmall = 23000;
+        final LamAsemaVO lamSmall = TestUtils.createLamAsema(vanhaIdSmall);
+        tmsStationService.updateOrInsertTmsStation(lamSmall);
+        final TmsStationFeature resultSmall = tmsStationService.getTmsStationByRoadStationId(lamSmall.getVanhaId().longValue());
+        assertEquals(vanhaIdSmall, resultSmall.getProperties().getTmsNaturalId());
+
+        final long vanhaIdBig = 23001;
+        final LamAsemaVO lamBig = TestUtils.createLamAsema(vanhaIdBig);
+        tmsStationService.updateOrInsertTmsStation(lamBig);
+        final TmsStationFeature resultBig = tmsStationService.getTmsStationByRoadStationId(lamBig.getVanhaId().longValue());
+        assertEquals(vanhaIdBig-23000, resultBig.getProperties().getTmsNaturalId());
+    }
 }

@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
+import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollectionV1;
@@ -223,18 +225,24 @@ public class MaintenanceTrackingControllerV1 {
     @Operation(summary = "Road maintenance tracking tasks")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_TASKS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking tasks"))
-    public List<MaintenanceTrackingTaskDtoV1> getMaintenanceTrackingTasks() {
-        return Stream.of(MaintenanceTrackingTask.values())
+    public ResponseEntityWithLastModifiedHeader<List<MaintenanceTrackingTaskDtoV1>> getMaintenanceTrackingTasks() {
+        final List<MaintenanceTrackingTaskDtoV1> tasks = Stream.of(MaintenanceTrackingTask.values())
             .sorted(Comparator.comparing(MaintenanceTrackingTask::getId))
-            .map(t -> new MaintenanceTrackingTaskDtoV1(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn()))
+            .map(t -> new MaintenanceTrackingTaskDtoV1(t.name(), t.getNameFi(), t.getNameSv(), t.getNameEn(), t.getDataUpdatedTime()))
             .collect(Collectors.toList());
+        final Instant lastModified =
+            tasks.stream().map(MaintenanceTrackingTaskDtoV1::getDataUpdatedTime).max(Comparator.naturalOrder()).orElse(null);
+        return ResponseEntityWithLastModifiedHeader.of(tasks, lastModified, API_MAINTENANCE_V1_TRACKING_TASKS);
     }
 
     @Operation(summary = "Road maintenance tracking domains")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_DOMAINS, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking domains"))
-    public List<MaintenanceTrackingDomainDtoV1> getMaintenanceTrackingDomains() {
-        return maintenanceTrackingWebDataServiceV1.getDomainsWithGenerics();
+    public ResponseEntityWithLastModifiedHeader<List<MaintenanceTrackingDomainDtoV1>> getMaintenanceTrackingDomains() {
+        final List<MaintenanceTrackingDomainDtoV1> domains = maintenanceTrackingWebDataServiceV1.getDomainsWithGenerics();
+        final Instant lastModified = domains.stream().filter(d -> d.getDataUpdatedTime() != null).map(MaintenanceTrackingDomainDtoV1::getDataUpdatedTime)
+            .max(Comparator.naturalOrder()).orElse(null);
+        return ResponseEntityWithLastModifiedHeader.of(domains, lastModified, API_MAINTENANCE_V1_TRACKING_DOMAINS);
     }
 
     private static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final int defaultHoursOfHistory) {

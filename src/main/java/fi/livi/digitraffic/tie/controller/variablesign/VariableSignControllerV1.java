@@ -8,6 +8,8 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.VARIABLE_SIGN_TAG_
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.dto.v1.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureCollectionV1;
@@ -65,17 +68,19 @@ public class VariableSignControllerV1 {
     @Operation(summary = "Return the history of variable sign data")
     @RequestMapping(method = RequestMethod.GET, path = API_VS_V1 + API_SIGNS_HISTORY, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
-    public List<TrafficSignHistoryV1> variableSignHistory(
+    public ResponseEntityWithLastModifiedHeader<List<TrafficSignHistoryV1>> variableSignHistory(
         @Parameter(description = "List history data of given sign")
         @RequestParam(value = "deviceId")
         final String deviceId) {
-        return variableSignDataServiceV1.listVariableSignHistory(deviceId);
+        final List<TrafficSignHistoryV1> history = variableSignDataServiceV1.listVariableSignHistory(deviceId);
+        final Instant lastModified = history.stream().map(TrafficSignHistoryV1::getCreatedDate).max(Comparator.naturalOrder()).orElse(Instant.EPOCH);
+        return ResponseEntityWithLastModifiedHeader.of(history, lastModified, API_VS_V1 + API_SIGNS_HISTORY + "?deviceId=" + deviceId);
     }
 
     @Operation(summary = "Return all code descriptions.")
     @GetMapping(path = API_VS_V1 + API_SIGNS_CODE_DESCRIPTIONS, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
-    public VariableSignDescriptions listCodeDescriptions() {
-        return new VariableSignDescriptions(variableSignDataServiceV1.listVariableSignTypes());
+    public VariableSignDescriptions getCodeDescriptions() {
+        return variableSignDataServiceV1.getCodeDescriptions();
     }
 }
