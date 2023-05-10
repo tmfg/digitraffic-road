@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <publicationTime>2023-05-09T13:55:48.993Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50413073" version="1">
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="EnvironmentalObstruction" id="GUID5041422201" version="1">
+                <situationRecordCreationTime>2023-05-09T13:55:47.648Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-05-09T13:55:47.621Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2023-05-09T13:53:46.634Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2023-05-09T13:53:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 7, Kotka. Liikennetiedote.
+
+                                Tie 7 välillä Porvoo - Kotka, Kotka.
+                                Tarkempi paikka: Välillä Sutela - Heinlahden liittymä. Haittaa
+                                molempiin suuntiin.
+
+                                Maastopalo.
+                                Savu heikentää näkyvyyttä.
+
+                                Ajankohta: 09.05.2023 klo 16:53 alkaen toistaiseksi.
+
+                                Liikenne- ja kelitiedot verkossa:
+                                https://liikennetilanne.fintraffic.fi/
+
+                                Fintraffic Tieliikennekeskus Tampere
+                                Puh: 02002100
+                                Sähköposti: tampere.liikennekeskus@fintraffic.fi</value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>1578</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>8507</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <environmentalObstructionType>grassFire</environmentalObstructionType>
+            </situationRecord>
+            <situationRecord xsi:type="PoorEnvironmentConditions" id="GUID5041422202" version="1">
+                <situationRecordCreationTime>2023-05-09T13:55:47.648Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-05-09T13:55:47.621Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2023-05-09T13:53:46.634Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>low</severity>
+                <validity>
+                    <validityStatus>active</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2023-05-09T13:53:00.000Z</overallStartTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point" />
+                <poorEnvironmentType>smokeHazard</poorEnvironmentType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
