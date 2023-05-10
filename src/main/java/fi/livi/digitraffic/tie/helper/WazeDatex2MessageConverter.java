@@ -237,6 +237,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -278,6 +279,7 @@ import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditions;
 import fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.PoorEnvironmentConditions;
+import fi.livi.digitraffic.tie.datex2.PoorEnvironmentTypeEnum;
 import fi.livi.digitraffic.tie.datex2.PublicEvent;
 import fi.livi.digitraffic.tie.datex2.PublicEventTypeEnum;
 import fi.livi.digitraffic.tie.datex2.ReroutingManagement;
@@ -315,6 +317,7 @@ public class WazeDatex2MessageConverter {
     private final Map<InfrastructureDamageTypeEnum, String> infrastructureDamageTypeEnumStringMap = new HashMap<>();
     private final Map<NonWeatherRelatedRoadConditionTypeEnum, String> nonWeatherRelatedRoadConditionTypeEnumStringMap = new HashMap<>();
     private final Map<ObstructionTypeEnum, String> obstructionTypeMap = new HashMap<>();
+    private final Map<PoorEnvironmentTypeEnum, String> poorEnvironmentTypeEnumStringMap = new HashMap<>();
     private final Map<PublicEventTypeEnum, String> publicEventTypeEnumStringMap = new HashMap<>();
     private final Map<ReroutingManagementTypeEnum, String> reroutingManagementTypeMap = new HashMap<>();
     private final Map<RoadOrCarriagewayOrLaneManagementTypeEnum, String> roadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
@@ -465,6 +468,56 @@ public class WazeDatex2MessageConverter {
         obstructionTypeMap.put(SPILLAGE_ON_THE_ROAD, "Spillage on the road");
         obstructionTypeMap.put(UNPROTECTED_ACCIDENT_AREA, "Unprotected accident area");
         obstructionTypeMap.put(ObstructionTypeEnum.OTHER, "Obstruction on roadway");
+
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.BAD_WEATHER, "Bad weather");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.BLIZZARD, "Blizzard");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.BLOWING_DUST, "Blowing dust");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.BLOWING_SNOW, "Blowing snow");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.CROSSWINDS, "Crosswinds");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.DAMAGING_HAIL, "Damaging hail");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.DENSE_FOG, "Dense fog");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.ECLIPSE, "Eclipse");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.EXTREME_COLD, "Extreme cold");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.EXTREME_HEAT, "Extreme heat");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.FOG, "Fog");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.FREEZING_FOG, "Freezing fog");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.FROST, "Frost");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.GALES, "Gales");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.GUSTY_WINDS, "Gusty winds");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.HAIL, "Hail");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.HEAVY_FROST, "Heavy frost");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.HEAVY_RAIN, "Heavy rain");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.HEAVY_SNOWFALL, "Heavy snowfall");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.HURRICANE_FORCE_WINDS, "Hurricane force winds");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.LOW_SUN_GLARE, "Low sun glare");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.MODERATE_FOG, "Moderate fog");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.OZONE_POLLUTION, "Ozone pollution");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.POLLUTION, "Pollution");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.PATCHY_FOG, "Patchy fog");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.PRECIPITATION_IN_THE_AREA, "Precipitation in the area");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.RAIN, "Rain");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.RAIN_CHANGING_TO_SNOW, "Rain changing to snow");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SAND_STORMS, "Sand storms");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SEVERE_EXHAUST_POLLUTION, "Severe exhaust pollution");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SEVERE_SMOG, "Severe smog");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SHOWERS, "Showers");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SLEET, "Sleet");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SMOG_ALERT, "Smog alert");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SMOKE_HAZARD, "Smoke hazard");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SNOW_CHANGING_TO_RAIN, "Snow changing to rain");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SNOWFALL, "Snowfall");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SPRAY_HAZARD, "Spray hazard");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.STORM_FORCE_WINDS, "Storm force winds");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.STRONG_GUSTS_OF_WIND, "Strong gusts of wind");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.STRONG_WINDS, "Strong winds");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.SWARMS_OF_INSECTS, "Swarms of insects");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.TEMPERATURE_FALLING, "Temperature falling");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.THUNDERSTORMS, "Thunderstorms");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.TORNADOES, "Tornadoes");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.VERY_STRONG_GUSTS_OF_WIND, "Very strong gusts of wind");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.VISIBILITY_REDUCED, "Visibility reduced");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.WHITE_OUT, "White out");
+        poorEnvironmentTypeEnumStringMap.put(PoorEnvironmentTypeEnum.WINTER_STORM, "Winter storm");
 
         publicEventTypeEnumStringMap.put(AGRICULTURAL_SHOW, "agricultural show");
         publicEventTypeEnumStringMap.put(AIR_SHOW, "air show");
@@ -715,7 +768,12 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final PoorEnvironmentConditions poorEnvironmentConditions) {
-        return Optional.empty();
+        final var environmentConditions = poorEnvironmentConditions.getPoorEnvironmentTypes().stream()
+            .map(x -> poorEnvironmentTypeEnumStringMap.getOrDefault(x, null))
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining(". "));
+
+        return Optional.of(environmentConditions);
     }
 
     private Optional<String> accept(final PublicEvent publicEvent) {
