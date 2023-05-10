@@ -87,6 +87,8 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
 
+        TestUtils.entityManagerFlushAndClear(entityManager);
+
         this.weatherStation = entityManager.find(WeatherStation.class, ws.getId());
         this.lastModifiedMillis =  weatherStation.getModified().toEpochMilli();
         log.info("Init last-modified: {} id: {}",  weatherStation.getModified(), weatherStation.getRoadStationNaturalId());
