@@ -9,3 +9,10 @@ CREATE TRIGGER CAMERA_PRESET_MODIFIED_T
   FOR EACH ROW
 EXECUTE PROCEDURE update_camera_preset_modified_column();
 
+DROP TRIGGER IF EXISTS COUNTING_SITE_COUNTER_MODIFIED_T on counting_site_counter;
+CREATE TRIGGER COUNTING_SITE_COUNTER_MODIFIED_T
+  BEFORE UPDATE
+  ON counting_site_counter
+  FOR EACH ROW
+EXECUTE PROCEDURE update_counting_site_counter_modified_column();
+

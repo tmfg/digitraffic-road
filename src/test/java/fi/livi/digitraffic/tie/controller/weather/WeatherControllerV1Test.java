@@ -57,7 +57,10 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
     private SensorValueRepository sensorValueRepository;
 
     private WeatherStation weatherStation;
-    private long lastModifiedMillis;
+    private long stationMetaDataModifiedMillis;
+    private long stationsMetaDataModifiedMillis;
+    private long sensorsMetadataModifiedMillis;
+    private long dataModifiedMillis;
 
     @BeforeEach
     public void initData() {
@@ -90,8 +93,11 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         this.weatherStation = entityManager.find(WeatherStation.class, ws.getId());
-        this.lastModifiedMillis =  weatherStation.getModified().toEpochMilli();
-        log.info("Init last-modified: {} id: {}",  weatherStation.getModified(), weatherStation.getRoadStationNaturalId());
+        this.stationMetaDataModifiedMillis =  weatherStation.getModified().toEpochMilli();
+        this.stationsMetaDataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_METADATA).toEpochMilli();
+        this.dataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION)).toEpochMilli();
+        this.stationsMetaDataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_METADATA).toEpochMilli();
+        this.sensorsMetadataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA).toEpochMilli();
     }
 
     /* METADATA */
@@ -117,7 +123,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
                 .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
                 .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, stationsMetaDataModifiedMillis));
     }
 
 
@@ -157,7 +163,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
                 .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
                 .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, stationMetaDataModifiedMillis));
     }
 
     @Test
@@ -178,7 +184,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.sensors[0].presentationNames.fi").hasJsonPath())
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, sensorsMetadataModifiedMillis));
     }
 
     /* DATA */
@@ -202,7 +208,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.stations[0].sensorValues[0].measuredTime", isA(String.class)))
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataModifiedMillis));
     }
 
     @Test
@@ -222,7 +228,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.sensorValues[0].measuredTime", isA(String.class)))
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataModifiedMillis));
     }
 
     private ResultActions performAndLogLastModifiedHeder(final String url) throws Exception {

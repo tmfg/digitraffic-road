@@ -8,13 +8,13 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
+
 @Entity
 @Immutable
-public class Device {
+public class Device extends ReadOnlyCreatedAndModifiedFields {
     @Id
     private String id;
-
-    private Instant updatedDate;
 
     private Instant deletedDate;
 
@@ -70,14 +70,6 @@ public class Device {
 
     public void setEtrsTm35FinY(final Double etrsTm35FinY) {
         this.etrsTm35FinY = etrsTm35FinY;
-    }
-
-    public Instant getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(final Instant updatedDate) {
-        this.updatedDate = updatedDate;
     }
 
     public String getDirection() {

@@ -16,14 +16,14 @@ import javax.persistence.OrderBy;
 
 import org.hibernate.annotations.Immutable;
 
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
+
 @Entity
 @Immutable
-public class DeviceData {
+public class DeviceData extends ReadOnlyCreatedAndModifiedFields {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long id;
-
-    private Instant createdDate;
 
     private String deviceId; // this is a foreign key
 
@@ -86,14 +86,6 @@ public class DeviceData {
 
     public void setDeviceId(final String deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public Instant getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(final Instant createdDate) {
-        this.createdDate = createdDate;
     }
 
     public String getReliability() {

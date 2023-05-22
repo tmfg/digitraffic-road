@@ -16,5 +16,5 @@ public interface TrafficSignHistoryV1 {
     List<HistoryTextRowV1> getRows();
 
     @JsonIgnore
-    Instant getCreatedDate();
+    Instant getCreated();
 }

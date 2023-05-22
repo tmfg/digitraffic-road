@@ -73,7 +73,7 @@ public class VariableSignControllerV1 {
         @RequestParam(value = "deviceId")
         final String deviceId) {
         final List<TrafficSignHistoryV1> history = variableSignDataServiceV1.listVariableSignHistory(deviceId);
-        final Instant lastModified = history.stream().map(TrafficSignHistoryV1::getCreatedDate).max(Comparator.naturalOrder()).orElse(Instant.EPOCH);
+        final Instant lastModified = history.stream().map(TrafficSignHistoryV1::getCreated).max(Comparator.naturalOrder()).orElse(Instant.EPOCH);
         return ResponseEntityWithLastModifiedHeader.of(history, lastModified, API_VS_V1 + API_SIGNS_HISTORY + "?deviceId=" + deviceId);
     }
 

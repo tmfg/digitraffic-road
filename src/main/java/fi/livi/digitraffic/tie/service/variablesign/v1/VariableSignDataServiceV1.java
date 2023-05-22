@@ -82,7 +82,7 @@ public class VariableSignDataServiceV1 {
             data.getCause(),
             VariableSignPropertiesV1.Reliability.byValue(data.getReliability()),
             textRows,
-            data.getCreatedDate());
+            data.getModified());
         final Point point = CoordinateConverter.convertFromETRS89ToWGS84(new Point(device.getEtrsTm35FinX(), device.getEtrsTm35FinY()));
 
         return new VariableSignFeatureV1(point, properties);
@@ -105,7 +105,7 @@ public class VariableSignDataServiceV1 {
 
         if(device.isPresent()) {
 
-            final Instant deviceLastUpdated = device.get().getUpdatedDate();
+            final Instant deviceLastUpdated = device.get().getModified();
             final List<Long> latest = deviceDataRepositoryV1.findLatestData(deviceId);
             final List<DeviceData> data = deviceDataRepositoryV1.findDistinctByIdIn(latest);
             final Instant dataLastUpdated = getDataLastUpdated(data, deviceLastUpdated);
@@ -126,7 +126,7 @@ public class VariableSignDataServiceV1 {
 
     private Instant getDataLastUpdated(final List<DeviceData> data, final Instant deviceLastUpdated) {
         return DateHelper.getGreatest(
-            data.stream().map(DeviceData::getCreatedDate).max(Comparator.naturalOrder()).orElse(null),
+            data.stream().map(DeviceData::getCreated).max(Comparator.naturalOrder()).orElse(Instant.EPOCH),
             deviceLastUpdated);
     }
 

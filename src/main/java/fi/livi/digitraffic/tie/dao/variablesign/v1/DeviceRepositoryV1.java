@@ -18,7 +18,7 @@ public interface DeviceRepositoryV1 extends JpaRepository<Device, String> {
     List<Device> findAllByDeletedDateIsNull();
 
     @Query(value =
-       "select max(updated_date)\n" +
+       "select max(modified)\n" +
        "from device", nativeQuery = true)
     Instant getLastUpdated();
 }

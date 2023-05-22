@@ -35,6 +35,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_counting_site_counter_modified_column()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  -- remove field from json with -
+  IF (to_jsonb(OLD.*) - 'last_data_timestamp') <> (to_jsonb(NEW.*) - 'last_data_timestamp') THEN
+    NEW.modified = now();
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 
 -- Delete prevention function
 CREATE OR REPLACE FUNCTION raise_prevent_delete_exception()

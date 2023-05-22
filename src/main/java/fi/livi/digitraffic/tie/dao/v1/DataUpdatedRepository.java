@@ -60,12 +60,12 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
     void upsertDataUpdated(final DataType dataType, final String subtype, final Instant updated);
 
     @Query(value =
-       "select max(greatest(added_timestamp, removed_timestamp))\n" +
+       "select max(modified)\n" +
        "from counting_site_domain", nativeQuery = true)
     Instant getCountingSiteDomainLastUpdated();
 
     @Query(value =
-       "select max(data_timestamp)\n" +
+       "select max(modified)\n" +
        "from counting_site_data", nativeQuery = true)
     Instant getCountingSiteDataLastUpdated();
 

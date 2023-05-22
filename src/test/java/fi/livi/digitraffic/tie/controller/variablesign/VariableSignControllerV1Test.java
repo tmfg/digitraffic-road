@@ -22,12 +22,12 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
 
     private void insertTestData() {
         entityManager.createNativeQuery(
-            "insert into device(id,updated_date,type,road_address,etrs_tm35fin_x,etrs_tm35fin_y,direction,carriageway) " +
-            "values('ID1',current_timestamp, 'NOPEUSRAJOITUS', '1 2 3',10, 20,'KASVAVA', 'NORMAALI');").executeUpdate();
+            "insert into device(id,type,road_address,etrs_tm35fin_x,etrs_tm35fin_y,direction,carriageway) " +
+            "values('ID1', 'NOPEUSRAJOITUS', '1 2 3',10, 20,'KASVAVA', 'NORMAALI');").executeUpdate();
 
         entityManager.createNativeQuery(
-            "insert into device_data(created_date,device_id,display_value,additional_information,effect_date,cause,reliability) " +
-                "values (current_timestamp,'ID1','80',null,current_date,null,'NORMAALI');").executeUpdate();
+            "insert into device_data(device_id,display_value,additional_information,effect_date,cause,reliability) " +
+                "values ('ID1','80',null,current_date,null,'NORMAALI');").executeUpdate();
 
         entityManager.createNativeQuery(
             "insert into device_data_row(device_data_id, screen, row_number, text) " +

@@ -38,12 +38,12 @@ public interface DeviceDataRepositoryV1 extends JpaRepository<DeviceData, Long> 
     List<TrafficSignHistoryV1> getDeviceDataByDeviceIdOrderByEffectDateDesc(final String deviceId);
 
     @Query(value =
-       "select max(created_date)\n" +
+       "select max(modified)\n" +
        "from device_data", nativeQuery = true)
     Instant getLastUpdated();
 
     @Query(value =
-       "select max(updated_timestamp)\n" +
+       "select max(modified)\n" +
        "from device_data_datex2", nativeQuery = true)
     Instant getDatex2LastUpdated();
 }
