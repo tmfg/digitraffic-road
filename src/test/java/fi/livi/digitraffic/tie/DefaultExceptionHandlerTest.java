@@ -1,8 +1,5 @@
 package fi.livi.digitraffic.tie;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_DATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_DATA_PATH;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -13,7 +10,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.util.Collections;
 
 import javax.validation.ConstraintViolationException;
 
@@ -27,14 +25,15 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsRootDataObjectDto;
+import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
+import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationDataDtoV1;
 import fi.livi.digitraffic.tie.service.BadRequestException;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.v1.TmsDataService;
+import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 
 public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
     @MockBean
-    private TmsDataService tmsDataService;
+    private TmsDataWebServiceV1 tmsDataService;
 
     @MockBean
     private Logger exceptionHandlerLogger;
@@ -46,12 +45,13 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
     }
 
     private ResultActions performQuery() throws Exception {
-        return mockMvc.perform(get(API_V1_BASE_PATH + API_DATA_PART_PATH + TMS_DATA_PATH + "/1"));
+        return mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/1" + TmsControllerV1.DATA));
     }
 
     @Test
     public void ok() throws Exception {
-        when(tmsDataService.findPublishableTmsData(anyLong())).thenReturn(new TmsRootDataObjectDto(ZonedDateTime.now()));
+        when(tmsDataService.findPublishableTmsData(anyLong()))
+            .thenReturn(new TmsStationDataDtoV1(1L,1L, Instant.now(), Collections.emptyList()));
 
         performQuery()
             .andExpect(status().isOk());

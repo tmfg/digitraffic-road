@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.QueryHint;
 
 import org.locationtech.jts.geom.Geometry;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,8 +20,6 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 public interface ForecastSectionRepository extends JpaRepository<ForecastSection, Long> {
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    @EntityGraph(attributePaths = { "road", "startRoadSection", "endRoadSection" },
-                 type = EntityGraph.EntityGraphType.LOAD)
     List<ForecastSection> findDistinctByVersionIsAndObsoleteDateIsNullOrderByNaturalIdAsc(final int version);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="400"))

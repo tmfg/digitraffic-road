@@ -18,7 +18,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -37,9 +36,7 @@ import org.springframework.web.servlet.resource.TransformedResource;
 
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2D2LogicalModelHttpMessageConverter;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
-import fi.livi.digitraffic.tie.controller.ApiPaths;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
-import fi.livi.digitraffic.tie.converter.Datex2MessagetypeParameterStringToEnumConverter;
 
 @ConditionalOnWebApplication
 @Configuration
@@ -62,7 +59,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     @Bean
     public Filter ShallowEtagHeaderFilter() {
         final ShallowEtagHeaderFilter shallowEtagHeaderFilter = new ShallowEtagHeaderFilter();
-        shallowEtagHeaderFilter.setWriteWeakETag(true);
+        shallowEtagHeaderFilter.setWriteWeakETag(false);
         return shallowEtagHeaderFilter;
     }
 
@@ -71,12 +68,6 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         // put first
         converters.add(0, new Jaxb2D2LogicalModelHttpMessageConverter(schemaDomainUrlAndPath));
         converters.add(0, new Jaxb2Datex2ResponseHttpMessageConverter(schemaDomainUrlAndPath));
-    }
-
-    @Override
-    public void addFormatters(final FormatterRegistry registry) {
-        // Converter for Controller Datex2Messagetype parameters
-        registry.addConverter(new Datex2MessagetypeParameterStringToEnumConverter());
     }
 
     @Override
@@ -138,9 +129,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 // By default many client's sends long list of accepted types or */* etc.
                 // If specific path is asked, then check if json is in accepted formats return json otherwise xml.
                 final String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
-                if (path.contains(ApiPaths.TRAFFIC_MESSAGES_DATEX2_PATH) ||
-                    path.contains(ApiPaths.TRAFFIC_DISORDERS_DATEX2_PATH) ||
-                    path.contains(ApiPaths.ROADWORKS_DATEX2_PATH)) {
+                if ( path.contains("datex2") ) {
                     return containsJson(fromHeaders) ?
                                 Collections.singletonList(DtMediaType.APPLICATION_JSON) :
                                 Collections.singletonList(DtMediaType.APPLICATION_XML);

@@ -4,19 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantDto;
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantRootDto;
+import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
+import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
-import fi.livi.digitraffic.tie.service.v1.TmsDataService;
+import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantUpdater;
@@ -24,7 +20,6 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 
 public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
-    private static final Logger log = LoggerFactory.getLogger(RoadStationStatusesUpdateJobTest.class);
     private static final String MS1 = "MS1";
     private static final String MS2 = "MS2";
     private static final String VVAPAAS1 = "VVAPAAS1";
@@ -37,8 +32,7 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
     @Autowired
     private TmsStationUpdater tmsStationUpdater;
 
-    @Autowired
-    private TmsDataService tmsDataService;
+    private TmsDataWebServiceV1 tmsDataWebServiceV1;
 
     @Autowired
     private LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceMock;
@@ -48,6 +42,11 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
 
     @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
+        if (!isBeanRegistered(TmsDataWebServiceV1.class)) {
+            final TmsDataWebServiceV1 tmsDataWebServiceV1 = beanFactory.createBean(TmsDataWebServiceV1.class);
+            beanFactory.registerSingleton(tmsDataWebServiceV1.getClass().getCanonicalName(), tmsDataWebServiceV1);
+            this.tmsDataWebServiceV1 = tmsDataWebServiceV1;
+        }
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuTmsStationMetadataClient);
     }
 
@@ -68,8 +67,8 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
         entityManager.flush();
         entityManager.clear();
 
-        TmsSensorConstantRootDto sensorConstantValuesBefore =
-            tmsDataService.findPublishableSensorConstants(false);
+        final TmsStationsSensorConstantsDataDtoV1 sensorConstantValuesBefore =
+            tmsDataWebServiceV1.findPublishableSensorConstants(false);
 
         // Now change lotju metadata and update tms sensor constants
         lotjuLAMMetatiedotServiceMock.setStateAfterChange(true);
@@ -79,8 +78,8 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
         entityManager.flush();
         entityManager.clear();
 
-        TmsSensorConstantRootDto sensorConstantValuesAfter =
-            tmsDataService.findPublishableSensorConstants(false);
+        final TmsStationsSensorConstantsDataDtoV1 sensorConstantValuesAfter =
+            tmsDataWebServiceV1.findPublishableSensorConstants(false);
 
         // Station lotjuId: naturalId
         // 1: 23001
@@ -121,16 +120,16 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
         assertNull(findConstantValue(TIEN_SUUNTA, 23826, sensorConstantValuesAfter));
 
         // Check constant values are updated
-        TmsSensorConstantValueDto vvapaas1WinterAfter = findConstantValue(VVAPAAS1, 23001, 101, sensorConstantValuesAfter);
-        TmsSensorConstantValueDto vvapaas1SummerAfter = findConstantValue(VVAPAAS1, 23001, 601, sensorConstantValuesAfter);
+        final TmsSensorConstantValueDto vvapaas1WinterAfter = findConstantValue(VVAPAAS1, 23001, 101, sensorConstantValuesAfter);
+        final TmsSensorConstantValueDto vvapaas1SummerAfter = findConstantValue(VVAPAAS1, 23001, 601, sensorConstantValuesAfter);
         // 95->100 ja 105->110
         assertEquals(100, (long) vvapaas1WinterAfter.getValue());
         assertEquals(110, (long) vvapaas1SummerAfter.getValue());
 
-        TmsSensorConstantValueDto vvapaas2WinterBefore = findConstantValue(VVAPAAS2, 23001, 101, sensorConstantValuesBefore);
-        TmsSensorConstantValueDto vvapaas2SummerBefore = findConstantValue(VVAPAAS2, 23001, 601, sensorConstantValuesBefore);
-        TmsSensorConstantValueDto vvapaas2WinterAfter = findConstantValue(VVAPAAS2, 23001, 101, sensorConstantValuesAfter);
-        TmsSensorConstantValueDto vvapaas2SummerAfter = findConstantValue(VVAPAAS2, 23001, 601, sensorConstantValuesAfter);
+        final TmsSensorConstantValueDto vvapaas2WinterBefore = findConstantValue(VVAPAAS2, 23001, 101, sensorConstantValuesBefore);
+        final TmsSensorConstantValueDto vvapaas2SummerBefore = findConstantValue(VVAPAAS2, 23001, 601, sensorConstantValuesBefore);
+        final TmsSensorConstantValueDto vvapaas2WinterAfter = findConstantValue(VVAPAAS2, 23001, 101, sensorConstantValuesAfter);
+        final TmsSensorConstantValueDto vvapaas2SummerAfter = findConstantValue(VVAPAAS2, 23001, 601, sensorConstantValuesAfter);
         // winter validity 1101 -> 1001 ja 331 -> 230, speed 95 -> 96
         // summer validity 401->301 ja 1031 -> 930, speed 105 -> 106
         assertEquals(1101, (long) vvapaas2WinterBefore.getValidFrom());
@@ -148,9 +147,9 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
     }
 
     private TmsSensorConstantValueDto findConstantValue(final String sensorConstantName, final long stationNaturalId,
-                                                        final int validDate, final TmsSensorConstantRootDto sensorConstantValues) {
-        TmsSensorConstantDto stationConstants = findSensorConstantsOfStation(stationNaturalId, sensorConstantValues);
-        return stationConstants.getSensorConstantValues()
+                                                        final int validDate, final TmsStationsSensorConstantsDataDtoV1 sensorConstantValues) {
+        final TmsStationSensorConstantDtoV1 stationConstants = findSensorConstantsOfStation(stationNaturalId, sensorConstantValues);
+        return stationConstants.sensorConstanValues
             .stream()
             .filter(v -> v.getName().equals(sensorConstantName)
                      && isValidOn(validDate, v))
@@ -164,10 +163,10 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
     }
 
     private TmsSensorConstantValueDto findConstantValue(final String sensorConstantName, final long stationNaturalId,
-                                                        TmsSensorConstantRootDto values) {
-        final TmsSensorConstantDto constants = findSensorConstantsOfStation(stationNaturalId, values);
+                                                        final TmsStationsSensorConstantsDataDtoV1 values) {
+        final TmsStationSensorConstantDtoV1 constants = findSensorConstantsOfStation(stationNaturalId, values);
         if (constants != null) {
-            return constants.getSensorConstantValues()
+            return constants.sensorConstanValues
                 .stream()
                 .filter(sc -> sc.getName().equals(sensorConstantName))
                 .findFirst()
@@ -176,13 +175,8 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
         return null;
     }
 
-    private TmsSensorConstantDto findSensorConstantsOfStation(final long stationNaturalId, TmsSensorConstantRootDto values) {
-        List<TmsSensorConstantDto> sensorConstants = values.getSensorConstantDtos();
-        return sensorConstants
-            .stream()
-            .filter(sc -> sc.getRoadStationId().equals(stationNaturalId))
-            .findFirst()
-            .orElse(null);
+    private TmsStationSensorConstantDtoV1 findSensorConstantsOfStation(final long stationNaturalId, final TmsStationsSensorConstantsDataDtoV1 values) {
+        return values.stations.stream().filter(s -> s.id.equals(stationNaturalId)).findFirst().orElseThrow();
     }
 
 }

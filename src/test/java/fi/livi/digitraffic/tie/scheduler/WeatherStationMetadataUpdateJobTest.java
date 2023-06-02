@@ -10,12 +10,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationFeatureCollection;
+import fi.livi.digitraffic.tie.controller.RoadStationState;
+import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureCollectionSimpleV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureDetailedV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureSimpleV1;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationType;
 import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
@@ -23,13 +24,11 @@ import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationsSensorsUpdater;
+import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
 
 public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
-
-    private static final Logger log = LoggerFactory.getLogger(WeatherStationMetadataUpdateJobTest.class);
 
     @Autowired
     private WeatherStationSensorUpdater weatherStationSensorUpdater;
@@ -41,24 +40,33 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
     private WeatherStationUpdater weatherStationUpdater;
 
     @Autowired
-    private WeatherStationService weatherStationService;
-
-    @Autowired
     private LotjuTiesaaPerustiedotServiceEndpointMock lotjuTiesaaPerustiedotServiceMock;
 
     @Autowired
     private RoadStationSensorService roadStationSensorService;
 
-    private WeatherStationFeatureCollection allInitial;
-    private WeatherStationFeatureCollection allAfterChange;
-    private Map<Long, RoadStationSensor> sensorsInitial;
-    private Map<Long, RoadStationSensor> sensorsAfterChange;
-
     @Autowired
     private LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
+    private WeatherStationMetadataWebServiceV1 weatherStationMetadataWebServiceV1;
+
+    private WeatherStationFeatureCollectionSimpleV1 stationsBefore;
+    private WeatherStationFeatureCollectionSimpleV1 stationsAfter;
+    private Map<Long, RoadStationSensor> sensorsInitial;
+    private Map<Long, RoadStationSensor> sensorsAfterChange;
+    private WeatherStationFeatureDetailedV1 station1Before;
+    private WeatherStationFeatureDetailedV1 station1After;
+    private WeatherStationFeatureDetailedV1 station2Before;
+    private WeatherStationFeatureDetailedV1 station2After;
+
 
     @BeforeEach
     public void setUpLotjuClientAndInitData() {
+        if (!isBeanRegistered(WeatherStationMetadataWebServiceV1.class)) {
+            final WeatherStationMetadataWebServiceV1 weatherStationMetadataWebServiceV1 = beanFactory.createBean(WeatherStationMetadataWebServiceV1.class);
+            beanFactory.registerSingleton(weatherStationMetadataWebServiceV1.getClass().getCanonicalName(), weatherStationMetadataWebServiceV1);
+            this.weatherStationMetadataWebServiceV1 = weatherStationMetadataWebServiceV1;
+        }
+
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuWeatherStationMetadataClient);
 
         lotjuTiesaaPerustiedotServiceMock.initStateAndService();
@@ -69,9 +77,11 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
         sensorsInitial = roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
 
-        allInitial =
-            weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
-        assertEquals(2, allInitial.getFeatures().size());
+        stationsBefore =
+            weatherStationMetadataWebServiceV1.findAllPublishableWeatherStationsAsSimpleFeatureCollection(false, RoadStationState.ACTIVE);
+        station1Before = weatherStationMetadataWebServiceV1.getWeatherStationById(1034L);
+        station2Before = weatherStationMetadataWebServiceV1.getWeatherStationById(1036L);
+        assertEquals(2, stationsBefore.getFeatures().size());
         sensorsInitial.values().forEach(s -> entityManager.detach(s));
 
         // Now change lotju metadata and update tms stations (3 non obsolete stations and 1 bsolete)
@@ -81,9 +91,11 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
         weatherStationsSensorsUpdater.updateWeatherStationsSensors();
 
         sensorsAfterChange = roadStationSensorService.findAllRoadStationSensorsMappedByLotjuId(RoadStationType.WEATHER_STATION);
-        allAfterChange =
-            weatherStationService.findAllPublishableWeatherStationAsFeatureCollection(false);
-        assertEquals(3, allAfterChange.getFeatures().size());
+        stationsAfter =
+            weatherStationMetadataWebServiceV1.findAllPublishableWeatherStationsAsSimpleFeatureCollection(false, RoadStationState.ACTIVE);
+        assertEquals(3, stationsAfter.getFeatures().size());
+        station1After = weatherStationMetadataWebServiceV1.getWeatherStationById(1034L);
+        station2After = weatherStationMetadataWebServiceV1.getWeatherStationById(1036L);
     }
 
     @AfterEach
@@ -93,48 +105,47 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
     // (name_fi ASC, road_station_type ASC, natural_id ASC, obsolete_date ASC);
     @Test
     public void testUpdateWeatherStations() {
-        assertNull(findWithLotjuId(allInitial, 33));
-        assertNotNull(findWithLotjuId(allInitial, 34));
-        assertNull(findWithLotjuId(allInitial, 35));
-        assertNotNull(findWithLotjuId(allInitial, 36));
+        assertNull(findWithNaturalId(stationsBefore, 1033));
+        assertNotNull(findWithNaturalId(stationsBefore, 1034));
+        assertNull(findWithNaturalId(stationsBefore, 1035));
+        assertNotNull(findWithNaturalId(stationsBefore, 1036));
 
-        assertNull(findWithLotjuId(allAfterChange, 33));
-        assertNotNull(findWithLotjuId(allAfterChange, 34));
-        assertNotNull(findWithLotjuId(allAfterChange, 35)); // removed temporary -> gathering
-        assertNotNull(findWithLotjuId(allAfterChange, 36));
+        assertNull(findWithNaturalId(stationsAfter, 1033));
+        assertNotNull(findWithNaturalId(stationsAfter, 1034));
+        assertNotNull(findWithNaturalId(stationsAfter, 1035)); // removed temporary -> gathering
+        assertNotNull(findWithNaturalId(stationsAfter, 1036));
 
-        final WeatherStationFeature before = findWithLotjuId(allInitial, 34);
-        final WeatherStationFeature after = findWithLotjuId(allAfterChange, 34);
+        assertEquals(station1Before.getProperties().getName() + "1", station1After.getProperties().getName());
 
-        assertEquals(before.getProperties().getName() + "1", after.getProperties().getName());
+        assertEquals(station1After.getProperties().getCollectionStatus(), CollectionStatus.GATHERING);
 
-        assertEquals(after.getProperties().getCollectionStatus(), CollectionStatus.GATHERING);
+        assertEquals(station1Before.getProperties().getNames().get("fi"), "Tie 3 Helsinki, Pirkkola");
+        assertEquals(station1Before.getProperties().getNames().get("sv"), "Väg 3 Helsingfors, Britas");
+        assertEquals(station1Before.getProperties().getNames().get("en"), "Road 3 Helsinki, Pirkkola");
 
-        assertEquals(before.getProperties().getNames().get("fi"), "Tie 3 Helsinki, Pirkkola");
-        assertEquals(before.getProperties().getNames().get("sv"), "Väg 3 Helsingfors, Britas");
-        assertEquals(before.getProperties().getNames().get("en"), "Road 3 Helsinki, Pirkkola");
+        assertEquals(station1After.getProperties().getNames().get("fi"), "Tie 3 Helsinki, Kirkkola");
+        assertEquals(station1After.getProperties().getNames().get("sv"), "Väg 3 Helsingfors, Kritas");
+        assertEquals(station1After.getProperties().getNames().get("en"), "Road 3 Helsinki, Kirkkola");
 
-        assertEquals(after.getProperties().getNames().get("fi"), "Tie 3 Helsinki, Kirkkola");
-        assertEquals(after.getProperties().getNames().get("sv"), "Väg 3 Helsingfors, Kritas");
-        assertEquals(after.getProperties().getNames().get("en"), "Road 3 Helsinki, Kirkkola");
+        assertEquals(station1Before.getProperties().getRoadAddress().distanceFromRoadSectionStart, 4715);
+        assertEquals(station1After.getProperties().getRoadAddress().distanceFromRoadSectionStart, 4716);
 
-        assertEquals(before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 4715);
-        assertEquals(after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart(), (Integer) 4716);
+        // For conversions https://www.retkikartta.fi/
+        final Point geomBefore = station1Before.getGeometry();
+        final Point geomAfter = station1After.getGeometry();
 
-        assertEquals(before.getProperties().getLongitudeETRS89(), 384007.0, 0.01);
-        assertEquals(after.getProperties().getLongitudeETRS89(), 384008.0, 0.01);
+        assertEquals(geomBefore.getLongitude(), 24.905725, 0.000001);
+        assertEquals(geomAfter.getLongitude(), 24.905742, 0.000001);
 
-        assertEquals(before.getProperties().getLatitudeETRS89(), 6678738.0, 0.01);
-        assertEquals(after.getProperties().getLatitudeETRS89(), 6678739.0, 0.01);
+        assertEquals(geomBefore.getLatitude(), 60.228845, 0.000001);
+        assertEquals(geomAfter.getLatitude(), 60.228854, 0.000001);
 
-        assertEquals(before.getProperties().getAltitudeETRS89(), 0.0, 0.01);
-        assertEquals(after.getProperties().getAltitudeETRS89(), 1.0, 0.01);
+        assertEquals(geomBefore.getAltitude(), 0.0, 0.01);
+        assertEquals(geomAfter.getAltitude(), 1.0, 0.01);
 
-        final WeatherStationFeature initial36 = findWithLotjuId(allInitial, 36);
-        final WeatherStationFeature after36 = findWithLotjuId(allAfterChange, 36);
 
-        final RoadStationSensor sensorInitial = findSensorWithLotjuId(initial36, 1, true);
-        final RoadStationSensor sensorAfter = findSensorWithLotjuId(after36, 1, false);
+        final RoadStationSensor sensorInitial = findSensorWithLotjuId(station2Before, 1, true);
+        final RoadStationSensor sensorAfter = findSensorWithLotjuId(station2After, 1, false);
 
         assertNotNull(sensorInitial);
         assertEquals("EsitysFi", sensorInitial.getPresentationNameFi());
@@ -161,35 +172,33 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
         assertEquals(10, sensorInitial.getAccuracy().intValue());
         assertEquals(1, sensorAfter.getAccuracy().intValue());
 
-        final RoadStationSensor sensor2Initial = findSensorWithLotjuId(initial36, 2, true);
-        final RoadStationSensor sensor2After = findSensorWithLotjuId(after36, 2, false);
+        final RoadStationSensor sensor2Initial = findSensorWithLotjuId(station2Before, 2, true);
+        final RoadStationSensor sensor2After = findSensorWithLotjuId(station2After, 2, false);
 
         assertNull(sensor2Initial);
         assertNotNull(sensor2After);
 
-        final RoadStationSensor sensor36Initial = findSensorWithLotjuId(initial36, 3, true);
-        final RoadStationSensor sensor36After = findSensorWithLotjuId(after36, 3, false);
+        final RoadStationSensor sensor36Initial = findSensorWithLotjuId(station2Before, 3, true);
+        final RoadStationSensor sensor36After = findSensorWithLotjuId(station2After, 3, false);
 
         assertNotNull(sensor36Initial);
         assertNull(sensor36After);
 
         assertEquals(CollectionStatus.GATHERING,
-                     findWithLotjuId(allAfterChange, 35).getProperties().getCollectionStatus());
+                     findWithNaturalId(stationsAfter, 1035).getProperties().getCollectionStatus());
     }
 
-    private WeatherStationFeature findWithLotjuId(final WeatherStationFeatureCollection collection, final long lotjuId) {
-        final Optional<WeatherStationFeature> initial =
-                collection.getFeatures().stream()
-                        .filter(x -> x.getProperties().getLotjuId() == lotjuId)
-                        .findFirst();
-        return initial.orElse(null);
+    private WeatherStationFeatureSimpleV1 findWithNaturalId(final WeatherStationFeatureCollectionSimpleV1 collection, final long naturalId) {
+        return collection.getFeatures().stream()
+                        .filter(x -> x.getProperties().id == naturalId)
+                        .findFirst().orElse(null);
     }
 
-    private RoadStationSensor findSensorWithLotjuId(final WeatherStationFeature feature, final long lotjuId, final boolean initial) {
+    private RoadStationSensor findSensorWithLotjuId(final WeatherStationFeatureDetailedV1 feature, final long lotjuId, final boolean initial) {
         final RoadStationSensor sensor = initial ? sensorsInitial.get(lotjuId) : sensorsAfterChange.get(lotjuId);
         if (sensor != null) {
             final Optional<Long> optional =
-                feature.getProperties().getStationSensors().stream()
+                feature.getProperties().sensors.stream()
                     .filter(naturalId -> naturalId == sensor.getNaturalId())
                     .findFirst();
             return optional.isPresent() ? sensor : null;

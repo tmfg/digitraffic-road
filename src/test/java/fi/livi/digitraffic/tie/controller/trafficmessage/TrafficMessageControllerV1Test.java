@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
+import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static fi.livi.digitraffic.tie.model.DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
@@ -8,6 +9,9 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituat
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createRegionGeometryFeatureCollection;
 import static fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper.createRegionsInDescOrderMappedByLocationCode;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -16,7 +20,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -226,6 +234,55 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         assertEquals(1, result.getFeatures().size());
         assertNotNull(result.getFeatures().get(0).getGeometry());
         assertEquals(3, result.getFeatures().get(0).getProperties().locationCode);
+    }
+
+    @Test
+    public void locationsApi() throws Exception {
+        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.type", is("FeatureCollection")))
+            .andExpect(jsonPath("$.features[0].type", is("Feature")))
+            .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
+            .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
+            .andExpect(jsonPath("$.features[0].properties.subtypeCode", isA(String.class)))
+            .andExpect(jsonPath("$.features[0].properties.firstName", isA(String.class)))
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        ;
+    }
+
+    @Test
+    public void locationsUpdatesOnlyApi() throws Exception {
+        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS)
+                .param("lastUpdated", "true"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.type", is("FeatureCollection")))
+            .andExpect(jsonPath("$.features").doesNotExist())
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        ;
+    }
+
+    @Test
+    public void locationsVersionsApi() throws Exception {
+        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.VERSIONS))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        ;
+    }
+
+    @Test
+    public void locationsTypesApi() throws Exception {
+        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.TYPES))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        ;
     }
 
     private void assertEmptyD2Situations(String xml) {

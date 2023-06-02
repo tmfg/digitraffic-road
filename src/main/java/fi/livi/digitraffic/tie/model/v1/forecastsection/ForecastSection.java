@@ -9,14 +9,10 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.locationtech.jts.geom.Geometry;
@@ -25,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
-import fi.livi.digitraffic.tie.model.v1.Road;
-import fi.livi.digitraffic.tie.model.v1.RoadSection;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionNaturalIdHelper;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -85,21 +79,6 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
 
     @Schema(description = "Forecast section obsolete date")
     private Date obsoleteDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="road_id")
-    @Fetch(FetchMode.JOIN)
-    private Road road;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="start_road_section_id")
-    @Fetch(FetchMode.JOIN)
-    private RoadSection startRoadSection;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="end_road_section_id")
-    @Fetch(FetchMode.JOIN)
-    private RoadSection endRoadSection;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("time")
@@ -219,30 +198,6 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         this.obsoleteDate = obsoleteDate;
     }
 
-    public Road getRoad() {
-        return road;
-    }
-
-    public void setRoad(Road road) {
-        this.road = road;
-    }
-
-    public RoadSection getStartRoadSection() {
-        return startRoadSection;
-    }
-
-    public void setStartRoadSection(RoadSection startRoadSection) {
-        this.startRoadSection = startRoadSection;
-    }
-
-    public RoadSection getEndRoadSection() {
-        return endRoadSection;
-    }
-
-    public void setEndRoadSection(RoadSection endRoadSection) {
-        this.endRoadSection = endRoadSection;
-    }
-
     public List<ForecastSectionWeather> getForecastSectionWeatherList() {
         return forecastSectionWeatherList;
     }
@@ -268,9 +223,6 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
                ", endDistance=" + endDistance +
                ", length=" + length +
                ", obsoleteDate=" + obsoleteDate +
-               ", road=" + road +
-               ", startRoadSection=" + startRoadSection +
-               ", endRoadSection=" + endRoadSection +
                '}';
     }
 

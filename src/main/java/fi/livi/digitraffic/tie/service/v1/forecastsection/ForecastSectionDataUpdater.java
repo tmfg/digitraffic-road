@@ -24,7 +24,7 @@ import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionWeather;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSectionWeatherPK;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
+import fi.livi.digitraffic.tie.service.weather.v1.forecast.ForecastWebDataServiceV1;
 
 @ConditionalOnNotWebApplication
 @Service
@@ -34,7 +34,7 @@ public class ForecastSectionDataUpdater {
     private final ForecastSectionClient forecastSectionClient;
 
     private final ForecastSectionRepository forecastSectionRepository;
-    private DataStatusService dataStatusService;
+    private final DataStatusService dataStatusService;
 
     @Autowired
     public ForecastSectionDataUpdater(final ForecastSectionClient forecastSectionClient, final ForecastSectionRepository forecastSectionRepository,
@@ -48,9 +48,9 @@ public class ForecastSectionDataUpdater {
     public Instant updateForecastSectionWeatherData(final ForecastSectionApiVersion version) {
         final ForecastSectionDataDto data = forecastSectionClient.getRoadConditions(version.getVersion());
 
-        dataStatusService.updateDataUpdated(ForecastSectionDataService.getDataCheckDataType(version));
+        dataStatusService.updateDataUpdated(ForecastWebDataServiceV1.getDataCheckDataType(version));
         final Instant messageTimestamp = data.messageTimestamp.toInstant();
-        final DataType updateDataType = ForecastSectionDataService.getDataUpdatedDataType(version);
+        final DataType updateDataType = ForecastWebDataServiceV1.getDataUpdatedDataType(version);
         final ZonedDateTime previousTimestamp = dataStatusService.findDataUpdatedTime(updateDataType);
         if (previousTimestamp != null && previousTimestamp.toInstant().isAfter(messageTimestamp)) {
             log.warn("method=updateForecastSectionWeatherData timestamp warning: apiVersion={} previousTimestamp={} > latestTimestamp={}. " +

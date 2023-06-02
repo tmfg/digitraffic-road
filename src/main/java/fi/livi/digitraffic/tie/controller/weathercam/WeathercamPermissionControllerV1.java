@@ -1,6 +1,6 @@
-package fi.livi.digitraffic.tie.controller;
+package fi.livi.digitraffic.tie.controller.weathercam;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHERCAM_PATH;
+import static fi.livi.digitraffic.tie.controller.weathercam.WeathercamPermissionControllerV1.WEATHERCAM_PATH;
 import static fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus.PUBLIC;
 
 import org.slf4j.Logger;
@@ -24,18 +24,19 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.
 @Validated
 @RequestMapping(WEATHERCAM_PATH)
 @ConditionalOnWebApplication
-public class WeathercamPermissionController {
+public class WeathercamPermissionControllerV1 {
 
-    private static final Logger log = LoggerFactory.getLogger(WeathercamPermissionController.class);
+    private static final Logger log = LoggerFactory.getLogger(WeathercamPermissionControllerV1.class);
 
+    public static final String WEATHERCAM_PATH = "/weathercam";
     private static final String VERSION_ID_PARAM = "versionId";
 
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
     private final WeathercamS3Properties weathercamS3Properties;
 
     @Autowired
-    public WeathercamPermissionController(final CameraPresetHistoryDataService cameraPresetHistoryDataService,
-                                          final WeathercamS3Properties weathercamS3Properties) {
+    public WeathercamPermissionControllerV1(final CameraPresetHistoryDataService cameraPresetHistoryDataService,
+                                            final WeathercamS3Properties weathercamS3Properties) {
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
         this.weathercamS3Properties = weathercamS3Properties;
     }

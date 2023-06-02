@@ -14,7 +14,6 @@ import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
-import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.dao.LockingDao;
 import fi.livi.digitraffic.tie.dao.SensorValueHistoryDao;
 import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
@@ -38,7 +37,6 @@ import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.location.LocationWebServiceV1;
 import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
-import fi.livi.digitraffic.tie.service.v1.TmsDataService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageReader;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
@@ -69,7 +67,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
          // services
          LocationService.class, CameraPresetService.class, TmsStationService.class, DataStatusService.class,
          RoadStationService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
-         TmsDataService.class, CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class, FileHttpGetClient.class,
+         CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class, FileHttpGetClient.class,
          CameraPresetHistoryUpdateService.class, FlywayService.class,
          WeatherService.class, SensorDataUpdateService.class,
          ImsJsonConverter.class, V2Datex2UpdateService.class,
@@ -85,7 +83,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
          MaintenanceTrackingMqttDataService.class, LocationWebServiceV1.class,
 
          // converters
-         TmsStationMetadata2FeatureConverter.class, CoordinateConverter.class, StationSensorConverterService.class,
+         CoordinateConverter.class, StationSensorConverterService.class,
          ObjectMapper.class,
 
          // daos

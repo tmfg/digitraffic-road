@@ -13,28 +13,26 @@ import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 
+import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureCollectionSimpleV1;
+import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureDetailedV1;
+import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureSimpleV1;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationSensorDto;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
-import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeature;
-import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationFeatureCollection;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.VehicleClass;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsSensorUpdater;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationsSensorsUpdater;
 
 public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
-
-    private static final Logger log = LoggerFactory.getLogger(TmsStationMetadataUpdateJobTest.class);
 
     @Autowired
     private TmsSensorUpdater tmsSensorUpdater;
@@ -46,9 +44,6 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
     private TmsStationUpdater tmsStationUpdater;
 
     @Autowired
-    private TmsStationService tmsStationService;
-
-    @Autowired
     private RoadStationSensorService roadStationSensorService;
 
     @Autowired
@@ -57,10 +52,16 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
     @Autowired
     private LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
 
+    private TmsStationMetadataWebServiceV1 tmsStationMetadataWebServiceV1;
     private DestinationProvider originalDestinationProvider;
 
     @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
+        if (!isBeanRegistered(TmsStationMetadataWebServiceV1.class)) {
+            final TmsStationMetadataWebServiceV1 tmsStationMetadataWebServiceV1 = beanFactory.createBean(TmsStationMetadataWebServiceV1.class);
+            beanFactory.registerSingleton(tmsStationMetadataWebServiceV1.getClass().getCanonicalName(), tmsStationMetadataWebServiceV1);
+            this.tmsStationMetadataWebServiceV1 = tmsStationMetadataWebServiceV1;
+        }
         setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuTmsStationMetadataClient);
     }
 
@@ -84,15 +85,19 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
         tmsSensorUpdater.updateTmsSensors();
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
-//        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
-//        tmsStationsSensorsUpdater.updateTmsStationsSensorConstantsValues();
 
-        final TmsStationFeatureCollection allInitial =
-                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
-        final TmsRoadStationsSensorsMetadata allSensorsInitial =
+        final long naturalIdToCheck1 = 23826;
+        final long naturalIdToCheck2 = 23001;
+
+
+        final TmsStationFeatureCollectionSimpleV1 allStationsBefore =
+            tmsStationMetadataWebServiceV1.findAllPublishableTmsStationsAsSimpleFeatureCollection(false, ACTIVE);
+        final TmsRoadStationsSensorsMetadata allSensorsBefore =
             roadStationSensorService.findTmsRoadStationsSensorsMetadata(false);
+        final TmsStationFeatureDetailedV1 station1Before = tmsStationMetadataWebServiceV1.getTmsStationById(naturalIdToCheck1);
+        final TmsStationFeatureDetailedV1 station2Before = tmsStationMetadataWebServiceV1.getTmsStationById(naturalIdToCheck2);
 
-        assertEquals(3, allInitial.getFeatures().size());
+        assertEquals(3, allStationsBefore.getFeatures().size());
 
 
         // Now change lotju metadata and update tms stations (2 non obsolete stations and 2 obsolete)
@@ -100,99 +105,90 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
         tmsSensorUpdater.updateTmsSensors();
         tmsStationUpdater.updateTmsStations();
         tmsStationsSensorsUpdater.updateTmsStationsSensors();
-//        tmsStationsSensorsUpdater.updateTmsStationsSensorConstants();
-//        tmsStationsSensorsUpdater.updateTmsStationsSensorConstantsValues();
 
-        final TmsStationFeatureCollection allAfterChange =
-                tmsStationService.findAllPublishableTmsStationsAsFeatureCollection(false, ACTIVE);
+        final TmsStationFeatureCollectionSimpleV1 allStationsAfterChange =
+            tmsStationMetadataWebServiceV1.findAllPublishableTmsStationsAsSimpleFeatureCollection(false, ACTIVE);
         final TmsRoadStationsSensorsMetadata allSensorsAfterChange =
             roadStationSensorService.findTmsRoadStationsSensorsMetadata(false);
-        assertEquals(2, allAfterChange.getFeatures().size());
+        final TmsStationFeatureDetailedV1 station1After =
+            tmsStationMetadataWebServiceV1.getTmsStationById(naturalIdToCheck1);
+        final TmsStationFeatureDetailedV1 station2After =
+            tmsStationMetadataWebServiceV1.getTmsStationById(naturalIdToCheck2);
+        assertEquals(2, allStationsAfterChange.getFeatures().size());
 
-        assertNotNull(findWithLotjuId(allInitial, 1));
-        assertNull(findWithLotjuId(allInitial, 2));
-        assertNotNull(findWithLotjuId(allInitial, 310));
-        assertNotNull(findWithLotjuId(allInitial, 581));
+        assertNotNull(findWithNaturalId(allStationsBefore, 23001));
+        assertNull(findWithNaturalId(allStationsBefore, 23002));
+        assertNotNull(findWithNaturalId(allStationsBefore, 23826));
+        assertNotNull(findWithNaturalId(allStationsBefore, 23005));
 
-        assertNotNull(findWithLotjuId(allAfterChange, 1));
-        assertNull(findWithLotjuId(allAfterChange, 2));
-        assertNotNull(findWithLotjuId(allAfterChange, 310));
-        assertNull(findWithLotjuId(allAfterChange, 581));
+        assertNotNull(findWithNaturalId(allStationsAfterChange, 23001));
+        assertNull(findWithNaturalId(allStationsAfterChange, 23002));
+        assertNotNull(findWithNaturalId(allStationsAfterChange, 23826));
+        assertNull(findWithNaturalId(allStationsAfterChange, 23005));
 
-        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allInitial, 1).getProperties().getCollectionStatus());
-        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allInitial, 310).getProperties().getCollectionStatus());
-        assertEquals(CollectionStatus.REMOVED_TEMPORARILY, findWithLotjuId(allInitial, 581).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.GATHERING, findWithNaturalId(allStationsBefore, 23001).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.GATHERING, findWithNaturalId(allStationsBefore, 23826).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.REMOVED_TEMPORARILY, findWithNaturalId(allStationsBefore, 23005).getProperties().getCollectionStatus());
 
-        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allAfterChange, 1).getProperties().getCollectionStatus());
-        assertEquals(CollectionStatus.GATHERING, findWithLotjuId(allAfterChange, 310).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.GATHERING, findWithNaturalId(allStationsAfterChange, 23001).getProperties().getCollectionStatus());
+        assertEquals(CollectionStatus.GATHERING, findWithNaturalId(allStationsAfterChange, 23826).getProperties().getCollectionStatus());
 
-        final TmsStationFeature before = findWithLotjuId(allInitial, 310);
-        final TmsStationFeature after = findWithLotjuId(allAfterChange, 310);
 
-        assertEquals("vt5_Iisalmi", before.getProperties().getName());
-        assertEquals("vt5_Iidensalmi", after.getProperties().getName());
+        assertEquals("vt5_Iisalmi", station1Before.getProperties().getName());
+        assertEquals("vt5_Iidensalmi", station1After.getProperties().getName());
 
         // For conversions https://www.retkikartta.fi/
-        assertEquals(512504.0, before.getProperties().getLongitudeETRS89(), 0.001);
-        assertEquals(522504.0, after.getProperties().getLongitudeETRS89(), 0.001);
-        assertEquals(7048771.0, before.getProperties().getLatitudeETRS89(), 0.001);
-        assertEquals(7148771.0, after.getProperties().getLatitudeETRS89(), 0.001);
-        assertEquals(0.0, before.getProperties().getAltitudeETRS89(), 0.001);
-        assertEquals(1.0, after.getProperties().getAltitudeETRS89(), 0.001);
+        final Point geomBefore = station1Before.getGeometry();
+        final Point geomAfter = station1After.getGeometry();
 
-        assertEquals(27.25177, before.getGeometry().getLongitude(), 0.00005);
-        assertEquals(27.46787, after.getGeometry().getLongitude(), 0.00005);
+        assertEquals(27.251752, geomBefore.getLongitude(), 0.000001);
+        assertEquals(27.467862, geomAfter.getLongitude(), 0.000001);
 
-        assertEquals(63.56682, before.getGeometry().getLatitude(), 0.00005);
-        assertEquals(64.46370, after.getGeometry().getLatitude(), 0.00005);
+        assertEquals(63.566830, geomBefore.getLatitude(), 0.000001);
+        assertEquals(64.463708, geomAfter.getLatitude(), 0.000001);
 
-        assertEquals(0.0, before.getGeometry().getAltitude(), 0.00005);
-        assertEquals(1.0, after.getGeometry().getAltitude(), 0.00005);
+        assertEquals(0.0, geomBefore.getAltitude(), 0.00005);
+        assertEquals(1.0, geomAfter.getAltitude(), 0.00005);
 
-        assertEquals((Integer) 4750, before.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
-        assertEquals((Integer) 4751, after.getProperties().getRoadAddress().getDistanceFromRoadSectionStart());
+        assertEquals(4750, station1Before.getProperties().getRoadAddress().distanceFromRoadSectionStart);
+        assertEquals(4751, station1After.getProperties().getRoadAddress().distanceFromRoadSectionStart);
 
-        assertEquals((Integer) 300, before.getProperties().getCollectionInterval());
-        assertEquals((Integer) 301, after.getProperties().getCollectionInterval());
+        assertEquals(300, station1Before.getProperties().getCollectionInterval());
+        assertEquals(301, station1After.getProperties().getCollectionInterval());
 
-        assertEquals("Pohjois-Savo", before.getProperties().getProvince());
-        assertEquals("Pohjois-Savvoo", after.getProperties().getProvince());
+        assertEquals("Pohjois-Savo", station1Before.getProperties().getProvince());
+        assertEquals("Pohjois-Savvoo", station1After.getProperties().getProvince());
 
-        assertEquals("Tie 5 Iisalmi", before.getProperties().getNames().get("fi"));
-        assertEquals("Tie 5 Idensalmi", after.getProperties().getNames().get("fi"));
+        assertEquals("Tie 5 Iisalmi", station1Before.getProperties().getNames().get("fi"));
+        assertEquals("Tie 5 Idensalmi", station1After.getProperties().getNames().get("fi"));
 
-        assertEquals("Väg 5 Idensalmi", before.getProperties().getNames().get("sv"));
-        assertEquals("Väg 5 Idensalmi", after.getProperties().getNames().get("sv"));
+        assertEquals("Väg 5 Idensalmi", station1Before.getProperties().getNames().get("sv"));
+        assertEquals("Väg 5 Idensalmi", station1After.getProperties().getNames().get("sv"));
 
-        assertEquals("Road 5 Iisalmi", before.getProperties().getNames().get("en"));
-        assertEquals("Road 5 Idensalmi", after.getProperties().getNames().get("en"));
+        assertEquals("Road 5 Iisalmi", station1Before.getProperties().getNames().get("en"));
+        assertEquals("Road 5 Idensalmi", station1After.getProperties().getNames().get("en"));
 
-        assertEquals("Kajaani", before.getProperties().getDirection1Municipality());
-        assertEquals("Kajaaniin", after.getProperties().getDirection1Municipality());
+        assertEquals("Kajaani", station1Before.getProperties().direction1Municipality);
+        assertEquals("Kajaaniin", station1After.getProperties().direction1Municipality);
 
-        assertEquals("Kuopio", before.getProperties().getDirection2Municipality());
-        assertEquals("Kuopioon", after.getProperties().getDirection2Municipality());
+        assertEquals("Kuopio", station1Before.getProperties().direction2Municipality);
+        assertEquals("Kuopioon", station1After.getProperties().direction2Municipality);
 
-        final TmsStationFeature before1 = findWithLotjuId(allInitial, 1);
-        final TmsStationFeature after1 = findWithLotjuId(allAfterChange, 1);
 
-        List<Long> sensorsInitial = before1.getProperties().getStationSensors();
-        List<Long> sensorsAfter = after1.getProperties().getStationSensors();
+        final List<Long> station2SensorsBefore = station2Before.getProperties().sensors;
+        final List<Long> station2SensorsAfter = station2After.getProperties().sensors;
 
-        log.info("sensorsInitial={}", sensorsInitial);
-        log.info("sensorsAfter={}", sensorsAfter);
+        assertTrue(station2SensorsBefore.contains(5116L));
+        assertTrue(station2SensorsBefore.contains(5119L));
+        assertTrue(station2SensorsBefore.contains(5122L));
+        assertFalse(station2SensorsBefore.contains(5125L));
 
-        assertTrue(sensorsInitial.contains(5116L));
-        assertTrue(sensorsInitial.contains(5119L));
-        assertTrue(sensorsInitial.contains(5122L));
-        assertFalse(sensorsInitial.contains(5125L));
+        assertTrue(station2SensorsAfter.contains(5116L));
+        assertFalse(station2SensorsAfter.contains(5119L)); // public false
+        assertFalse(station2SensorsAfter.contains(5122L));
+        assertTrue(station2SensorsAfter.contains(5125L));
 
-        assertTrue(sensorsAfter.contains(5116L));
-        assertFalse(sensorsAfter.contains(5119L)); // public false
-        assertFalse(sensorsAfter.contains(5122L));
-        assertTrue(sensorsAfter.contains(5125L));
-
-        TmsRoadStationSensorDto initialSensor = allSensorsInitial.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
+        TmsRoadStationSensorDto initialSensor = allSensorsBefore.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
         TmsRoadStationSensorDto afterChangeSensor = allSensorsAfterChange.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
         assertNull(initialSensor.getDirection());
         assertNull(initialSensor.getLane());
@@ -203,10 +199,10 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
         assertEquals(VehicleClass.TRUCK, afterChangeSensor.getVehicleClass());
     }
 
-    private TmsStationFeature findWithLotjuId(final TmsStationFeatureCollection collection, final long lotjuId) {
-        final Optional<TmsStationFeature> initial =
+    private TmsStationFeatureSimpleV1 findWithNaturalId(final TmsStationFeatureCollectionSimpleV1 collection, final long naturalId) {
+        final Optional<TmsStationFeatureSimpleV1> initial =
                 collection.getFeatures().stream()
-                        .filter(x -> x.getProperties().getLotjuId() == lotjuId)
+                        .filter(x -> x.getProperties().id == naturalId)
                         .findFirst();
         return initial.orElse(null);
     }

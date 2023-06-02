@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.WEATHERCAM_PATH;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,13 +21,14 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
+import fi.livi.digitraffic.tie.controller.weathercam.WeathercamPermissionControllerV1;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
 
-public class WeathercamPermissionControllerTest extends AbstractRestWebTest {
+public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
 
-    private static final Logger log = LoggerFactory.getLogger(WeathercamPermissionControllerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(WeathercamPermissionControllerV1Test.class);
 
     @Autowired
     private WeathercamS3Properties weathercamS3Properties;
@@ -105,7 +106,7 @@ public class WeathercamPermissionControllerTest extends AbstractRestWebTest {
     }
 
     private MockHttpServletResponse requestImage(final String imageName, final String versionId) throws Exception {
-        final URI uri = URI.create(WEATHERCAM_PATH + "/" + imageName + "?versionId=" + versionId);
+        final URI uri = URI.create(WeathercamPermissionControllerV1.WEATHERCAM_PATH + "/" + imageName + "?versionId=" + versionId);
         log.info("Request uri: {}", uri);
         final MockHttpServletRequestBuilder get = get(uri);
 

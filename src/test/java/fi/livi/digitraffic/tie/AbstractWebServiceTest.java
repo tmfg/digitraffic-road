@@ -15,8 +15,6 @@ import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
-import fi.livi.digitraffic.tie.converter.feature.TmsStationMetadata2FeatureConverter;
-import fi.livi.digitraffic.tie.converter.feature.WeatherStationMetadata2FeatureConverter;
 import fi.livi.digitraffic.tie.converter.tms.v1.TmsStationToFeatureConverterV1;
 import fi.livi.digitraffic.tie.converter.weather.v1.WeatherStationToFeatureConverterV1;
 import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1;
@@ -68,8 +66,8 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
          TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, MaintenanceTrackingDaoV1.class,
 
          // Conveters
-         TmsStationMetadata2FeatureConverter.class, TmsStationToFeatureConverterV1.class,
-         WeatherStationMetadata2FeatureConverter.class, WeatherStationToFeatureConverterV1.class,
+         TmsStationToFeatureConverterV1.class,
+         WeatherStationToFeatureConverterV1.class,
          TrafficMessageJsonConverterV1.class, V2Datex2JsonConverter.class, ImsJsonConverter.class, CoordinateConverter.class,
 
          // Test helpers etc.

@@ -194,7 +194,7 @@
           "overallRoadCondition": 1,
           "reliability": 1,
           "roadTemperature": "+12",
-          "temperature": "+8",
+          "temperature": "-1",
           "weatherSymbol": "d200",
           "windDirection": 199,
           "windSpeed": 3,

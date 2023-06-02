@@ -2,14 +2,12 @@ package fi.livi.digitraffic.tie.data.dao;
 
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType.TRAFFIC_INCIDENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -98,8 +96,6 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
     @Test
     public void activeInPastHours() {
 
-        final String[] array = Arrays.stream(SituationType.values()).map(t -> t.name()).toArray(String[]::new);
-
         final String pastSituationId = "GUID12345678";
         final List<Datex2> beroreActive10Hours = datex2Repository.findAllActiveBySituationType(10, TRAFFIC_ANNOUNCEMENT.name());
         // Situation should not exist
@@ -123,7 +119,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                 .anyMatch(s -> s.getSituationId().equals(pastSituationId))));
     }
 
-    private Datex2 createDatex2InPast2h(final String situationId, final SituationType type, final TrafficAnnouncementType trafficAnnouncementType) {
+    private void createDatex2InPast2h(final String situationId, final SituationType type, final TrafficAnnouncementType trafficAnnouncementType) {
         final Datex2 datex2 = new Datex2(type, trafficAnnouncementType);
         datex2.setImportTime(ZonedDateTime.now());
         datex2.setMessage("xml message");
@@ -149,7 +145,6 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         datex2Repository.save(datex2);
         datex2Repository.flush(); // native query used in findActive
 
-        return datex2;
     }
 
 }

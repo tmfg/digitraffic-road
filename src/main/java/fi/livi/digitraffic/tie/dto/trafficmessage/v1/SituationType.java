@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2MessageType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Traffic Announcement situation type", name = "SituationTypeV1", defaultValue = "TRAFFIC_ANNOUNCEMENT", enumAsRef = true)
@@ -39,24 +38,6 @@ public enum SituationType {
             throw new IllegalArgumentException(value);
         } else {
             return constant;
-        }
-    }
-
-    /**
-     * For legacy support
-     * @return Type of the message
-     * @deprecated
-     */
-    public Datex2MessageType getDatex2MessageType() {
-        switch (this) {
-            case TRAFFIC_ANNOUNCEMENT:
-            case EXEMPTED_TRANSPORT:
-                return Datex2MessageType.TRAFFIC_INCIDENT;
-            case WEIGHT_RESTRICTION:
-                return Datex2MessageType.WEIGHT_RESTRICTION;
-            case ROAD_WORK:
-                return Datex2MessageType.ROADWORK;
-            default: throw new IllegalArgumentException("Unmapped type " + this);
         }
     }
 }

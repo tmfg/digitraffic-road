@@ -26,7 +26,9 @@ import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionWeatherDto
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionWeatherForecastDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionsWeatherDtoV1;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
+import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
@@ -177,5 +179,21 @@ public class ForecastWebDataServiceV1 {
                     .collect(Collectors.toList());
         log.info("method=createForecastSectionWeatherDtos tookMs={}", time.getTime());
         return dtos;
+    }
+
+    public static DataType getDataUpdatedDataType(final ForecastSectionApiVersion version) {
+        switch (version) {
+        case V1: return DataType.FORECAST_SECTION_WEATHER_DATA;
+        case V2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA;
+        default: throw new IllegalArgumentException("Unknown ForecastSectionApiVersion " + version);
+        }
+    }
+
+    public static DataType getDataCheckDataType(final ForecastSectionApiVersion version) {
+        switch (version) {
+        case V1: return DataType.FORECAST_SECTION_WEATHER_DATA_CHECK;
+        case V2: return DataType.FORECAST_SECTION_V2_WEATHER_DATA_CHECK;
+        default: throw new IllegalArgumentException("Unknown ForecastSectionApiVersion " + version);
+        }
     }
 }

@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MAX_DOUBLE;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MIN_DOUBLE;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX_DOUBLE;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN_DOUBLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Instant;
@@ -17,21 +21,22 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureV1;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2Feature;
-import fi.livi.digitraffic.tie.metadata.geojson.forecastsection.ForecastSectionV2FeatureCollection;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
+import fi.livi.digitraffic.tie.service.weather.v1.forecast.ForecastWebDataServiceV1;
 
-public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
+public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    private V2ForecastSectionMetadataService v2ForecastSectionMetadataService;
+    private ForecastWebDataServiceV1 v2ForecastSectionMetadataService;
 
     @Autowired
     private V2ForecastSectionMetadataDao v2ForecastSectionMetadataDao;
@@ -53,6 +58,9 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     @MockBean(answer = Answers.CALLS_REAL_METHODS)
     private V2ForecastSectionMetadataUpdater forecastSectionMetadataUpdaterMockRealMethods;
 
+    final org.locationtech.jts.geom.Geometry AREA =
+        PostgisGeometryUtils.createSquarePolygonFromMinMax(X_MIN_DOUBLE, X_MAX_DOUBLE,
+                                                           Y_MIN_DOUBLE, Y_MAX_DOUBLE);
 
     @BeforeEach
     public void before() {
@@ -73,22 +81,21 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
         final Instant updated = forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
         final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA).toInstant();
-        final Instant lastChecked = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA_CHECK).toInstant();
 
         assertEquals(updated, lastUpdated);
 
-        final ForecastSectionV2FeatureCollection featureCollection =
-            v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null, null, null, null, null,
-                                                                          null);
+        final ForecastSectionFeatureCollectionV1 featureCollection =
+            v2ForecastSectionMetadataService.findForecastSections(false,false, null,
+                                                                  X_MIN_DOUBLE, Y_MIN_DOUBLE,
+                                                                  X_MAX_DOUBLE, Y_MAX_DOUBLE);
+        final Instant lastModified = forecastSectionRepository.getLastModified(2, AREA, null);
+        assertEquals(lastModified, featureCollection.dataUpdatedTime);
 
-        assertEquals(updated, featureCollection.dataUpdatedTime.toInstant());
-        assertEquals(lastChecked.getEpochSecond(), featureCollection.dataLastCheckedTime.toEpochSecond(), 2);
-
-        final ForecastSectionV2Feature feature = featureCollection.getFeatures().get(0);
+        final ForecastSectionFeatureV1 feature = featureCollection.getFeatures().get(0);
         assertEquals(11, featureCollection.getFeatures().size());
-        assertEquals("00004_229_00307_1_0", feature.getProperties().getNaturalId());
+        assertEquals("00004_229_00307_1_0", feature.getProperties().id);
 
-        final List<List<List<Double>>> coordinates = feature.getGeometry().getCoordinates();
+        final List<List<List<Double>>> coordinates = (List<List<List<Double>>>) feature.getGeometry().getCoordinates();
         assertEquals(2, coordinates.get(0).size());
 
         assertCoordinates(25.9564265, coordinates.get(0).get(0).get(0));
@@ -101,13 +108,13 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
         assertCoordinates(25.9564265, coordinates.get(15).get(75).get(0));
         assertCoordinates(62.1203392, coordinates.get(15).get(75).get(1));
 
-        assertEquals(2, feature.getProperties().getRoadSegments().size());
-        assertEquals(307, feature.getProperties().getRoadSegments().get(0).getStartDistance().intValue());
-        assertEquals(2830, feature.getProperties().getRoadSegments().get(0).getEndDistance().intValue());
+        assertEquals(2, feature.getProperties().roadSegments.size());
+        assertEquals(307, feature.getProperties().roadSegments.get(0).startDistance.intValue());
+        assertEquals(2830, feature.getProperties().roadSegments.get(0).endDistance.intValue());
 
-        assertEquals(13, feature.getProperties().getLinkIdList().size());
-        assertEquals(5742592L, feature.getProperties().getLinkIdList().get(0).longValue());
-        assertEquals(12471709L, feature.getProperties().getLinkIdList().get(12).longValue());
+        assertEquals(13, feature.getProperties().linkIds.size());
+        assertEquals(5742592L, feature.getProperties().linkIds.get(0).longValue());
+        assertEquals(12471709L, feature.getProperties().linkIds.get(12).longValue());
     }
 
     @Test
@@ -117,26 +124,26 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
         forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
 
-        final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, 941,
-                                                                                                                                   null, null,
-                                                                                                                                   null, null,
-                                                                                                                                   null);
+        final ForecastSectionFeatureCollectionV1 featureCollection =
+            v2ForecastSectionMetadataService.findForecastSections(false, false, 941,
+                                                                  X_MIN_DOUBLE, Y_MIN_DOUBLE,
+                                                                  X_MAX_DOUBLE, Y_MAX_DOUBLE);
 
         assertEquals(1, featureCollection.getFeatures().size());
 
-        final ForecastSectionV2Feature feature1 = featureCollection.getFeatures().get(0);
+        final ForecastSectionFeatureV1 feature1 = featureCollection.getFeatures().get(0);
 
-        assertEquals("00941_010_00000_0_0", feature1.getProperties().getNaturalId());
-        assertEquals("Posiontie, Ranuantie 941.10", feature1.getProperties().getDescription());
-        assertEquals(1, feature1.getProperties().getRoadSegments().size());
-        assertEquals(9, feature1.getProperties().getLinkIdList().size());
+        assertEquals("00941_010_00000_0_0", feature1.getProperties().id);
+        assertEquals("Posiontie, Ranuantie 941.10", feature1.getProperties().description);
+        assertEquals(1, feature1.getProperties().roadSegments.size());
+        assertEquals(9, feature1.getProperties().linkIds.size());
         assertEquals(Geometry.Type.MultiLineString, feature1.getGeometry().getType());
         assertEquals(11, feature1.getGeometry().getCoordinates().size());
-        assertEquals(22, feature1.getGeometry().getCoordinates().get(0).size());
-        assertCoordinates(27.3965783, feature1.getGeometry().getCoordinates().get(0).get(0).get(0));
-        assertCoordinates(65.9882322, feature1.getGeometry().getCoordinates().get(0).get(0).get(1));
-        assertCoordinates(27.4148914, feature1.getGeometry().getCoordinates().get(10).get(18).get(0));
-        assertCoordinates(65.9934206, feature1.getGeometry().getCoordinates().get(10).get(18).get(1));
+        assertEquals(22, ((List<Double>)feature1.getGeometry().getCoordinates().get(0)).size());
+        assertCoordinates(27.3965783, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(0)).get(0).get(0));
+        assertCoordinates(65.9882322, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(0)).get(0).get(1));
+        assertCoordinates(27.4148914, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(10)).get(18).get(0));
+        assertCoordinates(65.9934206, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(10)).get(18).get(1));
     }
 
     @Test
@@ -146,13 +153,9 @@ public class V2ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
         forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
 
-        final ForecastSectionV2FeatureCollection featureCollection = v2ForecastSectionMetadataService.getForecastSectionV2Metadata(false, null,
-                                                                                                                                   null, null,
-                                                                                                                                   null, null,
-                                                                                                                                   List.of("00941_010_00000_0_0"));
+        final ForecastSectionFeatureV1 feature = v2ForecastSectionMetadataService.getForecastSectionById(false,"00941_010_00000_0_0");
 
-        assertEquals(1, featureCollection.getFeatures().size());
-        assertEquals("00941_010_00000_0_0", featureCollection.getFeatures().get(0).getProperties().getNaturalId());
+        assertEquals("00941_010_00000_0_0", feature.getProperties().id);
     }
 
     private void assertCoordinates(final double expected, final double actual) {

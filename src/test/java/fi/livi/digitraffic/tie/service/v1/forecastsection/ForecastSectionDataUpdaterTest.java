@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.service.v1.forecastsection;
 
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MAX_DOUBLE;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MIN_DOUBLE;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX_DOUBLE;
+import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN_DOUBLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -16,12 +20,12 @@ import org.springframework.web.client.RestTemplate;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
-import fi.livi.digitraffic.tie.dto.v1.forecast.ForecastSectionWeatherRootDto;
+import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionsWeatherDtoV1;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v1.ForecastSectionDataService;
 import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
+import fi.livi.digitraffic.tie.service.weather.v1.forecast.ForecastWebDataServiceV1;
 
 public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
 
@@ -35,7 +39,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
     private ForecastSectionRepository forecastSectionRepository;
 
     @Autowired
-    private ForecastSectionDataService forecastSectionDataService;
+    private ForecastWebDataServiceV1 forecastSectionDataService;
 
     private MockRestServiceServer server;
 
@@ -81,20 +85,19 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
 
         assertEquals(dataUpdated, lastUpdated);
 
-        final ForecastSectionWeatherRootDto data = forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V1, false,
-                                                                                                            null,
-                                                                                                            null, null,
-                                                                                                            null, null,
-                                                                                                            null);
+        final ForecastSectionsWeatherDtoV1 data =
+            forecastSectionDataService.getForecastSectionWeatherData(
+                ForecastSectionApiVersion.V1, false, null,
+                X_MIN_DOUBLE, Y_MIN_DOUBLE, X_MAX_DOUBLE, Y_MAX_DOUBLE);
 
-        assertEquals(4, data.weatherData.size());
-        assertEquals("00001_001_000_0", data.weatherData.get(0).naturalId);
-        assertEquals(5, data.weatherData.get(0).roadConditions.size());
-        assertEquals("0h", data.weatherData.get(0).roadConditions.get(0).getForecastName());
-        assertEquals("2h", data.weatherData.get(0).roadConditions.get(1).getForecastName());
-        assertEquals("4h", data.weatherData.get(0).roadConditions.get(2).getForecastName());
-        assertEquals("6h", data.weatherData.get(0).roadConditions.get(3).getForecastName());
-        assertEquals("12h", data.weatherData.get(0).roadConditions.get(4).getForecastName());
+        assertEquals(4, data.forecastSections.size());
+        assertEquals("00001_001_000_0", data.forecastSections.get(0).id);
+        assertEquals(5, data.forecastSections.get(0).forecasts.size());
+        assertEquals("0h", data.forecastSections.get(0).forecasts.get(0).getForecastName());
+        assertEquals("2h", data.forecastSections.get(0).forecasts.get(1).getForecastName());
+        assertEquals("4h", data.forecastSections.get(0).forecasts.get(2).getForecastName());
+        assertEquals("6h", data.forecastSections.get(0).forecasts.get(3).getForecastName());
+        assertEquals("12h", data.forecastSections.get(0).forecasts.get(4).getForecastName());
     }
 
     @Test
@@ -112,23 +115,24 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
         assertEquals(metadataUpdated, metadataLastUpdated);
         assertEquals(dataUpdated, dataLastUpdated);
 
-        final ForecastSectionWeatherRootDto data = forecastSectionDataService.getForecastSectionWeatherData(ForecastSectionApiVersion.V2, false,
-                                                                                                            null,
-                                                                                                            null, null, null, null,
-                                                                                                            null);
+        final ForecastSectionsWeatherDtoV1 data =
+            forecastSectionDataService.getForecastSectionWeatherData(
+                ForecastSectionApiVersion.V2, false, null,
+                X_MIN_DOUBLE, Y_MIN_DOUBLE, X_MAX_DOUBLE, Y_MAX_DOUBLE);
 
         assertNotNull(data);
-        assertEquals("00004_229_00307_1_0", data.weatherData.get(0).naturalId);
-        assertEquals(5, data.weatherData.get(0).roadConditions.size());
-        assertEquals("0h", data.weatherData.get(0).roadConditions.get(0).getForecastName());
-        assertEquals(ForecastSectionTestHelper.TIMES[0], data.weatherData.get(0).roadConditions.get(0).getTime().toInstant().toString());
-        assertEquals("+5.7", data.weatherData.get(0).roadConditions.get(0).getTemperature());
-        assertEquals("12h", data.weatherData.get(0).roadConditions.get(4).getForecastName());
-        assertEquals(RoadCondition.WET, data.weatherData.get(0).roadConditions.get(4).getForecastConditionReason().getRoadCondition());
+        assertEquals("00004_229_00307_1_0", data.forecastSections.get(0).id);
+        assertEquals(5, data.forecastSections.get(0).forecasts.size());
+        assertEquals("0h", data.forecastSections.get(0).forecasts.get(0).getForecastName());
+        assertEquals(ForecastSectionTestHelper.TIMES[0], data.forecastSections.get(0).forecasts.get(0).getTime().toString());
+        assertEquals(5.7, data.forecastSections.get(0).forecasts.get(0).getTemperature());
+        assertEquals("12h", data.forecastSections.get(0).forecasts.get(4).getForecastName());
+        assertEquals(RoadCondition.WET, data.forecastSections.get(0).forecasts.get(4).getForecastConditionReason().roadCondition);
 
-        assertEquals("00409_001_01796_0_0", data.weatherData.get(1).naturalId);
-        assertEquals(5, data.weatherData.get(1).roadConditions.size());
-        assertEquals("2h", data.weatherData.get(1).roadConditions.get(1).getForecastName());
-        assertEquals("+6", data.weatherData.get(1).roadConditions.get(4).getRoadTemperature());
+        assertEquals("00409_001_01796_0_0", data.forecastSections.get(1).id);
+        assertEquals(5, data.forecastSections.get(1).forecasts.size());
+        assertEquals("2h", data.forecastSections.get(1).forecasts.get(1).getForecastName());
+        assertEquals(-1, data.forecastSections.get(1).forecasts.get(1).getTemperature());
+        assertEquals(6, data.forecastSections.get(1).forecasts.get(4).getRoadTemperature());
     }
 }

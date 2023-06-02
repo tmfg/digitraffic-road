@@ -55,19 +55,16 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     /**
      * Send some data bursts to jms handler and test performance of database updates.
-     * @throws JMSException
-     * @throws IOException
      */
     @Test
     public void testPerformanceForReceivedMessages() throws JMSException, IOException {
-
         final Map<Long, WeatherStation> weatherStationsWithLotjuId = weatherStationService.findAllPublishableWeatherStationsMappedByLotjuId();
         final JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater = createTiesaaMittatietoJMSDataUpdater();
         final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener = createTiesaaMittatietoJMSMessageListener(dataUpdater);
         final List<RoadStationSensor> publishableSensors = findPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
 
         // subset of 100 stations
-        List<Long> lotjuIds = weatherStationsWithLotjuId.keySet().stream().collect(Collectors.toList())
+        List<Long> lotjuIds = new ArrayList<>(weatherStationsWithLotjuId.keySet())
                                   .subList(0 , Math.min(100, weatherStationsWithLotjuId.size()));
         weatherStationsWithLotjuId.keySet().retainAll(lotjuIds);
         // Generate previous sensor values so that sensor update is mostly only updating old values
@@ -146,7 +143,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         flushSensorBuffer(false);
 
         // Assert sensor values are updated to db
-        final List<Long> tiesaaLotjuIds = data.stream().map(p -> p.getAsemaId()).distinct().collect(Collectors.toList());
+        final List<Long> tiesaaLotjuIds = data.stream().map(TiesaaProtos.TiesaaMittatieto::getAsemaId).distinct().collect(Collectors.toList());
 
         // Clear because data has been changed by jmsMessageListener directly to db and entity manager doesn't know about it
         entityManager.clear();
@@ -165,7 +162,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                                          final List<RoadStationSensor> publishableSensors,
                                          final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener)
         throws IOException, JMSException {
-        for (WeatherStation station : stations) { ;
+        for (WeatherStation station : stations) {
             jmsMessageListener.onMessage(
                 createBytesMessage(generateTiesaaMittatieto(Instant.now(), publishableSensors,
                                                             station.getLotjuId(),1).get(0)));
@@ -182,7 +179,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             final TiesaaProtos.TiesaaMittatieto.Builder builder = TiesaaProtos.TiesaaMittatieto.newBuilder();
             builders.add(builder);
             builder.setAsemaId(currentStationLotjuId);
-            builder.setAika(measurementTime.plusMillis(i*1000).toEpochMilli());
+            builder.setAika(measurementTime.plusMillis(i*1000L).toEpochMilli());
         }
 
         // Generate update-data
@@ -205,12 +202,12 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             // Increase value for every sensor to validate correct updates
             sensorValueToSet++;
 
-            if (builders.stream().mapToInt(b -> b.getAnturiCount()).sum() >= 30) {
+            if (builders.stream().mapToInt(TiesaaProtos.TiesaaMittatieto.Builder::getAnturiCount).sum() >= 30) {
                 break;
             }
         }
         log.debug("End with arvo={}", sensorValueToSet - 1);
-        return builders.stream().map(b -> b.build()).collect(Collectors.toList());
+        return builders.stream().map(TiesaaProtos.TiesaaMittatieto.Builder::build).collect(Collectors.toList());
     }
 
     private static BytesMessage createBytesMessage(final TiesaaProtos.TiesaaMittatieto tiesaa) throws JMSException, IOException {

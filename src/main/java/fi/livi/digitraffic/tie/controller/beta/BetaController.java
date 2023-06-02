@@ -1,10 +1,10 @@
 package fi.livi.digitraffic.tie.controller.beta;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_BAD_REQUEST;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
+import static fi.livi.digitraffic.tie.controller.beta.BetaController.API_BETA_BASE_PATH;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -38,6 +38,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(API_BETA_BASE_PATH)
 @ConditionalOnWebApplication
 public class BetaController {
+
+    public static final String API_BETA_BASE_PATH = "/api/beta";
     public static final String TMS_STATIONS_DATEX2_PATH = "/tms-stations-datex2";
     public static final String TMS_DATA_DATEX2_PATH = "/tms-data-datex2";
     public static final String WEATHER_HISTORY_DATA_PATH = "/weather-history-data";

@@ -1,9 +1,5 @@
 package fi.livi.digitraffic.tie;
 
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_BETA_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_METADATA_PART_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.API_V1_BASE_PATH;
-import static fi.livi.digitraffic.tie.controller.ApiPaths.TMS_STATIONS_PATH;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -18,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import fi.livi.digitraffic.tie.controller.beta.BetaController;
+import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
 import fi.livi.digitraffic.tie.service.BuildVersionService;
 
 public class SwaggerUiWebTest extends AbstractRestWebTest {
@@ -45,7 +43,7 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
             .andExpect(content().contentType(restContentType))
             .andExpect(jsonPath("$.openapi", is("3.0.1")))
             .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-            .andExpect(jsonPath("$.paths." + API_V1_BASE_PATH + API_METADATA_PART_PATH + TMS_STATIONS_PATH, anything()));
+            .andExpect(jsonPath("$.paths." + TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS, anything()));
     }
 
     @Test
@@ -55,6 +53,6 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
             .andExpect(content().contentType(restContentType))
             .andExpect(jsonPath("$.openapi", is("3.0.1")))
             .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-            .andExpect(content().string(containsString(API_BETA_BASE_PATH + "/")));
+            .andExpect(content().string(containsString(BetaController.API_BETA_BASE_PATH + "/")));
     }
 }
