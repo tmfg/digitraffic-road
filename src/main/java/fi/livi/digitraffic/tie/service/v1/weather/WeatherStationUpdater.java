@@ -113,7 +113,7 @@ public class WeatherStationUpdater  {
     /**
      * Updates Weather Stations
      */
-    @PerformanceMonitor(maxWarnExcecutionTime = 60000, maxErroExcecutionTime = 90000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 60000, maxErrorExcecutionTime = 90000)
     public boolean updateWeatherStations() {
         final List<TiesaaAsemaVO> tiesaaAsemas = lotjuWeatherStationMetadataClientWrapper.getTiesaaAsemas();
         return updateWeatherStationsMetadata(tiesaaAsemas);

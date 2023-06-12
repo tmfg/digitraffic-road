@@ -64,7 +64,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         return lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(tmsLotjuId);
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 800000, maxErroExcecutionTime = 1000000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 800000, maxErrorExcecutionTime = 1000000)
     public Map<Long, List<LamLaskennallinenAnturiVO>> getLamLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tmsLotjuIds) {
         final ConcurrentMap<Long, List<LamLaskennallinenAnturiVO>> lamAnturisMappedByTmsLotjuId = new ConcurrentHashMap<>();
 
@@ -106,7 +106,7 @@ public class LotjuTmsStationMetadataClientWrapper {
     }
 
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 150000, maxErroExcecutionTime = 200000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 150000, maxErrorExcecutionTime = 200000)
     public List<LamAnturiVakioVO> getAllLamAnturiVakios(final Collection<Long> tmsLotjuIds) {
 
         final List<LamAnturiVakioVO> allAnturiVakios = new ArrayList<>();
@@ -172,7 +172,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         return distincLamAnturiVakios;
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 120000, maxErroExcecutionTime = 200000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 120000, maxErrorExcecutionTime = 200000)
     public List<LamAnturiVakioArvoVO> getAllLamAnturiVakioArvos() {
 
         final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos = new ArrayList<>();

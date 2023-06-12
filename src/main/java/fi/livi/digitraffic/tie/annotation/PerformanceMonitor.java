@@ -19,7 +19,7 @@ public @interface PerformanceMonitor {
      *
      * @return maxErroExcecutionTime in millis
      */
-    int maxErroExcecutionTime() default 60000;
+    int maxErrorExcecutionTime() default 60000;
 
     /**
      * Limits when execution time is logged as warning

@@ -45,7 +45,7 @@ public class WeatherStationsSensorsUpdater {
     /**
      * Updates all available sensors of weather road stations
      */
-    @PerformanceMonitor(maxErroExcecutionTime = 900000, maxWarnExcecutionTime = 600000)
+    @PerformanceMonitor(maxErrorExcecutionTime = 900000, maxWarnExcecutionTime = 600000)
     public boolean updateWeatherStationsSensors() {
         log.info("method=updateWeatherStationsSensors Update WeatherStations RoadStationSensors start");
 

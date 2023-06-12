@@ -85,7 +85,7 @@ public class PerformanceMonitorAspect {
     }
 
     private int getErrorLimit(final PerformanceMonitor monitorAnnotation) {
-        return monitorAnnotation != null ? monitorAnnotation.maxErroExcecutionTime() : DEFAULT_ERROR_LIMIT;
+        return monitorAnnotation != null ? monitorAnnotation.maxErrorExcecutionTime() : DEFAULT_ERROR_LIMIT;
     }
 
     private boolean getMonitor(final PerformanceMonitor monitorAnnotation) {
