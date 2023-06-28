@@ -4,17 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.locationtech.jts.geom.Geometry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,8 +21,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
-    @GenericGenerator(name = "SEQ_FORECAST_SECTION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_FORECAST_SECTION"))
+    @SequenceGenerator(name = "SEQ_FORECAST_SECTION", sequenceName = "SEQ_FORECAST_SECTION", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_FORECAST_SECTION")
     @JsonIgnore
     private Long id;

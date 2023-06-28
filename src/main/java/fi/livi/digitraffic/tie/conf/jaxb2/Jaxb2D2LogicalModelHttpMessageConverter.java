@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.conf.jaxb2;
 
 import java.util.Set;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

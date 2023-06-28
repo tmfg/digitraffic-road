@@ -26,7 +26,7 @@ on:
 jobs:
   log-parameters:
     if: github.repository != 'tmfg/digitraffic-road'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -50,7 +50,7 @@ jobs:
           LINK_TEXT: parameters.txt
   build:
     if: github.repository != 'tmfg/digitraffic-road'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     permissions:
       id-token: write
       contents: read
@@ -79,12 +79,12 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: 17
           distribution: corretto
           cache: maven
       - name: Build package
         run: |
-          mvn install -DskipTests=true -Ddependency-check.skip=true
+          mvn install -T1.5C git-commit-id:revision install -e -U -DskipTests=true
 
           ls -la target/*.jar
 
@@ -114,7 +114,7 @@ jobs:
     strategy:
       matrix:
         app: [daemon, web, db]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     permissions:
       id-token: write
       contents: read
@@ -166,7 +166,7 @@ jobs:
             --output type=docker \
             --tag ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
             --pull=true \
-            --file=Dockerfile-road .
+            --file=docker/Dockerfile-road .
           docker push ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
       - name: Build docker image for db
         if: matrix.app == 'db'
@@ -196,7 +196,7 @@ jobs:
       id-token: write
       contents: read
       actions: read
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: ${{ github.event.inputs.env }}
     outputs:
       revision_daemon: ${{ steps.revision.outputs.revision_daemon }}
@@ -233,7 +233,7 @@ jobs:
       id-token: write
       contents: read
       actions: read
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Configure AWS credentials for ${{ matrix.app }}
@@ -257,7 +257,7 @@ jobs:
       id-token: write
       contents: read
       actions: read
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Configure AWS credentials for ${{ matrix.app }}
@@ -284,7 +284,7 @@ jobs:
       id-token: write
       contents: read
       actions: read
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Parameters ${{ matrix.ap  }}

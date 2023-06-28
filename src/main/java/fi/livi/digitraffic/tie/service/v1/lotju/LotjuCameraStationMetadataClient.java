@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import org.apache.commons.lang3.time.StopWatch;

@@ -3,23 +3,12 @@ package fi.livi.digitraffic.tie.model.v1.camera;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
@@ -31,8 +20,7 @@ import fi.livi.digitraffic.tie.model.v1.WeatherStation;
 public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
-    @GenericGenerator(name = "SEQ_CAMERA_PRESET", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_CAMERA_PRESET"))
+    @SequenceGenerator(name = "SEQ_CAMERA_PRESET", sequenceName = "SEQ_CAMERA_PRESET", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_CAMERA_PRESET")
     private Long id;
 

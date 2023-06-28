@@ -1,11 +1,10 @@
 package fi.livi.digitraffic.tie.model.v2.maintenance;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import jakarta.persistence.SequenceGenerator;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
@@ -13,8 +12,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 public class MaintenanceTrackingWorkMachine {
 
     @Id
-    @GenericGenerator(name = "SEQ_MAINTENANCE_TRACKING_WORK_MACHINE", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_MAINTENANCE_TRACKING_WORK_MACHINE"))
+    @SequenceGenerator(name = "SEQ_MAINTENANCE_TRACKING_WORK_MACHINE", sequenceName = "SEQ_MAINTENANCE_TRACKING_WORK_MACHINE", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_MAINTENANCE_TRACKING_WORK_MACHINE")
     private Long id;
     private Long harjaId;

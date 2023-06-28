@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;

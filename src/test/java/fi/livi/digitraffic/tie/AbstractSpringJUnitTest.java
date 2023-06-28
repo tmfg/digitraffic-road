@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.aop.support.AopUtils;
@@ -72,9 +72,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractTest {
         }
     }
     public Instant getTransactionTimestamp() {
-        final Timestamp value =
-            (Timestamp) entityManager.createNativeQuery("select now()").getSingleResult();
-        return DateHelper.toInstant(value);
+        return (Instant)entityManager.createNativeQuery("select now()").getSingleResult();
     }
 
     public Instant getTransactionTimestampRoundedToSeconds() {

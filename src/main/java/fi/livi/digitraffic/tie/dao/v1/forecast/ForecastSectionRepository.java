@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.dao.v1.forecast;
 import java.time.Instant;
 import java.util.List;
 
-import javax.persistence.QueryHint;
+import jakarta.persistence.QueryHint;
 
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -80,7 +80,7 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "where f.version = 2\n" +
         "  AND (cast(:area as geometry) IS NULL OR ST_INTERSECTS(cast(:area as geometry), f.geometry) = TRUE)\n" +
         "  AND (cast(:roadNumber as numeric) IS NULL OR f.road_number = cast(:roadNumber as numeric))\n" +
-        "  AND (:id IS NULL OR f.natural_id = :id)\n" +
+        "  AND (cast(:id as varchar) IS NULL OR f.natural_id = cast(:id as varchar))\n" +
         //"  AND (coalesce(array_length(cast('{' || :naturalIds || '}' as varchar[]), 1), 0) = 0 OR f.natural_id IN (:naturalIds))\n" +
         "  AND obsolete_date IS NULL\n" +
         "order by f.natural_id",

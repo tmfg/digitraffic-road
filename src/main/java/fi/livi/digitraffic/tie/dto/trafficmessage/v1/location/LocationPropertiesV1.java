@@ -7,7 +7,7 @@ import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Location GeoJSON properties object")
 public class LocationPropertiesV1 extends PropertiesV1 implements DataUpdatedSupportV1 {

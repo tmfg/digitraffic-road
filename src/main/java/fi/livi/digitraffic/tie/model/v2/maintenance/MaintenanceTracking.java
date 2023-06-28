@@ -5,24 +5,9 @@ import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
@@ -37,8 +22,7 @@ import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObserva
 public class MaintenanceTracking {
 
     @Id
-    @GenericGenerator(name = "SEQ_MAINTENANCE_TRACKING", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_MAINTENANCE_TRACKING"))
+    @SequenceGenerator(name = "SEQ_MAINTENANCE_TRACKING", sequenceName = "SEQ_MAINTENANCE_TRACKING", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_MAINTENANCE_TRACKING")
     private Long id;
 

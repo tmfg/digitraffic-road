@@ -2,24 +2,12 @@ package fi.livi.digitraffic.tie.model.v1;
 
 import java.time.LocalDate;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +23,7 @@ public class TmsStation extends ReadOnlyCreatedAndModifiedFields {
     private static final Logger log = LoggerFactory.getLogger(TmsStation.class);
 
     @Id
-    @GenericGenerator(name = "SEQ_TMS_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_TMS_STATION"))
+    @SequenceGenerator(name = "SEQ_TMS_STATION", sequenceName = "SEQ_TMS_STATION", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_TMS_STATION")
     private Long id;
 

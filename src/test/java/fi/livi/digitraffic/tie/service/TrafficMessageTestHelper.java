@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;

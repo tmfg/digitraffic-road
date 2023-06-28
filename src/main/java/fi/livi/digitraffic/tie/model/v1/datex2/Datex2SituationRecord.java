@@ -4,22 +4,10 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -35,8 +23,7 @@ public class Datex2SituationRecord {
 
     @JsonIgnore
     @Id
-    @GenericGenerator(name = "SEQ_DATEX2SITUATIONRECORD", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_DATEX2SITUATIONRECORD"))
+    @SequenceGenerator(name = "SEQ_DATEX2SITUATIONRECORD", sequenceName = "SEQ_DATEX2SITUATIONRECORD", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_DATEX2SITUATIONRECORD")
     private Long id;
 

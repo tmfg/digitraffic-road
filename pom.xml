@@ -15,19 +15,19 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.11</version>
+        <version>3.0.7</version>
         <relativePath/>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>11</java.version>
-        <maven.compiler.release>11</maven.compiler.release>
-        <com.google.protobuf.version>3.22.3</com.google.protobuf.version>
-        <org.apache.cxf.version>3.5.5</org.apache.cxf.version>
-        <org.glassfish.metro.ws.version>3.0.3</org.glassfish.metro.ws.version>
-        <spring.cloud.version>3.1.6</spring.cloud.version>
-        <proj4j.version>1.2.3</proj4j.version>
+        <java.version>17</java.version>
+        <maven.compiler.release>17</maven.compiler.release>
+        <com.google.protobuf.version>3.23.3</com.google.protobuf.version>
+        <org.apache.cxf.version>4.0.2</org.apache.cxf.version>
+        <org.glassfish.metro.ws.version>4.0.2</org.glassfish.metro.ws.version>
+        <spring.cloud.version>4.0.3</spring.cloud.version>
+        <proj4j.version>1.3.0</proj4j.version>
     </properties>
 
     <profiles>
@@ -42,7 +42,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.1.2</version>
+                        <version>8.3.1</version>
                         <configuration>
                             <failBuildOnCVSS>7</failBuildOnCVSS>
                             <suppressionFile>owasp-suppressions.xml</suppressionFile>
@@ -168,6 +168,12 @@
             <version>1.1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+
         <!-- Includes spring's support classes for quartz -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -184,14 +190,14 @@
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
-            <version>1.3.3</version>
+            <version>2.0.2</version>
         </dependency>
 
         <!-- JGit -->
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.5.0.202303070854-r</version>
+            <version>6.6.0.202305301015-r</version>
         </dependency>
 
         <!-- google protobuf -->
@@ -210,11 +216,6 @@
         <!-- Helpers and others -->
         <!-- Web Service dependencies-->
 
-        <!--
-            Cannot be updated beyond version 3.* before
-            org.apache.cxf.* is updated to support jakarta.* package names
-            https://issues.apache.org/jira/browse/CXF-8371
-        -->
         <dependency>
             <groupId>org.glassfish.metro</groupId>
             <artifactId>wsit-api</artifactId>
@@ -230,7 +231,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
+            <version>2.13.0</version>
         </dependency>
 
         <dependency>
@@ -256,29 +257,26 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-blackbird</artifactId>
-        </dependency>
+
         <!-- OpenApi JSON API specification generation-->
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.7.0</version>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
         <!-- Static Reader of META-INF/MANIFEST.MF Files -->
         <dependency>
             <groupId>com.jcabi</groupId>
             <artifactId>jcabi-manifests</artifactId>
-            <version>1.2.1</version>
+            <version>2.0.0</version>
         </dependency>
 
         <!-- Update also in dbroad/schemaspy/get-deps-and-run-schemaspy.sh -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.5.2</version>
+            <version>42.6.0</version>
         </dependency>
 
         <dependency>
@@ -324,16 +322,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <!--  TODO 5.6.8.Final -> 6.0.0.Final (org.hibernate.orm) when Spring/Boot supports it -->
-            <version>5.6.8.Final</version>
+            <version>6.1.7.Final</version>
         </dependency>
 
         <!-- json column type -->
         <dependency>
             <groupId>com.vladmihalcea</groupId>
-            <artifactId>hibernate-types-55</artifactId>
+            <artifactId>hibernate-types-60</artifactId>
             <version>2.21.1</version>
         </dependency>
 
@@ -349,7 +346,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>7.3</version>
+            <version>7.4</version>
         </dependency>
 
         <dependency>
@@ -360,7 +357,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.455</version>
+            <version>1.12.493</version>
         </dependency>
 
         <dependency>
@@ -373,7 +370,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.9.2</version>
+            <version>5.9.3</version>
             <scope>test</scope>
         </dependency>
 
@@ -418,7 +415,7 @@
 
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock</artifactId>
+            <artifactId>wiremock-standalone</artifactId>
             <version>2.27.2</version>
             <scope>test</scope>
         </dependency>
@@ -451,7 +448,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -472,7 +469,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.8.1</version>
+                <version>2.16.0</version>
                 <configuration>
                     <rulesUri>file:///${project.basedir}/versions-maven-plugin-rules.xml</rulesUri>
                 </configuration>
@@ -500,7 +497,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -511,7 +508,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -531,11 +528,9 @@
             </plugin>
 
             <plugin>
-                <!-- OpenJDK8 compatibility issue with 2.x versions. Jenkins uses OpenJDK -->
-                <!-- https://stackoverflow.com/questions/53010200/maven-surefire-could-not-find-forkedbooter-class -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>3.1.2</version>
                 <configuration>
                     <!-- <argLine>-Xms512m -Xmx1024M ${argLine}</argLine> -->
                     <systemPropertyVariables>
@@ -558,7 +553,7 @@
                         <id>generate-sources</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
+                            <sourceRoot>${basedir}/target/generated-sources/cxf</sourceRoot>
                             <defaultOptions>
                                 <extraargs>
                                     <extraarg>-xjc-npa</extraarg>
@@ -606,10 +601,10 @@
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-xjc-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>4.0.0</version>
                 <configuration>
                     <extensions>
-                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.3.1</extension>
+                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:4.0.0</extension>
                         <extension>net.java.dev.jaxb2-commons:jaxb-fluent-api:2.1.8</extension>
                         <extension>org.jvnet.jaxb2_commons:jaxb2-basics:1.11.1</extension>
                     </extensions>
@@ -748,7 +743,7 @@
             <plugin>
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                <version>1.0.1</version>
+                <version>1.2.1</version>
 
                 <configuration>
                     <sourceDirectory>${basedir}/src/main/resources/schemas/</sourceDirectory>
@@ -796,7 +791,7 @@
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>4.9.10</version>
 
                 <configuration>
                     <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
@@ -832,7 +827,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>schemaspy</id>
@@ -849,7 +844,7 @@
 
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.3.1</version>
                 <configuration>
                     <filesets>
                         <fileset>

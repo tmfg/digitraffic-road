@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.dto.v1;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import org.hibernate.annotations.Immutable;
 

@@ -2,17 +2,10 @@ package fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson;
 
 import java.time.Instant;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.ColumnTransformer;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Parameter;
 import org.locationtech.jts.geom.Geometry;
 
 import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
@@ -28,8 +21,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 public class RegionGeometry {
 
     @Id
-    @GenericGenerator(name = "SEQ_REGION_GEOMETRY", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_REGION_GEOMETRY"))
+    @SequenceGenerator(name = "SEQ_REGION_GEOMETRY", sequenceName = "SEQ_REGION_GEOMETRY", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_REGION_GEOMETRY")
     private Long id;
 

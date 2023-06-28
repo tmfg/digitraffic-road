@@ -1,18 +1,11 @@
 package fi.livi.digitraffic.tie.model.v1.datex2;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,8 +24,7 @@ public class SituationRecordCommentI18n {
 
     @JsonIgnore
     @Id
-    @GenericGenerator(name = "SEQ_SITUATION_RECORD_COMMENT", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_SITUATION_RECORD_COMMENT"))
+    @SequenceGenerator(name = "SEQ_SITUATION_RECORD_COMMENT", sequenceName = "SEQ_SITUATION_RECORD_COMMENT", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_SITUATION_RECORD_COMMENT")
     private Long id;
 

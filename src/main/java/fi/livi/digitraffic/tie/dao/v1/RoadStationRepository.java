@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.dao.v1;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.QueryHint;
+import jakarta.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

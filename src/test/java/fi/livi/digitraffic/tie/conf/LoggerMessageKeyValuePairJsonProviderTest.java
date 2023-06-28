@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggerContextVO;
+import org.slf4j.event.KeyValuePair;
 
 public class LoggerMessageKeyValuePairJsonProviderTest  {
     private static final Logger log = LoggerFactory.getLogger(LoggerMessageKeyValuePairJsonProviderTest.class);
@@ -292,6 +294,11 @@ public class LoggerMessageKeyValuePairJsonProviderTest  {
             }
 
             @Override
+            public List<Marker> getMarkerList() {
+                return null;
+            }
+
+            @Override
             public Map<String, String> getMDCPropertyMap() {
                 return null;
             }
@@ -304,6 +311,21 @@ public class LoggerMessageKeyValuePairJsonProviderTest  {
             @Override
             public long getTimeStamp() {
                 return 0;
+            }
+
+            @Override
+            public int getNanoseconds() {
+                return 0;
+            }
+
+            @Override
+            public long getSequenceNumber() {
+                return 0;
+            }
+
+            @Override
+            public List<KeyValuePair> getKeyValuePairs() {
+                return null;
             }
 
             @Override

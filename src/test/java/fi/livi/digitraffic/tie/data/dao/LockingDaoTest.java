@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.data.dao;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.BeforeEach;

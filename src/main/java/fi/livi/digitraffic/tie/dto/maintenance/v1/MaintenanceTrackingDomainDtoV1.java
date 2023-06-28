@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.dto.maintenance.v1;
 
 import java.time.Instant;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

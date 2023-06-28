@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.model.v1.location;
 
 import java.time.Instant;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import io.swagger.v3.oas.annotations.media.Schema;

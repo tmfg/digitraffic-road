@@ -79,10 +79,10 @@ public class MqttConfiguration {
 
     /**
      * Own simplified implemenation of message handler, for sending messages only.  Simplified and without synchronization, so
-     * must be called synhcronized or from a single thread!
+     * must be called synchronized or from a single thread!
      *
      */
-    private class SingleThreadMessageHandler extends AbstractMqttMessageHandler implements MqttCallback, MqttPahoComponent {
+    private class SingleThreadMessageHandler extends AbstractMqttMessageHandler<IMqttAsyncClient, MqttConnectOptions> implements MqttCallback, MqttPahoComponent {
         private final MqttPahoClientFactory clientFactory;
         private volatile IMqttAsyncClient client;
 
@@ -90,7 +90,6 @@ public class MqttConfiguration {
             super(null, clientId);
             this.clientFactory = clientFactory;
         }
-
         @Override
         protected void onInit() {
             super.onInit();

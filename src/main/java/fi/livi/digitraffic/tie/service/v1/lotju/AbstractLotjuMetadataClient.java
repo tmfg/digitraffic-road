@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.service.v1.lotju;
 
 import java.net.URI;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

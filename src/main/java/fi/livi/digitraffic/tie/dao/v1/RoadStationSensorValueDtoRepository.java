@@ -5,7 +5,7 @@ import static org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE;
 import java.time.Instant;
 import java.util.List;
 
-import javax.persistence.QueryHint;
+import jakarta.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

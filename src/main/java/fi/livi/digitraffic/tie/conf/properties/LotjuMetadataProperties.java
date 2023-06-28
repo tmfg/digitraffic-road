@@ -1,10 +1,8 @@
 package fi.livi.digitraffic.tie.conf.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "metadata.server")
-@ConstructorBinding
 public class LotjuMetadataProperties {
     private final String[] addresses;
     private final Path path;
@@ -34,7 +32,6 @@ public class LotjuMetadataProperties {
         return sender;
     }
 
-    @ConstructorBinding
     public static final class Path {
         public final String health;
         public final String camera;
@@ -51,7 +48,6 @@ public class LotjuMetadataProperties {
         }
     }
 
-    @ConstructorBinding
     public static final class Health {
         public final int ttlInSeconds;
         public final String value;
@@ -62,7 +58,6 @@ public class LotjuMetadataProperties {
         }
     }
 
-    @ConstructorBinding
     public static final class Sender {
         public final int connectionTimeout;
         public final int readTimeout;

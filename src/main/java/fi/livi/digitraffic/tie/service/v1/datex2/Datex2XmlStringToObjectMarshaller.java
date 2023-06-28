@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.v1.datex2;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -4,36 +4,23 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
+import org.hibernate.annotations.Type;
 
-@TypeDef(name = "json", typeClass = JsonType.class)
 @Entity
 @DynamicUpdate
 @Table(name = "DATEX2")
 public class Datex2 extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
-    @GenericGenerator(name = "SEQ_DATEX2", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_DATEX2"))
+    @SequenceGenerator(name = "SEQ_DATEX2", sequenceName = "SEQ_DATEX2", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_DATEX2")
     private Long id;
 
@@ -62,12 +49,12 @@ public class Datex2 extends ReadOnlyCreatedAndModifiedFields {
     @OneToMany(mappedBy = "datex2", cascade = CascadeType.ALL)
     private List<Datex2Situation> situations;
 
-    @Type(type = "json")
+    @Type(JsonType.class)
     @Column(columnDefinition = "json")
     private String jsonMessage;
 
     /** If geometry is not valid the original jsonMessage will be saved here and fixed version to jsonMessage-field */
-    @Type(type = "json")
+    @Type(JsonType.class)
     @Column(columnDefinition = "json")
     private String originalJsonMessage;
 

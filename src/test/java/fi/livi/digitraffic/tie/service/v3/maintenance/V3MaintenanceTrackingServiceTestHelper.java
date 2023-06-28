@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -556,12 +556,12 @@ public class V3MaintenanceTrackingServiceTestHelper {
                     "ST_GeometryFromText('LINESTRING(20.10 64.10 0, 20.0 64.0 0)', " + GeometryConstants.SRID + "), " +
                     workMachineId + ", 'dummy', now(), now(), now(), true)" )
             .executeUpdate();
-        final long id = ((BigInteger) entityManager.createNativeQuery(
+        final Long id = (Long)entityManager.createNativeQuery(
             "select id " +
                 "from road.public.maintenance_tracking " +
                 "where domain = '" + domain + "' " +
                 "order by id desc " +
-                "limit 1").getSingleResult()).longValue();
+                "limit 1").getSingleResult();
         entityManager.createNativeQuery(
                 "INSERT INTO road.public.maintenance_tracking_task(maintenance_tracking_id, task)\n" +
                     "VALUES (" + id + ", '" + BRUSHING.name() + "')")

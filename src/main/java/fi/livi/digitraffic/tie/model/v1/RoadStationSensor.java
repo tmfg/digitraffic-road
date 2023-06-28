@@ -6,21 +6,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.SortNatural;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,8 +34,7 @@ public class RoadStationSensor {
 
     @JsonIgnore
     @Id
-    @GenericGenerator(name = "SEQ_ROAD_STATION_SENSOR", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_STATION_SENSOR"))
+    @SequenceGenerator(name = "SEQ_ROAD_STATION_SENSOR", sequenceName = "SEQ_ROAD_STATION_SENSOR", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_ROAD_STATION_SENSOR")
     private Long id;
 
@@ -89,7 +78,6 @@ public class RoadStationSensor {
 
     @Schema(description = "Possible additional descriptions for sensor values")
     @OneToMany(mappedBy = "sensorValueDescriptionPK.sensorId", cascade = CascadeType.ALL)
-    @OrderBy("sensorValueDescriptionPK.sensorValue")
     @SortNatural
     private SortedSet<SensorValueDescription> sensorValueDescriptions;
 

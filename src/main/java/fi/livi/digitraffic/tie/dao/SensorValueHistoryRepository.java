@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.dao;
 import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
-import javax.persistence.QueryHint;
+import jakarta.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.QueryHints;

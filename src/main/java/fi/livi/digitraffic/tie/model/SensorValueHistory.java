@@ -2,23 +2,17 @@ package fi.livi.digitraffic.tie.model;
 
 import java.time.ZonedDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Parameter;
 
 @Entity
 @Immutable
 @DynamicUpdate(false)
 public class SensorValueHistory {
     @Id
-    @GenericGenerator(name = "SEQ_SENSOR_VALUE_HISTORY", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_SENSOR_VALUE_HISTORY"))
+    @SequenceGenerator(name = "SEQ_SENSOR_VALUE_HISTORY", sequenceName = "SEQ_SENSOR_VALUE_HISTORY", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_SENSOR_VALUE_HISTORY")
     private Long id;
 

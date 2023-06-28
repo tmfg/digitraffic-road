@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.dto.v1;
 import java.time.Instant;
 import java.util.List;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

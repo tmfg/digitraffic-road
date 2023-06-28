@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fi.livi.digitraffic.tie.dto.geojson.v1.FeatureCollectionV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @JsonPropertyOrder({"type", "locationsVersion"})
 @Schema(description = "Location GeoJSON feature collection object")

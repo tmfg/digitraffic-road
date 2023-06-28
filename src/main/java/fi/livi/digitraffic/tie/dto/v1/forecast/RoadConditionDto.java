@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.dto.v1.forecast;
 
 import java.time.ZonedDateTime;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

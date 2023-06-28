@@ -2,15 +2,9 @@ package fi.livi.digitraffic.tie.model.v1;
 
 import java.time.ZonedDateTime;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.model.DataType;
 
@@ -21,8 +15,7 @@ import fi.livi.digitraffic.tie.model.DataType;
 @DynamicUpdate
 public class DataUpdated {
     @Id
-    @GenericGenerator(name = "SEQ_DATA_UPDATED", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_DATA_UPDATED"))
+    @SequenceGenerator(name = "SEQ_DATA_UPDATED", sequenceName = "SEQ_DATA_UPDATED", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_DATA_UPDATED")
     private Long id;
 

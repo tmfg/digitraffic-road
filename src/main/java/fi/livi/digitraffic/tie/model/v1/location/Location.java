@@ -2,10 +2,10 @@ package fi.livi.digitraffic.tie.model.v1.location;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 
 import org.hibernate.annotations.DynamicUpdate;
 

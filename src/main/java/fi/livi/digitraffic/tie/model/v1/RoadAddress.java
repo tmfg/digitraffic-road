@@ -1,15 +1,11 @@
 package fi.livi.digitraffic.tie.model.v1;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,8 +78,7 @@ public class RoadAddress {
 
     @JsonIgnore
     @Id
-    @GenericGenerator(name = "SEQ_ROAD_ADDRESS", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_ADDRESS"))
+    @SequenceGenerator(name = "SEQ_ROAD_ADDRESS", sequenceName = "SEQ_ROAD_ADDRESS", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_ROAD_ADDRESS")
     private Long id;
 

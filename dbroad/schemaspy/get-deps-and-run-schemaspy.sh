@@ -30,7 +30,7 @@ then
 else
     Z_FLAG=
 fi
-curl ${Z_FLAG} -o ${PG_JAR} -L https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
+curl ${Z_FLAG} -o ${PG_JAR} -L https://jdbc.postgresql.org/download/postgresql-42.6.0.jar
 
 # Copy default parameters, read command line parameters and replace in properties
 cp ${BASEDIR}/schemaspy-default.properties ${BASEDIR}/lib/schemaspy.properties

@@ -3,19 +3,9 @@ package fi.livi.digitraffic.tie.model.v3.maintenance;
 import java.time.Instant;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
@@ -32,8 +22,7 @@ public class V3MaintenanceTrackingObservationData {
     }
 
     @Id
-    @GenericGenerator(name = "SEQ_MAINTENANCE_TRACKING_OBSERVATION_DATA", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_MAINTENANCE_TRACKING_OBSERVATION_DATA"))
+    @SequenceGenerator(name = "SEQ_MAINTENANCE_TRACKING_OBSERVATION_DATA", sequenceName = "SEQ_MAINTENANCE_TRACKING_OBSERVATION_DATA", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_MAINTENANCE_TRACKING_OBSERVATION_DATA")
     private Long id;
 

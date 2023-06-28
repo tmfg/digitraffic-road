@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import javax.persistence.QueryHint;
+import jakarta.persistence.QueryHint;
 
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,21 +1,11 @@
 package fi.livi.digitraffic.tie.model.v1;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
@@ -27,8 +17,7 @@ public class WeatherStation extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
     @NotNull
-    @GenericGenerator(name = "SEQ_ROAD_WEATHER_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_WEATHER_STATION"))
+    @SequenceGenerator(name = "SEQ_ROAD_WEATHER_STATION", sequenceName = "SEQ_ROAD_WEATHER_STATION", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_ROAD_WEATHER_STATION")
     private Long id;
 

@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.dto.v1.forecast;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

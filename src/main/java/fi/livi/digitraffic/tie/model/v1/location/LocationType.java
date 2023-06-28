@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.model.v1.location;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
 
 import org.hibernate.annotations.DynamicUpdate;
 

@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.dto.weather.v1.forecast;
 
 import java.time.Instant;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

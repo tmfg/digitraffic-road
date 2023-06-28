@@ -3,8 +3,8 @@ package fi.livi.digitraffic.tie.dto.v2.trafficannouncement.geojson;
 
 import static fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.EstimatedDuration.DURATION_REGEXP;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

@@ -2,18 +2,11 @@ package fi.livi.digitraffic.tie.model.v1;
 
 import java.time.ZonedDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,8 +17,7 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 public class SensorValue {
 
     @Id
-    @GenericGenerator(name = "SEQ_SENSOR_VALUE", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_SENSOR_VALUE"))
+    @SequenceGenerator(name = "SEQ_SENSOR_VALUE", sequenceName = "SEQ_SENSOR_VALUE", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_SENSOR_VALUE")
     private Long id;
 

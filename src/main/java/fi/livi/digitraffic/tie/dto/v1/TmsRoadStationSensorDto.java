@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.dto.v1;
 
 import java.util.List;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import fi.livi.digitraffic.tie.model.VehicleClass;
 import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;

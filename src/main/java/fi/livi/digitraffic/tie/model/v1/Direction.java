@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.model.v1;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 import org.hibernate.annotations.DynamicUpdate;
 

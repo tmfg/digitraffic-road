@@ -1,7 +1,7 @@
 
 package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;

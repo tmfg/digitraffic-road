@@ -4,8 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.springdoc.core.GroupedOpenApi;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -51,7 +51,7 @@ public class SwaggerConfiguration {
             .group("road-api")
             .pathsToMatch(API_PATHS)
             .pathsToExclude(BETA_PATHS)
-            .addOpenApiCustomiser(openApiConfig())
+            .addOpenApiCustomizer(openApiConfig())
             .build();
     }
 
@@ -60,11 +60,11 @@ public class SwaggerConfiguration {
         return GroupedOpenApi.builder()
             .group("road-api-beta")
             .pathsToMatch(BETA_PATHS)
-            .addOpenApiCustomiser(openApiConfig())
+            .addOpenApiCustomizer(openApiConfig())
             .build();
     }
 
-    private OpenApiCustomiser openApiConfig() {
+    private OpenApiCustomizer openApiConfig() {
         return openApi -> {
             openApi
                 .setInfo(new Info()

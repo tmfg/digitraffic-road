@@ -24,7 +24,7 @@ import java.util.Map;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;

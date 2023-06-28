@@ -7,26 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 import fi.livi.digitraffic.tie.converter.RoadStationTypeIntegerConverter;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -40,8 +26,7 @@ import fi.livi.digitraffic.tie.model.RoadStationType;
 public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
-    @GenericGenerator(name = "SEQ_ROAD_STATION", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-                      parameters = @Parameter(name = "sequence_name", value = "SEQ_ROAD_STATION"))
+    @SequenceGenerator(name = "SEQ_ROAD_STATION", sequenceName = "SEQ_ROAD_STATION", allocationSize = 1)
     @GeneratedValue(generator = "SEQ_ROAD_STATION")
     private Long id;
 

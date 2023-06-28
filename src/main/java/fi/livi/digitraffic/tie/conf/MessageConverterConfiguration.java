@@ -7,7 +7,6 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
-import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 
 @Configuration
 public class MessageConverterConfiguration {
@@ -17,10 +16,5 @@ public class MessageConverterConfiguration {
         xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
 
         return new MappingJackson2XmlHttpMessageConverter(xmlMapper);
-    }
-
-    @Bean
-    public BlackbirdModule afterburnerModule() {
-        return new BlackbirdModule();
     }
 }
