@@ -13,12 +13,6 @@ abstract public class LoggableMetric {
         this.statistic = statistic;
     }
 
-    protected LoggableMetric(final Statistic statistic, final String metricKey) {
-        this.metricKey = metricKey;
-        this.tagName = null;
-        this.statistic = statistic;
-    }
-
     abstract public LoggableMetric withTag(final String tagName);
 
     abstract public void accept(MetricVisitor visitor, MetricVisitorData metricVisitorData);
