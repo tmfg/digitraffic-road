@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.conf.metrics;
 import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_ACTIVE;
 import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_MAX;
 import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_PENDING;
+import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_TIMEOUT;
 import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.TAG_POOL;
 
 import java.util.Arrays;
@@ -29,18 +30,19 @@ import io.micrometer.core.instrument.search.RequiredSearch;
  * Measure pool statistics every 100ms and log min and max once a minute.
  */
 @Configuration
-public class MetricWriterConfiguration {
+public class MetricWriterConfiguration implements MetricVisitor {
     private final MeterRegistry meterRegistry;
 
     private static final Logger LOG = LoggerFactory.getLogger(MetricWriterConfiguration.class);
 
     private final List<LoggableMetric> metricsToLog = Arrays.asList(
-        LoggableMetric.of("process.cpu.usage"),
-        LoggableMetric.of("system.cpu.count"),
-        LoggableMetric.of("jvm.memory.used").withTag("area"),
-        LoggableMetric.of(CONNECTIONS_MAX).withTag(TAG_POOL).noMin(),
-        LoggableMetric.of(CONNECTIONS_PENDING).withTag(TAG_POOL),
-        LoggableMetric.of(CONNECTIONS_ACTIVE).withTag(TAG_POOL)
+        GaugeMetric.of("process.cpu.usage"),
+        GaugeMetric.of("system.cpu.count"),
+        GaugeMetric.of("jvm.memory.used").withTag("area"),
+        GaugeMetric.of(CONNECTIONS_MAX).withTag(TAG_POOL).noMin(),
+        CountMetric.of(CONNECTIONS_TIMEOUT).withTag(TAG_POOL),
+        GaugeMetric.of(CONNECTIONS_PENDING).withTag(TAG_POOL),
+        GaugeMetric.of(CONNECTIONS_ACTIVE).withTag(TAG_POOL)
     );
 
     private static final Map<MetricKey, Double> metricMap = new HashMap<>();
@@ -129,11 +131,36 @@ public class MetricWriterConfiguration {
             LOG.error("Could not find statistic {} for {}", metric.statistic, metric.metricKey);
             return;
         }
-
         final String tagValue = metric.tagName == null ? null : meter.getId().getTag(metric.tagName);
+        MetricVisitorData metricVisitorData = new MetricVisitorData(measurement, tagValue);
 
-        if(metric.logMin) {
-            final MetricKey metricKey = new MetricKey(metric.metricKey + ".min", tagValue);
+        metric.accept(this, metricVisitorData);
+    }
+
+    @Override
+    public void visitCountMetric(CountMetric countMetric, MetricVisitorData metricVisitorData) {
+        final String tagValue = metricVisitorData.tagValue();
+        final Measurement measurement = metricVisitorData.measurement();
+
+        final MetricKey metricKeyTotal = new MetricKey(countMetric.metricKey + ".total", tagValue);
+        final MetricKey metricKeyPeriodic = new MetricKey(countMetric.metricKey + ".period", tagValue);
+
+        final Double oldTotalValue = metricMap.get(metricKeyTotal);
+
+        final Double newTotalValue = measurement.getValue();
+        final Double newPeriodicValue = oldTotalValue == null ? newTotalValue : newTotalValue - oldTotalValue;
+
+        metricMap.put(metricKeyTotal, newTotalValue);
+        metricMap.put(metricKeyPeriodic, newPeriodicValue);
+    }
+
+    @Override
+    public void visitGaugeMetric(GaugeMetric gaugeMetric, MetricVisitorData metricVisitorData) {
+        final String tagValue = metricVisitorData.tagValue();
+        final Measurement measurement = metricVisitorData.measurement();
+
+        if(gaugeMetric.logMin) {
+            final MetricKey metricKey = new MetricKey(gaugeMetric.metricKey + ".min", tagValue);
 
             final Double oldValue = metricMap.get(metricKey);
             final Double newValue = oldValue == null ? measurement.getValue() : Math.min(oldValue, measurement.getValue());
@@ -141,8 +168,8 @@ public class MetricWriterConfiguration {
             metricMap.put(metricKey, newValue);
         }
 
-        if(metric.logMax) {
-            final MetricKey metricKey = new MetricKey(metric.metricKey + ".max", tagValue);
+        if(gaugeMetric.logMax) {
+            final MetricKey metricKey = new MetricKey(gaugeMetric.metricKey + ".max", tagValue);
 
             final Double oldValue = metricMap.get(metricKey);
             final Double newValue = oldValue == null ? measurement.getValue() : Math.max(oldValue, measurement.getValue());
