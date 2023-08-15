@@ -14,13 +14,13 @@ import fi.livi.digitraffic.tie.model.v1.TmsStation;
 public interface TmsStationDatex2Repository extends JpaRepository<TmsStation, Long> {
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadStationSensors"})
-    List<TmsStation> findDistinctByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+    List<TmsStation> findDistinctByRoadStationPublishableIsTrueOrderByNaturalId();
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadStationSensors"})
-    List<TmsStation> findDistinctByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId(final CollectionStatus collectionStatus);
+    List<TmsStation> findDistinctByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByNaturalId(final CollectionStatus collectionStatus);
 
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadStationSensors"})
-    List<TmsStation> findDistinctByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
+    List<TmsStation> findDistinctByRoadStationIsPublicIsTrueOrderByNaturalId();
 }

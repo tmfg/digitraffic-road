@@ -41,19 +41,19 @@ public class TmsStationDatex2Service {
 
     @Transactional(readOnly = true)
     public List<TmsStation> findAllPublishableTmsStations() {
-        return tmsStationDatex2Repository.findDistinctByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+        return tmsStationDatex2Repository.findDistinctByRoadStationPublishableIsTrueOrderByNaturalId();
     }
 
     private List<TmsStation> findStations(final RoadStationState roadStationState) {
 
         switch(roadStationState) {
         case ACTIVE:
-            return tmsStationDatex2Repository.findDistinctByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+            return tmsStationDatex2Repository.findDistinctByRoadStationPublishableIsTrueOrderByNaturalId();
         case REMOVED:
             return tmsStationDatex2Repository
-                .findDistinctByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId(CollectionStatus.REMOVED_PERMANENTLY);
+                .findDistinctByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByNaturalId(CollectionStatus.REMOVED_PERMANENTLY);
         case ALL:
-            return tmsStationDatex2Repository.findDistinctByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
+            return tmsStationDatex2Repository.findDistinctByRoadStationIsPublicIsTrueOrderByNaturalId();
         default:
             throw new IllegalArgumentException();
         }
