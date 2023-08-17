@@ -52,4 +52,25 @@ public class TransactionLoggerAspect {
             }
         }
     }
+
+    public static void logActiveTransactions(final Logger logger) {
+        logger.error("Connections pending!");
+
+        Map.copyOf(activeTransactions)
+            .entrySet()
+            .forEach(e -> logger.info("Active transaction {}", e.getValue().getLogString()));
+    }
+
+    private static String argumentsToString(final Object[] args) {
+        final StringBuilder arguments = new StringBuilder(100);
+        PerformanceMonitorAspect.buildValueToString(arguments, args);
+
+        return arguments.toString();
+    }
+
+    private record TransactionDetails(String method, Object[] args, Long starttime) {
+        String getLogString() {
+            return String.format("%s age %d ms arguments %s", method, System.currentTimeMillis() - starttime, argumentsToString(args));
+        };
+    }
 }
