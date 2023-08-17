@@ -67,7 +67,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
             this.weatherStationMetadataWebServiceV1 = weatherStationMetadataWebServiceV1;
         }
 
-        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuWeatherStationMetadataClient);
+        setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(lotjuWeatherStationMetadataClient);
 
         lotjuTiesaaPerustiedotServiceMock.initStateAndService();
 

@@ -18,7 +18,7 @@ public abstract class AbstractMetadataUpdateJobTest extends AbstractDaemonTest {
 
     private Map<AbstractLotjuMetadataClient, DestinationProvider> lotjuClienOriginalDestinationProvider = new HashMap<>();
 
-    public void setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(final AbstractLotjuMetadataClient lotjuClient) {
+    public void setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(final AbstractLotjuMetadataClient lotjuClient) {
         final AbstractLotjuMetadataClient tgt = getTargetObject(lotjuClient);
         final DestinationProvider original = tgt.getDestinationProvider();
         lotjuClienOriginalDestinationProvider.put(tgt, original);

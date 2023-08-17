@@ -62,7 +62,7 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
             beanFactory.registerSingleton(tmsStationMetadataWebServiceV1.getClass().getCanonicalName(), tmsStationMetadataWebServiceV1);
             this.tmsStationMetadataWebServiceV1 = tmsStationMetadataWebServiceV1;
         }
-        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuTmsStationMetadataClient);
+        setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(lotjuTmsStationMetadataClient);
     }
 
     @AfterEach

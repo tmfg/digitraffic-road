@@ -7,9 +7,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.ws.client.support.destination.DestinationProvider;
 
 import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.RoadStationType;
@@ -26,7 +23,6 @@ import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
 import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.service.v1.lotju.AbstractLotjuMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
@@ -71,13 +67,11 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
     @Autowired
     private LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
 
-    private Map<AbstractLotjuMetadataClient, DestinationProvider> lotjuClienOriginalDestinationProvider = new HashMap<>();
-
     @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
-        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuCameraStationMetadataClient);
-        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuTmsStationMetadataClient);
-        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuWeatherStationMetadataClient);
+        setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(lotjuCameraStationMetadataClient);
+        setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(lotjuTmsStationMetadataClient);
+        setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(lotjuWeatherStationMetadataClient);
     }
 
     @AfterEach
@@ -90,7 +84,6 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
 
     @Test
     public void testUpdateRoadStationStatuses() {
-
         doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
 
         lotjuLAMMetatiedotServiceMock.initStateAndService();
@@ -102,7 +95,7 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
         weatherStationUpdater.updateWeatherStations();
         cameraStationUpdater.updateCameras();
 
-        List<RoadStation> allInitial = roadStationService.findAll();
+        final List<RoadStation> allInitial = roadStationService.findAll();
         // Detatch entitys so updates wont affect them
         entityManager.flush();
         entityManager.clear();

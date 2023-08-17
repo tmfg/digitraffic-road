@@ -49,7 +49,7 @@ public class CameraStationUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
     @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
-        setLotjuClientFirstDestinationProviderAndSaveOroginalToMap(lotjuCameraStationMetadataClient);
+        setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(lotjuCameraStationMetadataClient);
     }
 
     @AfterEach

@@ -77,12 +77,12 @@ public class TmsStationUpdater {
         final List<LamAsemaVO> allLams = lotjuTmsStationMetadataClientWrapper.getLamAsemas();
 
         int updated = 0;
-        for(LamAsemaVO from : allLams) {
+        for(final LamAsemaVO from : allLams) {
             try {
                 if (roadStationUpdateService.updateRoadStation(from)) {
                     updated++;
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("method=updateTmsStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed", from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
                 throw e;
             }
@@ -108,8 +108,8 @@ public class TmsStationUpdater {
         final Collection<?> invalid = CollectionUtils.subtract(lamAsemas, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
-        for (LamAsemaVO tsa : toUpdate) {
-            UpdateStatus result = tmsStationService.updateOrInsertTmsStation(tsa);
+        for (final LamAsemaVO tsa : toUpdate) {
+            final UpdateStatus result = tmsStationService.updateOrInsertTmsStation(tsa);
             if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {

@@ -67,7 +67,7 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
 
     @Override
     public List<LamAnturiVakioArvoVO> haeKaikkiAnturiVakioArvot(final Integer paiva, final Integer kuukausi) {
-        HaeKaikkiAnturiVakioArvotResponse response = readLotjuSoapResponse(HaeKaikkiAnturiVakioArvotResponse.class);
+        final HaeKaikkiAnturiVakioArvotResponse response = readLotjuSoapResponse(HaeKaikkiAnturiVakioArvotResponse.class);
         if (response != null) {
             return response.getLamanturivakiot();
         }
@@ -91,7 +91,7 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
 
     @Override
     public List<LamLaskennallinenAnturiVO> haeKaikkiLAMLaskennallisetAnturit() {
-        HaeKaikkiLAMLaskennallisetAnturitResponse response = readLotjuSoapResponse(HaeKaikkiLAMLaskennallisetAnturitResponse.class);
+        final HaeKaikkiLAMLaskennallisetAnturitResponse response = readLotjuSoapResponse(HaeKaikkiLAMLaskennallisetAnturitResponse.class);
         if (response != null) {
             return response.getLaskennallinenAnturi();
         }
@@ -120,7 +120,7 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
 
     @Override
     public List<LamLaskennallinenAnturiVO> haeLAMAsemanLaskennallisetAnturit(final Long id) {
-        HaeLAMAsemanLaskennallisetAnturitResponse response = readLotjuSoapResponse(HaeLAMAsemanLaskennallisetAnturitResponse.class, id);
+        final HaeLAMAsemanLaskennallisetAnturitResponse response = readLotjuSoapResponse(HaeLAMAsemanLaskennallisetAnturitResponse.class, id);
         if (response != null) {
             return response.getLamlaskennallisetanturit();
         }
@@ -144,7 +144,7 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
 
     @Override
     public List<LamAsemaVO> haeKaikkiLAMAsemat() {
-        HaeKaikkiLAMAsematResponse response = readLotjuSoapResponse(HaeKaikkiLAMAsematResponse.class);
+        final HaeKaikkiLAMAsematResponse response = readLotjuSoapResponse(HaeKaikkiLAMAsematResponse.class);
         if (response != null) {
             return response.getAsemat();
         }
@@ -158,7 +158,7 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
 
     @Override
     public List<LamAnturiVakioVO> haeAsemanAnturiVakio(final Long asemaId) {
-        HaeAsemanAnturiVakioResponse response = readLotjuSoapResponse( HaeAsemanAnturiVakioResponse.class, asemaId);
+        final HaeAsemanAnturiVakioResponse response = readLotjuSoapResponse( HaeAsemanAnturiVakioResponse.class, asemaId);
         if (response != null) {
             return response.getLamanturivakiot();
         }

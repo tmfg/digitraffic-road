@@ -14,6 +14,7 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,9 +44,11 @@ public class DefaultExceptionHandler {
     private final Logger logger;
 
     // log these exceptions with error
-    private static final Set<Class<?>> errorLoggableExceptions = Set.of(
+    private static final Set<Class<? extends Exception>> errorLoggableExceptions = Set.of(
         NullPointerException.class,
-        ResourceAccessException.class);
+        DataAccessException.class,
+        ResourceAccessException.class
+    );
 
     // no need to log these exceptions at all
     private static final Set<Class<?>> nonLoggableExceptions = Set.of(
