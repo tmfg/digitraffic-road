@@ -1,0 +1,1 @@
+create unique index road_station_sensor_search_key on road_station_sensor(road_station_type, id, natural_id) where publishable = true;

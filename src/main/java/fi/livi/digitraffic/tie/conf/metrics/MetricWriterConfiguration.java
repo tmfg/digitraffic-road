@@ -138,7 +138,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
     }
 
     @Override
-    public void visitCountMetric(CountMetric countMetric, MetricVisitorData metricVisitorData) {
+    public void visitCountMetric(final CountMetric countMetric, final MetricVisitorData metricVisitorData) {
         final String tagValue = metricVisitorData.tagValue();
         final Measurement measurement = metricVisitorData.measurement();
 

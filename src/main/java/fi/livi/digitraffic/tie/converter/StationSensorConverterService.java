@@ -30,7 +30,7 @@ public class StationSensorConverterService {
             final List<StationSensors> list = roadStationSensorRepository.listStationPublishableSensorsByType(type);
             return createMap(list);
         }
-        throw new IllegalArgumentException(String.format("RoadStationType %s not suported", type.name()));
+        throw new IllegalArgumentException(String.format("RoadStationType %s not supported", type.name()));
     }
 
     @Transactional(readOnly = true)
@@ -40,7 +40,7 @@ public class StationSensorConverterService {
                 Collections.emptyMap() :
                 createMap(roadStationSensorRepository.getRoadStationPublishableSensorsNaturalIdsByStationIdAndType(roadStationId, type));
         }
-        throw new IllegalArgumentException(String.format("RoadStationType %s not suported", type.name()));
+        throw new IllegalArgumentException(String.format("RoadStationType %s not supported", type.name()));
     }
 
     @Transactional(readOnly = true)
@@ -50,7 +50,7 @@ public class StationSensorConverterService {
                    Collections.emptyList() :
                    roadStationSensorRepository.findRoadStationPublishableSensorsNaturalIdsByStationIdAndType(roadStationId, type);
         }
-        throw new IllegalArgumentException(String.format("RoadStationType %s not suported", type.name()));
+        throw new IllegalArgumentException(String.format("RoadStationType %s not supported", type.name()));
     }
 
 
