@@ -21,7 +21,7 @@ public class PendingConnectionDebugger {
         this.meterRegistry = meterRegistry;
     }
 
-    @Scheduled(fixedRate = 50)
+    @Scheduled(fixedRate = 100)
     @NoJobLogging
     void debugPendingConnections() {
         final RequiredSearch requiredSearch = meterRegistry.get(HikariCPMetrics.CONNECTIONS_PENDING);
