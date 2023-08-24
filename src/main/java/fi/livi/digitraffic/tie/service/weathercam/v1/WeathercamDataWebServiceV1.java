@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_IMAGE_UPDATE
 import java.time.Instant;
 import java.util.List;
 
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.model.v1.camera.WeatherStationPreset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -47,6 +48,7 @@ public class WeathercamDataWebServiceV1 {
         }
     }
 
+    @NotTransactionalServiceMethod // readoonly transaction declared in repository
     public WeathercamStationDataV1 findPublishableWeathercamStationData(final String cameraId) {
         final List<WeatherStationPreset> presets = cameraPresetRepository
                 .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(cameraId);
