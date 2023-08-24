@@ -38,7 +38,7 @@ public class TransactionLoggerAspect {
         final Long transactionId = idCounter.incrementAndGet();
 
         try {
-            activeTransactions.put(transactionId, new TransactionDetails(methodName, args, System.currentTimeMillis()));
+            activeTransactions.put(transactionId, new TransactionDetails(methodKey, args, System.currentTimeMillis()));
 
             return pjp.proceed();
         } finally {
