@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_IMAGE_UPDATE
 import java.time.Instant;
 import java.util.List;
 
+import fi.livi.digitraffic.tie.model.v1.camera.WeatherStationPreset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import fi.livi.digitraffic.tie.converter.weathercam.v1.WeathercamDataConverter;
 import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDataV1;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
@@ -47,14 +47,13 @@ public class WeathercamDataWebServiceV1 {
         }
     }
 
-    @Transactional(readOnly = true)
     public WeathercamStationDataV1 findPublishableWeathercamStationData(final String cameraId) {
-        final List<CameraPreset> data = cameraPresetRepository
+        final List<WeatherStationPreset> presets = cameraPresetRepository
                 .findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(cameraId);
 
-        if (data.isEmpty()) {
+        if (presets.isEmpty()) {
             throw new ObjectNotFoundException("CameraStation", cameraId);
         }
-        return weathercamDataConverter.convertSingleStationData(data);
+        return weathercamDataConverter.convertSingleStationData(presets);
     }
 }

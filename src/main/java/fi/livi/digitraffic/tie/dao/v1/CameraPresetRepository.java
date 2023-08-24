@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.dao.v1;
 import java.util.Collection;
 import java.util.List;
 
+import fi.livi.digitraffic.tie.model.v1.camera.WeatherStationPreset;
 import jakarta.persistence.QueryHint;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dto.v1.NearestRoadStation;
 import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long> {
@@ -63,23 +65,21 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
      * @see {@link CameraPresetRepository#findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(String)}
      */
     @Query(value =
-               "SELECT cp, rs, ra, ws " +
-               "FROM CameraPreset cp " +
-               "inner join cp.roadStation as rs " +
-               "left outer join rs.roadAddress as ra " +
-               "left outer join cp.nearestWeatherStation as ws " +
-               "where cp.publishable = true " +
-               "  AND cp.cameraId=:cameraId " +
-               "  AND rs.obsoleteDate IS NULL " +
-               "  AND rs.collectionStatus <> 'REMOVED_PERMANENTLY' " +
+               "SELECT cp.preset_id as PresetId, cp.pic_last_modified as PictureLastModified, cp.camera_id as CameraId " +
+               "FROM camera_preset cp, road_station rs " +
+               "where cp.road_station_id = rs.id " +
+               "  and cp.publishable = true " +
+               "  AND cp.camera_id=:cameraId " +
+               "  AND rs.obsolete_date IS NULL " +
+               "  AND rs.collection_status <> 'REMOVED_PERMANENTLY' " +
                "  AND ( " +
-               "        (rs.isPublic = true AND COALESCE(rs.publicityStartTime, CURRENT_TIMESTAMP) <= CURRENT_TIMESTAMP) " +
-               "        OR (rs.isPublicPrevious = true AND COALESCE(rs.publicityStartTime, CURRENT_TIMESTAMP) > CURRENT_TIMESTAMP) " +
+               "        (rs.is_public = true AND COALESCE(rs.publicity_start_time, CURRENT_TIMESTAMP) <= CURRENT_TIMESTAMP) " +
+               "        OR (rs.is_public_previous = true AND COALESCE(rs.publicity_start_time, CURRENT_TIMESTAMP) > CURRENT_TIMESTAMP) " +
                "  ) " +
-               "ORDER BY cp.presetId")
+               "ORDER BY cp.preset_id", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="20"))
-    @EntityGraph(attributePaths = { "roadStation", "roadStation.roadAddress", "nearestWeatherStation" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<CameraPreset> findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(final String cameraId);
+    @Transactional(readOnly = true)
+    List<WeatherStationPreset> findByCameraIdAndPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(final String cameraId);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     @Query(value = "select rs.natural_id nearestNaturalId, ws.id weatherStationId\n" +

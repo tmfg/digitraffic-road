@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import fi.livi.digitraffic.tie.model.v1.camera.WeatherStationPreset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
@@ -44,11 +45,12 @@ public class WeathercamDataConverter {
         return new WeathercamStationsDataV1(updated, stationsDatas);
     }
 
-    public WeathercamStationDataV1 convertSingleStationData(final List<CameraPreset> data) {
-        final List<WeathercamPresetDataV1> presetsDatas = data.stream()
-            .map(cp -> new WeathercamPresetDataV1(cp.getPresetId(), DateHelper.toInstantWithOutMillis(cp.getPictureLastModified())))
+    public WeathercamStationDataV1 convertSingleStationData(final List<WeatherStationPreset> presets) {
+        final List<WeathercamPresetDataV1> presetsDatas = presets.stream()
+            .map(preset -> new WeathercamPresetDataV1(preset.getPresetId(), DateHelper.toInstantWithOutMillis(preset.getPictureLastModified().toEpochMilli())))
             .collect(toList());
-        return new WeathercamStationDataV1(data.get(0).getCameraId(), presetsDatas, getMaxMeasuredTime(presetsDatas));
+
+        return new WeathercamStationDataV1(presets.get(0).getCameraId(), presetsDatas, getMaxMeasuredTime(presetsDatas));
     }
 
     private static Instant getMaxMeasuredTime(final List<WeathercamPresetDataV1> presetDatas) {
