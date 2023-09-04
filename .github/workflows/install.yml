@@ -74,8 +74,10 @@ jobs:
           repository: tmfg/digitraffic-build-dependencies
           ssh-key: ${{ secrets.DEPENDENCY_SSH_KEY }}
           path: digitraffic-build-dependencies
+          sparse-checkout: |
+            jms
       - name: Setup dependencies
-        run: cp -R digitraffic-build-dependencies/ ~/.m2/
+        run: cp -R digitraffic-build-dependencies/jms/ ~/.m2/
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
