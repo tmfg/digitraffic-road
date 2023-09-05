@@ -107,6 +107,13 @@ public final class DateHelper {
         return withoutMillis(Instant.ofEpochSecond(measuredTime.toEpochSecond()));
     }
 
+    public static Instant toInstantWithOutMillis(final Instant measuredTime) {
+        if (measuredTime == null) {
+            return null;
+        }
+        return withoutMillis(Instant.ofEpochSecond(measuredTime.getEpochSecond()));
+    }
+
     /**
      * Needed because some fields in db are Oracle Date type and Date won't have millis.
      */

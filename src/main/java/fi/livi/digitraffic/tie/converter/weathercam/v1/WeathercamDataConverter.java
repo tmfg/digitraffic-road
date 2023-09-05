@@ -47,7 +47,7 @@ public class WeathercamDataConverter {
 
     public WeathercamStationDataV1 convertSingleStationData(final List<WeatherStationPreset> presets) {
         final List<WeathercamPresetDataV1> presetsDatas = presets.stream()
-            .map(preset -> new WeathercamPresetDataV1(preset.getPresetId(), DateHelper.toInstantWithOutMillis(preset.getPictureLastModified().toEpochMilli())))
+            .map(preset -> new WeathercamPresetDataV1(preset.getPresetId(), DateHelper.toInstantWithOutMillis(preset.getPictureLastModified())))
             .collect(toList());
 
         return new WeathercamStationDataV1(presets.get(0).getCameraId(), presetsDatas, getMaxMeasuredTime(presetsDatas));
