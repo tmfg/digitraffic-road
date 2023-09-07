@@ -54,8 +54,6 @@ public class TransactionLoggerAspect {
     }
 
     public static void logActiveTransactions(final Logger logger) {
-        logger.error("Connections pending!");
-
         Map.copyOf(activeTransactions)
             .entrySet()
             .forEach(e -> logger.info("Active transaction {}", e.getValue().getLogString()));
