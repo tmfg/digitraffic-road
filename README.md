@@ -50,6 +50,7 @@ Or build the JAR file with:
 
 ### Running tests
 
+
 Copy the template application-default.properties.template to application-default.properties.
 Running may also require to specify the active Spring profile by setting _-Dspring.profiles.active=default_.
 
