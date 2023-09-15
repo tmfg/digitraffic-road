@@ -4,63 +4,50 @@
     <!--
         Temporary suppressions, check and update these periodically
     -->
-    <suppress until="2023-05-01">
-        <!-- Requires update in upstream org.springframework.boot/spring-boot-starter-parent -->
-        <notes><![CDATA[file name: snakeyaml-1.30.jar]]></notes>
+
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: angus-mail-1.0.0.jar (shaded: org.eclipse.angus:angus-core:1.0.0)]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus\-core@.*$</packageUrl>
+        <vulnerabilityName>CVE-2021-44549</vulnerabilityName>
+    </suppress>
+
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: angus-mail-1.0.0.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus\-mail@.*$</packageUrl>
+        <vulnerabilityName>CVE-2021-44549</vulnerabilityName>
+    </suppress>
+
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: quartz-2.3.2.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.quartz\-scheduler/quartz@.*$</packageUrl>
+        <cve>CVE-2023-39017</cve>
+    </suppress>
+
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: snakeyaml-1.33.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
-        <cve>CVE-2022-25857</cve>
-        <cve>CVE-2022-38749</cve>
-        <cve>CVE-2022-38750</cve>
-        <cve>CVE-2022-38751</cve>
-        <cve>CVE-2022-38752</cve>
         <cve>CVE-2022-1471</cve>
-        <cve>CVE-2022-41854</cve>
     </suppress>
 
-    <suppress until="2023-05-01">
-        <!-- Requires updating org.springframework.boot/spring-boot-starter-parent
-             fixed in spring-boot-starter-parent:2.7.9 which currently crashes build -->
-        <notes><![CDATA[file name: json-smart-2.4.8.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/net\.minidev/json\-smart@.*$</packageUrl>
-        <vulnerabilityName>CVE-2023-1370</vulnerabilityName>
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: bcprov-jdk15on-1.69.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
+        <vulnerabilityName>CVE-2023-33201</vulnerabilityName>
     </suppress>
 
-
-    <suppress until="2023-05-01Z">
+    <suppress until="2023-12-01Z">
         <!-- We don't use com.amazonaws.services.s3.transfer.TransferManager::downloadDirectory -->
         <notes><![CDATA[file name: aws-java-sdk-(secretsmanager|ec2).jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.amazonaws/(aws\-java\-sdk\-secretsmanager|aws\-java\-sdk\-ec2)@.*$</packageUrl>
         <cve>CVE-2022-31159</cve>
     </suppress>
 
-    <suppress until="2023-05-01Z">
-        <notes><![CDATA[file name: spring-*.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework.*$</packageUrl>
-        <!-- We are not using the vulnerable http-invoker -->
-        <cve>CVE-2016-1000027</cve>
-    </suppress>
-
-    <suppress until="2023-05-01">
+    <suppress until="2023-12-01">
         <notes><![CDATA[file name: spring-security-crypto-*.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
 
         <!-- Crypto vulnerability, not using vulnerable version of Spring Security -->
         <cve>CVE-2020-5408</cve>
-    </suppress>
-
-    <suppress until="2023-05-01">
-        <notes><![CDATA[file name: guava-31.1-jre.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-
-        <!-- Currently not using vulnerability-creating method com.google.common.io.Files.createTempDir() -->
-        <cve>CVE-2020-8908</cve>
-    </suppress>
-
-    <suppress until="2023-05-01">
-        <notes><![CDATA[file name: woodstox-core-6.3.1.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.woodstox/woodstox\-core@.*$</packageUrl>
-        <!-- not parsing incoming DTDs -->
-        <cve>CVE-2022-40152</cve>
     </suppress>
 
     <!--
