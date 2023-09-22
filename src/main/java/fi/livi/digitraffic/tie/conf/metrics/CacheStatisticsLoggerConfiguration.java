@@ -16,15 +16,15 @@ import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import fi.livi.digitraffic.tie.aop.NoJobLogging;
 
 @Configuration
-public class CacheStatisticsLogger {
+public class CacheStatisticsLoggerConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(CacheStatisticsLogger.class);
+    private static final Logger log = LoggerFactory.getLogger(CacheStatisticsLoggerConfiguration.class);
     private final CacheManager cacheManager;
 
     private final DecimalFormat f = new DecimalFormat("##.00");
 
     @Autowired
-    public CacheStatisticsLogger(final CacheManager cacheManager) {
+    public CacheStatisticsLoggerConfiguration(final CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 
