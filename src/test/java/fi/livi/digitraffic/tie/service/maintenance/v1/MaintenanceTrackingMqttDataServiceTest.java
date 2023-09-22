@@ -1,23 +1,21 @@
 package fi.livi.digitraffic.tie.service.maintenance.v1;
 
-import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
-import static fi.livi.digitraffic.tie.TestUtils.flushCommitEndTransactionAndStartNew;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
-
-import java.time.Instant;
-import java.util.List;
-
+import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTracking;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingWorkMachine;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
-import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
+import java.time.Instant;
+import java.util.List;
+
+import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
+import static fi.livi.digitraffic.tie.TestUtils.flushCommitEndTransactionAndStartNew;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
 
 public class MaintenanceTrackingMqttDataServiceTest extends AbstractServiceTest {
 
@@ -29,10 +27,10 @@ public class MaintenanceTrackingMqttDataServiceTest extends AbstractServiceTest 
     private MaintenanceTrackingMqttDataService maintenanceTrackingWebDataServiceV1;
 
     @Autowired
-    private V3MaintenanceTrackingServiceTestHelper testHelper;
+    private MaintenanceTrackingServiceTestHelperV1 testHelper;
 
     @Autowired
-    private V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
+    private MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
 
     @AfterEach
     @BeforeEach
@@ -57,7 +55,7 @@ public class MaintenanceTrackingMqttDataServiceTest extends AbstractServiceTest 
         testHelper.insertTrackingForDomain(DOMAIN_WITH_SOURCE, wm1.getId());
         flushCommitEndTransactionAndStartNew(entityManager);
 
-        final List<MaintenanceTracking> all = v2MaintenanceTrackingRepository.findAll();
+        final List<MaintenanceTracking> all = maintenanceTrackingRepositoryV1.findAll();
         assertCollectionSize(2, all);
         final Instant created = all.get(0).getCreated().toInstant();
 

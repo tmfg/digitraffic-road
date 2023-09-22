@@ -13,21 +13,20 @@ import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VA
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1.FromToParamType.CREATED_TIME;
 import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1.FromToParamType.END_TIME;
+import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.STATE_ROADS_DOMAIN;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
@@ -39,26 +38,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDtoV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingWebDataServiceV1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 
 @Tag(name = ApiConstants.MAINTENANCE_TAG_V1)
 @RestController
 @Validated
 @ConditionalOnWebApplication
 public class MaintenanceTrackingControllerV1 {
+
     private final MaintenanceTrackingWebDataServiceV1 maintenanceTrackingWebDataServiceV1;
 
     /**
@@ -76,12 +77,14 @@ public class MaintenanceTrackingControllerV1 {
     private static final String TRACKING = "/tracking";
 
     private static final String API_MAINTENANCE_V1_TRACKING = API_MAINTENANCE_V1 + TRACKING;
-    private static final String API_MAINTENANCE_BETA_TRACKING = API_MAINTENANCE_BETA + TRACKING;
 
     public static final String API_MAINTENANCE_V1_TRACKING_ROUTES = API_MAINTENANCE_V1_TRACKING + "/routes";
     public static final String API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST = API_MAINTENANCE_V1_TRACKING_ROUTES + "/latest";
     public static final String API_MAINTENANCE_V1_TRACKING_TASKS = API_MAINTENANCE_V1_TRACKING + "/tasks";
     public static final String API_MAINTENANCE_V1_TRACKING_DOMAINS = API_MAINTENANCE_V1_TRACKING + "/domains";
+
+    private static final Set<MaintenanceTrackingTask> ALL_MAINTENANCE_TRACKING_TASKS =
+        Arrays.stream(MaintenanceTrackingTask.values()).collect(Collectors.toSet());
 
     public enum FromToParamType {
         END_TIME("end"),
@@ -139,16 +142,19 @@ public class MaintenanceTrackingControllerV1 {
 
         @Parameter(description = "Task ids to include. Any route containing one of the selected tasks will be returned.")
         @RequestParam(value = "taskId", required = false)
-        final List<MaintenanceTrackingTask> taskId,
+        final Set<MaintenanceTrackingTask> taskId,
 
-        @Parameter(description = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
-        @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
-        final List<String> domain) {
+        @Parameter(description = "Data domains. If domain is not given default value of \"" + STATE_ROADS_DOMAIN + "\" will be used.")
+        @RequestParam(value = "domain", required = false, defaultValue = STATE_ROADS_DOMAIN)
+        final Set<String> domain) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
-        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
 
-        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), xMin, yMin, xMax, yMax, taskId, domain);
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(
+            DateHelper.floorInstantSeconds(endFrom), null,
+            MaintenanceTrackingWebDataServiceV1.convertToAreaParameter(xMin, xMax, yMin, yMax),
+            hasAllTasks(taskId) ? null : taskId,
+            maintenanceTrackingWebDataServiceV1.convertToRealDomainNames(domain));
     }
 
     @Operation(summary = "Road maintenance tracking routes")
@@ -202,18 +208,23 @@ public class MaintenanceTrackingControllerV1 {
 
         @Parameter(description = "Task ids to include. Any tracking containing one of the selected tasks will be returned.")
         @RequestParam(value = "taskId", required = false)
-        final List<MaintenanceTrackingTask> taskId,
+        final Set<MaintenanceTrackingTask> taskId,
 
-        @Parameter(description = "Data domains. If domain is not given default value of \"" + V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN + "\" will be used.")
-        @RequestParam(value = "domain", required = false, defaultValue = V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN)
-        final List<String> domain) {
+        @Parameter(description = "Data domains. If domain is not given default value of \"" + STATE_ROADS_DOMAIN + "\" will be used.")
+        @RequestParam(value = "domain", required = false, defaultValue = STATE_ROADS_DOMAIN)
+        final Set<String> domain) {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, endBefore, 24, END_TIME);
         validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
-        final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
 
-        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(fromTo.getLeft(), fromTo.getRight(), createdAfter, createdBefore, xMin, yMin, xMax, yMax,
-            taskId, domain);
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
+            DateHelper.floorInstantSeconds(endFrom),
+            DateHelper.floorInstantSeconds(endBefore),
+            DateHelper.floorInstantSeconds(createdAfter),
+            DateHelper.floorInstantSeconds(createdBefore),
+            MaintenanceTrackingWebDataServiceV1.convertToAreaParameter(xMin, xMax, yMin, yMax),
+            hasAllTasks(taskId) ? null : taskId,
+            maintenanceTrackingWebDataServiceV1.convertToRealDomainNames(domain));
     }
     @Operation(summary = "Road maintenance tracking route with tracking id")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES + "/{id}", produces = APPLICATION_JSON_VALUE)
@@ -245,29 +256,6 @@ public class MaintenanceTrackingControllerV1 {
         return ResponseEntityWithLastModifiedHeader.of(domains, lastModified, API_MAINTENANCE_V1_TRACKING_DOMAINS);
     }
 
-    private static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final int defaultHoursOfHistory) {
-        return getFromAndToParamsIfNotSetWithHoursOfHistory(from, null, null, null, defaultHoursOfHistory);
-    }
-
-    private static Pair<Instant, Instant> getFromAndToParamsIfNotSetWithHoursOfHistory(final Instant from, final Instant to,
-                                                                                       final Instant createdFrom, final Instant createdTo,
-                                                                                       final int defaultHoursOfHistory) {
-        // If created time limit is given, then from and to can be as they are
-        if (createdFrom != null || createdTo != null) {
-            return Pair.of(from, to);
-        }
-        // Make sure newest is also fetched
-        final Instant now = Instant.now();
-        final Instant fromParam = from != null ? from : now.minus(defaultHoursOfHistory, HOURS);
-        // Just to be sure all events near now in future will be fetched
-        final Instant toParam = to != null ? to : now.plus(1, HOURS);
-        return Pair.of(fromParam, toParam);
-    }
-
-    public static void validateTimeBetweenFromAndToMaxHours(final ZonedDateTime from, final ZonedDateTime to, final int maxDiffHours) {
-        validateTimeBetweenFromAndToMaxHours(DateHelper.toInstant(from), DateHelper.toInstant(to), maxDiffHours, END_TIME);
-    }
-
     public static void validateTimeBetweenFromAndToMaxHours(final Instant from, final Instant to, final int maxDiffHours, final FromToParamType paramType) {
         if (from != null && to != null) {
             if (from.isAfter(to)) {
@@ -278,5 +266,18 @@ public class MaintenanceTrackingControllerV1 {
         } else if (from != null && from.plus(maxDiffHours, HOURS).isBefore(Instant.now())) {
             throw new IllegalArgumentException(String.format("When just %sFrom -parameter is given, it must be inside %d hours.", paramType, maxDiffHours));
         }
+    }
+
+    /**
+     * Checks if tasks parameter value equals all values
+     * @param taskIds
+     * @return true if parameter is null, empty or contains all task values
+     */
+    private static boolean hasAllTasks(final Set<MaintenanceTrackingTask> taskIds) {
+        if (CollectionUtils.isEmpty(taskIds)) {
+            return true;
+        }
+        final Set<MaintenanceTrackingTask> tasks = taskIds.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+        return ALL_MAINTENANCE_TRACKING_TASKS.equals(tasks);
     }
 }

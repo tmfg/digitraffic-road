@@ -169,6 +169,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+
+        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>2.0.1.Final</version>
@@ -783,6 +789,8 @@
                                 <include>src/main/resources/schemas/lotju/proto</include>
                             </inputDirectories>
                             <outputDirectory>${project.build.directory}/generated-sources/lotju-proto</outputDirectory>
+                            <!--For m1/m2 Macs: brew install protobuf -->
+                            <!--<protocCommand>/opt/homebrew/bin/protoc</protocCommand>-->
                         </configuration>
                     </execution>
                 </executions>

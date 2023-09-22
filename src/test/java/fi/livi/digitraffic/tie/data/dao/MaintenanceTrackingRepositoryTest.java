@@ -1,9 +1,10 @@
 package fi.livi.digitraffic.tie.data.dao;
 
 import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
+import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.STATE_ROADS_DOMAIN;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -12,24 +13,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
-import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1;
 
 public class MaintenanceTrackingRepositoryTest extends AbstractServiceTest {
 
     @Autowired
-    private V2MaintenanceTrackingRepository maintenanceTrackingRepository;
+    private MaintenanceTrackingRepositoryV1 maintenanceTrackingRepository;
 
     @Autowired
-    private V3MaintenanceTrackingServiceTestHelper testHelper;
+    private MaintenanceTrackingServiceTestHelperV1 testHelper;
 
     private final static String DOMAIN_FOUND = "domain-1";
     private final static String DOMAIN_NOT_FOUND = "domain-2";
 
     @BeforeEach
     public void initDb() {
-        testHelper.insertDomain(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN, V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN);
+        testHelper.insertDomain(STATE_ROADS_DOMAIN, STATE_ROADS_DOMAIN);
         commitAndEndTransactionAndStartNew();
     }
 
@@ -47,13 +49,13 @@ public class MaintenanceTrackingRepositoryTest extends AbstractServiceTest {
         testHelper.insertDomain(DOMAIN_NOT_FOUND, null);
         commitAndEndTransactionAndStartNew();
         final List<MaintenanceTrackingDomainDtoV1> domains = maintenanceTrackingRepository.getDomainsWithGenerics();
-        final List<String> names = domains.stream().map(MaintenanceTrackingDomainDtoV1::getName).collect(Collectors.toList());
+        final List<String> names = domains.stream().map(MaintenanceTrackingDomainDtoV1::getName).toList();
 
         Assertions.assertTrue(names.contains(DOMAIN_FOUND));
         Assertions.assertFalse(names.contains(DOMAIN_NOT_FOUND));
-        Assertions.assertTrue(names.contains(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
-        Assertions.assertTrue(names.contains(V2MaintenanceTrackingRepository.GENERIC_ALL_DOMAINS));
-        Assertions.assertTrue(names.contains(V2MaintenanceTrackingRepository.GENERIC_MUNICIPALITY_DOMAINS));
+        Assertions.assertTrue(names.contains(STATE_ROADS_DOMAIN));
+        Assertions.assertTrue(names.contains(MaintenanceTrackingDaoV1.GENERIC_ALL_DOMAINS));
+        Assertions.assertTrue(names.contains(MaintenanceTrackingDaoV1.GENERIC_MUNICIPALITY_DOMAINS));
     }
 
     @Test
@@ -63,13 +65,13 @@ public class MaintenanceTrackingRepositoryTest extends AbstractServiceTest {
         testHelper.insertDomain(DOMAIN_FOUND, "Foo/Bar");
         testHelper.insertDomain(DOMAIN_NOT_FOUND, null);
         commitAndEndTransactionAndStartNew();
-        final List<String> domainNames = maintenanceTrackingRepository.getRealDomainNames();
+        final Set<String> domainNames = maintenanceTrackingRepository.getRealDomainNames();
 
         Assertions.assertTrue(domainNames.contains(DOMAIN_FOUND));
         Assertions.assertFalse(domainNames.contains(DOMAIN_NOT_FOUND));
-        Assertions.assertTrue(domainNames.contains(V2MaintenanceTrackingRepository.STATE_ROADS_DOMAIN));
-        Assertions.assertFalse(domainNames.contains(V2MaintenanceTrackingRepository.GENERIC_ALL_DOMAINS));
-        Assertions.assertFalse(domainNames.contains(V2MaintenanceTrackingRepository.GENERIC_MUNICIPALITY_DOMAINS));
+        Assertions.assertTrue(domainNames.contains(STATE_ROADS_DOMAIN));
+        Assertions.assertFalse(domainNames.contains(MaintenanceTrackingDaoV1.GENERIC_ALL_DOMAINS));
+        Assertions.assertFalse(domainNames.contains(MaintenanceTrackingDaoV1.GENERIC_MUNICIPALITY_DOMAINS));
     }
 
 }

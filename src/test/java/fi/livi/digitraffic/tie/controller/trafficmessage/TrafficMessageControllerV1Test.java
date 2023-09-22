@@ -141,7 +141,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    final Instant lastUpdated = DateHelper.roundToSeconds(getTransactionTimestamp());
+                    final Instant lastUpdated = DateHelper.roundInstantSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType), lastUpdated);
@@ -168,7 +168,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
                     trafficMessageTestHelper.cleanDb();
                     final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
-                    final Instant lastUpdated = DateHelper.roundToSeconds(getTransactionTimestamp());
+                    final Instant lastUpdated = DateHelper.roundInstantSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 2, situationType), lastUpdated);

@@ -29,7 +29,6 @@ public final class DateHelper {
 
     private static final Logger log = LoggerFactory.getLogger(DateHelper.class);
 
-
     // Tue, 03 Sep 2019 13:56:36 GMT
     private final static ZoneId GMT_ZONE = ZoneId.of("GMT");
     public static final String LAST_MODIFIED_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
@@ -59,10 +58,10 @@ public final class DateHelper {
     private DateHelper() {}
 
     public static String getInLastModifiedHeaderFormat(final Instant instant) {
-        return LAST_MODIFIED_FORMATTER.format(instant);
+        return LAST_MODIFIED_FORMATTER.format(roundInstantSeconds(instant));
     }
 
-    public static ZonedDateTime getGreatestAtUtc(final ZonedDateTime first, final ZonedDateTime second) {
+        public static ZonedDateTime getGreatestAtUtc(final ZonedDateTime first, final ZonedDateTime second) {
         if (first == null) {
             return toZonedDateTimeAtUtc(second);
         } else if(second == null || first.isAfter(second)) {
@@ -236,12 +235,27 @@ public final class DateHelper {
         return value == null ? null : value.toInstant();
     }
 
-    public static Instant roundToSeconds(final Instant from) {
+    public static Instant roundInstantSeconds(final Instant from) {
         if ( from == null) {
             return null;
         }
         return Instant.ofEpochSecond(from.getEpochSecond() + (from.getNano() >= 500000000 ? 1 : 0));
     }
+
+    public static Instant floorInstantSeconds(final Instant from) {
+        if ( from == null) {
+            return null;
+        }
+        return Instant.ofEpochSecond(from.getEpochSecond());
+    }
+
+    public static Instant ceilInstantSeconds(final Instant from) {
+        if ( from == null) {
+            return null;
+        }
+        return Instant.ofEpochSecond(from.getEpochSecond() + (from.getNano() > 0 ? 1 : 0));
+    }
+
 
     /**
      * Convert from "YYYY-MM-DD" to "EEE, dd MMM yyyy HH:mm:ss z"

@@ -2,40 +2,52 @@ package fi.livi.digitraffic.tie.conf;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.cache.CacheManager;
-import javax.cache.configuration.MutableConfiguration;
-import javax.cache.expiry.CreatedExpiryPolicy;
-import javax.cache.expiry.Duration;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Configuration
 @EnableCaching
-public class RoadCacheConfiguration implements JCacheManagerCustomizer {
+public class RoadCacheConfiguration implements CachingConfigurer {
+
+    private static final Logger log = LoggerFactory.getLogger(RoadCacheConfiguration.class);
+
     public static final String CACHE_REVERSE_GEOCODE = "reverseGeocode";
+    public static final String CACHE_MAINTENANCE_ROUTES = "maintenanceTracking";
+    public static final String CACHE_MAINTENANCE_ROUTES_LATES = "maintenanceTrackingLatest";
 
-    private final long reverseGeocode;
-
-    @Autowired
-    public RoadCacheConfiguration(@Value("${cache.reverseGeocode}") final long reverseGeocode) {
-        this.reverseGeocode = reverseGeocode;
+    @Bean(name = CACHE_REVERSE_GEOCODE)
+    public CaffeineCache cacheGeocode(@Value("${cache.reverseGeocode.ms}") final long durationMs) {
+        return createCache(CACHE_REVERSE_GEOCODE, durationMs, null);
     }
 
-    @Override
-    public void customize(final CacheManager cacheManager) {
-        createCacheIfNeeded(cacheManager, CACHE_REVERSE_GEOCODE, reverseGeocode);
+    @Bean(name = CACHE_MAINTENANCE_ROUTES)
+    public CaffeineCache cacheRoutes(@Value("${cache.maintenance.routes.ms}") final long durationMs,
+                                     @Value("${cache.maintenance.routes.size}") final int size) {
+        return createCache(CACHE_MAINTENANCE_ROUTES, durationMs, size);
     }
 
-    private void createCacheIfNeeded(final CacheManager cacheManager, final String cacheName, final long duration) {
-        if (cacheManager.getCache(cacheName) == null) {
-            cacheManager.createCache(cacheName, new MutableConfiguration<>()
-                .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.MILLISECONDS, duration)))
-                .setStoreByValue(false)
-                .setStatisticsEnabled(true));
+    @Bean(name = CACHE_MAINTENANCE_ROUTES_LATES)
+    public CaffeineCache cacheRoutesLatest(@Value("${cache.maintenance.routes.latest.ms}") final long durationMs,
+                                     @Value("${cache.maintenance.routes.latest.size}") final int size) {
+        return createCache(CACHE_MAINTENANCE_ROUTES_LATES, durationMs, size);
+    }
+
+    private CaffeineCache createCache(final String cacheName, final long expireAfterWritedMs, final Integer size) {
+        final Caffeine<Object, Object> builder =
+            Caffeine.newBuilder()
+                .expireAfterWrite(expireAfterWritedMs, TimeUnit.MILLISECONDS)
+                .recordStats();
+        if (size != null) {
+            builder.maximumSize(size);
         }
+        return new CaffeineCache(cacheName, builder.build());
     }
 }

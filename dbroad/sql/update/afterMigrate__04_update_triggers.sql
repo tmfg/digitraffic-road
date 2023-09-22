@@ -63,4 +63,10 @@ CREATE TRIGGER road_station_sensor_publishable_t
   FOR EACH ROW
 EXECUTE PROCEDURE road_station_sensor_publishable();
 
-
+-- updates maintenance_tracking task-column after insert in maintenance_tracking_task table
+DROP TRIGGER IF EXISTS maintenance_tracking_task_t ON maintenance_tracking_task;
+CREATE TRIGGER maintenance_tracking_task_t
+  AFTER INSERT
+  ON maintenance_tracking_task
+  FOR EACH ROW
+EXECUTE PROCEDURE maintenance_tracking_task_update();

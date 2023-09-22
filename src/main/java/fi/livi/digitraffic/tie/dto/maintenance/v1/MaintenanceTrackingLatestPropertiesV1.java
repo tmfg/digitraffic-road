@@ -1,12 +1,12 @@
 package fi.livi.digitraffic.tie.dto.maintenance.v1;
 
+import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;
-
-import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Maintenance tracking properties")
 public class MaintenanceTrackingLatestPropertiesV1 extends PropertiesV1 {

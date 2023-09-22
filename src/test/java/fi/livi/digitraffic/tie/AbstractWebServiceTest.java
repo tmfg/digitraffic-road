@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.RestTemplate;
 
+import fi.livi.digitraffic.tie.conf.RoadCacheConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
@@ -26,6 +27,8 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingMqttDataService;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingUpdateServiceV1;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingWebDataServiceV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
@@ -40,8 +43,6 @@ import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
-import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
-import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
 
@@ -52,6 +53,7 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
 @Import({// configurations
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
          Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
+         RoadCacheConfiguration.class,
 
          // Services V1
          TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class, WeatherDataWebServiceV1.class, WeatherStationMetadataWebServiceV1.class,
@@ -71,7 +73,7 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
          TrafficMessageJsonConverterV1.class, V2Datex2JsonConverter.class, ImsJsonConverter.class, CoordinateConverter.class,
 
          // Test helpers etc.
-         TmsTestHelper.class, TrafficMessageTestHelper.class, V3MaintenanceTrackingServiceTestHelper.class, V3MaintenanceTrackingUpdateService.class
+         TmsTestHelper.class, TrafficMessageTestHelper.class, MaintenanceTrackingServiceTestHelperV1.class, MaintenanceTrackingUpdateServiceV1.class
 })
 public abstract class AbstractWebServiceTest extends AbstractJpaTest {
 }

@@ -1,51 +1,9 @@
-package fi.livi.digitraffic.tie.service.v3.maintenance;
-
-import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData.Status.HANDLED;
-import static fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData.Status.UNHANDLED;
-import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createMaintenanceTrackingWithPoints;
-import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.createWorkMachines;
-import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getEndTime;
-import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getStartTimeOneDayInPast;
-import static fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper.getTaskSetWithIndex;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
+package fi.livi.digitraffic.tie.service.maintenance.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
-import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingObservationDataRepositoryV1;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
@@ -55,26 +13,53 @@ import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
-import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTracking;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingWorkMachine;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.Rollback;
 
-public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
+import java.io.IOException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
-    private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingUpdateServiceTest.class);
+import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
+import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
+import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData.Status.HANDLED;
+import static fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData.Status.UNHANDLED;
+import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class MaintenanceTrackingUpdateServiceV1Test extends AbstractServiceTest {
+
+    private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingUpdateServiceV1Test.class);
 
     @Autowired
-    private V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
+    private MaintenanceTrackingObservationDataRepositoryV1 maintenanceTrackingObservationDataRepositoryV1;
 
     @Autowired
-    private V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
+    private MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
 
     @Autowired
-    private V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService;
+    private MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1;
 
     @Autowired
-    private V3MaintenanceTrackingServiceTestHelper testHelper;
+    private MaintenanceTrackingServiceTestHelperV1 testHelper;
 
     @Value("${workmachine.tracking.distinct.observation.gap.minutes}")
     private int maxGapInMinutes;
@@ -97,8 +82,8 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         testHelper.saveTrackingDataAsObservations(seuranta);
 
         // Check that data can be fetched from db
-        final List<V3MaintenanceTrackingObservationData> unhandled =
-            v3MaintenanceTrackingObservationDataRepository.findUnhandled(100, 0).collect(Collectors.toList());
+        final List<MaintenanceTrackingObservationData> unhandled =
+            maintenanceTrackingObservationDataRepositoryV1.findUnhandled(100, 0).toList();
         assertEquals(observationCount * machineCount, unhandled.size());
 
         // Check that unhanded are in ascending order by observation time
@@ -121,7 +106,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             try {
                 final Havainto h = havainto.getHavainto();
                 final String formatedJson = testHelper.getFormatedObservationJson(h);
-                final V3MaintenanceTrackingObservationData observation =
+                final MaintenanceTrackingObservationData observation =
                     unhandled.stream()
                         .filter(o -> o.getHarjaWorkmachineId().equals(h.getTyokone().getId().longValue()) &&
                                      o.getObservationTime().equals(h.getHavaintoaika().toInstant()))
@@ -144,18 +129,18 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             createMaintenanceTrackingWithPoints(now, observationCount, 1, machineCount, ASFALTOINTI);
         testHelper.saveTrackingDataAsObservations(seuranta);
 
-        final List<V3MaintenanceTrackingObservationData> unhandled =
-            v3MaintenanceTrackingObservationDataRepository.findUnhandled(100,0).collect(Collectors.toList());
+        final List<MaintenanceTrackingObservationData> unhandled =
+            maintenanceTrackingObservationDataRepositoryV1.findUnhandled(100,0).toList();
         // Check observation count and status
         assertEquals(machineCount * observationCount, unhandled.size());
         unhandled.forEach(o -> assertEquals(UNHANDLED, o.getStatus()));
 
         // Handle data and check status
-        final int handled = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(100);
+        final int handled = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(100);
         assertEquals(machineCount * observationCount, handled);
 
         // Check all data has been marked as handled
-        final List<V3MaintenanceTrackingObservationData> datasAfter = v3MaintenanceTrackingObservationDataRepository.findAll();
+        final List<MaintenanceTrackingObservationData> datasAfter = maintenanceTrackingObservationDataRepositoryV1.findAll();
         assertCollectionSize(machineCount * observationCount, datasAfter);
         datasAfter.forEach(o -> assertEquals(HANDLED, o.getStatus()));
 
@@ -205,7 +190,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         int handled;
         int total = 0;
         do {
-            handled = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData((machineCount*observationCountPerTracking*trackingMessagesCount)/10);
+            handled = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData((machineCount*observationCountPerTracking*trackingMessagesCount)/10);
             total += handled;
         } while (handled > 0);
         assertEquals(machineCount * trackingMessagesCount * observationCountPerTracking, total);
@@ -255,7 +240,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             }
         });
 
-        final int handled = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        final int handled = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
         assertEquals(machineCount * trackingsCountPerMachine * observationCountPerTracking, handled);
 
         // Get trackings for all workmachines
@@ -284,7 +269,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // next trackings start minute just after previous ends
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        final int handled = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        final int handled = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
         assertEquals(20, handled);
 
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
@@ -306,7 +291,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // ordinal 1 -> 2 makes next tracking points continue from the end of the previous one
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes((observationCountPerTracking-1) + maxGapInMinutes), observationCountPerTracking, 2, jobId, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
 
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
         assertTrackingGroupsSize(1, trackings);
@@ -324,7 +309,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // First point will be over 5 min (6 min) from previous tracking last point
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10+maxGapInMinutes), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
-        v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
 
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
         assertTrackingGroupsSize(2, trackings);
@@ -343,7 +328,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // Second tracking over time gap and task change
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10 + maxGapInMinutes), 10, 2, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
-        v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
 
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
         assertTrackingGroupsSize(2, trackings);
@@ -366,7 +351,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             koordinaatit.setX(koordinaatit.getX() + 2500);
         });
         testHelper.saveTrackingDataAsObservations(kirjaus);
-        v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
 
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
 
@@ -386,7 +371,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // First point will be after previous last point -> 10 min after start
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2, 1, workMachines, SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS));
-        v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
 
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
         assertTrackingGroupsSize(2, trackings);
@@ -404,7 +389,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         // First point will be after previous last point -> 10 min after start
         final TyokoneenseurannanKirjausRequestSchema transition = createMaintenanceTrackingWithPoints(startTime.plusMinutes(10), 10, 2,1, workMachines);
         testHelper.saveTrackingDataAsObservations(transition);
-        v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
 
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
         assertTrackingGroupsSize(1, trackings);
@@ -423,7 +408,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
     public void longJumpInLineStringData() throws IOException {
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/distancegap/long-jump-twice-1.json");
 
-        log.info("Handled count={}", v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000));
+        log.info("Handled count={}", maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000));
 
         // Jump twice -> should split to three
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
@@ -437,7 +422,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/linestring/linestring-first.json");
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/linestring/linestring-second.json");
 
-        log.info("Handled count={}", v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(100));
+        log.info("Handled count={}", maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(100));
 
         // Two linestring trackings without long jump between last and first point should be joined
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
@@ -458,7 +443,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/linestring/point-linestring-2.json");
         testHelper.saveTrackingFromResourceToDbAsObservations("classpath:harja/service/linestring/point-linestring-3.json");
 
-        log.info("Handled count={}", v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(100));
+        log.info("Handled count={}", maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(100));
 
         // 3 LineStrings with single point in each should be combined as one tracking group
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
@@ -486,18 +471,18 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(start9Days, 10, 1, 1, SuoritettavatTehtavat.ASFALTOINTI));
         assertCollectionSize(0, findAllMaintenanceTrackings());
-        final int count = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(1000);
+        final int count = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(1000);
         // Assert all handled
         assertEquals( 20, count);
         assertCollectionSize(20, findAllMaintenanceTrackings());
-        assertCollectionSize( 20, v3MaintenanceTrackingObservationDataRepository.findAll());
-        final long deleded1 = v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        assertCollectionSize( 20, maintenanceTrackingObservationDataRepositoryV1.findAll());
+        final long deleded1 = maintenanceTrackingUpdateServiceV1.deleteDataOlderThanDays(9, 5);
         assertEquals( 5, deleded1);
-        final long deleded2 = v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        final long deleded2 = maintenanceTrackingUpdateServiceV1.deleteDataOlderThanDays(9, 5);
         assertEquals( 5, deleded2);
-        final long deleded3 = v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(9, 5);
+        final long deleded3 = maintenanceTrackingUpdateServiceV1.deleteDataOlderThanDays(9, 5);
         assertEquals( 0, deleded3);
-        assertCollectionSize( 10, v3MaintenanceTrackingObservationDataRepository.findAll());
+        assertCollectionSize( 10, maintenanceTrackingObservationDataRepositoryV1.findAll());
         // Handled data is not deleted
         assertCollectionSize(20, findAllMaintenanceTrackings());
     }
@@ -572,7 +557,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
 
 
     private List<MaintenanceTracking> findAllMaintenanceTrackings() {
-        return v2MaintenanceTrackingRepository.findAll(Sort.by("startTime"));
+        return maintenanceTrackingRepositoryV1.findAll(Sort.by("startTime"));
     }
 
     private LinkedHashMap<Long, List<MaintenanceTracking>> groupTrackingsByStartId(final List<MaintenanceTracking> trackings) {
@@ -600,7 +585,7 @@ public class V3MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest 
             groups.values().stream()
                 .map(list -> list.get(0).getWorkMachine())
                 .sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
-                .collect(Collectors.toList());
+                .toList();
         // Check all work machines exists with harjaIds generated sequential from 1 onwards
         IntStream.range(0, machineCount).forEach(i -> assertEquals(i+1, wms.get(i).getHarjaId().intValue()));
     }

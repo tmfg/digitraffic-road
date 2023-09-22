@@ -148,3 +148,23 @@ BEGIN
 END;
 $$
   LANGUAGE plpgsql;
+
+-- updates maintenance_tracking task-column after insert in maintenance_tracking_task table
+CREATE OR REPLACE FUNCTION maintenance_tracking_task_update()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  WITH src_tasks AS (
+    SELECT t.maintenance_tracking_id AS tracking_id, array_agg(t.task)::maintenance_task_enum[] AS tasks
+    FROM maintenance_tracking_task t
+    WHERE t.maintenance_tracking_id = NEW.maintenance_tracking_id
+    GROUP BY maintenance_tracking_id
+  )
+  UPDATE maintenance_tracking
+  SET tasks = src_tasks.tasks
+  FROM src_tasks
+  WHERE maintenance_tracking.id = src_tasks.tracking_id;
+  RETURN NEW;
+END;
+$$
+  LANGUAGE plpgsql;

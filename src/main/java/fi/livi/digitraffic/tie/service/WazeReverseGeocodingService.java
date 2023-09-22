@@ -40,7 +40,7 @@ public class WazeReverseGeocodingService {
         this.wazeReverseGeocodingApi = wazeReverseGeocodingApi;
     }
 
-    @Cacheable(CACHE_REVERSE_GEOCODE)
+    @Cacheable(value = CACHE_REVERSE_GEOCODE)
     @Transactional(readOnly = true)
     public Optional<String> getStreetName(final Geometry<?> geometry) {
         return getPoint(geometry)

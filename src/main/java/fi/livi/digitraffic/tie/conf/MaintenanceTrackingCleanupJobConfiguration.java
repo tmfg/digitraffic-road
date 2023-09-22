@@ -1,26 +1,22 @@
 package fi.livi.digitraffic.tie.conf;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingUpdateServiceV1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
-
 @ConditionalOnProperty(name = "maintenance.tracking.job.enabled", matchIfMissing = true)
 @ConditionalOnNotWebApplication
 @Component
-public class V3MaintenanceTrackingCleanupJobConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingCleanupJobConfiguration.class);
+public class MaintenanceTrackingCleanupJobConfiguration {
 
-    private final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService;
+    private final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1;
 
     @Autowired
-    public V3MaintenanceTrackingCleanupJobConfiguration(final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService) {
-        this.v3MaintenanceTrackingUpdateService = v3MaintenanceTrackingUpdateService;
+    public MaintenanceTrackingCleanupJobConfiguration(final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1) {
+        this.maintenanceTrackingUpdateServiceV1 = maintenanceTrackingUpdateServiceV1;
     }
 
     /**
@@ -28,6 +24,6 @@ public class V3MaintenanceTrackingCleanupJobConfiguration {
      */
     @Scheduled(cron = "${maintenance.tracking.job.cleanup.cron}")
     public void deleteOldMaintenanceTrackingData() {
-        while(v3MaintenanceTrackingUpdateService.deleteDataOlderThanDays(31, 1000) > 0);
+        while(maintenanceTrackingUpdateServiceV1.deleteDataOlderThanDays(31, 1000) > 0);
     }
 }

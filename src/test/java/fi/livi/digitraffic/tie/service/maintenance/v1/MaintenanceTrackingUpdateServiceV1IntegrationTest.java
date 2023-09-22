@@ -1,27 +1,17 @@
-package fi.livi.digitraffic.tie.service.v3.maintenance;
+package fi.livi.digitraffic.tie.service.maintenance.v1;
 
-import java.io.IOException;
-
+import fi.livi.digitraffic.tie.AbstractServiceTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 
-import fi.livi.digitraffic.tie.AbstractServiceTest;
+import java.io.IOException;
 
-public class V3MaintenanceTrackingUpdateServiceIIntegrationTest extends AbstractServiceTest {
-
-    private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingUpdateServiceIIntegrationTest.class);
+public class MaintenanceTrackingUpdateServiceV1IntegrationTest extends AbstractServiceTest {
 
     @Autowired
-    private V3MaintenanceTrackingServiceTestHelper testHelper;
-
-//    @Before
-//    public void init() {
-//        testHelper.clearDb();
-//    }
+    private MaintenanceTrackingServiceTestHelperV1 testHelper;
 
     @Disabled("Just for internal testing")
     @Rollback(value = false)

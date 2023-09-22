@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.conf;
 
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingUpdateServiceV1;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,29 +12,26 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
-import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
-
 @ConditionalOnProperty(name = "maintenance.tracking.job.enabled", matchIfMissing = true)
 @ConditionalOnNotWebApplication
 @Component
-public class V3MaintenanceTrackingJobConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingJobConfiguration.class);
+public class MaintenanceTrackingJobConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingJobConfiguration.class);
 
-    private final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService;
+    private final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1;
     private final ClusteredLocker clusteredLocker;
     private final long runRateMs;
 
-    private final static String LOCK_NAME = "V3MaintenanceTrackingJobConfiguration";
+    private final static String LOCK_NAME = "MaintenanceTrackingJobConfiguration";
 
     private final static int MAX_HANDLE_COUNT_PER_CALL = 10;
 
     @Autowired
-    public V3MaintenanceTrackingJobConfiguration(final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService,
-                                                 final ClusteredLocker clusteredLocker,
-                                                 @Value("${maintenance.tracking.job.intervalMs}")
-                                                 final long runRateMs) {
-        this.v3MaintenanceTrackingUpdateService = v3MaintenanceTrackingUpdateService;
+    public MaintenanceTrackingJobConfiguration(final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1,
+                                               final ClusteredLocker clusteredLocker,
+                                               @Value("${maintenance.tracking.job.intervalMs}")
+                                               final long runRateMs) {
+        this.maintenanceTrackingUpdateServiceV1 = maintenanceTrackingUpdateServiceV1;
         this.clusteredLocker = clusteredLocker;
         this.runRateMs = runRateMs;
     }
@@ -50,7 +49,7 @@ public class V3MaintenanceTrackingJobConfiguration {
             if ( clusteredLocker.tryLock(LOCK_NAME, 300) ) {
                 final StopWatch startInternal = StopWatch.createStarted();
                 try {
-                    count = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(MAX_HANDLE_COUNT_PER_CALL);
+                    count = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(MAX_HANDLE_COUNT_PER_CALL);
                     totalCount += count;
                     if (count > 0) {
                         final long msPerObservation = startInternal.getTime() / count;

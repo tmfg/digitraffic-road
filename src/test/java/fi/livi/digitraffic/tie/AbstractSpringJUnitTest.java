@@ -1,10 +1,6 @@
 package fi.livi.digitraffic.tie;
 
-import java.sql.Timestamp;
 import java.time.Instant;
-
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.aop.support.AopUtils;
@@ -16,6 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
 
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 /**
  To keep created context count as low as possible take in account that configuration
@@ -76,6 +74,6 @@ public abstract class AbstractSpringJUnitTest extends AbstractTest {
     }
 
     public Instant getTransactionTimestampRoundedToSeconds() {
-        return DateHelper.roundToSeconds(getTransactionTimestamp());
+        return DateHelper.roundInstantSeconds(getTransactionTimestamp());
     }
 }

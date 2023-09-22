@@ -1,20 +1,17 @@
-package fi.livi.digitraffic.tie.model.v2.maintenance;
+package fi.livi.digitraffic.tie.model.maintenance;
 
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.Set;
-
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import jakarta.persistence.*;
-
 import org.hibernate.annotations.DynamicUpdate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
-import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData;
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "MAINTENANCE_TRACKING")
@@ -80,14 +77,14 @@ public class MaintenanceTracking {
     @JoinTable(name = "MAINTENANCE_TRACKING_OBSERVATION_DATA_TRACKING",
                joinColumns = @JoinColumn(name = "TRACKING_ID", referencedColumnName = "ID"),
                inverseJoinColumns = @JoinColumn(name = "DATA_ID", referencedColumnName = "ID"))
-    private Set<V3MaintenanceTrackingObservationData> maintenanceTrackingObservationDatas = new HashSet<>();
+    private Set<MaintenanceTrackingObservationData> maintenanceTrackingObservationDatas = new HashSet<>();
 
 
     public MaintenanceTracking() {
         // For Hibernate
     }
 
-    public MaintenanceTracking(final V3MaintenanceTrackingObservationData maintenanceTrackingObservationData, final MaintenanceTrackingWorkMachine workMachine,
+    public MaintenanceTracking(final MaintenanceTrackingObservationData maintenanceTrackingObservationData, final MaintenanceTrackingWorkMachine workMachine,
                                final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
                                final Point lastPoint, final Geometry geometry, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
                                final String domain) {

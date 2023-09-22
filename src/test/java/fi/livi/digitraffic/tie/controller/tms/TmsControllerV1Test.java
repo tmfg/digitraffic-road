@@ -3,6 +3,7 @@
 package fi.livi.digitraffic.tie.controller.tms;
 
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
+import static fi.livi.digitraffic.tie.helper.DateHelper.getGreatest;
 import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +23,8 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -49,6 +53,8 @@ import fi.livi.digitraffic.tie.service.TmsTestHelper;
  */
 public class TmsControllerV1Test extends AbstractRestWebTest {
 
+    private static final Logger log = LoggerFactory.getLogger(TmsControllerV1Test.class);
+
     @Autowired
     private TmsStationRepository tmsStationRepository;
 
@@ -65,7 +71,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     private TmsTestHelper tmsTestHelper;
 
     private TmsStation tmsStation;
-    private long lastModifiedMillis;
+    private long metadataLastModifiedMillis;
+    private long dataLastModifiedMillis;
 
     @BeforeEach
     public void initData() {
@@ -87,10 +94,12 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
 
-        final SensorValue sv1 = new SensorValue(tms.getRoadStation(), publishable.get(0), 10.0, ZonedDateTime.now());
-        final SensorValue sv2 = new SensorValue(tms.getRoadStation(), publishable.get(1), 10.0, ZonedDateTime.now());
+        final ZonedDateTime measured = ZonedDateTime.now();
+        final SensorValue sv1 = new SensorValue(tms.getRoadStation(), publishable.get(0), 10.0, measured);
+        final SensorValue sv2 = new SensorValue(tms.getRoadStation(), publishable.get(1), 10.0, measured.minusMinutes(1));
         sensorValueRepository.save(sv1);
         sensorValueRepository.save(sv2);
+        this.dataLastModifiedMillis =  DateHelper.roundInstantSeconds(measured.toInstant()).toEpochMilli();
 
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
 
@@ -98,9 +107,9 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         this.tmsStation = entityManager.find(TmsStation.class, tms.getId());
-        System.out.println("tms " + tmsStation.getModified() + " rs: " + tmsStation.getRoadStation().getModified());
-        // Db modified field is current transaction timestamp, so it's same for all objects saved here
-        this.lastModifiedMillis = DateHelper.roundToSeconds(tmsStation.getRoadStation().getModified()).toEpochMilli();
+        final Instant sensorsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA);
+        final Instant stationsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_METADATA);
+        this.metadataLastModifiedMillis = DateHelper.roundInstantSeconds(getGreatest(sensorsUpdated, stationsUpdated)).toEpochMilli();
     }
 
     @AfterEach
@@ -133,7 +142,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
                 .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
                 .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis));
     }
 
     @Test
@@ -191,7 +200,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
                 .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
                 .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis));
     }
 
     @Test
@@ -213,7 +222,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis));
     }
 
     /* DATA */
@@ -222,7 +231,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     public void tmsDataRestApi() throws Exception {
         final ResultActions tmp =
             mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA));
-        System.out.println(tmp.andReturn().getResponse().getContentAsString());
+        // log.info(tmp.andReturn().getResponse().getContentAsString());
         tmp
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
@@ -242,7 +251,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastModifiedMillis));
     }
 
     @Test
@@ -264,9 +273,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastModifiedMillis));
     }
-
 
     @Test
     public void tmsSensorConstantsRestApi() throws Exception {
@@ -276,7 +284,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         final LamAnturiVakioVO vakio = tmsTestHelper.createAndSaveLamAnturiVakio(tmsStation.getLotjuId(), vakioNimi);
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio, vakioArvo);
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
-
+        final long constantsUpdated = DateHelper.roundInstantSeconds(
+            dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA)).toEpochMilli();
         mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
@@ -291,7 +300,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, constantsUpdated));
     }
 
     @Test
@@ -302,8 +311,11 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         final LamAnturiVakioVO vakio = tmsTestHelper.createAndSaveLamAnturiVakio(tmsStation.getLotjuId(), vakioNimi);
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio, vakioArvo);
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
+        final long constantsUpdated = DateHelper.roundInstantSeconds(
+            dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA)).toEpochMilli();
 
-        System.out.println(mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS)).andReturn().getResponse().getContentAsString());
+        // log.info(mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS))
+        // .andReturn().getResponse().getContentAsString());
         mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
@@ -317,6 +329,6 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, constantsUpdated));
     }
 }

@@ -1,28 +1,25 @@
-package fi.livi.digitraffic.tie.service.v3.maintenance;
+package fi.livi.digitraffic.tie.service.maintenance.v1;
 
-import static fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask.BRUSHING;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingObservationDataRepositoryV1;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
+import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingWorkMachineRepositoryV1;
+import fi.livi.digitraffic.tie.external.harja.Havainto;
+import fi.livi.digitraffic.tie.external.harja.*;
+import fi.livi.digitraffic.tie.external.harja.entities.*;
+import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTracking;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingWorkMachine;
 import jakarta.persistence.EntityManager;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringSubstitutor;
@@ -35,44 +32,28 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2MaintenanceTrackingWorkMachineRepository;
-import fi.livi.digitraffic.tie.dao.v3.V3MaintenanceTrackingObservationDataRepository;
-import fi.livi.digitraffic.tie.external.harja.Havainnot;
-import fi.livi.digitraffic.tie.external.harja.Havainto;
-import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
-import fi.livi.digitraffic.tie.external.harja.Tyokone;
-import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
-import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
-import fi.livi.digitraffic.tie.external.harja.entities.Lahettaja;
-import fi.livi.digitraffic.tie.external.harja.entities.OrganisaatioSchema;
-import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
-import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
-import fi.livi.digitraffic.tie.external.harja.entities.ViivageometriasijaintiSchema;
-import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.GeometryConstants;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingTask;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTrackingWorkMachine;
-import fi.livi.digitraffic.tie.model.v3.maintenance.V3MaintenanceTrackingObservationData;
+import static fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask.BRUSHING;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Service
-public class V3MaintenanceTrackingServiceTestHelper {
-    private static final Logger log = LoggerFactory.getLogger(V3MaintenanceTrackingServiceTestHelper.class);
+public class MaintenanceTrackingServiceTestHelperV1 {
+    private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingServiceTestHelperV1.class);
 
-    private final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService;
-    private final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository;
-    private final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository;
-    private final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository;
+    private final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1;
+    private final MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
+    private final MaintenanceTrackingObservationDataRepositoryV1 maintenanceTrackingObservationDataRepositoryV1;
+    private final MaintenanceTrackingWorkMachineRepositoryV1 maintenanceTrackingWorkMachineRepositoryV1;
     private final ObjectReader jsonReaderForKirjaus;
     private final ObjectWriter jsonWriterForKirjaus;
     private final ObjectWriter jsonWriterForHavainto;
@@ -115,35 +96,35 @@ public class V3MaintenanceTrackingServiceTestHelper {
     private final ObjectWriter genericJsonWriter;
 
     @Autowired
-    public V3MaintenanceTrackingServiceTestHelper(final ObjectMapper objectMapper,
-                                                  final V3MaintenanceTrackingUpdateService v3MaintenanceTrackingUpdateService,
-                                                  final V2MaintenanceTrackingRepository v2MaintenanceTrackingRepository,
-                                                  final V3MaintenanceTrackingObservationDataRepository v3MaintenanceTrackingObservationDataRepository,
-                                                  final V2MaintenanceTrackingWorkMachineRepository v2MaintenanceTrackingWorkMachineRepository,
+    public MaintenanceTrackingServiceTestHelperV1(final ObjectMapper objectMapper,
+                                                  final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1,
+                                                  final MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1,
+                                                  final MaintenanceTrackingObservationDataRepositoryV1 maintenanceTrackingObservationDataRepositoryV1,
+                                                  final MaintenanceTrackingWorkMachineRepositoryV1 maintenanceTrackingWorkMachineRepositoryV1,
                                                   final EntityManager entityManager,
                                                   final ResourceLoader resourceLoader,
                                                   @Value("${workmachine.tracking.distinct.linestring.observationgap.km}")
                                                       final double maxLineStringGapInKilometers) {
 
-        this.v3MaintenanceTrackingUpdateService = v3MaintenanceTrackingUpdateService;
-        this.v2MaintenanceTrackingRepository = v2MaintenanceTrackingRepository;
+        this.maintenanceTrackingUpdateServiceV1 = maintenanceTrackingUpdateServiceV1;
+        this.maintenanceTrackingRepositoryV1 = maintenanceTrackingRepositoryV1;
         this.jsonWriterForKirjaus = objectMapper.writerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.jsonReaderForKirjaus = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
         this.genericJsonReader = objectMapper.reader();
         this.genericJsonWriter = objectMapper.writer();
         this.jsonReaderForTrackingsArray = objectMapper.readerForArrayOf(TyokoneenseurannanKirjausRequestSchema.class);
-        this.v3MaintenanceTrackingObservationDataRepository = v3MaintenanceTrackingObservationDataRepository;
-        this.v2MaintenanceTrackingWorkMachineRepository = v2MaintenanceTrackingWorkMachineRepository;
+        this.maintenanceTrackingObservationDataRepositoryV1 = maintenanceTrackingObservationDataRepositoryV1;
+        this.maintenanceTrackingWorkMachineRepositoryV1 = maintenanceTrackingWorkMachineRepositoryV1;
         this.entityManager = entityManager;
         this.resourceLoader = resourceLoader;
-        V3MaintenanceTrackingServiceTestHelper.maxLineStringGapInKilometers = maxLineStringGapInKilometers;
+        MaintenanceTrackingServiceTestHelperV1.maxLineStringGapInKilometers = maxLineStringGapInKilometers;
     }
 
     public void clearDb() {
-        v2MaintenanceTrackingRepository.deleteAllInBatch();
-        v3MaintenanceTrackingObservationDataRepository.deleteAllInBatch();
-        v2MaintenanceTrackingWorkMachineRepository.deleteAllInBatch();
+        maintenanceTrackingRepositoryV1.deleteAllInBatch();
+        maintenanceTrackingObservationDataRepositoryV1.deleteAllInBatch();
+        maintenanceTrackingWorkMachineRepositoryV1.deleteAllInBatch();
     }
 
     public static List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
@@ -175,7 +156,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
      */
     public static List<Tyokone> createWorkMachines(final int count) {
         log.info("Create {} workmachines", count);
-        return IntStream.range(1, count+1).mapToObj(V3MaintenanceTrackingServiceTestHelper::createWorkmachine).collect(toList());
+        return IntStream.range(1, count+1).mapToObj(MaintenanceTrackingServiceTestHelperV1::createWorkmachine).collect(toList());
     }
 
     /**
@@ -414,7 +395,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     }
 
     public int handleUnhandledWorkMachineObservations(final int maxToHandle) {
-        final int handled = v3MaintenanceTrackingUpdateService.handleUnhandledMaintenanceTrackingObservationData(maxToHandle);
+        final int handled = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(maxToHandle);
         log.info("Handled {} unhandled MaintenanceTrackingObservationDatas", handled);
         return handled;
     }
@@ -462,7 +443,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
             valuesMap.put("harjaWorkmachineId", h.getTyokone().getId());
             valuesMap.put("harjaContractId", h.getUrakkaid());
             valuesMap.put("sendingSystem", sendingSystem);
-            valuesMap.put("status", V3MaintenanceTrackingObservationData.Status.UNHANDLED.name());
+            valuesMap.put("status", MaintenanceTrackingObservationData.Status.UNHANDLED.name());
             valuesMap.put("hash", json.hashCode());
             valuesMap.put("s3Uri", "plaa");
 
@@ -524,7 +505,7 @@ public class V3MaintenanceTrackingServiceTestHelper {
     public MaintenanceTrackingWorkMachine createAndSaveWorkMachine() {
         final MaintenanceTrackingWorkMachine wm =
             new MaintenanceTrackingWorkMachine(TestUtils.getRandomId(1, 100000), TestUtils.getRandomId(1, 100000), "TEST");
-        v2MaintenanceTrackingWorkMachineRepository.save(wm);
+        maintenanceTrackingWorkMachineRepositoryV1.save(wm);
         return wm;
     }
 

@@ -1,4 +1,6 @@
-package fi.livi.digitraffic.tie.model.v2.maintenance;
+package fi.livi.digitraffic.tie.dto.maintenance.mqtt;
+
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -23,7 +25,7 @@ public interface MaintenanceTrackingForMqttV2 {
     double getY();
 
     default Set<MaintenanceTrackingTask> getTasks() {
-        return Arrays.stream(getTasksAsString().split(",")).map(s -> MaintenanceTrackingTask.valueOf(s)).collect(Collectors.toSet());
+        return Arrays.stream(getTasksAsString().split(",")).map(MaintenanceTrackingTask::valueOf).collect(Collectors.toSet());
     }
 
 }

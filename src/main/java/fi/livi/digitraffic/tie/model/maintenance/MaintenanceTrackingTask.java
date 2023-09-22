@@ -1,49 +1,13 @@
-package fi.livi.digitraffic.tie.model.v2.maintenance;
-
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUSVIITOITUS_JA_KINOSTIMET;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUS_JA_SOHJONPOISTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.HARJAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.JYRAYS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.KELINTARKASTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.KONEELLINEN_NIITTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.KONEELLINEN_VESAKONRAIVAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.KUUMENNUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LIIKENNEMERKKIEN_PUHDISTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LIIK_OPAST_JA_OHJAUSL_HOITO_SEKA_REUNAPAALUJEN_KUN_PITO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LINJAHIEKOITUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LUMENSIIRTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LUMIVALLIEN_MADALTAMINEN;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.L_JA_P_ALUEIDEN_PUHDISTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.MUU;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.OJITUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTETYN_TIEN_SORAPIENTAREEN_TAYTTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAANNEJAAN_POISTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PALTEEN_POISTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PINNAN_TASAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PISTEHIEKOITUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SEKOITUS_TAI_STABILOINTI;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SILTOJEN_PUHDISTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORAPIENTAREEN_TAYTTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORASTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORATEIDEN_MUOKKAUSHOYLAYS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORATEIDEN_POLYNSIDONTA;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORATEIDEN_TASAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SULAMISVEDEN_HAITTOJEN_TORJUNTA;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SUOLAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TIEMERKINTA;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TIESTOTARKASTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TILAAJAN_LAADUNVALVONTA;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TURVALAITE;
-
-import java.time.Instant;
-import java.util.Arrays;
+package fi.livi.digitraffic.tie.model.maintenance;
 
 import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.time.Instant;
+import java.util.Arrays;
+
+import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.*;
 
 public enum MaintenanceTrackingTask implements DataUpdatedSupportV1 {
 

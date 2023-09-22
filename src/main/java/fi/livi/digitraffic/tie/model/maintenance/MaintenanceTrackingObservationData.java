@@ -1,19 +1,16 @@
-package fi.livi.digitraffic.tie.model.v3.maintenance;
+package fi.livi.digitraffic.tie.model.maintenance;
+
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.Instant;
 import java.util.Set;
 
-import jakarta.persistence.*;
-
-import org.hibernate.annotations.DynamicUpdate;
-
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.model.v2.maintenance.MaintenanceTracking;
-
 @Entity
 @DynamicUpdate
 @Table(name = "MAINTENANCE_TRACKING_OBSERVATION_DATA")
-public class V3MaintenanceTrackingObservationData {
+public class MaintenanceTrackingObservationData {
 
     public enum Status {
         UNHANDLED,
@@ -66,7 +63,7 @@ public class V3MaintenanceTrackingObservationData {
     @ManyToMany(mappedBy = "maintenanceTrackingObservationDatas", fetch = FetchType.LAZY)
     private Set<MaintenanceTracking> trackings;
 
-    public V3MaintenanceTrackingObservationData() {
+    public MaintenanceTrackingObservationData() {
         // For Hibernate
     }
 

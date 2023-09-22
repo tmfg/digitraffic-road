@@ -1,12 +1,10 @@
-package fi.livi.digitraffic.tie.model.v2.maintenance;
+package fi.livi.digitraffic.tie.model.maintenance;
 
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-
 import jakarta.persistence.SequenceGenerator;
-
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
 
 @Entity
 public class MaintenanceTrackingWorkMachine {

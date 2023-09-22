@@ -36,7 +36,7 @@ public class TrafficMessageMqttDataServiceV1Test extends AbstractDaemonTest {
         trafficMessageTestHelper.cleanDb();
         final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
         final ZonedDateTime end = start.plusHours(2);
-        lastUpdated = DateHelper.roundToSeconds(getTransactionTimestamp());
+        lastUpdated = DateHelper.roundInstantSeconds(getTransactionTimestamp());
         trafficMessageTestHelper.initDataFromStaticImsResourceContent(
             TrafficMessageTestHelper.ImsXmlVersion.getLatestVersion(),
             TRAFFIC_ANNOUNCEMENT.name(),

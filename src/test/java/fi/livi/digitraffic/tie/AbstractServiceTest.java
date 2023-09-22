@@ -1,14 +1,6 @@
 package fi.livi.digitraffic.tie;
 
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.retry.support.RetryTemplate;
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
@@ -21,15 +13,10 @@ import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.helper.FileHttpGetClient;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
-import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.FlywayService;
-import fi.livi.digitraffic.tie.service.LockingServiceInternal;
-import fi.livi.digitraffic.tie.service.RoadStationSensorService;
-import fi.livi.digitraffic.tie.service.RoadStationService;
-import fi.livi.digitraffic.tie.service.TmsTestHelper;
-import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
+import fi.livi.digitraffic.tie.service.*;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingMqttDataService;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1;
+import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingUpdateServiceV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
@@ -38,27 +25,21 @@ import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.location.LocationWebServiceV1;
 import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.service.v1.WeatherService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageReader;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.v1.camera.*;
 import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
-import fi.livi.digitraffic.tie.service.v1.location.LocationMetadataUpdater;
-import fi.livi.digitraffic.tie.service.v1.location.LocationService;
-import fi.livi.digitraffic.tie.service.v1.location.LocationSubtypeUpdater;
-import fi.livi.digitraffic.tie.service.v1.location.LocationTypeUpdater;
-import fi.livi.digitraffic.tie.service.v1.location.LocationUpdater;
-import fi.livi.digitraffic.tie.service.v1.location.MetadataFileFetcher;
+import fi.livi.digitraffic.tie.service.v1.location.*;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryGitClient;
 import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.v2.maintenance.V2MaintenanceTrackingDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
 import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
-import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingServiceTestHelper;
-import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdateService;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.retry.support.RetryTemplate;
+import org.springframework.web.client.RestTemplate;
 
 @Import({// configurations
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
@@ -73,10 +54,10 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
          ImsJsonConverter.class, V2Datex2UpdateService.class,
          V2Datex2JsonConverter.class,
          V3RegionGeometryUpdateService.class,
-         V3MaintenanceTrackingUpdateService.class,
+         MaintenanceTrackingUpdateServiceV1.class,
          LocationTypeUpdater.class, LocationMetadataUpdater.class, LocationUpdater.class, LocationSubtypeUpdater.class,
          MetadataFileFetcher.class, ClusteredLocker.class, LockingServiceInternal.class,
-         V3RegionGeometryDataService.class, V2MaintenanceTrackingDataService.class,
+         V3RegionGeometryDataService.class,
 
          // V1 services
          RoadStationSensorServiceV1.class, TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class,
@@ -91,7 +72,7 @@ import fi.livi.digitraffic.tie.service.v3.maintenance.V3MaintenanceTrackingUpdat
          LockingDao.class,
 
          // Test services etc.
-         TrafficMessageTestHelper.class, V3MaintenanceTrackingServiceTestHelper.class, TmsTestHelper.class
+         TrafficMessageTestHelper.class, MaintenanceTrackingServiceTestHelperV1.class, TmsTestHelper.class
 })
 public abstract class AbstractServiceTest extends AbstractJpaTest {
 
