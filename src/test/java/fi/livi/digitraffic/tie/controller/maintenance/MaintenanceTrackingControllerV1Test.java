@@ -71,7 +71,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
     private MaintenanceTrackingServiceTestHelperV1 testHelper;
 
     @Autowired
-    private MaintenanceTrackingRepositoryV1 v2MaintenanceTrackingRepository;
+    private MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
 
     private ResultActions getTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
@@ -245,7 +245,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         entityManager.flush();
         entityManager.clear();
 
-        final List<MaintenanceTracking> allTrackings = v2MaintenanceTrackingRepository.findAll();
+        final List<MaintenanceTracking> allTrackings = maintenanceTrackingRepositoryV1.findAll();
         AssertHelper.assertCollectionSize(machineCount, allTrackings);
         final Instant created = allTrackings.get(0).getCreated().toInstant();
 
@@ -339,8 +339,8 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             }
         });
         testHelper.handleUnhandledWorkMachineObservations(1000);
-        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
-        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).max(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime min = maintenanceTrackingRepositoryV1.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime max = maintenanceTrackingRepositoryV1.findAll().stream().map(MaintenanceTracking::getEndTime).max(ChronoZonedDateTime::compareTo).orElseThrow();
 
         log.info("min {} max {} from: {}", min, max, start.toInstant());
         log.info("Machine count {}", machineCount);
@@ -406,8 +406,8 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             }
         });
         testHelper.handleUnhandledWorkMachineObservations(1000);
-        final ZonedDateTime min = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
-        final ZonedDateTime max = v2MaintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime min = maintenanceTrackingRepositoryV1.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
+        final ZonedDateTime max = maintenanceTrackingRepositoryV1.findAll().stream().map(MaintenanceTracking::getEndTime).min(ChronoZonedDateTime::compareTo).orElseThrow();
 
         log.info("min {} max {} from: {}", min, max, start.toInstant());
         log.info("Machine count {}", machineCount);
