@@ -21,7 +21,7 @@ public class CacheStatisticsLoggerConfiguration {
     private static final Logger log = LoggerFactory.getLogger(CacheStatisticsLoggerConfiguration.class);
     private final CacheManager cacheManager;
 
-    private final DecimalFormat f = new DecimalFormat("##.00");
+    private final DecimalFormat f = new DecimalFormat("#0.00");
 
     @Autowired
     public CacheStatisticsLoggerConfiguration(final CacheManager cacheManager) {
