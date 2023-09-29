@@ -39,6 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
@@ -48,6 +49,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -66,10 +68,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.data.domain.Sort;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
@@ -99,6 +104,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     final static Polygon AREA = MaintenanceTrackingWebDataServiceV1.convertToAreaParameter(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight());
     private final String DOMAIN_WITH_SOURCE = "domain-with-source";
     private final String DOMAIN_WITHOUT_SOURCE = "domain-without-source";
+    private final DecimalFormat f = new DecimalFormat("#0.00");
 
     @SpyBean
     private MaintenanceTrackingWebDataServiceV1 maintenanceTrackingWebDataServiceV1;
@@ -111,6 +117,9 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
 
     @Autowired
     private DataStatusService dataStatusService;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @AfterEach
     @BeforeEach
@@ -716,7 +725,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             );
             assertCollectionSize(
                 1,
-                findLatestMaintenanceTrackings(null, null, null).getFeatures()
+                findLatestMaintenanceTrackings(null, null).getFeatures()
             );
 
         });
@@ -737,9 +746,9 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         );
         assertCollectionSize(
             3,
-            findLatestMaintenanceTrackings(null, null, null).getFeatures()
+            findLatestMaintenanceTrackings(null, null).getFeatures()
         );
-
+        logCache();
     }
 
     @Test
@@ -763,7 +772,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         );
         assertCollectionSize(
             1,
-            findLatestMaintenanceTrackings(null, null, null).getFeatures()
+            findLatestMaintenanceTrackings(null, null).getFeatures()
         );
 
         final AtomicInteger a = new AtomicInteger();
@@ -777,7 +786,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                 );
                 assertCollectionSize(
                     1,
-                    findLatestMaintenanceTrackings(null, null, null).getFeatures()
+                    findLatestMaintenanceTrackings(null, null).getFeatures()
                 );
                 log.info("Thread {} end", current);
                 latch.countDown();
@@ -792,6 +801,16 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         verify(maintenanceTrackingWebDataServiceV1, times(1)).findLatestMaintenanceTrackings(
             null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
         );
+        logCache();
+    }
+
+    private void logCache() {
+        cacheManager.getCacheNames().forEach(cn -> {
+            final CacheStats s = ((CaffeineCache) Objects.requireNonNull(cacheManager.getCache(cn))).getNativeCache().stats();
+            log.info("method=cacheStats cacheName={} hitCount={} missCount={} hitRate={} missRate={} evictionCount={} averageLoadPenaltyMs={}",
+                    cn, s.hitCount(), s.missCount(), f.format(s.hitRate()), f.format(s.missRate()), s.evictionCount(), (long)s.averageLoadPenalty()/1000000); // ns -> ms
+        });
+
     }
 
     private MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,

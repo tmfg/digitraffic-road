@@ -58,8 +58,9 @@ import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1;
 
 @TestPropertySource(properties = {
-    "cache.maintenance.routes=0",
-    "cache.maintenance.routes.latest=0",
+    // Disable cache
+    "cache.maintenance.routes.size=0",
+    "cache.maintenance.routes.latest.size=-0",
 })
 public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingControllerV1Test.class);

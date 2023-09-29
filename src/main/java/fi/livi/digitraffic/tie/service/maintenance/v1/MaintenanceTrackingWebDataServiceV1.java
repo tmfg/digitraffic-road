@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.maintenance.v1;
 
+import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_DOMAIN_NAMES;
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_ROUTES;
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_ROUTES_LATES;
 import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.GENERIC_ALL_DOMAINS;
@@ -144,6 +145,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
      * @param domainNameParameters parameters to convert to real domain names
      * @return Actual real domain names
      */
+    @Cacheable(cacheNames = CACHE_MAINTENANCE_DOMAIN_NAMES, sync = true)
     @Transactional(readOnly = true)
     public Set<String> convertToRealDomainNames(final Set<String> domainNameParameters) {
         if (CollectionUtils.isEmpty(domainNameParameters)) {

@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.conf.metrics;
 
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +22,10 @@ public class CacheStatisticsLoggerConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(CacheStatisticsLoggerConfiguration.class);
     private final CacheManager cacheManager;
+    protected static ThreadLocal<DecimalFormat> f =
+            ThreadLocal.withInitial(() -> new DecimalFormat("#0.00"));
 
-    private final DecimalFormat f = new DecimalFormat("#0.00");
+    private final Map<String, CacheStatisticsLogger> statsCounters = new ConcurrentHashMap<>();
 
     @Autowired
     public CacheStatisticsLoggerConfiguration(final CacheManager cacheManager) {
@@ -36,13 +40,67 @@ public class CacheStatisticsLoggerConfiguration {
             return;
         }
         try {
-            cacheManager.getCacheNames().forEach(cn -> {
-                final CacheStats s = ((CaffeineCache) Objects.requireNonNull(cacheManager.getCache(cn))).getNativeCache().stats();
-                log.info("method=cacheStats cacheName={} hitCount={} missCount={} hitRate={} missRate={} evictionCount={} averageLoadPenaltyMs={}",
-                    cn, s.hitCount(), s.missCount(), f.format(s.hitRate()), f.format(s.missRate()), s.evictionCount(), (long)s.averageLoadPenalty()/1000000); // ns -> ms
-            });
+            cacheManager.getCacheNames().forEach(cn -> updateStatsAndLog(cn, ((CaffeineCache) Objects.requireNonNull(cacheManager.getCache(cn))).getNativeCache().stats()));
         } catch (final Exception e) {
             log.error("method=cacheStats Failed to log cache stats", e);
+        }
+    }
+
+    private void updateStatsAndLog(final String cacheName, final CacheStats statsSnapshot) {
+        if (!statsCounters.containsKey(cacheName)) {
+            statsCounters.put(cacheName, new CacheStatisticsLogger(cacheName));
+        }
+        final CacheStatisticsLogger counter = statsCounters.get(cacheName);
+        counter.update(statsSnapshot);
+        counter.logCacheStats();
+    }
+
+    private static class CacheStatisticsLogger {
+        private static final Logger log = LoggerFactory.getLogger(CacheStatisticsLogger.class);
+        private final String cacheName;
+        private CacheStats previous = CacheStats.empty();
+        private CacheStats latest = CacheStats.empty();
+
+        public CacheStatisticsLogger(final String cacheName) {
+            Objects.requireNonNull(cacheName);
+            this.cacheName = cacheName;
+        }
+
+        public void update(final CacheStats latestSnapshot) {
+            Objects.requireNonNull(latestSnapshot);
+            this.previous = this.latest;
+            this.latest = latestSnapshot;
+        }
+
+        public String getCacheName() {
+            return cacheName;
+        }
+
+        public CacheStats countStats() {
+            return previous != null ? latest.minus(previous) : latest;
+        }
+
+        public void logCacheStats() {
+            final CacheStats s = countStats();
+            log.info("method=logCacheStats cacheName={} hitCount={} missCount={} hitRate={} missRate={} evictionCount={} averageLoadPenaltyMs={}",
+                     getCacheName(),  s.hitCount(), s.missCount(), f.get().format(s.hitRate()), f.get().format(s.missRate()), s.evictionCount(), (long)s.averageLoadPenalty()/1000000); // ns -> ms
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(cacheName);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            final CacheStatisticsLogger that = (CacheStatisticsLogger) o;
+            return Objects.equals(cacheName, that.cacheName);
         }
     }
 }

@@ -91,7 +91,6 @@ public class MaintenanceTrackingDaoV1 {
         "  TASK_QUERY\n" +
         "  AND tracking.domain IN (:domains)\n" +
         "  AND domain.source IS NOT NULL\n" +
-        "GROUP BY tracking.id, contract.source, domain.source\n" +
         "ORDER BY tracking.id";
 
 
@@ -106,8 +105,8 @@ public class MaintenanceTrackingDaoV1 {
         "  TASK_QUERY\n" +
         "  AND tracking.domain IN (:domains) \n" +
         "  AND domain.source IS NOT NULL\n" +
-        "GROUP BY tracking.id, contract.source, domain.source\n" +
         "ORDER by tracking.id";
+
     public List<MaintenanceTrackingFeatureV1> findByAgeAndBoundingBoxAndTasks(final Instant endFrom, final Instant endBefore,
                                                                               final Instant createdAfter, final Instant createdBefore,
                                                                               final Geometry area, final Set<String> tasks, final Set<String> domains) {
@@ -240,27 +239,5 @@ public class MaintenanceTrackingDaoV1 {
             }
             return null;
         });
-
-//        .query(QUERY_SQL, paramSource, (rs, rowNum) -> {
-//
-//            final Instant modified = rs.getObject("modified", OffsetDateTime.class).toInstant();
-//
-//            return new MaintenanceTrackingFeatureV1(
-//                PostgisGeometryUtils.convertGeoJSONStringToGeoJSON(rs.getString("geometryStringJson")),
-//                new fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingPropertiesV1(
-//                        rs.getLong("id"),
-//                        rs.getObject("previousId", Long.class),
-//                        rs.getObject("sendingTime", OffsetDateTime.class).toInstant(),
-//                        rs.getObject("startTime", OffsetDateTime.class).toInstant(),
-//                        rs.getObject("endTime", OffsetDateTime.class).toInstant(),
-//                        rs.getObject("created", OffsetDateTime.class).toInstant(),
-//                        Arrays.stream(rs.getString("tasksAsString").split(",")).map(MaintenanceTrackingTask::valueOf).collect(Collectors.toSet()),
-//                        rs.getBigDecimal("direction"),
-//                        rs.getString("domain"),
-//                        rs.getString("source"),
-//                        modified)
-//                );
-//        });
-//        return null;
     }
 }
