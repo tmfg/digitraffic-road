@@ -62,6 +62,12 @@ public class MaintenanceTrackingControllerV1 {
 
     private final MaintenanceTrackingWebDataServiceV1 maintenanceTrackingWebDataServiceV1;
 
+    private static final String NL = "<br>";
+    private static final String ROUNDING_X_MIN = "xMin coordinate will be rounded to nearest integer that is less than or equal to given value";
+    private static final String ROUNDING_X_MAX = "xMax coordinate will be rounded to nearest integer greater than or equal to given value";
+    private static final String ROUNDING_Y_MIN = "yMin coordinate will be rounded to nearest half that is less than or equal to given value";
+    private static final String ROUNDING_Y_MAX = "yMax coordinate will be rounded to nearest half that is greater than or equal to given value";
+
     /**
      * API paths:
      * /api/maintenance/v/tracking/routes
@@ -116,25 +122,25 @@ public class MaintenanceTrackingControllerV1 {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant endFrom,
 
-        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT + NL + ROUNDING_X_MIN)
         @RequestParam(defaultValue = X_MIN, required = false)
         @DecimalMin(X_MIN)
         @DecimalMax(X_MAX)
         final double xMin,
 
-        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT + NL + ROUNDING_Y_MIN)
         @RequestParam(defaultValue = Y_MIN, required = false)
         @DecimalMin(Y_MIN)
         @DecimalMax(Y_MAX)
         final double yMin,
 
-        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT + NL + ROUNDING_X_MAX)
         @RequestParam(defaultValue = X_MAX, required = false)
         @DecimalMin(X_MIN)
         @DecimalMax(X_MAX)
         final double xMax,
 
-        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT + NL + ROUNDING_Y_MAX)
         @RequestParam(defaultValue = Y_MAX, required = false)
         @DecimalMin(Y_MIN)
         @DecimalMax(Y_MAX)
@@ -150,11 +156,11 @@ public class MaintenanceTrackingControllerV1 {
 
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
 
-        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackingRoutes(
             DateHelper.floorInstantSeconds(endFrom), null,
-            MaintenanceTrackingWebDataServiceV1.convertToAreaParameter(xMin, xMax, yMin, yMax),
+            MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(xMin, xMax, yMin, yMax),
             hasAllTasks(taskId) ? null : taskId,
-            maintenanceTrackingWebDataServiceV1.convertToRealDomainNames(domain));
+            maintenanceTrackingWebDataServiceV1.normalizeAndValidateDomainParameter(domain));
     }
 
     @Operation(summary = "Road maintenance tracking routes")
@@ -182,25 +188,25 @@ public class MaintenanceTrackingControllerV1 {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         final Instant createdBefore,
 
-        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @Parameter(description = "Minimum x coordinate (longitude) " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT + NL + ROUNDING_X_MIN)
         @RequestParam(defaultValue = X_MIN, required = false)
         @DecimalMin(X_MIN)
         @DecimalMax(X_MAX)
         final double xMin,
 
-        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @Parameter(description = "Minimum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT + NL + ROUNDING_Y_MIN)
         @RequestParam(defaultValue = Y_MIN, required = false)
         @DecimalMin(Y_MIN)
         @DecimalMax(Y_MAX)
         final double yMin,
 
-        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT)
+        @Parameter(description = "Maximum x coordinate (longitude). " + COORD_FORMAT_WGS84 + " " + RANGE_X_TXT + NL + ROUNDING_X_MAX)
         @RequestParam(defaultValue = X_MAX, required = false)
         @DecimalMin(X_MIN)
         @DecimalMax(X_MAX)
         final double xMax,
 
-        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT)
+        @Parameter(description = "Maximum y coordinate (latitude). " + COORD_FORMAT_WGS84 + " " + RANGE_Y_TXT + NL + ROUNDING_Y_MAX)
         @RequestParam(defaultValue = Y_MAX, required = false)
         @DecimalMin(Y_MIN)
         @DecimalMax(Y_MAX)
@@ -217,14 +223,14 @@ public class MaintenanceTrackingControllerV1 {
         validateTimeBetweenFromAndToMaxHours(endFrom, endBefore, 24, END_TIME);
         validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
 
-        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
             DateHelper.floorInstantSeconds(endFrom),
             DateHelper.floorInstantSeconds(endBefore),
             DateHelper.floorInstantSeconds(createdAfter),
             DateHelper.floorInstantSeconds(createdBefore),
-            MaintenanceTrackingWebDataServiceV1.convertToAreaParameter(xMin, xMax, yMin, yMax),
+            MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(xMin, xMax, yMin, yMax),
             hasAllTasks(taskId) ? null : taskId,
-            maintenanceTrackingWebDataServiceV1.convertToRealDomainNames(domain));
+            maintenanceTrackingWebDataServiceV1.normalizeAndValidateDomainParameter(domain));
     }
     @Operation(summary = "Road maintenance tracking route with tracking id")
     @RequestMapping(method = RequestMethod.GET, path = API_MAINTENANCE_V1_TRACKING_ROUTES + "/{id}", produces = APPLICATION_JSON_VALUE)
@@ -251,8 +257,10 @@ public class MaintenanceTrackingControllerV1 {
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of maintenance tracking domains"))
     public ResponseEntityWithLastModifiedHeader<List<MaintenanceTrackingDomainDtoV1>> getMaintenanceTrackingDomains() {
         final List<MaintenanceTrackingDomainDtoV1> domains = maintenanceTrackingWebDataServiceV1.getDomainsWithGenerics();
-        final Instant lastModified = domains.stream().filter(d -> d.getDataUpdatedTime() != null).map(MaintenanceTrackingDomainDtoV1::getDataUpdatedTime)
-            .max(Comparator.naturalOrder()).orElse(null);
+        final Instant lastModified = domains.stream()
+                .map(MaintenanceTrackingDomainDtoV1::getDataUpdatedTime)
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder()).orElse(null);
         return ResponseEntityWithLastModifiedHeader.of(domains, lastModified, API_MAINTENANCE_V1_TRACKING_DOMAINS);
     }
 
@@ -270,7 +278,7 @@ public class MaintenanceTrackingControllerV1 {
 
     /**
      * Checks if tasks parameter value equals all values
-     * @param taskIds
+     * @param taskIds task ids to check
      * @return true if parameter is null, empty or contains all task values
      */
     private static boolean hasAllTasks(final Set<MaintenanceTrackingTask> taskIds) {

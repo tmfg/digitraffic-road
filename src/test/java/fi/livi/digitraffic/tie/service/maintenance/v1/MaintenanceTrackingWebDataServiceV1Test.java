@@ -33,6 +33,7 @@ import static org.apache.sshd.common.util.GenericUtils.asSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
@@ -41,8 +42,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -63,6 +63,7 @@ import org.apache.sshd.common.util.GenericUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,6 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingPropertiesV
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -101,7 +101,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     final static Pair<Double, Double> BOUNDING_BOX_X_RANGE = Pair.of(20.0, 30.0);
     final static Pair<Double, Double> BOUNDING_BOX_Y_RANGE = Pair.of(64.0, 66.0);
     final static Pair<Double, Double> BOUNDING_BOX_CENTER = Pair.of(25.0, 65.0);
-    final static Polygon AREA = MaintenanceTrackingWebDataServiceV1.convertToAreaParameter(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight());
+    final static Polygon AREA = MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_X_RANGE.getRight(), BOUNDING_BOX_Y_RANGE.getRight());
     private final String DOMAIN_WITH_SOURCE = "domain-with-source";
     private final String DOMAIN_WITHOUT_SOURCE = "domain-without-source";
     private final DecimalFormat f = new DecimalFormat("#0.00");
@@ -135,8 +135,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
 
     @Test
     public void findTrackingsWithCreationTime() throws JsonProcessingException {
-        final ZonedDateTime start = getStartTimeOneHourInPast();
-        final ZonedDateTime created = start.plusMinutes(30);
+        final Instant start = getStartTimeOneHourInPast();
+        final Instant created = start.plus(30, ChronoUnit.MINUTES);
         final List<Tyokone> workMachines1 = createWorkMachines(1);
         final List<Tyokone> workMachines2 = createWorkMachines(1);
         // startTime == endTime == start
@@ -166,43 +166,43 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // start is exlusive -> nothing to return
         assertCollectionSize(0, findMaintenanceTrackings(
             null, null,
-            created.toInstant(), created.plusMinutes(1).toInstant(), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
+            created, created.plus(1, ChronoUnit.MINUTES), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
 
         // end is exclusive -> nothing to return
         assertCollectionSize(0, findMaintenanceTrackings(
             null, null,
-            created.minusMinutes(1).toInstant(), created.toInstant(), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
+            created.minus(1, ChronoUnit.MINUTES), created, GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
 
         // Both are created at the same time -> both are returned
         assertCollectionSize(2, findMaintenanceTrackings(
             null, null,
-            created.toInstant().minusSeconds(1), created.plusMinutes(1).toInstant(), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
+            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
 
         // Created match both and endTime (exlusive) only first
         final List<MaintenanceTrackingFeatureV1> firstFound = findMaintenanceTrackings(
-            start.toInstant(), start.toInstant().plusMillis(1),
-            created.toInstant().minusSeconds(1), created.plusMinutes(1).toInstant(), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures();
+            start, start.plusMillis(1),
+            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures();
         assertCollectionSize(1, firstFound);
         assertEquals(first.getId(), firstFound.get(0).getProperties().id);
 
         // Created match both and endTime only first
         final List<MaintenanceTrackingFeatureV1> secondFound = findMaintenanceTrackings(
-            created.toInstant(), created.toInstant().plusMillis(1),
-            created.toInstant().minusSeconds(1), created.plusMinutes(1).toInstant(), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures();
+            created, created.plusMillis(1),
+            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures();
         assertCollectionSize(1, secondFound);
         assertEquals(second.getId(), secondFound.get(0).getProperties().id);
     }
 
     @Test
     public void findCombinedTrackingsWithMultipleWorkMachines() throws JsonProcessingException {
-        final ZonedDateTime start = getStartTimeOneHourInPast();
+        final Instant start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final TyokoneenseurannanKirjausRequestSchema seuranta1 =
             createMaintenanceTrackingWithLineString(start, 10, 1, 1, workMachines, ASFALTOINTI);
         final TyokoneenseurannanKirjausRequestSchema seuranta2 =
-            createMaintenanceTrackingWithLineString(start.plusMinutes(5), 10, 2,1, workMachines, ASFALTOINTI);
-        final ZonedDateTime end = getEndTime(seuranta2);
+            createMaintenanceTrackingWithLineString(start.plus(5, ChronoUnit.MINUTES), 10, 2,1, workMachines, ASFALTOINTI);
+        final Instant end = getEndTime(seuranta2);
 
         testHelper.saveTrackingDataAsObservations(seuranta1);
         testHelper.saveTrackingDataAsObservations(seuranta2);
@@ -218,8 +218,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             assertEquals(2, properties.size());
             final MaintenanceTrackingPropertiesV1 first = properties.get(0);
             final MaintenanceTrackingPropertiesV1 second = properties.get(1);
-            assertEquals(start.toInstant(), first.startTime);
-            assertEquals(end.toInstant(), second.endTime);
+            assertEquals(start, first.startTime);
+            assertEquals(end, second.endTime);
         });
     }
 
@@ -227,11 +227,11 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     public void findCombinedMultipleTrackings() {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
 
         // Generate 5 messages/machine with 10 coordinates in each
-        final ZonedDateTime endTime = IntStream.range(0, 5).mapToObj(i -> {
-            final ZonedDateTime start = startTime.plusMinutes(i* 10L);
+        final Instant endTime = IntStream.range(0, 5).mapToObj(i -> {
+            final Instant start = startTime.plus(i* 10L, ChronoUnit.MINUTES);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
                 createMaintenanceTrackingWithLineString(start, 10, i + 1, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
             try {
@@ -240,7 +240,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                 throw new RuntimeException(e);
             }
             return getEndTime(seuranta);
-        }).max(ChronoZonedDateTime::compareTo).orElseThrow();
+        }).max(Instant::compareTo).orElseThrow();
         final int expectedObservationCount = 5 * machineCount; // 5 messages/machine
         final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(expectedObservationCount, handled);
@@ -267,12 +267,12 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final int machineCount = getRandomId(2, 10);
         // Work machines with harja id 1,2,...(machineCount+1)
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
 
         // Generate 5 different messages with different tasks for each machine
         // Each machine successive trackings will bombine next tracking first point as previous tracking last point
         IntStream.range(0, 5).forEach(idx -> {
-            final ZonedDateTime start = startTime.plusMinutes(idx*10L);
+            final Instant start = startTime.plus(idx*10L, ChronoUnit.MINUTES);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
                 createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, SuoritettavatTehtavat.values()[idx]);
             try {
@@ -285,18 +285,18 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
 
         // Without task parameter all should be found
         List<MaintenanceTrackingFeatureV1> allFeatures =
-            findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plusMinutes(10 * 5 + 9)).getFeatures();
+            findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plus(10 * 5 + 9, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(machineCount*5, allFeatures);
 
         // Latest should return latest one per machine
         List<MaintenanceTrackingLatestFeatureV1> latestFeatures =
-            findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10 * 5 + 9)).getFeatures();
+            findLatestMaintenanceTrackings(startTime, startTime.plus(10 * 5 + 9, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(machineCount, latestFeatures);
         assertAllHasOnlyPointGeometries(latestFeatures);
 
         // Find with tasks
         IntStream.range(0, 5).forEach(idx -> {
-            final ZonedDateTime endTime = startTime.plusMinutes(idx*10L+10L); // 10 observations end time is 10 min after first
+            final Instant endTime = startTime.plus(idx*10L+10L, ChronoUnit.MINUTES); // 10 observations end time is 10 min after first
             final List<MaintenanceTrackingFeatureV1> features =
                 findMaintenanceTrackingsInclusiveEnd(startTime, endTime, getTaskWithIndex(idx)).getFeatures();
             assertCollectionSize(machineCount, features);
@@ -308,21 +308,21 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     public void findTrackingWithDifferentJobsForSameMachine() throws JsonProcessingException {
         // Work machines with harja id 1
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
         // tracking with job 1
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // tracking with job 2
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime.plusMinutes(10), 10, 2, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plus(10, ChronoUnit.MINUTES), 10, 2, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as they have different jobs
-        final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plusMinutes(10+10)).getFeatures();
+        final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plus(10+10, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(2, features);
 
         // 2 tracking should be found as latest as same machine with different job id is handled as different machine
-        final List<MaintenanceTrackingLatestFeatureV1> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+11)).getFeatures();
+        final List<MaintenanceTrackingLatestFeatureV1> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plus(10+11, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(2, latestFeatures);
         assertAllHasOnlyPointGeometries(latestFeatures);
     }
@@ -330,24 +330,24 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     @Test
     public void findSeparateTrackingsWhenTransitionInBetweenTasks() throws JsonProcessingException {
         final List<Tyokone> workMachines = createWorkMachines(1);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
         // tracking with job 1
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime.plusMinutes(1), 10, 1, workMachines));
+            createMaintenanceTrackingWithLineString(startTime.plus(1, ChronoUnit.MINUTES), 10, 1, workMachines));
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime.plusMinutes(2), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plus(2, ChronoUnit.MINUTES), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as they have different jobs
-        final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plusMinutes(10+10+10)).getFeatures();
+        final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plus(10+10+10, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(2, features);
 
         // Only the latest one should be found
-        final List<MaintenanceTrackingLatestFeatureV1> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plusMinutes(10+10+10)).getFeatures();
+        final List<MaintenanceTrackingLatestFeatureV1> latestFeatures = findLatestMaintenanceTrackings(startTime, startTime.plus(10+10+10, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(1, latestFeatures);
-        assertEquals(startTime.plusMinutes(2).toInstant(), latestFeatures.get(0).getProperties().getTime());
+        assertEquals(startTime.plus(2, ChronoUnit.MINUTES), latestFeatures.get(0).getProperties().getTime());
         assertAllHasOnlyPointGeometries(latestFeatures);
     }
 
@@ -356,7 +356,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // M1 = Message 1, P1=Point 1. Then observation times are:
         // M1(P1) < M2(P1) < M1(P2) < M2(P2) < M1(P3) < M2(P3) ...
         final List<Tyokone> workMachines = createWorkMachines(getRandom(1,5));
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
         // tracking with startime T1 and end time T1+9
         // 10 observations / machine
         testHelper.saveTrackingDataAsObservations(
@@ -368,7 +368,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as first one's end time is after second one's start time.
-        final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plusMinutes(1+9)).getFeatures();
+        final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plus(1+9, ChronoUnit.MINUTES)).getFeatures();
         final LinkedHashMap<Long, List<MaintenanceTrackingPropertiesV1>> groupsByStartId = groupTrackingsByStartId(features);
         // There is as many groups of trackings as there is machines
         assertEquals(workMachines.size(), groupsByStartId.size());
@@ -377,17 +377,17 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     @Test
     public void findTrackingDataJsonsByTrackingId() throws IOException {
         final List<Tyokone> workMachines = createWorkMachines(getRandom(1,5));
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
         // Create 2 messages that are combined as one tracking
         // 10 observations
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithLineString(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         // 10 observations
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime.plusMinutes(10), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plus(10, ChronoUnit.MINUTES), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
-        final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plusMinutes(20)).getFeatures();
+        final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plus(20, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(workMachines.size() * 2, features);
         // Observation data count is == tracking count
         final List<JsonNode> jsons = maintenanceTrackingWebDataServiceV1.findTrackingDataJsonsByTrackingId(features.get(0).getProperties().id);
@@ -398,8 +398,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     public void findWithMultipleTasks() throws JsonProcessingException {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
-        final ZonedDateTime endTime = startTime.plusMinutes(9);
+        final Instant startTime = getStartTimeOneHourInPast();
+        final Instant endTime = startTime.plus(9, ChronoUnit.MINUTES);
         // Generate 3 observations for each machine
         testHelper.saveTrackingDataAsObservations(createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines,
             AURAUS_JA_SOHJONPOISTO, PAALLYSTEIDEN_JUOTOSTYOT)); // PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING
@@ -437,7 +437,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     @Test
     public void findMaintenanceTrackingWithLinestringCrossingWithBoundingBox() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()-0.5, BOUNDING_BOX_Y_RANGE.getRight() + 0.5);
 
@@ -449,8 +449,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
-        final MaintenanceTrackingFeatureCollectionV1 result = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant().plusMillis(1),
+        final MaintenanceTrackingFeatureCollectionV1 result = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
+            startTime, startTime.plusMillis(1),
             null, null,
             AREA,
             Collections.emptySet(),
@@ -458,8 +458,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingPropertiesV1 props = result.getFeatures().get(0).getProperties();
 
-        assertEquals(startTime.toInstant(), props.startTime);
-        assertEquals(startTime.toInstant(), props.endTime);
+        assertEquals(startTime, props.startTime);
+        assertEquals(startTime, props.endTime);
     }
 
 
@@ -474,7 +474,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     @Test
     public void findMaintenanceTrackingWithLinestringNotCrossingWithBoundingBox() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getRight() + 0.1,
                                                                      BOUNDING_BOX_Y_RANGE.getLeft() - 10,
@@ -487,8 +487,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
-        final MaintenanceTrackingFeatureCollectionV1 result = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant(),
+        final MaintenanceTrackingFeatureCollectionV1 result = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
+            startTime, startTime,
             null, null, AREA,
             Collections.emptySet(),
             GenericUtils.asSet(STATE_ROADS_DOMAIN));
@@ -504,7 +504,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     @Test
     public void findMaintenanceTrackingWithPointInsideBoundingBox() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = List.of(
                 asList(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_CENTER.getRight())
@@ -518,8 +518,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
-        final MaintenanceTrackingFeatureCollectionV1 result = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant().plusMillis(1),
+        final MaintenanceTrackingFeatureCollectionV1 result = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
+            startTime, startTime.plusMillis(1),
             null, null,
             AREA,
             Collections.emptySet(),
@@ -527,8 +527,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingPropertiesV1 props = result.getFeatures().get(0).getProperties();
 
-        assertEquals(startTime.toInstant(), props.startTime);
-        assertEquals(startTime.toInstant(), props.endTime);
+        assertEquals(startTime, props.startTime);
+        assertEquals(startTime, props.endTime);
     }
 
     /**
@@ -540,7 +540,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     @Test
     public void findMaintenanceTrackingWithPointOutsideBoundingBox() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = List.of(
                 asList(BOUNDING_BOX_X_RANGE.getRight() + 0.1, BOUNDING_BOX_CENTER.getRight())
@@ -554,8 +554,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
-        final MaintenanceTrackingFeatureCollectionV1 result = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant(),
+        final MaintenanceTrackingFeatureCollectionV1 result = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
+            startTime, startTime,
             null, null,
             AREA,
             Collections.emptySet(),
@@ -566,7 +566,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     @Test
     public void getById() throws JsonProcessingException {
         final Tyokone workMachine = createWorkmachine(1);
-        final ZonedDateTime startTime = getStartTimeOneHourInPast();
+        final Instant startTime = getStartTimeOneHourInPast();
 
         List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getRight());
 
@@ -578,8 +578,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final int handled = testHelper.handleUnhandledWorkMachineObservations(1000);
         assertEquals(1, handled);
 
-        final MaintenanceTrackingFeatureCollectionV1 result1 = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
-            startTime.toInstant(), startTime.toInstant().plusMillis(1),
+        final MaintenanceTrackingFeatureCollectionV1 result1 = maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
+            startTime, startTime.plusMillis(1),
             null, null,
             AREA,
             Collections.emptySet(),
@@ -702,7 +702,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
 
     @Test
     public void findRoutesIsCached() {
-        final ZonedDateTime start = ZonedDateTime.now().minusMinutes(3);
+        final Instant start = Instant.now().minus(3, ChronoUnit.MINUTES);
         final List<Tyokone> workmachines = createWorkMachines(3);
         IntStream.range(0,3).forEach(i -> { // Create 3 routes total
             log.info("Create tracking {}.", i);
@@ -731,10 +731,10 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         });
 
         // Verify cached methods are called only once
-        verify(maintenanceTrackingWebDataServiceV1, times(1)).findMaintenanceTrackings(
+        verify(maintenanceTrackingWebDataServiceV1, times(1)).findMaintenanceTrackingRoutes(
             null, null, null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
         );
-        verify(maintenanceTrackingWebDataServiceV1, times(1)).findLatestMaintenanceTrackings(
+        verify(maintenanceTrackingWebDataServiceV1, times(1)).findLatestMaintenanceTrackingRoutes(
             null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
         );
 
@@ -753,7 +753,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
 
     @Test
     public void findRoutesIsCachedAlsoInParallelCalls() throws JsonProcessingException, InterruptedException {
-        final ZonedDateTime start = ZonedDateTime.now().minusMinutes(3);
+        final Instant start = Instant.now().minus(3, ChronoUnit.MINUTES);
         final TyokoneenseurannanKirjausRequestSchema seuranta =
             createMaintenanceTrackingWithLineString(start, 10, 1, 1,
                                                     createWorkMachines(1), ASFALTOINTI);
@@ -795,13 +795,66 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         latch.await();
         // Verify cached methods are called only once
         // Only one thread should go in and other should come from cache
-        verify(maintenanceTrackingWebDataServiceV1, times(1)).findMaintenanceTrackings(
+        verify(maintenanceTrackingWebDataServiceV1, times(1)).findMaintenanceTrackingRoutes(
             null, null, null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
         );
-        verify(maintenanceTrackingWebDataServiceV1, times(1)).findLatestMaintenanceTrackings(
+        verify(maintenanceTrackingWebDataServiceV1, times(1)).findLatestMaintenanceTrackingRoutes(
             null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
         );
         logCache();
+    }
+
+    @Test
+    public void convertToNormalizedAreaParameterWholeAreaToNull() {
+        // Whole area is converted to null
+        assertNull(MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(RANGE_X_MIN, RANGE_X_MAX, RANGE_Y_MIN, RANGE_Y_MAX));
+    }
+
+    // X = 19.0 - 32.0
+    // Y = 59.0 - 72.0;
+    @Test
+    public void convertToNormalizedAreaParameterFromLowerLimits() {
+        final Polygon polygon = MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(17.1, 30.1, 61.51, 70.1);
+        final double xMin = 17.0;
+        final double xMax = 31.0;
+        final double yMin = 61.5;
+        final double yMax = 70.5;
+        assertCoords(xMin, xMax, yMin, yMax, polygon);
+    }
+
+    @Test
+    public void convertToNormalizedAreaParameterFromUpperLimits() {
+        final Polygon polygon = MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(17.9, 30.9, 61.99, 70.99);
+        final double xMin = 17.0;
+        final double xMax = 31.0;
+        final double yMin = 61.5;
+        final double yMax = 71.0;
+        assertCoords(xMin, xMax, yMin, yMax, polygon);
+    }
+
+    @Test
+    public void convertToNormalizedAreaParameterNoChange() {
+        final Polygon polygon = MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(17.0, 31.0, 61.5, 70.0);
+        final double xMin = 17.0;
+        final double xMax = 31.0;
+        final double yMin = 61.5;
+        final double yMax = 70.0;
+        assertCoords(xMin, xMax, yMin, yMax, polygon);
+    }
+
+    private void assertCoords(final double xMin, final double xMax, final double yMin, final double yMax, final Polygon polygon) {
+        final Coordinate[] coords = polygon.getCoordinates();
+        assertEquals(5, coords.length, "Coordinates length should be 5 but was " + coords.length);
+        assertEquals(xMin, coords[0].getX(), "xMin didn't match");
+        assertEquals(yMin, coords[0].getY(), "yMin didn't match");
+        assertEquals(xMin, coords[1].getX(), "xMin didn't match");
+        assertEquals(yMax, coords[1].getY(), "yMax didn't match");
+        assertEquals(xMax, coords[2].getX(), "xMax didn't match");
+        assertEquals(yMax, coords[2].getY(), "yMax didn't match");
+        assertEquals(xMax, coords[3].getX(), "xMax didn't match");
+        assertEquals(yMin, coords[3].getY(), "yMin didn't match");
+        assertEquals(xMin, coords[4].getX(), "xMin didn't match");
+        assertEquals(yMin, coords[4].getY(), "yMin didn't match");
     }
 
     private void logCache() {
@@ -813,11 +866,11 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
 
     }
 
-    private MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final ZonedDateTime start, final ZonedDateTime end,
+    private MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final Instant start, final Instant end,
                                                                                         final MaintenanceTrackingTask...tasks) {
-        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackings(
-            DateHelper.toInstant(start), DateHelper.toInstant(end),
-            MaintenanceTrackingWebDataServiceV1.convertToAreaParameter(RANGE_X_MIN, RANGE_X_MAX, RANGE_Y_MIN, RANGE_Y_MAX),
+        return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackingRoutes(
+            start, end,
+            MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(RANGE_X_MIN, RANGE_X_MAX, RANGE_Y_MIN, RANGE_Y_MAX),
             asSet(tasks),
             GenericUtils.asSet(STATE_ROADS_DOMAIN));
     }
@@ -826,10 +879,10 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         features.forEach(f -> assertEquals(Point, f.getGeometry().getType()));
     }
 
-    private MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackingsInclusiveEnd(final ZonedDateTime endFrom, final ZonedDateTime endTo,
+    private MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackingsInclusiveEnd(final Instant endFrom, final Instant endTo,
                                                                                         final MaintenanceTrackingTask...tasks) {
         return findMaintenanceTrackings(
-            DateHelper.toInstant(endFrom), DateHelper.toInstant(endTo).plusMillis(1),
+            endFrom, endTo.plusMillis(1),
             null, null,
             GenericUtils.asSet(STATE_ROADS_DOMAIN),
             tasks);
@@ -839,9 +892,9 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                                                                             final Instant changeAfter, final Instant changeBefore,
                                                                             final Set<String> domains,
                                                                             final MaintenanceTrackingTask...tasks) {
-        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackings(
+        return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
             endFrom, endBefore, changeAfter, changeBefore,
-            MaintenanceTrackingWebDataServiceV1.convertToAreaParameter(RANGE_X_MIN, RANGE_X_MAX, RANGE_Y_MIN, RANGE_Y_MAX),
+            MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(RANGE_X_MIN, RANGE_X_MAX, RANGE_Y_MIN, RANGE_Y_MAX),
             asSet(tasks),
             domains);
     }

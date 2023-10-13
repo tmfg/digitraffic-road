@@ -6,7 +6,7 @@ import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX_DOUBL
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN_DOUBLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,13 +65,12 @@ public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest
         forecastSectionTestHelper.serverExpectMetadata(server, 1);
 
         forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionV1Metadata();
-
         final ForecastSectionFeatureCollectionSimpleV1 collection =
             forecastWebDataServiceV1.findSimpleForecastSections(false, null,
                 X_MIN_DOUBLE, Y_MIN_DOUBLE, X_MAX_DOUBLE, Y_MAX_DOUBLE);
 
-        final ZonedDateTime now = ZonedDateTime.now();
-        assertEquals(now.toEpochSecond(), collection.dataUpdatedTime.getEpochSecond(), 2);
+        final Instant now = getTransactionTimestamp();
+        assertEquals(now.getEpochSecond(), collection.dataUpdatedTime.getEpochSecond(), 1);
 
         assertEquals(10, collection.getFeatures().size());
         assertEquals("00001_001_000_0", collection.getFeatures().get(0).getProperties().id);

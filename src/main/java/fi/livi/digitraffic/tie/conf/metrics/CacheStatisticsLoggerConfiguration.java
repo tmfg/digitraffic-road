@@ -82,8 +82,8 @@ public class CacheStatisticsLoggerConfiguration {
 
         public void logCacheStats() {
             final CacheStats s = countStats();
-            log.info("method=logCacheStats cacheName={} hitCount={} missCount={} hitRate={} missRate={} evictionCount={} averageLoadPenaltyMs={}",
-                     getCacheName(),  s.hitCount(), s.missCount(), f.get().format(s.hitRate()), f.get().format(s.missRate()), s.evictionCount(), (long)s.averageLoadPenalty()/1000000); // ns -> ms
+            log.info("method=logCacheStats cacheName={} hitCount={} missCount={} hitRate={} missRate={} evictionCount={} loadCount={} averageLoadPenaltyMs={}",
+                     getCacheName(),  s.hitCount(), s.missCount(), f.get().format(s.hitRate()), f.get().format(s.missRate()), s.evictionCount(), s.loadCount(), (long)s.averageLoadPenalty()/1000000); // ns -> ms
         }
 
         @Override

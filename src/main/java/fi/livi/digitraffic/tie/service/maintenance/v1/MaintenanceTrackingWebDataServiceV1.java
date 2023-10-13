@@ -45,6 +45,7 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.tie.helper.MathUtils;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -84,52 +85,52 @@ public class MaintenanceTrackingWebDataServiceV1 {
     @CacheEvict(value = CACHE_MAINTENANCE_ROUTES_LATES, allEntries = true)
     public void evictRoutesLatestCache () { }
 
+    // sync = true -> With a same cache key only the first request will be processed and another will wait for the result for the first one
     @Cacheable(cacheNames = CACHE_MAINTENANCE_ROUTES_LATES, sync = true)
     @Transactional(readOnly = true)
-    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackings(final Instant endFrom, final Instant endTo,
-                                                                                       final Polygon area,
-                                                                                       final Set<MaintenanceTrackingTask> taskIds,
-                                                                                       final Set<String> domains) {
-        final Set<String> realDomains = convertToRealDomainNames(domains);
+    public MaintenanceTrackingLatestFeatureCollectionV1 findLatestMaintenanceTrackingRoutes(final Instant endFrom, final Instant endTo,
+                                                                                            final Polygon normalizedArea,
+                                                                                            final Set<MaintenanceTrackingTask> taskIds,
+                                                                                            final Set<String> normalizedDomains) {
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
-        final Instant lastUpdated = DateHelper.withoutNanos(maintenanceTrackingRepositoryV1.findLastUpdatedForDomain(realDomains));
+        final Instant lastUpdated = DateHelper.withoutNanos(maintenanceTrackingRepositoryV1.findLastUpdatedForDomain(normalizedDomains));
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingLatestFeatureV1> found =
             maintenanceTrackingDaoV1.findLatestByAgeAndBoundingBoxAndTasks(
                 fromTo.getLeft(),
                 fromTo.getRight(),
-                area,
+                normalizedArea,
                 convertTasksToStringSetOrNull(taskIds),
-                realDomains);
+                normalizedDomains);
 
         log.info("method=findLatestMaintenanceTrackings with params area {} endFrom={} endTo={} foundCount={} tookMs={}",
-                 area, toZonedDateTimeAtUtc(endFrom), toZonedDateTimeAtUtc(endTo), found.size(), start.getTime());
+                 normalizedArea, toZonedDateTimeAtUtc(endFrom), toZonedDateTimeAtUtc(endTo), found.size(), start.getTime());
 
         return new MaintenanceTrackingLatestFeatureCollectionV1(lastUpdated, found);
     }
 
+    // sync = true -> With a same cache key only the first request will be processed and another will wait for the result for the first one
     @Cacheable(cacheNames = CACHE_MAINTENANCE_ROUTES, sync = true)
     @Transactional(readOnly = true)
-    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackings(final Instant endFrom, final Instant endBefore,
-                                                                           final Instant createdAfter, final Instant createdBefore,
-                                                                           final Polygon area,
-                                                                           final Set<MaintenanceTrackingTask> taskIds,
-                                                                           final Set<String> domains) {
-        final Set<String> realDomains = convertToRealDomainNames(domains);
+    public MaintenanceTrackingFeatureCollectionV1 findMaintenanceTrackingRoutes(final Instant endFrom, final Instant endBefore,
+                                                                                final Instant createdAfter, final Instant createdBefore,
+                                                                                final Polygon normalizedArea,
+                                                                                final Set<MaintenanceTrackingTask> taskIds,
+                                                                                final Set<String> normalizedDomains) {
 
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
-        final Instant lastUpdated = maintenanceTrackingRepositoryV1.findLastUpdatedForDomain(realDomains);
+        final Instant lastUpdated = maintenanceTrackingRepositoryV1.findLastUpdatedForDomain(normalizedDomains);
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingFeatureV1> found =
             maintenanceTrackingDaoV1.findByAgeAndBoundingBoxAndTasks(
                 fromTo.getLeft(), fromTo.getRight(),
                 createdAfter, createdBefore,
-                area, convertTasksToStringSetOrNull(taskIds), realDomains);
+                normalizedArea, convertTasksToStringSetOrNull(taskIds), normalizedDomains);
 
         log.info("method=findMaintenanceTrackings with params area {} endFrom {} endBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
-                 area, endFrom, endBefore, createdAfter, createdBefore, realDomains, found.size(), start.getTime());
+                 normalizedArea, endFrom, endBefore, createdAfter, createdBefore, normalizedDomains, found.size(), start.getTime());
 
         return new MaintenanceTrackingFeatureCollectionV1(lastUpdated, found);
     }
@@ -144,10 +145,13 @@ public class MaintenanceTrackingWebDataServiceV1 {
      *
      * @param domainNameParameters parameters to convert to real domain names
      * @return Actual real domain names
+     * @throws IllegalArgumentException if there is invalid domain values
      */
+    // sync = true -> With a same cache key only the first request will be processed and another will wait for the result for the first one
     @Cacheable(cacheNames = CACHE_MAINTENANCE_DOMAIN_NAMES, sync = true)
     @Transactional(readOnly = true)
-    public Set<String> convertToRealDomainNames(final Set<String> domainNameParameters) {
+    public Set<String> normalizeAndValidateDomainParameter(final Set<String> domainNameParameters) throws IllegalArgumentException {
+        validateDomainParameters(domainNameParameters);
         if (CollectionUtils.isEmpty(domainNameParameters)) {
             // Without parameter default to STATE_ROADS_DOMAIN
             return Collections.singleton(STATE_ROADS_DOMAIN);
@@ -158,11 +162,36 @@ public class MaintenanceTrackingWebDataServiceV1 {
         } else if (domainNameParameters.contains(GENERIC_MUNICIPALITY_DOMAINS)) {
             return getRealDomainNamesWithoutStateRoadsDomain();
         }
-        validateDomainParameters(domainNameParameters);
         return new HashSet<>(domainNameParameters);
     }
 
-    public static Polygon convertToAreaParameter(double xMin, double xMax, double yMin, double yMax) {
+    /**
+     * Converts area coordinates to normalized (rounded to around 50km resolution) area parameter.
+     * If result area covers whole Finland null value will be returned.
+     * @param xMin x min
+     * @param xMax x max
+     * @param yMin y min
+     * @param yMax y max
+     * @return Normalized are or null
+     */
+    public static Polygon convertToNormalizedAreaParameter(final double xMin, final double xMax, final double yMin, final double yMax) {
+        final double xMinFloor = Math.floor(xMin);
+        final double xMaxCeil = Math.ceil(xMax);
+        final double yMinFloor = MathUtils.floorToHalf(yMin);
+        final double yMaxCeil = MathUtils.ceilToHalf(yMax);
+        return convertToAreaParameter(xMinFloor, xMaxCeil, yMinFloor, yMaxCeil);
+    }
+
+    /**
+     * Converts area coordinates to Polygon area parameter (not normalized).
+     * If result area covers whole Finland null value will be returned.
+     * @param xMin x min
+     * @param xMax x max
+     * @param yMin y min
+     * @param yMax y max
+     * @return If result area covers whole Finland null value will be returned.
+     */
+    private static Polygon convertToAreaParameter(final double xMin, final double xMax, final double yMin, final double yMax) {
         return isAreaAll(xMin, xMax, yMin, yMax) ? null : PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
     }
 
@@ -185,7 +214,12 @@ public class MaintenanceTrackingWebDataServiceV1 {
         return Pair.of(fromParam, toParam);
     }
 
-    private void validateDomainParameters(final Set<String> domainNameParameters) {
+    /**
+     * Validates domain parameter values
+     * @param domainNameParameters params to validate
+     * @throws IllegalArgumentException if there is invalid domain values
+     */
+    private void validateDomainParameters(final Set<String> domainNameParameters) throws IllegalArgumentException {
         final List<String> allValid = getDomainsWithGenerics().stream().map(MaintenanceTrackingDomainDtoV1::getName).toList();
         domainNameParameters.forEach(param  -> {
             if (!allValid.contains(param)) {
@@ -237,12 +271,13 @@ public class MaintenanceTrackingWebDataServiceV1 {
         }).collect(Collectors.toList());
     }
 
-    private final static double DELTA = 0.0001;
+    private final static double DELTA_X = 1.0; // ~50 km
+    private final static double DELTA_Y = 0.5; // ~50 km
     private static boolean isAreaAll(final double xMin, final double xMax, final double yMin, final double yMax) {
         // add DELTA to prevent rounding errors
-        return xMin <= ControllerConstants.X_MIN_DOUBLE+DELTA &&
-               xMax >= ControllerConstants.X_MAX_DOUBLE-DELTA &&
-               yMin <= ControllerConstants.Y_MIN_DOUBLE+DELTA &&
-               yMax >= ControllerConstants.Y_MAX_DOUBLE-DELTA;
+        return xMin <= ControllerConstants.X_MIN_DOUBLE+DELTA_X &&
+               xMax >= ControllerConstants.X_MAX_DOUBLE-DELTA_X &&
+               yMin <= ControllerConstants.Y_MIN_DOUBLE+DELTA_Y &&
+               yMax >= ControllerConstants.Y_MAX_DOUBLE-DELTA_Y;
     }
 }
