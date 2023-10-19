@@ -1,8 +1,9 @@
+-- Collation to order numbers naturally ie. versions
 CREATE COLLATION IF NOT EXISTS en_natural
-  (
+(
   LOCALE = 'en-US-u-kn-true',
   PROVIDER = 'icu'
-  );
+);
 -- drop table if exists ocpi_cpo_version_endpoint;
 -- drop table if exists ocpi_cpo_version;
 -- drop ocpi_cpo_business_details
