@@ -79,15 +79,15 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "forecastSectionWeatherPK.forecastSectionId", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("time")
-    private List<ForecastSectionWeather> forecastSectionWeatherList = new ArrayList<>();
+    private final List<ForecastSectionWeather> forecastSectionWeatherList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "roadSegmentPK.forecastSectionId", cascade = CascadeType.ALL)
     @OrderBy("roadSegmentPK.orderNumber")
-    private List<RoadSegment> roadSegments = new ArrayList<>();
+    private final List<RoadSegment> roadSegments = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "linkIdPK.forecastSectionId", cascade = CascadeType.ALL)
     @OrderBy("linkIdPK.orderNumber")
-    private List<LinkId> linkIds = new ArrayList<>();
+    private final List<LinkId> linkIds = new ArrayList<>();
 
     private Geometry geometry;
 
@@ -107,7 +107,6 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
             this.roadSectionVersionNumber = 0;
         }
         this.description = description;
-        this.forecastSectionWeatherList = new ArrayList<>();
         this.obsoleteDate = null;
     }
 
@@ -119,7 +118,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return naturalId;
     }
 
-    public void setNaturalId(String naturalId) {
+    public void setNaturalId(final String naturalId) {
         this.naturalId = naturalId;
     }
 
@@ -127,7 +126,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(final Integer version) {
         this.version = version;
     }
 
@@ -135,7 +134,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -143,7 +142,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return roadSectionNumber;
     }
 
-    public void setRoadSectionNumber(int roadSectionNumber) {
+    public void setRoadSectionNumber(final int roadSectionNumber) {
         this.roadSectionNumber = roadSectionNumber;
     }
 
@@ -151,7 +150,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return roadNumber;
     }
 
-    public void setRoadNumber(int roadNumber) {
+    public void setRoadNumber(final int roadNumber) {
         this.roadNumber = roadNumber;
     }
 
@@ -159,7 +158,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return roadSectionVersionNumber;
     }
 
-    public void setRoadSectionVersionNumber(int roadSectionVersionNumber) {
+    public void setRoadSectionVersionNumber(final int roadSectionVersionNumber) {
         this.roadSectionVersionNumber = roadSectionVersionNumber;
     }
 
@@ -167,7 +166,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return startDistance;
     }
 
-    public void setStartDistance(Integer startDistance) {
+    public void setStartDistance(final Integer startDistance) {
         this.startDistance = startDistance;
     }
 
@@ -175,7 +174,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return endDistance;
     }
 
-    public void setEndDistance(Integer endDistance) {
+    public void setEndDistance(final Integer endDistance) {
         this.endDistance = endDistance;
     }
 
@@ -183,7 +182,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return length;
     }
 
-    public void setLength(Integer length) {
+    public void setLength(final Integer length) {
         this.length = length;
     }
 
@@ -191,7 +190,7 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         return obsoleteDate;
     }
 
-    public void setObsoleteDate(Date obsoleteDate) {
+    public void setObsoleteDate(final Date obsoleteDate) {
         this.obsoleteDate = obsoleteDate;
     }
 

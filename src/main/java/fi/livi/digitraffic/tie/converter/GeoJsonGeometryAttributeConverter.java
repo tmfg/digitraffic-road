@@ -1,8 +1,5 @@
 package fi.livi.digitraffic.tie.converter;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class GeoJsonGeometryAttributeConverter implements AttributeConverter<Geometry<?>, String> {
@@ -33,7 +32,7 @@ public class GeoJsonGeometryAttributeConverter implements AttributeConverter<Geo
         }
         try {
             return jsonWriter.writeValueAsString(geometry);
-        } catch (JsonProcessingException e) {
+        } catch (final JsonProcessingException e) {
             log.error("Failed to convert geometry to json: {}", ToStringHelper.toStringFull(geometry));
             throw new RuntimeException(e);
         }

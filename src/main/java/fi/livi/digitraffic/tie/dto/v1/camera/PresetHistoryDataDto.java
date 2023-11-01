@@ -15,7 +15,7 @@ public class PresetHistoryDataDto {
     @Schema(description = "Url to read the image.")
     private final String imageUrl;
     @Schema(description = "Image size in bytes.")
-    private int sizeBytes;
+    private final int sizeBytes;
 
     public PresetHistoryDataDto(final ZonedDateTime lastModified, final String imageUrl, final int sizeBytes) {
         this.lastModified = lastModified;

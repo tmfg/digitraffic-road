@@ -105,7 +105,7 @@ public class CameraPresetService {
 
         final List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))));
-        for (List<Long> ids : Iterables.partition(camerasLotjuIds, 1000)) {
+        for (final List<Long> ids : Iterables.partition(camerasLotjuIds, 1000)) {
             predicates.add(cb.not(root.get("cameraLotjuId").in(ids)));
         }
         update.where(cb.and(predicates.toArray(new Predicate[0])));

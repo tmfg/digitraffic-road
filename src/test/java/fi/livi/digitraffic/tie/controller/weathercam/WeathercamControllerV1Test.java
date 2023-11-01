@@ -190,9 +190,6 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
     @Test
     public void testCameraDataRestApi() throws Exception {
 
-        System.out.println(mockMvc.perform(get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS +
-                                                          WeathercamControllerV1.DATA)).andReturn().getResponse().getContentAsString());
-
         mockMvc.perform(get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + WeathercamControllerV1.DATA))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON_VALUE))
@@ -214,7 +211,6 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void testCameraDataRestApiById() throws Exception {
-        System.out.println(mockMvc.perform(get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + preset1.getCameraId() + WeathercamControllerV1.DATA)).andReturn().getResponse().getContentAsString());
 
         mockMvc.perform(get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + preset1.getCameraId() + WeathercamControllerV1.DATA))
             .andExpect(status().isOk())

@@ -41,7 +41,7 @@ public class LockingDaoTest extends AbstractServiceTest {
     public void testLockingAfterExpiration() {
         // Acquire 1. lock
         final boolean locked1 = acquireLock(LOCK_NAME_1, INSTANCE_ID_1);
-        long locked1Time = System.currentTimeMillis();
+        final long locked1Time = System.currentTimeMillis();
         logLockingTime(LOCK_NAME_1, locked1, locked1Time, System.currentTimeMillis());
         assertTrue(locked1);
 
@@ -57,7 +57,7 @@ public class LockingDaoTest extends AbstractServiceTest {
 
         while (!locked1Second) {
             locked1Second = acquireLock(LOCK_NAME_1, INSTANCE_ID_2);
-            long now = System.currentTimeMillis();
+            final long now = System.currentTimeMillis();
             logLockingTime(LOCK_NAME_1, locked1Second, locked1Time, now);
 
             if (locked1Time > (now - (EXPIRATION_SECONDS -1)*1000) ) {

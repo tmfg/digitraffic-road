@@ -44,7 +44,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
     public void testGenerate() {
         final Set<Long> ids = new HashSet<>();
         IntStream.range(0,20).forEach(i -> {
-            long id = ClusteredLocker.generateInstanceId();
+            final long id = ClusteredLocker.generateInstanceId();
             assertFalse(ids.contains(id));
             ids.add(id);
         });
@@ -93,13 +93,13 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         final ExecutorService executor2 = Executors.newFixedThreadPool(1);
 
         // Acquire 1. lock @ instance 1
-        Future<Boolean> futureLocked1 = tryLock(LOCK_NAME_1, EXPIRATION_SECONDS, executor1);
+        final Future<Boolean> futureLocked1 = tryLock(LOCK_NAME_1, EXPIRATION_SECONDS, executor1);
         waitCompletion(futureLocked1);
-        long locked1Time = System.currentTimeMillis();
+        final long locked1Time = System.currentTimeMillis();
         assertTrue(futureLocked1.get());
 
         // 2. lock can be acquired @ instance 2
-        Future<Boolean> locked2 = tryLock(LOCK_NAME_2, EXPIRATION_SECONDS, executor2);
+        final Future<Boolean> locked2 = tryLock(LOCK_NAME_2, EXPIRATION_SECONDS, executor2);
         waitCompletion(locked2);
         assertTrue(locked2.get());
 
@@ -113,7 +113,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
             locked1Second = tryLock(LOCK_NAME_1, EXPIRATION_SECONDS, executor2);
             waitCompletion(locked1Second);
 
-            long now = System.currentTimeMillis();
+            final long now = System.currentTimeMillis();
             final double timeFromLocking = (double) (now - locked1Time) / 1000.0;
             if (timeFromLocking > 0.95 ) {
                 log.info("LOCK_NAME_1 acquired: {}, time from locking {} seconds", locked1Second.get(), timeFromLocking);

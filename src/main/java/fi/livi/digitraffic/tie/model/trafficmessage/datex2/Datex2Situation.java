@@ -59,7 +59,7 @@ public class Datex2Situation {
         return situationRecords;
     }
 
-    public void setSituationRecords(List<Datex2SituationRecord> situationRecords) {
+    public void setSituationRecords(final List<Datex2SituationRecord> situationRecords) {
         this.situationRecords = situationRecords;
     }
 
@@ -67,11 +67,11 @@ public class Datex2Situation {
         return situationId;
     }
 
-    public void setSituationId(String situationId) {
+    public void setSituationId(final String situationId) {
         this.situationId = situationId;
     }
 
-    public void setVersionTime(ZonedDateTime versionTime) {
+    public void setVersionTime(final ZonedDateTime versionTime) {
         this.versionTime = versionTime;
     }
 
@@ -79,7 +79,7 @@ public class Datex2Situation {
         return versionTime;
     }
 
-    public void addSituationRecord(Datex2SituationRecord situationRecord) {
+    public void addSituationRecord(final Datex2SituationRecord situationRecord) {
         if (situationRecords == null) {
             situationRecords = new ArrayList<>();
         }
@@ -91,7 +91,7 @@ public class Datex2Situation {
         return datex2;
     }
 
-    public void setDatex2(Datex2 datex2) {
+    public void setDatex2(final Datex2 datex2) {
         this.datex2 = datex2;
     }
 }

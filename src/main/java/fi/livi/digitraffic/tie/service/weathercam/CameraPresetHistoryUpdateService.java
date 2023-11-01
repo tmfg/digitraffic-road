@@ -53,7 +53,7 @@ public class CameraPresetHistoryUpdateService {
         if (!rs.isPublicNow()) {
             try {
                 cameraImageUpdateHandler.hideCurrentImagesForCamera(rs);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error(String.format("method=updatePresetHistoryPublicityForCamera Error while calling hideCurrentImagesForCamera " +
                                         "for cameraId: %s. History is updated but current images are not hidden in S3", cameraId), e);
             }

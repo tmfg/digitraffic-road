@@ -4,7 +4,7 @@ public abstract class AbstractRoadStationSensorUpdater {
 
     protected final RoadStationSensorService roadStationSensorService;
 
-    public AbstractRoadStationSensorUpdater(RoadStationSensorService roadStationSensorService) {
+    public AbstractRoadStationSensorUpdater(final RoadStationSensorService roadStationSensorService) {
         this.roadStationSensorService = roadStationSensorService;
     }
 }

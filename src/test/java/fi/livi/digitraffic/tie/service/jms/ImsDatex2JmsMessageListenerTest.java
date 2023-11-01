@@ -117,7 +117,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
         }
         // Check Datex2 vs Json content
         for (final Situation s : situations) {
-            Optional<TrafficAnnouncementFeature> feature =
+            final Optional<TrafficAnnouncementFeature> feature =
                 features.stream().filter(f -> f.getProperties().situationId.equals(s.getId())).findFirst();
             assertTrue(feature.isPresent());
 

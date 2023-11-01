@@ -54,7 +54,7 @@ public class LoggerMessageKeyValuePairJsonProvider extends AbstractJsonProvider<
                     final Object objectValue = getObjectValue(e.getValue());
                     generator.writeObjectField(e.getKey(), objectValue);
                     hasWrittenFieldNames.add(e.getKey());
-                } catch (IOException ex) {
+                } catch (final IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }

@@ -27,7 +27,7 @@ public class JMSErrorResolver {
      * @return
      */
     public static String resolveErrorMessageByErrorCode(final String errCode) {
-        Optional<Field> errorField = Arrays.stream(ErrorCodes.class.getDeclaredFields())
+        final Optional<Field> errorField = Arrays.stream(ErrorCodes.class.getDeclaredFields())
                 .filter(field -> isFieldValueEqualWithErrorCode(field, errCode) )
                 .findFirst();
         if (errorField.isPresent()) {
@@ -39,10 +39,10 @@ public class JMSErrorResolver {
     private static boolean isFieldValueEqualWithErrorCode(final Field field, final String errCode) {
         try {
             if (Modifier.isStatic(field.getModifiers())) {
-                Object value = FieldUtils.readDeclaredStaticField(ErrorCodes.class, field.getName());
+                final Object value = FieldUtils.readDeclaredStaticField(ErrorCodes.class, field.getName());
                 return value != null && StringUtils.equals(errCode, "" + value);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.debug("Error while resolving field value", e);
             return false;
         }

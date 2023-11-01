@@ -65,7 +65,7 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
                         // mark host as healthy
                         mdp.setHostHealthy(dest);
                         return value;
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         // mark host not healthy
                         mdp.setHostNotHealthy(dest);
                         lastException = e;

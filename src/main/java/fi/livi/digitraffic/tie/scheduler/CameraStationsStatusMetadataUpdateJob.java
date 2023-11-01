@@ -19,7 +19,7 @@ public class CameraStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
     private CameraStationUpdater cameraStationUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) {
+    protected void doExecute(final JobExecutionContext context) {
         final int csCount = cameraStationUpdater.updateCameraStationsStatuses();
         if (csCount > 0) {
             dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);

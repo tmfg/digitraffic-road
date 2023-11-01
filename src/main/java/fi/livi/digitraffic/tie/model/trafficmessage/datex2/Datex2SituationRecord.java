@@ -94,7 +94,7 @@ public class Datex2SituationRecord {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -102,7 +102,7 @@ public class Datex2SituationRecord {
         return situation;
     }
 
-    public void setSituation(Datex2Situation situation) {
+    public void setSituation(final Datex2Situation situation) {
         this.situation = situation;
     }
 
@@ -110,11 +110,11 @@ public class Datex2SituationRecord {
         return situationRecordId;
     }
 
-    public void setSituationRecordId(String situationRecordId) {
+    public void setSituationRecordId(final String situationRecordId) {
         this.situationRecordId = situationRecordId;
     }
 
-    public void setCreationTime(ZonedDateTime creationTime) {
+    public void setCreationTime(final ZonedDateTime creationTime) {
         this.creationTime = creationTime;
     }
 
@@ -122,7 +122,7 @@ public class Datex2SituationRecord {
         return creationTime;
     }
 
-    public void setVersionTime(ZonedDateTime versionTime) {
+    public void setVersionTime(final ZonedDateTime versionTime) {
         this.versionTime = versionTime;
     }
 
@@ -130,7 +130,7 @@ public class Datex2SituationRecord {
         return versionTime;
     }
 
-    public void setObservationTime(ZonedDateTime observationTime) {
+    public void setObservationTime(final ZonedDateTime observationTime) {
         this.observationTime = observationTime;
     }
 
@@ -142,11 +142,11 @@ public class Datex2SituationRecord {
         return validyStatus;
     }
 
-    public void setValidyStatus(Datex2SituationRecordValidyStatus validyStatus) {
+    public void setValidyStatus(final Datex2SituationRecordValidyStatus validyStatus) {
         this.validyStatus = validyStatus;
     }
 
-    public void setOverallStartTime(ZonedDateTime overallStartTime) {
+    public void setOverallStartTime(final ZonedDateTime overallStartTime) {
         this.overallStartTime = overallStartTime;
     }
 
@@ -154,7 +154,7 @@ public class Datex2SituationRecord {
         return overallStartTime;
     }
 
-    public void setOverallEndTime(ZonedDateTime overallEndTime) {
+    public void setOverallEndTime(final ZonedDateTime overallEndTime) {
         this.overallEndTime = overallEndTime;
     }
 
@@ -166,7 +166,7 @@ public class Datex2SituationRecord {
         return type;
     }
 
-    public void setType(Datex2SituationRecordType type) {
+    public void setType(final Datex2SituationRecordType type) {
         this.type = type;
     }
 
@@ -174,7 +174,7 @@ public class Datex2SituationRecord {
         return publicComments;
     }
 
-    public void setPublicComments(List<SituationRecordCommentI18n> publicComments) {
+    public void setPublicComments(final List<SituationRecordCommentI18n> publicComments) {
         this.publicComments = publicComments;
         publicComments.forEach(k-> k.setSituationRecord(this));
     }

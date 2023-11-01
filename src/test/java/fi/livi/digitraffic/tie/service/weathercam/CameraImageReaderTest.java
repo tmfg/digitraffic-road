@@ -76,7 +76,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         try {
             cameraImageReader.readImage(id, info);
             fail("First request to server1 should fail and throw exception");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // empty
         }
         final byte[] img = cameraImageReader.readImage(id, info);

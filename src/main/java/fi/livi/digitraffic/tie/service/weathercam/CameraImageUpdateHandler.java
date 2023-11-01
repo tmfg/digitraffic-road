@@ -181,7 +181,7 @@ public class CameraImageUpdateHandler {
     }
 
     public void hideCurrentImagesForCamera(final RoadStation rs) {
-        Map<Long, CameraPreset> presets = cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
+        final Map<Long, CameraPreset> presets = cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
         presets.values().forEach(this::hideCurrentImageForPreset);
     }
 
@@ -210,18 +210,18 @@ public class CameraImageUpdateHandler {
 
     static class CameraImageReadFailureException extends RuntimeException {
 
-        CameraImageReadFailureException(String message) {
+        CameraImageReadFailureException(final String message) {
             super(message);
         }
 
-        CameraImageReadFailureException(Throwable cause) {
+        CameraImageReadFailureException(final Throwable cause) {
             super(cause);
         }
     }
 
     static class CameraImageWriteFailureException extends RuntimeException {
 
-        CameraImageWriteFailureException(Throwable cause) {
+        CameraImageWriteFailureException(final Throwable cause) {
             super(cause);
         }
 

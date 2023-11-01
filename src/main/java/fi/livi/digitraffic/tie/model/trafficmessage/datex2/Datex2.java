@@ -74,7 +74,7 @@ public class Datex2 extends ReadOnlyCreatedAndModifiedFields {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -135,7 +135,7 @@ public class Datex2 extends ReadOnlyCreatedAndModifiedFields {
         return trafficAnnouncementType;
     }
 
-    public void setTrafficAnnouncementType(TrafficAnnouncementType trafficAnnouncementType) {
+    public void setTrafficAnnouncementType(final TrafficAnnouncementType trafficAnnouncementType) {
         this.trafficAnnouncementType = trafficAnnouncementType;
     }
 

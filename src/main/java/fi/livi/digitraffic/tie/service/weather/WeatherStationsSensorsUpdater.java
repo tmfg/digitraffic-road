@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.service.lotju.LotjuWeatherStationMetadataClientWr
 public class WeatherStationsSensorsUpdater {
     private static final Logger log = LoggerFactory.getLogger(WeatherStationsSensorsUpdater.class);
 
-    private RoadStationSensorService roadStationSensorService;
+    private final RoadStationSensorService roadStationSensorService;
     private final WeatherStationService weatherStationService;
     private final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper;
 
@@ -76,11 +76,11 @@ public class WeatherStationsSensorsUpdater {
         int countAdded = 0;
         int countRemoved = 0;
 
-        for (Pair<WeatherStation, List<TiesaaLaskennallinenAnturiVO>> pair : stationAnturisPairs) {
-            WeatherStation ws = pair.getKey();
+        for (final Pair<WeatherStation, List<TiesaaLaskennallinenAnturiVO>> pair : stationAnturisPairs) {
+            final WeatherStation ws = pair.getKey();
             final List<TiesaaLaskennallinenAnturiVO> anturis = pair.getRight();
             final List<Long> sensorslotjuIds = anturis.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
-            Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfRoadStation(ws.getRoadStationId(),
+            final Pair<Integer, Integer> deletedInserted = roadStationSensorService.updateSensorsOfRoadStation(ws.getRoadStationId(),
                                                                                                              RoadStationType.WEATHER_STATION,
                                                                                                              sensorslotjuIds);
             countRemoved += deletedInserted.getLeft();

@@ -78,7 +78,7 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
         return null;
     }
 
-    private static Point getETRS89CoordinatesPoint(RoadStation rs) {
+    private static Point getETRS89CoordinatesPoint(final RoadStation rs) {
         if (rs.getLatitude() != null && rs.getLongitude() != null) {
             return new Point(
                 rs.getLongitude().doubleValue(),

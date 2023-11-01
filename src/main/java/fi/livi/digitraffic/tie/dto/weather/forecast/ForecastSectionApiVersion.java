@@ -6,7 +6,7 @@ public enum ForecastSectionApiVersion {
 
     private final int version;
 
-    ForecastSectionApiVersion(int version) {
+    ForecastSectionApiVersion(final int version) {
         this.version = version;
     }
 

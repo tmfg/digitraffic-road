@@ -21,7 +21,7 @@ public class LocationSubtype {
         return descriptionEn;
     }
 
-    public void setDescriptionEn(String descriptionEn) {
+    public void setDescriptionEn(final String descriptionEn) {
         this.descriptionEn = descriptionEn;
     }
 
@@ -29,7 +29,7 @@ public class LocationSubtype {
         return descriptionFi;
     }
 
-    public void setDescriptionFi(String descriptionFi) {
+    public void setDescriptionFi(final String descriptionFi) {
         this.descriptionFi = descriptionFi;
     }
 
@@ -41,7 +41,7 @@ public class LocationSubtype {
         return id;
     }
 
-    public void setId(LocationSubtypeKey id) {
+    public void setId(final LocationSubtypeKey id) {
         this.id = id;
     }
 

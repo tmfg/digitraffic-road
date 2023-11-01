@@ -40,7 +40,7 @@ public class CameraHelper {
     }
 
     public static boolean validatePresetId(final String presetId) {
-        Matcher m = cameraPresetIdPattern.matcher(presetId);
+        final Matcher m = cameraPresetIdPattern.matcher(presetId);
         return m.matches();
     }
 

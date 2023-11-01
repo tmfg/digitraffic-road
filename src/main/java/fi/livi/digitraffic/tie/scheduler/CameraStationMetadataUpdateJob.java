@@ -19,7 +19,7 @@ public class CameraStationMetadataUpdateJob extends SimpleUpdateJob {
     private CameraStationUpdater cameraStationUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) {
+    protected void doExecute(final JobExecutionContext context) {
         if (cameraStationUpdater.updateCameras()) {
             dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
         }

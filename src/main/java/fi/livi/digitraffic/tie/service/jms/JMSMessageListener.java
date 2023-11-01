@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jakarta.annotation.PreDestroy;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import jakarta.annotation.PreDestroy;
 
 public class JMSMessageListener<K> implements MessageListener {
     public static final String MESSAGE_UNMARSHALLING_ERROR = "Message unmarshalling error";
@@ -82,7 +82,7 @@ public class JMSMessageListener<K> implements MessageListener {
                 drainQueueInternal();
                 try {
                     message.acknowledge();
-                } catch (JMSException e) {
+                } catch (final JMSException e) {
                     log.error("method=onMessage JMS message acknowledge failed", e);
                 }
             }
@@ -131,7 +131,7 @@ public class JMSMessageListener<K> implements MessageListener {
             }
 
             // Allocate array with current message queue size and drain same amount of messages
-            ArrayList<K> targetList = new ArrayList<>(queueToDrain);
+            final ArrayList<K> targetList = new ArrayList<>(queueToDrain);
             int counter = 0;
             while (counter < queueToDrain) {
                 final K next = messageQueue.poll();

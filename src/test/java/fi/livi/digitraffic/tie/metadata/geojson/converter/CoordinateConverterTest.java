@@ -106,7 +106,7 @@ public class CoordinateConverterTest {
                 }
                 log.info("End thread {}", Thread.currentThread().getId());
             };
-        Thread thread = new Thread(runnable);
+        final Thread thread = new Thread(runnable);
         thread.start();
         return thread;
     }
@@ -130,7 +130,7 @@ public class CoordinateConverterTest {
         assertNotNull(convertFromWGS84ToETRS89(RANGE_X_MAX, RANGE_Y_MAX));
     }
 
-    private Point convertFromWGS84ToETRS89(double x, double y) {
+    private Point convertFromWGS84ToETRS89(final double x, final double y) {
         final Point from = new Point(x, y);
         final Point to = CoordinateConverter.convertFromWGS84ToETRS89(from);
         log.info("From: " + from + "\nTo:   " + to);

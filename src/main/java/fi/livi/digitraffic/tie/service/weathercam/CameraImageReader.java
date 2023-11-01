@@ -54,7 +54,7 @@ public class CameraImageReader {
                 info.setReadDurationMs(start.getTime());
                 return data;
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             destinationProvider.setHostNotHealthy(destination);
             throw e;
         }

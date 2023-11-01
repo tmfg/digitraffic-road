@@ -66,7 +66,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
      */
     @Transactional
     public Pair<Integer, Integer> updateOrInsertRoadStationAndPresets(final KameraVO kamera, final List<EsiasentoVO> esiasentos) {
-        Map<Long, CameraPreset> presets = cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(kamera.getId());
+        final Map<Long, CameraPreset> presets = cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(kamera.getId());
         int updated = 0;
         int inserted = 0;
 
@@ -76,7 +76,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             presets.values().stream().filter(CameraPreset::makeObsolete).map(CameraPreset::getId).collect(Collectors.toSet());
         entityManager.flush();
 
-        for (EsiasentoVO esiasento : esiasentos) {
+        for (final EsiasentoVO esiasento : esiasentos) {
 
             final CameraPreset cameraPreset = presets.remove(esiasento.getId());
 
@@ -208,7 +208,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             final RoadStation rs = to.getRoadStation();
             final boolean updated = updateRoadStationAttributes(kameraFrom, rs);
             return updated || hash != HashCodeBuilder.reflectionHashCode(to);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("method=updateCameraPresetAtributes : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed",
                 kameraFrom.getNimiFi(), kameraFrom.getId(), kameraFrom.getVanhaId(), kameraFrom.getKeruunTila());
             throw e;
@@ -240,7 +240,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
     public boolean updatePreset(final EsiasentoVO esiasento, final KameraVO kamera) {
         final CameraPreset preset = cameraPresetService.findCameraPresetByLotjuId(esiasento.getId());
         // Update history every time in case JMS message handling has failed
-        boolean updated = updateCameraPresetAtributes(kamera, esiasento, preset);
+        final boolean updated = updateCameraPresetAtributes(kamera, esiasento, preset);
         cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(preset.getRoadStation());
         return updated;
     }

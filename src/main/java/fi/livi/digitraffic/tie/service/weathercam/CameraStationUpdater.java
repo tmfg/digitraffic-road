@@ -55,8 +55,8 @@ public class CameraStationUpdater {
         log.info("method=updateCameras start");
         final List<KameraVO> kameras = lotjuCameraStationMetadataClientWrapper.getKameras();
 
-        AtomicInteger updated = new AtomicInteger();
-        AtomicInteger inserted = new AtomicInteger();
+        final AtomicInteger updated = new AtomicInteger();
+        final AtomicInteger inserted = new AtomicInteger();
 
         final List<Exception> errors = new ArrayList<>();
 
@@ -72,8 +72,8 @@ public class CameraStationUpdater {
             });
 
         final Set<Long> camerasLotjuIds = kameras.stream().map(AbstractVO::getId).collect(Collectors.toSet());
-        long obsoletePresets = cameraPresetService.obsoleteCameraPresetsExcludingCameraLotjuIds(camerasLotjuIds);
-        long obsoletedRoadStations = cameraPresetService.obsoleteCameraRoadStationsWithoutPublishablePresets();
+        final long obsoletePresets = cameraPresetService.obsoleteCameraPresetsExcludingCameraLotjuIds(camerasLotjuIds);
+        final long obsoletedRoadStations = cameraPresetService.obsoleteCameraRoadStationsWithoutPublishablePresets();
 
         log.info("obsoletedCameraPresetsCount={} CameraPresets that are not active", obsoletePresets);
         log.info("obsoletedRoadStationsCount={} Camera RoadStations without active presets", obsoletedRoadStations);

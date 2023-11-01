@@ -17,7 +17,7 @@ public class LocationKey implements Serializable {
         return locationCode;
     }
 
-    public void setLocationCode(Integer locationCode) {
+    public void setLocationCode(final Integer locationCode) {
         this.locationCode = locationCode;
     }
 
@@ -25,11 +25,11 @@ public class LocationKey implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override public boolean equals(final Object o) {
         if (this == o)
             return true;
 

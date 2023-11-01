@@ -38,7 +38,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             .findAllPublishableRoadStationSensors(roadStationType);
     }
 
-    protected void flushSensorBuffer(boolean tms) {
+    protected void flushSensorBuffer(final boolean tms) {
         if (TestTransaction.isActive()) {
             TestTransaction.flagForCommit();
             TestTransaction.end();
@@ -59,7 +59,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
     public static TextMessage createTextMessage(final String content, final String filename) {
         return new TextMessage() {
             @Override
-            public void setText(String s) {
+            public void setText(final String s) {
 
             }
 
@@ -74,7 +74,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSMessageID(String s) {
+            public void setJMSMessageID(final String s) {
 
             }
 
@@ -84,7 +84,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSTimestamp(long l) {
+            public void setJMSTimestamp(final long l) {
 
             }
 
@@ -94,12 +94,12 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSCorrelationIDAsBytes(byte[] bytes) {
+            public void setJMSCorrelationIDAsBytes(final byte[] bytes) {
 
             }
 
             @Override
-            public void setJMSCorrelationID(String s) {
+            public void setJMSCorrelationID(final String s) {
 
             }
 
@@ -114,7 +114,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSReplyTo(Destination destination) {
+            public void setJMSReplyTo(final Destination destination) {
 
             }
 
@@ -124,7 +124,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSDestination(Destination destination) {
+            public void setJMSDestination(final Destination destination) {
 
             }
 
@@ -134,7 +134,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSDeliveryMode(int i) {
+            public void setJMSDeliveryMode(final int i) {
 
             }
 
@@ -144,7 +144,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSRedelivered(boolean b) {
+            public void setJMSRedelivered(final boolean b) {
 
             }
 
@@ -154,7 +154,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSType(String s) {
+            public void setJMSType(final String s) {
 
             }
 
@@ -164,7 +164,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSExpiration(long l) {
+            public void setJMSExpiration(final long l) {
 
             }
 
@@ -174,7 +174,7 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setJMSPriority(int i) {
+            public void setJMSPriority(final int i) {
 
             }
 
@@ -184,52 +184,52 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public boolean propertyExists(String s) {
+            public boolean propertyExists(final String s) {
                 return false;
             }
 
             @Override
-            public boolean getBooleanProperty(String s) {
+            public boolean getBooleanProperty(final String s) {
                 return false;
             }
 
             @Override
-            public byte getByteProperty(String s) {
+            public byte getByteProperty(final String s) {
                 return 0;
             }
 
             @Override
-            public short getShortProperty(String s) {
+            public short getShortProperty(final String s) {
                 return 0;
             }
 
             @Override
-            public int getIntProperty(String s) {
+            public int getIntProperty(final String s) {
                 return 0;
             }
 
             @Override
-            public long getLongProperty(String s) {
+            public long getLongProperty(final String s) {
                 return 0;
             }
 
             @Override
-            public float getFloatProperty(String s) {
+            public float getFloatProperty(final String s) {
                 return 0;
             }
 
             @Override
-            public double getDoubleProperty(String s) {
+            public double getDoubleProperty(final String s) {
                 return 0;
             }
 
             @Override
-            public String getStringProperty(String s) {
+            public String getStringProperty(final String s) {
                 return null;
             }
 
             @Override
-            public Object getObjectProperty(String s) {
+            public Object getObjectProperty(final String s) {
                 return null;
             }
 
@@ -239,47 +239,47 @@ public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest 
             }
 
             @Override
-            public void setBooleanProperty(String s, boolean b) {
+            public void setBooleanProperty(final String s, final boolean b) {
 
             }
 
             @Override
-            public void setByteProperty(String s, byte b) {
+            public void setByteProperty(final String s, final byte b) {
 
             }
 
             @Override
-            public void setShortProperty(String s, short i) {
+            public void setShortProperty(final String s, final short i) {
 
             }
 
             @Override
-            public void setIntProperty(String s, int i) {
+            public void setIntProperty(final String s, final int i) {
 
             }
 
             @Override
-            public void setLongProperty(String s, long l) {
+            public void setLongProperty(final String s, final long l) {
 
             }
 
             @Override
-            public void setFloatProperty(String s, float v) {
+            public void setFloatProperty(final String s, final float v) {
 
             }
 
             @Override
-            public void setDoubleProperty(String s, double v) {
+            public void setDoubleProperty(final String s, final double v) {
 
             }
 
             @Override
-            public void setStringProperty(String s, String s1) {
+            public void setStringProperty(final String s, final String s1) {
 
             }
 
             @Override
-            public void setObjectProperty(String s, Object o) {
+            public void setObjectProperty(final String s, final Object o) {
 
             }
 

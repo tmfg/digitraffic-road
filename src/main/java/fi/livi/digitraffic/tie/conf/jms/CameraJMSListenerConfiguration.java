@@ -24,7 +24,8 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
     private final CameraImageUpdateManager cameraImageUpdateManager;
 
     @Autowired
-    public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+    public CameraJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
+                                          final QueueConnectionFactory connectionFactory,
                                           @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
                                           @Value("#{'${jms.camera.inQueue}'.split(',')}")final List<String> jmsQueueKeys, final CameraImageUpdateManager cameraImageUpdateManager,
                                           final ClusteredLocker clusteredLocker) {
@@ -43,7 +44,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
         final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> handleData = data -> {
             try {
                 return cameraImageUpdateManager.updateCameraData(data);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("method=createJMSMessageListener Error while handling Camera data", e);
                 return 0;
             }

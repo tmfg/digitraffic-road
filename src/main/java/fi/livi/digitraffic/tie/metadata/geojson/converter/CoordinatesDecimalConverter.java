@@ -31,7 +31,7 @@ public final class CoordinatesDecimalConverter
         if (isEmpty(provider, value)) {
             return;
         } else {
-            for (Object element : value) {
+            for (final Object element : value) {
                 if (element instanceof List) {
                     this.serialize((List<?>) element, gen, provider);
                 } else {
@@ -41,7 +41,7 @@ public final class CoordinatesDecimalConverter
         }
     }
 
-    synchronized private void serializeDouble(Double value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+    synchronized private void serializeDouble(final Double value, final JsonGenerator gen, final SerializerProvider provider) throws IOException {
         gen.writeObject(BigDecimal.valueOf(value).setScale(6, RoundingMode.HALF_UP));
     }
 
@@ -52,7 +52,7 @@ public final class CoordinatesDecimalConverter
     }
 
     @Override
-    public boolean isEmpty(SerializerProvider provider, List<?> value) {
+    public boolean isEmpty(final SerializerProvider provider, final List<?> value) {
         return value.isEmpty();
     }
 }

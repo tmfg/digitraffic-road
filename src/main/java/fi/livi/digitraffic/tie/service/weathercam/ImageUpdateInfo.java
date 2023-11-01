@@ -157,7 +157,7 @@ public class ImageUpdateInfo {
         return writeError;
     }
 
-    private void setWriteError(Throwable writeError) {
+    private void setWriteError(final Throwable writeError) {
         this.writeError = writeError;
     }
 

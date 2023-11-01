@@ -18,7 +18,7 @@ public class ForecastSectionV2Dto {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -26,7 +26,7 @@ public class ForecastSectionV2Dto {
         return dataUpdatedTime;
     }
 
-    public void setDataUpdatedTime(ZonedDateTime dataUpdatedTime) {
+    public void setDataUpdatedTime(final ZonedDateTime dataUpdatedTime) {
         this.dataUpdatedTime = dataUpdatedTime;
     }
 
@@ -34,7 +34,7 @@ public class ForecastSectionV2Dto {
         return features;
     }
 
-    public void setFeatures(List<ForecastSectionV2FeatureDto> features) {
+    public void setFeatures(final List<ForecastSectionV2FeatureDto> features) {
         this.features = features;
     }
 }

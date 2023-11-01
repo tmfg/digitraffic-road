@@ -7,7 +7,7 @@ import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 
 public class VariableSignDescriptions implements DataUpdatedSupportV1 {
     public final List<CodeDescription> signTypes;
-    private Instant dataUpdatedTime;
+    private final Instant dataUpdatedTime;
 
     public VariableSignDescriptions(final List<CodeDescription> signTypes, final Instant dataUpdatedTime) {
         this.signTypes = signTypes;

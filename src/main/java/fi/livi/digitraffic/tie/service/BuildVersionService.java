@@ -6,7 +6,6 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
@@ -68,7 +67,7 @@ public class BuildVersionService {
                 return prop;
             }
             return null;
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             log.error("Failed to load git properties from file: " + GIT_PROPERTIES, ioe);
             return null;
         }

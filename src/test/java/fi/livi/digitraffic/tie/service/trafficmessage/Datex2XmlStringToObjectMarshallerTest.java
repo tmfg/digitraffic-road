@@ -43,7 +43,7 @@ public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
 
     private void checkIsoDateFormats(final String xml, final boolean shouldMatchIsoFormat, final int timesCount) {
         // Now create matcher object to find times from the xml.
-        Matcher timesMatcher = timesPattern.matcher(xml);
+        final Matcher timesMatcher = timesPattern.matcher(xml);
 
         int found = 0;
         while (timesMatcher.find()) {

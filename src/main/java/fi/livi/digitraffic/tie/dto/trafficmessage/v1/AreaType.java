@@ -28,7 +28,7 @@ public enum AreaType {
     private final static Map<String, AreaType> CONSTANTS = new HashMap<>();
 
     static {
-        for (AreaType c : values()) {
+        for (final AreaType c : values()) {
             CONSTANTS.put(c.value, c);
             CONSTANTS.put(c.name(), c);
         }

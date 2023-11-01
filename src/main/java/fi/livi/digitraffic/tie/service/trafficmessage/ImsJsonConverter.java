@@ -144,7 +144,7 @@ public class ImsJsonConverter {
         }
         try {
             return TrafficAnnouncementType.fromValue(trafficAnnouncementType.asText());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("method=getTrafficAnnouncementType Error while trying to resolve json TrafficAnnouncementType", e);
             return resolveTrafficAnnouncementTypeTypeFromTextWithError(feature);
         }

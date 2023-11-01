@@ -46,7 +46,7 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     @Autowired
     void setConverters(final HttpMessageConverter<?>[] converters) {
 
-        HttpMessageConverter<?> mappingJackson2HttpMessageConverter = Arrays.stream(converters).filter(
+        final HttpMessageConverter<?> mappingJackson2HttpMessageConverter = Arrays.stream(converters).filter(
             hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().orElseThrow();
 
         assertNotNull(mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
@@ -90,7 +90,7 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     protected ResultActions logDebugResponse(final ResultActions result) throws UnsupportedEncodingException {
         return logResponse(result, true);
     }
-    private ResultActions logResponse(final ResultActions result, boolean debug) throws UnsupportedEncodingException {
+    private ResultActions logResponse(final ResultActions result, final boolean debug) throws UnsupportedEncodingException {
         final String responseStr = result.andReturn().getResponse().getContentAsString();
         if (debug) {
             log.debug("\n" + responseStr);

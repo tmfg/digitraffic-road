@@ -73,7 +73,7 @@ public class CameraPresetHistory extends ReadOnlyCreatedAndModifiedFields {
         return publishable;
     }
 
-    public void setPublishable(Boolean publishable) {
+    public void setPublishable(final Boolean publishable) {
         this.publishable = publishable;
     }
 

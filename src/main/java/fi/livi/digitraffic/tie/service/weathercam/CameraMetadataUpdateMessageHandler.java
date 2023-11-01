@@ -39,10 +39,10 @@ public class CameraMetadataUpdateMessageHandler {
 
     // Disable info logging as it can be normally over 1 s. Log only if over default warning level 5 s.
     @PerformanceMonitor(maxInfoExcecutionTime = 100000)
-    public int updateMetadataFromJms(List<CameraMetadataUpdatedMessageDto> cameraMetadataUpdates) {
+    public int updateMetadataFromJms(final List<CameraMetadataUpdatedMessageDto> cameraMetadataUpdates) {
         int updateCount = 0;
 
-        for (CameraMetadataUpdatedMessageDto message : cameraMetadataUpdates) {
+        for (final CameraMetadataUpdatedMessageDto message : cameraMetadataUpdates) {
             log.info("method=updateMetadataFromJms roadStationType={} data: {}", RoadStationType.CAMERA_STATION.name(), ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
             final UpdateType updateType = message.getUpdateType();
@@ -88,7 +88,7 @@ public class CameraMetadataUpdateMessageHandler {
         return updateStations(asemaLotjuIds, UPDATE);
     }
 
-    private int updateStations(final Set<Long> asemaLotjuIds, UpdateType updateType) {
+    private int updateStations(final Set<Long> asemaLotjuIds, final UpdateType updateType) {
         return (int) asemaLotjuIds.stream().filter(lotjuId -> cameraStationUpdater.updateCameraStation(lotjuId, updateType)).count();
     }
 }

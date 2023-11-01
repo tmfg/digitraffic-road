@@ -22,7 +22,7 @@ public class ForecastSectionV2Geometry {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -30,7 +30,7 @@ public class ForecastSectionV2Geometry {
         return coordinates;
     }
 
-    public void setCoordinates(List<List<List<BigDecimal>>> coordinates) {
+    public void setCoordinates(final List<List<List<BigDecimal>>> coordinates) {
         this.coordinates = coordinates;
     }
 

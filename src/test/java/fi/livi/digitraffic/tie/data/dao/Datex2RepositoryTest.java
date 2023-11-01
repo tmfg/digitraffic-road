@@ -58,11 +58,11 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
 
     @Test
     public void testThatNewAndOldTypesForAllSituationTypesAreStillSavedToDb() {
-        for (SituationType type : SituationType.values()) {
+        for (final SituationType type : SituationType.values()) {
             datex2Repository.deleteAll();
             if (SituationType.TRAFFIC_ANNOUNCEMENT == type) {
                 // Test also that new TrafficAnnouncementTypes are saved
-                for (TrafficAnnouncementType trafficAnnouncementType : TrafficAnnouncementType.values()) {
+                for (final TrafficAnnouncementType trafficAnnouncementType : TrafficAnnouncementType.values()) {
                     datex2Repository.deleteAll();
                     createAndSaveDatex2Message(type, trafficAnnouncementType);
                     final List<Datex2> found = datex2Repository.findAll();
@@ -122,12 +122,12 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         datex2.setMessage("xml message");
         datex2.setPublicationTime(ZonedDateTime.now());
 
-        Datex2Situation situation = new Datex2Situation();
+        final Datex2Situation situation = new Datex2Situation();
         situation.setSituationId(situationId);
         situation.setDatex2(datex2);
         datex2.setSituations(Collections.singletonList(situation));
 
-        Datex2SituationRecord record = new Datex2SituationRecord();
+        final Datex2SituationRecord record = new Datex2SituationRecord();
         record.setType(Datex2SituationRecordType.TRAFFIC_ELEMENT_ACCIDENT);
         record.setSituationRecordId(situationId + "01");
         record.setVersionTime(ZonedDateTime.now().minusHours(10));

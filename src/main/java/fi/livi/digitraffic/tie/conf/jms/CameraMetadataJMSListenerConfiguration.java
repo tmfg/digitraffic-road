@@ -26,7 +26,8 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
     private final Jaxb2Marshaller kameraMetadataChangeJaxb2Marshaller;
 
     @Autowired
-    public CameraMetadataJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+    public CameraMetadataJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
+                                                  final QueueConnectionFactory connectionFactory,
                                                   @Value("${jms.userId}") final String jmsUserId,
                                                   @Value("${jms.password}") final String jmsPassword,
                                                   @Value("#{'${jms.camera.meta.inQueue}'.split(',')}")final List<String> jmsQueueKeys,

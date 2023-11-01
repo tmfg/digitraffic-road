@@ -64,9 +64,9 @@ public class ForecastSectionWeather {
     public ForecastSectionWeather() {
     }
 
-    public ForecastSectionWeather(ForecastSectionWeatherPK forecastSectionWeatherPK, Timestamp time, Boolean daylight, OverallRoadCondition overallRoadCondition,
-                                  Reliability reliability, String roadTemperature, String temperature, String weatherSymbol, Integer windDirection,
-                                  Double windSpeed, ForecastConditionReason forecastConditionReason) {
+    public ForecastSectionWeather(final ForecastSectionWeatherPK forecastSectionWeatherPK, final Timestamp time, final Boolean daylight, final OverallRoadCondition overallRoadCondition,
+                                  final Reliability reliability, final String roadTemperature, final String temperature, final String weatherSymbol, final Integer windDirection,
+                                  final Double windSpeed, final ForecastConditionReason forecastConditionReason) {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
         this.time = time;
         this.daylight = daylight;
@@ -93,7 +93,7 @@ public class ForecastSectionWeather {
         return new String(forecastSectionWeatherPK.getForecastName());
     }
 
-    public void setForecastSectionWeatherPK(ForecastSectionWeatherPK forecastSectionWeatherPK) {
+    public void setForecastSectionWeatherPK(final ForecastSectionWeatherPK forecastSectionWeatherPK) {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
     }
 
@@ -101,7 +101,7 @@ public class ForecastSectionWeather {
         return time;
     }
 
-    public void setTime(Timestamp time) {
+    public void setTime(final Timestamp time) {
         this.time = time;
     }
 
@@ -109,7 +109,7 @@ public class ForecastSectionWeather {
         return daylight;
     }
 
-    public void setDaylight(Boolean daylight) {
+    public void setDaylight(final Boolean daylight) {
         this.daylight = daylight;
     }
 
@@ -117,7 +117,7 @@ public class ForecastSectionWeather {
         return overallRoadCondition;
     }
 
-    public void setOverallRoadCondition(OverallRoadCondition overallRoadCondition) {
+    public void setOverallRoadCondition(final OverallRoadCondition overallRoadCondition) {
         this.overallRoadCondition = overallRoadCondition;
     }
 
@@ -125,7 +125,7 @@ public class ForecastSectionWeather {
         return reliability;
     }
 
-    public void setReliability(Reliability reliability) {
+    public void setReliability(final Reliability reliability) {
         this.reliability = reliability;
     }
 
@@ -133,7 +133,7 @@ public class ForecastSectionWeather {
         return roadTemperature;
     }
 
-    public void setRoadTemperature(String roadTemperature) {
+    public void setRoadTemperature(final String roadTemperature) {
         this.roadTemperature = roadTemperature;
     }
 
@@ -141,7 +141,7 @@ public class ForecastSectionWeather {
         return temperature;
     }
 
-    public void setTemperature(String temperature) {
+    public void setTemperature(final String temperature) {
         this.temperature = temperature;
     }
 
@@ -149,7 +149,7 @@ public class ForecastSectionWeather {
         return weatherSymbol;
     }
 
-    public void setWeatherSymbol(String weatherSymbol) {
+    public void setWeatherSymbol(final String weatherSymbol) {
         this.weatherSymbol = weatherSymbol;
     }
 
@@ -157,7 +157,7 @@ public class ForecastSectionWeather {
         return windDirection;
     }
 
-    public void setWindDirection(Integer windDirection) {
+    public void setWindDirection(final Integer windDirection) {
         this.windDirection = windDirection;
     }
 
@@ -165,7 +165,7 @@ public class ForecastSectionWeather {
         return windSpeed;
     }
 
-    public void setWindSpeed(Double windSpeed) {
+    public void setWindSpeed(final Double windSpeed) {
         this.windSpeed = windSpeed;
     }
 
@@ -177,7 +177,7 @@ public class ForecastSectionWeather {
         return forecastSection;
     }
 
-    public void setForecastSection(ForecastSection forecastSection) {
+    public void setForecastSection(final ForecastSection forecastSection) {
         this.forecastSection = forecastSection;
     }
 
@@ -185,7 +185,7 @@ public class ForecastSectionWeather {
         return forecastConditionReason;
     }
 
-    public void setForecastConditionReason(ForecastConditionReason forecastConditionReason) {
+    public void setForecastConditionReason(final ForecastConditionReason forecastConditionReason) {
         this.forecastConditionReason = forecastConditionReason;
     }
 }

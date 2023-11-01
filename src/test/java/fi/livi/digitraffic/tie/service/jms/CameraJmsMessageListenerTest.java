@@ -177,7 +177,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
 
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
-        long maxHandleTime = testBurstsLeft * 2200;
+        final long maxHandleTime = testBurstsLeft * 2200;
         final List<KuvaProtos.Kuva> data = new ArrayList<>(presets.size());
 
         final StopWatch sw = new StopWatch();
@@ -188,12 +188,12 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
 
             data.clear();
             while (presetIterator.hasNext()) {
-                CameraPreset preset = presetIterator.next();
+                final CameraPreset preset = presetIterator.next();
 
                 // Kuva: {"asemanNimi":"Vaalimaa_testi","nimi":"C0364302201610110000.jpg","esiasennonNimi":"esiasento2","esiasentoId":3324,"kameraId":1703,"aika":2016-10-10T21:00:40Z,"tienumero":7,"tieosa":42,"tieosa":false,"url":"https://testioag.liikennevirasto.fi/LOTJU/KameraKuvavarasto/6845284"}
-                int kuvaIndex = RandomUtils.nextInt(1, 6);
+                final int kuvaIndex = RandomUtils.nextInt(1, 6);
 
-                KuvaProtos.Kuva.Builder kuvaBuilder = KuvaProtos.Kuva.newBuilder();
+                final KuvaProtos.Kuva.Builder kuvaBuilder = KuvaProtos.Kuva.newBuilder();
                 kuvaBuilder.setEsiasentoId(preset.getLotjuId());
                 kuvaBuilder.setKameraId(preset.getCameraLotjuId());
                 kuvaBuilder.setNimi(preset.getPresetId() + "1234.jpg");
@@ -213,7 +213,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
                 kuvaBuilder.setXKoordinaatti("12345.67");
                 kuvaBuilder.setYKoordinaatti("23456.78");
 
-                KuvaProtos.Kuva kuva = kuvaBuilder.build();
+                final KuvaProtos.Kuva kuva = kuvaBuilder.build();
                 data.add(kuva);
 
                 time = time.plusMillis(1000);
@@ -235,7 +235,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
             handleDataTotalTime += sw.getTime();
 
             // send data with 1 s intervall
-            long sleep = 1000 - generation;
+            final long sleep = 1000 - generation;
             if (sleep > 0) {
                 ThreadUtils.delayMs(sleep);
             }
@@ -247,18 +247,18 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
 
         final Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
 
-        for (KuvaProtos.Kuva kuva : data) {
-            String presetId = CameraHelper.resolvePresetId(kuva);
+        for (final KuvaProtos.Kuva kuva : data) {
+            final String presetId = CameraHelper.resolvePresetId(kuva);
             // Check written image against source image
-            byte[] dst = readCameraImageFromS3(presetId);
-            byte[] src = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
+            final byte[] dst = readCameraImageFromS3(presetId);
+            final byte[] src = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
             assertArrayEquals(src, dst, "Written image is invalid for " + presetId);
 
             // Check preset updated to db against kuva
-            CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
+            final CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
 
-            Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
-            Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
+            final Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
+            final Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
 
             assertEquals(kuvaTaken, presetPictureLastModified, "Preset not updated with kuva's timestamp " + preset.getPresetId());
         }
@@ -316,8 +316,8 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     }
 
     public static long roundToZeroMillis(final long epochMilli) {
-        long secs = Math.floorDiv(epochMilli, 1000);
-        int mos = Math.floorMod(epochMilli, 1000);
+        final long secs = Math.floorDiv(epochMilli, 1000);
+        final int mos = Math.floorMod(epochMilli, 1000);
         if (mos >= 500) {
             return (secs+1)*1000;
         }

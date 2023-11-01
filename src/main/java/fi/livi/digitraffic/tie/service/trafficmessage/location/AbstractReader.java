@@ -89,7 +89,7 @@ public abstract class AbstractReader<T> {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Line: " + Arrays.toString(ref.get()));
             log.error("Read or parse error occured at line: " + counter.get(), e);
 

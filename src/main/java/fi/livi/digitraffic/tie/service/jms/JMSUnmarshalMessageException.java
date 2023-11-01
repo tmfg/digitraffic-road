@@ -2,11 +2,11 @@ package fi.livi.digitraffic.tie.service.jms;
 
 public class JMSUnmarshalMessageException extends RuntimeException {
 
-    public JMSUnmarshalMessageException(String message, Exception e) {
+    public JMSUnmarshalMessageException(final String message, final Exception e) {
         super(message, e);
     }
 
-    public JMSUnmarshalMessageException(String message) {
+    public JMSUnmarshalMessageException(final String message) {
         super(message);
     }
 }

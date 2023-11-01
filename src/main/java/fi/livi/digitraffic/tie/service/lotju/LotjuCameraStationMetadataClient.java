@@ -54,7 +54,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    public List<EsiasentoVO> getEsiasentos(Long kameraId) {
+    public List<EsiasentoVO> getEsiasentos(final Long kameraId) {
         final HaeEsiasennotKameranTunnuksella haeEsiasennotKameranTunnuksellaRequest =
                 new HaeEsiasennotKameranTunnuksella();
         haeEsiasennotKameranTunnuksellaRequest.setId(kameraId);

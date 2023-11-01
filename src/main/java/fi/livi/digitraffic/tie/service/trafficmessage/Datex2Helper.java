@@ -45,7 +45,7 @@ public class Datex2Helper {
         }
     }
 
-    public static void checkD2HasOnlyOneSituation(D2LogicalModel d2) {
+    public static void checkD2HasOnlyOneSituation(final D2LogicalModel d2) {
         final int situations = getSituationPublication(d2).getSituations().size();
         if ( situations > 1 ) {
             log.error("method=checkOnyOneSituation D2LogicalModel had {) situations. Only 1 is allowed in this service.");

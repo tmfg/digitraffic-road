@@ -28,18 +28,18 @@ public class ForecastSectionWeatherPK implements Serializable {
     public ForecastSectionWeatherPK() {
     }
 
-    public ForecastSectionWeatherPK(long forecastSectionId, String forecastName) {
+    public ForecastSectionWeatherPK(final long forecastSectionId, final String forecastName) {
         this.forecastSectionId = forecastSectionId;
         this.forecastName = forecastName.toCharArray();
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        ForecastSectionWeatherPK that = (ForecastSectionWeatherPK) o;
+        final ForecastSectionWeatherPK that = (ForecastSectionWeatherPK) o;
 
         return new EqualsBuilder()
                 .append(forecastSectionId, that.forecastSectionId)

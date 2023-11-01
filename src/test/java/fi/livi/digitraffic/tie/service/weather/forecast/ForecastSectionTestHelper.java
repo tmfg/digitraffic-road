@@ -164,7 +164,7 @@ public class ForecastSectionTestHelper {
             gzipOs.close();
             byteArrayOs.close();
             return new ByteArrayResource(byteArrayOs.toByteArray());
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
 

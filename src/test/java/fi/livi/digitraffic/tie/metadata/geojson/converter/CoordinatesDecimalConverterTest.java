@@ -55,7 +55,7 @@ public class CoordinatesDecimalConverterTest extends AbstractDaemonTest {
         assertEquals(LINE_STRING, json);
     }
 
-    public static List<Double> asList(Double... a) {
+    public static List<Double> asList(final Double... a) {
         return Arrays.asList(a);
     }
 

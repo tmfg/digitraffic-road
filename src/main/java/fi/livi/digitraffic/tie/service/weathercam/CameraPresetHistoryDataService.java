@@ -183,7 +183,7 @@ public class CameraPresetHistoryDataService {
     }
 
     private CameraHistoryPresencesDto findCameraHistoryPresences(final Instant fromTime, final Instant toTime) {
-        List<PresetHistoryPresenceDto> presetsHistoryStatuses =
+        final List<PresetHistoryPresenceDto> presetsHistoryStatuses =
             cameraPresetHistoryRepository.findCameraPresetHistoryPresenceByTime(fromTime, toTime, getOldestTimeLimit());
         return convertToCameraHistoryPresences(presetsHistoryStatuses, fromTime, toTime);
     }
@@ -219,7 +219,7 @@ public class CameraPresetHistoryDataService {
         return new CameraHistoryPresencesDto(fromTime, toTime, result);
     }
 
-    private List<CameraHistoryDto> convertToCameraHistory(List<CameraPresetHistory> history) {
+    private List<CameraHistoryDto> convertToCameraHistory(final List<CameraPresetHistory> history) {
         return history.stream()
             // Map<presetId, List<CameraPresetHistory>
             .collect(Collectors.groupingBy(CameraPresetHistory::getPresetId))

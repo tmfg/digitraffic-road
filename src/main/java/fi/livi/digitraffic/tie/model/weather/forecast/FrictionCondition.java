@@ -23,7 +23,7 @@ public enum FrictionCondition {
         if (value == null) {
             return null;
         }
-        for (FrictionCondition frictionCondition : values()) {
+        for (final FrictionCondition frictionCondition : values()) {
             if (frictionCondition.value == value) {
                 return frictionCondition;
             }

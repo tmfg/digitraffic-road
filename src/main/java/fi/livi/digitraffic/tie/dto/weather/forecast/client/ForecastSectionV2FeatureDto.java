@@ -15,7 +15,7 @@ public class ForecastSectionV2FeatureDto {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -23,7 +23,7 @@ public class ForecastSectionV2FeatureDto {
         return geometry;
     }
 
-    public void setGeometry(ForecastSectionV2Geometry geometry) {
+    public void setGeometry(final ForecastSectionV2Geometry geometry) {
         this.geometry = geometry;
     }
 
@@ -31,7 +31,7 @@ public class ForecastSectionV2FeatureDto {
         return properties;
     }
 
-    public void setProperties(ForecastSectionV2PropertiesDto properties) {
+    public void setProperties(final ForecastSectionV2PropertiesDto properties) {
         this.properties = properties;
     }
 }

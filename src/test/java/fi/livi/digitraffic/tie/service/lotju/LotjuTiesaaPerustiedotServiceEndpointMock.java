@@ -32,7 +32,7 @@ public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpo
 
     private List<TiesaaAsemaVO> initialTiesaaAsemas;
     private List<TiesaaAsemaVO> afterChangeTiesaaAsemas;
-    private Map<Long, List<TiesaaLaskennallinenAnturiVO>> initialTiesaaAnturisMap = new HashMap<>();
+    private final Map<Long, List<TiesaaLaskennallinenAnturiVO>> initialTiesaaAnturisMap = new HashMap<>();
     private final Map<Long, List<TiesaaLaskennallinenAnturiVO>> afterChangeTiesaaAnturisMap = new HashMap<>();
     private List<TiesaaLaskennallinenAnturiVO> initialLaskennallisetAnturis;
     private List<TiesaaLaskennallinenAnturiVO> afterChangeLaskennallisetAnturis;
@@ -64,7 +64,7 @@ public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpo
 
     @Override
     public List<TiesaaLaskennallinenAnturiVO> haeTiesaaAsemanLaskennallisetAnturit(final Long id) {
-        HaeTiesaaAsemanLaskennallisetAnturitResponse response = readLotjuSoapResponse(HaeTiesaaAsemanLaskennallisetAnturitResponse.class, id);
+        final HaeTiesaaAsemanLaskennallisetAnturitResponse response = readLotjuSoapResponse(HaeTiesaaAsemanLaskennallisetAnturitResponse.class, id);
         if (response != null) {
             return response.getLaskennallinenAnturi();
         }
@@ -93,7 +93,7 @@ public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpo
 
     @Override
     public List<TiesaaAsemaVO> haeKaikkiTiesaaAsemat() {
-        HaeKaikkiTiesaaAsematResponse response = readLotjuSoapResponse(HaeKaikkiTiesaaAsematResponse.class);
+        final HaeKaikkiTiesaaAsematResponse response = readLotjuSoapResponse(HaeKaikkiTiesaaAsematResponse.class);
         if (response != null) {
             return response.getTiesaaAsema();
         }
@@ -127,7 +127,7 @@ public class LotjuTiesaaPerustiedotServiceEndpointMock extends LotjuServiceEndpo
 
     @Override
     public List<TiesaaLaskennallinenAnturiVO> haeKaikkiLaskennallisetAnturit() {
-        HaeKaikkiLaskennallisetAnturitResponse response = readLotjuSoapResponse(HaeKaikkiLaskennallisetAnturitResponse.class);
+        final HaeKaikkiLaskennallisetAnturitResponse response = readLotjuSoapResponse(HaeKaikkiLaskennallisetAnturitResponse.class);
         if (response != null) {
             return response.getLaskennallinenAnturi();
         }

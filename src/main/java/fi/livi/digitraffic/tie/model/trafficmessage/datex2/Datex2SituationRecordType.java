@@ -89,7 +89,7 @@ public enum Datex2SituationRecordType {
         }
     }
 
-    Datex2SituationRecordType(Class<? extends SituationRecord> situationRecordClass) {
+    Datex2SituationRecordType(final Class<? extends SituationRecord> situationRecordClass) {
         this.situationRecordClass = situationRecordClass;
     }
 
@@ -97,8 +97,8 @@ public enum Datex2SituationRecordType {
         return situationRecordClass;
     }
 
-    public static Datex2SituationRecordType fromRecord(Class<? extends SituationRecord> situationRecordClass) {
-        Datex2SituationRecordType type = lookup.get(situationRecordClass);
+    public static Datex2SituationRecordType fromRecord(final Class<? extends SituationRecord> situationRecordClass) {
+        final Datex2SituationRecordType type = lookup.get(situationRecordClass);
         if (type == null) {
             throw new IllegalArgumentException("Type " + situationRecordClass.getName() + " not suported!");
         }

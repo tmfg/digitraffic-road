@@ -36,7 +36,7 @@ public class ActuatorInfoFlyway implements InfoContributor {
             db.put("success", first.getSuccess().toString());
             final Instant instant = first.getInstalledOn().truncatedTo(ChronoUnit.SECONDS).atZone(ZoneOffset.UTC).toInstant();
             db.put("installedOn", instant.toString());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Could not get db version info", e);
             db.put("error", "Could not get db version info");
         }

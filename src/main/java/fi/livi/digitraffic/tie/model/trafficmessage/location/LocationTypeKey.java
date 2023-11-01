@@ -26,7 +26,7 @@ public class LocationTypeKey implements Serializable{
         return typeCode;
     }
 
-    public void setTypeCode(String typeCode) {
+    public void setTypeCode(final String typeCode) {
         this.typeCode = typeCode;
     }
 
@@ -34,7 +34,7 @@ public class LocationTypeKey implements Serializable{
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -42,7 +42,7 @@ public class LocationTypeKey implements Serializable{
         return isNotEmpty(typeCode) && isNotEmpty(version);
     }
 
-    @Override public boolean equals(Object o) {
+    @Override public boolean equals(final Object o) {
         if (this == o)
             return true;
 

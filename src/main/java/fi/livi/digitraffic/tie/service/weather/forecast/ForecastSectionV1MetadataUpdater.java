@@ -72,7 +72,7 @@ public class ForecastSectionV1MetadataUpdater {
                 fs -> !receivedForecastSections.contains(fs.getNaturalId())).collect(Collectors.toMap(ForecastSection::getNaturalId, c -> c));
 
         addForecastSections(naturalIdToForecastSections, forecastSectionsToAdd);
-        boolean updated = updateForecastSections(naturalIdToForecastSections, forecastSectionsToUpdate);
+        final boolean updated = updateForecastSections(naturalIdToForecastSections, forecastSectionsToUpdate);
         markForecastSectionsObsolete(naturalIdToForecastSections, forecastSectionsToDelete);
 
         forecastSectionRepository.saveAll(naturalIdToForecastSections.values());

@@ -25,7 +25,7 @@ public class ForecastSectionV2PropertiesDto {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -33,7 +33,7 @@ public class ForecastSectionV2PropertiesDto {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -41,7 +41,7 @@ public class ForecastSectionV2PropertiesDto {
         return roadNumber;
     }
 
-    public void setRoadNumber(Integer roadNumber) {
+    public void setRoadNumber(final Integer roadNumber) {
         this.roadNumber = roadNumber;
     }
 
@@ -49,7 +49,7 @@ public class ForecastSectionV2PropertiesDto {
         return roadSectionNumber;
     }
 
-    public void setRoadSectionNumber(Integer roadSectionNumber) {
+    public void setRoadSectionNumber(final Integer roadSectionNumber) {
         this.roadSectionNumber = roadSectionNumber;
     }
 
@@ -57,7 +57,7 @@ public class ForecastSectionV2PropertiesDto {
         return totalLengthKm;
     }
 
-    public void setTotalLengthKm(Double totalLengthKm) {
+    public void setTotalLengthKm(final Double totalLengthKm) {
         this.totalLengthKm = totalLengthKm;
     }
 
@@ -65,7 +65,7 @@ public class ForecastSectionV2PropertiesDto {
         return roadSegmentList;
     }
 
-    public void setRoadSegmentList(List<RoadSegmentDto> roadSegmentList) {
+    public void setRoadSegmentList(final List<RoadSegmentDto> roadSegmentList) {
         this.roadSegmentList = roadSegmentList;
     }
 
@@ -73,7 +73,7 @@ public class ForecastSectionV2PropertiesDto {
         return linkIdList;
     }
 
-    public void setLinkIdList(List<Long> linkIdList) {
+    public void setLinkIdList(final List<Long> linkIdList) {
         this.linkIdList = linkIdList;
     }
 }

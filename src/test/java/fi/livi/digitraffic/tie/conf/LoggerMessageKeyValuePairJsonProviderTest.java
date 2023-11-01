@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.slf4j.event.KeyValuePair;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -24,14 +25,13 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggerContextVO;
-import org.slf4j.event.KeyValuePair;
 
 public class LoggerMessageKeyValuePairJsonProviderTest  {
     private static final Logger log = LoggerFactory.getLogger(LoggerMessageKeyValuePairJsonProviderTest.class);
 
     final LoggerMessageKeyValuePairJsonProvider provider = new LoggerMessageKeyValuePairJsonProvider();
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private JsonFactory factory;
 
@@ -97,7 +97,7 @@ public class LoggerMessageKeyValuePairJsonProviderTest  {
 
     @Test
     public void allowedKeys() throws IOException {
-        for (String allowedKey : ALLOWED_KEYS) {
+        for (final String allowedKey : ALLOWED_KEYS) {
             log.info("Test key {}", allowedKey);
             final String result = sendEventWithFormatedMessageAndReturnResultJson(allowedKey + "=bar");
             assertEquals(String.format("{\"%s\":\"bar\"}", allowedKey), result);
@@ -107,7 +107,7 @@ public class LoggerMessageKeyValuePairJsonProviderTest  {
 
     @Test
     public void notAllowedKeys() throws IOException {
-        for (String notAllowedKey : NOT_ALLOWED_KEYS) {
+        for (final String notAllowedKey : NOT_ALLOWED_KEYS) {
             log.info("Test key {}", notAllowedKey);
             final String result = sendEventWithFormatedMessageAndReturnResultJson(notAllowedKey + "=bar");
             assertEquals("{}", result);

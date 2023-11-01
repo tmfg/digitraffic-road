@@ -18,7 +18,7 @@ public class DateTimeConverter {
                 return null;
             }
             return ZonedDateTime.parse(from).toInstant();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalArgumentException(e);
         }
     }

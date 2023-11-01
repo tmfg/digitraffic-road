@@ -71,7 +71,7 @@ public enum DataType {
         throw new IllegalArgumentException("No metadata type for " + roadStationType);
     }
 
-    public static DataType getSensorMetadataCheckTypeForRoadStationType(RoadStationType roadStationType) {
+    public static DataType getSensorMetadataCheckTypeForRoadStationType(final RoadStationType roadStationType) {
         if (RoadStationType.TMS_STATION == roadStationType) {
             return TMS_STATION_SENSOR_METADATA_CHECK;
         } else if (RoadStationType.WEATHER_STATION == roadStationType) {

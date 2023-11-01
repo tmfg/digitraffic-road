@@ -28,7 +28,7 @@ public class JMSConfiguration {
     }
 
     public static QueueConnectionFactory createQueueConnectionFactory(final String jmsConnectionUrls, final String jmsUserId, final String jmsPassword) throws JMSException {
-        QueueConnectionFactory connectionFactory = new QueueConnectionFactory();
+        final QueueConnectionFactory connectionFactory = new QueueConnectionFactory();
         connectionFactory.setSequential(true);
         connectionFactory.setFaultTolerant(true);
         // How often to check idle connection status

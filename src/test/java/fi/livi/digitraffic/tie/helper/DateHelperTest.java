@@ -230,7 +230,7 @@ public class DateHelperTest extends AbstractTest {
         final ZonedDateTime timeAtOffset2 = ZonedDateTime.parse(DATE_STRING_OFFSET_2);
         final XMLGregorianCalendar xmlUtc = DateHelper.toXMLGregorianCalendarAtUtc(timeAtOffset2);
         assertEquals(XML_DATE_STRING_Z, xmlUtc.toString());
-        ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(xmlUtc);
+        final ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(xmlUtc);
         assertEquals(timeAtOffset2.toEpochSecond() , utc.toEpochSecond());
     }
 
@@ -239,7 +239,7 @@ public class DateHelperTest extends AbstractTest {
         final Instant instant = Instant.parse(DATE_STRING_Z);
         final XMLGregorianCalendar xmlUtc = DateHelper.toXMLGregorianCalendarAtUtc(instant);
         assertEquals(XML_DATE_STRING_Z, xmlUtc.toString());
-        ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(xmlUtc);
+        final ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(xmlUtc);
         assertEquals(instant.getEpochSecond() , utc.toEpochSecond());
     }
 

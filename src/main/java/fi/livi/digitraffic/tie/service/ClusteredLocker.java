@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.dao.LockingRepository;
 public class ClusteredLocker {
 
     private static final Logger log = LoggerFactory.getLogger(ClusteredLocker.class);
-    private LockingServiceInternal lockingServiceInternal;
+    private final LockingServiceInternal lockingServiceInternal;
     public ClusteredLocker(final LockingServiceInternal lockingServiceInternal) {
         this.lockingServiceInternal = lockingServiceInternal;
     }
@@ -68,7 +68,7 @@ public class ClusteredLocker {
         return tryLock(lockName, expirationSeconds, getThreadId());
     }
 
-    public boolean tryLock(String lockName, int expirationSeconds, final long overrideInstanceId) {
+    public boolean tryLock(final String lockName, final int expirationSeconds, final long overrideInstanceId) {
         final StopWatch start = StopWatch.createStarted();
         final boolean locked = lockingServiceInternal.tryLock(lockName, expirationSeconds, overrideInstanceId);
         if (log.isDebugEnabled()) {

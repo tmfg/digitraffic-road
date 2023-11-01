@@ -41,7 +41,7 @@ public class LocationType {
         return id;
     }
 
-    public void setId(LocationTypeKey id) {
+    public void setId(final LocationTypeKey id) {
         this.id = id;
     }
 }

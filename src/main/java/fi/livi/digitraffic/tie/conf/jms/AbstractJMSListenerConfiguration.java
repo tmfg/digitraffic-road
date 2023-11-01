@@ -29,7 +29,7 @@ import progress.message.jclient.Topic;
 
 public abstract class AbstractJMSListenerConfiguration<K> {
     protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
-    private static String STATISTICS_PREFIX = "STATISTICS";
+    private static final String STATISTICS_PREFIX = "STATISTICS";
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger lockAcquiredCounter = new AtomicInteger();
     private final AtomicInteger lockNotAcquiredCounter = new AtomicInteger();
@@ -185,14 +185,14 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             log.info("method=createConnection Connection initialized: {}", connectionFactory);
 
             return queueConnection;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("method=createConnection Connection initialization failed for " + connectionFactory, e);
             closeConnectionQuietly();
             throw e;
         }
     }
 
-    private Session createSessionAndConsumer(List<String> jmsQueueKeys, QueueConnection queueConnection) throws JMSException, JAXBException {
+    private Session createSessionAndConsumer(final List<String> jmsQueueKeys, final QueueConnection queueConnection) throws JMSException, JAXBException {
         final boolean drainScheduled = isQueueTopic(jmsQueueKeys);
         final Session session = drainScheduled ?
                           queueConnection.createSession(false, Session.AUTO_ACKNOWLEDGE) : // ACKNOWLEDGE automatically when message received
@@ -214,7 +214,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             try {
                 // also stops the connection
                 connection.close();
-            } catch (JMSException e) {
+            } catch (final JMSException e) {
                 log.debug("method=closeConnectionQuietly Closing connection failed", e);
             } finally {
                 connection = null;
@@ -232,7 +232,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         return jmsQueueKeys.stream().allMatch(key -> key.startsWith("topic://"));
     }
 
-    protected Destination createDestination(String jmsQueueKey) throws JMSException {
+    protected Destination createDestination(final String jmsQueueKey) throws JMSException {
         final boolean topic = isQueueTopic(Collections.singletonList(jmsQueueKey));
         final String jmsQueue = jmsQueueKey.replaceFirst(".*://", "");
         return topic ? new Topic(jmsQueue) : new Queue(jmsQueue);

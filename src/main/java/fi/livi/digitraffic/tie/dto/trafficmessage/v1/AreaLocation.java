@@ -26,7 +26,7 @@ public class AreaLocation extends JsonAdditionalProperties {
     public AreaLocation() {
     }
 
-    public AreaLocation(List<Area> areas) {
+    public AreaLocation(final List<Area> areas) {
         super();
         this.areas = areas;
     }

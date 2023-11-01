@@ -48,14 +48,14 @@ public class ForecastConditionReason {
     public ForecastConditionReason() {
     }
 
-    public ForecastConditionReason(ForecastSectionWeatherPK forecastSectionWeatherPK,
-                                   PrecipitationCondition precipitationCondition,
-                                   RoadCondition roadCondition,
-                                   WindCondition windCondition,
-                                   Boolean freezingRainCondition,
-                                   Boolean winterSlipperiness,
-                                   VisibilityCondition visibilityCondition,
-                                   FrictionCondition frictionCondition) {
+    public ForecastConditionReason(final ForecastSectionWeatherPK forecastSectionWeatherPK,
+                                   final PrecipitationCondition precipitationCondition,
+                                   final RoadCondition roadCondition,
+                                   final WindCondition windCondition,
+                                   final Boolean freezingRainCondition,
+                                   final Boolean winterSlipperiness,
+                                   final VisibilityCondition visibilityCondition,
+                                   final FrictionCondition frictionCondition) {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
         this.precipitationCondition = precipitationCondition;
         this.roadCondition = roadCondition;
@@ -70,7 +70,7 @@ public class ForecastConditionReason {
         return forecastSectionWeatherPK;
     }
 
-    public void setForecastSectionWeatherPK(ForecastSectionWeatherPK forecastSectionWeatherPK) {
+    public void setForecastSectionWeatherPK(final ForecastSectionWeatherPK forecastSectionWeatherPK) {
         this.forecastSectionWeatherPK = forecastSectionWeatherPK;
     }
 
@@ -78,7 +78,7 @@ public class ForecastConditionReason {
         return precipitationCondition;
     }
 
-    public void setPrecipitationCondition(PrecipitationCondition precipitationCondition) {
+    public void setPrecipitationCondition(final PrecipitationCondition precipitationCondition) {
         this.precipitationCondition = precipitationCondition;
     }
 
@@ -86,7 +86,7 @@ public class ForecastConditionReason {
         return roadCondition;
     }
 
-    public void setRoadCondition(RoadCondition roadCondition) {
+    public void setRoadCondition(final RoadCondition roadCondition) {
         this.roadCondition = roadCondition;
     }
 
@@ -94,7 +94,7 @@ public class ForecastConditionReason {
         return windCondition;
     }
 
-    public void setWindCondition(WindCondition windCondition) {
+    public void setWindCondition(final WindCondition windCondition) {
         this.windCondition = windCondition;
     }
 
@@ -102,7 +102,7 @@ public class ForecastConditionReason {
         return freezingRainCondition;
     }
 
-    public void setFreezingRainCondition(Boolean freezingRainCondition) {
+    public void setFreezingRainCondition(final Boolean freezingRainCondition) {
         this.freezingRainCondition = freezingRainCondition;
     }
 
@@ -110,7 +110,7 @@ public class ForecastConditionReason {
         return winterSlipperiness;
     }
 
-    public void setWinterSlipperiness(Boolean winterSlipperiness) {
+    public void setWinterSlipperiness(final Boolean winterSlipperiness) {
         this.winterSlipperiness = winterSlipperiness;
     }
 
@@ -118,7 +118,7 @@ public class ForecastConditionReason {
         return visibilityCondition;
     }
 
-    public void setVisibilityCondition(VisibilityCondition visibilityCondition) {
+    public void setVisibilityCondition(final VisibilityCondition visibilityCondition) {
         this.visibilityCondition = visibilityCondition;
     }
 
@@ -126,7 +126,7 @@ public class ForecastConditionReason {
         return frictionCondition;
     }
 
-    public void setFrictionCondition(FrictionCondition frictionCondition) {
+    public void setFrictionCondition(final FrictionCondition frictionCondition) {
         this.frictionCondition = frictionCondition;
     }
 
@@ -134,7 +134,7 @@ public class ForecastConditionReason {
         return forecastSectionWeather;
     }
 
-    public void setForecastSectionWeather(ForecastSectionWeather forecastSectionWeather) {
+    public void setForecastSectionWeather(final ForecastSectionWeather forecastSectionWeather) {
         this.forecastSectionWeather = forecastSectionWeather;
     }
 }

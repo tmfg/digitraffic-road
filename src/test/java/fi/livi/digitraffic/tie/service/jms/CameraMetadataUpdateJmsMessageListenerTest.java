@@ -197,7 +197,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
 
     @Test
     public void cameraMetadataUpdateDeletePresetMessages() {
-        List<CameraPreset> presets = createAndSaveCameraPresets(2);
+        final List<CameraPreset> presets = createAndSaveCameraPresets(2);
         final CameraPreset ps1 = presets.get(0);
         final CameraPreset ps2 = presets.get(1);
 
@@ -213,7 +213,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
 
     @Test
     public void cameraMetadataUpdateDeleteCameraMessages() {
-        List<CameraPreset> presets = createAndSaveCameraPresets(2);
+        final List<CameraPreset> presets = createAndSaveCameraPresets(2);
         final CameraPreset ps1 = presets.get(0);
         final CameraPreset ps2 = presets.get(1);
         TestUtils.entityManagerFlushAndClear(entityManager);
@@ -244,7 +244,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
 
     private static String getUpdateMessageXml(final UpdateType tyyppi, final EntityType entiteetti, final long lotjuId, final long...lotjuIds) {
         final StringBuilder asemaIds = new StringBuilder();
-        for(long id : lotjuIds) {
+        for(final long id : lotjuIds) {
             asemaIds.append("        <id>").append(id).append("</id>\n");
         }
         return String.format(
@@ -258,7 +258,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
 
     private static String getRoadAddressUpdateMessageXml(final UpdateType tyyppi, final long lotjuId, final long...lotjuIds) {
         final StringBuilder asemaIds = new StringBuilder();
-        for(long id : lotjuIds) {
+        for(final long id : lotjuIds) {
             asemaIds.append("        <id>").append(id).append("</id>\n");
         }
         return String.format("""

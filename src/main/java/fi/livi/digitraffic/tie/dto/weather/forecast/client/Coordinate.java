@@ -43,12 +43,12 @@ public class Coordinate {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        Coordinate that = (Coordinate) o;
+        final Coordinate that = (Coordinate) o;
 
         return new EqualsBuilder()
                 .append(longitude, that.longitude)

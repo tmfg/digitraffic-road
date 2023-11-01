@@ -36,7 +36,7 @@ public class HostWithHealthCheck {
      * @param healthPath ie. /healthcheck. If empty no healt check is performed
      * @param healthTtlSeconds Health check time to live
      */
-    public HostWithHealthCheck(final String baseUrl, final String dataPath, final String healthPath, int healthTtlSeconds, final String healthOkValue) {
+    public HostWithHealthCheck(final String baseUrl, final String dataPath, final String healthPath, final int healthTtlSeconds, final String healthOkValue) {
         this.baseUrl = baseUrl;
         this.healthTtlSeconds = healthTtlSeconds;
         this.healthOkValue = healthOkValue;

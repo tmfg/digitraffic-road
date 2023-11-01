@@ -52,7 +52,7 @@ public class Location {
         return roadName;
     }
 
-    public void setRoadName(String roadName) {
+    public void setRoadName(final String roadName) {
         this.roadName = roadName;
     }
 
@@ -60,7 +60,7 @@ public class Location {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(final String firstName) {
         this.firstName = firstName;
     }
 
@@ -68,7 +68,7 @@ public class Location {
         return secondName;
     }
 
-    public void setSecondName(String secondName) {
+    public void setSecondName(final String secondName) {
         this.secondName = secondName;
     }
 
@@ -76,7 +76,7 @@ public class Location {
         return negOffset;
     }
 
-    public void setNegOffset(Integer negOffset) {
+    public void setNegOffset(final Integer negOffset) {
         this.negOffset = negOffset;
     }
 
@@ -84,7 +84,7 @@ public class Location {
         return posOffset;
     }
 
-    public void setPosOffset(Integer posOffset) {
+    public void setPosOffset(final Integer posOffset) {
         this.posOffset = posOffset;
     }
 
@@ -92,7 +92,7 @@ public class Location {
         return urban;
     }
 
-    public void setUrban(Boolean urban) {
+    public void setUrban(final Boolean urban) {
         this.urban = urban;
     }
 
@@ -100,7 +100,7 @@ public class Location {
         return wgs84Lat;
     }
 
-    public void setWgs84Lat(BigDecimal wgs84Lat) {
+    public void setWgs84Lat(final BigDecimal wgs84Lat) {
         this.wgs84Lat = wgs84Lat;
     }
 
@@ -108,7 +108,7 @@ public class Location {
         return wgs84Long;
     }
 
-    public void setWgs84Long(BigDecimal wgs84Long) {
+    public void setWgs84Long(final BigDecimal wgs84Long) {
         this.wgs84Long = wgs84Long;
     }
 
@@ -116,7 +116,7 @@ public class Location {
         return roadJunction;
     }
 
-    public void setRoadJunction(String roadJunction) {
+    public void setRoadJunction(final String roadJunction) {
         this.roadJunction = roadJunction;
     }
 
@@ -124,7 +124,7 @@ public class Location {
         return negDirection;
     }
 
-    public void setNegDirection(String negDirection) {
+    public void setNegDirection(final String negDirection) {
         this.negDirection = negDirection;
     }
 
@@ -132,7 +132,7 @@ public class Location {
         return posDirection;
     }
 
-    public void setPosDirection(String posDirection) {
+    public void setPosDirection(final String posDirection) {
         this.posDirection = posDirection;
     }
 
@@ -140,7 +140,7 @@ public class Location {
         return geocode;
     }
 
-    public void setGeocode(String geocode) {
+    public void setGeocode(final String geocode) {
         this.geocode = geocode;
     }
 
@@ -148,7 +148,7 @@ public class Location {
         return orderOfPoint;
     }
 
-    public void setOrderOfPoint(Integer orderOfPoint) {
+    public void setOrderOfPoint(final Integer orderOfPoint) {
         this.orderOfPoint = orderOfPoint;
     }
 
@@ -156,7 +156,7 @@ public class Location {
         return etrsTm35FinX;
     }
 
-    public void setEtrsTm35FinX(BigDecimal etrsTm35FinX) {
+    public void setEtrsTm35FinX(final BigDecimal etrsTm35FinX) {
         this.etrsTm35FinX = etrsTm35FinX;
     }
 
@@ -164,7 +164,7 @@ public class Location {
         return etrsTm35FixY;
     }
 
-    public void setEtrsTm35FixY(BigDecimal etrsTm35FixY) {
+    public void setEtrsTm35FixY(final BigDecimal etrsTm35FixY) {
         this.etrsTm35FixY = etrsTm35FixY;
     }
 
@@ -176,7 +176,7 @@ public class Location {
         return subtypeCode;
     }
 
-    public void setSubtypeCode(String subtypeCode) {
+    public void setSubtypeCode(final String subtypeCode) {
         this.subtypeCode = subtypeCode;
     }
 
@@ -184,7 +184,7 @@ public class Location {
         return areaRef;
     }
 
-    public void setAreaRef(Integer areaRef) {
+    public void setAreaRef(final Integer areaRef) {
         this.areaRef = areaRef;
     }
 
@@ -192,11 +192,11 @@ public class Location {
         return linearRef;
     }
 
-    public void setLinearRef(Integer linearRef) {
+    public void setLinearRef(final Integer linearRef) {
         this.linearRef = linearRef;
     }
 
-    public void setLocationCode(Integer locationCode) {
+    public void setLocationCode(final Integer locationCode) {
         this.locationCode = locationCode;
     }
 
@@ -204,7 +204,7 @@ public class Location {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 }

@@ -24,8 +24,8 @@ import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 public class RestTemplateGzipService {
     private static final Logger log = LoggerFactory.getLogger(RestTemplateGzipService.class);
 
-    private RestTemplate restTemplate;
-    private ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     public RestTemplateGzipService(final RestTemplate restTemplate, final ObjectMapper objectMapper) {
 

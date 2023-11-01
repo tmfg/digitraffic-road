@@ -42,13 +42,13 @@ public class ImsJsonMessageTestFactory {
     }
 
     public static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature createJsonMessage(
-        final TrafficAnnouncementProperties.SituationType situationType,
-        final TrafficAnnouncementProperties.TrafficAnnouncementType trafficAnnouncementType,
-        final boolean createWithAreaLocation,
-        final ZonedDateTime releaseTime, Restriction.Type restrictionType, final String restrictionName, final Double restrictionQuantity, final String restrictionUnit,
-        final Worktype.Type worktype,
-        final String geometryPath,
-        final ObjectReader readerForGeometry)
+            final TrafficAnnouncementProperties.SituationType situationType,
+            final TrafficAnnouncementProperties.TrafficAnnouncementType trafficAnnouncementType,
+            final boolean createWithAreaLocation,
+            final ZonedDateTime releaseTime, final Restriction.Type restrictionType, final String restrictionName, final Double restrictionQuantity, final String restrictionUnit,
+            final Worktype.Type worktype,
+            final String geometryPath,
+            final ObjectReader readerForGeometry)
         throws IOException {
 
         final String geometryJson = readResourceContent("classpath:" + geometryPath);
@@ -130,7 +130,7 @@ public class ImsJsonMessageTestFactory {
         return new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Location(358, 10, "1.1.1", "Location description");
     }
 
-    private static RoadWorkPhase createRoadWorkPhase(final ZonedDateTime releaseTime, Restriction.Type restrictionType, final String featureName, final Double featureQuantity,
+    private static RoadWorkPhase createRoadWorkPhase(final ZonedDateTime releaseTime, final Restriction.Type restrictionType, final String featureName, final Double featureQuantity,
                                                      final String featureUnit, final Worktype.Type wokType) {
         return new RoadWorkPhase()
             .withComment("Työn aloitus")

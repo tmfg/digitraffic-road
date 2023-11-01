@@ -10,8 +10,10 @@ public class ForecastSectionCoordinatesEntry {
 
     private final List<List<BigDecimal>> coordinates;
 
-    public ForecastSectionCoordinatesEntry(@JsonProperty("name") String name,
-                                           @JsonProperty("coord") List<List<BigDecimal>> coordinates) {
+    public ForecastSectionCoordinatesEntry(@JsonProperty("name")
+                                           final String name,
+                                           @JsonProperty("coord")
+                                           final List<List<BigDecimal>> coordinates) {
         this.name = name;
         this.coordinates = coordinates;
     }

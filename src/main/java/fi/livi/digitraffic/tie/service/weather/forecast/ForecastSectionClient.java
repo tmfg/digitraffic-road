@@ -38,7 +38,7 @@ public class ForecastSectionClient {
 
     private final Map<String, String> keyValues;
     private final ObjectMapper objectMapper;
-    private RestTemplateGzipService restTemplateGzipService;
+    private final RestTemplateGzipService restTemplateGzipService;
 
     public ForecastSectionClient(final RestTemplateGzipService restTemplateGzipService,
                                  final ObjectMapper objectMapper,
@@ -97,7 +97,7 @@ public class ForecastSectionClient {
         return getUrlWithVersion(version, false, true);
     }
 
-    private String getUrlWithVersion(final int version, boolean metadata, boolean loggerSafe) {
+    private String getUrlWithVersion(final int version, final boolean metadata, final boolean loggerSafe) {
         final Map<String, String> values = new HashMap<>();
         if (!loggerSafe) {
             values.putAll(keyValues);

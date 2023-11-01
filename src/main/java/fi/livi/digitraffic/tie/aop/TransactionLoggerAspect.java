@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.aop;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -9,10 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-
 @Aspect
 @Order
 public class TransactionLoggerAspect {
@@ -21,7 +21,7 @@ public class TransactionLoggerAspect {
     private final int limit;
 
     private final AtomicLong idCounter = new AtomicLong();
-    private static Map<Long, TransactionDetails> activeTransactions = new ConcurrentHashMap();
+    private final static Map<Long, TransactionDetails> activeTransactions = new ConcurrentHashMap();
 
     public TransactionLoggerAspect(final int limit) {
         this.limit = limit;

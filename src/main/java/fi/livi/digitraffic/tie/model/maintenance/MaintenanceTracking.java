@@ -1,17 +1,32 @@
 package fi.livi.digitraffic.tie.model.maintenance;
 
-import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.annotations.DynamicUpdate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "MAINTENANCE_TRACKING")
@@ -71,13 +86,13 @@ public class MaintenanceTracking {
     @CollectionTable(name = "MAINTENANCE_TRACKING_TASK", joinColumns = @JoinColumn(name = "MAINTENANCE_TRACKING_ID", referencedColumnName = "ID"))
     @Column(name = "TASK", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Set<MaintenanceTrackingTask> tasks = new HashSet<>();
+    private final Set<MaintenanceTrackingTask> tasks = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "MAINTENANCE_TRACKING_OBSERVATION_DATA_TRACKING",
                joinColumns = @JoinColumn(name = "TRACKING_ID", referencedColumnName = "ID"),
                inverseJoinColumns = @JoinColumn(name = "DATA_ID", referencedColumnName = "ID"))
-    private Set<MaintenanceTrackingObservationData> maintenanceTrackingObservationDatas = new HashSet<>();
+    private final Set<MaintenanceTrackingObservationData> maintenanceTrackingObservationDatas = new HashSet<>();
 
 
     public MaintenanceTracking() {

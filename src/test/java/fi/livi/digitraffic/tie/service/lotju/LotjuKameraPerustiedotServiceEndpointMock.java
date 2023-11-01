@@ -66,7 +66,7 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
 
     @Override
     public List<EsiasentoVO> haeEsiasennotKameranTunnuksella(final Long id) {
-        HaeEsiasennotKameranTunnuksellaResponse response = readLotjuSoapResponse(HaeEsiasennotKameranTunnuksellaResponse.class, id);
+        final HaeEsiasennotKameranTunnuksellaResponse response = readLotjuSoapResponse(HaeEsiasennotKameranTunnuksellaResponse.class, id);
         if (response != null) {
             return response.getEsiasennot();
         }
@@ -84,13 +84,13 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     }
 
     @Override
-    public KameraVO muutaKameranJulkisuus(Long id, JulkisuusTaso julkisuusTaso, XMLGregorianCalendar alkaen) {
+    public KameraVO muutaKameranJulkisuus(final Long id, final JulkisuusTaso julkisuusTaso, final XMLGregorianCalendar alkaen) {
         throw new NotImplementedException("haeKameratVideopalvelimenTunnuksella");
     }
 
     @Override
     public List<KameraVO> haeKaikkiKamerat() {
-        HaeKaikkiKameratResponse response = readLotjuSoapResponse(HaeKaikkiKameratResponse.class);
+        final HaeKaikkiKameratResponse response = readLotjuSoapResponse(HaeKaikkiKameratResponse.class);
         if (response != null) {
             return response.getKamerat();
         }
@@ -103,7 +103,7 @@ public class LotjuKameraPerustiedotServiceEndpointMock extends LotjuServiceEndpo
     }
 
     @Override
-    public EsiasentoVO muuttaaEsiasennonJulkisuus(Long id, boolean julkinen) {
+    public EsiasentoVO muuttaaEsiasennonJulkisuus(final Long id, final boolean julkinen) {
         throw new NotImplementedException("muuttaaEsiasennonJulkisuus");
     }
 }

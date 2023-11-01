@@ -14,7 +14,7 @@ public class ForecastSectionV2DataUpdateJob extends SimpleUpdateJob {
     private ForecastSectionDataUpdater forecastSectionDataUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) {
+    protected void doExecute(final JobExecutionContext context) {
         forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V2);
     }
 }

@@ -91,7 +91,7 @@ public class Device extends ReadOnlyCreatedAndModifiedFields {
         return deletedDate;
     }
 
-    public void setDeletedDate(Instant deletedDate) {
+    public void setDeletedDate(final Instant deletedDate) {
         this.deletedDate = deletedDate;
     }
 }

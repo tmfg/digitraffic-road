@@ -150,7 +150,7 @@ public class Datex2HelperTest extends AbstractServiceTest {
         ).collect(Collectors.toList());
     }
 
-    private static Situation createSituationWithRecordsVersionTimes(Instant...versionTimes) {
+    private static Situation createSituationWithRecordsVersionTimes(final Instant...versionTimes) {
         final List<SituationRecord> records = Arrays.stream(versionTimes).map(Datex2HelperTest::createSituationRecord).collect(Collectors.toList());
         return new Situation().withSituationRecords(records);
     }
@@ -159,7 +159,7 @@ public class Datex2HelperTest extends AbstractServiceTest {
         return new Accident().withSituationRecordVersionTime(versionTime);
     }
 
-    private static D2LogicalModel createD2LogicalModelWithSituationPublications(Situation...situations) {
+    private static D2LogicalModel createD2LogicalModelWithSituationPublications(final Situation...situations) {
         final SituationPublication sp = new SituationPublication();
         sp.withSituations(situations);
         return new D2LogicalModel().withPayloadPublication(sp);

@@ -75,7 +75,7 @@ public class DataUpdatedRepositoryTest extends AbstractJpaTest {
         assertPlusMinusMillis(setTime2, result, 500);
     }
 
-    private void assertPlusMinusMillis(final Instant expected, final Instant actual, long deltaMillis) {
+    private void assertPlusMinusMillis(final Instant expected, final Instant actual, final long deltaMillis) {
         MatcherAssert.assertThat(actual.toEpochMilli(),
             CoreMatchers.allOf(Matchers.greaterThanOrEqualTo(expected.minusMillis(deltaMillis).toEpochMilli()),
                 Matchers.lessThanOrEqualTo(expected.plusMillis(deltaMillis).toEpochMilli())));

@@ -97,7 +97,7 @@ public class CameraImageUpdateManager {
         final HashMap<Long, KuvaProtos.Kuva> kuvaMappedByPresetLotjuId = new HashMap<>();
         data.forEach(kuva -> {
             if (kuva.hasEsiasentoId()) {
-                KuvaProtos.Kuva currentKamera = kuvaMappedByPresetLotjuId.get(kuva.getEsiasentoId());
+                final KuvaProtos.Kuva currentKamera = kuvaMappedByPresetLotjuId.get(kuva.getEsiasentoId());
 
                 if ( currentKamera == null || currentKamera.getAikaleima() < kuva.getAikaleima()) {
                     if (currentKamera != null) {

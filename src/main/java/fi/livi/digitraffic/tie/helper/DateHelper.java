@@ -157,7 +157,7 @@ public final class DateHelper {
             cal.setTimeInMillis(from.toEpochMilli());
             try {
                 return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-            } catch (DatatypeConfigurationException e) {
+            } catch (final DatatypeConfigurationException e) {
                 log.error("Failed to convert Instant " + from + " to XMLGregorianCalendar", e);
             }
         }

@@ -65,8 +65,8 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         final Instant initialPublicFrom = getInstant(-60);
         final KameraVO kamera = createKamera(initialPublicFrom); // update only this camera
         final KameraVO kameraOther = createKamera(initialPublicFrom);
-        List<EsiasentoVO> esiasentos = createEsiasentos(kamera.getId(), 2);
-        List<EsiasentoVO> esiasentosOther = createEsiasentos(kameraOther.getId(), 1);
+        final List<EsiasentoVO> esiasentos = createEsiasentos(kamera.getId(), 2);
+        final List<EsiasentoVO> esiasentosOther = createEsiasentos(kameraOther.getId(), 1);
         final Map<KameraVO, List<EsiasentoVO>> kameras = new HashMap<>();
         kameras.put(kamera, esiasentos);
         kameras.put(kameraOther, esiasentosOther);
@@ -153,7 +153,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         assertEquals(isPublic, rs.internalIsPublic());
     }
 
-    private void checkAllPublishableCameraPresetsContainsOnly(long ... lotjuIds) {
+    private void checkAllPublishableCameraPresetsContainsOnly(final long ... lotjuIds) {
         // End current transaction and starts new as query uses current_timestamp from db
         // and it is same as transaction start time.
         TestUtils.commitAndEndTransactionAndStartNew();

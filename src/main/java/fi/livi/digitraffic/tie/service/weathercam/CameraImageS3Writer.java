@@ -134,7 +134,7 @@ public class CameraImageS3Writer {
         return StringUtils.substringBeforeLast(key, ".");
     }
 
-    public static String getVersionedKey(String key) {
+    public static String getVersionedKey(final String key) {
         // Key ie. C0650802.jpg -> C0650802-versions.jpg
         return resolvePresetIdFromKey(key) + IMAGE_VERSION_KEY_SUFFIX;
     }

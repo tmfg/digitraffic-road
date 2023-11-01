@@ -26,7 +26,7 @@ public class LocationSubtypeKey implements Serializable {
         return subtypeCode;
     }
 
-    public void setSubtypeCode(String subtypeCode) {
+    public void setSubtypeCode(final String subtypeCode) {
         this.subtypeCode = subtypeCode;
     }
 
@@ -34,7 +34,7 @@ public class LocationSubtypeKey implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -42,7 +42,7 @@ public class LocationSubtypeKey implements Serializable {
         return isNotEmpty(subtypeCode) && isNotEmpty(version);
     }
 
-    @Override public boolean equals(Object o) {
+    @Override public boolean equals(final Object o) {
         if (this == o)
             return true;
 

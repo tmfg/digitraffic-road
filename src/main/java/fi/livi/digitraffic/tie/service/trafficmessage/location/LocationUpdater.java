@@ -22,7 +22,8 @@ public class LocationUpdater {
 
     private final int batchSize;
 
-    public LocationUpdater(final EntityManager entityManager, @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}") int batchSize) {
+    public LocationUpdater(final EntityManager entityManager, @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+    final int batchSize) {
         this.entityManager = entityManager;
         this.batchSize = batchSize;
     }

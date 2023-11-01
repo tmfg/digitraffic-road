@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -16,7 +15,7 @@ public class MaintenanceTrackingTaskDtoV1 implements DataUpdatedSupportV1 {
     public final String nameFi;
     public final String nameSv;
     public final String nameEn;
-    private Instant dataUpdatedTime;
+    private final Instant dataUpdatedTime;
 
     public MaintenanceTrackingTaskDtoV1(final String id, final String nameFi, final String nameSv, final String nameEn, final Instant dataUpdatedTime) {
         this.id = id;

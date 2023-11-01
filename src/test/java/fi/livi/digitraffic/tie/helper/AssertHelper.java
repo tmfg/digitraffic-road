@@ -52,7 +52,7 @@ public final class AssertHelper {
         assertTrue(Math.abs(diffMillis) <= maxDiffMs, "Difference between times was " + diffMillis + " ms and allowed diff was " + maxDiffMs + " ms");
     }
 
-    public static void collectionContains(final Object objectToFind, List<?> collection) {
+    public static void collectionContains(final Object objectToFind, final List<?> collection) {
         final Optional<?> first = collection.stream().filter(e -> e.equals(objectToFind)).findFirst();
         assertTrue(first.isPresent(), "Element " + objectToFind + " not found in collection");
     }
@@ -65,7 +65,6 @@ public final class AssertHelper {
         assertTrue(compare >= to, MessageFormat.format("{0} >= {1} was false", compare, to));
         if (maxDiff >= 0) {
             final long diff = compare - to;
-            System.out.println(diff);
             assertTrue(diff <= maxDiff, MessageFormat.format("{0} - {1} == {2} > {3} (maxDiff)", compare, to, diff, maxDiff));
         }
     }

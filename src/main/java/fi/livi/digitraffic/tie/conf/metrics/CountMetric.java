@@ -18,7 +18,7 @@ public class CountMetric extends LoggableMetric {
     }
 
     @Override
-    public void accept(MetricVisitor visitor, MetricVisitorData metricVisitorData) {
+    public void accept(final MetricVisitor visitor, final MetricVisitorData metricVisitorData) {
         visitor.visitCountMetric(this, metricVisitorData);
     }
 }
