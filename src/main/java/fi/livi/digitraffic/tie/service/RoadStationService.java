@@ -3,21 +3,17 @@ package fi.livi.digitraffic.tie.service;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationDao;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 
 @Service
 public class RoadStationService {
-
-    private static final Logger log = LoggerFactory.getLogger(RoadStationService.class);
 
     private final RoadStationRepository roadStationRepository;
     private final RoadStationDao roadStationDao;

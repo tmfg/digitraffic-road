@@ -38,15 +38,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
-import fi.livi.digitraffic.tie.model.v1.SensorValue;
-import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
+import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
+import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 
 @Disabled("Transaction problems with the test env")
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -70,9 +70,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @Autowired
     private TmsStationService tmsStationService;
-
-    @Autowired
-    private TmsStationRepository tmsStationRepository;
 
     @BeforeEach
     public void initData() {
@@ -134,17 +131,15 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             tmsJmsMessageListener.drainQueueScheduled();
             handleDataTotalTime += swHandle.getTime();
 
-            try {
-                // send data with 1 s interval
-                long sleep = 1000 - sw.getTime();
-                if (sleep < 0) {
-                    log.error("Data generation and handle took too long");
-                } else {
-                    Thread.sleep(sleep);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+            // send data with 1 s interval
+            long sleep = 1000 - sw.getTime();
+            if (sleep < 0) {
+                log.warn("Data generation and handle took {} ms and should use maximum 1000 ms", sw.getTime());
+            } else {
+                ThreadUtils.delayMs(sleep);
             }
+
         }
 
         flushSensorBuffer(true);

@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dao.v1.TmsFreeFlowSpeedRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
-import fi.livi.digitraffic.tie.model.v1.TmsStation;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
+import fi.livi.digitraffic.tie.model.tms.TmsStation;
+import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
 
 public class TmsFreeFlowSpeedRepositoryTest extends AbstractServiceTest {
 

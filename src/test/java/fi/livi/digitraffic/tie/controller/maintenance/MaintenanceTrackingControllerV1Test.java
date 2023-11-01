@@ -46,7 +46,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
@@ -72,7 +72,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
     private MaintenanceTrackingServiceTestHelperV1 testHelper;
 
     @Autowired
-    private MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
+    private MaintenanceTrackingRepository maintenanceTrackingRepository;
 
     private ResultActions getTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
@@ -246,7 +246,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         entityManager.flush();
         entityManager.clear();
 
-        final List<MaintenanceTracking> allTrackings = maintenanceTrackingRepositoryV1.findAll();
+        final List<MaintenanceTracking> allTrackings = maintenanceTrackingRepository.findAll();
         AssertHelper.assertCollectionSize(machineCount, allTrackings);
         final Instant created = allTrackings.get(0).getCreated().toInstant();
 
@@ -340,8 +340,8 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             }
         });
         testHelper.handleUnhandledWorkMachineObservations(1000);
-        final Instant min = maintenanceTrackingRepositoryV1.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
-        final Instant max = maintenanceTrackingRepositoryV1.findAll().stream().map(MaintenanceTracking::getEndTime).max(ZonedDateTime::compareTo).orElseThrow().toInstant();
+        final Instant min = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
+        final Instant max = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).max(ZonedDateTime::compareTo).orElseThrow().toInstant();
 
         log.info("min {} max {} from: {}", min, max, start);
         log.info("Machine count {}", machineCount);
@@ -407,8 +407,8 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             }
         });
         testHelper.handleUnhandledWorkMachineObservations(1000);
-        final Instant min = maintenanceTrackingRepositoryV1.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
-        final Instant max = maintenanceTrackingRepositoryV1.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
+        final Instant min = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
+        final Instant max = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
 
         log.info("min {} max {} from: {}", min, max, start);
         log.info("Machine count {}", machineCount);

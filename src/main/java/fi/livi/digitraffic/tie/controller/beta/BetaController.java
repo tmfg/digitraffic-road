@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
-import fi.livi.digitraffic.tie.service.v1.TmsDataDatex2Service;
-import fi.livi.digitraffic.tie.service.v1.WeatherService;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationDatex2Service;
+import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
+import fi.livi.digitraffic.tie.service.tms.TmsDataDatex2Service;
+import fi.livi.digitraffic.tie.service.tms.TmsStationDatex2Service;
+import fi.livi.digitraffic.tie.service.weather.WeatherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

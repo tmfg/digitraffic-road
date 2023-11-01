@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-import static fi.livi.digitraffic.tie.helper.MqttUtil.getEpochSeconds;
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.STATUS;
+import static fi.livi.digitraffic.tie.helper.DateHelper.getEpochSeconds;
+import static fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue.StatisticsType.STATUS;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
+import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 
 public class MqttMessageSenderV2 {
     private final Logger log;

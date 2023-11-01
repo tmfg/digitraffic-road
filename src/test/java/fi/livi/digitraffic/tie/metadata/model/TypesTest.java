@@ -11,13 +11,13 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.AjoneuvoluokkaTyyppi;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LaiteTyyppi;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaTyyppi;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaTyyppi;
-import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.RoadStationState;
-import fi.livi.digitraffic.tie.model.TmsStationType;
-import fi.livi.digitraffic.tie.model.VehicleClass;
-import fi.livi.digitraffic.tie.model.WeatherStationType;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraType;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationState;
+import fi.livi.digitraffic.tie.model.roadstation.VehicleClass;
+import fi.livi.digitraffic.tie.model.tms.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.tms.TmsStationType;
+import fi.livi.digitraffic.tie.model.weather.WeatherStationType;
+import fi.livi.digitraffic.tie.model.weathercam.CameraType;
 
 public class TypesTest extends AbstractTest {
 

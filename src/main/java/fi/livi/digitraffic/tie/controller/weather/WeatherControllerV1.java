@@ -17,9 +17,6 @@ import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUN
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,28 +26,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.RoadStationState;
+import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionSimpleV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureSimpleV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionWeatherDtoV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionsWeatherDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationDataDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureDetailedV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationsDataDtoV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionSimpleV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureSimpleV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionWeatherDtoV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionsWeatherDtoV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
+import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
-import fi.livi.digitraffic.tie.service.weather.v1.forecast.ForecastWebDataServiceV1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 
 @Tag(name = WEATHER_TAG_V1)
 @RestController

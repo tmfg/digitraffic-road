@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import fi.livi.digitraffic.tie.dto.JsonAdditionalProperties;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinatesDecimalConverter;
-import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonTypeInfo(
@@ -76,11 +76,9 @@ public abstract class Geometry<T> extends JsonAdditionalProperties implements Se
             return true;
         }
 
-        if (!(o instanceof Geometry)) {
+        if (!(o instanceof final Geometry<?> geometry)) {
             return false;
         }
-
-        Geometry<?> geometry = (Geometry<?>) o;
 
         return new EqualsBuilder()
             .append(getType(), geometry.getType())

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import fi.livi.digitraffic.tie.model.v1.camera.WeatherStationPreset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,8 @@ import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDataV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDataV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
+import fi.livi.digitraffic.tie.model.weathercam.WeatherStationPreset;
 
 @ConditionalOnWebApplication
 @Component

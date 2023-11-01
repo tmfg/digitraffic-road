@@ -1,17 +1,24 @@
 package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.RANGE_X_MAX;
+import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.RANGE_X_MIN;
+import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.RANGE_Y_MAX;
+import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.RANGE_Y_MIN;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 public class CoordinateConverterTest {
     private static final Logger log = LoggerFactory.getLogger(CoordinateConverterTest.class);
@@ -68,7 +75,7 @@ public class CoordinateConverterTest {
         threads.add(startThread(UTSJOKI_TM35FIN_X, UTSJOKI_TM35FIN_Y, UTSJOKI_WGS84_X, UTSJOKI_WGS84_Y, fail));
 
         while (threads.stream().mapToInt(t -> t.isAlive() ? 1 : 0).sum() > 0) {
-            Thread.sleep(100);
+            ThreadUtils.delayMs(10);
         }
         assertFalse(fail.get());
     }

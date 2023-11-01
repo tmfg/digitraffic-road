@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.lotju.LotjuTmsStationMetadataClient;
+import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantUpdater;
+import fi.livi.digitraffic.tie.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantUpdater;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
 
 public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 

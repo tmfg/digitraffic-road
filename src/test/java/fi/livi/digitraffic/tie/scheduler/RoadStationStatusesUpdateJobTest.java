@@ -16,21 +16,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
-import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.RoadStationService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
+import fi.livi.digitraffic.tie.service.lotju.LotjuCameraStationMetadataClient;
+import fi.livi.digitraffic.tie.service.lotju.LotjuKameraPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.lotju.LotjuTmsStationMetadataClient;
+import fi.livi.digitraffic.tie.service.lotju.LotjuWeatherStationMetadataClient;
+import fi.livi.digitraffic.tie.service.tms.TmsStationUpdater;
+import fi.livi.digitraffic.tie.service.weather.WeatherStationUpdater;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateHandler;
+import fi.livi.digitraffic.tie.service.weathercam.CameraStationUpdater;
 
 public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobTest {
 

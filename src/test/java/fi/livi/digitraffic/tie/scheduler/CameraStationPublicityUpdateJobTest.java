@@ -6,7 +6,6 @@ import static fi.livi.digitraffic.tie.TestUtils.createKameraJulkisuus;
 import static fi.livi.digitraffic.tie.TestUtils.getInstant;
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.JULKINEN;
 import static fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso.VALIAIKAISESTI_SALAINEN;
-import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,9 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -31,14 +27,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
-import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraPerustiedotException;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
+import fi.livi.digitraffic.tie.service.lotju.LotjuCameraStationMetadataClient;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryUpdateService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraStationUpdater;
 
 public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
@@ -61,7 +57,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     }
 
     @Test
-    public void publicityChangeNow() throws KameraPerustiedotException, DatatypeConfigurationException, InterruptedException {
+    public void publicityChangeNow() {
         // Two cameras, change only first camera: public -> secret -> public, should affect right away
         // Other camera should stay a same all the time
 
@@ -103,7 +99,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     }
 
     @Test
-    public void publicityChangeInFuture() throws KameraPerustiedotException, DatatypeConfigurationException, InterruptedException {
+    public void publicityChangeInFuture() throws InterruptedException {
 
         // Create now public camera with presets
         final Instant publicFrom = getInstant(-60);
@@ -130,7 +126,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
 
         // Wait for secretFrom time to pass -> RoadStation changes to not public
         while ( Instant.now().isBefore(secretFrom) ) {
-            sleep(200);
+            ThreadUtils.delayMs(200);
         }
 
         // At current time, road RoadStation is not public as secretFrom time has passed
@@ -146,9 +142,8 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
      * @param publicityStart publicity start time
      * @param previousIsPublic what should previous value be
      * @param isPublic what should isPublic value to be
-     * @return
      */
-    private RoadStation checkCameraPresetRoadStationPublicity(final Long lotjuId, final boolean isPublicNow, final Instant publicityStart,
+    private void checkCameraPresetRoadStationPublicity(final Long lotjuId, final boolean isPublicNow, final Instant publicityStart,
                                                               final boolean previousIsPublic, final boolean isPublic) {
         final CameraPreset cp = cameraPresetService.findCameraPresetByLotjuId(lotjuId);
         final RoadStation rs = cp.getRoadStation();
@@ -156,7 +151,6 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         assertEquals(isPublicNow, rs.isPublicNow());
         assertEquals(previousIsPublic, rs.isPublicPrevious());
         assertEquals(isPublic, rs.internalIsPublic());
-        return rs;
     }
 
     private void checkAllPublishableCameraPresetsContainsOnly(long ... lotjuIds) {
@@ -165,7 +159,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         TestUtils.commitAndEndTransactionAndStartNew();
         // uses current_timestamp
         final List<CameraPreset> allPublishable = cameraPresetService.findAllPublishableCameraPresets();
-        final List<Long> publishableLotjuIds = allPublishable.stream().map(CameraPreset::getLotjuId).collect(Collectors.toList());
+        final List<Long> publishableLotjuIds = allPublishable.stream().map(CameraPreset::getLotjuId).toList();
         for (final long lotjuId : lotjuIds) {
             assertTrue(publishableLotjuIds.contains(lotjuId));
         }
@@ -176,14 +170,13 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
      *
      * @param kameras kameras returned by lotju
      * @param times how many times lotju should have been called
-     * @throws InterruptedException
      */
     private void updateCameraMetadataAndVerifyLotjuCalls(final Map<KameraVO, List<EsiasentoVO>> kameras, final int times) {
 
         when(lotjuCameraStationMetadataClient.getKameras()).thenReturn(new ArrayList<>(kameras.keySet()));
-        kameras.entrySet().forEach(e -> {
-            when(lotjuCameraStationMetadataClient.getKamera(e.getKey().getId())).thenReturn(e.getKey());
-            when(lotjuCameraStationMetadataClient.getEsiasentos(e.getKey().getId())).thenReturn(e.getValue());
+        kameras.forEach((key, value) -> {
+            when(lotjuCameraStationMetadataClient.getKamera(key.getId())).thenReturn(key);
+            when(lotjuCameraStationMetadataClient.getEsiasentos(key.getId())).thenReturn(value);
         });
         // Update cameras from lotju
         runUpdateCameraMetadataJob();
@@ -192,9 +185,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
 
         // Verify lotju calls
         verify(lotjuCameraStationMetadataClient, times(times)).getKameras();
-        kameras.keySet().forEach(kamera -> {
-            verify(lotjuCameraStationMetadataClient, times(times)).getEsiasentos(eq(kamera.getId()));
-        });
+        kameras.keySet().forEach(kamera -> verify(lotjuCameraStationMetadataClient, times(times)).getEsiasentos(eq(kamera.getId())));
     }
 
     private void runUpdateCameraMetadataJob() {

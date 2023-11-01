@@ -9,13 +9,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.converter.WazeDatex2Converter;
-import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.converter.waze.WazeDatex2Converter;
+import fi.livi.digitraffic.tie.converter.waze.WazeDatex2JsonConverter;
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 
 
 @ConditionalOnWebApplication

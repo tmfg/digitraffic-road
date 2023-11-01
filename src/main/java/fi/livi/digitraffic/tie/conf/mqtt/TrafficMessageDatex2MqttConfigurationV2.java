@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.TRAFFIC_MESSAGE_DATEX;
+import static fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue.StatisticsType.TRAFFIC_MESSAGE_DATEX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Instant;
@@ -18,12 +18,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.helper.MqttUtil;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageMqttDataServiceV1;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
 @ConditionalOnProperty("mqtt.trafficMessage.datex2.v2.enabled")
 @ConditionalOnNotWebApplication

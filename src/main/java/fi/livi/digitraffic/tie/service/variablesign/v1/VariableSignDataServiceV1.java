@@ -26,9 +26,9 @@ import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignPropertiesV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.model.v2.variablesign.Device;
-import fi.livi.digitraffic.tie.model.v2.variablesign.DeviceData;
-import fi.livi.digitraffic.tie.model.v2.variablesign.DeviceDataRow;
+import fi.livi.digitraffic.tie.model.variablesign.Device;
+import fi.livi.digitraffic.tie.model.variablesign.DeviceData;
+import fi.livi.digitraffic.tie.model.variablesign.DeviceDataRow;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service
@@ -56,7 +56,7 @@ public class VariableSignDataServiceV1 {
         final List<VariableSignFeatureV1> features = devices.stream()
             .map(d -> convert(d, dataMap))
             .filter(Objects::nonNull)
-            .collect(Collectors.toUnmodifiableList());
+            .toList();
 
         return new VariableSignFeatureCollectionV1(dataLastUpdated, features);
     }

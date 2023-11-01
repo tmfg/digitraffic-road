@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.conf.metrics;
 
 import java.text.DecimalFormat;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +24,11 @@ public class CacheStatisticsLoggerConfiguration {
     private static final Logger log = LoggerFactory.getLogger(CacheStatisticsLoggerConfiguration.class);
     private final CacheManager cacheManager;
     protected static ThreadLocal<DecimalFormat> f =
-            ThreadLocal.withInitial(() -> new DecimalFormat("#0.00"));
+            ThreadLocal.withInitial(() -> {
+                final DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance(Locale.US);
+                df.applyLocalizedPattern("#0.00");
+                return df;
+            });
 
     private final Map<String, CacheStatisticsLogger> statsCounters = new ConcurrentHashMap<>();
 

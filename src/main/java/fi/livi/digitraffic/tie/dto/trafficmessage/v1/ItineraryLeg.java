@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
+import fi.livi.digitraffic.tie.dto.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "ItineraryLeg is one leg of the route", name = "ItineraryLegV1")

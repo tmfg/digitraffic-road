@@ -32,11 +32,11 @@ import fi.livi.digitraffic.tie.dto.roadstation.v1.StationRoadAddressV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDirectionV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.RoadStationState;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationState;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
 /** Test for {@link WeathercamControllerV1} */
 public class WeathercamControllerV1Test extends AbstractRestWebTest {

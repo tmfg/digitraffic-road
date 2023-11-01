@@ -1,0 +1,63 @@
+package fi.livi.digitraffic.tie.dto.weather.forecast.v1;
+
+import static fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastConditionReasonDtoV1.API_DESCRIPTION;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import fi.livi.digitraffic.tie.model.weather.forecast.FrictionCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.PrecipitationCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.RoadCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.VisibilityCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.WindCondition;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = API_DESCRIPTION)
+public class ForecastConditionReasonDtoV1 {
+
+    @JsonIgnore
+    public static final String API_DESCRIPTION = "Forecast that is used is Vaisala’s weather forecast which is initialised from the weather model that performs best " +
+        "for Finland for a period under study. Majority of the times the initialisation is done from ECMWF model data. " +
+        "Then Vaisala meteorologists also manually edit the data to fix certain known errors in the model.";
+
+    @Schema(description = PrecipitationCondition.API_DESCRIPTION)
+    @Enumerated(EnumType.STRING)
+    public final PrecipitationCondition precipitationCondition;
+
+    @Schema(description = RoadCondition.API_DESCRIPTION)
+    @Enumerated(EnumType.STRING)
+    public final RoadCondition roadCondition;
+
+    @Schema(description = WindCondition.API_DESCRIPTION)
+    @Enumerated(EnumType.STRING)
+    public final WindCondition windCondition;
+
+    @Schema(description = "Tells if there is freezing rain: true/false")
+    public final Boolean freezingRainCondition;
+
+    @Schema(description = "Tells if it is slippery: true/false")
+    public final Boolean winterSlipperiness;
+
+    @Schema(description = VisibilityCondition.API_DESCRIPTION)
+    @Enumerated(EnumType.STRING)
+    public final VisibilityCondition visibilityCondition;
+
+    @Schema(description = FrictionCondition.API_DESCRIPTION)
+    @Enumerated(EnumType.STRING)
+    public final FrictionCondition frictionCondition;
+
+    public ForecastConditionReasonDtoV1(final PrecipitationCondition precipitationCondition, final RoadCondition roadCondition,
+                                        final WindCondition windCondition, final Boolean freezingRainCondition, final Boolean winterSlipperiness,
+                                        final VisibilityCondition visibilityCondition, final FrictionCondition frictionCondition) {
+        this.precipitationCondition = precipitationCondition;
+        this.roadCondition = roadCondition;
+        this.windCondition = windCondition;
+        this.freezingRainCondition = freezingRainCondition;
+        this.winterSlipperiness = winterSlipperiness;
+        this.visibilityCondition = visibilityCondition;
+        this.frictionCondition = frictionCondition;
+    }
+}

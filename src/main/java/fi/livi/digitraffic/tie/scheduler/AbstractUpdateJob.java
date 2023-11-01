@@ -12,6 +12,8 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 @ConditionalOnNotWebApplication
 public abstract class AbstractUpdateJob implements Job {
 
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     protected DataStatusService dataStatusService;
 

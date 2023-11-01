@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
-import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
+import fi.livi.digitraffic.tie.dao.weathercam.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetPublicityHistoryV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPresetsPublicityHistoryV1;
@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetHistory
 import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetsHistoryDtoV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamsHistoryDtoV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service

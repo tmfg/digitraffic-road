@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import fi.livi.digitraffic.tie.service.v1.LotjuAnturiWrapper;
+import fi.livi.digitraffic.tie.service.lotju.LotjuAnturiWrapper;
 
 public class SensorValueBuffer<T> {
     private final Object LOCK = new Object();
     // <roadStationId, Map<sensorId, object>
-    private Map<Long, Map<Long, LotjuAnturiWrapper<T>>> map = new HashMap<>();
+    private final Map<Long, Map<Long, LotjuAnturiWrapper<T>>> map = new HashMap<>();
 
     private int internalIncomingCounter = 0;
     private int internalUpdateCounter = 0;

@@ -8,27 +8,24 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.converter.feature.AbstractMetadataToFeatureConverter;
-import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionDto;
+import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionDto;
 import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionSimpleV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureCollectionV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureSimpleV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionFeatureV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionPropertiesSimpleV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.ForecastSectionPropertiesV1;
-import fi.livi.digitraffic.tie.dto.weather.v1.forecast.RoadSegmentDtoV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionSimpleV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureSimpleV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionPropertiesSimpleV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionPropertiesV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.RoadSegmentDtoV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
-import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.ForecastSection;
+import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSection;
 
 @Component
-public class ForecastSectionToFeatureCollectionConverterV1 extends AbstractMetadataToFeatureConverter {
+public class ForecastSectionToFeatureCollectionConverterV1 {
 
-    protected ForecastSectionToFeatureCollectionConverterV1(final CoordinateConverter coordinateConverter) {
-        super(coordinateConverter);
+    protected ForecastSectionToFeatureCollectionConverterV1() {
     }
 
     public ForecastSectionFeatureCollectionSimpleV1 convertToSimpleFeatureCollection(final List<ForecastSection> forecastSections, final Instant lastModifiedFallback) {

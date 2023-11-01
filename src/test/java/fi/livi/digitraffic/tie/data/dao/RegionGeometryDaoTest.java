@@ -12,19 +12,15 @@ import java.util.stream.IntStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
-import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
-import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper;
+import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
+import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper;
 
 public class RegionGeometryDaoTest extends AbstractJpaTest {
-    private static final Logger log = LoggerFactory.getLogger(RegionGeometryDaoTest.class);
-
 
     @Autowired
     private RegionGeometryRepository regionGeometryRepository;

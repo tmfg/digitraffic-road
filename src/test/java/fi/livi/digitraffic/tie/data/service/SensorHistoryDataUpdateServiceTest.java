@@ -15,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
-import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
-import fi.livi.digitraffic.tie.service.v1.WeatherService;
+import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
+import fi.livi.digitraffic.tie.service.weather.WeatherService;
 
 public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
     private static final Logger log = LoggerFactory.getLogger(SensorHistoryDataUpdateServiceTest.class);

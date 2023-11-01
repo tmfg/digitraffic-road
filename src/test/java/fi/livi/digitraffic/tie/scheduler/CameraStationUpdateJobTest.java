@@ -16,21 +16,17 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuCameraStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuKameraPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
+import fi.livi.digitraffic.tie.service.lotju.LotjuCameraStationMetadataClient;
+import fi.livi.digitraffic.tie.service.lotju.LotjuKameraPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateHandler;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraStationUpdater;
 
 public class CameraStationUpdateJobTest extends AbstractMetadataUpdateJobTest {
-
-    private static final Logger log = LoggerFactory.getLogger(CameraStationUpdateJobTest.class);
 
     @Autowired
     private CameraStationUpdater cameraStationUpdater;

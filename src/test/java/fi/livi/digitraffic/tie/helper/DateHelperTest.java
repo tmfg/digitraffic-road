@@ -134,9 +134,9 @@ public class DateHelperTest extends AbstractTest {
 
     @Test
     public void getNewest() {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
-        final ZonedDateTime older = now.minusNanos(1);
-        final ZonedDateTime newest = DateHelper.getGreatestAtUtc(now, older);
+        final Instant now = Instant.now();
+        final Instant older = now.minusNanos(1);
+        final Instant newest = DateHelper.getGreatest(now, older);
         assertEquals(now, newest);
     }
 

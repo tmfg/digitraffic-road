@@ -1,9 +1,11 @@
 package fi.livi.digitraffic.tie.dao.v1.tms;
 
-import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import fi.livi.digitraffic.tie.AbstractJpaTest;
+import fi.livi.digitraffic.tie.dao.tms.TmsStationDatex2Repository;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 
 public class TmsStationDatex2RepositoryTest extends AbstractJpaTest {
 

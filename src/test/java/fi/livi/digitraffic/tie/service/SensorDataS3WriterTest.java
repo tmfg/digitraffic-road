@@ -28,8 +28,8 @@ import com.opencsv.bean.CsvToBeanBuilder;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
-import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
-import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 
 public class SensorDataS3WriterTest extends AbstractDaemonTest {

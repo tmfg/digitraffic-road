@@ -5,16 +5,15 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import fi.livi.digitraffic.tie.dto.JsonAdditionalProperties;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Weekday time period", name = "WeekdayTimePeriodV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)

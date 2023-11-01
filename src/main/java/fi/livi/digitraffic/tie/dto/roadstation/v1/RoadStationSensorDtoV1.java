@@ -7,7 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueDescription;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Road station sensor")

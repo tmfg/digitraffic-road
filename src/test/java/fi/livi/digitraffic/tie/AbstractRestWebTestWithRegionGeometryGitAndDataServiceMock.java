@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
+import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 
 public class AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock extends AbstractRestWebTest {

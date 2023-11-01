@@ -14,7 +14,7 @@ import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
+import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.weather.inQueue")

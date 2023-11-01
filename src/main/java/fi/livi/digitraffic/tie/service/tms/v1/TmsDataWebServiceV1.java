@@ -12,20 +12,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
-import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantValueDtoRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoRepository;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationDataDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
+import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
+import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 
 @ConditionalOnWebApplication
 @Service

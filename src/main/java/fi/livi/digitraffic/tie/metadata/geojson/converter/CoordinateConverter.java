@@ -86,7 +86,7 @@ public class CoordinateConverter {
 
     // TODO: change List<List<Double>> to List<List<Integer>> and remove int->double conversion from HavaintoToObservationFeatureConverter and do it here.
     public static LineString convertLineStringFromETRS89ToWGS84(final List<List<Double>> fromETRS89Coordinates) {
-        List<List<Double>> coords =
+        final List<List<Double>> coords =
             fromETRS89Coordinates.stream()
                 .map(l -> (List<Double>) new ArrayList<>(convertFromETRS89ToWGS84(new Point(l)).getCoordinates()))
                 .collect(Collectors.toList());
@@ -105,13 +105,13 @@ public class CoordinateConverter {
 
     private static Point convert(final Point fromPoint, final CoordinateTransform transformer) {
         final ProjCoordinate to = new ProjCoordinate();
-        ProjCoordinate from = new ProjCoordinate(fromPoint.getLongitude(),
+        final ProjCoordinate from = new ProjCoordinate(fromPoint.getLongitude(),
                                                  fromPoint.getLatitude());
         // CoordinateTransform is not thread safe and this can be called from multiple threads
         synchronized (transformer) {
             transformer.transform(from, to);
         }
-        Point point = new Point(to.x, to.y, fromPoint.getAltitude());
+        final Point point = new Point(to.x, to.y, fromPoint.getAltitude());
 
         if (log.isDebugEnabled()) {
             log.debug("From: " + fromPoint + " to " + point);

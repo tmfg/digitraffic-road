@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.dao.v1.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.model.DataType;
 
 public class DataUpdatedRepositoryTest extends AbstractJpaTest {

@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 
 public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(WeathercamControllerV1HistoryTest.class);
@@ -181,9 +181,9 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
         final String versionId = RandomStringUtils.randomAlphanumeric(32);
         final String cameraId = getCameraIdFromPresetId(presetId);
         entityManager.createNativeQuery(
-                "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created, preset_public)\n" +
+                "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created, preset_public, preset_seq_prev)\n" +
                     "VALUES ('" + presetId + "', '" + cameraId + "', '" + versionId + "',  (select id from camera_preset where preset_id = '" + presetId + "' and obsolete_date IS NULL) , timestamp with time zone '" + lastModified + "', " + isPublic + ", " +
-                    IMAGE_SIZE + ", NOW(), "+ true +")")
+                    IMAGE_SIZE + ", NOW(), " + true + ", null)")
             .executeUpdate();
         return versionId;
     }

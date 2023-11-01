@@ -31,8 +31,8 @@ import fi.livi.digitraffic.tie.datex2.MultilingualStringValue;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 
 public class Datex2HelperTest extends AbstractServiceTest {
 

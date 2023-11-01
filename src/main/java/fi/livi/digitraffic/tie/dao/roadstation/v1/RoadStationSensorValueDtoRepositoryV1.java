@@ -5,49 +5,51 @@ import static org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE;
 import java.time.Instant;
 import java.util.List;
 
-import jakarta.persistence.QueryHint;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 
 import fi.livi.digitraffic.tie.dao.SqlRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
-import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import jakarta.persistence.QueryHint;
 
 public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
 
-    String SQL_SELECT =
-        "select rs.natural_id roadStationNaturalId\n" +
-        "     , s.natural_id sensorNaturalId\n" +
-        "     , sv.id sensorValueId\n" +
-        "     , sv.value\n" +
-        "     , sv.time_window_start timeWindowStart\n" +
-        "     , sv.time_window_end timeWindowEnd\n" +
-        "     , sv.measured as measuredTime\n" +
-        "     , s.name_fi sensorNameFi\n" +
-        "     , s.short_name_fi sensorShortNameFi\n" +
-        "     , s.unit\n" +
-        "     , svd.description_fi as sensorValueDescriptionFi\n" +
-        "     , svd.description_en as sensorValueDescriptionEn\n" +
-        "     , max(sv.measured) over(partition by sv.road_station_id) stationLatestMeasuredTime" +
-        "     , sv.updated as updatedTime\n";
+    String SQL_SELECT = """
+        select rs.natural_id roadStationNaturalId
+             , s.natural_id sensorNaturalId
+             , sv.id sensorValueId
+             , sv.value
+             , sv.time_window_start timeWindowStart
+             , sv.time_window_end timeWindowEnd
+             , sv.measured as measuredTime
+             , s.name_fi sensorNameFi
+             , s.short_name_fi sensorShortNameFi
+             , s.unit
+             , svd.description_fi as sensorValueDescriptionFi
+             , svd.description_en as sensorValueDescriptionEn
+             , max(sv.measured) over(partition by sv.road_station_id) stationLatestMeasuredTime
+             , sv.updated as updatedTime
+             """;
 
-    String SQL_FROM =
-        "from road_station rs\n" +
-        "inner join sensor_value sv on sv.road_station_id = rs.id\n" +
-        "inner join road_station_sensor s on sv.road_station_sensor_id = s.id\n" +
-        "left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id\n" +
-        "                                            and svd.sensor_value = sv.value\n";
+    String SQL_FROM = """
+        from road_station rs
+        inner join sensor_value sv on sv.road_station_id = rs.id
+        inner join road_station_sensor s on sv.road_station_sensor_id = s.id
+        left outer join sensor_value_description svd on svd.sensor_id = sv.road_station_sensor_id
+                                                    and svd.sensor_value = sv.value
+        """;
 
-    String SQL_WHERE_PUBLISHABLE =
-        "where rs.publishable = true\n" +
-        "  and s.publishable = true\n" +
-        "  and exists (\n" +
-        "     select null\n" +
-        "     from allowed_road_station_sensor allowed\n" +
-        "     where allowed.natural_id = s.natural_id\n" +
-        "       and allowed.road_station_type = s.road_station_type\n" +
-        "  )\n";
+    String SQL_WHERE_PUBLISHABLE = """
+        where rs.publishable = true
+          and s.publishable = true
+          and exists (
+             select null
+             from allowed_road_station_sensor allowed
+             where allowed.natural_id = s.natural_id
+               and allowed.road_station_type = s.road_station_type
+          )
+        """;
 
     @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
     @Query(value =

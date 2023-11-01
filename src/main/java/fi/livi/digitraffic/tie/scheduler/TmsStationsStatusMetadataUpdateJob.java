@@ -5,11 +5,13 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
+import fi.livi.digitraffic.tie.service.tms.TmsStationUpdater;
 
 @DisallowConcurrentExecution
 public class TmsStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private TmsStationUpdater tmsStationUpdater;
 

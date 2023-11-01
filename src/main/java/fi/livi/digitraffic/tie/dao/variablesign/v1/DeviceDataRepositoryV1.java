@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.dao.variablesign.v1;
 import java.time.Instant;
 import java.util.List;
 
-import jakarta.persistence.QueryHint;
-
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +10,8 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
-import fi.livi.digitraffic.tie.model.v2.variablesign.DeviceData;
+import fi.livi.digitraffic.tie.model.variablesign.DeviceData;
+import jakarta.persistence.QueryHint;
 
 @Repository
 public interface DeviceDataRepositoryV1 extends JpaRepository<DeviceData, Long> {

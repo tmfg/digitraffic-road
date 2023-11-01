@@ -28,9 +28,9 @@ import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesSimp
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
 @ConditionalOnWebApplication
 @Component

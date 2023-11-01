@@ -2,10 +2,9 @@ package fi.livi.digitraffic.tie.conf.amazon;
 
 import java.net.URI;
 
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer;
 
 public class WeathercamS3Properties extends S3Properties {
-    private final String s3WeathercamKeyRegexp = "^C([0-9]{7})\\.jpg$";
     private final int historyMaxAgeHours;
     private final String weathercamBaseUrl;
 
@@ -27,15 +26,11 @@ public class WeathercamS3Properties extends S3Properties {
     }
 
     public String getS3WeathercamKeyRegexp() {
-        return s3WeathercamKeyRegexp;
+        return "^C([0-9]{7})\\.jpg$";
     }
 
     public int getHistoryMaxAgeHours() {
         return historyMaxAgeHours;
-    }
-
-    public String getWeathercamBaseUrl() {
-        return weathercamBaseUrl;
     }
 
     public String getS3WeathercamBucketUrl() {
@@ -47,9 +42,9 @@ public class WeathercamS3Properties extends S3Properties {
     }
 
     public URI getS3UriForVersion(final String imageName, final String versionId) {
-        URI uri = URI.create(String.format("%s/%s?versionId=%s", getS3WeathercamBucketUrl(),
-            getImageVersionKey(getPresetIdFromImageName(imageName)), versionId));
-        return uri;
+        return URI.create(String.format("%s/%s?versionId=%s",
+                getS3WeathercamBucketUrl(),
+                getImageVersionKey(getPresetIdFromImageName(imageName)), versionId));
     }
 
     private String getImageVersionKey(final String presetId) {

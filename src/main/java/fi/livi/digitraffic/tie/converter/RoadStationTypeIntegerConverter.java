@@ -1,9 +1,8 @@
 package fi.livi.digitraffic.tie.converter;
 
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-
-import fi.livi.digitraffic.tie.model.RoadStationType;
 
 @Converter
 public class RoadStationTypeIntegerConverter implements AttributeConverter<RoadStationType, Integer> {

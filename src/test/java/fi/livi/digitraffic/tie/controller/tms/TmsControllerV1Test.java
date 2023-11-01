@@ -23,8 +23,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -32,18 +30,18 @@ import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
-import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
-import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.TmsStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
-import fi.livi.digitraffic.tie.model.v1.SensorValue;
-import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
+import fi.livi.digitraffic.tie.model.tms.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.tms.TmsStation;
+import fi.livi.digitraffic.tie.model.tms.TmsStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
@@ -52,8 +50,6 @@ import fi.livi.digitraffic.tie.service.TmsTestHelper;
  * Test for {@link TmsControllerV1}
  */
 public class TmsControllerV1Test extends AbstractRestWebTest {
-
-    private static final Logger log = LoggerFactory.getLogger(TmsControllerV1Test.class);
 
     @Autowired
     private TmsStationRepository tmsStationRepository;

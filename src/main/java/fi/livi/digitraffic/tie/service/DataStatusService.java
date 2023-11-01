@@ -29,33 +29,33 @@ import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
 import fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV1;
 import fi.livi.digitraffic.tie.controller.weather.WeatherControllerV1;
 import fi.livi.digitraffic.tie.controller.weathercam.WeathercamControllerV1;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
-import fi.livi.digitraffic.tie.dao.v1.DataUpdatedRepository;
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.dao.v1.ForecastSectionWeatherRepository;
-import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
-import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
-import fi.livi.digitraffic.tie.dao.v1.location.LocationVersionRepository;
-import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.dao.DataUpdatedRepository;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.location.LocationVersionRepository;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceDataRepositoryV1;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceRepositoryV1;
+import fi.livi.digitraffic.tie.dao.weather.WeatherStationRepository;
+import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherRepository;
 import fi.livi.digitraffic.tie.dto.info.v1.DataSourceInfoDtoV1;
 import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfoDtoV1;
 import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfosDtoV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
+import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataSource;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationVersion;
 
 @Service
 public class DataStatusService {
 
     private final DataUpdatedRepository dataUpdatedRepository;
-    private final MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
+    private final MaintenanceTrackingRepository maintenanceTrackingRepository;
     private final Datex2Repository datex2Repository;
 
     private final TmsStationRepository tmsStationRepository;
@@ -69,7 +69,7 @@ public class DataStatusService {
 
     @Autowired
     public DataStatusService(final DataUpdatedRepository dataUpdatedRepository,
-                             final MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1,
+                             final MaintenanceTrackingRepository maintenanceTrackingRepository,
                              final Datex2Repository datex2Repository,
                              final TmsStationRepository tmsStationRepository,
                              final WeatherStationRepository weatherStationRepository,
@@ -79,7 +79,7 @@ public class DataStatusService {
                              final DeviceDataRepositoryV1 deviceDataRepositoryV1,
                              final LocationVersionRepository locationVersionRepository) {
         this.dataUpdatedRepository = dataUpdatedRepository;
-        this.maintenanceTrackingRepositoryV1 = maintenanceTrackingRepositoryV1;
+        this.maintenanceTrackingRepository = maintenanceTrackingRepository;
         this.datex2Repository = datex2Repository;
         this.tmsStationRepository = tmsStationRepository;
         this.weatherStationRepository = weatherStationRepository;
@@ -151,14 +151,14 @@ public class DataStatusService {
     }
 
     private List<UpdateInfoDtoV1> getMaintenanceUpdateInfos() {
-        final List<MaintenanceTrackingDomainDtoV1> domains = maintenanceTrackingRepositoryV1.getDomains();
+        final List<MaintenanceTrackingDomainDtoV1> domains = maintenanceTrackingRepository.getDomains();
         final DataSourceInfoDtoV1 stateInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING);
         final DataSourceInfoDtoV1 municipalityInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY);
         return domains.stream().map(d -> {
                 final String domain = d.getName();
                 final String updateInterval = domain.contains("state") ? stateInfo.getUpdateInterval() : municipalityInfo.getUpdateInterval();
                 final String recommendedFetchInterval = domain.contains("state") ? stateInfo.getRecommendedFetchInterval() : municipalityInfo.getRecommendedFetchInterval();
-                final Instant updated = maintenanceTrackingRepositoryV1.findLastUpdatedForDomain(Collections.singleton(domain));
+                final Instant updated = maintenanceTrackingRepository.findLastUpdatedForDomain(Collections.singleton(domain));
                 final Instant checked = findDataUpdatedTime(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, Collections.singletonList(domain));
                 return new UpdateInfoDtoV1(MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_ROUTES, d.getName(), updated, checked, updateInterval, recommendedFetchInterval);
             }).collect(Collectors.toList());

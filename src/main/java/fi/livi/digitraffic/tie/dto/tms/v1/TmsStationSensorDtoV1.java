@@ -4,7 +4,7 @@ import java.util.List;
 
 import fi.livi.digitraffic.tie.dto.roadstation.v1.RoadStationSensorDirection;
 import fi.livi.digitraffic.tie.dto.roadstation.v1.RoadStationSensorDtoV1;
-import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueDescription;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "TMS road station sensor")

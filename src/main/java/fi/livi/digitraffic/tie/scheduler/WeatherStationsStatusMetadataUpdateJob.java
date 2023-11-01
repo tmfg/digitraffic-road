@@ -5,11 +5,13 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
+import fi.livi.digitraffic.tie.service.weather.WeatherStationUpdater;
 
 @DisallowConcurrentExecution
 public class WeatherStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private WeatherStationUpdater weatherStationUpdater;
 

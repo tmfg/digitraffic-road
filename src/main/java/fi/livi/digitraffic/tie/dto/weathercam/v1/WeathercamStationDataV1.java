@@ -22,6 +22,8 @@ public class WeathercamStationDataV1 extends StationDataV1<String> {
 
     @Override
     public boolean shouldContainLastModified() {
-        return presets != null && !presets.isEmpty();
+        return presets != null &&
+                !presets.isEmpty() &&
+                presets.stream().anyMatch(weathercamPresetDataV1 -> weathercamPresetDataV1.measuredTime != null);
     }
 }

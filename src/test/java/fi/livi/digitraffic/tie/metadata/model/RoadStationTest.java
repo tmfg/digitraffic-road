@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.model;
 
-import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,7 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 
 public class RoadStationTest extends AbstractTest {
 
@@ -31,18 +31,14 @@ public class RoadStationTest extends AbstractTest {
     public void isNotAllowedToSetPublicityTimeForWeatherStation() {
         final RoadStation rs = RoadStation.createWeatherStation();
 
-        assertThrows(IllegalStateException.class, () -> {
-            updatePublicityWithTime(rs);
-        });
+        assertThrows(IllegalStateException.class, () -> updatePublicityWithTime(rs));
     }
 
     @Test
     public void isNotAllowedToSetPublicityTimeForTmsStation() {
         final RoadStation rs = RoadStation.createWeatherStation();
 
-        assertThrows(IllegalStateException.class, () -> {
-            updatePublicityWithTime(rs);
-        });
+        assertThrows(IllegalStateException.class, () -> updatePublicityWithTime(rs));
     }
 
     /* Publicity without time */
@@ -110,7 +106,7 @@ public class RoadStationTest extends AbstractTest {
 
         // Wait for secretFrom time to pass -> RoadStation changes to not public
         while ( ZonedDateTime.now().isBefore(secretInFuture) ) {
-            sleep(100);
+            ThreadUtils.delayMs(100);
         }
         assertFalse(rs.isPublicNow());
     }
@@ -137,13 +133,13 @@ public class RoadStationTest extends AbstractTest {
         // Wait for secretInFuture1 time to pass -> RoadStation should not change to secret
         // as second update moved change to secretInFuture2
         while ( ZonedDateTime.now().isBefore(secretInFuture1) ) {
-            sleep(100);
+            ThreadUtils.delayMs(100);
         }
         assertTrue(rs.isPublicNow());
 
         // Wait for secretInFuture2 time to pass -> RoadStation changes to not public
         while ( ZonedDateTime.now().isBefore(secretInFuture2) ) {
-            sleep(100);
+            ThreadUtils.delayMs(100);
         }
         assertFalse(rs.isPublicNow());
     }
@@ -171,19 +167,19 @@ public class RoadStationTest extends AbstractTest {
 
         // Wait for secretInFuture1 time to pass -> RoadStation should not change to secret
         while ( ZonedDateTime.now().isBefore(secretInFuture1) ) {
-            sleep(100);
+            ThreadUtils.delayMs(100);
         }
         assertTrue(rs.isPublicNow());
 
         // Wait for secretInFuture2 time to pass -> RoadStation changes to not public
         while ( ZonedDateTime.now().isBefore(secretInFuture2) ) {
-            sleep(100);
+            ThreadUtils.delayMs(100);
         }
         assertTrue(rs.isPublicNow());
 
         // Wait for publicInFuture time to pass -> RoadStation stays public
         while ( ZonedDateTime.now().isBefore(publicInFuture) ) {
-            sleep(100);
+            ThreadUtils.delayMs(100);
         }
         assertTrue(rs.isPublicNow());
     }

@@ -17,9 +17,9 @@ import fi.livi.digitraffic.tie.metadata.geojson.Properties;
 import fi.livi.digitraffic.tie.metadata.geojson.camera.CameraProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.tms.TmsStationProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.weather.WeatherStationProperties;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.RoadStationState;
-import fi.livi.digitraffic.tie.model.v1.RoadAddress;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationState;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "Properties", description = "Roadstation properties", subTypes = { CameraProperties.class, TmsStationProperties.class, WeatherStationProperties.class })
@@ -59,11 +59,12 @@ public abstract class RoadStationProperties extends Properties {
     private String provinceCode;
 
     @Schema(description = "Map of names [fi, sv, en]",
-                      example = "{\n" +
-                                "      \"fi\": \"Tie 7 Porvoo, Harabacka\",\n" +
-                                "      \"sv\": \"Väg 7 Borgå, Harabacka\",\n" +
-                                "      \"en\": \"Road 7 Porvoo, Harabacka\"\n" +
-                                "}")
+                      example = """
+                              {
+                                    "fi": "Tie 7 Porvoo, Harabacka",
+                                    "sv": "Väg 7 Borgå, Harabacka",
+                                    "en": "Road 7 Porvoo, Harabacka"
+                              }""")
     private Map<String, String> names = new HashMap<>();
 
     private RoadAddress roadAddress = new RoadAddress();
@@ -96,7 +97,7 @@ public abstract class RoadStationProperties extends Properties {
 
     @Schema(description = "Road station coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. Coordinates are in ETRS89 / ETRS-TM35FIN format. " +
                               "Altitude is optional and measured in metres.)", required = true)
-    private List<Double> coordinatesETRS89 = new ArrayList<>(3);
+    private final List<Double> coordinatesETRS89 = new ArrayList<>(3);
 
     public long getNaturalId() {
         return naturalId;

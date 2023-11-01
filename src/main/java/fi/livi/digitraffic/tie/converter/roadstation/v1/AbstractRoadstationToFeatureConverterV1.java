@@ -10,8 +10,8 @@ import fi.livi.digitraffic.tie.dto.roadstation.v1.StationRoadAddressV1;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.model.v1.RoadAddress;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
+import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 
 public abstract class AbstractRoadstationToFeatureConverterV1 {
 

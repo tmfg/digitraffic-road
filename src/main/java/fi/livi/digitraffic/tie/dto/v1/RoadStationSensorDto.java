@@ -7,7 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.model.v1.SensorValueDescription;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueDescription;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Road station sensor")
@@ -16,34 +16,34 @@ public abstract class RoadStationSensorDto {
 
     @Schema(description = "Sensor id")
     @JsonProperty("id")
-    private long naturalId;
+    private final long naturalId;
 
     @Schema(description = "Sensor old name. For new sensors will equal name. Will deprecate in future.")
     @JsonProperty(value = "nameOld")
-    private String name;
+    private final String name;
 
     @Schema(description = "Unit of sensor value")
-    private String unit;
+    private final String unit;
 
     @Schema(description = "Sensor name [fi]")
     @JsonProperty(value = "name")
-    private String nameFi;
+    private final String nameFi;
 
     @Schema(description = "Short name for sensor [fi]")
     @JsonProperty(value = "shortName")
-    private String shortNameFi;
+    private final String shortNameFi;
 
     @Schema(description = "Sensor accuracy")
-    private Integer accuracy;
+    private final Integer accuracy;
 
     @Schema(description = "Possible additional descriptions for sensor values")
-    private List<SensorValueDescription> sensorValueDescriptions;
+    private final List<SensorValueDescription> sensorValueDescriptions;
 
     @Schema(description = "Map of descriptions [fi, sv, en]")
-    private Map<String, String> descriptions = new HashMap<>();
+    private final Map<String, String> descriptions = new HashMap<>();
 
     @Schema(description = "Map of presentation names [fi, sv, en]")
-    private Map<String, String> presentationNames = new HashMap<>();
+    private final Map<String, String> presentationNames = new HashMap<>();
 
     public RoadStationSensorDto(long naturalId, String name, String unit, String descriptionFi, String descriptionSv, String descriptionEn,
                                 String nameFi, String shortNameFi, Integer accuracy,

@@ -2,14 +2,12 @@ package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,11 +16,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 
 public class ImsJsonConverterTest extends AbstractServiceTest {
-    private static final Logger log = getLogger(ImsJsonConverterTest.class);
 
     @Autowired
     private ImsJsonConverter imsJsonConverter;
@@ -32,37 +29,37 @@ public class ImsJsonConverterTest extends AbstractServiceTest {
 
     private static final String SITUATION_ID1 = "GUID00000001";
     private static final String SITUATION_ID2 = "GUID00000002";
-    private static final String FEATURE =
-        "{\n" +
-            "  \"type\" : \"Feature\",\n" +
-            "  \"geometry\" : {\n" +
-            "    \"type\" : \"Point\",\n" +
-            "    \"coordinates\" : [ 23.77474, 61.50221 ]\n" +
-            "  },\n" +
-            "  \"properties\" : {\n" +
-            "    \"situationId\" : \"GUID00000001\",\n" +
-            "    \"version\" : 1,\n" +
-            "    \"releaseTime\" : \"2019-12-13T14:43:18.388+02:00\",\n" +
-            "    \"locationToDisplay\" : {\n" +
-            "      \"e\" : 331529.0,\n" +
-            "      \"n\" : 6805963.0\n" +
-            "    },\n" +
-            "    \"announcements\" : [ ],\n" +
-            "    \"contact\" : {\n" +
-            "      \"phone\" : \"12341234\",\n" +
-            "      \"fax\" : \"43214321\",\n" +
-            "      \"email\" : \"paivystys@liikenne.fi\"\n" +
-            "    }\n" +
-            "  }\n" +
-            "}";
+    private static final String FEATURE = """
+                    {
+                      "type" : "Feature",
+                      "geometry" : {
+                        "type" : "Point",
+                        "coordinates" : [ 23.77474, 61.50221 ]
+                      },
+                      "properties" : {
+                        "situationId" : "GUID00000001",
+                        "version" : 1,
+                        "releaseTime" : "2019-12-13T14:43:18.388+02:00",
+                        "locationToDisplay" : {
+                          "e" : 331529.0,
+                          "n" : 6805963.0
+                        },
+                        "announcements" : [ ],
+                        "contact" : {
+                          "phone" : "12341234",
+                          "fax" : "43214321",
+                          "email" : "paivystys@liikenne.fi"
+                        }
+                      }
+                    }""";
 
-    private static final String FEATURE_COLLECTION =
-        "{\n" +
-            "  \"type\": \"FeatureCollection\",\n" +
-            "  \"features\": [\n" +
-            "    FEATURES \n" +
-            "  ]\n" +
-            "}";
+    private static final String FEATURE_COLLECTION = """
+                    {
+                      "type": "FeatureCollection",
+                      "features": [
+                        FEATURES\s
+                      ]
+                    }""";
 
     @Test
     public void parseFeatureJsonsFromImsJson_Feature() throws JsonProcessingException {
@@ -138,7 +135,7 @@ public class ImsJsonConverterTest extends AbstractServiceTest {
     }
 
     private String createFeatureCollectionWithSituations(final String... feature) {
-        final String features = StringUtils.joinWith(", ", feature);
+        final String features = StringUtils.joinWith(", ", (Object[]) feature);
         return StringUtils.replace(FEATURE_COLLECTION, "FEATURES", features);
     }
 }

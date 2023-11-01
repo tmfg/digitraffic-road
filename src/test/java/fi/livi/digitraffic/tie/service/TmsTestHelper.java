@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 

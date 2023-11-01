@@ -1,16 +1,15 @@
 package fi.livi.digitraffic.tie.dto.v1.forecast;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import fi.livi.digitraffic.tie.model.v1.forecastsection.FrictionCondition;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.PrecipitationCondition;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.RoadCondition;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.VisibilityCondition;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.WindCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.FrictionCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.PrecipitationCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.RoadCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.VisibilityCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.WindCondition;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description =

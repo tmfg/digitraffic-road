@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
-import fi.livi.digitraffic.tie.dao.v1.location.LocationRepository;
-import fi.livi.digitraffic.tie.dao.v1.location.LocationSubtypeRepository;
-import fi.livi.digitraffic.tie.dao.v1.location.LocationTypeRepository;
-import fi.livi.digitraffic.tie.dao.v1.location.LocationVersionRepository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.location.LocationRepository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.location.LocationSubtypeRepository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.location.LocationTypeRepository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.location.LocationVersionRepository;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationDtoV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationFeatureV1;
@@ -25,7 +25,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationSubtypeDto
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationTypeDtoV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationTypesDtoV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationVersionDtoV1;
-import fi.livi.digitraffic.tie.model.v1.location.LocationVersion;
+import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationVersion;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service

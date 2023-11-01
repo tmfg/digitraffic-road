@@ -4,13 +4,12 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Traffic Announcement properties", name = "TrafficAnnouncementPropertiesV1")
 @JsonPropertyOrder({

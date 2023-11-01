@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.converter.weather.v1.WeatherStationToFeatureConverterV1;
-import fi.livi.digitraffic.tie.dao.v1.WeatherStationRepository;
+import fi.livi.digitraffic.tie.dao.weather.WeatherStationRepository;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureDetailedV1;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v1.WeatherStation;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
@@ -60,17 +60,13 @@ public class WeatherStationMetadataWebServiceV1 {
     }
 
     private List<WeatherStation> findPublishableStations(final RoadStationState roadStationState) {
-        switch(roadStationState) {
-        case ACTIVE:
-            return weatherStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
-        case REMOVED:
-            return weatherStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
-                (CollectionStatus.REMOVED_PERMANENTLY);
-        case ALL:
-            return weatherStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
-        default:
-            throw new IllegalArgumentException();
-        }
+        return switch (roadStationState) {
+            case ACTIVE -> weatherStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+            case REMOVED -> weatherStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
+                    (CollectionStatus.REMOVED_PERMANENTLY);
+            case ALL -> weatherStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     private Instant getMetadataLastUpdated() {

@@ -9,15 +9,15 @@ import java.util.stream.IntStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 
-import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
-import fi.livi.digitraffic.tie.model.SensorValueHistory;
+import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 
 public class SensorValueHistoryBuilder {
     private final Logger log;
 
-    private SensorValueHistoryRepository repository;
-    private List<SensorValueHistory> list;
-    private List<Integer> createdCounts;
+    private final SensorValueHistoryRepository repository;
+    private final List<SensorValueHistory> list;
+    private final List<Integer> createdCounts;
     private ZonedDateTime refTime;
     private ChronoUnit chronoUnit;
 
@@ -49,17 +49,16 @@ public class SensorValueHistoryBuilder {
      * @param maxSensorId   Max sensor id
      * @param start         Start offset in minutes from current time
      * @param stop          End offset in minuts from current time
-     * @return
+     * @return the builder
      */
     public SensorValueHistoryBuilder buildRandom(int maxAmount, int maxStationId, int maxSensorId, int start, int stop) {
         int count = RandomUtils.nextInt(1, maxAmount);
 
-        IntStream.range(0, count).forEach(i -> {
-            list.add(createDummyModel(RandomUtils.nextLong(1, maxStationId),
-                RandomUtils.nextLong(1, maxSensorId),
-                RandomUtils.nextDouble(0, 10),
-                getTime(start, stop)));
-        });
+        IntStream.range(0, count).forEach(i ->
+                list.add(createDummyModel(RandomUtils.nextLong(1, maxStationId),
+                         RandomUtils.nextLong(1, maxSensorId),
+                         RandomUtils.nextDouble(0, 10),
+                         getTime(start, stop))));
 
         createdCounts.add(count);
 
@@ -70,12 +69,11 @@ public class SensorValueHistoryBuilder {
     public SensorValueHistoryBuilder buildWithStationId(int maxAmount, int stationId, int maxSensorId, int start, int stop) {
         int count = RandomUtils.nextInt(1, maxAmount);
 
-        IntStream.range(0, count).forEach(i -> {
-            list.add(createDummyModel((long)stationId,
-                RandomUtils.nextLong(1, maxSensorId),
-                RandomUtils.nextDouble(0, 10),
-                getTime(start, stop)));
-        });
+        IntStream.range(0, count).forEach(i ->
+                list.add(createDummyModel(stationId,
+                         RandomUtils.nextLong(1, maxSensorId),
+                         RandomUtils.nextDouble(0, 10),
+                         getTime(start, stop))));
 
         createdCounts.add(count);
 
@@ -86,12 +84,11 @@ public class SensorValueHistoryBuilder {
     public SensorValueHistoryBuilder buildWithStationIdAndSensorId(int maxAmount, int stationId, int sensorId, int start, int stop) {
         int count = RandomUtils.nextInt(1, maxAmount);
 
-        IntStream.range(0, count).forEach(i -> {
-            list.add(createDummyModel((long)stationId,
-                (long)sensorId,
-                RandomUtils.nextDouble(0, 10),
-                getTime(start, stop)));
-        });
+        IntStream.range(0, count).forEach(i ->
+                list.add(createDummyModel(stationId,
+                         sensorId,
+                         RandomUtils.nextDouble(0, 10),
+                         getTime(start, stop))));
 
         createdCounts.add(count);
 

@@ -11,21 +11,20 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Situation;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2SituationRecord;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2SituationRecordType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2SituationRecordValidyStatus;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
+import jakarta.persistence.EntityManager;
 
 public class Datex2RepositoryTest extends AbstractJpaTest {
 
@@ -70,7 +69,6 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                     assertCollectionSize(1, found);
                     assertEquals(type, found.get(0).getSituationType());
                     assertEquals(trafficAnnouncementType, found.get(0).getTrafficAnnouncementType());
-                    assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
                 }
             } else {
                 createAndSaveDatex2Message(type, null);
@@ -78,7 +76,6 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                 assertCollectionSize(1, found);
                 assertEquals(type, found.get(0).getSituationType());
                 assertNull(found.get(0).getTrafficAnnouncementType());
-                assertEquals(type.getDatex2MessageType(), found.get(0).getMessageType());
             }
 
         }

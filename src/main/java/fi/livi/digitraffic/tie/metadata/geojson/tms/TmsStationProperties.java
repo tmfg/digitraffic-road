@@ -12,8 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.model.CalculatorDeviceType;
-import fi.livi.digitraffic.tie.model.TmsStationType;
+import fi.livi.digitraffic.tie.model.tms.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.tms.TmsStationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "TMS station properties", name = "TmsStationProperties")

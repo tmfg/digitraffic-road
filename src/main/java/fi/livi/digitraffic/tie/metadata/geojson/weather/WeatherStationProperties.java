@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.metadata.geojson.roadstation.RoadStationProperties;
-import fi.livi.digitraffic.tie.model.WeatherStationType;
+import fi.livi.digitraffic.tie.model.weather.WeatherStationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Weather Station properties", name = "WeatherStationProperties")

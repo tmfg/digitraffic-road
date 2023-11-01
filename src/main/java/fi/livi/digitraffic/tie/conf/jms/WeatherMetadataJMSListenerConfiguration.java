@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMetadataUpdatedMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherMetadataUpdateMessageHandler;
+import fi.livi.digitraffic.tie.service.weather.WeatherMetadataUpdateMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.weather.meta.inQueue")

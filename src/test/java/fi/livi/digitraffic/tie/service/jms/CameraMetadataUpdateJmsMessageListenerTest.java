@@ -35,19 +35,19 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dao.v1.CameraPresetRepository;
+import fi.livi.digitraffic.tie.dao.weathercam.CameraPresetRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto.EntityType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataUpdateMessageHandler;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraMetadataUpdateMessageHandler;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
 public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataUpdateJmsMessageListenerTest.class);
@@ -65,14 +65,15 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
     @Autowired
     private CameraPresetRepository cameraPresetRepository;
 
-    private JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater;
     private JMSMessageListener<CameraMetadataUpdatedMessageDto> cameraMetadataJmsMessageListener;
 
     @BeforeEach
     public void initListener() {
         // Create listener
-        this.dataUpdater = (data) -> cameraMetadataUpdateMessageHandler.updateMetadataFromJms(data);
-        cameraMetadataJmsMessageListener = new JMSMessageListener<>(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller), dataUpdater, false, log);
+        final JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater =
+                (data) -> cameraMetadataUpdateMessageHandler.updateMetadataFromJms(data);
+        cameraMetadataJmsMessageListener = new JMSMessageListener<>(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller),
+                dataUpdater, false, log);
     }
 
     @Test
@@ -226,21 +227,6 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         assertFalse(preset2.isPublishable());
     }
 
-    private enum Tyyppi {
-        PAIVITYS,
-        LISAYS,
-        POISTO
-    }
-
-    private enum Entiteetti {
-        KAMERA,
-        VIDEOPALVELIN,
-        KAMERAKOKOONPANO,
-        ESIASENTO,
-        MASTER_TIETOVARASTO,
-        TIEOSOITE
-    }
-
     private List<CameraPreset> createAndSaveCameraPresets(final int count) {
         final AtomicReference<RoadStation> rs = new AtomicReference<>();
         return IntStream.range(0, count).mapToObj(i -> {
@@ -275,12 +261,10 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         for(long id : lotjuIds) {
             asemaIds.append("        <id>").append(id).append("</id>\n");
         }
-        return String.format(
-            "<metatietomuutos tyyppi=\"%s\" aika=\"%s\" entiteetti=\"TIEOSOITE\" id=\"%d\">\n" +
-            "    <asemat>\n" +
-            "%s" +
-            "    </asemat>\n" +
-            "</metatietomuutos>",
+        return String.format("""
+                        <metatietomuutos tyyppi="%s" aika="%s" entiteetti="TIEOSOITE" id="%d">
+                            <asemat>%s</asemat>
+                        </metatietomuutos>""",
             tyyppi.getExternalValue(), Instant.now(), lotjuId, asemaIds);
     }
 

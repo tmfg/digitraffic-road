@@ -14,31 +14,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AlertCLocation;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.Feature;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.LocationDetails;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddress;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadPoint;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TimeAndDuration;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.TrafficAnnouncementProperties;
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AlertCLocation;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Feature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.LocationDetails;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadAddress;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadAddressLocation;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadPoint;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TimeAndDuration;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2Situation;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecord;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordType;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2SituationRecordValidyStatus;
-import fi.livi.digitraffic.tie.model.v1.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Situation;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2SituationRecord;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2SituationRecordType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2SituationRecordValidyStatus;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 
 @Component
 public class WazeFeedServiceTestHelper {
 
-    private final ObjectMapper objectMapper;
     private final Datex2Repository datex2Repository;
     private final ObjectWriter genericJsonWriter;
 
@@ -47,8 +46,6 @@ public class WazeFeedServiceTestHelper {
     @Autowired
     WazeFeedServiceTestHelper(final ObjectMapper objectMapper, final Datex2Repository datex2Repository) {
         this.datex2Repository = datex2Repository;
-
-        this.objectMapper = objectMapper;
         this.genericJsonWriter = objectMapper.writer();
     }
 
@@ -78,7 +75,7 @@ public class WazeFeedServiceTestHelper {
         final SituationParams params = new SituationParams(
             situationId,
             ZonedDateTime.now(),
-            TrafficAnnouncementType.ACCIDENT_REPORT,
+            fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.ACCIDENT_REPORT,
             direction,
             geometry
         );
@@ -95,8 +92,9 @@ public class WazeFeedServiceTestHelper {
     }
 
     void insertSituation(final String situationId, final String situationRecordId, final String datex2Message, final SituationParams params,
-                                final TrafficAnnouncementType datex2TrafficAnnouncementType) {
-        final Datex2 datex2 = new Datex2(SituationType.TRAFFIC_ANNOUNCEMENT, datex2TrafficAnnouncementType);
+                                final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType datex2TrafficAnnouncementType) {
+        final Datex2 datex2 = new Datex2(SituationType.TRAFFIC_ANNOUNCEMENT,
+                                         TrafficAnnouncementType.fromValue(datex2TrafficAnnouncementType.name()));
         final Datex2Situation situation = new Datex2Situation();
         final Datex2SituationRecord situationRecord = new Datex2SituationRecord();
         final ZonedDateTime dateTimeNow = ZonedDateTime.now();
@@ -137,8 +135,7 @@ public class WazeFeedServiceTestHelper {
     static class SituationParams {
         String situationId;
         Geometry<?> geometry;
-        TrafficAnnouncementType trafficAnnouncementType;
-
+        fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType trafficAnnouncementType;
         final ZonedDateTime startTime;
         final RoadAddressLocation.Direction direction;
 
@@ -146,20 +143,20 @@ public class WazeFeedServiceTestHelper {
             this(
                 null,
                 ZonedDateTime.now(),
-                TrafficAnnouncementType.ACCIDENT_REPORT,
+                fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.ACCIDENT_REPORT,
                 RoadAddressLocation.Direction.UNKNOWN
             );
         }
 
         SituationParams(final String situationId, final ZonedDateTime startTime,
-                               final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction) {
+                               final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction) {
             this(situationId, startTime, trafficAnnouncementType, direction, null);
 
             this.geometry = createDummyGeometry();
         }
 
         SituationParams(final String situationId, final ZonedDateTime startTime,
-                               final TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
+                               final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
                                final Geometry<?> geometry) {
             this.situationId = situationId;
             this.startTime = startTime;
@@ -197,7 +194,6 @@ public class WazeFeedServiceTestHelper {
             try {
                 json = genericJsonWriter.writeValueAsString(feature);
             } catch (final JsonProcessingException e) {
-                e.printStackTrace();
                 throw new RuntimeException(e);
             }
 
@@ -237,7 +233,7 @@ public class WazeFeedServiceTestHelper {
             return new TrafficAnnouncementProperties(
                 this.situationId,
                 11,
-                SituationType.TRAFFIC_ANNOUNCEMENT,
+                fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT,
                 this.trafficAnnouncementType,
                 null,
                 null,

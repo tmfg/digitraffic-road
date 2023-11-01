@@ -1,0 +1,1 @@
+ALTER table datex2 drop column message_type;

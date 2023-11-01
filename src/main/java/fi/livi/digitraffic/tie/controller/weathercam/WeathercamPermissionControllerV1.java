@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.controller.weathercam;
 
 import static fi.livi.digitraffic.tie.controller.weathercam.WeathercamPermissionControllerV1.WEATHERCAM_PATH;
-import static fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus.PUBLIC;
+import static fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus.PUBLIC;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus;
 
 @RestController
 @Validated

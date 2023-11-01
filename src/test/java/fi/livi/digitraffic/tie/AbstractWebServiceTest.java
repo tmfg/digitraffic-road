@@ -18,31 +18,29 @@ import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
 import fi.livi.digitraffic.tie.converter.tms.v1.TmsStationToFeatureConverterV1;
 import fi.livi.digitraffic.tie.converter.weather.v1.WeatherStationToFeatureConverterV1;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationDao;
-import fi.livi.digitraffic.tie.dao.v1.SensorValueDao;
-import fi.livi.digitraffic.tie.dao.v1.TmsSensorConstantDao;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationDao;
+import fi.livi.digitraffic.tie.dao.roadstation.SensorValueDao;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingMqttDataService;
+import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingMqttDataService;
+import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingUpdateServiceV1;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1;
-import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingUpdateServiceV1;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingWebDataServiceV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
+import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
+import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
-import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
-import fi.livi.digitraffic.tie.service.trafficmessage.V2Datex2JsonConverter;
+import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationSensorConstantService;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationService;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryDataService;
+import fi.livi.digitraffic.tie.service.weather.WeatherStationService;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
 
@@ -62,15 +60,15 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
 
          // Old Services
          TmsStationService.class, DataStatusService.class, TmsStationSensorConstantService.class, StationSensorConverterService.class,
-         V3RegionGeometryDataService.class, WeatherStationService.class,
+         WeatherStationService.class,
 
          // Repositories and daos
-         TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, MaintenanceTrackingDaoV1.class,
+         TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, MaintenanceTrackingDao.class,
 
          // Conveters
          TmsStationToFeatureConverterV1.class,
          WeatherStationToFeatureConverterV1.class,
-         TrafficMessageJsonConverterV1.class, V2Datex2JsonConverter.class, ImsJsonConverter.class, CoordinateConverter.class,
+         TrafficMessageImsJsonConverterV1.class, ImsJsonConverter.class, CoordinateConverter.class,
 
          // Test helpers etc.
          TmsTestHelper.class, TrafficMessageTestHelper.class, MaintenanceTrackingServiceTestHelperV1.class, MaintenanceTrackingUpdateServiceV1.class

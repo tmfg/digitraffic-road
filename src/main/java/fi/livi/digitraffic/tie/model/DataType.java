@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.model;
 
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+
 public enum DataType {
 
     CAMERA_STATION_METADATA,

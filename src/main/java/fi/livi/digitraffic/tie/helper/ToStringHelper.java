@@ -14,9 +14,9 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
-import fi.livi.digitraffic.tie.model.v1.TmsSensorConstant;
-import fi.livi.digitraffic.tie.model.v1.TmsSensorConstantValue;
-import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.model.tms.TmsSensorConstant;
+import fi.livi.digitraffic.tie.model.tms.TmsSensorConstantValue;
+import fi.livi.digitraffic.tie.model.tms.TmsStation;
 
 /**
  * Provides helper functions to stringify objects for logging
@@ -109,7 +109,7 @@ public class ToStringHelper {
     }
 
     private static void removeLastFieldSeparatorFromEnd(final StringBuffer sb) {
-        if (sb.length() > 0 && sb.lastIndexOf(",") == (sb.length() - 1)) {
+        if (!sb.isEmpty() && sb.lastIndexOf(",") == (sb.length() - 1)) {
             sb.setLength(sb.length()-1); // remove last char","
         }
     }

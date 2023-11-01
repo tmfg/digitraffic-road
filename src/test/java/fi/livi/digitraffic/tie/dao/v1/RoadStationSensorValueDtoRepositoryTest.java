@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractJpaTest;
-import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorValueDtoRepository;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 
 public class RoadStationSensorValueDtoRepositoryTest extends AbstractJpaTest {
 

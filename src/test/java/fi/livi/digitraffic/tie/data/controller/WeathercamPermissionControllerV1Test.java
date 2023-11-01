@@ -22,9 +22,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.controller.weathercam.WeathercamPermissionControllerV1;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryDataService.HistoryStatus;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus;
 
 public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
 

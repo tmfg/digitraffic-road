@@ -22,16 +22,16 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.dao.v1.forecast.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.dao.v2.V2ForecastSectionMetadataDao;
+import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.dao.weather.forecast.V2ForecastSectionMetadataDao;
+import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RestTemplateGzipService;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionApiVersion;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionClient;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionDataUpdater;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionTestHelper;
-import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionV1MetadataUpdater;
-import fi.livi.digitraffic.tie.service.v2.forecastsection.V2ForecastSectionMetadataUpdater;
+import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionClient;
+import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionDataUpdater;
+import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionTestHelper;
+import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionV1MetadataUpdater;
+import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionV2MetadataUpdater;
 
 public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
 
@@ -64,8 +64,8 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
 
         final ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater =
             new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
-        final V2ForecastSectionMetadataUpdater v2ForecastSectionMetadataUpdater =
-            new V2ForecastSectionMetadataUpdater(forecastSectionClient, forecastSectionRepository,
+        final ForecastSectionV2MetadataUpdater forecastSectionV2MetadataUpdater =
+            new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionRepository,
                                                  v2ForecastSectionMetadataDao, dataStatusService);
 
         final ForecastSectionDataUpdater forecastSectionDataUpdater =
@@ -80,7 +80,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
         forecastSectionTestHelper.serverExpectData(server,2);
 
         forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
-        v2ForecastSectionMetadataUpdater.updateForecastSectionsV2Metadata();
+        forecastSectionV2MetadataUpdater.updateForecastSectionsV2Metadata();
         forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V1);
         forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V2);
         entityManager.flush();

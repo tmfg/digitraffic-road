@@ -13,7 +13,7 @@ import com.amazonaws.services.s3.AmazonS3;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer;
 
 public class CameraImageS3WriterTest extends AbstractDaemonTest {
 
@@ -32,9 +32,7 @@ public class CameraImageS3WriterTest extends AbstractDaemonTest {
         final String regex = new WeathercamS3Properties("fakeBucket","fakeRegion",1,"fakeBaseUrl").getS3WeathercamKeyRegexp();
         final String errorMessage = String.format("S3 key should match regexp format \"%s\" ie. \"C1234567.jpg\" but was \"%s\"", regex, key);
 
-        assertThrows(RuntimeException.class, () -> {
-            cameraImageS3Writer.writeCurrentImage(imgData, "BAD_KEY", nowEpochMilli);
-        }, errorMessage);
+        assertThrows(RuntimeException.class, () -> cameraImageS3Writer.writeCurrentImage(imgData, "BAD_KEY", nowEpochMilli), errorMessage);
 
         Assertions.assertDoesNotThrow(() -> cameraImageS3Writer.writeCurrentImage(imgData, key, nowEpochMilli));
     }

@@ -8,13 +8,18 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.service.SensorDataS3Writer;
-import fi.livi.digitraffic.tie.service.v1.SensorDataUpdateService;
+import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 
 @DisallowConcurrentExecution
 public class WeatherHistoryUpdateJob extends SimpleUpdateJob {
 
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private SensorDataUpdateService sensorDataUpdateService;
+
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private SensorDataS3Writer sensorDataS3Writer;
 

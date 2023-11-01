@@ -13,12 +13,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageReader;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageS3Writer;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateHandler;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageReader;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateHandler;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
 public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
 

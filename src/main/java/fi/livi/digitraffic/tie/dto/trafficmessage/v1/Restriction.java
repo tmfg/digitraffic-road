@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
+import fi.livi.digitraffic.tie.dto.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "A single phase in a larger road work", name = "RestrictionV1")

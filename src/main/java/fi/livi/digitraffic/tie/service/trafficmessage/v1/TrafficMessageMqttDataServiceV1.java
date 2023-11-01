@@ -1,10 +1,11 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
-import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingUpdateServiceV1;
-import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +14,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
+import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingUpdateServiceV1;
+import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 
 /**
  * This service returns traffic messages data for public use in MQTT
@@ -31,11 +32,11 @@ public class TrafficMessageMqttDataServiceV1 {
     private static final Logger log = LoggerFactory.getLogger(TrafficMessageMqttDataServiceV1.class);
 
     private final Datex2Repository datex2Repository;
-    private final TrafficMessageJsonConverterV1 trafficMessageJsonConverterV1;
+    private final TrafficMessageImsJsonConverterV1 trafficMessageJsonConverterV1;
 
     @Autowired
     public TrafficMessageMqttDataServiceV1(final Datex2Repository datex2Repository,
-                                           final TrafficMessageJsonConverterV1 trafficMessageJsonConverterV1) {
+                                           final TrafficMessageImsJsonConverterV1 trafficMessageJsonConverterV1) {
         this.datex2Repository = datex2Repository;
         this.trafficMessageJsonConverterV1 = trafficMessageJsonConverterV1;
     }

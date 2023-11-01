@@ -4,8 +4,8 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import fi.livi.digitraffic.tie.dto.JsonAdditionalProperties;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.model.JsonAdditionalProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Sender's contact information", name = "ContactV1")

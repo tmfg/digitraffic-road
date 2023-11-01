@@ -13,7 +13,7 @@ import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VA
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1.FromToParamType.CREATED_TIME;
 import static fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1.FromToParamType.END_TIME;
-import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.STATE_ROADS_DOMAIN;
+import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.STATE_ROADS_DOMAIN;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 import static java.time.temporal.ChronoUnit.HOURS;
 

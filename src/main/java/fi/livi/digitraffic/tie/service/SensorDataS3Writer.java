@@ -21,10 +21,10 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 
 import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
-import fi.livi.digitraffic.tie.dao.SensorValueHistoryRepository;
-import fi.livi.digitraffic.tie.dto.WeatherSensorValueHistoryDto;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.SensorValueHistory;
+import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 
 @Component
 @ConditionalOnNotWebApplication

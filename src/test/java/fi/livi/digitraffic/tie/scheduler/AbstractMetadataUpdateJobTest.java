@@ -9,14 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.support.destination.DestinationProvider;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
-import fi.livi.digitraffic.tie.service.v1.lotju.AbstractLotjuMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.lotju.MultiDestinationProvider;
+import fi.livi.digitraffic.tie.service.lotju.AbstractLotjuMetadataClient;
+import fi.livi.digitraffic.tie.service.lotju.MultiDestinationProvider;
 
 public abstract class AbstractMetadataUpdateJobTest extends AbstractDaemonTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMetadataUpdateJobTest.class);
 
-    private Map<AbstractLotjuMetadataClient, DestinationProvider> lotjuClienOriginalDestinationProvider = new HashMap<>();
+    private final Map<AbstractLotjuMetadataClient, DestinationProvider> lotjuClienOriginalDestinationProvider = new HashMap<>();
 
     public void setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(final AbstractLotjuMetadataClient lotjuClient) {
         final AbstractLotjuMetadataClient tgt = getTargetObject(lotjuClient);

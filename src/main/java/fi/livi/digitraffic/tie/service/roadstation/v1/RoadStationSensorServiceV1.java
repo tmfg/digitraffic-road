@@ -10,35 +10,29 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.v1.RoadStationSensorValueDtoRepositoryV1;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
 public class RoadStationSensorServiceV1 {
-    private static final Logger log = LoggerFactory.getLogger(RoadStationSensorServiceV1.class);
 
     private final RoadStationSensorValueDtoRepositoryV1 roadStationSensorValueDtoRepositoryV1;
     private final RoadStationSensorRepository roadStationSensorRepository;
     private final RoadStationRepository roadStationRepository;
     private final DataStatusService dataStatusService;
-    private final EntityManager entityManager;
 
     private final Map<RoadStationType, Integer> sensorValueTimeLimitInMins;
 
@@ -47,7 +41,6 @@ public class RoadStationSensorServiceV1 {
                                       final RoadStationSensorRepository roadStationSensorRepository,
                                       final DataStatusService dataStatusService,
                                       final RoadStationRepository roadStationRepository,
-                                      final EntityManager entityManager,
                                       @Value("${weatherStation.sensorValueTimeLimitInMinutes}")
                                       final int weatherStationSensorValueTimeLimitInMins,
                                       @Value("${tmsStation.sensorValueTimeLimitInMinutes}")
@@ -56,7 +49,6 @@ public class RoadStationSensorServiceV1 {
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.roadStationRepository = roadStationRepository;
         this.dataStatusService = dataStatusService;
-        this.entityManager = entityManager;
 
         sensorValueTimeLimitInMins = new EnumMap<>(RoadStationType.class);
         sensorValueTimeLimitInMins.put(RoadStationType.WEATHER_STATION, weatherStationSensorValueTimeLimitInMins);

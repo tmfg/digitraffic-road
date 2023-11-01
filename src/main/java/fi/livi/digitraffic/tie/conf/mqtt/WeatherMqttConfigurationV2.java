@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.WEATHER;
+import static fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue.StatisticsType.WEATHER;
 
 import java.time.Instant;
 import java.util.Comparator;
@@ -20,12 +20,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.aop.NoJobLogging;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
-import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
 
 @ConditionalOnProperty("mqtt.weather.v2.enabled")
 @ConditionalOnNotWebApplication

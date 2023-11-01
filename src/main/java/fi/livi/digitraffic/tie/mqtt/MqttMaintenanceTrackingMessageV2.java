@@ -1,13 +1,14 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import fi.livi.digitraffic.tie.dto.maintenance.mqtt.MaintenanceTrackingForMqttV2;
-import fi.livi.digitraffic.tie.helper.GeometryConstants;
-import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
+import static fi.livi.digitraffic.tie.helper.MathUtils.roundToScale;
 
 import java.util.Set;
 
-import static fi.livi.digitraffic.tie.helper.MqttUtil.roundToScale;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import fi.livi.digitraffic.tie.dto.maintenance.mqtt.MaintenanceTrackingForMqttV2;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MqttMaintenanceTrackingMessageV2 {

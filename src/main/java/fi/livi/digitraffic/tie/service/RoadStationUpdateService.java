@@ -4,13 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaUpdate;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.EntityType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
 
-import fi.livi.digitraffic.tie.dao.v1.RoadAddressRepository;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadAddressRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadAddress;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.service.v1.camera.AbstractCameraStationAttributeUpdater;
-import fi.livi.digitraffic.tie.service.v1.tms.AbstractTmsStationAttributeUpdater;
-import fi.livi.digitraffic.tie.service.v1.weather.AbstractWeatherStationAttributeUpdater;
+import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.service.tms.AbstractTmsStationAttributeUpdater;
+import fi.livi.digitraffic.tie.service.weather.AbstractWeatherStationAttributeUpdater;
+import fi.livi.digitraffic.tie.service.weathercam.AbstractCameraStationAttributeUpdater;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.EntityType;
 
 @ConditionalOnNotWebApplication
 @Service

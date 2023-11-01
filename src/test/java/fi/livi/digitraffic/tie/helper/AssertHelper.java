@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -55,4 +56,30 @@ public final class AssertHelper {
         final Optional<?> first = collection.stream().filter(e -> e.equals(objectToFind)).findFirst();
         assertTrue(first.isPresent(), "Element " + objectToFind + " not found in collection");
     }
+
+    public static void assertGe(final long compare, final int to) {
+        assertGe(compare, to, -1);
+    }
+
+    public static void assertGe(final long compare, final int to, final int maxDiff) {
+        assertTrue(compare >= to, MessageFormat.format("{0} >= {1} was false", compare, to));
+        if (maxDiff >= 0) {
+            final long diff = compare - to;
+            System.out.println(diff);
+            assertTrue(diff <= maxDiff, MessageFormat.format("{0} - {1} == {2} > {3} (maxDiff)", compare, to, diff, maxDiff));
+        }
+    }
+
+    public static void assertLe(final long compare, final int to) {
+        assertGe(compare, to, -1);
+    }
+
+    public static void assertLe(final long compare, final int to, final int maxDiff) {
+        assertTrue(compare <= to, MessageFormat.format("{0} <= {1} was false", compare, to));
+        if (maxDiff >= 0) {
+            final long diff = to - compare;
+            assertTrue(diff <= maxDiff, MessageFormat.format("{0} - {1} == {2} > {3} (maxDiff)",  to, compare, diff, maxDiff));
+        }
+    }
+
 }

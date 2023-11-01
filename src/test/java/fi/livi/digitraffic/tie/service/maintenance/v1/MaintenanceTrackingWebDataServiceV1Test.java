@@ -4,7 +4,7 @@ import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartN
 import static fi.livi.digitraffic.tie.TestUtils.flushCommitEndTransactionAndStartNew;
 import static fi.livi.digitraffic.tie.TestUtils.getRandom;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
-import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.STATE_ROADS_DOMAIN;
+import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.STATE_ROADS_DOMAIN;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUS_JA_SOHJONPOISTO;
 import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
@@ -27,7 +27,6 @@ import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTracking
 import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.getStartTimeOneHourInPast;
 import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.getTaskSetWithIndex;
 import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.getTaskWithIndex;
-import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static org.apache.sshd.common.util.GenericUtils.asSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -78,7 +77,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
@@ -87,6 +86,7 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingPropertiesV
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -113,7 +113,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     private MaintenanceTrackingServiceTestHelperV1 testHelper;
 
     @Autowired
-    private MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
+    private MaintenanceTrackingRepository maintenanceTrackingRepository;
 
     @Autowired
     private DataStatusService dataStatusService;
@@ -157,7 +157,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             .setParameter("domain", STATE_ROADS_DOMAIN)
             .executeUpdate();
 
-        final List<MaintenanceTracking> all = maintenanceTrackingRepositoryV1.findAll(Sort.by("endTime"));
+        final List<MaintenanceTracking> all = maintenanceTrackingRepository.findAll(Sort.by("endTime"));
         assertCollectionSize(2, all);
 
         final MaintenanceTracking first = all.get(0);
@@ -630,7 +630,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         testHelper.handleUnhandledWorkMachineObservations(1000);
         // created time = transaction start time
         // +1s to next creation time
-        sleep(1000);
+        ThreadUtils.delayMs(1000);
         flushCommitEndTransactionAndStartNew(entityManager);
         testHelper.saveTrackingDataAsObservations(seuranta2);
         testHelper.handleUnhandledWorkMachineObservations(1000);
@@ -663,14 +663,14 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // tracking for firstDomain
         testHelper.insertTrackingForDomain(firstDomain, wm1.getId());
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, firstDomain);
-        sleep(2000); // delay creation with 2 s
+        ThreadUtils.delayMs(2000); // delay creation with 2 s
         // tracking for secondDomain 2 s later
         flushCommitEndTransactionAndStartNew(entityManager);
         testHelper.insertTrackingForDomain(secondDomain, wm2.getId());
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, secondDomain);
         flushCommitEndTransactionAndStartNew(entityManager);
 
-        final List<MaintenanceTracking> all = maintenanceTrackingRepositoryV1.findAll(Sort.by("created"));
+        final List<MaintenanceTracking> all = maintenanceTrackingRepository.findAll(Sort.by("created"));
         assertCollectionSize(2, all);
         final MaintenanceTracking first = all.get(0);
         final MaintenanceTracking second = all.get(1);

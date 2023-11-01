@@ -5,7 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesDetailedV1;
-import fi.livi.digitraffic.tie.model.WeatherStationType;
+import fi.livi.digitraffic.tie.model.weather.WeatherStationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Weather station properties object with basic information")

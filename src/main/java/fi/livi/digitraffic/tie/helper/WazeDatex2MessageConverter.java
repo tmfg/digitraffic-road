@@ -250,7 +250,7 @@ import org.springframework.stereotype.Component;
 
 import com.sun.xml.ws.util.StringUtils;
 
-import fi.livi.digitraffic.tie.converter.WazeDatex2Converter;
+import fi.livi.digitraffic.tie.converter.waze.WazeDatex2Converter;
 import fi.livi.digitraffic.tie.datex2.AbnormalTraffic;
 import fi.livi.digitraffic.tie.datex2.AbnormalTrafficExtensionType;
 import fi.livi.digitraffic.tie.datex2.AbnormalTrafficTypeEnum;
@@ -298,7 +298,7 @@ import fi.livi.digitraffic.tie.datex2.VehicleObstruction;
 import fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditions;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
 
 @Component
 public class WazeDatex2MessageConverter {
@@ -760,7 +760,7 @@ public class WazeDatex2MessageConverter {
             .map(x -> nonWeatherRelatedRoadConditionTypeEnumStringMap.getOrDefault(x, null))
             .collect(Collectors.joining(". "));
 
-        if (nonweatherRelatedRoadConditionTypes.equals("")) {
+        if (nonweatherRelatedRoadConditionTypes.isEmpty()) {
             return Optional.empty();
         }
 

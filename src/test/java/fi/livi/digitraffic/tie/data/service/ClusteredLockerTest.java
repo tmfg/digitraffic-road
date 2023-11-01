@@ -16,8 +16,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
-import jakarta.transaction.Transactional;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.LockingRepository.LockInfo;
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import jakarta.transaction.Transactional;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class ClusteredLockerTest extends AbstractServiceTest {
@@ -63,7 +63,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         }
 
         while (futures.stream().anyMatch(f -> !f.isDone())) {
-            sleep(100);
+            ThreadUtils.delayMs(100);
         }
 
         assertEquals(lockInfos.size(), THREAD_COUNT * LOCK_COUNT);
@@ -137,7 +137,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         }
 
         while (futures.stream().anyMatch(f -> !f.isDone())) {
-            sleep(100);
+            ThreadUtils.delayMs(100);
         }
 
         assertEquals(lockInfos.size(), THREAD_COUNT * LOCK_COUNT);
@@ -163,11 +163,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
 
     private void waitCompletion(final Future<Boolean> future) {
         while(!future.isDone()) {
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            ThreadUtils.delayMs(5);
         }
     }
 
@@ -213,7 +209,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
                     log.info("Acquired Lock {} from {} to {} for instanceId {}", info.getLockName(), info.getLockLocked(), info.getLockExpires(), info.getInstanceId() );
                     counter++;
                     // Sleep little more than expiration time so another thread should get the lock
-                    sleep(LOCK_EXPIRATION_S * 1000 + LOCK_EXPIRATION_DELTA_MS);
+                    ThreadUtils.delayMs(LOCK_EXPIRATION_S * 1000 + LOCK_EXPIRATION_DELTA_MS);
                 }
             }
         }
@@ -248,20 +244,11 @@ public class ClusteredLockerTest extends AbstractServiceTest {
                 counter++;
 
                 // Sleep little and then release the lock for next thread
-                sleep(200);
+                ThreadUtils.delayMs(200);
                 clusteredLocker.unlock(lock);
                 // Sleep to make sure next thread will try the lock
-                sleep(200);
+                ThreadUtils.delayMs(200);
             }
         }
     }
-
-    private void sleep(final long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            log.error("Sleep error" , e);
-        }
-    }
-
 }

@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.AbstractWebServiceTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureDetailedV1;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 
 /** Test for {@link TmsStationMetadataWebServiceV1} */
 public class TmsStationMetadataWebServiceV1Test extends AbstractWebServiceTest {

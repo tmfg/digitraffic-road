@@ -14,7 +14,7 @@ import fi.livi.digitraffic.tie.AbstractWebServiceTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureDetailedV1;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 
 /** Test for {@link WeatherStationMetadataWebServiceV1} */
 public class WeatherStationMetadataWebServiceV1Test extends AbstractWebServiceTest {

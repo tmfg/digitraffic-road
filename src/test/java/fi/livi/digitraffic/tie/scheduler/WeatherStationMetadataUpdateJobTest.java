@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.scheduler;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -17,15 +18,15 @@ import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureCollectionSim
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureDetailedV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureSimpleV1;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuWeatherStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationSensorUpdater;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationUpdater;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationsSensorsUpdater;
+import fi.livi.digitraffic.tie.service.lotju.LotjuTiesaaPerustiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.lotju.LotjuWeatherStationMetadataClient;
+import fi.livi.digitraffic.tie.service.weather.WeatherStationSensorUpdater;
+import fi.livi.digitraffic.tie.service.weather.WeatherStationUpdater;
+import fi.livi.digitraffic.tie.service.weather.WeatherStationsSensorsUpdater;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
 
 public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
@@ -149,7 +150,7 @@ public class WeatherStationMetadataUpdateJobTest extends AbstractMetadataUpdateJ
 
         assertNotNull(sensorInitial);
         assertEquals("EsitysFi", sensorInitial.getPresentationNameFi());
-        assertEquals("EsitysFi2", sensorAfter.getPresentationNameFi());
+        assertEquals("EsitysFi2", requireNonNull(sensorAfter).getPresentationNameFi());
 
         assertEquals("EsitysSe", sensorInitial.getPresentationNameSv());
         assertEquals("EsitysSe2", sensorAfter.getPresentationNameSv());

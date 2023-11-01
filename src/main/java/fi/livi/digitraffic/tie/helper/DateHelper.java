@@ -61,15 +61,6 @@ public final class DateHelper {
         return LAST_MODIFIED_FORMATTER.format(roundInstantSeconds(instant));
     }
 
-        public static ZonedDateTime getGreatestAtUtc(final ZonedDateTime first, final ZonedDateTime second) {
-        if (first == null) {
-            return toZonedDateTimeAtUtc(second);
-        } else if(second == null || first.isAfter(second)) {
-            return toZonedDateTimeAtUtc(first);
-        }
-        return toZonedDateTimeAtUtc(second);
-    }
-
     public static Instant getGreatest(final Instant first, final Instant second) {
         if (first == null) {
             return second;
@@ -264,4 +255,9 @@ public final class DateHelper {
         final LocalDate parsedDate = LocalDate.parse(isoLocalDate, ISO_DATE_FORMATTER);
         return HTTP_DATE_FORMATTER.format(parsedDate.atStartOfDay(GMT_ZONE));
     }
+
+    public static Long getEpochSeconds(final Instant time) {
+        return time == null ? null : time.getEpochSecond();
+    }
+
 }

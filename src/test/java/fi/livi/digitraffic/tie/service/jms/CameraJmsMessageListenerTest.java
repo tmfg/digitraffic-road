@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import jakarta.persistence.EntityManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -48,14 +47,16 @@ import com.amazonaws.services.s3.model.S3Object;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraImageUpdateManager;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
+import jakarta.persistence.EntityManager;
 
 @Disabled("Does not execute properly in CI server")
 public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
@@ -91,7 +92,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     @Value("${metadata.server.path.image}")
     private String LOTJU_IMAGE_PATH;
 
-    private Map<String, byte[]> imageFilesMap = new HashMap<>();
+    private final Map<String, byte[]> imageFilesMap = new HashMap<>();
     @BeforeEach
     public void initData() throws IOException {
         log.info("LOTJU_IMAGE_PATH={}", LOTJU_IMAGE_PATH);
@@ -233,14 +234,10 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
             log.info("Data handle took " + sw.getTime() + " ms");
             handleDataTotalTime += sw.getTime();
 
-            try {
-                // send data with 1 s intervall
-                long sleep = 1000 - generation;
-                if (sleep > 0) {
-                    Thread.sleep(sleep);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            // send data with 1 s intervall
+            long sleep = 1000 - generation;
+            if (sleep > 0) {
+                ThreadUtils.delayMs(sleep);
             }
         }
         log.info("Handle kuva data total took {} ms and max was {} ms success={}",

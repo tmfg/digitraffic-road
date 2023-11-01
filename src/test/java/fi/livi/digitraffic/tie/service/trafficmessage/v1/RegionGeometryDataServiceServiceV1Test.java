@@ -20,15 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericApplicationContext;
 
 import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryGitMock;
-import fi.livi.digitraffic.tie.dao.v3.RegionGeometryRepository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.RegionGeometryRepository;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProperties;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.AreaType;
-import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
+import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryTestHelper;
-import fi.livi.digitraffic.tie.service.v2.datex2.V3RegionGeometryTestHelper;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
+import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper;
+import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryUpdateJobTestHelper;
+import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryUpdateService;
 
 public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTestWithRegionGeometryGitMock {
 
@@ -41,13 +41,13 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
     @Autowired
     private GenericApplicationContext applicationContext;
 
-    private V3RegionGeometryTestHelper v3RegionGeometryTestHelper;
+    private RegionGeometryUpdateJobTestHelper v3RegionGeometryTestHelper;
 
     @BeforeEach
     public void init() {
-        final V3RegionGeometryUpdateService v3RegionGeometryUpdateService =
-            applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryUpdateService.class);
-        v3RegionGeometryTestHelper = new V3RegionGeometryTestHelper(regionGeometryGitClientMock, v3RegionGeometryUpdateService, dataStatusService);
+        final RegionGeometryUpdateService regionGeometryUpdateService =
+            applicationContext.getAutowireCapableBeanFactory().createBean(RegionGeometryUpdateService.class);
+        v3RegionGeometryTestHelper = new RegionGeometryUpdateJobTestHelper(regionGeometryGitClientMock, regionGeometryUpdateService, dataStatusService);
 
         regionGeometryRepository.deleteAll();
 

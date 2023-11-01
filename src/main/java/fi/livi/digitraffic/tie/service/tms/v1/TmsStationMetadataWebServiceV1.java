@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.converter.tms.v1.TmsStationToFeatureConverterV1;
-import fi.livi.digitraffic.tie.dao.v1.TmsFreeFlowSpeedRepository;
-import fi.livi.digitraffic.tie.dao.v1.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsFreeFlowSpeedRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureDetailedV1;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v1.TmsStation;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
@@ -66,17 +66,12 @@ public class TmsStationMetadataWebServiceV1 {
     }
 
     private List<TmsStation> findPublishableStations(final RoadStationState roadStationState) {
-        switch(roadStationState) {
-        case ACTIVE:
-            return tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
-        case REMOVED:
-            return tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
-                (CollectionStatus.REMOVED_PERMANENTLY);
-        case ALL:
-            return tmsStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
-        default:
-            throw new IllegalArgumentException();
-        }
+        return switch (roadStationState) {
+            case ACTIVE -> tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
+            case REMOVED -> tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
+                    (CollectionStatus.REMOVED_PERMANENTLY);
+            case ALL -> tmsStationRepository.findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
+        };
     }
 
     private Instant getMetadataLastUpdated() {

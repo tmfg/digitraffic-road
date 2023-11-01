@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraMetadataUpdateMessageHandler;
+import fi.livi.digitraffic.tie.service.weathercam.CameraMetadataUpdateMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.camera.meta.inQueue")

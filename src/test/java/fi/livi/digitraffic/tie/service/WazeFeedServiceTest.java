@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.service;
 
+import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.ACCIDENT_REPORT;
+import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.GENERAL;
+import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT;
 import static fi.livi.digitraffic.tie.service.WazeFeedServiceTestHelper.readDatex2MessageFromFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -24,8 +27,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.converter.WazeDatex2JsonConverter;
-import fi.livi.digitraffic.tie.dto.v3.trafficannouncement.geojson.RoadAddressLocation;
+import fi.livi.digitraffic.tie.converter.waze.WazeDatex2JsonConverter;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
@@ -37,7 +40,6 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiPoint;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiPolygon;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
-import fi.livi.digitraffic.tie.model.v1.datex2.TrafficAnnouncementType;
 
 @Import({ JacksonAutoConfiguration.class })
 public class WazeFeedServiceTest extends AbstractRestWebTest {
@@ -85,7 +87,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         final WazeFeedServiceTestHelper.SituationParams params =
             new WazeFeedServiceTestHelper.SituationParams(situationId, startTime,
-                TrafficAnnouncementType.ACCIDENT_REPORT, RoadAddressLocation.Direction.BOTH);
+                    ACCIDENT_REPORT, RoadAddressLocation.Direction.BOTH);
 
         wazeFeedServiceTestHelper.insertSituation(params, "");
 
@@ -319,14 +321,14 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     public void filterPreliminaryAccidentReports() {
         final WazeFeedServiceTestHelper.SituationParams params = new WazeFeedServiceTestHelper.SituationParams();
         params.situationId = wazeFeedServiceTestHelper.nextSituationRecord();
-        params.trafficAnnouncementType = TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT;
+        params.trafficAnnouncementType = PRELIMINARY_ACCIDENT_REPORT;
 
         // datex2 database record having preliminary accident report type
         wazeFeedServiceTestHelper.insertSituation(params);
 
         // datex2 announcement type column having incorrect announcement type, but real preliminary accident report type still in json format
         params.situationId = wazeFeedServiceTestHelper.nextSituationRecord();
-        wazeFeedServiceTestHelper.insertSituation(params.situationId, params.situationId, "", params, TrafficAnnouncementType.GENERAL);
+        wazeFeedServiceTestHelper.insertSituation(params.situationId, params.situationId, "", params, GENERAL);
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;

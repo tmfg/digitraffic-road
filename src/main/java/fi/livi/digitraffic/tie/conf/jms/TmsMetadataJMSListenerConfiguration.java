@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMetadataUpdatedMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMessageDto;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsMetadataUpdateMessageHandler;
+import fi.livi.digitraffic.tie.service.tms.TmsMetadataUpdateMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
 
 @ConditionalOnProperty(name = "jms.tms.meta.inQueue")

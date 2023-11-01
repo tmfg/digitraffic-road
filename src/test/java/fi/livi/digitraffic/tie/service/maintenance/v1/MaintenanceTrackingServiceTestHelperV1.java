@@ -39,9 +39,9 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingObservationDataRepositoryV1;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingWorkMachineRepositoryV1;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingObservationDataRepository;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
@@ -60,6 +60,7 @@ import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingWorkMachine;
+import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingUpdateServiceV1;
 import jakarta.persistence.EntityManager;
 
 @Service
@@ -67,9 +68,9 @@ public class MaintenanceTrackingServiceTestHelperV1 {
     private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingServiceTestHelperV1.class);
 
     private final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1;
-    private final MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
-    private final MaintenanceTrackingObservationDataRepositoryV1 maintenanceTrackingObservationDataRepositoryV1;
-    private final MaintenanceTrackingWorkMachineRepositoryV1 maintenanceTrackingWorkMachineRepositoryV1;
+    private final MaintenanceTrackingRepository maintenanceTrackingRepository;
+    private final MaintenanceTrackingObservationDataRepository maintenanceTrackingObservationDataRepository;
+    private final MaintenanceTrackingWorkMachineRepository maintenanceTrackingWorkMachineRepository;
     private final ObjectReader jsonReaderForKirjaus;
     private final ObjectWriter jsonWriterForHavainto;
     private final EntityManager entityManager;
@@ -94,30 +95,30 @@ public class MaintenanceTrackingServiceTestHelperV1 {
     @Autowired
     public MaintenanceTrackingServiceTestHelperV1(final ObjectMapper objectMapper,
                                                   final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1,
-                                                  final MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1,
-                                                  final MaintenanceTrackingObservationDataRepositoryV1 maintenanceTrackingObservationDataRepositoryV1,
-                                                  final MaintenanceTrackingWorkMachineRepositoryV1 maintenanceTrackingWorkMachineRepositoryV1,
+                                                  final MaintenanceTrackingRepository maintenanceTrackingRepository,
+                                                  final MaintenanceTrackingObservationDataRepository maintenanceTrackingObservationDataRepository,
+                                                  final MaintenanceTrackingWorkMachineRepository maintenanceTrackingWorkMachineRepository,
                                                   final EntityManager entityManager,
                                                   final ResourceLoader resourceLoader,
                                                   @Value("${workmachine.tracking.distinct.linestring.observationgap.km}")
                                                   final double maxLineStringGapInKilometers) {
 
         this.maintenanceTrackingUpdateServiceV1 = maintenanceTrackingUpdateServiceV1;
-        this.maintenanceTrackingRepositoryV1 = maintenanceTrackingRepositoryV1;
+        this.maintenanceTrackingRepository = maintenanceTrackingRepository;
         this.jsonReaderForKirjaus = objectMapper.readerFor(TyokoneenseurannanKirjausRequestSchema.class);
         this.jsonWriterForHavainto = objectMapper.writerFor(Havainto.class);
         this.jsonReaderForTrackingsArray = objectMapper.readerForArrayOf(TyokoneenseurannanKirjausRequestSchema.class);
-        this.maintenanceTrackingObservationDataRepositoryV1 = maintenanceTrackingObservationDataRepositoryV1;
-        this.maintenanceTrackingWorkMachineRepositoryV1 = maintenanceTrackingWorkMachineRepositoryV1;
+        this.maintenanceTrackingObservationDataRepository = maintenanceTrackingObservationDataRepository;
+        this.maintenanceTrackingWorkMachineRepository = maintenanceTrackingWorkMachineRepository;
         this.entityManager = entityManager;
         this.resourceLoader = resourceLoader;
         MaintenanceTrackingServiceTestHelperV1.maxLineStringGapInKilometers = maxLineStringGapInKilometers;
     }
 
     public void clearDb() {
-        maintenanceTrackingRepositoryV1.deleteAllInBatch();
-        maintenanceTrackingObservationDataRepositoryV1.deleteAllInBatch();
-        maintenanceTrackingWorkMachineRepositoryV1.deleteAllInBatch();
+        maintenanceTrackingRepository.deleteAllInBatch();
+        maintenanceTrackingObservationDataRepository.deleteAllInBatch();
+        maintenanceTrackingWorkMachineRepository.deleteAllInBatch();
     }
 
     public static List<List<Double>> createVerticalLineStringWGS84(final double x, final double minY, final double maxY) {
@@ -480,7 +481,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
     public MaintenanceTrackingWorkMachine createAndSaveWorkMachine() {
         final MaintenanceTrackingWorkMachine wm =
             new MaintenanceTrackingWorkMachine(TestUtils.getRandomId(1, 100000), TestUtils.getRandomId(1, 100000), "TEST");
-        maintenanceTrackingWorkMachineRepositoryV1.save(wm);
+        maintenanceTrackingWorkMachineRepository.save(wm);
         return wm;
     }
 

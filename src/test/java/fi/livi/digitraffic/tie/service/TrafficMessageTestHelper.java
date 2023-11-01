@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
-import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
-import fi.livi.digitraffic.tie.service.v2.datex2.V2Datex2UpdateService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 public class TrafficMessageTestHelper {
@@ -87,7 +86,7 @@ public class TrafficMessageTestHelper {
     @Autowired
     protected GenericApplicationContext applicationContext;
 
-    private V2Datex2UpdateService v2Datex2UpdateService;
+    private Datex2UpdateService v2Datex2UpdateService;
     private TrafficMessageDataServiceV1 trafficMessageDataServiceV1;
 
     @Autowired
@@ -101,9 +100,9 @@ public class TrafficMessageTestHelper {
         datex2Repository.deleteAll();
     }
 
-    public V2Datex2UpdateService getV2Datex2UpdateService() {
+    public Datex2UpdateService getV2Datex2UpdateService() {
         if (v2Datex2UpdateService == null) {
-            v2Datex2UpdateService = applicationContext.getAutowireCapableBeanFactory().createBean(V2Datex2UpdateService .class);
+            v2Datex2UpdateService = applicationContext.getAutowireCapableBeanFactory().createBean(Datex2UpdateService.class);
         }
         return v2Datex2UpdateService;
     }
@@ -115,12 +114,10 @@ public class TrafficMessageTestHelper {
             applicationContext.getBeanFactory().registerSingleton(
                 regionGeometryDataServiceV1.getClass().getCanonicalName(), regionGeometryDataServiceV1);
 
-//            final V3RegionGeometryDataService v3RegionGeometryDataService =
-//                applicationContext.getAutowireCapableBeanFactory().createBean(V3RegionGeometryDataService.class);
             trafficMessageDataServiceV1 = new TrafficMessageDataServiceV1(
                 applicationContext.getBean(Datex2Repository.class),
                 applicationContext.getBean(Datex2XmlStringToObjectMarshaller.class),
-                applicationContext.getBean(TrafficMessageJsonConverterV1.class)
+                applicationContext.getBean(TrafficMessageImsJsonConverterV1.class)
             );
         }
         return trafficMessageDataServiceV1;

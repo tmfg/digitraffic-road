@@ -34,12 +34,13 @@ import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
-import fi.livi.digitraffic.tie.model.v1.SensorValue;
-import fi.livi.digitraffic.tie.model.v1.WeatherStation;
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
+import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMessageMarshaller;
-import fi.livi.digitraffic.tie.service.v1.weather.WeatherStationService;
+import fi.livi.digitraffic.tie.service.weather.WeatherStationService;
 
 @Disabled("Transaction problems with the test env")
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
@@ -123,18 +124,15 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             jmsMessageListener.drainQueueScheduled();
             handleDataTotalTime += swHandle.getTime();
 
-            try {
-                // send data with 1 s intervall
-                long sleep = 1000 - sw.getTime();
+            // send data with 1 s intervall
+            long sleep = 1000 - sw.getTime();
 
-                if (sleep < 0) {
-                    log.error("Data generation took too long");
-                } else {
-                    Thread.sleep(sleep);
-                }
-            } catch (final InterruptedException e) {
-                e.printStackTrace();
+            if (sleep < 0) {
+                log.error("Data generation took too long");
+            } else {
+                ThreadUtils.delayMs(sleep);
             }
+
         }
         log.info("Handle weather data total tookMs={} and max was maxMs={} result={}",
                  handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
@@ -258,7 +256,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     private static JMSMessageListener<TiesaaProtos.TiesaaMittatieto> createTiesaaMittatietoJMSMessageListener(
         JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater) {
-        return (JMSMessageListener<TiesaaProtos.TiesaaMittatieto>) new JMSMessageListener(new WeatherMessageMarshaller(),
+        return new JMSMessageListener<>(new WeatherMessageMarshaller(),
             dataUpdater, true, log);
     }
 

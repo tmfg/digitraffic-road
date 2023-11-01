@@ -5,10 +5,10 @@ import java.time.OffsetDateTime;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
-import fi.livi.digitraffic.tie.service.v1.LotjuAnturiWrapper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
-import fi.livi.digitraffic.tie.model.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.service.lotju.LotjuAnturiWrapper;
 
 public class SensorValueUpdateParameterDto {
     private final BigDecimal value;

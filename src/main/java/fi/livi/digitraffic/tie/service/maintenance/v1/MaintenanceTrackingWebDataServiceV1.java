@@ -3,9 +3,9 @@ package fi.livi.digitraffic.tie.service.maintenance.v1;
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_DOMAIN_NAMES;
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_ROUTES;
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_ROUTES_LATES;
-import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.GENERIC_ALL_DOMAINS;
-import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.GENERIC_MUNICIPALITY_DOMAINS;
-import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.STATE_ROADS_DOMAIN;
+import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.GENERIC_ALL_DOMAINS;
+import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.GENERIC_MUNICIPALITY_DOMAINS;
+import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.STATE_ROADS_DOMAIN;
 import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 import static java.time.temporal.ChronoUnit.HOURS;
 
@@ -36,9 +36,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.controller.ControllerConstants;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingObservationDataRepositoryV1;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingObservationDataRepository;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
@@ -49,6 +49,7 @@ import fi.livi.digitraffic.tie.helper.MathUtils;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingUpdateServiceV1;
 
 /**
  * This service returns Harja and municipality tracking data for public use
@@ -61,20 +62,20 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 public class MaintenanceTrackingWebDataServiceV1 {
 
     private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingWebDataServiceV1.class);
-    private final MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1;
-    private final MaintenanceTrackingObservationDataRepositoryV1 maintenanceTrackingObservationDataRepositoryV1;
-    private final MaintenanceTrackingDaoV1 maintenanceTrackingDaoV1;
+    private final MaintenanceTrackingRepository maintenanceTrackingRepository;
+    private final MaintenanceTrackingObservationDataRepository maintenanceTrackingObservationDataRepository;
+    private final MaintenanceTrackingDao maintenanceTrackingDao;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public MaintenanceTrackingWebDataServiceV1(final MaintenanceTrackingRepositoryV1 maintenanceTrackingRepositoryV1,
-                                               final MaintenanceTrackingObservationDataRepositoryV1 maintenanceTrackingObservationDataRepositoryV1,
+    public MaintenanceTrackingWebDataServiceV1(final MaintenanceTrackingRepository maintenanceTrackingRepository,
+                                               final MaintenanceTrackingObservationDataRepository maintenanceTrackingObservationDataRepository,
                                                final ObjectMapper objectMapper,
-                                               final MaintenanceTrackingDaoV1 maintenanceTrackingDaoV1) {
-        this.maintenanceTrackingRepositoryV1 = maintenanceTrackingRepositoryV1;
-        this.maintenanceTrackingObservationDataRepositoryV1 = maintenanceTrackingObservationDataRepositoryV1;
+                                               final MaintenanceTrackingDao maintenanceTrackingDao) {
+        this.maintenanceTrackingRepository = maintenanceTrackingRepository;
+        this.maintenanceTrackingObservationDataRepository = maintenanceTrackingObservationDataRepository;
         this.objectMapper = objectMapper;
-        this.maintenanceTrackingDaoV1 = maintenanceTrackingDaoV1;
+        this.maintenanceTrackingDao = maintenanceTrackingDao;
     }
 
     @NotTransactionalServiceMethod
@@ -93,11 +94,11 @@ public class MaintenanceTrackingWebDataServiceV1 {
                                                                                             final Set<MaintenanceTrackingTask> taskIds,
                                                                                             final Set<String> normalizedDomains) {
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
-        final Instant lastUpdated = DateHelper.withoutNanos(maintenanceTrackingRepositoryV1.findLastUpdatedForDomain(normalizedDomains));
+        final Instant lastUpdated = DateHelper.withoutNanos(maintenanceTrackingRepository.findLastUpdatedForDomain(normalizedDomains));
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingLatestFeatureV1> found =
-            maintenanceTrackingDaoV1.findLatestByAgeAndBoundingBoxAndTasks(
+            maintenanceTrackingDao.findLatestByAgeAndBoundingBoxAndTasks(
                 fromTo.getLeft(),
                 fromTo.getRight(),
                 normalizedArea,
@@ -120,11 +121,11 @@ public class MaintenanceTrackingWebDataServiceV1 {
                                                                                 final Set<String> normalizedDomains) {
 
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, endBefore, createdAfter, createdBefore, 24);
-        final Instant lastUpdated = maintenanceTrackingRepositoryV1.findLastUpdatedForDomain(normalizedDomains);
+        final Instant lastUpdated = maintenanceTrackingRepository.findLastUpdatedForDomain(normalizedDomains);
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingFeatureV1> found =
-            maintenanceTrackingDaoV1.findByAgeAndBoundingBoxAndTasks(
+            maintenanceTrackingDao.findByAgeAndBoundingBoxAndTasks(
                 fromTo.getLeft(), fromTo.getRight(),
                 createdAfter, createdBefore,
                 normalizedArea, convertTasksToStringSetOrNull(taskIds), normalizedDomains);
@@ -229,7 +230,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
     }
 
     private Set<String> getRealDomainNames() {
-        return maintenanceTrackingRepositoryV1.getRealDomainNames();
+        return maintenanceTrackingRepository.getRealDomainNames();
     }
 
     private Set<String> getRealDomainNamesWithoutStateRoadsDomain() {
@@ -240,7 +241,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
 
     @Transactional(readOnly = true)
     public List<MaintenanceTrackingDomainDtoV1> getDomainsWithGenerics() {
-        return maintenanceTrackingRepositoryV1.getDomainsWithGenerics();
+        return maintenanceTrackingRepository.getDomainsWithGenerics();
     }
 
     private Set<String> convertTasksToStringSetOrNull(final Set<MaintenanceTrackingTask> taskIds) {
@@ -253,7 +254,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
 
     @Transactional(readOnly = true)
     public MaintenanceTrackingFeatureV1 getMaintenanceTrackingById(final long id) throws ObjectNotFoundException {
-        final MaintenanceTrackingFeatureV1 feature = maintenanceTrackingDaoV1.getById(id);
+        final MaintenanceTrackingFeatureV1 feature = maintenanceTrackingDao.getById(id);
         if (feature != null) {
             return feature;
         }
@@ -262,7 +263,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
 
     @Transactional(readOnly = true)
     public List<JsonNode> findTrackingDataJsonsByTrackingId(final long trackingId) {
-        return maintenanceTrackingObservationDataRepositoryV1.findJsonsByTrackingId(trackingId).stream().map(j -> {
+        return maintenanceTrackingObservationDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
             try {
                 return objectMapper.readTree(j);
             } catch (final JsonProcessingException e) {

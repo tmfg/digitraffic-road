@@ -5,7 +5,7 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
+import fi.livi.digitraffic.tie.service.weathercam.CameraStationUpdater;
 
 /**
  * Updates only camera station's (RoadStation) metadata
@@ -13,6 +13,8 @@ import fi.livi.digitraffic.tie.service.v1.camera.CameraStationUpdater;
 @DisallowConcurrentExecution
 public class CameraStationsStatusMetadataUpdateJob extends SimpleUpdateJob {
 
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
 

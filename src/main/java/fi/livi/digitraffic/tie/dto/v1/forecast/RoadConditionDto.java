@@ -2,15 +2,14 @@ package fi.livi.digitraffic.tie.dto.v1.forecast;
 
 import java.time.ZonedDateTime;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.model.v1.forecastsection.OverallRoadCondition;
-import fi.livi.digitraffic.tie.model.v1.forecastsection.Reliability;
+import fi.livi.digitraffic.tie.model.weather.forecast.OverallRoadCondition;
+import fi.livi.digitraffic.tie.model.weather.forecast.Reliability;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @JsonPropertyOrder({ "time", "type", "forecastName", "daylight", "roadTemperature", "temperature", "windSpeed",
     "windDirection", "overallRoadCondition", "weatherSymbol", "reliability", "forecastConditionReason" })

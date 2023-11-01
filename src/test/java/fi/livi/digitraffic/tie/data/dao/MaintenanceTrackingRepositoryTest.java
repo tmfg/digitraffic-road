@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.data.dao;
 
 import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
-import static fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1.STATE_ROADS_DOMAIN;
+import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.STATE_ROADS_DOMAIN;
 
 import java.util.List;
 import java.util.Set;
@@ -13,15 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingDaoV1;
-import fi.livi.digitraffic.tie.dao.maintenance.v1.MaintenanceTrackingRepositoryV1;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao;
+import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1;
 
 public class MaintenanceTrackingRepositoryTest extends AbstractServiceTest {
 
     @Autowired
-    private MaintenanceTrackingRepositoryV1 maintenanceTrackingRepository;
+    private MaintenanceTrackingRepository maintenanceTrackingRepository;
 
     @Autowired
     private MaintenanceTrackingServiceTestHelperV1 testHelper;
@@ -54,8 +54,8 @@ public class MaintenanceTrackingRepositoryTest extends AbstractServiceTest {
         Assertions.assertTrue(names.contains(DOMAIN_FOUND));
         Assertions.assertFalse(names.contains(DOMAIN_NOT_FOUND));
         Assertions.assertTrue(names.contains(STATE_ROADS_DOMAIN));
-        Assertions.assertTrue(names.contains(MaintenanceTrackingDaoV1.GENERIC_ALL_DOMAINS));
-        Assertions.assertTrue(names.contains(MaintenanceTrackingDaoV1.GENERIC_MUNICIPALITY_DOMAINS));
+        Assertions.assertTrue(names.contains(MaintenanceTrackingDao.GENERIC_ALL_DOMAINS));
+        Assertions.assertTrue(names.contains(MaintenanceTrackingDao.GENERIC_MUNICIPALITY_DOMAINS));
     }
 
     @Test
@@ -70,8 +70,8 @@ public class MaintenanceTrackingRepositoryTest extends AbstractServiceTest {
         Assertions.assertTrue(domainNames.contains(DOMAIN_FOUND));
         Assertions.assertFalse(domainNames.contains(DOMAIN_NOT_FOUND));
         Assertions.assertTrue(domainNames.contains(STATE_ROADS_DOMAIN));
-        Assertions.assertFalse(domainNames.contains(MaintenanceTrackingDaoV1.GENERIC_ALL_DOMAINS));
-        Assertions.assertFalse(domainNames.contains(MaintenanceTrackingDaoV1.GENERIC_MUNICIPALITY_DOMAINS));
+        Assertions.assertFalse(domainNames.contains(MaintenanceTrackingDao.GENERIC_ALL_DOMAINS));
+        Assertions.assertFalse(domainNames.contains(MaintenanceTrackingDao.GENERIC_MUNICIPALITY_DOMAINS));
     }
 
 }

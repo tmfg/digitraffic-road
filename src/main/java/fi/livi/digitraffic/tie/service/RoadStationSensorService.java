@@ -13,13 +13,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaUpdate;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.EntityType;
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -31,10 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
 
-import fi.livi.digitraffic.tie.dao.v1.RoadStationRepository;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorRepository;
-import fi.livi.digitraffic.tie.dao.v1.RoadStationSensorValueDtoRepository;
-import fi.livi.digitraffic.tie.dao.v1.SensorValueRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorValueDtoRepository;
+import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
@@ -43,10 +36,16 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallin
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.VehicleClass;
-import fi.livi.digitraffic.tie.model.v1.RoadStationSensor;
-import fi.livi.digitraffic.tie.model.v1.SensorValue;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
+import fi.livi.digitraffic.tie.model.roadstation.VehicleClass;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.EntityType;
 
 @Service
 public class RoadStationSensorService {

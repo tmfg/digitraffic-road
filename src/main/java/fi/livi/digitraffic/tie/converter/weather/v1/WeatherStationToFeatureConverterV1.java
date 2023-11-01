@@ -17,9 +17,9 @@ import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationPropertiesDetailedV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.model.RoadStationType;
-import fi.livi.digitraffic.tie.model.v1.RoadStation;
-import fi.livi.digitraffic.tie.model.v1.WeatherStation;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 
 @Component
 public class WeatherStationToFeatureConverterV1 extends AbstractRoadstationToFeatureConverterV1 {

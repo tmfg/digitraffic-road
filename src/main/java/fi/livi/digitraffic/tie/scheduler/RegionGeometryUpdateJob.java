@@ -8,32 +8,36 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.v3.trafficannouncement.geojson.RegionGeometry;
-import fi.livi.digitraffic.tie.service.v2.datex2.RegionGeometryGitClient;
-import fi.livi.digitraffic.tie.service.v3.datex2.V3RegionGeometryUpdateService;
+import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
+import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryGitClient;
+import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryUpdateService;
 
 @DisallowConcurrentExecution
 public class RegionGeometryUpdateJob extends SimpleUpdateJob {
 
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private RegionGeometryGitClient regionGeometryGitClient;
 
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    private V3RegionGeometryUpdateService v3RegionGeometryUpdateService;
+    private RegionGeometryUpdateService regionGeometryUpdateService;
 
     @Override
     protected void doExecute(final JobExecutionContext context) {
         final StopWatch start = StopWatch.createStarted();
 
-        final String currentLatestCommitId = v3RegionGeometryUpdateService.getLatestCommitId();
+        final String currentLatestCommitId = regionGeometryUpdateService.getLatestCommitId();
         final List<RegionGeometry> changes =
             regionGeometryGitClient.getChangesAfterCommit(currentLatestCommitId);
 
-        v3RegionGeometryUpdateService.saveChanges(changes);
+        regionGeometryUpdateService.saveChanges(changes);
 
-        final String latestCommitId = v3RegionGeometryUpdateService.getLatestCommitId();
+        final String latestCommitId = regionGeometryUpdateService.getLatestCommitId();
 
-        if (changes.size() > 0) {
+        if (!changes.isEmpty()) {
             dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA);
         }
         dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK);

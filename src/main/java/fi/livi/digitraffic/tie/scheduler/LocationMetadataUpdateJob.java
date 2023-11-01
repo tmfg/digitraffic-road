@@ -5,10 +5,13 @@ import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.service.v1.location.LocationMetadataUpdater;
+import fi.livi.digitraffic.tie.service.trafficmessage.location.LocationMetadataUpdater;
 
 @DisallowConcurrentExecution
 public class LocationMetadataUpdateJob extends SimpleUpdateJob {
+
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private LocationMetadataUpdater locationMetadataUpdater;
 

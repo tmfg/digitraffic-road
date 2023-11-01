@@ -22,15 +22,15 @@ import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureSimpleV1;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationSensorDto;
 import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
-import fi.livi.digitraffic.tie.model.CollectionStatus;
-import fi.livi.digitraffic.tie.model.VehicleClass;
+import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
+import fi.livi.digitraffic.tie.model.roadstation.VehicleClass;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
+import fi.livi.digitraffic.tie.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
+import fi.livi.digitraffic.tie.service.lotju.LotjuTmsStationMetadataClient;
+import fi.livi.digitraffic.tie.service.tms.TmsSensorUpdater;
+import fi.livi.digitraffic.tie.service.tms.TmsStationUpdater;
+import fi.livi.digitraffic.tie.service.tms.TmsStationsSensorsUpdater;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuLAMMetatiedotServiceEndpointMock;
-import fi.livi.digitraffic.tie.service.v1.lotju.LotjuTmsStationMetadataClient;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsSensorUpdater;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationUpdater;
-import fi.livi.digitraffic.tie.service.v1.tms.TmsStationsSensorsUpdater;
 
 public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTest {
 
@@ -190,6 +190,7 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
 
         TmsRoadStationSensorDto initialSensor = allSensorsBefore.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
         TmsRoadStationSensorDto afterChangeSensor = allSensorsAfterChange.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
+        assertNotNull(initialSensor);
         assertNull(initialSensor.getDirection());
         assertNull(initialSensor.getLane());
         assertNull(initialSensor.getVehicleClass());

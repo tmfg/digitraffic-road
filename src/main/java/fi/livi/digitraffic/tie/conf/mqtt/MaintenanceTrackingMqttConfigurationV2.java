@@ -1,14 +1,12 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import fi.livi.digitraffic.tie.dto.maintenance.mqtt.MaintenanceTrackingForMqttV2;
-import fi.livi.digitraffic.tie.helper.MqttUtil;
-import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
-import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
-import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
-import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingMqttDataService;
-import fi.livi.digitraffic.tie.service.v1.MqttRelayQueue;
+import static fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue.StatisticsType.MAINTENANCE_TRACKING;
+
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +15,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static fi.livi.digitraffic.tie.service.v1.MqttRelayQueue.StatisticsType.MAINTENANCE_TRACKING;
+import fi.livi.digitraffic.tie.dto.maintenance.mqtt.MaintenanceTrackingForMqttV2;
+import fi.livi.digitraffic.tie.helper.MqttUtil;
+import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
+import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
+import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
+import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingMqttDataService;
+import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 
 @ConditionalOnProperty("mqtt.maintenance.tracking.v2.enabled")
 @ConditionalOnNotWebApplication

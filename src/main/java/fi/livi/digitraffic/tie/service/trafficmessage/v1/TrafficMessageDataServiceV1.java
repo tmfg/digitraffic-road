@@ -16,17 +16,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
-import fi.livi.digitraffic.tie.dao.v1.Datex2Repository;
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
-import fi.livi.digitraffic.tie.model.v1.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageJsonConverterV1;
-import fi.livi.digitraffic.tie.service.v1.datex2.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 
 @ConditionalOnWebApplication
 @Service
@@ -35,12 +34,12 @@ public class TrafficMessageDataServiceV1 {
 
     private final Datex2Repository datex2Repository;
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
-    private final TrafficMessageJsonConverterV1 datex2JsonConverterV1;
+    private final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1;
 
     @Autowired
     public TrafficMessageDataServiceV1(final Datex2Repository datex2Repository,
                                        final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
-                                       final TrafficMessageJsonConverterV1 datex2JsonConverterV1) {
+                                       final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1) {
         this.datex2Repository = datex2Repository;
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
         this.datex2JsonConverterV1 = datex2JsonConverterV1;

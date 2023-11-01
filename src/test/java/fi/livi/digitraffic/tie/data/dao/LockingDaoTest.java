@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.data.dao;
 
-import jakarta.transaction.Transactional;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,9 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.LockingDao;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import fi.livi.digitraffic.tie.helper.ThreadUtils;
+import jakarta.transaction.Transactional;
 
 public class LockingDaoTest extends AbstractServiceTest {
     private static final Logger log = LoggerFactory.getLogger(LockingDao.class);
@@ -65,11 +65,7 @@ public class LockingDaoTest extends AbstractServiceTest {
             } else if (locked1Time < (now - (EXPIRATION_SECONDS+1) * 1000) ) {
                 assertTrue(locked1Second, "Failed to lock after expiration");
             }
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.debug("Interrupted", e);
-            }
+            ThreadUtils.delayMs(500);
         }
     }
 

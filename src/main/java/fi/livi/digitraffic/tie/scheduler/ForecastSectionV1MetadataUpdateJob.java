@@ -4,16 +4,18 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.tie.service.v1.forecastsection.ForecastSectionV1MetadataUpdater;
+import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionV1MetadataUpdater;
 
 @DisallowConcurrentExecution
 public class ForecastSectionV1MetadataUpdateJob extends SimpleUpdateJob {
 
+    // AutowiringSpringBeanJobFactory takes care of autowiring
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater;
+    private ForecastSectionV1MetadataUpdater forecastSectionV1MetadataUpdater;
 
     @Override
     protected void doExecute(final JobExecutionContext context) {
-        forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
+        forecastSectionV1MetadataUpdater.updateForecastSectionV1Metadata();
     }
 }

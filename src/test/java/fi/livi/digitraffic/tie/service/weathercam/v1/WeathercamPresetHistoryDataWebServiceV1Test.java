@@ -32,15 +32,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dao.v1.CameraPresetHistoryRepository;
+import fi.livi.digitraffic.tie.dao.weathercam.CameraPresetHistoryRepository;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsPresetsPublicityHistoryV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetHistoryDtoV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetHistoryItemDtoV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetsHistoryDtoV1;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPreset;
-import fi.livi.digitraffic.tie.model.v1.camera.CameraPresetHistory;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetHistoryUpdateService;
-import fi.livi.digitraffic.tie.service.v1.camera.CameraPresetService;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryUpdateService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
 public class WeathercamPresetHistoryDataWebServiceV1Test extends AbstractDaemonTest {
 
@@ -207,7 +207,7 @@ public class WeathercamPresetHistoryDataWebServiceV1Test extends AbstractDaemonT
         final List<Map.Entry<String, List<CameraPreset>>> all =
             cameraPresetService.findAllPublishableCameraPresets().stream()
                 .collect(Collectors.groupingBy(CameraPreset::getCameraId))
-                .entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toList());
+                .entrySet().stream().filter(e -> e.getValue().size() > 1).toList();
 
         // Get random camera
         final Map.Entry<String, List<CameraPreset>> camera =
