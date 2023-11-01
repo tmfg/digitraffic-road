@@ -206,7 +206,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
             try {
                 trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, TRAFFIC_ANNOUNCEMENT.name(), ImsJsonVersion.getLatestVersion(),
                                                                               latestStart.get(), end);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -291,7 +291,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         assertTrue(commentXml.contains(announcement.title.trim()));
     }
 
-    private void assertActiveMessageFound(final String situationId, boolean foundInDatex2, boolean foundInJson) {
+    private void assertActiveMessageFound(final String situationId, final boolean foundInDatex2, final boolean foundInJson) {
         final D2LogicalModel withOrWithoutJson = trafficMessageDataServiceV1.findActive(0).getLeft();
         final SituationPublication situationPublication = ((SituationPublication) withOrWithoutJson.getPayloadPublication());
         final TrafficAnnouncementFeatureCollection withJson = trafficMessageDataServiceV1.findActiveJson(0, true);

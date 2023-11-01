@@ -37,8 +37,8 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
               log);
         this.sensorDataUpdateService = sensorDataUpdateService;
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
-                                           TmsJMSListenerConfiguration.class.getSimpleName(),
-                                           ClusteredLocker.generateInstanceId()));
+                TmsJMSListenerConfiguration.class.getSimpleName(),
+                ClusteredLocker.generateInstanceId()));
     }
 
     @Override

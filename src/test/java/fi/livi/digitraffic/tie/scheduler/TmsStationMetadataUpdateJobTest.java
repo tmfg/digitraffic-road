@@ -188,8 +188,8 @@ public class TmsStationMetadataUpdateJobTest extends AbstractMetadataUpdateJobTe
         assertFalse(station2SensorsAfter.contains(5122L));
         assertTrue(station2SensorsAfter.contains(5125L));
 
-        TmsRoadStationSensorDto initialSensor = allSensorsBefore.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
-        TmsRoadStationSensorDto afterChangeSensor = allSensorsAfterChange.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
+        final TmsRoadStationSensorDto initialSensor = allSensorsBefore.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
+        final TmsRoadStationSensorDto afterChangeSensor = allSensorsAfterChange.getRoadStationSensors().stream().filter(x -> x.getNaturalId() == 5116L).findFirst().orElse(null);
         assertNotNull(initialSensor);
         assertNull(initialSensor.getDirection());
         assertNull(initialSensor.getLane());

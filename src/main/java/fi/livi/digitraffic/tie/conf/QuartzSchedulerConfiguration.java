@@ -127,7 +127,7 @@ public class QuartzSchedulerConfiguration {
                             try {
                                 log.warn("method=createScheduler Deleting job={}", jobKey);
                                 scheduler.deleteJob(jobKey);
-                            } catch (SchedulerException e) {
+                            } catch (final SchedulerException e) {
                                 log.error("method=createScheduler Deleting job=" + jobKey + " failed", e);
                             }
                         }
@@ -324,9 +324,9 @@ public class QuartzSchedulerConfiguration {
         }
         try {
             // Try first to create interval trigger and fallback to cron
-            long intervalMs = Long.parseLong(jobScheduleExpression);
+            final long intervalMs = Long.parseLong(jobScheduleExpression);
             return  createRepeatingTrigger(jobDetail, intervalMs);
-        } catch (NumberFormatException nfe) { // cron expression
+        } catch (final NumberFormatException nfe) { // cron expression
             return createCronTrigger(jobDetail, jobScheduleExpression);
         }
     }
@@ -370,7 +370,7 @@ public class QuartzSchedulerConfiguration {
         return factoryBean;
     }
 
-    private static String getJobName(JobDetail jobDetail) {
+    private static String getJobName(final JobDetail jobDetail) {
         return jobDetail.getJobClass().getSimpleName();
     }
 

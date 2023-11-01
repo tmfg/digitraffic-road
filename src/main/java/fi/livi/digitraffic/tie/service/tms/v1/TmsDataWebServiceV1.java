@@ -51,7 +51,7 @@ public class TmsDataWebServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationsDataDtoV1 findPublishableTmsData(boolean onlyUpdateInfo) {
+    public TmsStationsDataDtoV1 findPublishableTmsData(final boolean onlyUpdateInfo) {
         final Instant updated = roadStationSensorServiceV1.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
 
         if (onlyUpdateInfo) {
@@ -72,7 +72,7 @@ public class TmsDataWebServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public TmsStationDataDtoV1 findPublishableTmsData(long roadStationNaturalId) {
+    public TmsStationDataDtoV1 findPublishableTmsData(final long roadStationNaturalId) {
         if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.TMS_STATION) ) {
             throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
         }

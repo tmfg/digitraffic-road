@@ -49,7 +49,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     private SensorValueHistoryBuilder builder;
 
     protected void initDBContent(final ZonedDateTime time) {
-        int min = time.getMinute();
+        final int min = time.getMinute();
 
         // Init same db-content
         builder = new SensorValueHistoryBuilder(repository, log)
@@ -63,30 +63,30 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     @Disabled("ks. DPO-1835")
     @Test
     public void s3Bucket() {
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
-        ZonedDateTime from = to.minusHours(1);
+        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
+        final ZonedDateTime from = to.minusHours(1);
 
         initDBContent(now);
 
         sensorDataS3Properties.setRefTime(from);
 
-        int origCount = builder.getElementCountAt(1);
-        int sum = writer.writeSensorData(from, to);
+        final int origCount = builder.getElementCountAt(1);
+        final int sum = writer.writeSensorData(from, to);
 
         assertEquals(origCount, sum, "element count mismatch");
 
         //repository.findAll().stream().forEach(item -> log.info("item: {}, measured: {}", item.getRoadStationId(), item.getMeasuredTime()));
         // Check S3 object
 
-        ObjectListing list = amazonS3.listObjects(sensorDataS3Properties.getS3BucketName());
+        final ObjectListing list = amazonS3.listObjects(sensorDataS3Properties.getS3BucketName());
 
         assertFalse(list.getObjectSummaries().isEmpty(), "No elements");
 
-        String objectName = list.getObjectSummaries().get(0).getKey();
+        final String objectName = list.getObjectSummaries().get(0).getKey();
 
         log.info("Read object {} from {}", objectName, sensorDataS3Properties.getS3BucketName());
-        S3Object s3Object = amazonS3.getObject(sensorDataS3Properties.getS3BucketName(), objectName);
+        final S3Object s3Object = amazonS3.getObject(sensorDataS3Properties.getS3BucketName(), objectName);
 
         assertNotNull(s3Object, "S3 object not found");
 /**
@@ -96,14 +96,14 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
             e.printStackTrace();
         }
  */
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(s3Object.getObjectContent().readAllBytes());
-            ZipInputStream in = new ZipInputStream(bis)) {
+        try (final ByteArrayInputStream bis = new ByteArrayInputStream(s3Object.getObjectContent().readAllBytes());
+            final ZipInputStream in = new ZipInputStream(bis)) {
             // Get entry
-            ZipEntry entry = in.getNextEntry();
+            final ZipEntry entry = in.getNextEntry();
 
             log.info("entry {}", entry.getName());
 
-            List<WeatherSensorValueHistoryDto> items = new CsvToBeanBuilder<WeatherSensorValueHistoryDto>(new InputStreamReader(in))
+            final List<WeatherSensorValueHistoryDto> items = new CsvToBeanBuilder<WeatherSensorValueHistoryDto>(new InputStreamReader(in))
                 .withType(WeatherSensorValueHistoryDto.class)
                 .withSeparator(',')
                 .build()
@@ -112,7 +112,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
             in.closeEntry();
 
             log.info("Gotta items {}", items);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("zip error:", e);
             //Assert.fail("failed to process zip: " + objectName);
         }

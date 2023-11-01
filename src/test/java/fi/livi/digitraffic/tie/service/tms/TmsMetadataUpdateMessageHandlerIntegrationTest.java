@@ -442,7 +442,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         assertEquals(to.getUrakkaAlue(), rs.getRoadAddress().getContractArea());
     }
 
-    private List<TmsMetadataUpdatedMessageDto> createMessage(final EntityType entityType, final UpdateType updateType, long lotjuId, Long...asemaLotjuIds) {
+    private List<TmsMetadataUpdatedMessageDto> createMessage(final EntityType entityType, final UpdateType updateType, final long lotjuId, final Long...asemaLotjuIds) {
         return Collections.singletonList(
             new TmsMetadataUpdatedMessageDto(lotjuId, Set.of(asemaLotjuIds), updateType, Instant.now(), entityType));
     }

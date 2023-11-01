@@ -184,11 +184,11 @@ public class RoadStationTest extends AbstractTest {
         assertTrue(rs.isPublicNow());
     }
 
-    private void updatePublicityWithTime(RoadStation rs) {
+    private void updatePublicityWithTime(final RoadStation rs) {
         rs.updatePublicity(true, ZonedDateTime.now());
     }
 
-    private void updatePublicityWithoutTime(RoadStation rs) {
+    private void updatePublicityWithoutTime(final RoadStation rs) {
         rs.updatePublicity(true);
     }
 

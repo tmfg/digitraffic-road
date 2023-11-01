@@ -41,7 +41,7 @@ public class WeatherMetadataUpdateMessageHandler {
     public int updateMetadataFromJms(final List<WeatherMetadataUpdatedMessageDto> weatherMetadataUpdates) {
         int updateCount = 0;
 
-        for (WeatherMetadataUpdatedMessageDto message : weatherMetadataUpdates) {
+        for (final WeatherMetadataUpdatedMessageDto message : weatherMetadataUpdates) {
             log.info("method=updateMetadataFromJms roadStationType={} data: {}", RoadStationType.WEATHER_STATION.name(), ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
 

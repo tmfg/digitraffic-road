@@ -97,7 +97,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
         int index = 0;
         String prevResult = null;
 
-        for (List<Double> areaCoordinates : API_AREA_PARAMETERS) {
+        for (final List<Double> areaCoordinates : API_AREA_PARAMETERS) {
             final String result =
                 expectOkFeatureCollectionWithSize(
                         getTrackingsJson(
@@ -143,7 +143,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
         int index = 0;
         String prevResult = null;
 
-        for (List<Double> areaCoordinates : API_AREA_PARAMETERS) {
+        for (final List<Double> areaCoordinates : API_AREA_PARAMETERS) {
             final String result =
                     expectOkFeatureCollectionWithSize(
                         getLatestTrackingsJson(

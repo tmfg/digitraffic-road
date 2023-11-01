@@ -23,7 +23,7 @@ public enum VisibilityCondition {
         if (value == null) {
             return null;
         }
-        for (VisibilityCondition visibilityCondition : values()) {
+        for (final VisibilityCondition visibilityCondition : values()) {
             if (visibilityCondition.value == value) {
                 return visibilityCondition;
             }

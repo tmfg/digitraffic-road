@@ -83,7 +83,7 @@ public class TrafficAnnouncementProperties extends PropertiesV1 {
         return situationType;
     }
 
-    public void setTrafficAnnouncementType(TrafficAnnouncementType trafficAnnouncementType) {
+    public void setTrafficAnnouncementType(final TrafficAnnouncementType trafficAnnouncementType) {
         if (this.trafficAnnouncementType == null) {
             this.trafficAnnouncementType = trafficAnnouncementType;
         } else {

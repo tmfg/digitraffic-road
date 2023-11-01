@@ -29,7 +29,7 @@ public class MultiDestinationProvider implements DestinationProvider {
         if (hosts.size() == 1) {
             return hosts.get(0).getDataUrl();
         }
-        for (HostWithHealthCheck host : hosts) {
+        for (final HostWithHealthCheck host : hosts) {
             if ( host.doHealthCheck() ) {
                 return host.getDataUrl();
             }

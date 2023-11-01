@@ -20,7 +20,7 @@ public enum OverallRoadCondition {
         if (value == null) {
             return null;
         }
-        for (OverallRoadCondition overallRoadCondition : values()) {
+        for (final OverallRoadCondition overallRoadCondition : values()) {
             if (overallRoadCondition.value == value) {
                 return overallRoadCondition;
             }

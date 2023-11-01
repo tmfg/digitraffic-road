@@ -105,7 +105,7 @@ public class TmsStationSensorConstantUpdater {
 
         final List<LamAnturiVakioArvoVO> allLamAnturiVakioArvos = lotjuTmsStationMetadataClientWrapper.getAllLamAnturiVakioArvos();
 
-        boolean updated = tmsStationSensorConstantService.updateSensorConstantValues(allLamAnturiVakioArvos);
+        final boolean updated = tmsStationSensorConstantService.updateSensorConstantValues(allLamAnturiVakioArvos);
 
         if (updated) {
             dataStatusService.updateDataUpdated(DataType.TMS_FREE_FLOW_SPEEDS_DATA);

@@ -19,7 +19,7 @@ public class WeatherMessageMarshaller implements JMSMessageListener.MessageMarsh
     private static final Logger log = LoggerFactory.getLogger(WeatherMessageMarshaller.class);
 
     @Override
-    public List<TiesaaProtos.TiesaaMittatieto> unmarshalMessage(Message message) throws JMSException {
+    public List<TiesaaProtos.TiesaaMittatieto> unmarshalMessage(final Message message) throws JMSException {
         return unmarshallBytes((BytesMessage) message);
     }
 

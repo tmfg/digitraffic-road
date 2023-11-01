@@ -96,7 +96,7 @@ public class PostgisGeometryUtilsTest extends AbstractTest {
 
         final Point tampere =  PostgisGeometryUtils.createPointWithZ(PostgisGeometryUtils.createCoordinateWithZ(TAMPERE_WGS84_X, TAMPERE_WGS84_Y, 0.0));
         final Point kuopio = PostgisGeometryUtils.createPointWithZ(PostgisGeometryUtils.createCoordinateWithZ(KUOPIO_WGS84_X, KUOPIO_WGS84_Y, 0.0));
-        double dist = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(tampere, kuopio);
+        final double dist = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(tampere, kuopio);
         log.info("Calculated distance {} km", dist);
         assertEquals(TAMPERE_KUOPIO_DISTANCE_KM, dist, ALLOWED_DELTA_IN_KM_H);
     }
@@ -246,7 +246,7 @@ public class PostgisGeometryUtilsTest extends AbstractTest {
 
 
 
-    private void checkCoordinate(Coordinate coordinate, final double x, final double y, final double z) {
+    private void checkCoordinate(final Coordinate coordinate, final double x, final double y, final double z) {
         final double ALLOWED_COORDINATE_DELTA = 0.00002;
         assertEquals(x, coordinate.getX(), ALLOWED_COORDINATE_DELTA);
         assertEquals(y, coordinate.getY(), ALLOWED_COORDINATE_DELTA);

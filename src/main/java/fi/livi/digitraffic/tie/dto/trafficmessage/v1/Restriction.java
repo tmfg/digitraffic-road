@@ -79,7 +79,7 @@ public class Restriction extends JsonAdditionalProperties {
         private final static Map<String, Type> CONSTANTS = new HashMap<>();
 
         static {
-            for (Type c: values()) {
+            for (final Type c: values()) {
                 CONSTANTS.put(c.value, c);
                 CONSTANTS.put(c.name(), c);
             }

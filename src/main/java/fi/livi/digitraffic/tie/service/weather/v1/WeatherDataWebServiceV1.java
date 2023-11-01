@@ -39,7 +39,7 @@ public class WeatherDataWebServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public WeatherStationsDataDtoV1 findPublishableWeatherData(boolean onlyUpdateInfo) {
+    public WeatherStationsDataDtoV1 findPublishableWeatherData(final boolean onlyUpdateInfo) {
         final Instant updated = roadStationSensorServiceV1.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION);
 
         if (onlyUpdateInfo) {
@@ -61,7 +61,7 @@ public class WeatherDataWebServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public WeatherStationDataDtoV1 findPublishableWeatherData(long roadStationNaturalId) {
+    public WeatherStationDataDtoV1 findPublishableWeatherData(final long roadStationNaturalId) {
         if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.WEATHER_STATION) ) {
             throw new ObjectNotFoundException("WeatherStation", roadStationNaturalId);
         }

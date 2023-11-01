@@ -24,7 +24,7 @@ public class WeatherHistoryUpdateJob extends SimpleUpdateJob {
     private SensorDataS3Writer sensorDataS3Writer;
 
     @Override
-    protected void doExecute(JobExecutionContext context) throws Exception {
+    protected void doExecute(final JobExecutionContext context) throws Exception {
         final ZonedDateTime now = ZonedDateTime.now();
         // Do one hour time window (xx:00 - xx:59)
         final ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);

@@ -29,7 +29,7 @@ public class WeatherStationMetadataUpdateJob extends SimpleUpdateJob {
     public WeatherStationsSensorsUpdater weatherStationsSensorsUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) throws Exception {
+    protected void doExecute(final JobExecutionContext context) throws Exception {
         final StopWatch sensorsWatch = StopWatch.createStarted();
         final boolean sensorsUpdated = weatherStationSensorUpdater.updateRoadStationSensors();
         if (sensorsUpdated) {

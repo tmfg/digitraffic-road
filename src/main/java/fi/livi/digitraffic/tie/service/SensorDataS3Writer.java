@@ -68,14 +68,14 @@ public class SensorDataS3Writer {
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream(BUFFER_SIZE);
 
-        try (ZipOutputStream zos = new ZipOutputStream(bos);
-            OutputStreamWriter osw = new OutputStreamWriter(zos)) {
+        try (final ZipOutputStream zos = new ZipOutputStream(bos);
+            final OutputStreamWriter osw = new OutputStreamWriter(zos)) {
 
             // .csv file
             zos.putNextEntry(new ZipEntry(s3Properties.getFilename(SensorDataS3Properties.CSV)));
 
             // csv-builder
-            StatefulBeanToCsv csvWriter = new StatefulBeanToCsvBuilder<WeatherSensorValueHistoryDto>(osw)
+            final StatefulBeanToCsv csvWriter = new StatefulBeanToCsvBuilder<WeatherSensorValueHistoryDto>(osw)
                 .withSeparator(';')
                 .withApplyQuotesToAll(false)
                 .build();
@@ -100,7 +100,7 @@ public class SensorDataS3Writer {
 
             final String fileName = s3Properties.getFileStorageName();
 
-            ObjectMetadata metadata = new ObjectMetadata();
+            final ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("application/zip");
             metadata.setContentLength(bos.size());
 
@@ -113,15 +113,15 @@ public class SensorDataS3Writer {
             log.info("method=writeSensorData Collected addCount={} , window {} - {} , file {}", counter.get(), from, to, fileName);
 
             return counter.get();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Failed to process sensor data archive", e);
         }
 
         return -1;
     }
 
-    private long mapToNaturalId(SensorValueHistory item) {
-        Long naturalId = roadStationNaturalIdMaps.get(item.getRoadStationId());
+    private long mapToNaturalId(final SensorValueHistory item) {
+        final Long naturalId = roadStationNaturalIdMaps.get(item.getRoadStationId());
 
         // NOTE! -1 is just for fail safe
         return naturalId != null ? naturalId : -1;

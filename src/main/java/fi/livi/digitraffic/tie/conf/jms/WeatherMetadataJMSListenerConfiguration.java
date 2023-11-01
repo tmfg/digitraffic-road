@@ -26,7 +26,8 @@ public class WeatherMetadataJMSListenerConfiguration extends AbstractJMSListener
     private final Jaxb2Marshaller tiesaaMetadataChangeJaxb2Marshaller;
 
     @Autowired
-    public WeatherMetadataJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+    public WeatherMetadataJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
+                                                   final QueueConnectionFactory connectionFactory,
                                                    @Value("${jms.userId}") final String jmsUserId,
                                                    @Value("${jms.password}") final String jmsPassword,
                                                    @Value("#{'${jms.weather.meta.inQueue}'.split(',')}")final List<String> jmsQueueKeys,
@@ -39,8 +40,8 @@ public class WeatherMetadataJMSListenerConfiguration extends AbstractJMSListener
         this.tiesaaMetadataChangeJaxb2Marshaller = tiesaaMetadataChangeJaxb2Marshaller;
 
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
-                                           WeatherMetadataJMSListenerConfiguration.class.getSimpleName(),
-                                           ClusteredLocker.generateInstanceId()));
+                WeatherMetadataJMSListenerConfiguration.class.getSimpleName(),
+                ClusteredLocker.generateInstanceId()));
     }
 
     @Override

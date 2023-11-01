@@ -138,7 +138,7 @@ public class LotjuLAMMetatiedotServiceEndpointMock extends LotjuServiceEndpointM
     }
 
     @Override
-    public void updateAsemaTilatieto(Long asemaId, String tieto) {
+    public void updateAsemaTilatieto(final Long asemaId, final String tieto) {
         throw new NotImplementedException("updateAsemaTilatieto");
     }
 

@@ -85,7 +85,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         // Exception should be thrown
         try {
             clientRequestData();
-        } catch (IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             verifyServer1HealthCount(1);
             verifyServer2HealthCount(1);
             return; // this is wanted
@@ -172,7 +172,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         server2WhenRequestDataThenReturn(RESPONSE2);
     }
 
-    private void clientRequestDataAndVerifyResponse(String response) {
+    private void clientRequestDataAndVerifyResponse(final String response) {
         assertEquals(response, clientRequestData());
     }
 

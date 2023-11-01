@@ -57,7 +57,7 @@ public class SensorValueDescription implements Comparable<SensorValueDescription
     }
 
     @Override
-    public int compareTo(SensorValueDescription o) {
+    public int compareTo(final SensorValueDescription o) {
         if (getSensorValue() == null && o.getSensorValue() == null) {
             return 0;
         } else if (o.getSensorValue() == null) {
@@ -69,7 +69,7 @@ public class SensorValueDescription implements Comparable<SensorValueDescription
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -78,7 +78,7 @@ public class SensorValueDescription implements Comparable<SensorValueDescription
             return false;
         }
 
-        SensorValueDescription that = (SensorValueDescription) o;
+        final SensorValueDescription that = (SensorValueDescription) o;
 
         return new EqualsBuilder()
             .append(sensorValueDescriptionPK, that.sensorValueDescriptionPK)

@@ -25,10 +25,11 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
     private final SensorDataUpdateService sensorDataUpdateService;
 
     @Autowired
-    public WeatherJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory") QueueConnectionFactory connectionFactory,
+    public WeatherJMSListenerConfiguration(@Qualifier("sonjaJMSConnectionFactory")
+                                           final QueueConnectionFactory connectionFactory,
                                            @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
                                            @Value("#{'${jms.weather.inQueue}'.split(',')}") final List<String> jmsQueueKey, final SensorDataUpdateService sensorDataUpdateService,
-                                           ClusteredLocker clusteredLocker) {
+                                           final ClusteredLocker clusteredLocker) {
 
         super(connectionFactory,
                 clusteredLocker,
@@ -36,8 +37,8 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
         this.sensorDataUpdateService = sensorDataUpdateService;
 
         setJmsParameters(new JMSParameters(jmsQueueKey, jmsUserId, jmsPassword,
-                                           WeatherJMSListenerConfiguration.class.getSimpleName(),
-                                           ClusteredLocker.generateInstanceId()));
+                WeatherJMSListenerConfiguration.class.getSimpleName(),
+                ClusteredLocker.generateInstanceId()));
     }
 
 

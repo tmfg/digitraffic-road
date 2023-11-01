@@ -26,7 +26,7 @@ public enum PrecipitationCondition {
         if (value == null) {
             return null;
         }
-        for (PrecipitationCondition precipitationCondition : values()) {
+        for (final PrecipitationCondition precipitationCondition : values()) {
             if (precipitationCondition.value == value) {
                 return precipitationCondition;
             }

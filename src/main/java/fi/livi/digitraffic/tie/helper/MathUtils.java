@@ -5,11 +5,11 @@ import java.math.RoundingMode;
 
 public class MathUtils {
 
-    public static double floorToHalf(double number) {
+    public static double floorToHalf(final double number) {
         return Math.floor(number * 2.0) / 2.0;
     }
 
-    public static double ceilToHalf(double number) {
+    public static double ceilToHalf(final double number) {
         return Math.ceil(number * 2.0) / 2.0;
     }
 

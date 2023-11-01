@@ -1,14 +1,13 @@
 package fi.livi.digitraffic.tie.dto.v1.tms;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Schema(name = "TmsFreeFlowSpeedData")
 @Entity
@@ -60,7 +59,7 @@ public class TmsFreeFlowSpeedDto {
         return roadStationNaturalId;
     }
 
-    public void setRoadStationNaturalId(long roadStationNaturalId) {
+    public void setRoadStationNaturalId(final long roadStationNaturalId) {
         this.roadStationNaturalId = roadStationNaturalId;
     }
 
@@ -68,7 +67,7 @@ public class TmsFreeFlowSpeedDto {
         return tmsNaturalId;
     }
 
-    public void setTmsNaturalId(long tmsNaturalId) {
+    public void setTmsNaturalId(final long tmsNaturalId) {
         this.tmsNaturalId = tmsNaturalId;
     }
 }

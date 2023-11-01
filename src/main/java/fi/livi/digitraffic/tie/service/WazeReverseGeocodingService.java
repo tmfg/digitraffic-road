@@ -84,9 +84,9 @@ public class WazeReverseGeocodingService {
 
     private Optional<ReverseGeocode> parseReverseGeocodeJson(final String input) {
         try {
-            ReverseGeocode reverseGeocode = this.genericJsonReader.readValue(input, ReverseGeocode.class);
+            final ReverseGeocode reverseGeocode = this.genericJsonReader.readValue(input, ReverseGeocode.class);
             return Optional.of(reverseGeocode);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("method=parseReverseGeocodeJson unable to parse input.", e);
         }
         return Optional.empty();

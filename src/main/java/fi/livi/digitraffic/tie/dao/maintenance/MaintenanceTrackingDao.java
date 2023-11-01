@@ -216,7 +216,7 @@ public class MaintenanceTrackingDao {
         final MapSqlParameterSource paramSource = new MapSqlParameterSource()
             .addValue("id", id, Types.NUMERIC);
 
-        return jdbcTemplate.query(QUERY_SQL,paramSource, (ResultSet rs) -> {
+        return jdbcTemplate.query(QUERY_SQL,paramSource, (final ResultSet rs) -> {
             if (rs.next()) {
 
                 final Instant modified = rs.getObject("modified", OffsetDateTime.class).toInstant();

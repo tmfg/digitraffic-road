@@ -3,9 +3,6 @@ package fi.livi.digitraffic.tie.dto.v1;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 @Immutable
@@ -155,7 +154,7 @@ public class SensorValueDto {
         return measuredTime;
     }
 
-    public void setMeasuredTime(ZonedDateTime measuredTime) {
+    public void setMeasuredTime(final ZonedDateTime measuredTime) {
         this.measuredTime = measuredTime;
     }
 

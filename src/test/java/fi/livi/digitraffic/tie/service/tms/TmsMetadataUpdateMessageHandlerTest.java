@@ -83,7 +83,7 @@ public class TmsMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateM
 
     @Test // ROAD_ADDRESS
     public void roadAddressMessagesShouldTriggerUpdate() {
-        for (UpdateType updateType : UpdateType.values()) {
+        for (final UpdateType updateType : UpdateType.values()) {
             verifyRoadAddressMessageTriggersUpdate(updateType);
             verifyNoMoreInteractionsAndResetMocks();
         }
@@ -132,7 +132,7 @@ public class TmsMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateM
         verify(tmsStationUpdater, times(1)).updateTmsStationAndSensors(eq(STATION_LOTJU_ID2), eq(UpdateType.UPDATE));
     }
 
-    private List<TmsMetadataUpdatedMessageDto> createMessage(final long entityLotjuId, final EntityType entityType, final UpdateType updateType, Long...stationIds) {
+    private List<TmsMetadataUpdatedMessageDto> createMessage(final long entityLotjuId, final EntityType entityType, final UpdateType updateType, final Long...stationIds) {
         return Collections.singletonList(
             new TmsMetadataUpdatedMessageDto(entityLotjuId, Set.of(stationIds), updateType, Instant.now(), entityType));
     }

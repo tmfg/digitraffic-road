@@ -124,12 +124,12 @@ public class WeatherStationUpdater  {
         final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataClientWrapper.getTiesaaAsemas();
 
         int updated = 0;
-        for (TiesaaAsemaVO from : allTiesaaAsemas) {
+        for (final TiesaaAsemaVO from : allTiesaaAsemas) {
             try {
                 if (roadStationUpdateService.updateRoadStation(from)) {
                     updated++;
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("method=updateWeatherStationsStatuses : Updating roadstation nimiFi=\"{}\" lotjuId={} naturalId={} keruunTila={} failed", from.getNimiFi(), from.getId(), from.getVanhaId(), from.getKeruunTila());
                 throw e;
             }
@@ -148,11 +148,11 @@ public class WeatherStationUpdater  {
         final Collection<?> invalid = CollectionUtils.subtract(tiesaaAsemas, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
-        List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaAsemaVO::getId).collect(Collectors.toList());
-        int obsoleted = roadStationUpdateService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.WEATHER_STATION, notToObsoleteLotjuIds);
+        final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaAsemaVO::getId).collect(Collectors.toList());
+        final int obsoleted = roadStationUpdateService.obsoleteRoadStationsExcludingLotjuIds(RoadStationType.WEATHER_STATION, notToObsoleteLotjuIds);
 
-        for (TiesaaAsemaVO tsa : toUpdate) {
-            UpdateStatus result = weatherStationService.updateOrInsertWeatherStation(tsa);
+        for (final TiesaaAsemaVO tsa : toUpdate) {
+            final UpdateStatus result = weatherStationService.updateOrInsertWeatherStation(tsa);
             if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {

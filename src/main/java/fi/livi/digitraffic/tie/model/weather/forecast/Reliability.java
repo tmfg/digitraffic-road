@@ -11,7 +11,7 @@ public enum Reliability {
 
     private final int value;
 
-    Reliability(int value) {
+    Reliability(final int value) {
         this.value = value;
     }
 
@@ -19,7 +19,7 @@ public enum Reliability {
         if (value == null) {
             return null;
         }
-        for (Reliability reliability : values()) {
+        for (final Reliability reliability : values()) {
             if (reliability.value == value) {
                 return reliability;
             }

@@ -40,7 +40,7 @@ public class TmsSensorConstant {
         return lotjuId;
     }
 
-    public void setLotjuId(Long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -48,7 +48,7 @@ public class TmsSensorConstant {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -64,7 +64,7 @@ public class TmsSensorConstant {
         return roadStation;
     }
 
-    public void setRoadStation(RoadStation roadStation) {
+    public void setRoadStation(final RoadStation roadStation) {
         this.roadStation = roadStation;
     }
 

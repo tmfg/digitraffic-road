@@ -189,7 +189,7 @@ public class WazeFeedServiceTestHelper {
             final TrafficAnnouncementProperties properties = createTrafficAnnouncementProperties();
             final TrafficAnnouncementFeature feature = new TrafficAnnouncementFeature(this.geometry, properties);
 
-            String json;
+            final String json;
 
             try {
                 json = genericJsonWriter.writeValueAsString(feature);

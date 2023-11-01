@@ -89,7 +89,7 @@ public class RegionGeometryUpdateServiceTest extends AbstractServiceTest {
     /**
      * Creates commit contents
      */
-    private List<RegionGeometry> createCommit(final String commitId1, final Instant effectiveDate, int...locationCode) {
+    private List<RegionGeometry> createCommit(final String commitId1, final Instant effectiveDate, final int...locationCode) {
         return Arrays.stream(locationCode)
             .mapToObj(i -> RegionGeometryTestHelper.createNewRegionGeometry(i, effectiveDate, commitId1))
             .collect(Collectors.toList());

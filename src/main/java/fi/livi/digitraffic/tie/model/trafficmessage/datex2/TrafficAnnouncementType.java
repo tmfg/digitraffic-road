@@ -18,7 +18,7 @@ public enum TrafficAnnouncementType {
     private final static Map<String, TrafficAnnouncementType> CONSTANTS = new HashMap<>();
 
     static {
-        for (TrafficAnnouncementType c : values()) {
+        for (final TrafficAnnouncementType c : values()) {
             CONSTANTS.put(c.value.toUpperCase(), c);
             CONSTANTS.put(c.name(), c); // Enum name
         }

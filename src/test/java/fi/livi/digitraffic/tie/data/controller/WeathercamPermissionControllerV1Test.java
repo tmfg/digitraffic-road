@@ -48,7 +48,7 @@ public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
         Mockito.when(cameraPresetHistoryDataServiceMock.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.PUBLIC);
 
-        MockHttpServletResponse response = requestImage(imageName, versionId);
+        final MockHttpServletResponse response = requestImage(imageName, versionId);
         assertResponse(response, HttpStatus.FOUND, getVersionedRedirectUrl(imageName, versionId));
     }
 
@@ -61,7 +61,7 @@ public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
         Mockito.when(cameraPresetHistoryDataServiceMock.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.SECRET);
 
-        MockHttpServletResponse response = requestImage(imageName, versionId);
+        final MockHttpServletResponse response = requestImage(imageName, versionId);
         assertResponse(response, HttpStatus.NOT_FOUND, null);
     }
 
@@ -74,7 +74,7 @@ public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
         Mockito.when(cameraPresetHistoryDataServiceMock.resolveHistoryStatusForVersion(eq(imageName), eq(versionId)))
             .thenReturn(HistoryStatus.TOO_OLD);
 
-        MockHttpServletResponse response = requestImage(imageName, versionId);
+        final MockHttpServletResponse response = requestImage(imageName, versionId);
         assertResponse(response, HttpStatus.NOT_FOUND, null);
     }
 
@@ -113,7 +113,7 @@ public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
         return mockMvc.perform(get).andReturn().getResponse();
     }
 
-    private static String getPresetId(String imageName) {
+    private static String getPresetId(final String imageName) {
         return imageName.substring(0,8);
     }
 }

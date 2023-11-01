@@ -16,7 +16,7 @@ public class S3Properties {
         return s3Region;
     }
 
-    public void setS3Region(String s3Region) {
+    public void setS3Region(final String s3Region) {
         this.s3Region = s3Region;
     }
 }

@@ -54,7 +54,7 @@ public class TrafficMessageImsJsonConverterV1 {
         this.genericJsonReader = objectMapper.reader();
         this.regionGeometryDataServiceV1 = regionGeometryDataServiceV1;
 
-        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+        try (final ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             this.validator = factory.getValidator();
         }
     }

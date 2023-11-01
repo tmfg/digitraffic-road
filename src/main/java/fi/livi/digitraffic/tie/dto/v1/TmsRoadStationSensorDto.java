@@ -24,11 +24,11 @@ public class TmsRoadStationSensorDto extends RoadStationSensorDto {
         "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.")
     private final Integer direction;
 
-    public TmsRoadStationSensorDto(long naturalId, String name, String unit, String descriptionFi, String descriptionSv, String descriptionEn,
-                                   String nameFi, String shortNameFi, Integer accuracy,
-                                   List<SensorValueDescription> sensorValueDescriptions,
-                                   String presentationNameFi, String presentationNameSv, String presentationNameEn,
-                                   VehicleClass vehicleClass, Integer lane, Integer direction) {
+    public TmsRoadStationSensorDto(final long naturalId, final String name, final String unit, final String descriptionFi, final String descriptionSv, final String descriptionEn,
+                                   final String nameFi, final String shortNameFi, final Integer accuracy,
+                                   final List<SensorValueDescription> sensorValueDescriptions,
+                                   final String presentationNameFi, final String presentationNameSv, final String presentationNameEn,
+                                   final VehicleClass vehicleClass, final Integer lane, final Integer direction) {
         super(naturalId, name, unit, descriptionFi, descriptionSv, descriptionEn, nameFi, shortNameFi, accuracy, sensorValueDescriptions,
               presentationNameFi, presentationNameSv, presentationNameEn);
         this.vehicleClass = vehicleClass;

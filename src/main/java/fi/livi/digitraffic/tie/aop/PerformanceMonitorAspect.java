@@ -36,7 +36,7 @@ public class PerformanceMonitorAspect {
      *
      */
     @Around("within(@org.springframework.stereotype.Service *) || @annotation(fi.livi.digitraffic.tie.annotation.PerformanceMonitor)")
-    public Object monitor(ProceedingJoinPoint pjp) throws Throwable {
+    public Object monitor(final ProceedingJoinPoint pjp) throws Throwable {
 
         final MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
 

@@ -236,7 +236,7 @@ public class LotjuTmsStationMetadataClientWrapper {
 
         private final LamAnturiVakioArvoVO vakio;
 
-        public LamAnturiVakioArvoWrapper(LamAnturiVakioArvoVO vakio) {
+        public LamAnturiVakioArvoWrapper(final LamAnturiVakioArvoVO vakio) {
             this.vakio = vakio;
         }
 
@@ -244,7 +244,7 @@ public class LotjuTmsStationMetadataClientWrapper {
             return vakio;
         }
 
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (this == o) {
                 return true;
             }
@@ -252,9 +252,9 @@ public class LotjuTmsStationMetadataClientWrapper {
                 return false;
             }
 
-            LamAnturiVakioArvoVO other = ((LamAnturiVakioArvoWrapper)o).unWrap();
+            final LamAnturiVakioArvoVO other = ((LamAnturiVakioArvoWrapper)o).unWrap();
 
-            boolean equals = new EqualsBuilder()
+            final boolean equals = new EqualsBuilder()
                 .append(other.getAnturiVakioId(), vakio.getAnturiVakioId())
                 .append(other.getVoimassaAlku(), vakio.getVoimassaAlku())
                 .append(other.getVoimassaLoppu(), vakio.getVoimassaLoppu())

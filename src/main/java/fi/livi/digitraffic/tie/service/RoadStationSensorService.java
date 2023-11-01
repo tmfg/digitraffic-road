@@ -263,7 +263,7 @@ public class RoadStationSensorService {
         final List<Predicate> predicates = new ArrayList<>();
         predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
         predicates.add( cb.isNull(root.get("obsoleteDate")));
-        for (List<Long> ids : Iterables.partition(sensorsLotjuIdsNotToObsolete, 1000)) {
+        for (final List<Long> ids : Iterables.partition(sensorsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
         update.where(cb.and(predicates.toArray(new Predicate[0])));

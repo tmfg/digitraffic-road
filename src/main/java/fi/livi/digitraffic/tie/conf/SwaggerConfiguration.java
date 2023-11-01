@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
                                 final @Value("${dt.domain.url}") String domainUrl) throws URISyntaxException {
         this.roadApiInfo = roadApiInfoGetter.getApiInfo();
 
-        URI uri = new URI(domainUrl);
+        final URI uri = new URI(domainUrl);
 
         final int port = uri.getPort();
         if (port > -1) {

@@ -386,7 +386,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
             String havaintoJson = null;
             try {
                 havaintoJson = jsonWriterForHavainto.writeValueAsString(havainto);
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 log.error("Failed to convert havainto to json", e);
             }
             log.warn("method=splitLineStringsWithGaps Distance between points: {} The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",
@@ -421,7 +421,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                             x, y, z, coordinate.getX(), coordinate.getY(), coordinate.getZ());
                     }
                     return PostgisGeometryUtils.createCoordinateWithZFromETRS89ToWGS84(x, y, z);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     log.error("method=resolveCoordinatesAsWGS84 failed", e);
                     throw e;
                 }
@@ -486,7 +486,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
         }
     }
 
-    private static boolean isTransition(Set<MaintenanceTrackingTask> tehtavat) {
+    private static boolean isTransition(final Set<MaintenanceTrackingTask> tehtavat) {
         return tehtavat == null || tehtavat.isEmpty();
     }
 

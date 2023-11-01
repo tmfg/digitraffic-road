@@ -170,7 +170,7 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
         return lotjuId;
     }
 
-    public void setLotjuId(Long lotjuId) {
+    public void setLotjuId(final Long lotjuId) {
         this.lotjuId = lotjuId;
     }
 
@@ -206,7 +206,7 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
         return isPublicPrevious;
     }
 
-    private void setPublicPrevious(boolean publicPrevious) {
+    private void setPublicPrevious(final boolean publicPrevious) {
         isPublicPrevious = publicPrevious;
     }
 

@@ -36,7 +36,7 @@ public class WazeReverseGeocodingApi {
 
         try {
             return httpClient.execute(httpGet, responseHandler);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("method=fetch Unable to fetch data from waze reverse geocode api", e);
         }
         return Optional.empty();

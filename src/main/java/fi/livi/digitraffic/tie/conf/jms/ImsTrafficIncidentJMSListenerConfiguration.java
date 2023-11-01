@@ -43,8 +43,8 @@ public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListe
         this.v2Datex2UpdateService = v2Datex2UpdateService;
 
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
-                                           ImsTrafficIncidentJMSListenerConfiguration.class.getSimpleName(),
-                                           ClusteredLocker.generateInstanceId()));
+            ImsTrafficIncidentJMSListenerConfiguration.class.getSimpleName(),
+            ClusteredLocker.generateInstanceId()));
     }
 
     @Override

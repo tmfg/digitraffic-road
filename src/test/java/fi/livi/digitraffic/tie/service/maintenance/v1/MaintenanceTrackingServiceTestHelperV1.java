@@ -126,7 +126,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
         final Point end = PostgisGeometryUtils.createPointWithZ(new Coordinate(x, maxY));
         final double dist = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(start, end);
         final int minCountOfPoints = (int)Math.ceil((dist/maxLineStringGapInKilometers));
-        double increment = (maxY-minY)/minCountOfPoints;
+        final double increment = (maxY-minY)/minCountOfPoints;
 
         return IntStream.range(1, minCountOfPoints+1)
             .mapToObj(i -> asList(x, minY + (i*increment)))
@@ -318,7 +318,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
         if (lineString) {
 
             // LineString observation with {pointsCount} points
-            List<List<Object>> coordinates = IntStream.range(0, pointsCount)
+            final List<List<Object>> coordinates = IntStream.range(0, pointsCount)
                 .mapToObj(i -> Arrays.<Object>asList(RANGE_X_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor,
                                                 RANGE_Y_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor)).collect(toList());
 
@@ -412,7 +412,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
         for(final Havainnot havainnot : seuranta.getHavainnot()) {
             final Havainto h = havainnot.getHavainto();
             final String json = jsonWriterForHavainto.writeValueAsString(h);
-            Map<String, Object> valuesMap = new HashMap<>();
+            final Map<String, Object> valuesMap = new HashMap<>();
             valuesMap.put("observationTime", h.getHavaintoaika().toInstant().toString());
             valuesMap.put("sendingTime", sendingTime.toString());
             valuesMap.put("json", json);
@@ -424,7 +424,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
             valuesMap.put("s3Uri", "plaa");
 
             final StringSubstitutor sub = new StringSubstitutor(valuesMap);
-            String sql = sub.replace(UPSERT_MAINTENANCE_TRACKING_OBSERVATION_DATA_SQL);
+            final String sql = sub.replace(UPSERT_MAINTENANCE_TRACKING_OBSERVATION_DATA_SQL);
 
             entityManager.createNativeQuery(sql).executeUpdate();
         }
@@ -456,7 +456,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
     public void saveTrackingFromResourceToDbAsObservationsFromMultipleMessages(final String path) throws IOException {
         final String json = readResourceContent(path);
         final TyokoneenseurannanKirjausRequestSchema[] trackings = jsonReaderForTrackingsArray.readValue(json);
-        for(TyokoneenseurannanKirjausRequestSchema tracking : trackings) {
+        for(final TyokoneenseurannanKirjausRequestSchema tracking : trackings) {
             saveTrackingDataAsObservations(tracking);
         }
     }

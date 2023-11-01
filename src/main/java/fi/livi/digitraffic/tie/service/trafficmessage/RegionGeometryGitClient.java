@@ -118,7 +118,7 @@ public class RegionGeometryGitClient {
             final Geometry geometry = geoJsonReader.read(json.get("geometry").toString());
             log.info("Create new RegionGeometry with name {}, locationCode {}, type {}, effectiveDate {}, gitPath {}, changeType {}", name, locationCode,type, effectiveDate, gitPath, diff.getChangeType());
             return new RegionGeometry(name, locationCode, type, effectiveDate, geometry, versionDate, gitId, gitPath, commit.getId().getName());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -156,7 +156,7 @@ public class RegionGeometryGitClient {
                 logAsc.add(0, revCommit);
             }
             return logAsc;
-        } catch (GitAPIException e) {
+        } catch (final GitAPIException e) {
             log.error(format("Failed to get Git log after commitId {0}", afterCommitId), e);
             throw new RuntimeException(e);
         }
@@ -233,7 +233,7 @@ public class RegionGeometryGitClient {
         if (targetPath.exists()) {
             try {
                 FileUtils.deleteDirectory(targetPath);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 log.error(format("Failed to delete local repository at {0}.", targetPath), e);
                 throw new RuntimeException(e);
             }
@@ -243,7 +243,7 @@ public class RegionGeometryGitClient {
     private static Git gitOpen(final File targetPath) {
         try (final Git git = Git.open(targetPath)) {
             return git;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error(format("Failed to open local repository at {0}. Clean it and do clone.", targetPath), e);
         }
         return null;

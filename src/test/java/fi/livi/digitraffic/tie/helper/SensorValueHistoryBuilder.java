@@ -28,13 +28,13 @@ public class SensorValueHistoryBuilder {
         createdCounts = new ArrayList<>();
     }
 
-    public SensorValueHistoryBuilder setReferenceTime(ZonedDateTime refTime) {
+    public SensorValueHistoryBuilder setReferenceTime(final ZonedDateTime refTime) {
         this.refTime = refTime;
 
         return this;
     }
 
-    public SensorValueHistoryBuilder setTimeTruncateUnit(ChronoUnit chronoUnit) {
+    public SensorValueHistoryBuilder setTimeTruncateUnit(final ChronoUnit chronoUnit) {
         this.chronoUnit = chronoUnit;
 
         return this;
@@ -51,8 +51,8 @@ public class SensorValueHistoryBuilder {
      * @param stop          End offset in minuts from current time
      * @return the builder
      */
-    public SensorValueHistoryBuilder buildRandom(int maxAmount, int maxStationId, int maxSensorId, int start, int stop) {
-        int count = RandomUtils.nextInt(1, maxAmount);
+    public SensorValueHistoryBuilder buildRandom(final int maxAmount, final int maxStationId, final int maxSensorId, final int start, final int stop) {
+        final int count = RandomUtils.nextInt(1, maxAmount);
 
         IntStream.range(0, count).forEach(i ->
                 list.add(createDummyModel(RandomUtils.nextLong(1, maxStationId),
@@ -66,8 +66,8 @@ public class SensorValueHistoryBuilder {
         return this;
     }
 
-    public SensorValueHistoryBuilder buildWithStationId(int maxAmount, int stationId, int maxSensorId, int start, int stop) {
-        int count = RandomUtils.nextInt(1, maxAmount);
+    public SensorValueHistoryBuilder buildWithStationId(final int maxAmount, final int stationId, final int maxSensorId, final int start, final int stop) {
+        final int count = RandomUtils.nextInt(1, maxAmount);
 
         IntStream.range(0, count).forEach(i ->
                 list.add(createDummyModel(stationId,
@@ -81,8 +81,8 @@ public class SensorValueHistoryBuilder {
         return this;
     }
 
-    public SensorValueHistoryBuilder buildWithStationIdAndSensorId(int maxAmount, int stationId, int sensorId, int start, int stop) {
-        int count = RandomUtils.nextInt(1, maxAmount);
+    public SensorValueHistoryBuilder buildWithStationIdAndSensorId(final int maxAmount, final int stationId, final int sensorId, final int start, final int stop) {
+        final int count = RandomUtils.nextInt(1, maxAmount);
 
         IntStream.range(0, count).forEach(i ->
                 list.add(createDummyModel(stationId,
@@ -110,14 +110,14 @@ public class SensorValueHistoryBuilder {
         return this;
     }
 
-    public int getElementCountAt(int index) {
+    public int getElementCountAt(final int index) {
         return createdCounts.get(index);
     }
 
-    private ZonedDateTime getTime(int start, int stop) {
-        ZonedDateTime time = refTime != null ?
-                             refTime.minusMinutes(RandomUtils.nextInt(start, stop)) :
-                             ZonedDateTime.now().minusMinutes(RandomUtils.nextInt(start, stop));
+    private ZonedDateTime getTime(final int start, final int stop) {
+        final ZonedDateTime time = refTime != null ?
+                                   refTime.minusMinutes(RandomUtils.nextInt(start, stop)) :
+                                   ZonedDateTime.now().minusMinutes(RandomUtils.nextInt(start, stop));
 
         if (chronoUnit != null) {
             return time.truncatedTo(chronoUnit);
@@ -126,8 +126,8 @@ public class SensorValueHistoryBuilder {
         return time;
     }
 
-    private SensorValueHistory createDummyModel(long roadStation, long sensor, double value, ZonedDateTime time) {
-        SensorValueHistory model = new SensorValueHistory();
+    private SensorValueHistory createDummyModel(final long roadStation, final long sensor, final double value, final ZonedDateTime time) {
+        final SensorValueHistory model = new SensorValueHistory();
         model.setRoadStationId(roadStation);
         model.setSensorId(sensor);
         model.setSensorValue(value);

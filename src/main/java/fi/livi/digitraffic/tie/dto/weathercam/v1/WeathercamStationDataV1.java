@@ -15,7 +15,7 @@ public class WeathercamStationDataV1 extends StationDataV1<String> {
     @Schema(description = "Weathercam presets data", required = true)
     public final List<WeathercamPresetDataV1> presets;
 
-    public WeathercamStationDataV1(final String id, List<WeathercamPresetDataV1> presetsData, final Instant dataUpdatedTime) {
+    public WeathercamStationDataV1(final String id, final List<WeathercamPresetDataV1> presetsData, final Instant dataUpdatedTime) {
         super(id, dataUpdatedTime);
         this.presets = presetsData;
     }

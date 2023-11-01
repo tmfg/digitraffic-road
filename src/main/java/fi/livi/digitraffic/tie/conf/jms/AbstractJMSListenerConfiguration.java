@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jakarta.annotation.PreDestroy;
 import javax.jms.ConnectionMetaData;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
@@ -13,7 +12,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.QueueConnection;
 import javax.jms.Session;
-import jakarta.xml.bind.JAXBException;
 
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,7 +20,8 @@ import fi.livi.digitraffic.tie.aop.NoJobLogging;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import progress.message.jclient.Connection;
+import jakarta.annotation.PreDestroy;
+import jakarta.xml.bind.JAXBException;
 import progress.message.jclient.Queue;
 import progress.message.jclient.QueueConnectionFactory;
 import progress.message.jclient.Topic;
@@ -171,7 +170,6 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
             queueConnection.setExceptionListener(jmsExceptionListener);
 
-            final Connection sonicCon = (Connection) queueConnection;
             final ConnectionMetaData meta = queueConnection.getMetaData();
 
             log.info("method=createConnection JMS Connection created with ConnectionFactory: {}, Sonic version: {} {}", connectionFactory, meta.getJMSProviderName(), meta.getProviderVersion());
@@ -253,7 +251,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         }
     }
 
-    protected class JMSParameters {
+    protected static class JMSParameters {
         private final String jmsUserId;
         private final String jmsPassword;
         private final long lockInstanceId;

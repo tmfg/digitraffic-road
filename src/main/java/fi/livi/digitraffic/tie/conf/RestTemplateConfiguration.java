@@ -20,7 +20,7 @@ public class RestTemplateConfiguration {
         return createRestTemplate(DEFAULT_CONNECT_TIMEOUT_S, DEFAULT_READ_TIMEOUT_S);
     }
 
-    public static RestTemplate createRestTemplate(final int connectTimeoutSeconds, int readTimeoutSeconds) {
+    public static RestTemplate createRestTemplate(final int connectTimeoutSeconds, final int readTimeoutSeconds) {
         final RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory(connectTimeoutSeconds, readTimeoutSeconds));
 
         // DPO-294 aineistot.vally.local palvelee UTF-8 merkistöllisiä xml-tiedostoja ilman encoding tietoa.
@@ -31,8 +31,8 @@ public class RestTemplateConfiguration {
         return restTemplate;
     }
 
-    private static ClientHttpRequestFactory clientHttpRequestFactory(final int connectTimeoutSeconds, int readTimeoutSeconds) {
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+    private static ClientHttpRequestFactory clientHttpRequestFactory(final int connectTimeoutSeconds, final int readTimeoutSeconds) {
+        final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(connectTimeoutSeconds * 1000);
         factory.setReadTimeout(readTimeoutSeconds * 1000);
         return factory;

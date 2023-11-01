@@ -60,7 +60,7 @@ public class LotjuWeatherStationMetadataClientWrapper {
             try {
                 final Future<Integer> f = completionService.take();
                 countAnturis.addAndGet(f.get());
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching Anturits", e);
                 executor.shutdownNow();
                 throw new RuntimeException(e);

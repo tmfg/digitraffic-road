@@ -93,14 +93,14 @@ public class TmsSensorConstantDao {
 
         final ArrayList<Map<String, Object>> batchData = new ArrayList<>();
         allLamAnturiVakios.forEach(lamAnturiVakio -> {
-            HashMap<String, Object> params = new HashMap<>();
+            final HashMap<String, Object> params = new HashMap<>();
             params.put("sensorConstantLotjuId", lamAnturiVakio.getId());
             params.put("sensorConstantName", lamAnturiVakio.getNimi());
             params.put("sensorConstantRoadStationLotjuId", lamAnturiVakio.getAsemaId());
             batchData.add(params);
         });
 
-        int[] upserts = namedParameterJdbcTemplate.batchUpdate(
+        final int[] upserts = namedParameterJdbcTemplate.batchUpdate(
             UPSERT_CONSTANTS_STATEMENT,
             batchData.toArray(new Map[0]));
 
@@ -111,7 +111,7 @@ public class TmsSensorConstantDao {
 
         final ArrayList<Map<String, Object>> batchData = new ArrayList<>();
         allLamAnturiVakioArvos.forEach(v -> {
-            HashMap<String, Object> params = new HashMap<>();
+            final HashMap<String, Object> params = new HashMap<>();
             params.put("sensorConstantValueLotjuId", v.getId());
             params.put("sensorConstantLotjuId", v.getAnturiVakioId());
             params.put("sensorConstantValue", v.getArvo());
@@ -120,7 +120,7 @@ public class TmsSensorConstantDao {
             batchData.add(params);
         });
 
-        int[] upserts = namedParameterJdbcTemplate.batchUpdate(
+        final int[] upserts = namedParameterJdbcTemplate.batchUpdate(
                 UPSERT_CONSTANT_VALUES_STATEMENT,
                 batchData.toArray(new Map[0]));
 
@@ -129,7 +129,7 @@ public class TmsSensorConstantDao {
 
     private int countUpserts(final int[] upserts) {
         int count = 0;
-        for (int value : upserts) {
+        for (final int value : upserts) {
             if (value >= 0) {
                 count += value;
             } else if (value == -2) {
@@ -141,7 +141,7 @@ public class TmsSensorConstantDao {
         return count;
     }
 
-    public int updateSensorSensorConstantValuesToObsoleteExcludingIds(Collection<Long> excludeLotjuIds) {
+    public int updateSensorSensorConstantValuesToObsoleteExcludingIds(final Collection<Long> excludeLotjuIds) {
         final Map<String, Collection<Long>> paramMap = Collections.singletonMap("ids", excludeLotjuIds);
         return namedParameterJdbcTemplate.update(
                 "UPDATE TMS_SENSOR_CONSTANT_VALUE\n" +

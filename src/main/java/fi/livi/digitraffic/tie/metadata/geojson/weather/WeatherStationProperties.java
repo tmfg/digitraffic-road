@@ -52,7 +52,7 @@ public class WeatherStationProperties extends RoadStationProperties {
         return stationSensors;
     }
 
-    public void setStationSensors(List<Long> stationSensors) {
+    public void setStationSensors(final List<Long> stationSensors) {
         this.stationSensors = stationSensors;
         Collections.sort(this.stationSensors);
     }

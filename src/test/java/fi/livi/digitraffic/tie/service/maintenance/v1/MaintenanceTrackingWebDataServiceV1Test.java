@@ -236,7 +236,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                 createMaintenanceTrackingWithLineString(start, 10, i + 1, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta);
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
             return getEndTime(seuranta);
@@ -277,19 +277,19 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                 createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, SuoritettavatTehtavat.values()[idx]);
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta);
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // Without task parameter all should be found
-        List<MaintenanceTrackingFeatureV1> allFeatures =
+        final List<MaintenanceTrackingFeatureV1> allFeatures =
             findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plus(10 * 5 + 9, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(machineCount*5, allFeatures);
 
         // Latest should return latest one per machine
-        List<MaintenanceTrackingLatestFeatureV1> latestFeatures =
+        final List<MaintenanceTrackingLatestFeatureV1> latestFeatures =
             findLatestMaintenanceTrackings(startTime, startTime.plus(10 * 5 + 9, ChronoUnit.MINUTES)).getFeatures();
         assertCollectionSize(machineCount, latestFeatures);
         assertAllHasOnlyPointGeometries(latestFeatures);
@@ -439,7 +439,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
-        List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()-0.5, BOUNDING_BOX_Y_RANGE.getRight() + 0.5);
+        final List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft()-0.5, BOUNDING_BOX_Y_RANGE.getRight() + 0.5);
 
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
@@ -476,7 +476,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
-        List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getRight() + 0.1,
+        final List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getRight() + 0.1,
                                                                      BOUNDING_BOX_Y_RANGE.getLeft() - 10,
                                                                      BOUNDING_BOX_Y_RANGE.getRight() + 10);
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
@@ -506,7 +506,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
-        List<List<Double>> fromWGS84 = List.of(
+        final List<List<Double>> fromWGS84 = List.of(
                 asList(BOUNDING_BOX_CENTER.getLeft(), BOUNDING_BOX_CENTER.getRight())
         );
 
@@ -542,7 +542,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
-        List<List<Double>> fromWGS84 = List.of(
+        final List<List<Double>> fromWGS84 = List.of(
                 asList(BOUNDING_BOX_X_RANGE.getRight() + 0.1, BOUNDING_BOX_CENTER.getRight())
         );
 
@@ -568,7 +568,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
-        List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getRight());
+        final List<List<Double>> fromWGS84 = createVerticalLineStringWGS84(BOUNDING_BOX_X_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getLeft(), BOUNDING_BOX_Y_RANGE.getRight());
 
         final List<List<Double>> fromETRS89 = CoordinateConverter.convertLineStringCoordinatesFromWGS84ToETRS89(fromWGS84);
 
@@ -900,9 +900,9 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     private LinkedHashMap<Long, List<MaintenanceTrackingPropertiesV1>> groupTrackingsByStartId(final List<MaintenanceTrackingFeatureV1> trackings) {
-        Map<Long, MaintenanceTrackingPropertiesV1> idToTrackingMap =
+        final Map<Long, MaintenanceTrackingPropertiesV1> idToTrackingMap =
             trackings.stream().collect(Collectors.toMap(f -> f.getProperties().id, Feature::getProperties));
-        LinkedHashMap<Long, List<MaintenanceTrackingPropertiesV1>> groupsByStartId = new LinkedHashMap<>();
+        final LinkedHashMap<Long, List<MaintenanceTrackingPropertiesV1>> groupsByStartId = new LinkedHashMap<>();
         trackings.stream()
             .map(MaintenanceTrackingFeatureV1::getProperties)
             .forEach(p -> {

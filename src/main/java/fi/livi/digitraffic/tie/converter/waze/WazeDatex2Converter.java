@@ -66,7 +66,7 @@ public class WazeDatex2Converter {
 
         try {
             d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2.getMessage());
-        } catch (UnmarshallingFailureException e) {
+        } catch (final UnmarshallingFailureException e) {
             logger.error("method=export situation {} did not have a proper datex2 message, error: {}", feature.getProperties().situationId, e.getMessage());
             return Optional.empty();
         }

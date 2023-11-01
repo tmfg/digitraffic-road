@@ -45,10 +45,10 @@ public abstract class RoadStationSensorDto {
     @Schema(description = "Map of presentation names [fi, sv, en]")
     private final Map<String, String> presentationNames = new HashMap<>();
 
-    public RoadStationSensorDto(long naturalId, String name, String unit, String descriptionFi, String descriptionSv, String descriptionEn,
-                                String nameFi, String shortNameFi, Integer accuracy,
-                                List<SensorValueDescription> sensorValueDescriptions, String presentationNameFi, String presentationNameSv,
-                                String presentationNameEn) {
+    public RoadStationSensorDto(final long naturalId, final String name, final String unit, final String descriptionFi, final String descriptionSv, final String descriptionEn,
+                                final String nameFi, final String shortNameFi, final Integer accuracy,
+                                final List<SensorValueDescription> sensorValueDescriptions, final String presentationNameFi, final String presentationNameSv,
+                                final String presentationNameEn) {
         this.naturalId = naturalId;
         this.name = name;
         this.unit = unit;

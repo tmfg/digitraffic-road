@@ -216,7 +216,7 @@ public class TrafficMessageTestHelper {
     }
 
     public static String readStaticD2MessageResourceContent(final String situationTypeName, final ZonedDateTime startTime,
-                                                            final ZonedDateTime endTime, int situationVersion,
+                                                            final ZonedDateTime endTime, final int situationVersion,
                                                             final boolean lifeCycleCanceled) throws IOException {
         final String path = "classpath:tloik/ims/versions/d2Message_" + situationTypeName + ".xml";
         log.info("Reading D2Message resource: {}", path);

@@ -65,7 +65,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         final List<RoadStationSensor> publishableSensors = findPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
 
         // subset of 100 stations
-        List<Long> lotjuIds = new ArrayList<>(weatherStationsWithLotjuId.keySet())
+        final List<Long> lotjuIds = new ArrayList<>(weatherStationsWithLotjuId.keySet())
                                   .subList(0 , Math.min(100, weatherStationsWithLotjuId.size()));
         weatherStationsWithLotjuId.keySet().retainAll(lotjuIds);
         // Generate previous sensor values so that sensor update is mostly only updating old values
@@ -94,10 +94,10 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                 }
                 final WeatherStation currentStation = stationsIter.next();
 
-                List<TiesaaProtos.TiesaaMittatieto> tiesaas =
+                final List<TiesaaProtos.TiesaaMittatieto> tiesaas =
                     generateTiesaaMittatieto(time, publishableSensors, currentStation.getLotjuId(), 2);
 
-                for (TiesaaProtos.TiesaaMittatieto tiesaa : tiesaas) {
+                for (final TiesaaProtos.TiesaaMittatieto tiesaa : tiesaas) {
                     data.add(tiesaa);
                     jmsMessageListener.onMessage(createBytesMessage(tiesaa));
                 }
@@ -110,22 +110,22 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             }
 
             // Create data for non existing station to test that data will be updated even if there is data for non existing station.
-            List<TiesaaProtos.TiesaaMittatieto> nonExistingTiesaas =
+            final List<TiesaaProtos.TiesaaMittatieto> nonExistingTiesaas =
                 generateTiesaaMittatieto(Instant.now(), publishableSensors,
                                          NON_EXISTING_STATION_LOTJU_ID, 2);
-            for (TiesaaProtos.TiesaaMittatieto nonExistingTiesaa : nonExistingTiesaas) {
+            for (final TiesaaProtos.TiesaaMittatieto nonExistingTiesaa : nonExistingTiesaas) {
                 data.add(nonExistingTiesaa);
                 jmsMessageListener.onMessage(createBytesMessage(nonExistingTiesaa));
             }
 
             sw.stop();
             log.info("Data generation tookMs={}", sw.getTime());
-            StopWatch swHandle = StopWatch.createStarted();
+            final StopWatch swHandle = StopWatch.createStarted();
             jmsMessageListener.drainQueueScheduled();
             handleDataTotalTime += swHandle.getTime();
 
             // send data with 1 s intervall
-            long sleep = 1000 - sw.getTime();
+            final long sleep = 1000 - sw.getTime();
 
             if (sleep < 0) {
                 log.error("Data generation took too long");
@@ -160,7 +160,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                                          final List<RoadStationSensor> publishableSensors,
                                          final JMSMessageListener<TiesaaProtos.TiesaaMittatieto> jmsMessageListener)
         throws IOException, JMSException {
-        for (WeatherStation station : stations) {
+        for (final WeatherStation station : stations) {
             jmsMessageListener.onMessage(
                 createBytesMessage(generateTiesaaMittatieto(Instant.now(), publishableSensors,
                                                             station.getLotjuId(),1).get(0)));
@@ -172,7 +172,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
                                                                                 final List<RoadStationSensor> availableSensors,
                                                                                 final Long currentStationLotjuId,
                                                                                 final int splitToMessages) {
-        ArrayList<TiesaaProtos.TiesaaMittatieto.Builder> builders = new ArrayList<>();
+        final ArrayList<TiesaaProtos.TiesaaMittatieto.Builder> builders = new ArrayList<>();
         for (int i = 0; i < splitToMessages; i++) {
             final TiesaaProtos.TiesaaMittatieto.Builder builder = TiesaaProtos.TiesaaMittatieto.newBuilder();
             builders.add(builder);
@@ -225,7 +225,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
         return bytesMessage;
     }
 
-    private static void assertData(List<TiesaaProtos.TiesaaMittatieto> data, Map<Long, List<SensorValue>> valuesMap) {
+    private static void assertData(final List<TiesaaProtos.TiesaaMittatieto> data, final Map<Long, List<SensorValue>> valuesMap) {
         for (final TiesaaProtos.TiesaaMittatieto tiesaa : data) {
             final long asemaLotjuId = tiesaa.getAsemaId();
             // Don't check non existing station values
@@ -255,7 +255,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     }
 
     private static JMSMessageListener<TiesaaProtos.TiesaaMittatieto> createTiesaaMittatietoJMSMessageListener(
-        JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater) {
+            final JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater) {
         return new JMSMessageListener<>(new WeatherMessageMarshaller(),
             dataUpdater, true, log);
     }

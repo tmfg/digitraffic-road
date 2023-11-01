@@ -33,7 +33,7 @@ public abstract class LotjuServiceEndpointMock {
     private boolean inited;
 
     public LotjuServiceEndpointMock(final ResourceLoader resourceLoader, final String metadataServerAddress, final Class<?> metatiedotClass,
-                                    final QName serviceName, final Jaxb2Marshaller jaxb2Marshaller, String resourcePath) {
+                                    final QName serviceName, final Jaxb2Marshaller jaxb2Marshaller, final String resourcePath) {
         log.info("metadataServerAddress={}", metadataServerAddress);
         this.resourceLoader = resourceLoader;
         this.metadataServerAddress = metadataServerAddress;

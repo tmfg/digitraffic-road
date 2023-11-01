@@ -44,7 +44,7 @@ public class TmsMetadataUpdateMessageHandler {
     public int updateMetadataFromJms(final List<TmsMetadataUpdatedMessageDto> tmsMetadataUpdates) {
         int updateCount = 0;
 
-        for (TmsMetadataUpdatedMessageDto message : tmsMetadataUpdates) {
+        for (final TmsMetadataUpdatedMessageDto message : tmsMetadataUpdates) {
             log.info("method=updateMetadataFromJms roadStationType={} data: {}", RoadStationType.TMS_STATION.name(), ToStringHelper.toStringFull(message));
             final EntityType type = message.getEntityType();
             final UpdateType updateType = message.getUpdateType();

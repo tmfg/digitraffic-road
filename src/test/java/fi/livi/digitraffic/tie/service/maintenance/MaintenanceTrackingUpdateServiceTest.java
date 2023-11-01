@@ -127,7 +127,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
                                      o.getObservationTime().equals(h.getHavaintoaika().toInstant()))
                         .findFirst().orElseThrow();
                 assertEquals(formatedJson, observation.getJson());
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -251,7 +251,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
                 log.debug("Tracking start={} end={}",
                           seuranta.getHavainnot().get(0).getHavainto().getHavaintoaika(),
                           seuranta.getHavainnot().get(seuranta.getHavainnot().size()-1).getHavainto().getHavaintoaika());
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -514,7 +514,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
         return startIds.size();
     }
 
-    private Long getTrackingStartId(final Map<Long, Long> idToPreviousIdMapping, long id) {
+    private Long getTrackingStartId(final Map<Long, Long> idToPreviousIdMapping, final long id) {
         final Long found = idToPreviousIdMapping.get(id);
         if (found.equals(id)) {
             return id;
@@ -552,7 +552,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
     private LinkedHashMap<Long, List<MaintenanceTracking>> groupTrackingsByStartId(final List<MaintenanceTracking> trackings) {
         final Map<Long, MaintenanceTracking> idToTrackingMap =
             trackings.stream().collect(Collectors.toMap(MaintenanceTracking::getId, Function.identity()));
-        LinkedHashMap<Long, List<MaintenanceTracking>> groupsByStartId = new LinkedHashMap<>();
+        final LinkedHashMap<Long, List<MaintenanceTracking>> groupsByStartId = new LinkedHashMap<>();
         trackings.forEach(t -> {
             // This is the first one to handle
             if (t.getPreviousTrackingId() == null) {

@@ -17,7 +17,7 @@ public class TmsStationSensorConstantsMetadataUpdateJob extends SimpleUpdateJob 
     private TmsStationSensorConstantUpdater tmsStationSensorConstantUpdater;
 
     @Override
-    protected void doExecute(JobExecutionContext context) throws Exception {
+    protected void doExecute(final JobExecutionContext context) throws Exception {
 
         final StopWatch stationsSensorConstantsWatch = StopWatch.createStarted();
         final boolean updatedTmsStationSensorConstants =

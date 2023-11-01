@@ -96,7 +96,7 @@ public class WazeDatex2JsonConverter {
         }
     }
 
-    private Optional<WazeFeedLocationDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, Geometry<?> geometry) {
+    private Optional<WazeFeedLocationDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, final Geometry<?> geometry) {
         if (direction == null || geometry == null || geometry instanceof Point) {
             return Optional.empty();
         }

@@ -92,7 +92,7 @@ public class ToStringHelper {
                 if (field.getName().equals("ignoreClassToPropertiesMap")) {
                     return "<skipped>";
                 }
-                for (String excludeFieldName : secretFields) {
+                for (final String excludeFieldName : secretFields) {
                     if (field.getName().equals(excludeFieldName)) {
                         return "*****";
                     }
@@ -155,7 +155,7 @@ public class ToStringHelper {
 
         boolean first = true;
 
-        for (TiesaaProtos.TiesaaMittatieto.Anturi anturi : tiesaa.getAnturiList()) {
+        for (final TiesaaProtos.TiesaaMittatieto.Anturi anturi : tiesaa.getAnturiList()) {
             if (!first) {
                 sb.append(", ");
             }

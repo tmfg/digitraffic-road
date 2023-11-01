@@ -368,7 +368,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         assertEquals(to.getUrakkaAlue(), rs.getRoadAddress().getContractArea());
     }
 
-    private List<WeatherMetadataUpdatedMessageDto> createMessage(final EntityType entityType, final UpdateType updateType, long lotjuId, Long...asemaLotjuIds) {
+    private List<WeatherMetadataUpdatedMessageDto> createMessage(final EntityType entityType, final UpdateType updateType, final long lotjuId, final Long...asemaLotjuIds) {
         return Collections.singletonList(
             new WeatherMetadataUpdatedMessageDto(lotjuId, Set.of(asemaLotjuIds), updateType, Instant.now(), entityType));
     }

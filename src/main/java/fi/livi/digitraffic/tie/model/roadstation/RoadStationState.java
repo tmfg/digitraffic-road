@@ -43,14 +43,14 @@ public enum RoadStationState {
         return null;
     }
 
-    public static RoadStationState fromTilaTyyppi(fi.livi.digitraffic.tie.external.lotju.metadata.lam.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(final fi.livi.digitraffic.tie.external.lotju.metadata.lam.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return fromValue(asemanTila.value());
         }
         return null;
     }
 
-    public static RoadStationState fromTilaTyyppi(fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TilaTyyppi asemanTila) {
+    public static RoadStationState fromTilaTyyppi(final fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TilaTyyppi asemanTila) {
         if (asemanTila != null) {
             return fromValue(asemanTila.value());
         }

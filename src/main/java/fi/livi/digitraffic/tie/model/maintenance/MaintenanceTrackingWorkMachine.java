@@ -31,7 +31,7 @@ public class MaintenanceTrackingWorkMachine {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -39,7 +39,7 @@ public class MaintenanceTrackingWorkMachine {
         return harjaId;
     }
 
-    public void setHarjaId(Long harjaId) {
+    public void setHarjaId(final Long harjaId) {
         this.harjaId = harjaId;
     }
 
@@ -55,7 +55,7 @@ public class MaintenanceTrackingWorkMachine {
         return type;
     }
 
-    public void setType(String machineType) {
+    public void setType(final String machineType) {
         this.type = machineType;
     }
 

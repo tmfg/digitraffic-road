@@ -18,7 +18,7 @@ public class TmsStationFeature extends Feature<Point, TmsStationProperties> {
     @JsonPropertyOrder(value = "2")
     public final long id;
 
-    public TmsStationFeature(final Point geometry, final TmsStationProperties properties, long id) {
+    public TmsStationFeature(final Point geometry, final TmsStationProperties properties, final long id) {
         super(geometry, properties);
         this.id = id;
     }

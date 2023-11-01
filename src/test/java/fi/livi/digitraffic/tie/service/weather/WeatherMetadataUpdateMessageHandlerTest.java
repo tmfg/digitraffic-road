@@ -83,7 +83,7 @@ public class WeatherMetadataUpdateMessageHandlerTest extends AbstractMetadataUpd
 
     @Test // ROAD_ADDRESS
     public void roadAddressMessagesShouldTriggerUpdate() {
-        for (UpdateType updateType : UpdateType.values()) {
+        for (final UpdateType updateType : UpdateType.values()) {
             verifyRoadAddressMessageTriggersUpdate(updateType);
             verifyNoMoreInteractionsAndResetMocks();
         }

@@ -15,11 +15,11 @@ import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 @Service
 public class SensorDataTestUpdateService extends SensorDataUpdateService {
     @Autowired
-    public SensorDataTestUpdateService(SensorValueDao sensorValueDao,
-                                       RoadStationSensorService roadStationSensorService,
-                                       RoadStationDao roadStationDao,
-                                       DataStatusService dataStatusService,
-                                       SensorValueHistoryDao sensorValueHistoryDao) {
+    public SensorDataTestUpdateService(final SensorValueDao sensorValueDao,
+                                       final RoadStationSensorService roadStationSensorService,
+                                       final RoadStationDao roadStationDao,
+                                       final DataStatusService dataStatusService,
+                                       final SensorValueHistoryDao sensorValueHistoryDao) {
         super(sensorValueDao, roadStationSensorService, roadStationDao, dataStatusService, sensorValueHistoryDao);
     }
 

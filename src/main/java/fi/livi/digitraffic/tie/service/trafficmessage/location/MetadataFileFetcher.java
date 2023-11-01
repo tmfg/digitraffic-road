@@ -55,7 +55,7 @@ public class MetadataFileFetcher {
 
         try {
             reader.read(createStreamFromUrl(url));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error("error reading latest versions", e);
         }
 
@@ -160,8 +160,8 @@ public class MetadataFileFetcher {
         return new URL(tmcUrl + filename);
     }
 
-    private InputStream createStreamFromUrl(URL url) throws IOException {
-        URLConnection connection = url.openConnection();
+    private InputStream createStreamFromUrl(final URL url) throws IOException {
+        final URLConnection connection = url.openConnection();
         connection.setRequestProperty("Accept-Encoding", "gzip");
         connection.setRequestProperty("Connection", "close");
 

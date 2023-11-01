@@ -44,7 +44,7 @@ public class TmsSensorConstantValue {
         return lotjuId;
     }
 
-    public void setLotjuId(Long id) {
+    public void setLotjuId(final Long id) {
         this.lotjuId = id;
     }
 
@@ -52,7 +52,7 @@ public class TmsSensorConstantValue {
         return sensorConstant;
     }
 
-    public void setSensorConstant(TmsSensorConstant sensorConstant) {
+    public void setSensorConstant(final TmsSensorConstant sensorConstant) {
         this.sensorConstant = sensorConstant;
     }
 
@@ -60,7 +60,7 @@ public class TmsSensorConstantValue {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(final Integer value) {
         this.value = value;
     }
 
@@ -68,7 +68,7 @@ public class TmsSensorConstantValue {
         return validFrom;
     }
 
-    public void setValidFrom(Integer validFrom) {
+    public void setValidFrom(final Integer validFrom) {
         this.validFrom = validFrom;
     }
 
@@ -76,7 +76,7 @@ public class TmsSensorConstantValue {
         return validTo;
     }
 
-    public void setValidTo(Integer validTo) {
+    public void setValidTo(final Integer validTo) {
         this.validTo = validTo;
     }
 

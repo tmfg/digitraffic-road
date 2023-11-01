@@ -69,7 +69,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
 
     @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
-    public List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(Long tiesaaAsemaLotjuId) {
+    public List<TiesaaLaskennallinenAnturiVO> getTiesaaAsemanLaskennallisetAnturit(final Long tiesaaAsemaLotjuId) {
         final HaeTiesaaAsemanLaskennallisetAnturit request = new HaeTiesaaAsemanLaskennallisetAnturit();
         request.setId(tiesaaAsemaLotjuId);
 

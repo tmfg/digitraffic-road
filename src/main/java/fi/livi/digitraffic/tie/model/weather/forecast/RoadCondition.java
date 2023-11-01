@@ -28,7 +28,7 @@ public enum RoadCondition {
         if (value == null) {
             return null;
         }
-        for (RoadCondition roadCondition : values()) {
+        for (final RoadCondition roadCondition : values()) {
             if (roadCondition.value == value) {
                 return roadCondition;
             }

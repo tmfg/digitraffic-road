@@ -24,13 +24,13 @@ public class RegionGeometryTestHelper {
 
     private static final GeoJsonReader GEOJSON_READER = new GeoJsonReader(GeometryConstants.JTS_GEOMETRY_FACTORY);
 
-    public static String getGeneratedGeoJsonPolygon(int seed) {
+    public static String getGeneratedGeoJsonPolygon(final int seed) {
         // Generates x bewteen 27 +/- 4 and y in range 65 +/- 5
         final Random r = new Random(seed);
         final int xMaxDiff = 4;
-        double xDiff = xMaxDiff * r.nextGaussian();
+        final double xDiff = xMaxDiff * r.nextGaussian();
         final int yMaxDiff = 5;
-        double yDiff = yMaxDiff * r.nextGaussian();
+        final double yDiff = yMaxDiff * r.nextGaussian();
 
         return
             "{" +
@@ -53,7 +53,7 @@ public class RegionGeometryTestHelper {
         return createNewRegionGeometry(locationCode, effectiveDate, commitId, AreaType.MUNICIPALITY);
     }
 
-    public static Map<Integer, List<RegionGeometry>> createRegionsInDescOrderMappedByLocationCode(int...locationCodes) {
+    public static Map<Integer, List<RegionGeometry>> createRegionsInDescOrderMappedByLocationCode(final int...locationCodes) {
         final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode = new HashMap<>();
         Arrays.stream(locationCodes).forEach(locationCode -> regionsInDescOrderMappedByLocationCode.put(locationCode, createRegionGeometrySingletonCollection(locationCode)));
         return regionsInDescOrderMappedByLocationCode;
@@ -77,7 +77,7 @@ public class RegionGeometryTestHelper {
                 RandomStringUtils.randomAlphanumeric(32),
                 "geometry/regions/" + StringUtils.leftPad("" + locationCode, 5, '0') + "_jokualue.json",
                 commitId);
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             throw new RuntimeException(e);
         }
     }

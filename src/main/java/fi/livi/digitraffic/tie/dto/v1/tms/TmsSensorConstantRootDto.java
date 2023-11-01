@@ -20,7 +20,7 @@ public class TmsSensorConstantRootDto extends RootDataObjectDto {
     @JsonProperty(value = "tmsStations")
     private List<TmsSensorConstantDto> sensorConstantDtos;
 
-    public TmsSensorConstantRootDto(ZonedDateTime dataUpdatedTime, final List<TmsSensorConstantDto> sensorConstantDtos) {
+    public TmsSensorConstantRootDto(final ZonedDateTime dataUpdatedTime, final List<TmsSensorConstantDto> sensorConstantDtos) {
         super(dataUpdatedTime);
         this.sensorConstantDtos = sensorConstantDtos;
     }

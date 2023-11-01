@@ -335,7 +335,7 @@ public abstract class RoadStationProperties extends Properties {
         }
     }
 
-    private Double getCoordinateETRS89(int index) {
+    private Double getCoordinateETRS89(final int index) {
         if ( index < coordinatesETRS89.size() ) {
             return coordinatesETRS89.get(index);
         }

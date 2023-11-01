@@ -114,7 +114,7 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
         verify(cameraImageUpdateHandler, times(5)).hideCurrentImageForPreset(any(CameraPreset.class));
         verify(cameraImageUpdateHandler, times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
 
-        List<RoadStation> allAfterChange = roadStationService.findAll();
+        final List<RoadStation> allAfterChange = roadStationService.findAll();
 
         // TMS stations: 1(GATHERING),2(REMOVED_PERMANENTLY),310(GATHERING),581(POISTETTU_TILAPAISESTI->POISTETTU_PYSYVASTI)
         assertCollectionStatus(allInitial, 1, RoadStationType.TMS_STATION, CollectionStatus.GATHERING);

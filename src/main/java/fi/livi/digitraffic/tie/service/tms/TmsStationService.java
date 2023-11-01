@@ -57,7 +57,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional(readOnly = true)
-    public TmsStation findPublishableTmsStationByRoadStationNaturalId(long roadStationNaturalId) {
+    public TmsStation findPublishableTmsStationByRoadStationNaturalId(final long roadStationNaturalId) {
         final TmsStation entity = tmsStationRepository.findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(roadStationNaturalId);
 
         if (entity == null) {
@@ -68,7 +68,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
     }
 
     @Transactional
-    public UpdateStatus updateOrInsertTmsStation(LamAsemaVO lam) {
+    public UpdateStatus updateOrInsertTmsStation(final LamAsemaVO lam) {
         final TmsStation existingTms = findTmsStationByLotjuId(lam.getId());
 
         if (existingTms != null) {

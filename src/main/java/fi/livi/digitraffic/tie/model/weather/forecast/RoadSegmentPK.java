@@ -21,12 +21,12 @@ public class RoadSegmentPK implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        RoadSegmentPK that = (RoadSegmentPK) o;
+        final RoadSegmentPK that = (RoadSegmentPK) o;
 
         return new EqualsBuilder()
             .append(forecastSectionId, that.forecastSectionId)

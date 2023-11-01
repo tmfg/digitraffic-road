@@ -35,8 +35,8 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
         this.cameraImageUpdateManager = cameraImageUpdateManager;
 
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
-                                           CameraJMSListenerConfiguration.class.getSimpleName(),
-                                           ClusteredLocker.generateInstanceId()));
+            CameraJMSListenerConfiguration.class.getSimpleName(),
+            ClusteredLocker.generateInstanceId()));
     }
 
     @Override

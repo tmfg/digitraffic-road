@@ -269,7 +269,7 @@ public class RoadStationSensor {
         return roadStationType;
     }
 
-    public void setRoadStationType(RoadStationType roadStationType) {
+    public void setRoadStationType(final RoadStationType roadStationType) {
         if (this.roadStationType != null && !this.roadStationType.equals(roadStationType)) {
             throw new IllegalStateException("Cannot change roadStationType of RoadStationSensor from " +
                     this.roadStationType + " to " + roadStationType + ". (" + this + ")");
@@ -301,7 +301,7 @@ public class RoadStationSensor {
         return presentationNameEn;
     }
 
-    public void setPublic(boolean isPublic) {
+    public void setPublic(final boolean isPublic) {
         this.isPublic = isPublic;
     }
 

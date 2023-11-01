@@ -107,7 +107,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
     }
 
     @Transactional(readOnly = true)
-    public WeatherStation findPublishableWeatherStationByRoadStationNaturalId(long roadStationNaturalId) {
+    public WeatherStation findPublishableWeatherStationByRoadStationNaturalId(final long roadStationNaturalId) {
         final WeatherStation entity = weatherStationRepository.findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(roadStationNaturalId);
 
         if (entity == null) {

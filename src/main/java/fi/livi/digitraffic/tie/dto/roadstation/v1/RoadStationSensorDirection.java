@@ -33,7 +33,7 @@ public enum RoadStationSensorDirection {
     }
 
     static {
-        for (RoadStationSensorDirection c : values()) {
+        for (final RoadStationSensorDirection c : values()) {
             CONSTANTS.put(c.directionCode, c);
         }
     }

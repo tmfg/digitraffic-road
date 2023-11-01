@@ -75,7 +75,7 @@ public class PostgisGeometryUtils {
         return new Coordinate(x, y, z != null ? z : 0);
     }
 
-    public static Coordinate createCoordinateWithZFromETRS89ToWGS84(double x, double y, Double z) {
+    public static Coordinate createCoordinateWithZFromETRS89ToWGS84(final double x, final double y, final Double z) {
         final fi.livi.digitraffic.tie.metadata.geojson.Point wgs84 =
             CoordinateConverter.convertFromETRS89ToWGS84(new fi.livi.digitraffic.tie.metadata.geojson.Point(x, y, z));
         return createCoordinateWithZ(wgs84.getLongitude(), wgs84.getLatitude(), wgs84.getAltitude());

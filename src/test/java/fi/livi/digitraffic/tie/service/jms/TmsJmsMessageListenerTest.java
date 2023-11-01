@@ -94,7 +94,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         int testBurstsLeft = 10;
         long handleDataTotalTime = 0;
         // This just an value got by running tests. Purpose is only to notice if there is big change in performance.
-        long maxHandleTime = testBurstsLeft * 2000;
+        final long maxHandleTime = testBurstsLeft * 2000;
         final List<LAMRealtimeProtos.Lam> data = new ArrayList<>(lamsWithLotjuId.size());
         Instant time = Instant.now();
 
@@ -110,10 +110,10 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
                 }
                 final TmsStation currentStation = stationsIter.next();
 
-                List<LAMRealtimeProtos.Lam> lams =
+                final List<LAMRealtimeProtos.Lam> lams =
                     generateLams(time, publishableSensors, currentStation.getLotjuId());
 
-                for (LAMRealtimeProtos.Lam lam : lams) {
+                for (final LAMRealtimeProtos.Lam lam : lams) {
                     data.add(lam);
                     tmsJmsMessageListener.onMessage(createBytesMessage(lam));
                 }
@@ -133,7 +133,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
 
             // send data with 1 s interval
-            long sleep = 1000 - sw.getTime();
+            final long sleep = 1000 - sw.getTime();
             if (sleep < 0) {
                 log.warn("Data generation and handle took {} ms and should use maximum 1000 ms", sw.getTime());
             } else {
@@ -155,7 +155,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     @Test
     public void test2LastUpdated() {
         final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
-        ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
+        final ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);
         assertTrue(lastUpdated.isAfter(timeInPast2Minutes), "LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes);
@@ -165,7 +165,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         assertFalse(updated.isEmpty());
     }
 
-    private List<LAMRealtimeProtos.Lam> generateLams(Instant time, final List<RoadStationSensor> availableSensors, Long stationLotjuId) {
+    private List<LAMRealtimeProtos.Lam> generateLams(final Instant time, final List<RoadStationSensor> availableSensors, final Long stationLotjuId) {
         // Generate two different messages for same station to test filtering newest sensor data from both
         final LAMRealtimeProtos.Lam.Builder lamBuilder1 = LAMRealtimeProtos.Lam.newBuilder();
         final LAMRealtimeProtos.Lam.Builder lamBuilder2 = LAMRealtimeProtos.Lam.newBuilder();
@@ -239,7 +239,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         log.info("Data is valid");
     }
 
-    private JMSMessageListener<LAMRealtimeProtos.Lam> createTmsJmsMessageListener(JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater) {
+    private JMSMessageListener<LAMRealtimeProtos.Lam> createTmsJmsMessageListener(final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater) {
         return new JMSMessageListener<>(new TmsMessageMarshaller(),
             dataUpdater, true, log);
     }

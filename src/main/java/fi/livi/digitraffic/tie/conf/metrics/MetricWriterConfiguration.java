@@ -57,14 +57,14 @@ public class MetricWriterConfiguration implements MetricVisitor {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (this == o) {
                 return true;
             }
             if (o == null || getClass() != o.getClass()) {
                 return false;
             }
-            MetricKey metricKey = (MetricKey) o;
+            final MetricKey metricKey = (MetricKey) o;
             return Objects.equals(metric, metricKey.metric) &&
                 Objects.equals(tag, metricKey.tag);
         }
@@ -132,7 +132,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
             return;
         }
         final String tagValue = metric.tagName == null ? null : meter.getId().getTag(metric.tagName);
-        MetricVisitorData metricVisitorData = new MetricVisitorData(measurement, tagValue);
+        final MetricVisitorData metricVisitorData = new MetricVisitorData(measurement, tagValue);
 
         metric.accept(this, metricVisitorData);
     }
@@ -155,7 +155,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
     }
 
     @Override
-    public void visitGaugeMetric(GaugeMetric gaugeMetric, MetricVisitorData metricVisitorData) {
+    public void visitGaugeMetric(final GaugeMetric gaugeMetric, final MetricVisitorData metricVisitorData) {
         final String tagValue = metricVisitorData.tagValue();
         final Measurement measurement = metricVisitorData.measurement();
 

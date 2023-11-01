@@ -45,7 +45,7 @@ public class SensorValueHistory {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -53,7 +53,7 @@ public class SensorValueHistory {
         return sensorId;
     }
 
-    public void setSensorId(Long sensorId) {
+    public void setSensorId(final Long sensorId) {
         this.sensorId = sensorId;
     }
 
@@ -61,7 +61,7 @@ public class SensorValueHistory {
         return sensorValue;
     }
 
-    public void setSensorValue(Double sensorValue) {
+    public void setSensorValue(final Double sensorValue) {
         this.sensorValue = sensorValue;
     }
 
@@ -69,7 +69,7 @@ public class SensorValueHistory {
         return measuredTime;
     }
 
-    public void setMeasuredTime(ZonedDateTime measuredTime) {
+    public void setMeasuredTime(final ZonedDateTime measuredTime) {
         this.measuredTime = measuredTime;
     }
 
@@ -77,7 +77,7 @@ public class SensorValueHistory {
         return roadStationId;
     }
 
-    public void setRoadStationId(Long roadStationId) {
+    public void setRoadStationId(final Long roadStationId) {
         this.roadStationId = roadStationId;
     }
 
@@ -85,7 +85,7 @@ public class SensorValueHistory {
         return timeWindowStart;
     }
 
-    public void setTimeWindowStart(ZonedDateTime timeWindowStart) {
+    public void setTimeWindowStart(final ZonedDateTime timeWindowStart) {
         this.timeWindowStart = timeWindowStart;
     }
 
@@ -93,7 +93,7 @@ public class SensorValueHistory {
         return timeWindowEnd;
     }
 
-    public void setTimeWindowEnd(ZonedDateTime timeWindowEnd) {
+    public void setTimeWindowEnd(final ZonedDateTime timeWindowEnd) {
         this.timeWindowEnd = timeWindowEnd;
     }
 }

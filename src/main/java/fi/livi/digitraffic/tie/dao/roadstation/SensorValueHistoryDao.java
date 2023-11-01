@@ -49,7 +49,7 @@ public class SensorValueHistoryDao {
      * @return
      */
     public int cleanSensorData(final ZonedDateTime time) {
-        HashMap<String, Object> params = new HashMap<String, Object>();
+        final HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("remove_before", time.toOffsetDateTime());
 
         return jdbcTemplate.update(CLEAN, params);

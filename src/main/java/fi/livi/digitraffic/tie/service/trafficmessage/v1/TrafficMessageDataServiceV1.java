@@ -48,7 +48,7 @@ public class TrafficMessageDataServiceV1 {
     // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     public TrafficAnnouncementFeatureCollection findActiveJson(final int activeInPastHours,
-                                                               boolean includeAreaGeometry, final SituationType... situationTypes) {
+                                                               final boolean includeAreaGeometry, final SituationType... situationTypes) {
         final List<Datex2> allActive = datex2Repository.findAllActiveBySituationTypeWithJson(activeInPastHours, typesAsStrings(situationTypes));
         final Instant lastModified = getLastModified(allActive, situationTypes);
         return convertToFeatureCollection(allActive, includeAreaGeometry, lastModified);
@@ -65,7 +65,7 @@ public class TrafficMessageDataServiceV1 {
 
     // Isolation.REPEATABLE_READ to prevent another transaction to update data between datex2 query and possible getLastModified query to db.
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
-    public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, final boolean includeAreaGeometry, boolean latest) {
+    public TrafficAnnouncementFeatureCollection findBySituationIdJson(final String situationId, final boolean includeAreaGeometry, final boolean latest) {
         final List<Datex2> datex2s = datex2Repository.findBySituationIdWithJson(situationId);
         if (datex2s.isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
@@ -120,7 +120,7 @@ public class TrafficMessageDataServiceV1 {
         return Arrays.stream(situationTypes).map(Enum::name).toArray(String[]::new);
     }
 
-    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s, boolean includeAreaGeometry,
+    private TrafficAnnouncementFeatureCollection convertToFeatureCollection(final List<Datex2> datex2s, final boolean includeAreaGeometry,
                                                                             final Instant lastModified) {
         // conver Datex2s to Json objects, newest first, filter out ones without json
         final List<TrafficAnnouncementFeature> features = datex2s.stream()

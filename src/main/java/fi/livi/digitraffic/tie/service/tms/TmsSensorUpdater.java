@@ -49,7 +49,7 @@ public class TmsSensorUpdater extends AbstractRoadStationSensorUpdater {
         final List<LamLaskennallinenAnturiVO> allLamLaskennallinenAnturis =
                 lotjuTmsStationMetadataClientWrapper.getAllLamLaskennallinenAnturis();
 
-        boolean updated = updateAllRoadStationSensors(allLamLaskennallinenAnturis);
+        final boolean updated = updateAllRoadStationSensors(allLamLaskennallinenAnturis);
         log.info("method=updateTmsSensors end");
         return updated;
     }
@@ -89,8 +89,8 @@ public class TmsSensorUpdater extends AbstractRoadStationSensorUpdater {
         final Collection<?> invalid = CollectionUtils.subtract(allLamLaskennallinenAnturis, toUpdate);
         invalid.forEach(i -> log.warn("Found invalid {}", ToStringHelper.toStringFull(i)));
 
-        for (LamLaskennallinenAnturiVO anturi : toUpdate) {
-            UpdateStatus result = roadStationSensorService.updateOrInsert(anturi);
+        for (final LamLaskennallinenAnturiVO anturi : toUpdate) {
+            final UpdateStatus result = roadStationSensorService.updateOrInsert(anturi);
             if (result == UpdateStatus.UPDATED) {
                 updated++;
             } else if (result == UpdateStatus.INSERTED) {

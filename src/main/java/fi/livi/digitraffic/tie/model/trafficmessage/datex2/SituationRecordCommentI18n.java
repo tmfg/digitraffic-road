@@ -50,7 +50,7 @@ public class SituationRecordCommentI18n {
 
     public SituationRecordCommentI18n() {}
 
-    public SituationRecordCommentI18n(String lang) {
+    public SituationRecordCommentI18n(final String lang) {
         this.lang = lang;
     }
 
@@ -58,7 +58,7 @@ public class SituationRecordCommentI18n {
         return lang;
     }
 
-    public void setLang(String lang) {
+    public void setLang(final String lang) {
         this.lang = lang;
     }
 
@@ -66,7 +66,7 @@ public class SituationRecordCommentI18n {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
@@ -74,7 +74,7 @@ public class SituationRecordCommentI18n {
         return situationRecord;
     }
 
-    public void setSituationRecord(Datex2SituationRecord situationRecord) {
+    public void setSituationRecord(final Datex2SituationRecord situationRecord) {
         this.situationRecord = situationRecord;
     }
 

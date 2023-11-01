@@ -49,7 +49,7 @@ public class Point extends Geometry<Double> implements Serializable {
     }
 
 
-    private static List<Double> coordinatesAsList(double longitude, double latitude, Double altitude) {
+    private static List<Double> coordinatesAsList(final double longitude, final double latitude, final Double altitude) {
         final List<Double> coordinates = Arrays.asList(new Double[altitude == null ? 2 : 3]);
         coordinates.set(LONGITUDE_IDX, longitude);
         coordinates.set(LATITUDE_IDX, latitude);
@@ -84,7 +84,7 @@ public class Point extends Geometry<Double> implements Serializable {
         return getLatitude();
     }
 
-    private Double getCoordinate(int index) {
+    private Double getCoordinate(final int index) {
         if ( index < getCoordinates().size() ) {
             return getCoordinates().get(index);
         }

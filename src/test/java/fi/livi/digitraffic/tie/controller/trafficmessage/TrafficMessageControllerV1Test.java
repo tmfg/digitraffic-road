@@ -285,7 +285,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         ;
     }
 
-    private void assertEmptyD2Situations(String xml) {
+    private void assertEmptyD2Situations(final String xml) {
         final D2LogicalModel d2 = parseD2LogicalModel(xml);
         assertNull(d2.getPayloadPublication());
     }
@@ -376,7 +376,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         }
     }
 
-    private void assertTextIsValidJson(String json) {
+    private void assertTextIsValidJson(final String json) {
         try {
             objectMapper.readTree(json);
         } catch (final IOException e) {
@@ -395,7 +395,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
             "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
-    private static String getRegionGeometryUrl(final boolean includeGeometry, int regionId) {
+    private static String getRegionGeometryUrl(final boolean includeGeometry, final int regionId) {
         return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES + "/" + regionId +
             "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }

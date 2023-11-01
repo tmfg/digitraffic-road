@@ -6,8 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.servlet.Filter;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.slf4j.Logger;
@@ -37,6 +35,7 @@ import org.springframework.web.servlet.resource.TransformedResource;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2D2LogicalModelHttpMessageConverter;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
+import jakarta.servlet.Filter;
 
 @ConditionalOnWebApplication
 @Configuration
@@ -64,14 +63,14 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     }
 
     @Override
-    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+    public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
         // put first
         converters.add(0, new Jaxb2D2LogicalModelHttpMessageConverter(schemaDomainUrlAndPath));
         converters.add(0, new Jaxb2Datex2ResponseHttpMessageConverter(schemaDomainUrlAndPath));
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         // Add datex2 schema locations to default static file path and
         registry.addResourceHandler(SCHEMA_PATH + "/**")
             .addResourceLocations("classpath:/schemas/datex2/")

@@ -10,7 +10,7 @@ import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 
 public class RoadStationSensorDtoConverter {
 
-    public static List<WeatherRoadStationSensorDto> convertWeatherSensors(List<RoadStationSensor> sensors) {
+    public static List<WeatherRoadStationSensorDto> convertWeatherSensors(final List<RoadStationSensor> sensors) {
         return sensors.stream().map(s -> new WeatherRoadStationSensorDto(
             s.getNaturalId(), s.getName(), s.getUnit(), s.getDescriptionFi(), s.getDescriptionSv(), s.getDescriptionEn(),
             s.getNameFi(), s.getShortNameFi(), s.getAccuracy(), new ArrayList<>(s.getSensorValueDescriptions()), s.getPresentationNameFi(),
@@ -18,7 +18,7 @@ public class RoadStationSensorDtoConverter {
             .collect(Collectors.toList());
     }
 
-    public static List<TmsRoadStationSensorDto> convertTmsSensors(List<RoadStationSensor> sensors) {
+    public static List<TmsRoadStationSensorDto> convertTmsSensors(final List<RoadStationSensor> sensors) {
         return sensors.stream().map(s -> new TmsRoadStationSensorDto(
             s.getNaturalId(), s.getName(), s.getUnit(), s.getDescriptionFi(), s.getDescriptionSv(), s.getDescriptionEn(),
             s.getNameFi(), s.getShortNameFi(), s.getAccuracy(), new ArrayList<>(s.getSensorValueDescriptions()), s.getPresentationNameFi(),

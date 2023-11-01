@@ -290,7 +290,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
                     createMaintenanceTrackingWithLineString(start, 10, 1, Collections.singletonList(machine),
                         SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]);
                 testHelper.saveTrackingDataAsObservations(havainnot);
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -335,7 +335,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
                         start.plus(i * 10L, ChronoUnit.MINUTES), 10, 1, workMachines,
                         SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]);
                 testHelper.saveTrackingDataAsObservations(seuranta);
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -364,7 +364,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         IntStream.range(0, machineCount).forEach(i -> {
             try {
                 latestResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("Point")));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         });
@@ -382,7 +382,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         IntStream.range(0, machineCount * 5).forEach(i -> {
             try {
                 trackingResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("LineString")));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         });
@@ -402,7 +402,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
                     createMaintenanceTrackingWithPoints(
                         start.plus(i * 10L, ChronoUnit.MINUTES), 10, 1, workMachines,
                         SuoritettavatTehtavat.values()[i]));
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -445,7 +445,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             .max(Double::compareTo)
             .orElseThrow();
 
-        Point pointWGS84 = CoordinateConverter.convertFromETRS89ToWGS84(new Point(maxX, maxY));
+        final Point pointWGS84 = CoordinateConverter.convertFromETRS89ToWGS84(new Point(maxX, maxY));
 
         log.info(pointWGS84.toString());
         // The only tracking should be found when it's inside the bounding box

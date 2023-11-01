@@ -24,7 +24,7 @@ public class SensorDataS3Properties extends S3Properties {
         setRefTime(ZonedDateTime.now().truncatedTo(ChronoUnit.HOURS));
     }
 
-    public void setRefTime(ZonedDateTime time) {
+    public void setRefTime(final ZonedDateTime time) {
         refTime = time;
     }
 

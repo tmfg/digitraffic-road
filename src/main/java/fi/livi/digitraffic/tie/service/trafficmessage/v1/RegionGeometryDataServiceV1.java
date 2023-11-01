@@ -143,7 +143,7 @@ public class RegionGeometryDataServiceV1 {
     @NotTransactionalServiceMethod
     public Geometry<?> getGeoJsonGeometryUnion(final Instant effectiveDate, final Integer...ids) {
         final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
-        for (int id : ids) {
+        for (final int id : ids) {
             final RegionGeometry region = getAreaLocationRegionEffectiveOn(id, effectiveDate);
             if (region != null) {
                 final org.locationtech.jts.geom.Geometry geometry = region.getGeometry();
@@ -231,7 +231,7 @@ public class RegionGeometryDataServiceV1 {
 
     private List<RegionGeometryFeature> filterByIdsAndConvertToDto(final boolean includeGeometry, final Integer...ids) {
         final Map<Integer, List<RegionGeometry>> regionsMappedByLocationCode = new HashMap<>();
-        for (int id : ids) {
+        for (final int id : ids) {
             final List<RegionGeometry> regionVersions = regionStatus.getRegionVersionsInDescOrder(id);
             if (regionVersions != null) {
                 regionsMappedByLocationCode.put(id, regionVersions);
@@ -244,7 +244,7 @@ public class RegionGeometryDataServiceV1 {
                                                                                              final boolean includeGeometry,
                                                                                              final Integer... locationCodes) {
         final List<RegionGeometryFeature> regions = new ArrayList<>();
-        for (int locationCode : locationCodes) {
+        for (final int locationCode : locationCodes) {
             final RegionGeometry region = getAreaLocationRegionEffectiveOn(locationCode, effectiveDate);
             if (region != null) {
                 regions.add(convertToDto(region, includeGeometry));

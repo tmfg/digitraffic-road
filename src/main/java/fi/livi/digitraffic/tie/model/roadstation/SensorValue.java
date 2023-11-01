@@ -107,7 +107,7 @@ public class SensorValue {
         return updated;
     }
 
-    public void setUpdated(ZonedDateTime updated) {
+    public void setUpdated(final ZonedDateTime updated) {
         this.updated = updated;
     }
 

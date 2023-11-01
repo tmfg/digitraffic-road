@@ -18,16 +18,16 @@ public class ZonedDateTimeMatcher extends BaseMatcher<ZonedDateTime> {
     }
 
     @Override
-    public boolean matches(Object item) {
+    public boolean matches(final Object item) {
         if(item instanceof java.lang.String) {
-            ZonedDateTime other = ZonedDateTime.parse((String) item);
+            final ZonedDateTime other = ZonedDateTime.parse((String) item);
             return other.isEqual(time);
         }
         return false;
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(final Description description) {
         description.appendText(time.toString());
     }
 }

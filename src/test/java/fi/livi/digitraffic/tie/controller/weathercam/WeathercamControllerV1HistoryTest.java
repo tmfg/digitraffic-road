@@ -158,7 +158,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
             .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()));
     }
 
-    private String getCameraIdFromPresetId(String presetId) {
+    private String getCameraIdFromPresetId(final String presetId) {
         return presetId.substring(0, 6);
     }
 
@@ -188,7 +188,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
         return versionId;
     }
 
-    private Matcher<String> matchUrl(String presetId, String versionId) {
+    private Matcher<String> matchUrl(final String presetId, final String versionId) {
         return is(String.format("%s%s.jpg?versionId=%s", weathercamBaseUrl, presetId, versionId));
     }
 }

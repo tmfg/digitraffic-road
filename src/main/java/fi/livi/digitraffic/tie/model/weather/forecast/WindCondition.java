@@ -22,7 +22,7 @@ public enum WindCondition {
         if (value == null) {
             return null;
         }
-        for (WindCondition windCondition : values()) {
+        for (final WindCondition windCondition : values()) {
             if (windCondition.value == value) {
                 return windCondition;
             }

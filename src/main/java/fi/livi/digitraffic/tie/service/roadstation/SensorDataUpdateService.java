@@ -259,11 +259,11 @@ public class SensorDataUpdateService {
         log.info("method=updateSensorHistoryData for {} stations insertCount={} tookMs={}", roadStationType, inserted.length, stopWatch.getTime());
     }
 
-    private void updateDataUpdatedTime(RoadStationType roadStationType) {
+    private void updateDataUpdatedTime(final RoadStationType roadStationType) {
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(roadStationType), dataStatusService.getTransactionStartTime());
     }
 
-    private void updateDataMeasuredTime(RoadStationType roadStationType, OffsetDateTime maxMeasuredTime) {
+    private void updateDataMeasuredTime(final RoadStationType roadStationType, final OffsetDateTime maxMeasuredTime) {
         dataStatusService.updateDataUpdated(DataType.getSensorValueMeasuredDataType(roadStationType), maxMeasuredTime.toInstant());
     }
 

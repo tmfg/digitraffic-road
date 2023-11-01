@@ -28,7 +28,7 @@ public class SensorValueBuffer<T> {
         }
     }
 
-    private void putWrapper(LotjuAnturiWrapper<T> candidate) {
+    private void putWrapper(final LotjuAnturiWrapper<T> candidate) {
         final long roadStationId = candidate.getRoadStationId();
         final long sensorId = candidate.getAnturiLotjuId();
 

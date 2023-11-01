@@ -31,7 +31,7 @@ public class RoadStationService {
     }
 
     @Transactional(readOnly = true)
-    public RoadStation findByTypeAndLotjuId(final RoadStationType type, Long lotjuId) {
+    public RoadStation findByTypeAndLotjuId(final RoadStationType type, final Long lotjuId) {
         return roadStationRepository.findByTypeAndLotjuId(type, lotjuId);
     }
 

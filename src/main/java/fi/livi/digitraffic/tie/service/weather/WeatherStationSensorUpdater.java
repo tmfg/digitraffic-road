@@ -49,7 +49,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         final List<TiesaaLaskennallinenAnturiVO> allTiesaaLaskennallinenAnturis =
                 lotjuWeatherStationMetadataClientWrapper.getAllTiesaaLaskennallinenAnturis();
 
-        boolean updated = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
+        final boolean updated = updateAllRoadStationSensors(allTiesaaLaskennallinenAnturis);
         log.info("method=updateRoadStationSensors Update weather RoadStationSensors end");
         return updated;
     }
@@ -88,7 +88,7 @@ public class WeatherStationSensorUpdater extends AbstractRoadStationSensorUpdate
         final List<Long> notToObsoleteLotjuIds = toUpdate.stream().map(TiesaaLaskennallinenAnturiVO::getId).collect(Collectors.toList());
         final int obsoleted = roadStationSensorService.obsoleteSensorsExcludingLotjuIds(RoadStationType.WEATHER_STATION, notToObsoleteLotjuIds);
 
-        for (TiesaaLaskennallinenAnturiVO anturi : toUpdate) {
+        for (final TiesaaLaskennallinenAnturiVO anturi : toUpdate) {
             final UpdateStatus result = roadStationSensorService.updateOrInsert(anturi);
             if (result == UpdateStatus.UPDATED) {
                 updated++;
