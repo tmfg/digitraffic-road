@@ -16,7 +16,7 @@ import javax.jms.Session;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import fi.livi.digitraffic.tie.aop.NoJobLogging;
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;

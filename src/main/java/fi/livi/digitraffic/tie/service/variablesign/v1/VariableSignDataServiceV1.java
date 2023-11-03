@@ -13,7 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.CodeDescriptionRepositoryV1;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceDataRepositoryV1;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceRepositoryV1;

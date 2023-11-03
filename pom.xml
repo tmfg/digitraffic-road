@@ -28,6 +28,7 @@
         <org.glassfish.metro.ws.version>4.0.2</org.glassfish.metro.ws.version>
         <spring.cloud.version>4.0.3</spring.cloud.version>
         <proj4j.version>1.3.0</proj4j.version>
+        <project.digitraffic-common-java.directory>lib/digitraffic-common-java</project.digitraffic-common-java.directory>
     </properties>
 
     <profiles>
@@ -847,6 +848,20 @@
                             <executable>./get-deps-and-run-schemaspy.sh</executable>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>init git submodules</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <executable>node</executable>
+                            <arguments>
+                                <argument>common/scripts/git-submodule-extra.mjs</argument>
+                                <argument>init</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -869,6 +884,38 @@
                         </fileset>
                     </filesets>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.digitraffic-common-java.directory}/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.digitraffic-common-java.directory}/src/test/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

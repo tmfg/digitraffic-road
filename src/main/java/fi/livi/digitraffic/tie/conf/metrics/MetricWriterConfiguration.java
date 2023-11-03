@@ -1,10 +1,10 @@
 package fi.livi.digitraffic.tie.conf.metrics;
 
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_ACTIVE;
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_MAX;
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_PENDING;
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.CONNECTIONS_TIMEOUT;
-import static fi.livi.digitraffic.tie.conf.metrics.HikariCPMetrics.TAG_POOL;
+import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.CONNECTIONS_ACTIVE;
+import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.CONNECTIONS_MAX;
+import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.CONNECTIONS_PENDING;
+import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.CONNECTIONS_TIMEOUT;
+import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.TAG_POOL;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import fi.livi.digitraffic.tie.aop.NoJobLogging;
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;

@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Component;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;

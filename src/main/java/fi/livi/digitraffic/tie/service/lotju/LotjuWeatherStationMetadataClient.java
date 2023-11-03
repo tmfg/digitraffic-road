@@ -11,7 +11,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiLaskennallisetAnturit;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiLaskennallisetAnturitResponse;

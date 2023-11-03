@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.aop.NoJobLogging;
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;

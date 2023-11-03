@@ -1,13 +1,14 @@
 package fi.livi.digitraffic.tie.scheduler;
 
-import static fi.livi.digitraffic.tie.scheduler.JobLogger.JobType.Quartz;
+import static fi.livi.digitraffic.common.scheduler.JobLogger.JobType.Quartz;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.digitraffic.tie.scheduler.JobLogger.JobType;
+import fi.livi.digitraffic.common.scheduler.JobLogger;
+import fi.livi.digitraffic.common.scheduler.JobLogger.JobType;
 
 public abstract class SimpleUpdateJob extends AbstractUpdateJob {
     protected final Logger log = LoggerFactory.getLogger(getClass());

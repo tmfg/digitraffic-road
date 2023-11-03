@@ -32,6 +32,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.TransformedResource;
 
+import fi.livi.digitraffic.common.config.DeprecationInterceptor;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2D2LogicalModelHttpMessageConverter;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
 import fi.livi.digitraffic.tie.controller.DtMediaType;

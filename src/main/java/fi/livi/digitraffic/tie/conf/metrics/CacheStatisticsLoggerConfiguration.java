@@ -16,7 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
 
-import fi.livi.digitraffic.tie.aop.NoJobLogging;
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
 
 @Configuration
 public class CacheStatisticsLoggerConfiguration {

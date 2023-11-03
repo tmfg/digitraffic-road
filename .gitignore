@@ -37,3 +37,6 @@
 
 # Mac tiedostoja
 **/.DS_Store
+
+# Git submodule
+.gitmodules
