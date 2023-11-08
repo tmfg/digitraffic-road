@@ -19,7 +19,7 @@ public class BuildVersionService {
     private static final String GIT_COMMIT_ID_HASH = "git.commit.id.abbrev";
     private static final String GIT_BUILD_TIME  = "git.build.time";
     private static final String GIT_TAGS  = "git.tags";
-    private static final String GIT_DIRTY  = "git.dirty";
+    private static final String GIT_BRANCH  = "git.branch";
 
     private String getAppBuildRevision() {
         final String tag = readProperty(GIT_COMMIT_ID_HASH);
@@ -45,17 +45,17 @@ public class BuildVersionService {
         return "DEV";
     }
 
-    private String getDirty() {
-        final String dirty = readProperty(GIT_DIRTY);
-        if (StringUtils.isNotBlank(dirty) && !StringUtils.contains(dirty, "{")) {
-            return "true".equals(dirty) ? "dirty" : "";
+    private String getAppBranch() {
+        final String branch = readProperty(GIT_BRANCH);
+        if (StringUtils.isNotBlank(branch)) {
+            return branch;
         }
-        return "dirty";
+        return "?";
     }
 
     @NotTransactionalServiceMethod
     public String getAppFullVersion() {
-        return String.format("Tag: %s #%s %s @ %s", getAppTags(), getAppBuildRevision(), getDirty(), getAppBuildTime());
+        return String.format("Branch: %s, tag: %s #%s @ %s", getAppBranch(), getAppTags(), getAppBuildRevision(), getAppBuildTime());
     }
 
     private String readProperty(final String property) {
