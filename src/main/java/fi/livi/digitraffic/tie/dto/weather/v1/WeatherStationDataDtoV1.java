@@ -14,8 +14,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class WeatherStationDataDtoV1 extends AbstractStationDataWithSensorsDtoV1 {
 
     public WeatherStationDataDtoV1(final Long roadStationNaturalId,
-                                   final Instant stationLatestMeasurement,
+                                   final Instant stationLatestUpdated,
                                    final List<SensorValueDtoV1> sensorValues) {
-        super(roadStationNaturalId, stationLatestMeasurement, sensorValues);
+        super(roadStationNaturalId, stationLatestUpdated, sensorValues);
     }
 }

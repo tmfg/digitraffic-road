@@ -17,7 +17,7 @@ public class MqttSensorValueMessageV2 {
 
     public MqttSensorValueMessageV2(final SensorValueDtoV1 sv) {
         this.value = sv.getValue();
-        this.time = getEpochSeconds(sv.getUpdatedTime());
+        this.time = getEpochSeconds(sv.getModified());
         this.start = getEpochSeconds(sv.getTimeWindowStart());
         this.end = getEpochSeconds(sv.getTimeWindowEnd());
     }

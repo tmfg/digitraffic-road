@@ -19,8 +19,16 @@ public class WeatherSensorValueHistoryDto implements SensorValueHistoryDto {
     private double sensorValue;
 
     @CsvBindByPosition(position = 3, required = true)
-    @CsvDate("yyyy-MM-dd\'T\'HH:mm:ss\'Z\'")
+    // See https://stackoverflow.com/questions/71771439/parsing-instant-using-opencsv
+    @CsvDate(
+        value = "yyyy-MM-dd'T'HH:mm:ssX", // For reading csv file
+        writeFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        writeFormatEqualsReadFormat = false)
     private Instant measured;
+
+    public WeatherSensorValueHistoryDto() {
+        // For open csv
+    }
 
     public WeatherSensorValueHistoryDto(final long roadStationId, final long sensorId, final double sensorValue, final Instant measured) {
         this.roadStationId = roadStationId;

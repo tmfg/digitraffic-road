@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.LockingDao;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import jakarta.transaction.Transactional;
 
 public class LockingDaoTest extends AbstractServiceTest {
@@ -65,7 +65,7 @@ public class LockingDaoTest extends AbstractServiceTest {
             } else if (locked1Time < (now - (EXPIRATION_SECONDS+1) * 1000) ) {
                 assertTrue(locked1Second, "Failed to lock after expiration");
             }
-            ThreadUtils.delayMs(500);
+            ThreadUtil.delayMs(500);
         }
     }
 

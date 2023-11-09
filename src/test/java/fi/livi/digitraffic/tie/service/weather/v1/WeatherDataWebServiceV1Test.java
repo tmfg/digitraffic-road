@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class WeatherDataWebServiceV1Test extends AbstractWebServiceTest {
 
     @BeforeEach
     public void updateData() {
-
+        TestUtils.truncateWeatherData(entityManager);
         final List<RoadStationSensor> publishable =
             roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
         assertFalse(publishable.isEmpty());
@@ -68,6 +69,12 @@ public class WeatherDataWebServiceV1Test extends AbstractWebServiceTest {
         });
 
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
+    }
+
+    @AfterEach
+    protected void cleanDb() {
+        TestUtils.truncateWeatherData(entityManager);
+        TestUtils.commitAndEndTransactionAndStartNew();
     }
 
     @Test

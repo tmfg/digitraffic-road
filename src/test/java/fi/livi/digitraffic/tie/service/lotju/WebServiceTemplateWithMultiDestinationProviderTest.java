@@ -17,9 +17,9 @@ import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
 
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.HaeKaikkiTiesaaAsemat;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.ObjectFactory;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.service.lotju.AbstractLotjuMetadataClient.WebServiceTemplateWithMultiDestinationProviderSupport;
 import jakarta.xml.bind.JAXBElement;
 
@@ -113,7 +113,7 @@ public class WebServiceTemplateWithMultiDestinationProviderTest extends Abstract
         // Data request goes to server 1 both times
         clientRequestDataAndVerifyResponse(RESPONSE1); // also health request
 
-        ThreadUtils.delayMs(1100L);
+        ThreadUtil.delayMs(1100L);
 
         clientRequestDataAndVerifyResponse(RESPONSE1); // also health request
         verifyServer1HealthCount(2);

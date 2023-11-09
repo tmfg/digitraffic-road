@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.lotju.LotjuCameraStationMetadataClient;
@@ -126,7 +126,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
 
         // Wait for secretFrom time to pass -> RoadStation changes to not public
         while ( Instant.now().isBefore(secretFrom) ) {
-            ThreadUtils.delayMs(200);
+            ThreadUtil.delayMs(200);
         }
 
         // At current time, road RoadStation is not public as secretFrom time has passed

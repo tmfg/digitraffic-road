@@ -48,7 +48,7 @@ public class SensorValueHistoryBuilder {
      * @param maxStationId  Max station id
      * @param maxSensorId   Max sensor id
      * @param start         Start offset in minutes from current time
-     * @param stop          End offset in minuts from current time
+     * @param stop          End offset in minutes from current time
      * @return the builder
      */
     public SensorValueHistoryBuilder buildRandom(final int maxAmount, final int maxStationId, final int maxSensorId, final int start, final int stop) {
@@ -112,6 +112,10 @@ public class SensorValueHistoryBuilder {
 
     public int getElementCountAt(final int index) {
         return createdCounts.get(index);
+    }
+
+    public List<SensorValueHistory> getGeneratedHistory() {
+        return list;
     }
 
     private ZonedDateTime getTime(final int start, final int stop) {

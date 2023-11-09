@@ -16,7 +16,7 @@ import fi.livi.digitraffic.tie.controller.ApiConstants;
 public class VariableSignControllerV1Test extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
         final ResultActions response = executeGet(ApiConstants.API_VS_V1 + url);
-        logInfoResponse(response);
+        logDebugResponse(response);
         return response;
     }
 

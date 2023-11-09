@@ -75,7 +75,7 @@ public class WeatherDataWebServiceV1 {
     private WeatherStationDataDtoV1 createWeatherStationDataDto(final WeatherStation ws, final List<SensorValueDtoV1> sensorValues) {
         return new WeatherStationDataDtoV1(
             ws.getRoadStationNaturalId(),
-            SensorValueDtoV1.getStationLatestMeasurement(sensorValues),
+            SensorValueDtoV1.getStationLatestUpdated(sensorValues),
             sensorValues);
     }
 }

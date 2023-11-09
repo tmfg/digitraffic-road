@@ -12,9 +12,6 @@ import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
-import fi.livi.digitraffic.tie.model.tms.TmsStation;
-import fi.livi.digitraffic.tie.model.weather.WeatherStation;
-import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 
 public class RoadStationServiceTest extends AbstractServiceTest {
@@ -24,12 +21,12 @@ public class RoadStationServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     public void initData() {
-        final List<TmsStation> ts = TestUtils.generateDummyTmsStations(2);
-        final List<WeatherStation> ws = TestUtils.generateDummyWeatherStations(3);
-        final List<List<CameraPreset>> cs = TestUtils.generateDummyCameraStations(4,1);
-        ts.forEach(e -> entityManager.persist(e));
-        ws.forEach(e -> entityManager.persist(e));
-        cs.forEach(camera -> camera.forEach(preset -> entityManager.persist(preset)));
+        TestUtils.truncateTmsData(entityManager);
+        TestUtils.truncateWeatherData(entityManager);
+        TestUtils.truncateCameraData(entityManager);
+        TestUtils.generateDummyTmsStations(2).forEach(ts -> entityManager.persist(ts));
+        TestUtils.generateDummyWeatherStations(3).forEach(ws -> entityManager.persist(ws));
+        TestUtils.generateDummyCameraStations(4,1).forEach(camera -> camera.forEach(preset -> entityManager.persist(preset)));
     }
 
     @Test

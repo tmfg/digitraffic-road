@@ -82,7 +82,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
-        log.info("Response:\n{}", result.andReturn().getResponse().getContentAsString());
+        log.debug("Response:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
     }
 
@@ -94,7 +94,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
-        log.info("Response:\n{}", result.andReturn().getResponse().getContentAsString());
+        log.debug("Response:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
     }
 
@@ -107,7 +107,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
-        log.info("Response:\n{}", result.andReturn().getResponse().getContentAsString());
+        log.debug("Response:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
     }
 
@@ -117,7 +117,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
         get.contentType(MediaType.APPLICATION_JSON);
         final ResultActions result = mockMvc.perform(get);
-        log.info("Response:\n{}", result.andReturn().getResponse().getContentAsString());
+        log.debug("Response:\n{}", result.andReturn().getResponse().getContentAsString());
         return result;
     }
 

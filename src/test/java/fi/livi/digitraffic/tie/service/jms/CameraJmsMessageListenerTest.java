@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.service.jms;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -21,17 +22,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +47,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.github.tomakehurst.wiremock.WireMockServer;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
-import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
@@ -58,7 +65,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 import jakarta.persistence.EntityManager;
 
-@Disabled("Does not execute properly in CI server")
+@Disabled("Does not execute properly with other tests")
 public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
 
@@ -90,15 +97,43 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     private String bucketName;
 
     @Value("${metadata.server.path.image}")
-    private String LOTJU_IMAGE_PATH;
+    private String lotjuImagePath;
 
     private final Map<String, byte[]> imageFilesMap = new HashMap<>();
+
+    private WireMockServer wm;
+
+    private final int sationsCount = 50;
+    private final int presetsPerStationCount = 5;
+    private final int burstSize = 25;
+    private final int port = 8899;
+
     @BeforeEach
     public void initData() throws IOException {
-        log.info("LOTJU_IMAGE_PATH={}", LOTJU_IMAGE_PATH);
-        log.info("healthPath={}", healthPath);
-        createHealthOKStubFor(healthPath);
+        TestUtils.truncateCameraData(entityManager);
+        generateImageFilesMap();
 
+        wm = new WireMockServer(options().port(port));
+        wm.start();
+        log.info("lotjuImagePath: {}", lotjuImagePath);
+        log.info("healthPath: {}", healthPath);
+        createHealthOKStubFor(healthPath);
+        createHttpResponseStubFor(1);// + IMAGE_SUFFIX);
+        createHttpResponseStubFor(2);// + IMAGE_SUFFIX);
+        createHttpResponseStubFor(3);// + IMAGE_SUFFIX);
+        createHttpResponseStubFor(4);// + IMAGE_SUFFIX);
+        createHttpResponseStubFor(5);// + IMAGE_SUFFIX);
+
+
+        // 250 presets
+        final List<List<CameraPreset>> cs = TestUtils.generateDummyCameraStations(sationsCount,presetsPerStationCount);
+        cs.forEach(camera -> camera.forEach(preset -> entityManager.persist(preset)));
+
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+    private void generateImageFilesMap() throws IOException {
         int i = 5;
         while (i > 0) {
             final String imageName = i + IMAGE_SUFFIX;
@@ -109,31 +144,6 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
             imageFilesMap.put(imageName, bytes);
             i--;
         }
-
-        final List<CameraPreset> nonObsoleteCameraPresets = cameraPresetService.findAllPublishableCameraPresets();
-        log.info("Non obsolete CameraPresets before:{}", nonObsoleteCameraPresets.size());
-
-        final Map<Long, CameraPreset> cameraPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
-        log.info("All camera presets size cameraPresetsCount={}", cameraPresets.size());
-
-        int missingMin = 1000 - nonObsoleteCameraPresets.size();
-        final Iterator<CameraPreset> iter = cameraPresets.values().iterator();
-
-        while (missingMin > 0 && iter.hasNext()) {
-            final CameraPreset cp = iter.next();
-            final RoadStation rs = cp.getRoadStation();
-
-            if (!rs.isPublishable() || !cp.isPublishable()) {
-                missingMin--;
-            }
-            rs.setCollectionStatus(CollectionStatus.GATHERING);
-            rs.unobsolete();
-            rs.updatePublicity(true);
-            cp.unobsolete();
-            cp.setPublic(true);
-        }
-        entityManager.flush();
-        entityManager.clear();
     }
 
     /**
@@ -141,12 +151,146 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
      */
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JMSException {
-        createHttpResponseStubFor(1);// + IMAGE_SUFFIX);
-        createHttpResponseStubFor(2);// + IMAGE_SUFFIX);
-        createHttpResponseStubFor(3);// + IMAGE_SUFFIX);
-        createHttpResponseStubFor(4);// + IMAGE_SUFFIX);
-        createHttpResponseStubFor(5);// + IMAGE_SUFFIX);
 
+        final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> dataUpdater = createJMSDataUpdater();
+
+        final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener =
+            new JMSMessageListener<>(new KuvaMessageMarshaller(), dataUpdater, true, log);
+
+        Instant time = Instant.now().minusSeconds(60);
+
+        // Generate update-data
+        final List<CameraPreset> presets = cameraPresetService.findAllPublishableCameraPresets();
+        final Iterator<CameraPreset> presetIterator = presets.iterator();
+
+        long handleDataTotalTime = 0;
+        long maxHandleTime = 0;
+        final List<KuvaProtos.Kuva> jmsKuvaMessages = new ArrayList<>(presets.size());
+
+        int iteration = 0;
+        while (presetIterator.hasNext()) {
+            iteration++;
+            maxHandleTime += burstSize*85; // allowed time per preset 85 ms
+            final StopWatch sw = StopWatch.createStarted();
+
+            while (presetIterator.hasNext()) {
+                final CameraPreset preset = presetIterator.next();
+
+                final KuvaProtos.Kuva kuva = createKuvaMessage(preset, time);
+                jmsKuvaMessages.add(kuva);
+
+                final String key = preset.getPresetId() + ".jpg";
+                final String versionKey = preset.getPresetId() + "-versions.jpg";
+                final String versionId = preset.getPresetId() + "-version-" + RandomStringUtils.randomAlphanumeric(10);
+
+                mockS3PutImageVersion(versionId, versionKey);
+                mockS3GetObjectWithImageKey(kuva, key);
+
+                time = time.plusMillis(1000);
+
+                cameraJmsMessageListener.onMessage(createBytesMessage(kuva));
+
+                if (jmsKuvaMessages.size() >= burstSize*iteration) {
+                    break;
+                }
+            }
+
+            final long generation = sw.getTime();
+            assertTrue(!jmsKuvaMessages.isEmpty(), "Data was empty");
+            final StopWatch drain = StopWatch.createStarted();
+            cameraJmsMessageListener.drainQueueScheduled();
+            handleDataTotalTime += drain.getTime();
+
+            // send data with 1 s intervall
+            final long sleep = 1000 - generation;
+            if (sleep > 0) {
+                ThreadUtil.delayMs(sleep);
+            }
+        }
+
+        assertEquals(sationsCount * presetsPerStationCount, jmsKuvaMessages.size());
+
+        log.info("Handle kuva data total took {} ms and max was {} ms success={}",
+                 handleDataTotalTime, maxHandleTime, (handleDataTotalTime <= maxHandleTime ? "OK" : "FAIL"));
+
+        log.info("Check data validy");
+
+        checkDataUpdated(jmsKuvaMessages);
+
+        final long latestImageTimestampToExpect = jmsKuvaMessages.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow();
+        final ZonedDateTime imageUpdatedInDb = dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_IMAGE_UPDATED);
+        assertEquals(Instant.ofEpochMilli(roundToZeroMillis(latestImageTimestampToExpect)), imageUpdatedInDb.toInstant(), "Latest image update time not correct");
+
+        log.info("Data is valid");
+        assertTrue(handleDataTotalTime <= maxHandleTime,
+            "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
+    }
+
+    private void checkDataUpdated(final List<KuvaProtos.Kuva> jmsKuvaMessages) throws IOException {
+        final Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
+
+        for (final KuvaProtos.Kuva kuva : jmsKuvaMessages) {
+            final String presetId = CameraHelper.resolvePresetId(kuva);
+            // Check written image against source image
+            final byte[] dst = readCameraImageFromS3(presetId);
+            final byte[] src = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
+            assertArrayEquals(src, dst, "Written image is invalid for " + presetId);
+
+            // Check preset updated to db against kuva
+            final CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
+
+            final Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
+            final Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
+
+            assertEquals(kuvaTaken, presetPictureLastModified, "Preset not updated with kuva's timestamp " + preset.getPresetId());
+        }
+    }
+
+    private void mockS3GetObjectWithImageKey(final KuvaProtos.Kuva kuva, final String key) {
+        final byte[] imageData = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
+        final S3Object s3Object = new S3Object();
+        final S3ObjectInputStream objectContent = new S3ObjectInputStream(new ByteArrayInputStream(imageData), null);
+        s3Object.setObjectContent(objectContent);
+        Mockito.when(amazonS3.getObject(Mockito.eq(bucketName), Mockito.eq(key))).thenReturn(s3Object);
+    }
+
+    private void mockS3PutImageVersion(final String versionId, final String versionKey) {
+        final PutObjectResult result = new PutObjectResult();
+        result.setVersionId(versionId);
+        Mockito
+            .when(amazonS3.putObject(Mockito.anyString(), Mockito.eq(versionKey), Mockito.any(), Mockito.any()))
+            .thenReturn(result);
+    }
+
+    private static KuvaProtos.Kuva createKuvaMessage(final CameraPreset preset, final Instant time) {
+        // Kuva: {"asemanNimi":"Vaalimaa_testi","nimi":"C0364302201610110000.jpg","esiasennonNimi":"esiasento2","esiasentoId":3324,"kameraId":1703,"aika":2016-10-10T21:00:40Z,"tienumero":7,"tieosa":42,"tieosa":false,"url":"https://testioag.liikennevirasto.fi/LOTJU/KameraKuvavarasto/6845284"}
+        final int kuvaIndex = RandomUtils.nextInt(1, 6);
+
+        final KuvaProtos.Kuva.Builder kuvaBuilder = KuvaProtos.Kuva.newBuilder();
+        kuvaBuilder.setEsiasentoId(preset.getLotjuId());
+        kuvaBuilder.setKameraId(preset.getCameraLotjuId());
+        kuvaBuilder.setNimi(preset.getPresetId() + "1234.jpg");
+        kuvaBuilder.setAikaleima(time.toEpochMilli());
+        kuvaBuilder.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
+        kuvaBuilder.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
+        kuvaBuilder.setEtaisyysTieosanAlusta(RandomUtils.nextInt(0, 99999));
+        kuvaBuilder.setJulkinen(true);
+        kuvaBuilder.setLiviId("" + kuvaIndex);
+        kuvaBuilder.setKuvaId(kuvaIndex);
+
+        if (preset.getRoadStation().getRoadAddress() != null) {
+            kuvaBuilder.setTienumero(preset.getRoadStation().getRoadAddress().getRoadNumber());
+            kuvaBuilder.setTieosa(preset.getRoadStation().getRoadAddress().getRoadSection());
+        }
+        //kuvaBuilder.setUrl("http://localhost:" + httpPort + REQUEST_PATH + kuvaIndex + IMAGE_SUFFIX);
+        kuvaBuilder.setXKoordinaatti("12345.67");
+        kuvaBuilder.setYKoordinaatti("23456.78");
+
+        final KuvaProtos.Kuva kuva = kuvaBuilder.build();
+        return kuva;
+    }
+
+    private JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> createJMSDataUpdater() {
         final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> dataUpdater = (data) -> {
             final StopWatch start = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
@@ -165,111 +309,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
             log.info("handleData tookMs={}", start.getTime());
             return updated;
         };
-
-        final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener =
-            new JMSMessageListener<>(new KuvaMessageMarshaller(), dataUpdater, true, log);
-
-        Instant time = Instant.now();
-
-        // Generate update-data
-        final List<CameraPreset> presets = cameraPresetService.findAllPublishableCameraPresets();
-        final Iterator<CameraPreset> presetIterator = presets.iterator();
-
-        int testBurstsLeft = 10;
-        long handleDataTotalTime = 0;
-        final long maxHandleTime = testBurstsLeft * 2200;
-        final List<KuvaProtos.Kuva> data = new ArrayList<>(presets.size());
-
-        final StopWatch sw = new StopWatch();
-        while (testBurstsLeft > 0) {
-            testBurstsLeft--;
-            sw.reset();
-            sw.start();
-
-            data.clear();
-            while (presetIterator.hasNext()) {
-                final CameraPreset preset = presetIterator.next();
-
-                // Kuva: {"asemanNimi":"Vaalimaa_testi","nimi":"C0364302201610110000.jpg","esiasennonNimi":"esiasento2","esiasentoId":3324,"kameraId":1703,"aika":2016-10-10T21:00:40Z,"tienumero":7,"tieosa":42,"tieosa":false,"url":"https://testioag.liikennevirasto.fi/LOTJU/KameraKuvavarasto/6845284"}
-                final int kuvaIndex = RandomUtils.nextInt(1, 6);
-
-                final KuvaProtos.Kuva.Builder kuvaBuilder = KuvaProtos.Kuva.newBuilder();
-                kuvaBuilder.setEsiasentoId(preset.getLotjuId());
-                kuvaBuilder.setKameraId(preset.getCameraLotjuId());
-                kuvaBuilder.setNimi(preset.getPresetId() + "1234.jpg");
-                kuvaBuilder.setAikaleima(time.toEpochMilli());
-                kuvaBuilder.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
-                kuvaBuilder.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
-                kuvaBuilder.setEtaisyysTieosanAlusta(RandomUtils.nextInt(0, 99999));
-                kuvaBuilder.setJulkinen(true);
-                kuvaBuilder.setLiviId("" + kuvaIndex);
-                kuvaBuilder.setKuvaId(kuvaIndex);
-
-                if (preset.getRoadStation().getRoadAddress() != null) {
-                    kuvaBuilder.setTienumero(preset.getRoadStation().getRoadAddress().getRoadNumber());
-                    kuvaBuilder.setTieosa(preset.getRoadStation().getRoadAddress().getRoadSection());
-                }
-                //kuvaBuilder.setUrl("http://localhost:" + httpPort + REQUEST_PATH + kuvaIndex + IMAGE_SUFFIX);
-                kuvaBuilder.setXKoordinaatti("12345.67");
-                kuvaBuilder.setYKoordinaatti("23456.78");
-
-                final KuvaProtos.Kuva kuva = kuvaBuilder.build();
-                data.add(kuva);
-
-                time = time.plusMillis(1000);
-
-                cameraJmsMessageListener.onMessage(createBytesMessage(kuva));
-
-                if (data.size() >= 25) {
-                    break;
-                }
-            }
-
-            final long generation = sw.getTime();
-
-            sw.reset();
-            sw.start();
-            assertTrue(data.size() >= 25, "Data size too small: " + data.size());
-            cameraJmsMessageListener.drainQueueScheduled();
-            log.info("Data handle took " + sw.getTime() + " ms");
-            handleDataTotalTime += sw.getTime();
-
-            // send data with 1 s intervall
-            final long sleep = 1000 - generation;
-            if (sleep > 0) {
-                ThreadUtils.delayMs(sleep);
-            }
-        }
-        log.info("Handle kuva data total took {} ms and max was {} ms success={}",
-            handleDataTotalTime, maxHandleTime, (handleDataTotalTime <= maxHandleTime ? "OK" : "FAIL"));
-
-        log.info("Check data validy");
-
-        final Map<Long, CameraPreset> updatedPresets = cameraPresetService.findAllCameraPresetsMappedByLotjuId();
-
-        for (final KuvaProtos.Kuva kuva : data) {
-            final String presetId = CameraHelper.resolvePresetId(kuva);
-            // Check written image against source image
-            final byte[] dst = readCameraImageFromS3(presetId);
-            final byte[] src = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
-            assertArrayEquals(src, dst, "Written image is invalid for " + presetId);
-
-            // Check preset updated to db against kuva
-            final CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
-
-            final Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
-            final Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
-
-            assertEquals(kuvaTaken, presetPictureLastModified, "Preset not updated with kuva's timestamp " + preset.getPresetId());
-        }
-
-        final long latestImageTimestampToExpect = data.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow();
-        final ZonedDateTime imageUpdatedInDb = dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_IMAGE_UPDATED);
-        assertEquals(Instant.ofEpochMilli(roundToZeroMillis(latestImageTimestampToExpect)), imageUpdatedInDb.toInstant(), "Latest image update time not correct");
-
-        log.info("Data is valid");
-        assertTrue(handleDataTotalTime <= maxHandleTime,
-            "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
+        return dataUpdater;
     }
 
     private byte[] readCameraImageFromS3(final String presetId) throws IOException {
@@ -282,16 +322,17 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
 
     private void createHealthOKStubFor(final String healthPath) {
         log.info("Create health mock with url: " + healthPath);
-        stubFor(get(urlEqualTo(healthPath))
+        wm.stubFor(get(urlEqualTo(healthPath))
             .willReturn(aResponse().withBody("ok!")
                 .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
                 .withStatus(200)));
     }
+    final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(100);
 
     private void createHttpResponseStubFor(final int kuvaId) {
-        final String path = StringUtils.appendIfMissing(LOTJU_IMAGE_PATH, "/") + kuvaId;
+        final String path = StringUtils.appendIfMissing(lotjuImagePath, "/") + kuvaId;
         log.info("Create image mock with url: {}", path);
-        stubFor(get(urlEqualTo(path))
+        wm.stubFor(get(urlEqualTo(path))
                 .willReturn(aResponse().withBody(imageFilesMap.get(kuvaId + IMAGE_SUFFIX))
                         .withHeader("Content-Type", "image/jpeg")
                         .withStatus(200)));

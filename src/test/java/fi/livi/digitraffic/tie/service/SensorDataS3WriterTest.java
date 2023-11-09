@@ -1,29 +1,31 @@
 package fi.livi.digitraffic.tie.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3Object;
 import com.opencsv.bean.CsvToBeanBuilder;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
@@ -31,6 +33,8 @@ import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
+import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
     public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
@@ -44,9 +48,16 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     @Autowired
     private SensorValueHistoryRepository repository;
 
-    private final SensorDataS3Properties sensorDataS3Properties = new SensorDataS3Properties("fakeTestBucket");
+    @Autowired
+    private SensorDataS3Properties sensorDataS3Properties;
+
+    @Autowired
+    private RoadStationService roadStationService;
 
     private SensorValueHistoryBuilder builder;
+
+    @Captor
+    ArgumentCaptor<InputStream> inputStreamArgumentCaptor;
 
     protected void initDBContent(final ZonedDateTime time) {
         final int min = time.getMinute();
@@ -60,9 +71,8 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
             .save();
     }
 
-    @Disabled("ks. DPO-1835")
     @Test
-    public void s3Bucket() {
+    public void s3Bucket() throws IOException {
         final ZonedDateTime now = ZonedDateTime.now();
         final ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
         final ZonedDateTime from = to.minusHours(1);
@@ -76,52 +86,74 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
         assertEquals(origCount, sum, "element count mismatch");
 
-        //repository.findAll().stream().forEach(item -> log.info("item: {}, measured: {}", item.getRoadStationId(), item.getMeasuredTime()));
         // Check S3 object
+        Mockito.verify(amazonS3, Mockito.times(1))
+            .putObject(
+                Mockito.eq(sensorDataS3Properties.getS3BucketName()),
+                Mockito.eq(sensorDataS3Properties.getFileStorageName()),
+                inputStreamArgumentCaptor.capture(),
+                Mockito.any());
+        final byte[] zipBytes = inputStreamArgumentCaptor.getValue().readAllBytes();
 
-        final ObjectListing list = amazonS3.listObjects(sensorDataS3Properties.getS3BucketName());
 
-        assertFalse(list.getObjectSummaries().isEmpty(), "No elements");
+//        For debugging, write zip file to project root
+//        try {
+//            FileUtils.copyInputStreamToFile(new ByteArrayInputStream(zipBytes), new File("temppi.zip"));
+//        } catch (final Exception e) {
+//            e.printStackTrace();
+//        }
 
-        final String objectName = list.getObjectSummaries().get(0).getKey();
-
-        log.info("Read object {} from {}", objectName, sensorDataS3Properties.getS3BucketName());
-        final S3Object s3Object = amazonS3.getObject(sensorDataS3Properties.getS3BucketName(), objectName);
-
-        assertNotNull(s3Object, "S3 object not found");
-/**
-        try {
-            FileUtils.copyInputStreamToFile(new ByteArrayInputStream(s3Object.getObjectContent().readAllBytes()), new File("temppi.zip"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
- */
-        try (final ByteArrayInputStream bis = new ByteArrayInputStream(s3Object.getObjectContent().readAllBytes());
+        try (final ByteArrayInputStream bis = new ByteArrayInputStream(zipBytes);
             final ZipInputStream in = new ZipInputStream(bis)) {
             // Get entry
             final ZipEntry entry = in.getNextEntry();
 
-            log.info("entry {}", entry.getName());
+            log.info("entry {}", Objects.requireNonNull(entry).getName());
 
             final List<WeatherSensorValueHistoryDto> items = new CsvToBeanBuilder<WeatherSensorValueHistoryDto>(new InputStreamReader(in))
                 .withType(WeatherSensorValueHistoryDto.class)
-                .withSeparator(',')
+                .withSeparator(';')
                 .build()
                 .parse();
 
             in.closeEntry();
 
-            log.info("Gotta items {}", items);
+            assertEquals(origCount, items.size());
+            //Convert db data to truncated as csv dates are truncated and order by measured time & sensor id
+            final List<SensorValueHistory> expectedHistory =
+                // This contains also data outside from-to time frame, so we filter those out
+                builder.getGeneratedHistory().stream()
+                    .peek(h -> h.setMeasuredTime(h.getMeasuredTime().truncatedTo(ChronoUnit.SECONDS))) // CSV is truncated
+                    .filter(h -> h.getMeasuredTime().toEpochSecond() >= from.toEpochSecond() && h.getMeasuredTime().toEpochSecond() < to.toEpochSecond())
+                    .sorted(Comparator.comparing(SensorValueHistory::getMeasuredTime).thenComparing(SensorValueHistory::getSensorId))
+                    .toList();
+            // Same ordering for csv
+            final List<WeatherSensorValueHistoryDto> actualHistory = items.stream()
+                .sorted(Comparator.comparing(WeatherSensorValueHistoryDto::getMeasuredTime).thenComparing(WeatherSensorValueHistoryDto::getSensorId))
+                .toList();
+            assertHistory(expectedHistory, actualHistory);
         } catch (final Exception e) {
             log.error("zip error:", e);
-            //Assert.fail("failed to process zip: " + objectName);
+            Assertions.fail("failed to process zip: " + sensorDataS3Properties.getFileStorageName());
         }
-        //TODO! Check object is .zip and document is .csv and actual content is readable
+    }
+
+    private void assertHistory(final List<SensorValueHistory> expectedHistory, final List<WeatherSensorValueHistoryDto> actualHistory) {
+        assertEquals(expectedHistory.size(), actualHistory.size());
+        final Map<Long, Long> roadStationNaturalIdMaps = roadStationService.getNaturalIdMappings(RoadStationType.WEATHER_STATION);
+        for (int i = 0; i < expectedHistory.size(); i++) {
+            final SensorValueHistory expected = expectedHistory.get(i);
+            final WeatherSensorValueHistoryDto actual = actualHistory.get(i);
+            final Long expectedRsNaturalId = roadStationNaturalIdMaps.getOrDefault(expected.getRoadStationId(), -1L);
+            assertEquals(expected.getSensorId(), actual.getSensorId());
+            assertEquals(expectedRsNaturalId, actual.getRoadStationId());
+            assertEquals(expected.getSensorValue(), actual.getSensorValue());
+            assertEquals(expected.getMeasuredTime().toInstant().truncatedTo(ChronoUnit.SECONDS), actual.getMeasuredTime());
+        }
     }
 
     @Test
     public void historyCap() {
-        ReflectionTestUtils.setField(writer, "s3Properties", sensorDataS3Properties);
 
         final ZonedDateTime now = ZonedDateTime.now();
         final ZonedDateTime currentTimeWindow = now.minusHours(1).truncatedTo(ChronoUnit.HOURS);

@@ -19,9 +19,9 @@ public class TmsStationDataDtoV1 extends AbstractStationDataWithSensorsDtoV1 {
     public final long tmsStationNaturalId;
 
     public TmsStationDataDtoV1(final Long roadStationNaturalId, final Long tmsStationNaturalId,
-                               final Instant stationLatestMeasurement,
+                               final Instant stationLatestUpdated,
                                final List<SensorValueDtoV1> sensorValues) {
-        super(roadStationNaturalId, stationLatestMeasurement, sensorValues);
+        super(roadStationNaturalId, stationLatestUpdated, sensorValues);
         this.tmsStationNaturalId = tmsStationNaturalId;
     }
 }

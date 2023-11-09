@@ -139,21 +139,6 @@ public class RoadStationSensorService {
         return dataStatusService.findDataUpdatedTime(DataType.getSensorValueUpdatedDataType(roadStationType));
     }
 
-    @Transactional(readOnly = true)
-    public List<SensorValueDto> findAllPublishableRoadStationSensorValues(final long roadStationNaturalId,
-                                                                          final RoadStationType roadStationType) {
-        final boolean publicAndNotObsolete = roadStationRepository.isPublishableRoadStation(roadStationNaturalId, roadStationType);
-
-        if ( !publicAndNotObsolete ) {
-            return Collections.emptyList();
-        }
-
-        return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
-                roadStationNaturalId,
-                roadStationType,
-                sensorValueTimeLimitInMins.get(roadStationType));
-    }
-
     @Transactional
     public RoadStationSensor save(final RoadStationSensor roadStationSensor) {
         return roadStationSensorRepository.save(roadStationSensor);

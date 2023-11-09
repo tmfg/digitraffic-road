@@ -15,9 +15,9 @@ public abstract class AbstractStationDataWithSensorsDtoV1 extends StationDataV1<
     @Schema(description = "Measured sensor values of the station", required = true)
     public final List<SensorValueDtoV1> sensorValues;
 
-    public AbstractStationDataWithSensorsDtoV1(final long roadStationNaturalId, final Instant measuredTime,
+    public AbstractStationDataWithSensorsDtoV1(final long roadStationNaturalId, final Instant updated,
                                                final List<SensorValueDtoV1> sensorValues) {
-        super(roadStationNaturalId, measuredTime);
+        super(roadStationNaturalId, updated);
         this.sensorValues = sensorValues;
     }
 

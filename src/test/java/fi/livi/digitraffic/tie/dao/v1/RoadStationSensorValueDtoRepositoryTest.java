@@ -20,11 +20,6 @@ public class RoadStationSensorValueDtoRepositoryTest extends AbstractJpaTest {
     }
 
     @Test
-    public void findAllPublicPublishableRoadStationSensorValuesWithNaturalId() {
-        roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(1L, RoadStationType.TMS_STATION,10);
-    }
-
-    @Test
     public void findAllPublicPublishableRoadStationSensorValuesUpdatedAfter() {
         roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(RoadStationType.TMS_STATION, Instant.now());
     }

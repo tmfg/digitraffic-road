@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 public class CoordinateConverterTest {
@@ -75,7 +75,7 @@ public class CoordinateConverterTest {
         threads.add(startThread(UTSJOKI_TM35FIN_X, UTSJOKI_TM35FIN_Y, UTSJOKI_WGS84_X, UTSJOKI_WGS84_Y, fail));
 
         while (threads.stream().mapToInt(t -> t.isAlive() ? 1 : 0).sum() > 0) {
-            ThreadUtils.delayMs(10);
+            ThreadUtil.delayMs(10);
         }
         assertFalse(fail.get());
     }

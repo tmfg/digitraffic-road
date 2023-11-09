@@ -6,9 +6,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +18,7 @@ import jakarta.persistence.SequenceGenerator;
 
 @Entity
 @DynamicUpdate
-public class SensorValue {
+public class SensorValue extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
     @SequenceGenerator(name = "SEQ_SENSOR_VALUE", sequenceName = "SEQ_SENSOR_VALUE", allocationSize = 1)
@@ -40,9 +39,6 @@ public class SensorValue {
     @JoinColumn(name="ROAD_STATION_SENSOR_ID", nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStationSensor roadStationSensor;
-
-    @JsonIgnore
-    private ZonedDateTime updated;
 
     @Column(name = "TIME_WINDOW_START")
     private ZonedDateTime timeWindowStart;
@@ -101,14 +97,6 @@ public class SensorValue {
 
     public void setRoadStationSensor(final RoadStationSensor roadStationSensor) {
         this.roadStationSensor = roadStationSensor;
-    }
-
-    public ZonedDateTime getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(final ZonedDateTime updated) {
-        this.updated = updated;
     }
 
     public ZonedDateTime getTimeWindowStart() {

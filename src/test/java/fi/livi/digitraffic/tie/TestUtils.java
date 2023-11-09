@@ -71,6 +71,8 @@ public class TestUtils {
 
     private final static AtomicReference<Set<String>> reservedPresetIds = new AtomicReference<>();
 
+    private final static HashSet<Integer> usedLotjuIds = new HashSet<>();
+
     static {
         reservedPresetIds.set(new HashSet<>());
     }
@@ -294,7 +296,13 @@ public class TestUtils {
     }
 
     public static long getRandomLotjuId() {
-        return getRandomId(MIN_LOTJU_ID, MAX_LOTJU_ID);
+        while(true) {
+            final Integer random = getRandomId(MIN_LOTJU_ID, MAX_LOTJU_ID);
+            if (!usedLotjuIds.contains(random)) {
+                usedLotjuIds.add(random);
+                return random;
+            }
+        }
     }
 
     private static String generateUniquePresetId(final String cameraId) {

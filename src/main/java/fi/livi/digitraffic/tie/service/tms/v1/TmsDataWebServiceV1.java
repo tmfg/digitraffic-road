@@ -117,7 +117,7 @@ public class TmsDataWebServiceV1 {
     private TmsStationDataDtoV1 createTmsStationDataDto(final TmsStation tms, final List<SensorValueDtoV1> sensorValues) {
         return new TmsStationDataDtoV1(tms.getRoadStationNaturalId(),
             tms.getNaturalId(),
-            SensorValueDtoV1.getStationLatestMeasurement(sensorValues),
+            SensorValueDtoV1.getStationLatestUpdated(sensorValues),
             sensorValues);
     }
 }

@@ -68,7 +68,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     private TmsStation tmsStation;
     private long metadataLastModifiedMillis;
-    private long dataLastModifiedMillis;
+    private long dataLastMeasuredMillis;
+    private long dataLastUpdatedMillis;
 
     @BeforeEach
     public void initData() {
@@ -90,12 +91,13 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
 
-        final ZonedDateTime measured = ZonedDateTime.now();
+        final ZonedDateTime measured = ZonedDateTime.now().minusMinutes(2);
         final SensorValue sv1 = new SensorValue(tms.getRoadStation(), publishable.get(0), 10.0, measured);
         final SensorValue sv2 = new SensorValue(tms.getRoadStation(), publishable.get(1), 10.0, measured.minusMinutes(1));
         sensorValueRepository.save(sv1);
         sensorValueRepository.save(sv2);
-        this.dataLastModifiedMillis =  DateHelper.roundInstantSeconds(measured.toInstant()).toEpochMilli();
+        this.dataLastMeasuredMillis =  DateHelper.roundInstantSeconds(measured.toInstant()).toEpochMilli();
+        this.dataLastUpdatedMillis =  DateHelper.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
 
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
 
@@ -244,10 +246,10 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.stations[0].sensorValues[0].value", isA(Number.class)))
             .andExpect(jsonPath("$.stations[0].sensorValues[0].unit", isA(String.class)))
             .andExpect(jsonPath("$.stations[0].sensorValues[0].measuredTime", isA(String.class)))
-
+            // todo test measured
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
     }
 
     @Test
@@ -266,10 +268,10 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.sensorValues[0].value", isA(Number.class)))
             .andExpect(jsonPath("$.sensorValues[0].unit", isA(String.class)))
             .andExpect(jsonPath("$.sensorValues[0].measuredTime", isA(String.class)))
-
+            // todo test measured
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
     }
 
     @Test

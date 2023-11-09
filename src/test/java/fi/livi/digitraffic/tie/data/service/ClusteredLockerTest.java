@@ -21,9 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.LockingRepository.LockInfo;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import jakarta.transaction.Transactional;
 
@@ -63,7 +63,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         }
 
         while (futures.stream().anyMatch(f -> !f.isDone())) {
-            ThreadUtils.delayMs(100);
+            ThreadUtil.delayMs(100);
         }
 
         assertEquals(lockInfos.size(), THREAD_COUNT * LOCK_COUNT);
@@ -137,7 +137,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
         }
 
         while (futures.stream().anyMatch(f -> !f.isDone())) {
-            ThreadUtils.delayMs(100);
+            ThreadUtil.delayMs(100);
         }
 
         assertEquals(lockInfos.size(), THREAD_COUNT * LOCK_COUNT);
@@ -163,7 +163,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
 
     private void waitCompletion(final Future<Boolean> future) {
         while(!future.isDone()) {
-            ThreadUtils.delayMs(5);
+            ThreadUtil.delayMs(5);
         }
     }
 
@@ -209,7 +209,7 @@ public class ClusteredLockerTest extends AbstractServiceTest {
                     log.info("Acquired Lock {} from {} to {} for instanceId {}", info.getLockName(), info.getLockLocked(), info.getLockExpires(), info.getInstanceId() );
                     counter++;
                     // Sleep little more than expiration time so another thread should get the lock
-                    ThreadUtils.delayMs(LOCK_EXPIRATION_S * 1000 + LOCK_EXPIRATION_DELTA_MS);
+                    ThreadUtil.delayMs(LOCK_EXPIRATION_S * 1000 + LOCK_EXPIRATION_DELTA_MS);
                 }
             }
         }
@@ -244,10 +244,10 @@ public class ClusteredLockerTest extends AbstractServiceTest {
                 counter++;
 
                 // Sleep little and then release the lock for next thread
-                ThreadUtils.delayMs(200);
+                ThreadUtil.delayMs(200);
                 clusteredLocker.unlock(lock);
                 // Sleep to make sure next thread will try the lock
-                ThreadUtils.delayMs(200);
+                ThreadUtil.delayMs(200);
             }
         }
     }

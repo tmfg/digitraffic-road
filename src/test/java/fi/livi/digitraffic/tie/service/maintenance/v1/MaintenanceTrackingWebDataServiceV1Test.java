@@ -76,6 +76,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
 
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureCollectionV1;
@@ -86,7 +87,6 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingPropertiesV
 import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -630,7 +630,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         testHelper.handleUnhandledWorkMachineObservations(1000);
         // created time = transaction start time
         // +1s to next creation time
-        ThreadUtils.delayMs(1000);
+        ThreadUtil.delayMs(1000);
         flushCommitEndTransactionAndStartNew(entityManager);
         testHelper.saveTrackingDataAsObservations(seuranta2);
         testHelper.handleUnhandledWorkMachineObservations(1000);
@@ -663,7 +663,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // tracking for firstDomain
         testHelper.insertTrackingForDomain(firstDomain, wm1.getId());
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, firstDomain);
-        ThreadUtils.delayMs(2000); // delay creation with 2 s
+        ThreadUtil.delayMs(2000); // delay creation with 2 s
         // tracking for secondDomain 2 s later
         flushCommitEndTransactionAndStartNew(entityManager);
         testHelper.insertTrackingForDomain(secondDomain, wm2.getId());

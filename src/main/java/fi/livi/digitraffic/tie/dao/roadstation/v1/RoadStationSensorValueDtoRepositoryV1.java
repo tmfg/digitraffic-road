@@ -29,7 +29,8 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
              , svd.description_fi as sensorValueDescriptionFi
              , svd.description_en as sensorValueDescriptionEn
              , max(sv.measured) over(partition by sv.road_station_id) stationLatestMeasuredTime
-             , sv.updated as updatedTime
+             , max(sv.modified) over(partition by sv.road_station_id) stationLatestModifiedTime
+             , sv.modified
              """;
 
     String SQL_FROM = """
@@ -85,8 +86,8 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
                SQL_FROM +
                SQL_WHERE_PUBLISHABLE +
                "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
-               "  and sv.updated > :afterDate\n" +
-               "order by sv.updated",
+               "  and sv.modified > :afterDate\n" +
+               "order by sv.modified",
                    nativeQuery = true)
     List<SensorValueDtoV1> findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
             final RoadStationType roadStationType,

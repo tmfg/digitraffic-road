@@ -24,17 +24,19 @@ import javax.jms.JMSException;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
+import fi.livi.digitraffic.common.util.ThreadUtil;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
@@ -42,7 +44,7 @@ import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMessageMarshaller;
 import fi.livi.digitraffic.tie.service.weather.WeatherStationService;
 
-@Disabled("Transaction problems with the test env")
+
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
@@ -54,6 +56,22 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     @Autowired
     private WeatherStationService weatherStationService;
 
+    @BeforeEach
+    public void initData() {
+        TestUtils.truncateWeatherData(entityManager);
+        entityManager.flush();
+        TestUtils.generateDummyWeatherStations(50).forEach(s -> entityManager.persist(s));
+        entityManager.flush();
+        TestUtils.commitAndEndTransactionAndStartNew();
+        sensorDataUpdateService.updateStationsAndSensorsMetadata();
+    }
+
+    @AfterEach
+    protected void cleanDb() {
+        TestUtils.commitAndEndTransactionAndStartNew();
+        TestUtils.truncateWeatherData(entityManager);
+        TestUtils.commitAndEndTransactionAndStartNew();
+    }
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      */
@@ -130,7 +148,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
             if (sleep < 0) {
                 log.error("Data generation took too long");
             } else {
-                ThreadUtils.delayMs(sleep);
+                ThreadUtil.delayMs(sleep);
             }
 
         }

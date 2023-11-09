@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.dto.v1;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -61,6 +62,9 @@ public class SensorValueDto {
     @JsonIgnore
     private ZonedDateTime stationLatestMeasuredTime;
 
+    @JsonIgnore
+    private Instant stationLatestModifiedTime;
+
     @Schema(description = "Measurement time window start time (only for fixed time window sensors)")
     private ZonedDateTime timeWindowStart;
 
@@ -69,7 +73,7 @@ public class SensorValueDto {
 
     /** Db's timestamp */
     @JsonIgnore
-    private ZonedDateTime updatedTime;
+    private Instant modified;
 
     @Schema(description = "Measurement time")
     private ZonedDateTime measuredTime;
@@ -134,6 +138,10 @@ public class SensorValueDto {
         return stationLatestMeasuredTime;
     }
 
+    public Instant getStationLatestModifiedTime() {
+        return stationLatestModifiedTime;
+    }
+
     public ZonedDateTime getTimeWindowStart() {
         return timeWindowStart;
     }
@@ -142,12 +150,12 @@ public class SensorValueDto {
         return timeWindowEnd;
     }
 
-    public ZonedDateTime getUpdatedTime() {
-        return updatedTime;
+    public Instant getModified() {
+        return modified;
     }
 
-    public void setUpdatedTime(final ZonedDateTime updated) {
-        this.updatedTime = updated;
+    public void setModified(final Instant modified) {
+        this.modified = modified;
     }
 
     public ZonedDateTime getMeasuredTime() {
@@ -161,6 +169,13 @@ public class SensorValueDto {
     public static ZonedDateTime getStationLatestMeasurement(final List<SensorValueDto> sensorValues) {
         if (sensorValues != null && !sensorValues.isEmpty()) {
             return sensorValues.get(0).getStationLatestMeasuredTime();
+        }
+        return null;
+    }
+
+    public static Instant getStationLatestModified(final List<SensorValueDto> sensorValues) {
+        if (sensorValues != null && !sensorValues.isEmpty()) {
+            return sensorValues.get(0).getStationLatestModifiedTime();
         }
         return null;
     }

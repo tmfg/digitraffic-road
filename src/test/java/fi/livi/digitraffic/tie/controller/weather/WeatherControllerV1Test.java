@@ -28,6 +28,7 @@ import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.weather.WeatherStationRepository;
+import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
@@ -61,6 +62,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
     private long stationsMetaDataModifiedMillis;
     private long sensorsMetadataModifiedMillis;
     private long dataModifiedMillis;
+    private long dataLastUpdatedMillis;
 
     @BeforeEach
     public void initData() {
@@ -85,16 +87,16 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
         final SensorValue sv1 = new SensorValue(ws.getRoadStation(), publishable.get(0), 10.0, ZonedDateTime.now());
         final SensorValue sv2 = new SensorValue(ws.getRoadStation(), publishable.get(1), 10.0, ZonedDateTime.now());
-        sensorValueRepository.save(sv1);
+        this.dataLastUpdatedMillis =  DateHelper.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
+
+        sensorValueRepository.save(sv1); // 2023-11-06T13:18:32Z
         sensorValueRepository.save(sv2);
 
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION));
-
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         this.weatherStation = entityManager.find(WeatherStation.class, ws.getId());
-        this.stationMetaDataModifiedMillis =  weatherStation.getModified().toEpochMilli();
-        this.stationsMetaDataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_METADATA).toEpochMilli();
+        this.stationMetaDataModifiedMillis = weatherStation.getModified().toEpochMilli();
         this.dataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION)).toEpochMilli();
         this.stationsMetaDataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_METADATA).toEpochMilli();
         this.sensorsMetadataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA).toEpochMilli();
@@ -206,9 +208,10 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.stations[0].sensorValues[0].value", isA(Number.class)))
             .andExpect(jsonPath("$.stations[0].sensorValues[0].unit", isA(String.class)))
             .andExpect(jsonPath("$.stations[0].sensorValues[0].measuredTime", isA(String.class)))
+            // TODO test measured time
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
     }
 
     @Test
@@ -226,9 +229,10 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.sensorValues[0].value", isA(Number.class)))
             .andExpect(jsonPath("$.sensorValues[0].unit", isA(String.class)))
             .andExpect(jsonPath("$.sensorValues[0].measuredTime", isA(String.class)))
+            // TODO test measured time
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataModifiedMillis));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
     }
 
     private ResultActions performAndLogLastModifiedHeder(final String url) throws Exception {

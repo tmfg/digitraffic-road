@@ -18,23 +18,20 @@ public class SensorValueDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final String UPDATE =
-        "UPDATE SENSOR_VALUE AS sv\n" +
-            "SET value = :value\n" +
-            "  , measured = :measured\n" +
-            "  , updated = current_timestamp\n" +
-            "  , time_window_start = :timeWindowStart\n" +
-            "  , time_window_end = :timeWindowEnd\n" +
-            "WHERE sv.road_station_id = :roadStationId\n" +
-            "AND sv.road_station_sensor_id = (select id from road_station_sensor where lotju_id = :sensorLotjuId " +
-            "and road_station_type = :stationType " +
-            "and publishable = true)";
+    private static final String UPDATE = """
+            UPDATE SENSOR_VALUE AS sv
+            SET value = :value
+              , measured = :measured
+              , time_window_start = :timeWindowStart
+              , time_window_end = :timeWindowEnd
+            WHERE sv.road_station_id = :roadStationId
+            AND sv.road_station_sensor_id = (select id from road_station_sensor where lotju_id = :sensorLotjuId and road_station_type = :stationType and publishable = true)""";
 
     private static final String INSERT =
             "INSERT INTO sensor_value(id, road_station_id, road_station_sensor_id, value,\n" +
-            "                         measured, updated, time_window_start, time_window_end)\n" +
+            "                         measured, time_window_start, time_window_end)\n" +
             "SELECT nextval('seq_sensor_value'), :roadStationId, sensor.id,\n" +
-            "       :value, :measured, current_timestamp, :timeWindowStart, :timeWindowEnd\n" +
+            "       :value, :measured, :timeWindowStart, :timeWindowEnd\n" +
             "FROM ROAD_STATION_SENSOR sensor\n" +
             "WHERE sensor.lotju_id = :sensorLotjuId\n" +
             "  AND sensor.road_station_type = :stationType\n" +

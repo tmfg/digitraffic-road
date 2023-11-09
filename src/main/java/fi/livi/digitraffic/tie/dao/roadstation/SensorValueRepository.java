@@ -20,7 +20,7 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
     List<SensorValue> findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(final List<Long> tmsLotjuIds, final RoadStationType roadStationType);
 
     @Query(value =
-        "select max(sv.updated)\n" +
+        "select max(sv.modified)\n" +
         "from sensor_value sv\n" +
         "where exists(select null from road_station rs\n" +
         "             where rs.id = sv.road_station_id\n" +

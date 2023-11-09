@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -48,6 +49,8 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     @Autowired
     private RestTemplate restTemplate;
 
+    private MockRestServiceServer server;
+
     @BeforeEach
     public void initData() throws IOException {
         final StopWatch start = StopWatch.createStarted();
@@ -71,7 +74,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
         final ForecastSectionDataUpdater forecastSectionDataUpdater =
             new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
 
-        final MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+        server = MockRestServiceServer.createServer(restTemplate);
 
         forecastSectionTestHelper.serverExpectMetadata(server,1);
         forecastSectionTestHelper.serverExpectMetadata(server,2);
@@ -86,6 +89,11 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
         entityManager.flush();
         entityManager.clear();
         log.info("Init data tookMs={}", start.getTime());
+    }
+
+    @AfterEach
+    public void reset() {
+        server.reset();
     }
 
     @Test
@@ -203,7 +211,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
 
     @Test
     public void forecastSectionsForecastsSimple() throws Exception {
-        logInfoResponse(
+        logDebugResponse(
             mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))

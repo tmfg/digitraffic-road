@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.jms;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertTimesEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -27,8 +27,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -37,10 +37,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
@@ -48,7 +48,6 @@ import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 
-@Disabled("Transaction problems with the test env")
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
@@ -73,16 +72,25 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     @BeforeEach
     public void initData() {
+        TestUtils.truncateTmsData(entityManager);
+        entityManager.flush();
         TestUtils.generateDummyTmsStations(50).forEach(s -> entityManager.persist(s));
         entityManager.flush();
         TestUtils.commitAndEndTransactionAndStartNew();
+        sensorDataUpdateService.updateStationsAndSensorsMetadata();
     }
 
+    @AfterEach
+    protected void cleanDb() {
+        TestUtils.commitAndEndTransactionAndStartNew();
+        TestUtils.truncateTmsData(entityManager);
+        TestUtils.commitAndEndTransactionAndStartNew();
+    }
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      */
     @Test
-    public void test1PerformanceForReceivedMessages() throws JMSException, IOException {
+    public void testPerformanceForReceivedMessages() throws JMSException, IOException {
 
         final Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
         final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater = createLamJMSDataUpdater();
@@ -104,14 +112,14 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             final StopWatch sw = StopWatch.createStarted();
 
             data.clear();
-            while (true) {
+            do {
                 if (!stationsIter.hasNext()) {
                     stationsIter = lamsWithLotjuId.values().iterator();
                 }
                 final TmsStation currentStation = stationsIter.next();
 
                 final List<LAMRealtimeProtos.Lam> lams =
-                    generateLams(time, publishableSensors, currentStation.getLotjuId());
+                        generateLams(time, publishableSensors, currentStation.getLotjuId());
 
                 for (final LAMRealtimeProtos.Lam lam : lams) {
                     data.add(lam);
@@ -120,10 +128,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
                 time = time.plusMillis(2000);
 
-                if (data.size() >= 100 || lamsWithLotjuId.values().size() <= data.size()) {
-                    break;
-                }
-            }
+            } while (data.size() < 100 && lamsWithLotjuId.values().size() > data.size());
 
             log.info("Data generation tookMs={}", sw.getTime());
             final StopWatch swHandle = StopWatch.createStarted();
@@ -137,7 +142,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             if (sleep < 0) {
                 log.warn("Data generation and handle took {} ms and should use maximum 1000 ms", sw.getTime());
             } else {
-                ThreadUtils.delayMs(sleep);
+                ThreadUtil.delayMs(sleep);
             }
 
         }
@@ -150,10 +155,12 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         checkDataValidity(data);
         assertTrue(handleDataTotalTime <= maxHandleTime,
             "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
+
+        checkLastUpdated();
     }
 
-    @Test
-    public void test2LastUpdated() {
+
+    private void checkLastUpdated() {
         final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
         final ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
@@ -206,7 +213,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private void checkDataValidity(final List<LAMRealtimeProtos.Lam> data) {
         log.info("Check data validity");
         // Assert sensor values are updated to db
-        final List<Long> lamLotjuIds = data.stream().map(LAMRealtimeProtos.Lam::getAsemaId).distinct().collect(Collectors.toList());
+        final List<Long> lamLotjuIds = data.stream().map(LAMRealtimeProtos.Lam::getAsemaId).distinct().toList();
         final Map<Long, List<SensorValue>> valuesMap =
             roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
 
@@ -214,6 +221,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         for (final LAMRealtimeProtos.Lam lam : data) {
             final long asemaLotjuId = lam.getAsemaId();
             final List<SensorValue> sensorValues = valuesMap.get(asemaLotjuId);
+
+            assertNotNull(sensorValues);
             final List<LAMRealtimeProtos.Lam.Anturi> anturit = lam.getAnturiList();
 
             for (final LAMRealtimeProtos.Lam.Anturi anturi : anturit) {

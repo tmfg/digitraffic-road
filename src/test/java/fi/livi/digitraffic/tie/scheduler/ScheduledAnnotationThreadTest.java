@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.test.context.TestPropertySource;
 
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 
 @TestPropertySource(properties = { "dt.scheduled.annotation.enabled=true" })
 public class ScheduledAnnotationThreadTest extends AbstractDaemonTest {
@@ -35,7 +35,7 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTest {
         while ( ( (count1 <= (job1StartErrorsAfter + poolSize + 1)) ||
                   (count2 <= (job2StartErrorsAfter + poolSize + 1)) )  &&
                 start.getTime() < 500) {
-            ThreadUtils.delayMs(10);
+            ThreadUtil.delayMs(10);
         }
 
         // Assert that scheduledServices has been running even when there has been errors

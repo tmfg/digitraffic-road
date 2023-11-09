@@ -152,6 +152,7 @@ public class CameraImageUpdateHandler {
                 info.updateReadStatusFailed(e);
                 throw e;
             }
+            info.updateReadStatusSuccess();
             return image;
         });
     }

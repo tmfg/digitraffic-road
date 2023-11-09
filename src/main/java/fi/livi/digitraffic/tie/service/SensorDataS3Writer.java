@@ -53,7 +53,11 @@ public class SensorDataS3Writer {
         this.s3Client = sensorDataS3Client;
     }
 
-
+    /**
+     * @param from inclusive
+     * @param to exclusive
+     * @return written sensor values count
+     */
     @Transactional(readOnly = true)
     public int writeSensorData(final ZonedDateTime from, final ZonedDateTime to) {
         // Set current time window start
@@ -83,7 +87,6 @@ public class SensorDataS3Writer {
             csvWriter.write(repository.streamAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(from, to)
                 .map(item -> {
                     counter.getAndIncrement();
-
                     // Internal road_station_id must be mapped back to road_station's natural_id (API uses natural ids)
                     return new WeatherSensorValueHistoryDto(mapToNaturalId(item),
                         item.getSensorId(),

@@ -25,8 +25,8 @@ import org.springframework.stereotype.Component;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
@@ -68,7 +68,7 @@ public class CameraImageUpdateManager {
         dataStatusService.updateDataUpdated(CAMERA_STATION_IMAGE_UPDATED, latestUpdate);
 
         while ( futures.stream().anyMatch(f -> !f.isDone()) ) {
-            ThreadUtils.delayMs(100L);
+            ThreadUtil.delayMs(100L);
         }
         final long updateCount = futures.parallelStream().filter(p -> {
             try {

@@ -10,7 +10,7 @@ import java.net.URI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
+import fi.livi.digitraffic.common.util.ThreadUtil;
 
 public class MultiDestinationProviderTest extends AbstractMultiDestinationProviderTest {
 
@@ -87,7 +87,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
         assertEquals(dataUrl1, dest1.toString());
 
         // Wait for TTL to pass
-        ThreadUtils.delayMs(1100L);
+        ThreadUtil.delayMs(1100L);
 
         final URI dest2 = mdp.getDestination();
 

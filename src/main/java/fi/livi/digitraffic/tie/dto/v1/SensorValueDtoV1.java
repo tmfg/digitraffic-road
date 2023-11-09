@@ -3,14 +3,13 @@ package fi.livi.digitraffic.tie.dto.v1;
 import java.time.Instant;
 import java.util.List;
 
-import jakarta.persistence.Id;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Id;
 
 @Schema(description = "Sensor value")
 @JsonPropertyOrder({"id", "stationId", "name", "oldName", "shortName", "sensorValueId", "sensorValue", "sensorUnit", "timeWindowStart", "timeWindowEnd", "measuredTime"})
@@ -51,6 +50,9 @@ public interface SensorValueDtoV1 {
     @JsonIgnore
     Instant getStationLatestMeasuredTime();
 
+    @JsonIgnore
+    Instant getStationLatestModifiedTime();
+
     @Schema(description = "Measurement time window start time (only for fixed time window sensors)")
     Instant getTimeWindowStart();
 
@@ -59,7 +61,7 @@ public interface SensorValueDtoV1 {
 
     /** Db's timestamp */
     @JsonIgnore
-    Instant getUpdatedTime();
+    Instant getModified();
 
     @Schema(description = "Measurement time", required = true)
     Instant getMeasuredTime();
@@ -68,6 +70,13 @@ public interface SensorValueDtoV1 {
     static Instant getStationLatestMeasurement(final List<SensorValueDtoV1> sensorValues) {
         if (sensorValues != null && !sensorValues.isEmpty()) {
             return sensorValues.get(0).getStationLatestMeasuredTime();
+        }
+        return Instant.EPOCH;
+    }
+
+    static Instant getStationLatestUpdated(final List<SensorValueDtoV1> sensorValues) {
+        if (sensorValues != null && !sensorValues.isEmpty()) {
+            return sensorValues.get(0).getStationLatestModifiedTime();
         }
         return Instant.EPOCH;
     }

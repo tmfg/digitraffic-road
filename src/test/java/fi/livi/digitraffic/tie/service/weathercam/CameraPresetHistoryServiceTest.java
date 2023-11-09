@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.Rollback;
 
+import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
@@ -57,7 +58,6 @@ import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.helper.ThreadUtils;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
@@ -498,7 +498,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
         // Must end transaction to save different timestamps to db
         TestUtils.commitAndEndTransactionAndStartNew();
-        ThreadUtils.delayMs(10);
+        ThreadUtil.delayMs(10);
 
         // Generate 3 changes in the history
         IntStream.range(1,4).forEach(i -> {
@@ -510,7 +510,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
             cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs1);
             // Must end transaction to save different timestamps to db
             TestUtils.commitAndEndTransactionAndStartNew();
-            ThreadUtils.delayMs(1000);
+            ThreadUtil.delayMs(1000);
         });
         TestUtils.entityManagerFlushAndClear(entityManager);
 

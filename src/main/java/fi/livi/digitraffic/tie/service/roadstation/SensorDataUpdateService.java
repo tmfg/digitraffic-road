@@ -88,8 +88,9 @@ public class SensorDataUpdateService {
         return roadStationDao.findPublishableRoadStationsIdsMappedByLotjuId(roadStationType);
     }
 
+    @NotTransactionalServiceMethod
     @Scheduled(fixedRate = 300000)
-    protected void updateStationsAndSensorsMetadata() {
+    public void updateStationsAndSensorsMetadata() {
         /* TODO! Pitää selvittaa ekaksi oikeat tyypit tuolta datastatuksesta jotta homma ei mene puihin
         lastMetadataUpdates.replaceAll((type, current) -> {
             ZonedDateTime candidate = dataStatusService.findDataUpdatedTime(type);

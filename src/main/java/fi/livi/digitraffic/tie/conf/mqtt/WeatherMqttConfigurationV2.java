@@ -61,8 +61,8 @@ public class WeatherMqttConfigurationV2 {
 
                 if(!sensorValues.isEmpty()) {
                     final Instant lastUpdated = sensorValues.stream()
-                        .max(Comparator.comparing(SensorValueDtoV1::getUpdatedTime))
-                        .map(SensorValueDtoV1::getUpdatedTime)
+                        .max(Comparator.comparing(SensorValueDtoV1::getModified))
+                        .map(SensorValueDtoV1::getModified)
                         .orElseThrow();
                     final List<MqttDataMessageV2> dataMessages = sensorValues.stream().map(this::createMqttDataMessage).collect(Collectors.toList());
 
