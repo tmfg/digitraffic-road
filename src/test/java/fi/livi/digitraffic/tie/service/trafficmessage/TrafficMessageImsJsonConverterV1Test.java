@@ -18,12 +18,17 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -77,22 +82,28 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
         whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(419));
         whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(createNewRegionGeometry(5898));
 
-        when(regionGeometryDataServiceV1.getGeoJsonGeometryUnion(any(), any())).thenCallRealMethod();
+        when(regionGeometryDataServiceV1.getGeoJsonGeometryUnion(any(Instant.class), any(Integer[].class))).thenCallRealMethod();
     }
 
-    @Test
-    public void convertImsSimpleJsonVersionToGeoJsonFeatureObject_V1() throws IOException {
-        for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-            for (final SituationType st : SituationType.values()) {
-                final String json = readStaticImsJmessageResourceContent(imsJsonVersion, st.name(), ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
-                final Instant now = Instant.now();
-                log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, imsJsonVersion);
-                final TrafficAnnouncementFeature ta =
-                    datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, st, GENERAL, true, now);
-                validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(st, imsJsonVersion, ta, now);
-                log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, imsJsonVersion);
+    @TestFactory
+    public Collection<DynamicTest> convertImsSimpleJsonVersionToGeoJsonFeatureObject_V1() throws IOException {
+        final List<DynamicTest> tests = new ArrayList<>();
+
+        for (final SituationType st : SituationType.values()) {
+            for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
+                tests.add(DynamicTest.dynamicTest("convert " + st + " version " + imsJsonVersion, () -> {
+                    final String json = readStaticImsJmessageResourceContent(imsJsonVersion, st.name(), ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+                    final Instant now = Instant.now();
+                    log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, imsJsonVersion);
+                    final TrafficAnnouncementFeature ta =
+                        datex2JsonConverterV1.convertToFeatureJsonObject_V1(json, st, GENERAL, true, now);
+                    validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(st, imsJsonVersion, ta, now);
+                    log.info("Converted SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, imsJsonVersion);
+                }));
             }
         }
+
+        return tests;
     }
 
     @Test
