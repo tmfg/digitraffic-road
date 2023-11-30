@@ -23,7 +23,7 @@ public class TmsStationProperties extends RoadStationProperties {
     @JsonIgnore // Using road station's natural id
     private long id;
 
-    // tms aseman naturalId
+    // NaturalId of tms station
     @Schema(description = "TMS station number (naturalId) for legacy support", required = true)
     @JsonProperty(value = "tmsNumber")
     private long tmsNaturalId;
