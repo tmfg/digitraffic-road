@@ -24,7 +24,7 @@ public class TmsStationProperties extends RoadStationProperties {
     private long id;
 
     // tms aseman naturalId
-    @Schema(description = "TMS station number (naturalId)", required = true)
+    @Schema(description = "TMS station number (naturalId) for legacy support", required = true)
     @JsonProperty(value = "tmsNumber")
     private long tmsNaturalId;
 

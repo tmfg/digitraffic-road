@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "tmsNumber", "name" })
 public class TmsStationPropertiesSimpleV1 extends RoadStationPropertiesSimpleV1<Long> {
 
+    // tms aseman naturalId
+    @Schema(description = "TMS station number (naturalId) for legacy support", required = true)
     public final long tmsNumber;
 
     public TmsStationPropertiesSimpleV1(final long id, final long tmsNumber) {
