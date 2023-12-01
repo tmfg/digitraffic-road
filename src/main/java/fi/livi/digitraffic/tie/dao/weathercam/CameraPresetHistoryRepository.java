@@ -23,7 +23,16 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
 
     @Query(value = """
             SELECT DISTINCT ON (preset_id)
-            history.*
+              history.created,
+              history.modified,
+              history.preset_id,
+              history.version_id,
+              history.camera_preset_id,
+              history.last_modified,
+              history.publishable,
+              history.size,
+              history.camera_id,
+              history.preset_public
             FROM camera_preset_history history
             WHERE history.preset_id = :presetId
             ORDER BY history.preset_id, history.last_modified DESC""",
@@ -32,7 +41,16 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
 
     @Query(value = """
             SELECT DISTINCT ON (preset_id)
-            history.*
+              history.created,
+              history.modified,
+              history.preset_id,
+              history.version_id,
+              history.camera_preset_id,
+              history.last_modified,
+              history.publishable,
+              history.size,
+              history.camera_id,
+              history.preset_public
             FROM camera_preset_history history
             WHERE history.publishable = true
               AND history.last_modified <= :atTime
@@ -46,7 +64,17 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
             final Instant atTime, final Instant oldestTimeLimit);
 
     @Query(value = """
-            SELECT history.*
+            SELECT
+              history.created,
+              history.modified,
+              history.preset_id,
+              history.version_id,
+              history.camera_preset_id,
+              history.last_modified,
+              history.publishable,
+              history.size,
+              history.camera_id,
+              history.preset_public
             FROM camera_preset_history history
             WHERE history.publishable = true
               AND history.last_modified >= :oldestTimeLimit
@@ -161,7 +189,17 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     List<PresetHistoryChangeDto> findCameraPresetHistoryChangesAfter(final Instant fromTime);
 
     @Query(value = """
-            SELECT history.*
+            SELECT
+              history.created,
+              history.modified,
+              history.preset_id,
+              history.version_id,
+              history.camera_preset_id,
+              history.last_modified,
+              history.publishable,
+              history.size,
+              history.camera_id,
+              history.preset_public
             FROM camera_preset_history history
             WHERE history.publishable = true
               AND history.last_modified >= :oldestTimeLimit
@@ -171,7 +209,17 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     List<CameraPresetHistory> findAllPublishableHistoryByCameraIdOrNullOrderByPresetIdAndLastModified(final String cameraId, final Instant oldestTimeLimit);
     @Query(value = """
-            SELECT history.*
+            SELECT
+              history.created,
+              history.modified,
+              history.preset_id,
+              history.version_id,
+              history.camera_preset_id,
+              history.last_modified,
+              history.publishable,
+              history.size,
+              history.camera_id,
+              history.preset_public
             FROM camera_preset_history history
             WHERE history.publishable = true
               AND history.last_modified >= :oldestTimeLimit
