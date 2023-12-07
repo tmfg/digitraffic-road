@@ -11,6 +11,7 @@ public enum WeatherStationType {
     FINAVIA_B("FINAVIA_B"),
     ELY_B("ELY_B"),
     ISGN("ISGN"),
+    VAISALA_API("VAISALA_API"),
     OLD("OLD"),
 
     // Legacy values

@@ -414,6 +414,7 @@
       <xs:enumeration value="FINAVIA_B"/>
       <xs:enumeration value="ELY_B"/>
       <xs:enumeration value="ISGN"/>
+      <xs:enumeration value="VAISALA_API"/>
       <xs:enumeration value="OLD"/>
     </xs:restriction>
   </xs:simpleType>
