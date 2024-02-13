@@ -7,9 +7,8 @@ import java.util.List;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 
-import com.vladmihalcea.hibernate.type.json.JsonType;
-
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
