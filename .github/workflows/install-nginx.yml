@@ -22,7 +22,7 @@ jobs:
           echo "Environment ${{ github.event.inputs.env }}" >> parameters.txt
           echo "config-repo-branch ${{ github.event.inputs.config-repo-branch }}" >> parameters.txt
       - name: Upload parameters.txt
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: parameters.txt
           path: parameters.txt
@@ -48,17 +48,17 @@ jobs:
           docker build -t nginx-road-${{ github.event.inputs.env }} --build-arg APPNAME=road --build-arg ENVIRONMENT=${{ github.event.inputs.env }} .
           docker run --rm -t nginx-road-${{ github.event.inputs.env }} nginx -t
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-image-road-nginx-${{ github.event.inputs.env }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
       - name: Build image
         run: |
           cd digitraffic-ci/aws/nginx
@@ -77,7 +77,7 @@ jobs:
         id: update
         uses: tmfg/digitraffic-actions@update-task-def/v1
         with:
-          task-def-file-name: road-${{ github.event.inputs.env }}-nginx
+          task-def-file-name: road/${{ github.event.inputs.env }}-nginx
           family-name: road-${{ github.event.inputs.env }}-nginx
           image-arn: ${{ secrets.ECR_URL }}/dt-road-nginx-repository:latest
           aws-role: ${{ secrets.AWS_ROLE }}

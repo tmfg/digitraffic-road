@@ -92,12 +92,12 @@ jobs:
 
           cp target/*.jar road.jar
       - name: Upload jar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: road.jar
           path: road.jar
       - name: Upload sql
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sql
           path: dbroad/sql
@@ -131,25 +131,25 @@ jobs:
           ref: ${{ inputs.config-repo-branch }}
           path: digitraffic-ci
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-image-road-${{ matrix.app }}-${{ github.event.inputs.env }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
       - name: Download jar
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         if: matrix.app != 'db'
         with:
           name: road.jar
           path: digitraffic-ci/aws
       - name: Download sql
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         if: matrix.app == 'db'
         with:
           name: sql
@@ -205,7 +205,7 @@ jobs:
       revision_web: ${{ steps.revision.outputs.revision_web }}
     steps:
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
@@ -214,7 +214,7 @@ jobs:
         id: update
         uses: tmfg/digitraffic-actions@update-task-def/v2
         with:
-          task-def-file-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
+          task-def-file-name: road/${{ github.event.inputs.env }}-${{ matrix.app }}
           family-name: road-${{ github.event.inputs.env }}-${{ matrix.app }}
           image-arn: ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }}
           aws-role: ${{ secrets.AWS_ROLE }}
@@ -239,7 +239,7 @@ jobs:
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
@@ -263,7 +263,7 @@ jobs:
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
