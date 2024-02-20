@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.dao.roadstation.v1;
 
-import static org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE;
-
 import java.time.Instant;
 import java.util.List;
 
@@ -12,6 +10,8 @@ import fi.livi.digitraffic.tie.dao.SqlRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import jakarta.persistence.QueryHint;
+
+import static org.hibernate.jpa.HibernateHints.HINT_FETCH_SIZE;
 
 public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
 

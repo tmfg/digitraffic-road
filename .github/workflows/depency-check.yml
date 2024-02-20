@@ -22,12 +22,12 @@ jobs:
       - name: Setup dependencies
         run: cp -R digitraffic-build-dependencies/jms/ ~/.m2/
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 11
           distribution: corretto
       - name: Cache dependency-check files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository/org/owasp
           key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}
