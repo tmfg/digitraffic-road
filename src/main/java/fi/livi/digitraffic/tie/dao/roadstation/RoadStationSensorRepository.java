@@ -21,11 +21,6 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
         FROM RoadStationSensor s
         WHERE s.publishable = true
           AND s.roadStationType = ?1
-          AND EXISTS (
-             FROM AllowedRoadStationSensor allowed
-             WHERE allowed.naturalId = s.naturalId
-               AND allowed.roadStationType = s.roadStationType
-          )
         ORDER BY s.naturalId""")
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<RoadStationSensor> findByRoadStationTypeAndPublishable(final RoadStationType roadStationType);
@@ -41,7 +36,6 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
         SELECT rs_sensors.road_station_id roadStationId, string_agg(cast(sensor.natural_id as varchar), ',' order by sensor.natural_id) AS sensors
         FROM road_station_sensor sensor
         inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id
-        inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id
         where sensor.publishable = true
           and sensor.road_station_type = :#{#roadStationType.name()}
         GROUP BY rs_sensors.road_station_id
@@ -53,7 +47,6 @@ order by rs_sensors.road_station_id""", nativeQuery = true)
         SELECT rs_sensors.road_station_id roadStationId, string_agg(cast(sensor.natural_id as varchar), ',' order by sensor.natural_id) AS sensors
         FROM road_station_sensor sensor
         inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id
-        inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id
         where rs_sensors.road_station_id = :id
           and sensor.publishable = true
           and sensor.road_station_type = :#{#roadStationType.name()}
@@ -66,7 +59,6 @@ order by rs_sensors.road_station_id""", nativeQuery = true)
         SELECT sensor.natural_id
         FROM road_station_sensor sensor
         inner join road_station_sensors rs_sensors on rs_sensors.road_station_sensor_id = sensor.id
-        inner join allowed_road_station_sensor allowed on allowed.natural_id = sensor.natural_id
         where rs_sensors.road_station_id = :id
           and sensor.publishable = true
           and sensor.road_station_type = :#{#roadStationType.name()}

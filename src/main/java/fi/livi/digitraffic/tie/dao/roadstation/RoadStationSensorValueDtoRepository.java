@@ -41,12 +41,7 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
          and rs.publishable = true
          and s.publishable = true
          and sv.measured > (now() -(:measuredTimeLimitInMinutes * interval '1 MINUTE'))
-         and exists (
-            select null
-            from allowed_road_station_sensor allowed
-            where allowed.natural_id = s.natural_id
-              and allowed.road_station_type = s.road_station_type
-         )""", nativeQuery = true)
+         """, nativeQuery = true)
     List<SensorValueDto> findAllPublicPublishableRoadStationSensorValues(
             final RoadStationType roadStationType,
             final int measuredTimeLimitInMinutes);
@@ -78,12 +73,6 @@ public interface RoadStationSensorValueDtoRepository extends JpaRepository<Senso
           and rs.publishable = true
           and s.publishable = true
           and sv.modified > :afterDate
-          and exists (
-             select null
-             from allowed_road_station_sensor allowed
-             where allowed.natural_id = s.natural_id
-               and allowed.road_station_type = s.road_station_type
-          )
         order by sv.modified""", nativeQuery = true)
     List<SensorValueDto> findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
             final RoadStationType roadStationType,

@@ -182,7 +182,6 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final LamAsemaVO lam = createLamAsema(ROAD_STATION_LOTJU_ID);
         assertEquals(UpdateStatus.INSERTED, tmsStationService.updateOrInsertTmsStation(lam));
         final int sensorsCountBeforeUpdate = getTmsSensorsFromDb().size();
-        TestUtils.addAllowedSensor(NEW_LOTJU_ID, RoadStationType.TMS_STATION, entityManager);
 
         // 2. Send insert message
         final LamLaskennallinenAnturiVO anturi = createAnturiListWith(Pair.of(NEW_LOTJU_ID, NEW_LOTJU_ID)).get(0);

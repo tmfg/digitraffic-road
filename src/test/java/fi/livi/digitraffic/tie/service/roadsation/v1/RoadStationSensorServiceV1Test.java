@@ -6,32 +6,39 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
+import jakarta.transaction.Transactional;
 
+@Transactional
+@Sql({ "/roadstationsensor/set_road_station_sensor_publicity.sql"})
 public class RoadStationSensorServiceV1Test extends AbstractServiceTest {
 
     @Autowired
     private RoadStationSensorServiceV1 roadStationSensorService;
 
     @Test
+    @Transactional
     public void findAllNonObsoleteAndAllowedRoadStationSensorsForWeatherStation() {
         final List<RoadStationSensor> sensors = roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION);
 
-        assertCollectionSize(88, sensors);
+        assertCollectionSize(137, sensors);
     }
 
     @Test
+    @Transactional
     public void findAllNonObsoleteAndAllowedRoadStationSensorsForTmsStation() {
         final List<RoadStationSensor> sensors = roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
 
-        assertCollectionSize(26, sensors);
+        assertCollectionSize(229, sensors);
     }
 
     @Test
+    @Transactional
     public void findAllRoadStationSensorsForWeatherStation() {
         final List<RoadStationSensor> sensors = roadStationSensorService.findAllRoadStationSensors(RoadStationType.WEATHER_STATION);
 
@@ -39,6 +46,7 @@ public class RoadStationSensorServiceV1Test extends AbstractServiceTest {
     }
 
     @Test
+    @Transactional
     public void findAllRoadStationSensorsForTmsStation() {
         final List<RoadStationSensor> sensors = roadStationSensorService.findAllRoadStationSensors(RoadStationType.TMS_STATION);
 
