@@ -23,46 +23,46 @@ public class TmsSensorConstantDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private final static String UPSERT_CONSTANTS_STATEMENT =
-        "WITH TMS_RS AS (\n" +
-        "    SELECT rs.id as rs_id, rs.lotju_id rs_lotju_id\n" +
-        "    FROM road_station rs\n" +
-        "    WHERE rs.road_station_type = 'TMS_STATION'\n" +
-        "      AND rs.lotju_id = :sensorConstantRoadStationLotjuId\n" +
-        ")\n" +
-        "INSERT INTO TMS_SENSOR_CONSTANT (LOTJU_ID, ROAD_STATION_ID, NAME)\n" +
-        "SELECT :sensorConstantLotjuId, tms_rs.rs_id, :sensorConstantName\n" +
-        "FROM TMS_RS\n" +
-        "ON CONFLICT (LOTJU_ID)\n" +
-        "DO UPDATE SET\n" +
-        "  name = :sensorConstantName,\n" +
-        "  road_station_id = excluded.ROAD_STATION_ID,\n" +
-        "  obsolete_date = null\n" +
-        "WHERE TMS_SENSOR_CONSTANT.name <> :sensorConstantName\n" +
-        "   OR TMS_SENSOR_CONSTANT.road_station_id <> excluded.ROAD_STATION_ID\n" +
-        "   OR TMS_SENSOR_CONSTANT.obsolete_date is not null";
+    private final static String UPSERT_CONSTANTS_STATEMENT = """
+        WITH TMS_RS AS (
+            SELECT rs.id as rs_id, rs.lotju_id rs_lotju_id
+            FROM road_station rs
+            WHERE rs.road_station_type = 'TMS_STATION'
+              AND rs.lotju_id = :sensorConstantRoadStationLotjuId
+        )
+        INSERT INTO TMS_SENSOR_CONSTANT (LOTJU_ID, ROAD_STATION_ID, NAME)
+        SELECT :sensorConstantLotjuId, tms_rs.rs_id, :sensorConstantName
+        FROM TMS_RS
+        ON CONFLICT (LOTJU_ID)
+        DO UPDATE SET
+          name = :sensorConstantName,
+          road_station_id = excluded.ROAD_STATION_ID,
+          obsolete_date = null
+        WHERE TMS_SENSOR_CONSTANT.name <> :sensorConstantName
+           OR TMS_SENSOR_CONSTANT.road_station_id <> excluded.ROAD_STATION_ID
+           OR TMS_SENSOR_CONSTANT.obsolete_date is not null""";
 
-    private final static String UPSERT_CONSTANT_VALUES_STATEMENT =
-        "WITH sc AS (\n" +
-        "  SELECT lotju_id\n" +
-        "  FROM TMS_SENSOR_CONSTANT\n" +
-        "  WHERE LOTJU_ID = :sensorConstantLotjuId\n" +
-        ")\n" +
-        "INSERT INTO TMS_SENSOR_CONSTANT_VALUE (LOTJU_ID, SENSOR_CONSTANT_LOTJU_ID, VALUE, VALID_FROM, VALID_TO)\n" +
-        "SELECT :sensorConstantValueLotjuId, sc.LOTJU_ID, :sensorConstantValue, :sensorConstantValidFrom, :sensorConstantValidTo\n" +
-        "FROM sc\n" +
-        "ON CONFLICT (LOTJU_ID)\n" +
-        "DO UPDATE set\n" +
-        "    sensor_constant_lotju_id = EXCLUDED.sensor_constant_lotju_id,\n" +
-        "    value = EXCLUDED.value,\n" +
-        "    valid_from = EXCLUDED.valid_from,\n" +
-        "    valid_to = EXCLUDED.valid_to,\n" +
-        "    obsolete_date = null\n" +
-        "WHERE TMS_SENSOR_CONSTANT_VALUE.sensor_constant_lotju_id <> EXCLUDED.sensor_constant_lotju_id\n" +
-        "   OR TMS_SENSOR_CONSTANT_VALUE.value <> EXCLUDED.value\n" +
-        "   OR TMS_SENSOR_CONSTANT_VALUE.valid_from <> EXCLUDED.valid_from\n" +
-        "   OR TMS_SENSOR_CONSTANT_VALUE.valid_to <> EXCLUDED.valid_to\n" +
-        "   OR TMS_SENSOR_CONSTANT_VALUE.obsolete_date is not null";
+    private final static String UPSERT_CONSTANT_VALUES_STATEMENT = """
+        WITH sc AS (
+          SELECT lotju_id
+          FROM TMS_SENSOR_CONSTANT
+          WHERE LOTJU_ID = :sensorConstantLotjuId
+        )
+        INSERT INTO TMS_SENSOR_CONSTANT_VALUE (LOTJU_ID, SENSOR_CONSTANT_LOTJU_ID, VALUE, VALID_FROM, VALID_TO)
+        SELECT :sensorConstantValueLotjuId, sc.LOTJU_ID, :sensorConstantValue, :sensorConstantValidFrom, :sensorConstantValidTo
+        FROM sc
+        ON CONFLICT (LOTJU_ID)
+        DO UPDATE set
+            sensor_constant_lotju_id = EXCLUDED.sensor_constant_lotju_id,
+            value = EXCLUDED.value,
+            valid_from = EXCLUDED.valid_from,
+            valid_to = EXCLUDED.valid_to,
+            obsolete_date = null
+        WHERE TMS_SENSOR_CONSTANT_VALUE.sensor_constant_lotju_id <> EXCLUDED.sensor_constant_lotju_id
+           OR TMS_SENSOR_CONSTANT_VALUE.value <> EXCLUDED.value
+           OR TMS_SENSOR_CONSTANT_VALUE.valid_from <> EXCLUDED.valid_from
+           OR TMS_SENSOR_CONSTANT_VALUE.valid_to <> EXCLUDED.valid_to
+           OR TMS_SENSOR_CONSTANT_VALUE.obsolete_date is not null""";
 
     @Autowired
     public TmsSensorConstantDao(final NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -81,11 +81,23 @@ public class TmsSensorConstantDao {
 
     public int obsoleteSensorConstantWithLotjuId(final Long lotjuId) {
         final Map<String, Long> paramMap = Collections.singletonMap("id", lotjuId);
-        return namedParameterJdbcTemplate.update(
-            "UPDATE TMS_SENSOR_CONSTANT\n" +
-                "SET OBSOLETE_DATE = now()\n" +
-                "WHERE lotju_id = (:id)\n" +
-                "  AND obsolete_date is null",
+        return namedParameterJdbcTemplate.update("""
+                UPDATE TMS_SENSOR_CONSTANT
+                SET OBSOLETE_DATE = now()
+                WHERE lotju_id = (:id)
+                AND obsolete_date is null""",
+            paramMap);
+    }
+
+    public int obsoleteSensorConstantsWithRoadStationLotjuId(final Long roadStationLotjuId) {
+        final Map<String, Long> paramMap = Collections.singletonMap("roadStationLotjuId", roadStationLotjuId);
+        return namedParameterJdbcTemplate.update("""
+                UPDATE TMS_SENSOR_CONSTANT
+                SET OBSOLETE_DATE = now()
+                WHERE tms_sensor_constant.road_station_id in (
+                   select rs.id   from road_station rs
+                   where rs.lotju_id = (:roadStationLotjuId))
+                AND obsolete_date is null""",
             paramMap);
     }
 
@@ -143,21 +155,21 @@ public class TmsSensorConstantDao {
 
     public int updateSensorSensorConstantValuesToObsoleteExcludingIds(final Collection<Long> excludeLotjuIds) {
         final Map<String, Collection<Long>> paramMap = Collections.singletonMap("ids", excludeLotjuIds);
-        return namedParameterJdbcTemplate.update(
-                "UPDATE TMS_SENSOR_CONSTANT_VALUE\n" +
-                "SET OBSOLETE_DATE = now()\n" +
-                "WHERE lotju_id not in (:ids)\n" +
-                "AND obsolete_date is null",
+        return namedParameterJdbcTemplate.update("""
+                UPDATE TMS_SENSOR_CONSTANT_VALUE
+                SET OBSOLETE_DATE = now()
+                WHERE lotju_id not in (:ids)
+                AND obsolete_date is null""",
             paramMap);
     }
 
     public int updateSensorConstantValueToObsoleteWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId) {
         final Map<String, Long> paramMap = Collections.singletonMap("sensorConstantValueLotjuId", sensorConstantValueLotjuId);
-        return namedParameterJdbcTemplate.update(
-            "UPDATE TMS_SENSOR_CONSTANT_VALUE\n" +
-                "SET OBSOLETE_DATE = now()\n" +
-                "WHERE lotju_id = :sensorConstantValueLotjuId\n" +
-                "AND obsolete_date is null",
+        return namedParameterJdbcTemplate.update("""
+                UPDATE TMS_SENSOR_CONSTANT_VALUE
+                SET OBSOLETE_DATE = now()
+                WHERE lotju_id = :sensorConstantValueLotjuId
+                AND obsolete_date is null""",
             paramMap);
     }
 }

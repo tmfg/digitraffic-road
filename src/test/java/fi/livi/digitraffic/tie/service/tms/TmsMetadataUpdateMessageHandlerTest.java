@@ -119,9 +119,11 @@ public class TmsMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateM
     }
 
     private void verifyTmsSensorConstantValueMessagesTriggersUpdate(final UpdateType updateType) {
-        when(tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(SENSOR_CONSTANT_VALUE_LOTJU_ID, updateType)).thenReturn(true);
+        when(tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(SENSOR_CONSTANT_VALUE_LOTJU_ID, STATION_LOTJU_ID1,
+				updateType)).thenReturn(true);
         tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(SENSOR_CONSTANT_VALUE_LOTJU_ID, EntityType.TMS_SENSOR_CONSTANT_VALUE, updateType, STATION_LOTJU_ID1));
-        verify(tmsStationSensorConstantUpdater, times(1)).updateTmsStationsSensorConstantValue(eq(SENSOR_CONSTANT_VALUE_LOTJU_ID), eq(updateType));
+        verify(tmsStationSensorConstantUpdater, times(1)).updateTmsStationsSensorConstantValue(eq(SENSOR_CONSTANT_VALUE_LOTJU_ID),
+            eq(STATION_LOTJU_ID1), eq(updateType));
     }
 
     private void verifyRoadAddressMessageTriggersUpdate(final UpdateType updateType) {

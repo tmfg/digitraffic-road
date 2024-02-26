@@ -75,7 +75,13 @@ public class TmsMetadataUpdateMessageHandler {
                         }
                         break;
                     case TMS_SENSOR_CONSTANT_VALUE:
-                        if (tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(message.getLotjuId(), updateType)) {
+                        if (message.getAsemaLotjuIds().size() != 1) {
+                            throw new IllegalArgumentException(
+                                String.format("method=updateTmsMetadataFromJms Error asemaLotjuIds size should be 1 " +
+                                              "but was %d with message %s", message.getAsemaLotjuIds().size(), ToStringHelper.toStringFull(message)));
+                        }
+                        final long asemaLotjuId = message.getAsemaLotjuIds().iterator().next();
+                        if (tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(message.getLotjuId(), asemaLotjuId, updateType)) {
                             updateCount++;
                         }
                         break;

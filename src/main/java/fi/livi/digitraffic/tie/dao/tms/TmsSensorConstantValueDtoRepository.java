@@ -11,9 +11,10 @@ import jakarta.persistence.QueryHint;
 
 public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSensorConstantValueDto, Long> {
 
+    String SELECT_LIST = "SELECT scv.LOTJU_ID, sc.lotju_id as constant_lotju_id, sc.NAME, scv.VALUE, scv.VALID_FROM, scv.VALID_TO, rs.natural_id as road_station_id, scv.modified\n";
+
     @Query(value =
-               "SELECT scv.LOTJU_ID, sc.NAME, scv.VALUE, scv.VALID_FROM, scv.VALID_TO, rs.natural_id as road_station_id,\n" +
-               "       scv.modified \n" +
+               SELECT_LIST +
                "FROM TMS_SENSOR_CONSTANT sc\n" +
                "INNER JOIN TMS_SENSOR_CONSTANT_VALUE scv on scv.SENSOR_CONSTANT_LOTJU_ID = sc.LOTJU_ID\n" +
                "INNER JOIN ROAD_STATION rs on rs.id = sc.ROAD_STATION_ID\n" +
@@ -27,8 +28,7 @@ public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSe
     List<TmsSensorConstantValueDto> findAllPublishableSensorConstantValues();
 
     @Query(value =
-               "SELECT scv.LOTJU_ID, sc.NAME, scv.VALUE, scv.VALID_FROM, scv.VALID_TO, rs.natural_id as road_station_id,\n" +
-               "       scv.modified \n" +
+               SELECT_LIST +
                "FROM TMS_SENSOR_CONSTANT sc\n" +
                "INNER JOIN TMS_SENSOR_CONSTANT_VALUE scv on scv.SENSOR_CONSTANT_LOTJU_ID = sc.LOTJU_ID\n" +
                "INNER JOIN ROAD_STATION rs on rs.id = sc.ROAD_STATION_ID\n" +
@@ -41,4 +41,16 @@ public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSe
            nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<TmsSensorConstantValueDto> findPublishableSensorConstantValueForStation(final long roadStationNaturalId);
+
+    @Query(value =
+               SELECT_LIST +
+               "FROM TMS_SENSOR_CONSTANT_VALUE scv\n" +
+               "INNER JOIN TMS_SENSOR_CONSTANT sc on sc.LOTJU_ID = scv.SENSOR_CONSTANT_LOTJU_ID\n" +
+               "INNER JOIN ROAD_STATION rs on rs.id = sc.ROAD_STATION_ID\n" +
+               "WHERE scv.lotju_id = :sensorConstantValueLotjuId\n" +
+               "  AND rs.lotju_id = :stationLotjuId\n" +
+               "ORDER BY sc.NAME, scv.valid_from",
+           nativeQuery = true)
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    TmsSensorConstantValueDto getStationSensorConstantValue(final long stationLotjuId, final long sensorConstantValueLotjuId);
 }

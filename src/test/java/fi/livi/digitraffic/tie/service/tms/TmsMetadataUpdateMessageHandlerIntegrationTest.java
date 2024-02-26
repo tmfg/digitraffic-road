@@ -307,11 +307,14 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
     @Test
     public void tmsSensorConstantValueInsertMessage() {
         // 1. There is station without sensor constant value
-        final long anturiVakio1LotjuId = requireNonNull(addTmsStationWithSensorConstant(ROAD_STATION_LOTJU_ID, SENSOR_CONSTANT_NAME_1));
+        addTmsStationWithSensorConstant(ROAD_STATION_LOTJU_ID, null);
+        final String sensorName = "Tien_suunta";
 
         // 2. Send insert message
-        final LamAnturiVakioArvoVO anturiVakioArvo = TestUtils.createLamAnturiVakioArvo(anturiVakio1LotjuId, 101, 1231, 95);
-        mockLotjuTmsStationMetadataClientEveryMonthForAnturiVakioArvo(anturiVakioArvo);
+        final LamAnturiVakioVO anturiVakio = TestUtils.createLamAnturiVakio(ROAD_STATION_LOTJU_ID, sensorName);
+        final LamAnturiVakioArvoVO anturiVakioArvo = TestUtils.createLamAnturiVakioArvo(anturiVakio.getId(), 101, 1231, 95);
+        mockLotjuTmsStationMetadataClientGetAllLamAnturiVakios(anturiVakio);
+        mockLotjuTmsStationMetadataClientEveryMonthForAnturiVakioArvo(ROAD_STATION_LOTJU_ID, anturiVakioArvo);
         tmsMetadataUpdateMessageHandler.updateMetadataFromJms(
             createMessage(TMS_SENSOR_CONSTANT_VALUE, UpdateType.INSERT, anturiVakioArvo.getId(), ROAD_STATION_LOTJU_ID));
         TestUtils.entityManagerFlushAndClear(entityManager);
@@ -323,7 +326,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         AssertHelper.assertCollectionSize(1, allValues);
         final TmsSensorConstantValueDto value = allValues.get(0);
         Assertions.assertEquals(95, value.getValue());
-        Assertions.assertEquals(SENSOR_CONSTANT_NAME_1, value.getName());
+        Assertions.assertEquals(sensorName, value.getName());
     }
 
     @Test
@@ -386,7 +389,16 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
 
     private void mockLotjuTmsStationMetadataClientEveryMonthForAnturiVakioArvo(final LamAnturiVakioArvoVO anturiVakioArvo) {
         IntStream.range(1,13).forEach(month ->
-            when(lotjuTmsStationMetadataClient.getAnturiVakioArvot(anturiVakioArvo.getId(), month, 1)).thenReturn(anturiVakioArvo));
+            when(lotjuTmsStationMetadataClient.getAnturiVakioArvot(anturiVakioArvo.getAnturiVakioId(), month, 1)).thenReturn(anturiVakioArvo));
+    }
+
+    private void mockLotjuTmsStationMetadataClientEveryMonthForAnturiVakioArvo(final long asemaLotjuId, final LamAnturiVakioArvoVO anturiVakioArvo) {
+        IntStream.range(1,13).forEach(month ->
+            when(lotjuTmsStationMetadataClient.getAsemanAnturiVakioArvos(asemaLotjuId, month, 1)).thenReturn(Collections.singletonList(anturiVakioArvo)));
+    }
+
+    private void mockLotjuTmsStationMetadataClientGetAllLamAnturiVakios(final LamAnturiVakioVO anturiVakioArvo) {
+        when(lotjuTmsStationMetadataClient.getAsemanAnturiVakios(anturiVakioArvo.getAsemaId())).thenReturn(Collections.singletonList(anturiVakioArvo));
     }
 
     private void addTmsStationWithOutSensorConstant(final long stationLotjuId) {

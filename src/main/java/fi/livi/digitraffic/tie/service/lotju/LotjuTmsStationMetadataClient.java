@@ -19,6 +19,8 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioArvot;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioArvotResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakio;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakioArvot;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakioArvotResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAsemanAnturiVakioResponse;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiAnturiVakioArvot;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeKaikkiAnturiVakioArvotResponse;
@@ -154,6 +156,22 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
             (JAXBElement<HaeKaikkiAnturiVakioArvotResponse>)
                 marshalSendAndReceive(objectFactory.createHaeKaikkiAnturiVakioArvot(haeKaikkiAnturiVakioArvotRequest));
         return haeKaikkiAnturiVakioArvotResponse.getValue().getLamanturivakiot();
+    }
+
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @Retryable(maxAttempts = 5)
+    @NotTransactionalServiceMethod
+    public List<LamAnturiVakioArvoVO> getAsemanAnturiVakioArvos(final long roadStationLotjuId, final int month, final int dayOfMonth) {
+        final HaeAsemanAnturiVakioArvot haeAsemanAnturiVakioArvotRequest =
+            new HaeAsemanAnturiVakioArvot();
+        haeAsemanAnturiVakioArvotRequest.setAsemaId(roadStationLotjuId);
+        haeAsemanAnturiVakioArvotRequest.setKuukausi(month);
+        haeAsemanAnturiVakioArvotRequest.setPaiva(dayOfMonth);
+
+        final JAXBElement<HaeAsemanAnturiVakioArvotResponse> haeAsemanAnturiVakioArvotResponse =
+            (JAXBElement<HaeAsemanAnturiVakioArvotResponse>)
+                marshalSendAndReceive(objectFactory.createHaeAsemanAnturiVakioArvot(haeAsemanAnturiVakioArvotRequest));
+        return haeAsemanAnturiVakioArvotResponse.getValue().getLamanturivakiot();
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
