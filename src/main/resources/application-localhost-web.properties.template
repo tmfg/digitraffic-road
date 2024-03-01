@@ -10,10 +10,10 @@ app.type=web
 spring.main.web-application-type=servlet
 
 # Http-server port
-server.port = 9010
+server.port = 9002
 
 # Domain for the app ie. https://digitraffic.fi
-dt.domain.url=http://localhost:9010
+dt.domain.url=http://localhost:9002
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=https://weathercam-test.digitraffic.fi/

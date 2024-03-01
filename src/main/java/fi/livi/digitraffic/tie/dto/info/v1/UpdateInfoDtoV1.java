@@ -63,7 +63,7 @@ public class UpdateInfoDtoV1 implements DataUpdatedSupportV1 {
     }
 
     public static UpdateInfoDtoV1 staticData(final String api, final Instant updatedTime) {
-        return new UpdateInfoDtoV1(api, updatedTime, null, null, null);
+        return new UpdateInfoDtoV1(api, updatedTime, null, null, "P1D");
     }
 
     @Override
