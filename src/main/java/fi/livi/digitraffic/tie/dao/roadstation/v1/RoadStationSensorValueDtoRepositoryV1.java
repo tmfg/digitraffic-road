@@ -44,12 +44,6 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
     String SQL_WHERE_PUBLISHABLE = """
         where rs.publishable = true
           and s.publishable = true
-          and exists (
-             select null
-             from allowed_road_station_sensor allowed
-             where allowed.natural_id = s.natural_id
-               and allowed.road_station_type = s.road_station_type
-          )
         """;
 
     @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))

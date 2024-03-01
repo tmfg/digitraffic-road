@@ -15,7 +15,6 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <!-- check hibernate-core dependency when updating! -->
         <version>3.1.8</version>
         <relativePath/>
     </parent>
@@ -24,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <maven.compiler.release>17</maven.compiler.release>
-        <com.google.protobuf.version>3.25.2</com.google.protobuf.version>
+        <com.google.protobuf.version>3.25.3</com.google.protobuf.version>
         <org.apache.cxf.version>4.0.3</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
         <spring.cloud.version>4.0.5</spring.cloud.version>
@@ -46,6 +45,7 @@
                         <artifactId>dependency-check-maven</artifactId>
                         <version>9.0.9</version>
                         <configuration>
+                            <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                             <failBuildOnCVSS>7</failBuildOnCVSS>
                             <suppressionFile>owasp-suppressions.xml</suppressionFile>
                             <formats>html,xml</formats>
@@ -72,13 +72,10 @@
     </repositories>
 
     <dependencies>
-        <!-- remove this when spring boot is updated to use this! -->
-        <dependency><groupId>org.hibernate.orm</groupId><artifactId>hibernate-core</artifactId><version>6.3.1.Final</version></dependency>
-
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
-            <version>${spring.cloud.version}</version>
+            <version>4.0.5</version>
         </dependency>
 
         <dependency>
@@ -96,7 +93,7 @@
         <dependency>
             <groupId>com.amazonaws.secretsmanager</groupId>
             <artifactId>aws-secretsmanager-jdbc</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.2</version>
         </dependency>
 
         <dependency>
@@ -334,14 +331,14 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <version>6.4.3.Final</version>
+            <version>6.4.4.Final</version>
         </dependency>
 
         <!-- json column type -->
         <dependency>
             <groupId>io.hypersistence</groupId>
             <artifactId>hypersistence-utils-hibernate-63</artifactId>
-            <version>3.7.1</version>
+            <version>3.7.3</version>
         </dependency>
 
         <!-- Library to transform GeoJSON <-> jts Geometry.
@@ -367,7 +364,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.651</version>
+            <version>1.12.661</version>
         </dependency>
 
         <dependency>

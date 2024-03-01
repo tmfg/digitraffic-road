@@ -2,10 +2,6 @@ package fi.livi.digitraffic.tie.dto.v1.tms;
 
 import java.time.Instant;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
-
 import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 
 @Schema(name = "Sensor constant value")
 @JsonPropertyOrder({ "name", "value", "validFrom", "validTo"})
@@ -23,6 +22,9 @@ public class TmsSensorConstantValueDto {
     @JsonIgnore
     @Id
     private Long lotjuId;
+
+    @JsonIgnore
+    private Long constantLotjuId;
 
     @JsonIgnore
     private Long roadStationId;
@@ -104,5 +106,9 @@ public class TmsSensorConstantValueDto {
 
     private static String formatValidity(final Integer value) {
         return String.format("%02d-%02d", value / 100, value % 100);
+    }
+
+    public Long getConstantLotjuId() {
+        return constantLotjuId;
     }
 }
