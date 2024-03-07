@@ -193,17 +193,17 @@ public class DataStatusService {
     }
 
     private List<UpdateInfoDtoV1> getVariableSignInfos() {
-        final DataSourceInfoDtoV1 singsInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.VARIABLE_SIGN_DATA);
+        final DataSourceInfoDtoV1 signsInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.VARIABLE_SIGN_DATA);
 
         final Instant jsonDataUpdated = DateHelper.getGreatest(deviceRepositoryV1.getLastUpdated(), deviceDataRepositoryV1.getLastUpdated());
         final Instant datex2DataUpdated = deviceDataRepositoryV1.getDatex2LastUpdated();
         final Instant codeDescriptionsUpdated = LocalDate.of(2019, 10, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 
         return Arrays.asList(
-            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS, jsonDataUpdated, singsInfo.getUpdateInterval(),
-                                singsInfo.getRecommendedFetchInterval()),
+            new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS, jsonDataUpdated, signsInfo.getUpdateInterval(),
+                signsInfo.getRecommendedFetchInterval()),
             new UpdateInfoDtoV1(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_DATEX2, datex2DataUpdated,
-                                singsInfo.getUpdateInterval(), singsInfo.getRecommendedFetchInterval()),
+                signsInfo.getUpdateInterval(), signsInfo.getRecommendedFetchInterval()),
             UpdateInfoDtoV1.staticData(ApiConstants.API_VS_V1 + ApiConstants.API_SIGNS_CODE_DESCRIPTIONS, codeDescriptionsUpdated)
         );
     }

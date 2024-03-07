@@ -4,17 +4,20 @@ import java.time.Instant;
 
 import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "Info about API's data updates")
+@Schema(description = "Info about API's data updates", requiredMode = Schema.RequiredMode.REQUIRED)
 public class UpdateInfoDtoV1 implements DataUpdatedSupportV1 {
 
-    @Schema(description = "Url of the API", required = true)
+    @NotNull
+    @Schema(description = "Url of the API")
     final public String api;
 
     @Schema(description = "More specific info about API. Ie. domain info.")
     final public String subtype;
 
-    @Schema(description = "Latest update of data", required = false) // Override super required=true
+    @NotNull
+    @Schema(description = "Latest update of data")
     private final Instant dataUpdatedTime;
 
     @Schema(description = "Latest check for data updates.  <br>\n" +
@@ -28,6 +31,7 @@ public class UpdateInfoDtoV1 implements DataUpdatedSupportV1 {
             example = "[PT5M, P1H]")
     public final String dataUpdateInterval;
 
+    @NotNull
     @Schema(description = "Recommended fetch interval for clients in ISO-8601 duration format `PnDTnHnMn.nS`",
             type = "string",
             example = "[PT5M, P1H]")
@@ -63,7 +67,7 @@ public class UpdateInfoDtoV1 implements DataUpdatedSupportV1 {
     }
 
     public static UpdateInfoDtoV1 staticData(final String api, final Instant updatedTime) {
-        return new UpdateInfoDtoV1(api, updatedTime, null, null, null);
+        return new UpdateInfoDtoV1(api, updatedTime, null, null, "P1D");
     }
 
     @Override
