@@ -7,12 +7,16 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.API_VS_V1;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.VARIABLE_SIGN_TAG_V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,10 +73,14 @@ public class VariableSignControllerV1 {
     @RequestMapping(method = RequestMethod.GET, path = API_VS_V1 + API_SIGNS_HISTORY, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public ResponseEntityWithLastModifiedHeader<List<TrafficSignHistoryV1>> variableSignHistory(
-        @Parameter(description = "List history data of given sign")
+        @Parameter(description = "Id of sign.")
         @RequestParam(value = "deviceId")
-        final String deviceId) {
-        final List<TrafficSignHistoryV1> history = variableSignDataServiceV1.listVariableSignHistory(deviceId);
+        final String deviceId,
+        @Parameter(description = "When a date is given, return only history for that day.  This is date of UTC-0 time.")
+        @RequestParam(value = "date", required = false)
+        @DateTimeFormat(iso = DATE)
+        final Date date) {
+        final List<TrafficSignHistoryV1> history = variableSignDataServiceV1.listVariableSignHistory(date, deviceId);
         final Instant lastModified = history.stream().map(TrafficSignHistoryV1::getCreated).max(Comparator.naturalOrder()).orElse(Instant.EPOCH);
         return ResponseEntityWithLastModifiedHeader.of(history, lastModified, API_VS_V1 + API_SIGNS_HISTORY + "?deviceId=" + deviceId);
     }
