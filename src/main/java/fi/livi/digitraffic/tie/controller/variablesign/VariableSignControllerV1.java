@@ -10,7 +10,6 @@ import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -77,10 +76,10 @@ public class VariableSignControllerV1 {
         @RequestParam(value = "deviceId")
         final String deviceId,
         @Parameter(description = "When a date is given, return only history for that day.  This is date of UTC-0 time.")
-        @RequestParam(value = "date", required = false)
+        @RequestParam(value = "effectiveDate", required = false)
         @DateTimeFormat(iso = DATE)
-        final Date date) {
-        final List<TrafficSignHistoryV1> history = variableSignDataServiceV1.listVariableSignHistory(date, deviceId);
+        final Date effectiveDate) {
+        final List<TrafficSignHistoryV1> history = variableSignDataServiceV1.listVariableSignHistory(deviceId, effectiveDate);
         final Instant lastModified = history.stream().map(TrafficSignHistoryV1::getCreated).max(Comparator.naturalOrder()).orElse(Instant.EPOCH);
         return ResponseEntityWithLastModifiedHeader.of(history, lastModified, API_VS_V1 + API_SIGNS_HISTORY + "?deviceId=" + deviceId);
     }

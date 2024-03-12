@@ -86,7 +86,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     public void historyExistsWrongDate() throws Exception {
         insertTestData();
 
-        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&date=" + now.toLocalDate().plusDays(100).format(DateTimeFormatter.ISO_DATE))
+        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + now.toLocalDate().plusDays(1).format(DateTimeFormatter.ISO_DATE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.empty()));
     }
@@ -95,7 +95,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     public void historyExistsCorrectDate() throws Exception {
         insertTestData();
 
-        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&date=" + now.toLocalDate().format(DateTimeFormatter.ISO_DATE))
+        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + now.toLocalDate().format(DateTimeFormatter.ISO_DATE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }

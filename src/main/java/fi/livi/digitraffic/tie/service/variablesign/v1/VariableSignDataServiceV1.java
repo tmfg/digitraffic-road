@@ -91,11 +91,11 @@ public class VariableSignDataServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public List<TrafficSignHistoryV1> listVariableSignHistory(final Date date, final String deviceId) {
-        if(date != null) {
-            final Instant start = date.toInstant();
-            final Instant end = date.toInstant().plus(Period.ofDays(1));
-            return deviceDataRepositoryV1.getDeviceDataByEffectDateBetweenAndDeviceIdOrderByEffectDateDesc(start, end, deviceId);
+    public List<TrafficSignHistoryV1> listVariableSignHistory(final String deviceId, final Date effectiveDate) {
+        if(effectiveDate != null) {
+            final Instant start = effectiveDate.toInstant();
+            final Instant end = effectiveDate.toInstant().plus(Period.ofDays(1));
+            return deviceDataRepositoryV1.getDeviceDataByDeviceIdAndEffectDateBetweenOrderByEffectDateDesc(deviceId, start, end);
         }
 
         return deviceDataRepositoryV1.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
