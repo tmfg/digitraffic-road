@@ -217,7 +217,7 @@ public class DataStatusService {
             dataUpdatedRepository.getDataSourceInfo(DataSource.COUNTING_SITE_DATA);
 
         final Instant staticMetadataUpdated = LocalDate.of(2022, 3, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
-        final Instant countersUpdated = dataUpdatedRepository.findUpdatedTime(DataType.COUNTING_SITES_METADATA);
+        final Instant countersUpdated = dataUpdatedRepository.getCountingSiteCounterLastUpdated();
         final Instant countersChecked = dataUpdatedRepository.findUpdatedTime(DataType.COUNTING_SITES_METADATA_CHECK);
         final Instant domainsUpdated = dataUpdatedRepository.getCountingSiteDomainLastUpdated();
         final Instant dataUpdated = dataUpdatedRepository.getCountingSiteDataLastUpdated();

@@ -1,0 +1,3 @@
+DELETE
+FROM data_updated
+WHERE data_type = 'COUNTING_SITES_METADATA';
