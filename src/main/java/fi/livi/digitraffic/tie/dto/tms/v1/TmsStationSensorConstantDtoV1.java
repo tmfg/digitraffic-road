@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.dto.roadstation.v1.StationDataV1;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Sensor constant values of TMS Station")
+@Schema(description = "Sensor constant of TMS Station")
 @JsonPropertyOrder({ "id", "dataUpdatedTime" })
 public class TmsStationSensorConstantDtoV1 extends StationDataV1<Long> {
 

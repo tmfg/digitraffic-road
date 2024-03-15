@@ -13,11 +13,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(name = "TmsSensorConstantValueDto", description = "Sensor constant value")
+@Schema(name = "TmsSensorConstantValueDtoV1", description = "Sensor constant value")
 @JsonPropertyOrder({ "name", "value", "validFrom", "validTo"})
 @Entity
 @Immutable
-public class TmsSensorConstantValueDto {
+public class TmsSensorConstantValueDto { // TODO rename to TmsSensorConstantValueDtoV1
 
     @JsonIgnore
     @Id
