@@ -1,12 +1,8 @@
 package fi.livi.digitraffic.tie.service.variablesign.v1;
 
-import java.time.Instant;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.*;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -95,7 +91,13 @@ public class VariableSignDataServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public List<TrafficSignHistoryV1> listVariableSignHistory(final String deviceId) {
+    public List<TrafficSignHistoryV1> listVariableSignHistory(final String deviceId, final Date effectiveDate) {
+        if(effectiveDate != null) {
+            final Instant start = effectiveDate.toInstant();
+            final Instant end = effectiveDate.toInstant().plus(Period.ofDays(1));
+            return deviceDataRepositoryV1.getDeviceDataByDeviceIdAndEffectDateBetweenOrderByEffectDateDesc(deviceId, start, end);
+        }
+
         return deviceDataRepositoryV1.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
     }
 

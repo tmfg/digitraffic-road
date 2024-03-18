@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.dao.variablesign.v1;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -32,6 +33,9 @@ public interface DeviceDataRepositoryV1 extends JpaRepository<DeviceData, Long> 
         nativeQuery = true)
     List<Long> findLatestData(final String deviceId);
 
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
+    @EntityGraph(attributePaths = "rows")
+    List<TrafficSignHistoryV1> getDeviceDataByDeviceIdAndEffectDateBetweenOrderByEffectDateDesc(final String deviceId, final Instant start, final Instant end);
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @EntityGraph(attributePaths = "rows")
     List<TrafficSignHistoryV1> getDeviceDataByDeviceIdOrderByEffectDateDesc(final String deviceId);

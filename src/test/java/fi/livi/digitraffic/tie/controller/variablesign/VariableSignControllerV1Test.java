@@ -8,10 +8,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.controller.ApiConstants;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class VariableSignControllerV1Test extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
@@ -20,6 +24,8 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         return response;
     }
 
+    private static final ZonedDateTime now = ZonedDateTime.now();
+
     private void insertTestData() {
         entityManager.createNativeQuery(
             "insert into device(id,type,road_address,etrs_tm35fin_x,etrs_tm35fin_y,direction,carriageway) " +
@@ -27,7 +33,9 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
 
         entityManager.createNativeQuery(
             "insert into device_data(device_id,display_value,additional_information,effect_date,cause,reliability) " +
-                "values ('ID1','80',null,current_date,null,'NORMAALI');").executeUpdate();
+                "values ('ID1','80',null,:time,null,'NORMAALI');")
+            .setParameter("time", now)
+            .executeUpdate();
 
         entityManager.createNativeQuery(
             "insert into device_data_row(device_data_id, screen, row_number, text) " +
@@ -73,6 +81,25 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }
+
+    @Test
+    public void historyExistsWrongDate() throws Exception {
+        insertTestData();
+
+        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + now.toLocalDate().plusDays(1).format(DateTimeFormatter.ISO_DATE))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", Matchers.empty()));
+    }
+
+    @Test
+    public void historyExistsCorrectDate() throws Exception {
+        insertTestData();
+
+        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + now.toLocalDate().format(DateTimeFormatter.ISO_DATE))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", Matchers.hasSize(1)));
+    }
+
 
     @Test
     public void codeDescriptionsV3() throws Exception {
