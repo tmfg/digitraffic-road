@@ -85,7 +85,7 @@ public class TmsDataWebServiceV1 {
 
     @Transactional(readOnly = true)
     public TmsStationsSensorConstantsDataDtoV1 findPublishableSensorConstants(final boolean lastUpdated) {
-        final Instant updated = tmsStationSensorConstantServiceV1.getLatestMeasurementTime();
+        final Instant updated = tmsStationSensorConstantServiceV1.getLatestModified();
 
         if (lastUpdated) {
             return new TmsStationsSensorConstantsDataDtoV1(updated, Collections.emptyList());

@@ -3,7 +3,7 @@
 ## Development
 
 ### Preconditions
-1. Java 11 JDK
+1. Java 17 JDK
 2. Maven
 3. Git client
 
@@ -38,7 +38,7 @@ See [dbroad/README.md](dbroad/README.md).
 
 ### Running the application
 
-    $ mvn spring-boot:run -Dspring-boot.run.profiles=localhost # localhost is default, you may leave it out :)
+    $ mvn spring-boot:run -Dspring.profiles.active=localhost # localhost is default, you may leave it out :)
 
 Or build the JAR file with:
 

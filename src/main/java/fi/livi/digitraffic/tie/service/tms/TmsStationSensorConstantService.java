@@ -16,8 +16,6 @@ import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoRepository;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
-import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @Service
@@ -99,10 +97,8 @@ public class TmsStationSensorConstantService {
     }
 
     @Transactional(readOnly = true)
-    public Instant getLatestMeasurementTime() {
-        final Instant dataUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
-        final Instant metadataUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_METADATA);
-        return DateHelper.getGreatest(dataUpdated, metadataUpdated);
+    public Instant getLatestModified() {
+        return tmsSensorConstantValueDtoRepository.getTmsSensorConstantsLastUpdated();
     }
 
     @Transactional(readOnly = true)
