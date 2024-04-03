@@ -55,7 +55,7 @@ public class LotjuTmsStationMetadataClient extends AbstractLotjuMetadataClient {
         super(lamMetadataJaxb2Marshaller, lotjuMetadataProperties, lotjuMetadataProperties.getPath().tms);
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000) // Normally takes around 10s
     @Retryable(maxAttempts = 5)
     @NotTransactionalServiceMethod
     public List<LamAsemaVO> getLamAsemas() {

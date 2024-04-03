@@ -119,7 +119,7 @@ public class WeatherStationUpdater  {
         return updateWeatherStationsMetadata(tiesaaAsemas);
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 30000) // Normally takes around 20s to fetch data and few seconds to update
     public int updateWeatherStationsStatuses() {
         final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataClientWrapper.getTiesaaAsemas();
 

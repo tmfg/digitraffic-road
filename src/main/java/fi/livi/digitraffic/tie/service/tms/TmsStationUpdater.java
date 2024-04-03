@@ -72,7 +72,7 @@ public class TmsStationUpdater {
         return false;
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000) // Fetching data takes normally around 10s and updating few seconds
     public int updateTmsStationsStatuses() {
         final List<LamAsemaVO> allLams = lotjuTmsStationMetadataClientWrapper.getLamAsemas();
 

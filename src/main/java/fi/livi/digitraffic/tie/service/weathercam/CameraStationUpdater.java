@@ -90,7 +90,7 @@ public class CameraStationUpdater {
         return updatedCameras;
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 50000, maxErrorExcecutionTime = 80000) // FIXME: DPO-2248 This is taking too long
+    @PerformanceMonitor(maxWarnExcecutionTime = 70000, maxErrorExcecutionTime = 100000) // FIXME: DPO-2248 This is taking too long
     public int updateCameraStationsStatuses() {
         log.info("method=updateCameraStationsStatuses start");
         final List<KameraVO> kameras = lotjuCameraStationMetadataClientWrapper.getKameras();

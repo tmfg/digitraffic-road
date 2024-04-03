@@ -45,6 +45,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         this.lotjuTmsStationMetadataClient = lotjuTmsStationMetadataClient;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000) // Normally takes around 10s
     public List<LamAsemaVO> getLamAsemas() {
         return lotjuTmsStationMetadataClient.getLamAsemas();
     }

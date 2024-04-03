@@ -37,7 +37,7 @@ public class LotjuWeatherStationMetadataClientWrapper {
         this.lotjuWeatherStationClient = lotjuWeatherStationClient;
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 30000) // Normally takes around 20s
     public List<TiesaaAsemaVO> getTiesaaAsemas() {
         return lotjuWeatherStationClient.getTiesaaAsemas();
     }

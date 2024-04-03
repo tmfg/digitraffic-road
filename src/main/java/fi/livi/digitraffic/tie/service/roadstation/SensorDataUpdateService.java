@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueDao;
@@ -268,6 +269,7 @@ public class SensorDataUpdateService {
         dataStatusService.updateDataUpdated(DataType.getSensorValueMeasuredDataType(roadStationType), maxMeasuredTime.toInstant());
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 10000) // Normally takes around 7s
     @Transactional
     public int cleanWeatherHistoryData(final ZonedDateTime before) {
         final StopWatch stopWatch = StopWatch.createStarted();
