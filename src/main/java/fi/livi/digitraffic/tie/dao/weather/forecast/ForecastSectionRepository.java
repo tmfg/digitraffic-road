@@ -148,4 +148,8 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         return getLastModified(version, null,null, id);
     }
 
+    default Instant getLastModified(final int version) {
+        return getLastModified(version, null,null, null);
+    }
+
 }

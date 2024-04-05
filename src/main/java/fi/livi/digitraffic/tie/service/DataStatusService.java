@@ -39,6 +39,7 @@ import fi.livi.digitraffic.tie.dao.trafficmessage.location.LocationVersionReposi
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceDataRepositoryV1;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceRepositoryV1;
 import fi.livi.digitraffic.tie.dao.weather.WeatherStationRepository;
+import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherRepository;
 import fi.livi.digitraffic.tie.dto.info.v1.DataSourceInfoDtoV1;
 import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfoDtoV1;
@@ -63,6 +64,7 @@ public class DataStatusService {
     private final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository;
     private final WeatherStationRepository weatherStationRepository;
     private final SensorValueRepository sensorValueRepository;
+    private final ForecastSectionRepository forecastSectionRepository;
     private final ForecastSectionWeatherRepository forecastSectionWeatherRepository;
     private final DeviceRepositoryV1 deviceRepositoryV1;
     private final DeviceDataRepositoryV1 deviceDataRepositoryV1;
@@ -80,7 +82,8 @@ public class DataStatusService {
                              final DeviceRepositoryV1 deviceRepositoryV1,
                              final DeviceDataRepositoryV1 deviceDataRepositoryV1,
                              final LocationVersionRepository locationVersionRepository,
-                             final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository) {
+                             final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository,
+                             final ForecastSectionRepository forecastSectionRepository) {
         this.dataUpdatedRepository = dataUpdatedRepository;
         this.maintenanceTrackingRepository = maintenanceTrackingRepository;
         this.datex2Repository = datex2Repository;
@@ -92,6 +95,7 @@ public class DataStatusService {
         this.deviceDataRepositoryV1 = deviceDataRepositoryV1;
         this.locationVersionRepository = locationVersionRepository;
         this.tmsSensorConstantValueDtoRepository = tmsSensorConstantValueDtoRepository;
+        this.forecastSectionRepository = forecastSectionRepository;
     }
 
     @Transactional
@@ -317,7 +321,7 @@ public class DataStatusService {
 
         final UpdateInfoDtoV1 forecastSectionsInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS,
-                findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA),
+                forecastSectionRepository.getLastModified(ForecastSectionApiVersion.V2.getVersion()),
                 findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA_CHECK),
                 forecastSectionInfo.getUpdateInterval(), forecastSectionInfo.getRecommendedFetchInterval());
 
