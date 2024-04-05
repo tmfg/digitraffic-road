@@ -77,6 +77,8 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     public void updateForecastSectionV2MetadataSucceeds() {
         forecastSectionTestHelper.serverExpectMetadata(server, 2);
 
+        forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
+
         final ForecastSectionFeatureCollectionV1 featureCollection =
             v2ForecastSectionMetadataService.findForecastSections(false,false, null,
                                                                   X_MIN_DOUBLE, Y_MIN_DOUBLE,
