@@ -50,7 +50,7 @@ public class TrafficMessageDataServiceV1 {
     public TrafficAnnouncementFeatureCollection findActiveJson(final int activeInPastHours,
                                                                final boolean includeAreaGeometry, final SituationType... situationTypes) {
         final List<Datex2> allActive = datex2Repository.findAllActiveBySituationTypeWithJson(activeInPastHours, typesAsStrings(situationTypes));
-        final Instant lastModified = getLastModified(allActive, situationTypes);
+        final Instant lastModified = getLastModifiedForSituationTypes(situationTypes);
         return convertToFeatureCollection(allActive, includeAreaGeometry, lastModified);
     }
 
@@ -59,7 +59,7 @@ public class TrafficMessageDataServiceV1 {
     public Pair<D2LogicalModel, Instant> findActive(final int activeInPastHours,
                                                     final SituationType...situationTypes) {
         final List<Datex2> allActive = datex2Repository.findAllActiveBySituationType(activeInPastHours, typesAsStrings(situationTypes));
-        final Instant lastModified = getLastModified(allActive, situationTypes);
+        final Instant lastModified = getLastModifiedForSituationTypes(situationTypes);
         return Pair.of(convertToD2LogicalModel(allActive), lastModified);
     }
 
@@ -72,7 +72,7 @@ public class TrafficMessageDataServiceV1 {
         }
 
         final SituationType[] situationTypes = getSituationTypes(datex2s);
-        final Instant lastModified = getLastModified(datex2s, situationTypes);
+        final Instant lastModified = getLastModifiedForSelection(datex2s, situationTypes);
 
         if (latest) {
             return convertToFeatureCollection(datex2s.subList(0,1), includeAreaGeometry, lastModified);
@@ -89,7 +89,7 @@ public class TrafficMessageDataServiceV1 {
         }
 
         final SituationType[] situationTypes = getSituationTypes(datex2s);
-        final Instant lastModified = getLastModified(datex2s, situationTypes);
+        final Instant lastModified = getLastModifiedForSelection(datex2s, situationTypes);
 
         if (latest) {
             return Pair.of(convertToD2LogicalModel(datex2s.subList(0,1)), lastModified);
@@ -101,11 +101,15 @@ public class TrafficMessageDataServiceV1 {
         return datex2s.stream().map(s -> SituationType.fromValue(s.getSituationType().value())).distinct().toArray(SituationType[]::new);
     }
 
-    private Instant getLastModified(final List<Datex2> datex2s, final SituationType[] situationTypes) {
+    private Instant getLastModifiedForSituationTypes(final SituationType[] situationTypes) {
+        return datex2Repository.getLastModified(typesAsStrings(situationTypes));
+    }
+
+    private Instant getLastModifiedForSelection(final List<Datex2> datex2s, final SituationType[] situationTypes) {
         return datex2s.stream()
             .map(Datex2::getModified)
             .max(Comparator.naturalOrder())
-            .orElse(datex2Repository.getLastModified(typesAsStrings(situationTypes)));
+            .orElse(getLastModifiedForSituationTypes(situationTypes));
     }
 
     /**
