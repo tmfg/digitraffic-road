@@ -105,14 +105,9 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
         forecastSectionTestHelper.serverExpectMetadata(server, 2);
         forecastSectionTestHelper.serverExpectData(server, 2);
 
-        final Instant metadataUpdated = forecastSectionMetadataUpdaterV2.updateForecastSectionsV2Metadata();
-
         final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V2);
-
-        final Instant metadataLastUpdated = dataStatusService.findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA);
         final Instant dataLastUpdated = dataStatusService.findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_WEATHER_DATA);
 
-        assertEquals(metadataUpdated, metadataLastUpdated);
         assertEquals(dataUpdated, dataLastUpdated);
 
         final ForecastSectionsWeatherDtoV1 data =
