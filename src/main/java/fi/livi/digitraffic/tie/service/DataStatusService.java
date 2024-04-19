@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.common.dto.info.v1.UpdateInfoDtoV1;
+import fi.livi.digitraffic.common.dto.info.v1.UpdateInfosDtoV1;
 import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1;
 import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
@@ -42,8 +44,6 @@ import fi.livi.digitraffic.tie.dao.weather.WeatherStationRepository;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherRepository;
 import fi.livi.digitraffic.tie.dto.info.v1.DataSourceInfoDtoV1;
-import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfoDtoV1;
-import fi.livi.digitraffic.tie.dto.info.v1.UpdateInfosDtoV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;

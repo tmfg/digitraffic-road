@@ -3,10 +3,9 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v1.location;
 import java.time.Instant;
 import java.util.List;
 
-import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
+import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.PropertiesV1;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Location GeoJSON properties object")
