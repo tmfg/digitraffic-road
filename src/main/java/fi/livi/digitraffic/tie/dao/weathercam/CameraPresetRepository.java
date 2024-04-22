@@ -66,6 +66,7 @@ public interface CameraPresetRepository extends JpaRepository<CameraPreset, Long
             SELECT cp.preset_id as PresetId
                  , cp.pic_last_modified as PictureLastModified
                  , cp.camera_id as CameraId
+                 , cp.modified as Modified
             FROM camera_preset cp, road_station rs
             WHERE cp.road_station_id = rs.id
               AND cp.publishable = true

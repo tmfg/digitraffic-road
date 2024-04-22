@@ -8,4 +8,6 @@ public interface WeatherStationPreset {
     Instant getPictureLastModified();
 
     String getCameraId();
+
+    Instant getModified();
 }
