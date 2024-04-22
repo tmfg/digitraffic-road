@@ -8,7 +8,7 @@ import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
+import fi.livi.digitraffic.common.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.FeatureCollection;
 import io.swagger.v3.oas.annotations.media.Schema;

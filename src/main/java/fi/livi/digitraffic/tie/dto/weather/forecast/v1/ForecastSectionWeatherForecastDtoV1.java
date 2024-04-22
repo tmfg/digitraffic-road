@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
+import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
 import fi.livi.digitraffic.tie.model.weather.forecast.FrictionCondition;
 import fi.livi.digitraffic.tie.model.weather.forecast.OverallRoadCondition;
 import fi.livi.digitraffic.tie.model.weather.forecast.PrecipitationCondition;

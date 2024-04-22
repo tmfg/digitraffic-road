@@ -1,0 +1,3 @@
+DELETE
+FROM data_updated
+WHERE data_type = 'TMS_STATION_SENSOR_CONSTANT_METADATA';

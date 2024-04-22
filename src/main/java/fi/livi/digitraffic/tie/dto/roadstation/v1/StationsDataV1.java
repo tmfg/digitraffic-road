@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
+import fi.livi.digitraffic.common.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationsDataV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 

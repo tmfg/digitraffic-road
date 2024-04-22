@@ -2,10 +2,9 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v1.location;
 
 import java.time.Instant;
 
-import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
+import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
 import fi.livi.digitraffic.tie.helper.LocationUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Location Version Object")

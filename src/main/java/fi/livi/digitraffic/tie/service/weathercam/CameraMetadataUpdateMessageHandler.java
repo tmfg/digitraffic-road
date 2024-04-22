@@ -80,6 +80,7 @@ public class CameraMetadataUpdateMessageHandler {
 
         if (updateCount > 0) {
             dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA);
+            dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK);
         }
         return updateCount;
     }

@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.dto.geojson.v1;
 
 import java.time.Instant;
 
-import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
+import fi.livi.digitraffic.common.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 

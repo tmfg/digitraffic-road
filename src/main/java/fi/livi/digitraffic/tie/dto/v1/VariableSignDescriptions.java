@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.dto.v1;
 import java.time.Instant;
 import java.util.List;
 
-import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
+import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
 
 public class VariableSignDescriptions implements DataUpdatedSupportV1 {
     public final List<CodeDescription> signTypes;

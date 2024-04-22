@@ -1,15 +1,10 @@
 package fi.livi.digitraffic.tie.dto.maintenance.v1;
 
-import java.time.Instant;
-
-import jakarta.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
-import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
+import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 @JsonPropertyOrder({ "name", "source" })
 @Schema(description = "Maintenance tracking domain")

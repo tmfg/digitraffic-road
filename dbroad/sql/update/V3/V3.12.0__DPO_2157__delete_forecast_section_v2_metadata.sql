@@ -1,0 +1,3 @@
+DELETE
+FROM data_updated
+WHERE data_type = 'FORECAST_SECTION_V2_METADATA';

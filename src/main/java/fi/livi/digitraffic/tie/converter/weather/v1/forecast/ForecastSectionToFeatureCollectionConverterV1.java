@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.common.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionDto;
-import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureSimpleV1;
