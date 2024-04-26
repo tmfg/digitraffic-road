@@ -70,6 +70,8 @@ public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
 
     @Column(name="PIC_LAST_MODIFIED")
     private ZonedDateTime pictureLastModified;
+    @Column(name="PIC_LAST_MODIFIED_DB")
+    private ZonedDateTime pictureLastModifiedDb;
 
     private LocalDate obsoleteDate;
 
@@ -285,6 +287,14 @@ public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
 
     public void setPictureLastModified(final ZonedDateTime pictureLastModified) {
         this.pictureLastModified = pictureLastModified;
+    }
+
+    public ZonedDateTime getPictureLastModifiedDb() {
+        return pictureLastModifiedDb;
+    }
+
+    public void setPictureLastModifiedDb(final ZonedDateTime pictureLastModifiedDb) {
+        this.pictureLastModifiedDb = pictureLastModifiedDb;
     }
 
     public LocalDate getObsoleteDate() {

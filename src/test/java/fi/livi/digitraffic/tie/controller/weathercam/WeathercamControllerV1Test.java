@@ -48,7 +48,9 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
     private DataStatusService dataStatusService;
 
     private final Instant imageUpdateTime1 = Instant.now().with(ChronoField.MILLI_OF_SECOND, 0);
+    private final Instant imageUpdateTimeDb1 = imageUpdateTime1.plusSeconds(15);
     private final Instant imageUpdateTime2 = imageUpdateTime1.minusSeconds(1);
+    private final Instant imageUpdateTimeDb2 = imageUpdateTime2.plusSeconds(10);
     private final Instant metadataCheckedTime = imageUpdateTime1.minusSeconds(60);
     private final Instant metadataUpdateTime = imageUpdateTime1.minusSeconds(120);
 
@@ -68,7 +70,9 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
         p1.setPresetId(p1.getCameraId() + "01");
         p1.setDirection("1");
         p1.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(imageUpdateTime1));
+        p1.setPictureLastModifiedDb(DateHelper.toZonedDateTimeAtUtc(imageUpdateTimeDb1));
         p2.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(imageUpdateTime2));
+        p2.setPictureLastModifiedDb(DateHelper.toZonedDateTimeAtUtc(imageUpdateTimeDb2));
 
         preset1 = cameraPresetService.save(p1);
         preset2 = cameraPresetService.save(p2);
@@ -226,7 +230,7 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
 
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, imageUpdateTime1.toEpochMilli()));
+            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, imageUpdateTimeDb1.toEpochMilli()));
     }
 
     private static String getIsoDateWithoutMillis(final ZonedDateTime time) {
