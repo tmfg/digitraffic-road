@@ -49,7 +49,7 @@ public class WeathercamDataConverter {
         final List<WeathercamPresetDataV1> presetsDatas = presets.stream()
             .map(preset -> new WeathercamPresetDataV1(preset.getPresetId(), DateHelper.toInstantWithOutMillis(preset.getPictureLastModified())))
             .collect(toList());
-        final Instant dataUpdatedTime = getMaxModified(presets);
+        final Instant dataUpdatedTime = getMaxPicLastModifiedDb(presets);
 
         return new WeathercamStationDataV1(presets.get(0).getCameraId(), presetsDatas, dataUpdatedTime);
     }
@@ -58,8 +58,8 @@ public class WeathercamDataConverter {
         return presetDatas.stream().filter(cp -> cp.measuredTime != null).map(cp -> cp.measuredTime).max(Instant::compareTo).orElse(null);
     }
 
-    private static Instant getMaxModified(final List<WeatherStationPreset> presets) {
-        return presets.stream().filter(cp -> cp.getModified() != null).map(cp -> cp.getModified()).max(Instant::compareTo).orElse(null);
+    private static Instant getMaxPicLastModifiedDb(final List<WeatherStationPreset> presets) {
+        return presets.stream().filter(cp -> cp.getPicLastModifiedDb() != null).map(cp -> cp.getPicLastModifiedDb()).max(Instant::compareTo).orElse(null);
     }
 }
 

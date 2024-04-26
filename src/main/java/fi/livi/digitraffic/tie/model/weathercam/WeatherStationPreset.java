@@ -9,5 +9,5 @@ public interface WeatherStationPreset {
 
     String getCameraId();
 
-    Instant getModified();
+    Instant getPicLastModifiedDb();
 }
