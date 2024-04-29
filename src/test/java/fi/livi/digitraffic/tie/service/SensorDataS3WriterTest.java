@@ -125,11 +125,11 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
                 builder.getGeneratedHistory().stream()
                     .peek(h -> h.setMeasuredTime(h.getMeasuredTime().truncatedTo(ChronoUnit.SECONDS))) // CSV is truncated
                     .filter(h -> h.getMeasuredTime().toEpochSecond() >= from.toEpochSecond() && h.getMeasuredTime().toEpochSecond() < to.toEpochSecond())
-                    .sorted(Comparator.comparing(SensorValueHistory::getMeasuredTime).thenComparing(SensorValueHistory::getSensorId))
+                    .sorted(Comparator.comparing(SensorValueHistory::getMeasuredTime).thenComparing(SensorValueHistory::getSensorId).thenComparing(SensorValueHistory::getSensorValue))
                     .toList();
             // Same ordering for csv
             final List<WeatherSensorValueHistoryDto> actualHistory = items.stream()
-                .sorted(Comparator.comparing(WeatherSensorValueHistoryDto::getMeasuredTime).thenComparing(WeatherSensorValueHistoryDto::getSensorId))
+                .sorted(Comparator.comparing(WeatherSensorValueHistoryDto::getMeasuredTime).thenComparing(WeatherSensorValueHistoryDto::getSensorId).thenComparing(WeatherSensorValueHistoryDto::getSensorValue))
                 .toList();
             assertHistory(expectedHistory, actualHistory);
         } catch (final Exception e) {
