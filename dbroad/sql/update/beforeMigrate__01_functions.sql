@@ -28,7 +28,7 @@ CREATE OR REPLACE FUNCTION update_camera_preset_modified_column()
 $$
 BEGIN
   -- remove field from json with -
-  IF (to_jsonb(OLD.*) - 'pic_last_modified') <> (to_jsonb(NEW.*) - 'pic_last_modified') THEN
+  IF (to_jsonb(OLD.*) - 'pic_last_modified' - 'pic_last_modified_db') <> (to_jsonb(NEW.*) - 'pic_last_modified' - 'pic_last_modified_db') THEN
     NEW.modified = now();
   END IF;
   RETURN NEW;
