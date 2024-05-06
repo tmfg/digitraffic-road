@@ -120,6 +120,7 @@ public class TestUtils {
         cp.setDirection("1");
         cp.setCameraLotjuId(cp.getLotjuId());
         cp.setPictureLastModified(ZonedDateTime.now());
+        cp.setPictureLastModifiedDb(cp.getPictureLastModified().plusSeconds(10));
 
         return cp;
     }

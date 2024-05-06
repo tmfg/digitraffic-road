@@ -70,3 +70,7 @@ CREATE TRIGGER maintenance_tracking_task_t
   ON maintenance_tracking_task
   FOR EACH ROW
 EXECUTE PROCEDURE maintenance_tracking_task_update();
+
+-- pic_last_modified is the source system update time, keep track of update time on Digitraffic side with column pic_last_updated_db
+DROP TRIGGER IF EXISTS camera_preset_pic_last_modified_db_t ON camera_preset;
+CREATE TRIGGER camera_preset_pic_last_modified_db_t BEFORE UPDATE ON camera_preset FOR EACH ROW EXECUTE PROCEDURE update_pic_last_modified_db_column();

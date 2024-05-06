@@ -28,7 +28,7 @@ CREATE OR REPLACE FUNCTION update_camera_preset_modified_column()
 $$
 BEGIN
   -- remove field from json with -
-  IF (to_jsonb(OLD.*) - 'pic_last_modified') <> (to_jsonb(NEW.*) - 'pic_last_modified') THEN
+  IF (to_jsonb(OLD.*) - 'pic_last_modified' - 'pic_last_modified_db') <> (to_jsonb(NEW.*) - 'pic_last_modified' - 'pic_last_modified_db') THEN
     NEW.modified = now();
   END IF;
   RETURN NEW;
@@ -168,3 +168,15 @@ BEGIN
 END;
 $$
   LANGUAGE plpgsql;
+
+-- for camera_preset
+-- pic_last_modified is the source system update time, keep track of update time on Digitraffic side with column pic_last_updated_db
+CREATE OR REPLACE FUNCTION update_pic_last_modified_db_column()
+  RETURNS TRIGGER AS $$
+BEGIN
+  IF (to_jsonb(OLD.pic_last_modified) <> to_jsonb(NEW.pic_last_modified)) THEN
+    NEW.pic_last_modified_db = now();
+END IF;
+RETURN NEW;
+END;
+$$ language 'plpgsql';
