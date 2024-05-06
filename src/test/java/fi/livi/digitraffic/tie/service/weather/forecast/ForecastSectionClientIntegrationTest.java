@@ -17,11 +17,10 @@ import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDto;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionV2Dto;
-import fi.livi.digitraffic.tie.service.RestTemplateGzipService;
 
 // Tests on this class are disabled so import won't affect test performance
 @Disabled("For manual integration testing")
-@Import({ ForecastSectionClient.class, RestTemplateGzipService.class })
+@Import({ ForecastSectionClient.class })
 public class ForecastSectionClientIntegrationTest extends AbstractServiceTest {
 
     @Autowired

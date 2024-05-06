@@ -6,22 +6,23 @@ import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX_DOUBL
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN_DOUBLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
 import java.time.Instant;
 
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
+import org.springframework.web.reactive.function.client.WebClient;
 
 public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest {
 
@@ -34,25 +35,21 @@ public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest
     @Autowired
     private DataStatusService dataStatusService;
 
-    private MockRestServiceServer server;
+    private MockWebServer server;
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    protected ForecastSectionClient forecastSectionClient;
-
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    protected ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdaterMockRealMethods;
+    protected ForecastSectionV1MetadataUpdater forecastSectionV1MetadataUpdater;
 
     @Autowired
     private ForecastSectionTestHelper forecastSectionTestHelper;
 
     @BeforeEach
     public void before() {
-        forecastSectionMetadataUpdaterMockRealMethods =
+        server = new MockWebServer();
+
+        final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient(server);
+
+        forecastSectionV1MetadataUpdater =
             new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
-        server = MockRestServiceServer.createServer(restTemplate);
     }
 
     @AfterEach
@@ -61,10 +58,10 @@ public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest
     }
 
     @Test
-    public void updateForecastSectionV1MetadataSucceeds() {
-        forecastSectionTestHelper.serverExpectMetadata(server, 1);
+    public void updateForecastSectionV1MetadataSucceeds() throws IOException {
+        forecastSectionTestHelper.serveGzippedMetadata(server, 1);
 
-        forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionV1Metadata();
+        forecastSectionV1MetadataUpdater.updateForecastSectionV1Metadata();
         final ForecastSectionFeatureCollectionSimpleV1 collection =
             forecastWebDataServiceV1.findSimpleForecastSections(false, null,
                 X_MIN_DOUBLE, Y_MIN_DOUBLE, X_MAX_DOUBLE, Y_MAX_DOUBLE);

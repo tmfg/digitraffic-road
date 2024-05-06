@@ -2,11 +2,13 @@ package fi.livi.digitraffic.tie.dto.weather.forecast.client;
 
 import java.time.ZonedDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fi.livi.digitraffic.tie.model.weather.forecast.OverallRoadCondition;
 import fi.livi.digitraffic.tie.model.weather.forecast.Reliability;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ForecastSectionObservationDto {
 
     public final ZonedDateTime time;

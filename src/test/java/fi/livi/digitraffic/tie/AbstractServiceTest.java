@@ -5,7 +5,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,7 +18,6 @@ import fi.livi.digitraffic.tie.dao.roadstation.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryDao;
 import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
-import fi.livi.digitraffic.tie.helper.FileHttpGetClient;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -58,12 +56,12 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
 @Import({// configurations
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
-         Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
+         Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RetryTemplate.class,
 
          // services
          CameraPresetService.class, TmsStationService.class, DataStatusService.class,
          RoadStationService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
-         CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class, FileHttpGetClient.class,
+         CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class,
          CameraPresetHistoryUpdateService.class, FlywayService.class,
          WeatherService.class, SensorDataUpdateService.class,
          ImsJsonConverter.class, Datex2UpdateService.class,
