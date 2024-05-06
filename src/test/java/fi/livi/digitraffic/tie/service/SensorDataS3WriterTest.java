@@ -37,7 +37,7 @@ import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
-    public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
+    public static final Logger log = LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 
     @Autowired
     private AmazonS3 amazonS3;
@@ -73,7 +73,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
     @Test
     public void s3Bucket() throws IOException {
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = ZonedDateTime.now().withMinute(1);
         final ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
         final ZonedDateTime from = to.minusHours(1);
 
