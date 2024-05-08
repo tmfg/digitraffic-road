@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.livi.digitraffic.tie.conf.WebClientConfiguration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +19,20 @@ import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDto;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionV2Dto;
+import org.springframework.web.reactive.function.client.WebClient;
 
 // Tests on this class are disabled so import won't affect test performance
 @Disabled("For manual integration testing")
-@Import({ ForecastSectionClient.class })
+@Import({WebClientConfiguration.class, ObjectMapper.class})
 public class ForecastSectionClientIntegrationTest extends AbstractServiceTest {
+    private final ForecastSectionClient forecastSectionClient;
 
     @Autowired
-    private ForecastSectionClient forecastSectionClient;
+    public ForecastSectionClientIntegrationTest(final WebClient webClient, final ObjectMapper objectMapper) {
+        this.forecastSectionClient = new ForecastSectionClient(webClient, objectMapper,
+            // fill in correct values for testing
+            "", "", "", "");         
+    }
 
     @Test
     public void getForecastSectionV1MetadataSucceeds() {
