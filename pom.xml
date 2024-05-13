@@ -23,7 +23,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <maven.compiler.release>17</maven.compiler.release>
-        <com.google.protobuf.version>3.25.3</com.google.protobuf.version>
+        <!-- https://mvnrepository.com/artifact/com.google.protobuf/protoc -->
+        <com.google.protobuf.version>4.26.1</com.google.protobuf.version>
         <org.apache.cxf.version>4.0.4</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
         <spring.cloud.version>4.1.2</spring.cloud.version>
@@ -796,13 +797,12 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
+                            <protocArtifact>com.google.protobuf:protoc:${com.google.protobuf.version}</protocArtifact>
                             <addProtoSources>all</addProtoSources>
                             <inputDirectories>
                                 <include>src/main/resources/schemas/lotju/proto</include>
                             </inputDirectories>
                             <outputDirectory>${project.build.directory}/generated-sources/lotju-proto</outputDirectory>
-                            <!--For m1/m2 Macs: brew install protobuf -->
-                            <!-- <protocCommand>/opt/homebrew/bin/protoc</protocCommand> -->
                         </configuration>
                     </execution>
                 </executions>
