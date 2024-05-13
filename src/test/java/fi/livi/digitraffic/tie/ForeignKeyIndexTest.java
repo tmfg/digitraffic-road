@@ -24,35 +24,34 @@ public class ForeignKeyIndexTest extends AbstractJpaTest {
 
     @Test
     public void testForeignKeysHaveIndex() {
-        final String sql =
-            "with constraints as (\n" +
-                "  select a.table_name\n" +
-                "       , a.constraint_name\n" +
-                "       , string_agg(b.column_name, ' ' order by b.ordinal_position) cols\n" +
-                "      from information_schema.table_constraints a, information_schema.key_column_usage b\n" +
-                "     where a.constraint_name = b.constraint_name\n" +
-                "       and a.constraint_type = 'FOREIGN KEY'\n" +
-                "  group by a.table_name, a.constraint_name\n" +
-                " ), indexes as (\n" +
-                "select\n" +
-                "    t.relname as table_name,\n" +
-                "    i.relname as index_name,\n" +
-                "    array_to_string(array_agg(a.attname order by a.attnum), ' ') as cols\n" +
-                "from\n" +
-                "    pg_class t,\n" +
-                "    pg_class i,\n" +
-                "    pg_index ix,\n" +
-                "    pg_attribute a\n" +
-                "where\n" +
-                "    t.oid = ix.indrelid\n" +
-                "    and i.oid = ix.indexrelid\n" +
-                "    and a.attrelid = i.oid\n" +
-                "    and t.relkind = 'r'\n" +
-                "group by\n" + "    t.relname,\n" + "    i.relname\n" +
-                "order by\n" + "    t.relname,\n" + "    i.relname\n" +
-                ")\n" +
-                "select * from constraints\n" +
-                "where not exists(select * from indexes where indexes.cols like '' || constraints.cols || '%');\n";
+        final String sql = """
+            with constraints as (
+                select a.table_name
+                     , a.constraint_name
+                     , string_agg(b.column_name, ' ' order by b.ordinal_position) cols
+                from information_schema.table_constraints a, information_schema.key_column_usage b
+                where a.constraint_name = b.constraint_name
+                  and a.constraint_type = 'FOREIGN KEY'
+                group by a.table_name, a.constraint_name
+            ), indexes as (
+                select t.relname as table_name
+                     , i.relname as index_name
+                     , array_to_string(array_agg(a.attname order by a.attnum), ' ') as cols
+                from pg_class t
+                   , pg_class i
+                   , pg_index ix
+                   , pg_attribute a
+                where t.oid = ix.indrelid
+                  and i.oid = ix.indexrelid
+                  and a.attrelid = i.oid
+                  and t.relkind = 'r'
+                group by t.relname 
+                       , i.relname
+                order by t.relname
+                       , i.relname
+            )
+            select * from constraints
+            where not exists(select * from indexes where indexes.cols like '' || constraints.cols || '%')""";
 
 
         final List<Map<String, Object>> foreignKeysWithoutIndex =

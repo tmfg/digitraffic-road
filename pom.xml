@@ -23,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <maven.compiler.release>17</maven.compiler.release>
-        <com.google.protobuf.version>3.25.3</com.google.protobuf.version>
+        <com.google.protobuf.version>4.26.1</com.google.protobuf.version>
         <org.apache.cxf.version>4.0.4</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
         <spring.cloud.version>4.1.2</spring.cloud.version>
