@@ -5,13 +5,14 @@ import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureV1;
 import org.joda.time.Interval;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 /**
  * Component for filtering out unreliable data that contains test data for set of devices
  * and for two time slices.
