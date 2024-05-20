@@ -1,9 +1,12 @@
 package fi.livi.digitraffic.tie.service.variablesign.v1;
 
 
+import fi.livi.digitraffic.tie.converter.waze.WazeDatex2Converter;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureV1;
 import org.joda.time.Interval;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,8 @@ import java.util.stream.Collectors;
  * and for two time slices.
  */
 public class TestDataFilteringService {
+    private static final Logger logger = LoggerFactory.getLogger(TestDataFilteringService.class);
+
     public static final Set<String> testDevices = Set.of(
         "VME01K502", "TIO01K502", "VME01K500", "TIO01K500", "VME015111", "TIO015111", "VME015152", "TIO015152"
     );
@@ -34,8 +39,14 @@ public class TestDataFilteringService {
     }
 
     public boolean isProductionData(final VariableSignFeatureV1 feature) {
-        if(testDevices.contains(feature.getProperties().id)) {
-            return !isTestTime(feature.getProperties().createDate);
+        try {
+            if (testDevices.contains(feature.getProperties().id)) {
+                return !isTestTime(feature.getProperties().createDate);
+            }
+        } catch(final Exception e) {
+            logger.error(String.format("Error in isProductionData for %s", feature.getProperties().id), e);
+
+            return true;
         }
 
         return true;
