@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,6 +45,9 @@ public class VariableSignPropertiesV1 extends PropertiesV1 {
     @Schema(description = "Information is effect after this date")
     public final Instant effectDate;
 
+    @JsonIgnore
+    public final Instant createDate;
+
     @Schema(description = "Cause for changing the sign:\n" +
                           "Automaatti = Automatic\n" +
                           "Käsiohjaus = By hand", nullable = true)
@@ -57,7 +61,8 @@ public class VariableSignPropertiesV1 extends PropertiesV1 {
     private final Instant lastModified;
 
     public VariableSignPropertiesV1(final String id, final SignType type, final String roadAddress, final Direction direction,
-                                    final Carriageway carriageway, final String displayValue, final String additionalInformation, final Instant effectDate,
+                                    final Carriageway carriageway, final String displayValue, final String additionalInformation,
+                                    final Instant createDate, final Instant effectDate,
                                     final String cause, final Reliability reliability, final List<SignTextRowV1> textRows, final Instant lastModified) {
         this.id = id;
         this.type = type;
@@ -66,6 +71,7 @@ public class VariableSignPropertiesV1 extends PropertiesV1 {
         this.carriageway = carriageway;
         this.displayValue = displayValue;
         this.additionalInformation = additionalInformation;
+        this.createDate = createDate;
         this.effectDate = effectDate;
         this.cause = cause;
         this.reliability = reliability;

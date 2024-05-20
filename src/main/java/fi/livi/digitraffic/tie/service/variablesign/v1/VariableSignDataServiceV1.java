@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.variablesign.v1;
 
 import java.time.*;
-import java.time.temporal.TemporalAmount;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,11 +32,14 @@ public class VariableSignDataServiceV1 {
     private final DeviceDataRepositoryV1 deviceDataRepositoryV1;
     private final CodeDescriptionRepositoryV1 codeDescriptionRepositoryV1;
 
+    private final TestDataFilteringService testDataFilteringService;
+
     public VariableSignDataServiceV1(final DeviceRepositoryV1 deviceRepositoryV1, final DeviceDataRepositoryV1 deviceDataRepositoryV1,
-                                     final CodeDescriptionRepositoryV1 codeDescriptionRepositoryV1) {
+                                     final CodeDescriptionRepositoryV1 codeDescriptionRepositoryV1, final TestDataFilteringService testDataFilteringService) {
         this.deviceRepositoryV1 = deviceRepositoryV1;
         this.deviceDataRepositoryV1 = deviceDataRepositoryV1;
         this.codeDescriptionRepositoryV1 = codeDescriptionRepositoryV1;
+        this.testDataFilteringService = testDataFilteringService;
     }
 
     @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 3000)
@@ -51,6 +53,7 @@ public class VariableSignDataServiceV1 {
         final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
         final List<VariableSignFeatureV1> features = devices.stream()
             .map(d -> convert(d, dataMap))
+            .filter(d -> testDataFilteringService.isProductionData(d))
             .filter(Objects::nonNull)
             .toList();
 
@@ -74,6 +77,7 @@ public class VariableSignDataServiceV1 {
             VariableSignPropertiesV1.Carriageway.byValue(device.getCarriageway()),
             data.getDisplayValue(),
             data.getAdditionalInformation(),
+            data.getCreated(),
             data.getEffectDate(),
             data.getCause(),
             VariableSignPropertiesV1.Reliability.byValue(data.getReliability()),
@@ -92,13 +96,17 @@ public class VariableSignDataServiceV1 {
 
     @Transactional(readOnly = true)
     public List<TrafficSignHistoryV1> listVariableSignHistory(final String deviceId, final Date effectiveDate) {
+        final List<TrafficSignHistoryV1> history;
         if(effectiveDate != null) {
             final Instant start = effectiveDate.toInstant();
             final Instant end = effectiveDate.toInstant().plus(Period.ofDays(1));
-            return deviceDataRepositoryV1.getDeviceDataByDeviceIdAndEffectDateBetweenOrderByEffectDateDesc(deviceId, start, end);
+
+            history = deviceDataRepositoryV1.getDeviceDataByDeviceIdAndEffectDateBetweenOrderByEffectDateDesc(deviceId, start, end);
+        } else {
+            history = deviceDataRepositoryV1.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
         }
 
-        return deviceDataRepositoryV1.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
+        return testDataFilteringService.filter(deviceId, history);
     }
 
     @Transactional(readOnly = true)
@@ -106,17 +114,18 @@ public class VariableSignDataServiceV1 {
         final Optional<Device> device = deviceRepositoryV1.findById(deviceId);
 
         if(device.isPresent()) {
-
             final Instant deviceLastUpdated = device.get().getModified();
             final List<Long> latest = deviceDataRepositoryV1.findLatestData(deviceId);
             final List<DeviceData> data = deviceDataRepositoryV1.findDistinctByIdIn(latest);
             final Instant dataLastUpdated = getDataLastUpdated(data, deviceLastUpdated);
+            final List<VariableSignFeatureV1> filtered = data.stream()
+                .map(d -> convert(device.get(), d))
+                .filter(d -> testDataFilteringService.isProductionData(d))
+                .collect(Collectors.toList());
 
             return new VariableSignFeatureCollectionV1(
                 dataLastUpdated,
-                data.stream()
-                    .map(d -> convert(device.get(), d))
-                    .collect(Collectors.toList()));
+                filtered);
         }
 
         throw new ObjectNotFoundException(Device.class, deviceId);
