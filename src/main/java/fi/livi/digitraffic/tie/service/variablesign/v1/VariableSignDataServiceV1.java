@@ -53,8 +53,8 @@ public class VariableSignDataServiceV1 {
         final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
         final List<VariableSignFeatureV1> features = devices.stream()
             .map(d -> convert(d, dataMap))
-            .filter(d -> testDataFilteringService.isProductionData(d))
             .filter(Objects::nonNull)
+            .filter(d -> testDataFilteringService.isProductionData(d))
             .toList();
 
         return new VariableSignFeatureCollectionV1(dataLastUpdated, features);
