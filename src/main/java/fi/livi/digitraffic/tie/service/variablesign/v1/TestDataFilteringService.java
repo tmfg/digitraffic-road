@@ -24,7 +24,10 @@ public class TestDataFilteringService {
     private static final Logger logger = LoggerFactory.getLogger(TestDataFilteringService.class);
 
     public static final Set<String> testDevices = Set.of(
-        "VME01K502", "TIO01K502", "VME01K500", "TIO01K500", "VME015111", "TIO015111", "VME015152", "TIO015152"
+        "VME/TIO01K502",
+        "VME/TIO01K500",
+        "VME/TIO015111",
+        "VME/TIO015152"
     );
 
     public static final Set<Interval> testTimes = Set.of(
