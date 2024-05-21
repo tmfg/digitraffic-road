@@ -103,7 +103,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
 
         insertTestDataForTestData(time);
 
-        return getJson(API_SIGNS + "/" + FILTERING_ID);
+        return getJson(API_SIGNS + "?deviceId=" + FILTERING_ID);
     }
 
     private ResultActions testHistoryFiltering(final int offset) throws Exception {
