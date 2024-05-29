@@ -13,7 +13,9 @@ import org.springframework.test.context.TestPropertySource;
     "roadConditions.baseUrl=https://roadConditions/",
     "roadConditions.suid=suid",
     "roadConditions.user=user",
-    "roadConditions.pass=pass"
+    "roadConditions.pass=pass",
+    // https://github.com/spring-projects/spring-boot/issues/39735 as default Tomcat listens 0.0.0.0 and stopping takes ages
+    "server.address=127.0.0.1"
 })
 public abstract class AbstractTest {
 
