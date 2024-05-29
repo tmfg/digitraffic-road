@@ -1,38 +1,28 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.common.util.ThreadUtil;
+import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.helper.CameraHelper;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
+import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -46,24 +36,21 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.github.tomakehurst.wiremock.WireMockServer;
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.*;
 
-import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
-import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
-import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
-import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
-import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
-import jakarta.persistence.EntityManager;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Disabled("Does not execute properly with other tests")
 public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
@@ -131,6 +118,11 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
 
         entityManager.flush();
         entityManager.clear();
+    }
+
+    @AfterEach
+    public void after() {
+        wm.stop();
     }
 
     private void generateImageFilesMap() throws IOException {
@@ -327,7 +319,6 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
                 .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
                 .withStatus(200)));
     }
-    final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(100);
 
     private void createHttpResponseStubFor(final int kuvaId) {
         final String path = StringUtils.appendIfMissing(lotjuImagePath, "/") + kuvaId;
