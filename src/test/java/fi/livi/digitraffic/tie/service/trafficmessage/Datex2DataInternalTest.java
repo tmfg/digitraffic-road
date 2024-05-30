@@ -73,4 +73,18 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(msg));
         v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
+
+    @Disabled("Just for internal testing to import given simple json and xml traffic message to db")
+    @Rollback(value = false)
+    @Test
+    public void manualImportOfImsMessage() throws IOException {
+        final String xmlImsMessage = readImsMessageResourceContent(ImsXmlVersion.V1_2_1);
+        final String jsonImsMessage = readResourceContent("classpath:tloik/ims/internal/manualImportOfImsMessage-simple.json");
+        final String datex2ImsMessage = readResourceContent("classpath:tloik/ims/internal/manualImportOfImsMessage-datex2.xml");
+
+        // Insert datex2 and message contents
+        final String msg = xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
+        final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(msg));
+        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+    }
 }

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <publicationTime>2020-12-21T04:44:07.251Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50376179" version="5">
+            <overallSeverity>high</overallSeverity>
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID5037709001" version="5">
+                <situationRecordCreationTime>2020-10-26T12:34:52.239Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2020-12-21T04:44:06.852Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2020-10-26T12:34:52.239Z
+                </situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>suspended</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2020-11-09T00:00:00.000Z</overallStartTime>
+                        <overallEndTime>2020-11-12T00:00:00.000Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Kiertotie Luhtikyläntien 1631, Päärniläntien 1631, Helsingintien 164 ja
+                                Huhdantien 11805 kautta.
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 11805, Orimattila. Tietyö peruttu.
+
+                                Tie 11805 välillä Järvikylä - Karkkula, Orimattila.
+                                Tarkempi paikka: Paikasta Järvikylä 1,6 km, vaikutusalue 200 m, suuntaan Huhdanoja.
+                                Haittaa molempiin ajosuuntiin.
+
+                                Massanvaihto
+
+                                Kiertotie käytössä
+
+                                Lisätieto: Kiertotie Luhtikyläntien 1631, Päärniläntien 1631, Helsingintien 164 ja
+                                Huhdantien 11805 kautta.
+
+                                Ajankohta: 09.11.2020 - 12.11.2020.
+                                Työaika: ma-to 07:00-09:00
+
+                                Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/
+
+                                Tieliikennekeskus Tampere - ITM Finland
+                                Puh: 02002100
+                                Sähköposti: tampere.liikennekeskus@tmfg.fi
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.37</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>23588</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>1599</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>23589</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>6306</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <management>
+                    <lifeCycleManagement>
+                        <cancel>true</cancel>
+                        <end>true</end>
+                    </lifeCycleManagement>
+                </management>
+                <roadMaintenanceType>roadworks</roadMaintenanceType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>
