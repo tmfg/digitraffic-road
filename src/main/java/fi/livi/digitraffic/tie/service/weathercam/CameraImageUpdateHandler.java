@@ -58,12 +58,12 @@ public class CameraImageUpdateHandler {
         this.imageReader = imageReader;
         this.cameraImageS3Writer = cameraImageS3Writer;
         this.resourceLoader = resourceLoader;
-        this.noiseImage = readImageFromResource(NOISE_IMG);
+        this.noiseImage = readEmptyImageFromResource();
     }
 
-    private byte[] readImageFromResource(final String imagePath) throws IOException {
-        log.info("Read image from {}", imagePath);
-        final Resource resource = resourceLoader.getResource("classpath:" + imagePath);
+    private byte[] readEmptyImageFromResource() throws IOException {
+        log.info("Read image from {}", CameraImageUpdateHandler.NOISE_IMG);
+        final Resource resource = resourceLoader.getResource("classpath:" + CameraImageUpdateHandler.NOISE_IMG);
         final InputStream imageIs = resource.getInputStream();
         return IOUtils.toByteArray(imageIs);
     }
@@ -84,50 +84,60 @@ public class CameraImageUpdateHandler {
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageKey, isResultPublic);
 
-            cameraPresetService.updateCameraPresetAndHistoryWithLotjuId(kuva.getEsiasentoId(), isResultPublic, kuva.getJulkinen(), transferInfo);
+            cameraPresetService.updateCameraPresetAndHistoryWithLotjuId(kuva.getEsiasentoId(), isResultPublic,
+                kuva.getJulkinen(), transferInfo);
 
             if (transferInfo.isSuccess()) {
-                log.info("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +
-                         "readTookMs={} writeTooksMs={} tookMs={} " +
-                         "downloadImageUrl={} sizeBytes={} " +
-                         "s3VersionId=\"{}\" imageTimestamp={} imageTimeInPastSeconds={}",
-                    presetId, imageKey, transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
-                    transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(),
-                    transferInfo.getDurationMs(), transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(), transferInfo.getVersionId(),
-                    transferInfo.getLastUpdated(), transferInfo.getImageTimeInPastSeconds());
+                if (log.isDebugEnabled()) {
+                    log.debug("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +
+                            "readTookMs={} writeTooksMs={} tookMs={} " +
+                            "downloadImageUrl={} sizeBytes={} " +
+                            "s3VersionId=\"{}\" imageTimestamp={} imageTimeInPastSeconds={}",
+                        presetId, imageKey, transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
+                        transferInfo.getReadDurationMs(), transferInfo.getWriteDurationMs(),
+                        transferInfo.getDurationMs(), transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(),
+                        transferInfo.getVersionId(),
+                        transferInfo.getLastUpdated(), transferInfo.getImageTimeInPastSeconds());
+                }
             } else {
                 log.error("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} readTotalTookMs={} writeTooksMs={} writeTotalTookMs={} tookMs={} " +
-                        "downloadImageUrl={} sizeBytes={} " +
-                        "readErro={} writeError={}",
+                        "downloadImageUrl={} sizeBytes={}",
                     presetId, imageKey, transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
                     transferInfo.getReadDurationMs(), transferInfo.getReadTotalDurationMs(),
-                    transferInfo.getWriteDurationMs(), transferInfo.getWriteTotalDurationMs(), transferInfo.getDurationMs(),
+                    transferInfo.getWriteDurationMs(), transferInfo.getWriteTotalDurationMs(),
+                    transferInfo.getDurationMs(),
                     transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(),
-                    transferInfo.getReadError(), transferInfo.getWriteError());
+                    transferInfo.getReadError() != null ? transferInfo.getReadError() : transferInfo.getWriteError());
             }
             return transferInfo.isSuccess();
         } else {
             // Preset doesn't exist, so we delete image
             final CameraImageS3Writer.DeleteInfo deleteInfoS3 = cameraImageS3Writer.deleteImage(imageKey);
-            log.info("method=handleKuva preset does not exists presetId=\"{}\" deleteFileS3Key=\"{}\" fileExists={} deleteSuccess={} tookMs={}",
-                     presetId, deleteInfoS3.getKey(), deleteInfoS3.isFileExists(), deleteInfoS3.isDeleteSuccess(), deleteInfoS3.getDurationMs());
+            log.info(
+                "method=handleKuva preset does not exists presetId=\"{}\" deleteFileS3Key=\"{}\" fileExists={} deleteSuccess={} tookMs={}",
+                presetId, deleteInfoS3.getKey(), deleteInfoS3.isFileExists(), deleteInfoS3.isDeleteSuccess(),
+                deleteInfoS3.getDurationMs());
             return deleteInfoS3.isSuccess();
         }
     }
 
-    private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename, final boolean isPublic) {
-        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, DateHelper.toZonedDateTimeAtUtc(kuva.getAikaleima()));
+    private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename,
+                                         final boolean isPublic) {
+        final ImageUpdateInfo info =
+            new ImageUpdateInfo(presetId, DateHelper.toZonedDateTimeAtUtc(kuva.getAikaleima()));
         try {
             byte[] image = readKuva(kuva.getKuvaId(), info);
             try {
                 image = ImageManipulationService.removeJpgExifMetadata(image);
             } catch (final Exception e) {
                 // Let's use original
-                log.warn("Failed to remove Exif metadata from image with presetId={}, using original image. Error message: {}", presetId, e.getMessage());
+                log.warn(
+                    "Failed to remove Exif metadata from image with presetId={}, using original image. Error message: {}",
+                    presetId, e.getMessage());
             }
             writeKuva(image, kuva.getAikaleima(), filename, info, isPublic);
-        } catch (final CameraImageReadFailureException|CameraImageWriteFailureException e) {
+        } catch (final CameraImageReadFailureException | CameraImageWriteFailureException e) {
             // read/write attempts exhausted
         }
         return info;
@@ -148,7 +158,8 @@ public class CameraImageUpdateHandler {
                 info.updateReadTotalDurationMs(start.getTime());
             }
             if (image.length <= 0) {
-                final CameraImageReadFailureException e = new CameraImageReadFailureException(String.format("Image was %d bytes", image.length));
+                final CameraImageReadFailureException e =
+                    new CameraImageReadFailureException(String.format("Image was %d bytes", image.length));
                 info.updateReadStatusFailed(e);
                 throw e;
             }
@@ -166,7 +177,7 @@ public class CameraImageUpdateHandler {
                 final byte[] currentImageToWrite = isPublic ? realImage : noiseImage;
 
                 final String versionId = cameraImageS3Writer.writeImage(currentImageToWrite, realImage,
-                                                                        filename, timestampEpochMillis);
+                    filename, timestampEpochMillis);
                 info.setVersionId(versionId);
                 info.updateWriteStatusSuccess();
                 info.setWriteDurationMs(writeStart.getTime());
@@ -182,7 +193,8 @@ public class CameraImageUpdateHandler {
     }
 
     public void hideCurrentImagesForCamera(final RoadStation rs) {
-        final Map<Long, CameraPreset> presets = cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
+        final Map<Long, CameraPreset> presets =
+            cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
         presets.values().forEach(this::hideCurrentImageForPreset);
     }
 
@@ -201,7 +213,11 @@ public class CameraImageUpdateHandler {
         return retryTemplate;
     }
 
-    static String resolvePresetIdFrom(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
+    public static String resolvePresetIdFrom(final KuvaProtos.Kuva kuva) {
+        return resolvePresetIdFrom(null, kuva);
+    }
+
+    private static String resolvePresetIdFrom(final CameraPreset cameraPreset, final KuvaProtos.Kuva kuva) {
         return cameraPreset != null ? cameraPreset.getPresetId() : kuva.getNimi().substring(0, 8);
     }
 
@@ -226,9 +242,5 @@ public class CameraImageUpdateHandler {
             super(cause);
         }
 
-    }
-
-    public byte[] getNoiseImage() {
-        return noiseImage;
     }
 }
