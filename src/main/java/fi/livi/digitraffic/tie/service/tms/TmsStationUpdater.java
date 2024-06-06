@@ -15,6 +15,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.common.service.locking.CachedLockingService;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.AbstractVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
@@ -22,7 +24,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
@@ -38,7 +39,7 @@ public class TmsStationUpdater {
     private static final Logger log = LoggerFactory.getLogger(TmsStationUpdater.class);
 
     private final RoadStationUpdateService roadStationUpdateService;
-    private final ClusteredLocker.ClusteredLock lock;
+    private final CachedLockingService cachedLockingService;
     private final DataStatusService dataStatusService;
     private final RoadStationService roadStationService;
     private final TmsStationService tmsStationService;
@@ -51,14 +52,14 @@ public class TmsStationUpdater {
                              final TmsStationService tmsStationService,
                              final RoadStationSensorService roadStationSensorService,
                              final LotjuTmsStationMetadataClientWrapper lotjuTmsStationMetadataClientWrapper,
-                             final ClusteredLocker clusteredLocker,
+                             final LockingService lockingService,
                              final DataStatusService dataStatusService) {
         this.roadStationUpdateService = roadStationUpdateService;
         this.roadStationService = roadStationService;
         this.tmsStationService = tmsStationService;
         this.roadStationSensorService = roadStationSensorService;
         this.lotjuTmsStationMetadataClientWrapper = lotjuTmsStationMetadataClientWrapper;
-        this.lock = clusteredLocker.createClusteredLock(this.getClass().getSimpleName(), 10000);
+        this.cachedLockingService = lockingService.createCachedLockingService(this.getClass().getSimpleName());
         this.dataStatusService = dataStatusService;
     }
 
@@ -159,9 +160,13 @@ public class TmsStationUpdater {
      * @return true if data was updated
      */
     private boolean updateTmsStationAndSensors(final LamAsemaVO lamAsema) {
-        lock.lock();
+        // Try to get lock for 10s and then gives up
+        if (!cachedLockingService.lock(10000)) {
+            log.error("method=updateTmsStationAndSensors did not get the lock {}", cachedLockingService.getLockInfoForLogging());
+            return false;
+        }
         try {
-            log.debug("method=updateCameraStationAndPresets got the lock");
+            log.debug("method=updateTmsStationAndSensors got the lock {}", cachedLockingService.getLockInfoForLogging());
             if (!validate(lamAsema)) {
                 return false;
             }
@@ -178,7 +183,7 @@ public class TmsStationUpdater {
 
             return updateStatus.isUpdateOrInsert() || result.getLeft() > 0 || result.getRight() > 0;
         } finally {
-            lock.unlock();
+            cachedLockingService.deactivate();
         }
     }
 

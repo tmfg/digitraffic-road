@@ -1,28 +1,27 @@
 package fi.livi.digitraffic.tie;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.retry.support.RetryTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.common.dao.LockingDao;
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
 import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
-import fi.livi.digitraffic.tie.dao.LockingDao;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryDao;
 import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.FlywayService;
-import fi.livi.digitraffic.tie.service.LockingServiceInternal;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
@@ -54,11 +53,18 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateHandler;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryUpdateService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
-@Import({// configurations
-         AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
-         Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RetryTemplate.class,
+@Import({// Configurations
+         // Spring
+         MetricsAutoConfiguration.class, // MeterRegistry
+         SimpleMetricsExportAutoConfiguration.class, // MeterRegistry
+         JacksonAutoConfiguration.class, // ObjectMapper
 
-         // services
+         //RetryTemplate.class,
+         // Own configs
+         AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class,
+         Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class,
+
+         // Services
          CameraPresetService.class, TmsStationService.class, DataStatusService.class,
          RoadStationService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
          CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class,
@@ -68,17 +74,17 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
          RegionGeometryUpdateService.class,
          MaintenanceTrackingUpdateServiceV1.class,
          LocationTypeUpdater.class, LocationMetadataUpdater.class, LocationUpdater.class, LocationSubtypeUpdater.class,
-         MetadataFileFetcher.class, ClusteredLocker.class, LockingServiceInternal.class,
+         MetadataFileFetcher.class,
 
          // V1 services
          RoadStationSensorServiceV1.class, TmsDataWebServiceV1.class, TmsStationMetadataWebServiceV1.class,
          MaintenanceTrackingMqttDataService.class, LocationWebServiceV1.class,
 
-         // converters
+         // Converters
          CoordinateConverter.class, StationSensorConverterService.class,
          ObjectMapper.class,
 
-         // daos
+         // Daos
          TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
          LockingDao.class,
 

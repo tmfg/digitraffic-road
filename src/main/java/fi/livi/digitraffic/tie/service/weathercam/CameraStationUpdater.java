@@ -14,13 +14,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.common.service.locking.CachedLockingService;
+import fi.livi.digitraffic.common.service.locking.LockingService;
+import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.AbstractVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.RoadStationService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.lotju.LotjuCameraStationMetadataClientWrapper;
@@ -34,19 +36,19 @@ public class CameraStationUpdater {
     private final CameraStationUpdateService cameraStationUpdateService;
     private final CameraPresetService cameraPresetService;
     private final RoadStationService roadStationService;
-    private final ClusteredLocker.ClusteredLock lock;
+    private final CachedLockingService cachedLockingService;
 
     @Autowired
     public CameraStationUpdater(final LotjuCameraStationMetadataClientWrapper lotjuCameraStationMetadataClientWrapper,
                                 final CameraStationUpdateService cameraStationUpdateService,
                                 final CameraPresetService cameraPresetService,
                                 final RoadStationService roadStationService,
-                                final ClusteredLocker clusteredLocker) {
+                                final LockingService lockingService) {
         this.lotjuCameraStationMetadataClientWrapper = lotjuCameraStationMetadataClientWrapper;
         this.cameraStationUpdateService = cameraStationUpdateService;
         this.cameraPresetService = cameraPresetService;
         this.roadStationService = roadStationService;
-        this.lock = clusteredLocker.createClusteredLock(this.getClass().getSimpleName(), 10000);
+        this.cachedLockingService = lockingService.createCachedLockingService(this.getClass().getSimpleName());
     }
 
 
@@ -131,7 +133,11 @@ public class CameraStationUpdater {
      * @return Pair of updated and inserted count of presets
      */
     private Pair<Integer, Integer> updateCameraStationAndPresets(final KameraVO kamera) {
-        lock.lock();
+        // Try to get lock for 10s and then gives up
+        if (!cachedLockingService.lock(10000)) {
+            throw new IllegalStateException(StringUtil.format("method=updateCameraStationAndPresets did not get the lock {}",
+                    cachedLockingService.getLockInfoForLogging()));
+        }
         try {
             log.debug("method=updateCameraStationAndPresets got the lock");
             if (!validate(kamera)) {
@@ -141,7 +147,7 @@ public class CameraStationUpdater {
             return cameraStationUpdateService.updateOrInsertRoadStationAndPresets(kamera, eas);
 
         } finally {
-            lock.unlock();
+            cachedLockingService.deactivate();
         }
     }
 
@@ -169,7 +175,11 @@ public class CameraStationUpdater {
         }
 
         // Otherwise we update only the station
-        lock.lock();
+        // Try to get lock for 10s and then gives up
+        if (!cachedLockingService.lock(10000)) {
+            throw new IllegalStateException(StringUtil.format("method=updateCameraStation did not get the lock {}",
+                    cachedLockingService.getLockInfoForLogging()));
+        }
         try {
             log.debug("method=updateCameraStation got the lock lotjuId={}", kamera.getId());
 
@@ -179,7 +189,7 @@ public class CameraStationUpdater {
             return cameraStationUpdateService.updateCamera(kamera);
 
         } finally {
-            lock.unlock();
+            cachedLockingService.deactivate();
         }
     }
 
@@ -209,11 +219,15 @@ public class CameraStationUpdater {
         log.debug("method=updateCameraPreset got the lock lotjuId={}", presetLotjuId);
         final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(esiasento.getKameraId());
         if (validate(kamera)) {
-            lock.lock();
+            // Try to get lock for 10s and then gives up
+            if (!cachedLockingService.lock(10000)) {
+                throw new IllegalStateException(StringUtil.format("method=updateCameraPreset did not get the lock {}",
+                        cachedLockingService.getLockInfoForLogging()));
+            }
             try {
                 return cameraStationUpdateService.updatePreset(esiasento, kamera);
             } finally {
-                lock.unlock();
+                cachedLockingService.deactivate();
             }
         } else {
             return false;

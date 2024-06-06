@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.common.annotation.NoJobLogging;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 
@@ -42,9 +42,9 @@ public class TmsMqttConfigurationV2 {
     public TmsMqttConfigurationV2(final MqttRelayQueue mqttRelay,
                                 final RoadStationSensorServiceV1 roadStationSensorService,
                                 final ObjectMapper objectMapper,
-                                final ClusteredLocker clusteredLocker) {
+                                final LockingService lockingService) {
 
-        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TMS, clusteredLocker);
+        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TMS, lockingService);
         this.roadStationSensorService = roadStationSensorService;
 
         mqttMessageSender.setLastUpdated(roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION));

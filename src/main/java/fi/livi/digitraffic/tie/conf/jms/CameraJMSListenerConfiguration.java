@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
@@ -28,15 +28,13 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
                                           final QueueConnectionFactory connectionFactory,
                                           @Value("${jms.userId}") final String jmsUserId, @Value("${jms.password}") final String jmsPassword,
                                           @Value("#{'${jms.camera.inQueue}'.split(',')}")final List<String> jmsQueueKeys, final CameraImageUpdateManager cameraImageUpdateManager,
-                                          final ClusteredLocker clusteredLocker) {
-        super(connectionFactory,
-            clusteredLocker,
-              log);
+                                          final LockingService lockingService) {
+        super(connectionFactory, lockingService, log);
         this.cameraImageUpdateManager = cameraImageUpdateManager;
 
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
             CameraJMSListenerConfiguration.class.getSimpleName(),
-            ClusteredLocker.generateInstanceId()));
+            lockingService.getInstanceId()));
     }
 
     @Override

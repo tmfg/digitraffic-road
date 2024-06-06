@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.dto.maintenance.mqtt.MaintenanceTrackingForMqttV2;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMaintenanceTrackingMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingMqttDataService;
 import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 
@@ -43,9 +43,9 @@ public class MaintenanceTrackingMqttConfigurationV2 {
     public MaintenanceTrackingMqttConfigurationV2(final MaintenanceTrackingMqttDataService maintenanceTrackingDataServiceV1,
                                                   final MqttRelayQueue mqttRelay,
                                                   final ObjectMapper objectMapper,
-                                                  final ClusteredLocker clusteredLocker) {
+                                                  final LockingService lockingService) {
         this.maintenanceTrackingDataServiceV1 = maintenanceTrackingDataServiceV1;
-        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, MAINTENANCE_TRACKING, clusteredLocker);
+        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, MAINTENANCE_TRACKING, lockingService);
 
         mqttMessageSender.setLastUpdated(Instant.now());
     }

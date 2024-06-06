@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
@@ -32,19 +32,19 @@ public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListe
                                                       @Value("${jms.password}") final String jmsPassword,
                                                       @Value("#{'${jms.datex2.inQueue}'.split(',')}")
                                                       final List<String> jmsQueueKeys,
-                                                      final ClusteredLocker clusteredLocker,
+                                                      final LockingService lockingService,
                                                       @Qualifier("imsJaxb2Marshaller") final Jaxb2Marshaller imsJaxb2Marshaller,
                                                       final Datex2UpdateService v2Datex2UpdateService) {
 
         super(connectionFactory,
-                clusteredLocker,
+                lockingService,
               log);
         this.imsJaxb2Marshaller = imsJaxb2Marshaller;
         this.v2Datex2UpdateService = v2Datex2UpdateService;
 
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
             ImsTrafficIncidentJMSListenerConfiguration.class.getSimpleName(),
-            ClusteredLocker.generateInstanceId()));
+            lockingService.getInstanceId()));
     }
 
     @Override

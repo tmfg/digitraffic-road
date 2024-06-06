@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
 import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
@@ -30,15 +30,15 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
                                        final @Value("${jms.password}") String jmsPassword,
                                        final @Value("#{'${jms.tms.inQueue}'.split(',')}") List<String> jmsQueueKeys,
                                        final SensorDataUpdateService sensorDataUpdateService,
-                                       final ClusteredLocker clusteredLocker) {
+                                       final LockingService lockingService) {
 
         super(connectionFactory,
-              clusteredLocker,
+              lockingService,
               log);
         this.sensorDataUpdateService = sensorDataUpdateService;
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
                 TmsJMSListenerConfiguration.class.getSimpleName(),
-                ClusteredLocker.generateInstanceId()));
+                lockingService.getInstanceId()));
     }
 
     @Override

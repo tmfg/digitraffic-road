@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
@@ -32,16 +32,16 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
                                                   @Value("${jms.password}") final String jmsPassword,
                                                   @Value("#{'${jms.camera.meta.inQueue}'.split(',')}")final List<String> jmsQueueKeys,
                                                   final CameraMetadataUpdateMessageHandler cameraMetadataUpdateMessageHandler,
-                                                  final ClusteredLocker clusteredLocker,
+                                                  final LockingService lockingService,
                                                   @Qualifier("kameraMetadataChangeJaxb2Marshaller")
                                                   final Jaxb2Marshaller kameraMetadataChangeJaxb2Marshaller) {
-        super(connectionFactory, clusteredLocker, log);
+        super(connectionFactory, lockingService, log);
         this.cameraMetadataUpdateMessageHandler = cameraMetadataUpdateMessageHandler;
         this.kameraMetadataChangeJaxb2Marshaller = kameraMetadataChangeJaxb2Marshaller;
 
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
             CameraMetadataJMSListenerConfiguration.class.getSimpleName(),
-            ClusteredLocker.generateInstanceId()));
+            lockingService.getInstanceId()));
         }
 
         @Override

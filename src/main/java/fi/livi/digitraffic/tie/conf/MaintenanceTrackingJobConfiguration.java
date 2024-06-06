@@ -10,7 +10,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.common.service.locking.CachedLockingService;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingUpdateServiceV1;
 
 @ConditionalOnProperty(name = "maintenance.tracking.job.enabled", matchIfMissing = true)
@@ -20,20 +21,18 @@ public class MaintenanceTrackingJobConfiguration {
     private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingJobConfiguration.class);
 
     private final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1;
-    private final ClusteredLocker clusteredLocker;
+    private final CachedLockingService cachedLockingService;
     private final long runRateMs;
-
-    private final static String LOCK_NAME = "MaintenanceTrackingJobConfiguration";
 
     private final static int MAX_HANDLE_COUNT_PER_CALL = 10;
 
     @Autowired
     public MaintenanceTrackingJobConfiguration(final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1,
-                                               final ClusteredLocker clusteredLocker,
+                                               final LockingService lockingService,
                                                @Value("${maintenance.tracking.job.intervalMs}")
                                                final long runRateMs) {
         this.maintenanceTrackingUpdateServiceV1 = maintenanceTrackingUpdateServiceV1;
-        this.clusteredLocker = clusteredLocker;
+        this.cachedLockingService = lockingService.createCachedLockingService(this.getClass().getSimpleName());
         this.runRateMs = runRateMs;
     }
 
@@ -47,7 +46,7 @@ public class MaintenanceTrackingJobConfiguration {
         int count;
         int totalCount = 0;
         do {
-            if ( clusteredLocker.tryLock(LOCK_NAME, 300) ) {
+            if ( cachedLockingService.hasLock() ) {
                 final StopWatch startInternal = StopWatch.createStarted();
                 try {
                     count = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(MAX_HANDLE_COUNT_PER_CALL);
@@ -60,8 +59,6 @@ public class MaintenanceTrackingJobConfiguration {
                 } catch (final Exception e) {
                     log.error(String.format("method=handleUnhandledMaintenanceTrackingObservations observations failed tookMs=%d", startInternal.getTime()), e);
                     throw e;
-                } finally {
-                    clusteredLocker.unlock(LOCK_NAME);
                 }
             } else {
                 log.warn("method=handleUnhandledMaintenanceTrackingObservations didn't get lock for updating tracking data.");

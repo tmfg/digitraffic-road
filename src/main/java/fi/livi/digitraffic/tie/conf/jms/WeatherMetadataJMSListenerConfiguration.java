@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMetadataUpdatedMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto;
@@ -32,16 +32,16 @@ public class WeatherMetadataJMSListenerConfiguration extends AbstractJMSListener
                                                    @Value("${jms.password}") final String jmsPassword,
                                                    @Value("#{'${jms.weather.meta.inQueue}'.split(',')}")final List<String> jmsQueueKeys,
                                                    final WeatherMetadataUpdateMessageHandler weatherMetadataUpdateMessageHandler,
-                                                   final ClusteredLocker clusteredLocker,
+                                                   final LockingService lockingService,
                                                    @Qualifier("tiesaaMetadataChangeJaxb2Marshaller")
                                                    final Jaxb2Marshaller tiesaaMetadataChangeJaxb2Marshaller) {
-        super(connectionFactory, clusteredLocker, log);
+        super(connectionFactory, lockingService, log);
         this.weatherMetadataUpdateMessageHandler = weatherMetadataUpdateMessageHandler;
         this.tiesaaMetadataChangeJaxb2Marshaller = tiesaaMetadataChangeJaxb2Marshaller;
 
         setJmsParameters(new JMSParameters(jmsQueueKeys, jmsUserId, jmsPassword,
                 WeatherMetadataJMSListenerConfiguration.class.getSimpleName(),
-                ClusteredLocker.generateInstanceId()));
+                lockingService.getInstanceId()));
     }
 
     @Override
