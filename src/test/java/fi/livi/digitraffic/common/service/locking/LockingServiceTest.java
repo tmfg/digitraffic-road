@@ -71,7 +71,6 @@ public class LockingServiceTest extends AbstractDaemonTest {
     }
 
     @Test
-
     public void releaseLock() {
         assertTrue(lockingService1.acquireLock(LOCKNAME1, 10));
         assertTrue(lockingService1.acquireLock(LOCKNAME1, 10));
@@ -86,7 +85,6 @@ public class LockingServiceTest extends AbstractDaemonTest {
     }
 
     @Test
-
     public void lockWithAnotherInstanceAfterExpiration() {
         final int expirationSeconds = 1;
         final int expirationMs = 1000 * expirationSeconds;
