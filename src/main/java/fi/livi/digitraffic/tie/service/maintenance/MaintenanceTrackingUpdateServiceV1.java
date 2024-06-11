@@ -102,6 +102,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
 
     @Transactional
     public int handleUnhandledMaintenanceTrackingObservationData(final int maxToHandle) {
+        final StopWatch start = StopWatch.createStarted();
         fromCacheCount = 0;
         fromDbCountAndMs = Pair.of(0,0L);
 
@@ -110,10 +111,11 @@ public class MaintenanceTrackingUpdateServiceV1 {
         final int count = (int) data.filter(trackingData -> handleMaintenanceTrackingObservationData(trackingData, cacheByHarjaWorkMachineIdAndContractId)).count();
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, STATE_ROADS_DOMAIN);
 
-        log.info("method=handleUnhandledMaintenanceTrackingObservationData Read data from db {} times and from cache {} times. Db queries tookTotal {} ms and average {} ms/query",
+        log.info("method=handleUnhandledMaintenanceTrackingObservationData Read data from db {} times and from cache {} times. Db queries tookTotal {} ms and average {} ms/query tookMs={}",
                  fromDbCountAndMs.getLeft(), fromCacheCount,
                  fromDbCountAndMs.getRight(),
-                 fromDbCountAndMs.getLeft() > 0 ? fromDbCountAndMs.getRight()/fromDbCountAndMs.getLeft() : 0);
+                 fromDbCountAndMs.getLeft() > 0 ? fromDbCountAndMs.getRight()/fromDbCountAndMs.getLeft() : 0,
+                start.getTime());
         return count;
     }
 
@@ -132,9 +134,8 @@ public class MaintenanceTrackingUpdateServiceV1 {
             log.error(String.format("method=handleMaintenanceTrackingObservationData failed for id %d", trackingData.getId()), e);
             trackingData.updateStatusToError();
             trackingData.appendHandlingInfo(ExceptionUtils.getStackTrace(e));
-            return false;
         }
-        return true;
+        return true; // We need to return always true, to count tracking as handled even when there is error in handling
     }
 
     private void handleRoute(final Havainto havainto,

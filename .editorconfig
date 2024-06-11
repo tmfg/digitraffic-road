@@ -9,6 +9,9 @@ tab_width = 4
 trim_trailing_whitespace = true
 ij_continuation_indent_size = 8
 
+[{*.sql}]
+ij_continuation_indent_size = 0
+
 [{*.json,*.yml,*.yaml,*.ddl,*.sql,*.sass,*.scss,*.markdown,*.md,*.bash,*.sh,*.zsh,.babelrc,.eslintrc,.prettierrc,.stylelintrc}]
 indent_size=2
 

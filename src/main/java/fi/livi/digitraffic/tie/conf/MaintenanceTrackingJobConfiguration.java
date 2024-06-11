@@ -14,7 +14,8 @@ import fi.livi.digitraffic.common.service.locking.CachedLockingService;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingUpdateServiceV1;
 
-@ConditionalOnProperty(name = "maintenance.tracking.job.enabled", matchIfMissing = true)
+@ConditionalOnProperty(name = "maintenance.tracking.job.enabled",
+                       matchIfMissing = true)
 @ConditionalOnNotWebApplication
 @Component
 public class MaintenanceTrackingJobConfiguration {
@@ -24,13 +25,14 @@ public class MaintenanceTrackingJobConfiguration {
     private final CachedLockingService cachedLockingService;
     private final long runRateMs;
 
-    private final static int MAX_HANDLE_COUNT_PER_CALL = 10;
+    private final static int MAX_HANDLE_COUNT_PER_CALL = 20;
 
     @Autowired
-    public MaintenanceTrackingJobConfiguration(final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1,
-                                               final LockingService lockingService,
-                                               @Value("${maintenance.tracking.job.intervalMs}")
-                                               final long runRateMs) {
+    public MaintenanceTrackingJobConfiguration(
+            final MaintenanceTrackingUpdateServiceV1 maintenanceTrackingUpdateServiceV1,
+            final LockingService lockingService,
+            @Value("${maintenance.tracking.job.intervalMs}")
+            final long runRateMs) {
         this.maintenanceTrackingUpdateServiceV1 = maintenanceTrackingUpdateServiceV1;
         this.cachedLockingService = lockingService.createCachedLockingService(this.getClass().getSimpleName());
         this.runRateMs = runRateMs;
@@ -45,36 +47,42 @@ public class MaintenanceTrackingJobConfiguration {
         final StopWatch start = StopWatch.createStarted();
         int count;
         int totalCount = 0;
+
         do {
-            if ( cachedLockingService.hasLock() ) {
+            if (cachedLockingService.hasLock()) {
                 final StopWatch startInternal = StopWatch.createStarted();
                 try {
-                    count = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(MAX_HANDLE_COUNT_PER_CALL);
+                    count = maintenanceTrackingUpdateServiceV1.handleUnhandledMaintenanceTrackingObservationData(
+                            MAX_HANDLE_COUNT_PER_CALL);
                     totalCount += count;
                     if (count > 0) {
                         final long msPerObservation = startInternal.getTime() / count;
-                        log.info("method=handleUnhandledMaintenanceTrackingObservations handledCount={} tookMs={} tookMsPerObservation={}",
-                                 count, startInternal.getTime(), msPerObservation);
+                        log.info("method=handleUnhandledMaintenanceTrackingObservations " +
+                                        "handledCount={} tookMs={} tookMsPerObservation={}",
+                                count, startInternal.getTime(), msPerObservation);
                     }
                 } catch (final Exception e) {
-                    log.error(String.format("method=handleUnhandledMaintenanceTrackingObservations observations failed tookMs=%d", startInternal.getTime()), e);
+                    log.error("method=handleUnhandledMaintenanceTrackingObservations observations failed tookMs={}",
+                            startInternal.getTime(), e);
                     throw e;
                 }
             } else {
-                log.warn("method=handleUnhandledMaintenanceTrackingObservations didn't get lock for updating tracking data.");
+                log.warn("method=handleUnhandledMaintenanceTrackingObservations didn't get " +
+                        "lock for updating tracking data.");
                 count = 0; // to end the loop
             }
-        // Stop if all was handled: count == MAX_HANDLE_COUNT_PER_CALL
-        // Make sure job stops now and then even when it cant handle all data: start.getTime() < runRateMs * 10
+        // Stop if UNHANDLED data handled: count != MAX_HANDLE_COUNT_PER_CALL
+        // Make sure job stops now and then even when it can't handle all data: start.getTime() < runRateMs * 10
         } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getTime() < runRateMs * 10);
 
         if (totalCount > 0) {
             final long msPerObservation = start.getTime() / totalCount;
-            log.info("method=handleUnhandledMaintenanceTrackingObservations handledTotalCount={} tookMs={} tookMsPerObservation={}",
-                     totalCount, start.getTime(), msPerObservation);
+            log.info("method=handleUnhandledMaintenanceTrackingObservations " +
+                            "handledTotalCount={} tookMs={} tookMsPerObservation={}",
+                    totalCount, start.getTime(), msPerObservation);
         } else {
             log.info("method=handleUnhandledMaintenanceTrackingObservations handledTotalCount={} tookMs={}",
-                     totalCount, start.getTime());
+                    totalCount, start.getTime());
         }
     }
 }
