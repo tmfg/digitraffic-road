@@ -131,7 +131,8 @@ public class MaintenanceTrackingUpdateServiceV1 {
             trackingData.updateStatusToHandled();
 
         } catch (final Exception e) {
-            log.error(String.format("method=handleMaintenanceTrackingObservationData failed for id %d", trackingData.getId()), e);
+            // FIXME: DPO-2617
+            log.warn(String.format("method=handleMaintenanceTrackingObservationData failed for id %d", trackingData.getId()), e);
             trackingData.updateStatusToError();
             trackingData.appendHandlingInfo(ExceptionUtils.getStackTrace(e));
         }
