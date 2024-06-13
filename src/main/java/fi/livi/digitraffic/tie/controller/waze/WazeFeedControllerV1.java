@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
-import fi.livi.digitraffic.tie.service.WazeFeedService;
+import fi.livi.digitraffic.tie.service.waze.WazeFeedService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 

@@ -39,10 +39,10 @@ public class TrafficAnnouncementProperties extends PropertiesV1 {
     @Schema(description = "The type of the traffic announcement. Omitted for other situation types. Note that ended and retracted are not actual types.")
     private TrafficAnnouncementType trafficAnnouncementType;
 
-    @Schema(description = "Annoucement release time", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Announcement release time", requiredMode = Schema.RequiredMode.REQUIRED)
     public final ZonedDateTime releaseTime;
 
-    @Schema(description = "Annoucement version time", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Announcement version time", requiredMode = Schema.RequiredMode.REQUIRED)
     public final ZonedDateTime versionTime;
 
     @Schema(description = "Contains announcement's different language versions available.", requiredMode = Schema.RequiredMode.REQUIRED)

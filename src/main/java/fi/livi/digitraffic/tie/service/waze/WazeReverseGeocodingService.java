@@ -1,11 +1,15 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.waze;
 
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_REVERSE_GEOCODE;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,15 +60,24 @@ public class WazeReverseGeocodingService {
         if (geometry instanceof Point) {
             return Optional.of((Point) geometry);
         } else if (geometry instanceof MultiLineString) {
+            // get first linestring and middle coordinates
             return ((MultiLineString) geometry).getCoordinates().stream()
-                .flatMap(Collection::stream)
                 .findFirst()
-                .map(pair -> new Point(pair.get(0), pair.get(1)));
+                .flatMap(this::middleElement)
+                .flatMap(pair -> Optional.of(new Point(pair.get(0), pair.get(1))));
         }
 
         logger.warn(String.format("method=getPoint Unknown geometry type %s", geometry.getClass().getSimpleName()));
         return Optional.empty();
     }
+
+private <T> Optional<T> middleElement(final List<T> list) {
+    if(list.isEmpty()) {
+        return Optional.empty();
+    }
+
+    return Optional.of(list.get(list.size() / 2));
+}
 
     private Optional<String> closestStreetName(final ReverseGeocode reverseGeocode) {
         return reverseGeocode.results.stream()
@@ -77,9 +90,15 @@ public class WazeReverseGeocodingService {
         final Double longitude = point.getLongitude();
 
         logger.info(String.format(Locale.US, "method=fetch Get reverse geocoding for lat: %f, lon: %f", latitude, longitude));
+
         return wazeReverseGeocodingApi
             .fetch(latitude, longitude)
-            .flatMap(this::parseReverseGeocodeJson);
+            .flatMap(this::parseReverseGeocodeJson)
+            .or(() -> {
+                logger.info(String.format(Locale.US, "method=fetch empty response for lat: %f, lon: %f", latitude, longitude));
+
+                return Optional.empty();
+            });
     }
 
     private Optional<ReverseGeocode> parseReverseGeocodeJson(final String input) {

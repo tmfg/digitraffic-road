@@ -27,7 +27,7 @@ import fi.livi.digitraffic.tie.helper.WazeDatex2MessageConverter;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
-import fi.livi.digitraffic.tie.service.WazeReverseGeocodingService;
+import fi.livi.digitraffic.tie.service.waze.WazeReverseGeocodingService;
 
 @ConditionalOnWebApplication
 @Component
@@ -40,11 +40,15 @@ public class WazeDatex2JsonConverter {
 
     private final WazeReverseGeocodingService wazeReverseGeocodingService;
 
+    private final WazeTypeConverter wazeTypeConverter;
+
     @Autowired
     public WazeDatex2JsonConverter(final WazeDatex2MessageConverter wazeDatex2MessageConverter,
-                                   final WazeReverseGeocodingService wazeReverseGeocodingService) {
+                                   final WazeReverseGeocodingService wazeReverseGeocodingService,
+                                   final WazeTypeConverter wazeTypeConverter) {
         this.wazeDatex2MessageConverter = wazeDatex2MessageConverter;
         this.wazeReverseGeocodingService = wazeReverseGeocodingService;
+        this.wazeTypeConverter = wazeTypeConverter;
     }
 
     public Optional<WazeFeedIncidentDto> convertToWazeFeedAnnouncementDto(final WazeDatex2FeatureDto wazeDatex2FeatureDto) {
@@ -52,7 +56,7 @@ public class WazeDatex2JsonConverter {
 
         final TrafficAnnouncementProperties properties = feature.getProperties();
         final String situationId = properties.situationId;
-        final Optional<WazeFeedIncidentDto.Type> maybeType = this.convertToWazeType(properties.getTrafficAnnouncementType());
+        final Optional<WazeFeedIncidentDto.WazeType> maybeType = wazeTypeConverter.convertToWazeType(wazeDatex2FeatureDto);
 
         final TrafficAnnouncement announcement = properties.announcements.get(0);
         final Optional<Geometry<?>> maybeGeometry = Optional.ofNullable(feature.getGeometry());

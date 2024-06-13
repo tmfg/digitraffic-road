@@ -1,9 +1,11 @@
-package fi.livi.digitraffic.tie.service;
+package fi.livi.digitraffic.tie.service.waze;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 @ConditionalOnWebApplication
 @Service
 public class WazeFeedService {
+    private static final Logger logger = LoggerFactory.getLogger(WazeFeedService.class);
 
     private final Datex2Repository datex2Repository;
     private final WazeDatex2Converter wazeDatex2Converter;
@@ -37,17 +40,20 @@ public class WazeFeedService {
 
     @Transactional(readOnly = true)
     public WazeFeedAnnouncementDto findActive() {
-        final List<Datex2> activeIncidents = datex2Repository.findAllActiveBySituationTypeWithJson(1, SituationType.TRAFFIC_ANNOUNCEMENT.name());
+        final List<Datex2> activeIncidents = datex2Repository.findAllActiveBySituationTypeWithJson(1,
+        SituationType.TRAFFIC_ANNOUNCEMENT.name(), SituationType.ROAD_WORK.name());
+
+        logger.info("method=findActive active incidents count=" + activeIncidents.size());
 
         final List<WazeFeedIncidentDto> incidents = activeIncidents.stream()
             .map(this.wazeDatex2Converter::convertToWazeDatex2FeatureDto)
             .flatMap(Optional::stream)
-            .filter(WazeDatex2Converter::hasGeometry)
-            .filter(WazeDatex2Converter::hasActiveSituationRecords)
-            .filter(x -> !WazeDatex2Converter.hasIceRoadOpenRecord(x))
+            .filter(WazeDatex2Converter::isValidWazeEntry)
             .map(this.wazeDatex2JsonConverter::convertToWazeFeedAnnouncementDto)
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
+
+        logger.info("method=findActive valid incidents count=" + incidents.size());
 
         return new WazeFeedAnnouncementDto(incidents);
     }
