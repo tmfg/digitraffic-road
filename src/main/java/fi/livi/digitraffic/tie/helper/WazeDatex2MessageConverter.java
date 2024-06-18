@@ -233,6 +233,7 @@ import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum
 import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.SURFACE_WATER;
 import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.WET_AND_ICY_ROAD;
 import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.WET_ICY_PAVEMENT;
+import static io.netty.util.internal.StringUtil.EMPTY_STRING;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -258,6 +259,9 @@ import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMar
 @Component
 public class WazeDatex2MessageConverter {
     private static final Logger logger = LoggerFactory.getLogger(WazeDatex2MessageConverter.class);
+
+    // use this string, when you want to skip some type-enum without error
+    private static final String SKIP_SUBTYPE = "";
 
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
@@ -609,6 +613,7 @@ public class WazeDatex2MessageConverter {
         maintenanceWorksTypeMap.put(ROAD_MARKING_WORK, "Road marking work");
         maintenanceWorksTypeMap.put(GRASS_CUTTING_WORK, "Grass cutting work");
         maintenanceWorksTypeMap.put(TREE_AND_VEGETATION_CUTTING_WORK, "Tree and vegetation cutting work");
+        maintenanceWorksTypeMap.put(OTHER, SKIP_SUBTYPE); // skip other, too vague
 
         constructionWorksTypeMap.put(ConstructionWorkTypeEnum.CONSTRUCTION_WORK, "Construction work");
         constructionWorksTypeMap.put(ConstructionWorkTypeEnum.BLASTING_WORK, "Blasting work");
@@ -669,7 +674,6 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final Accident accident) {
-
         return accident.getAccidentTypes()
             .stream()
             .findFirst()
@@ -885,6 +889,12 @@ public class WazeDatex2MessageConverter {
 
         if (result.isEmpty()) {
             logger.error("method=accept unknown {} record in situation {}", situationRecordType, situationId);
+        }
+
+        // EMPTY_STRING means, that we want to skip this event subtype, but it's ok and no need to log error
+        // (for example OTHER subtype for MaintenanceWorks)
+        if (result.get() == SKIP_SUBTYPE) {
+            return Optional.empty();
         }
 
         return result;
