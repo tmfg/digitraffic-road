@@ -1,16 +1,12 @@
 package fi.livi.digitraffic.tie.service.waze;
 
-import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_REVERSE_GEOCODE;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
+import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +14,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
-import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
-import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
-import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_REVERSE_GEOCODE;
 
 @ConditionalOnWebApplication
 @Service
@@ -45,7 +38,6 @@ public class WazeReverseGeocodingService {
     }
 
     @Cacheable(value = CACHE_REVERSE_GEOCODE)
-    @Transactional(readOnly = true)
     public Optional<String> getStreetName(final Geometry<?> geometry) {
         return getPoint(geometry)
             .flatMap(this::fetch)
@@ -53,7 +45,6 @@ public class WazeReverseGeocodingService {
     }
 
     @CacheEvict(value = CACHE_REVERSE_GEOCODE, allEntries = true)
-    @Transactional(readOnly = true)
     public void evictCache () { }
 
     private Optional<Point> getPoint(final Geometry<?> geometry) {
