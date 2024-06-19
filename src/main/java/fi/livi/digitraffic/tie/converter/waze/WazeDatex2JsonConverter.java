@@ -84,22 +84,6 @@ public class WazeDatex2JsonConverter {
                     new WazeFeedIncidentDto(situationId, street, description, direction, polyline, type, starttime, endtime))));
     }
 
-    private Optional<WazeFeedIncidentDto.Type> convertToWazeType(final TrafficAnnouncementType trafficAnnouncementType) {
-        if (trafficAnnouncementType == null) {
-            return Optional.empty();
-        }
-
-        switch (trafficAnnouncementType) {
-        case ACCIDENT_REPORT:
-        case PRELIMINARY_ACCIDENT_REPORT:
-            return Optional.of(WazeFeedIncidentDto.Type.ACCIDENT);
-        case GENERAL:
-            return Optional.of(WazeFeedIncidentDto.Type.HAZARD);
-        default:
-            return Optional.empty();
-        }
-    }
-
     private Optional<WazeFeedLocationDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, final Geometry<?> geometry) {
         if (direction == null || geometry == null || geometry instanceof Point) {
             return Optional.empty();

@@ -233,7 +233,6 @@ import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum
 import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.SURFACE_WATER;
 import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.WET_AND_ICY_ROAD;
 import static fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum.WET_ICY_PAVEMENT;
-import static io.netty.util.internal.StringUtil.EMPTY_STRING;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -261,7 +260,7 @@ public class WazeDatex2MessageConverter {
     private static final Logger logger = LoggerFactory.getLogger(WazeDatex2MessageConverter.class);
 
     // use this string, when you want to skip some type-enum without error
-    private static final String SKIP_SUBTYPE = "";
+    private static final String SKIP_SUBTYPE = "SKIP_SUBTYPE-5O7jh8ytZjQLKCurmFwYowFBaghhMk3U-SKIP_SUBTYPE";
 
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
@@ -891,12 +890,8 @@ public class WazeDatex2MessageConverter {
             logger.error("method=accept unknown {} record in situation {}", situationRecordType, situationId);
         }
 
-        // EMPTY_STRING means, that we want to skip this event subtype, but it's ok and no need to log error
+        // SKIP_SUBTYPE means, that we want to skip this event subtype, but it's ok and no need to log error
         // (for example OTHER subtype for MaintenanceWorks)
-        if (result.get() == SKIP_SUBTYPE) {
-            return Optional.empty();
-        }
-
-        return result;
+        return result.filter(v -> v != SKIP_SUBTYPE);
     }
 }
