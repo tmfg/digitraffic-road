@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.waze;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
 import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -38,6 +39,7 @@ public class WazeReverseGeocodingService {
     }
 
     @Cacheable(value = CACHE_REVERSE_GEOCODE)
+    @NotTransactionalServiceMethod
     public Optional<String> getStreetName(final Geometry<?> geometry) {
         return getPoint(geometry)
             .flatMap(this::fetch)
@@ -45,6 +47,7 @@ public class WazeReverseGeocodingService {
     }
 
     @CacheEvict(value = CACHE_REVERSE_GEOCODE, allEntries = true)
+    @NotTransactionalServiceMethod
     public void evictCache () { }
 
     private Optional<Point> getPoint(final Geometry<?> geometry) {
