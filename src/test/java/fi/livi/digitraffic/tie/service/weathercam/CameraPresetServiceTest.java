@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +18,12 @@ public class CameraPresetServiceTest extends AbstractServiceTest {
 
     @Autowired
     private CameraPresetService cameraPresetService;
+
+    @AfterEach
+    @BeforeEach
+    public void cleanDb() {
+        TestUtils.truncateCameraData(entityManager);
+    }
 
     @Test
     public void findAll() {
