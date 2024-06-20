@@ -8,10 +8,10 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 
-public class ImsMessageMarshaller extends TextMessageMarshaller<ExternalIMSMessage> {
-    private static final Logger log = LoggerFactory.getLogger(ImsMessageMarshaller.class);
+public class ImsJMSMessageMarshaller extends TextJMSMessageMarshaller<ExternalIMSMessage> {
+    private static final Logger log = LoggerFactory.getLogger(ImsJMSMessageMarshaller.class);
 
-    public ImsMessageMarshaller(final Jaxb2Marshaller imsJaxb2Marshaller) {
+    public ImsJMSMessageMarshaller(final Jaxb2Marshaller imsJaxb2Marshaller) {
         super(imsJaxb2Marshaller);
     }
 

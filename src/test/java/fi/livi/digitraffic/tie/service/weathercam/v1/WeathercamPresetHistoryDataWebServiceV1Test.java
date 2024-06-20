@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,7 +109,7 @@ public class WeathercamPresetHistoryDataWebServiceV1Test extends AbstractDaemonT
 
     @Test
     public void cameraOrPresetPublicHistory() {
-        final int historySize = RandomUtils.nextInt(15, 28);
+        final int historySize = TestUtils.getRandomId(15, 27);
         final Instant lastModified = getNowWithoutMillis();
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         log.info("Generated history for camera {} from {} to {} (size {})",

@@ -1,8 +1,3 @@
-# Http-server port
-server.port = 9000
-
-dt.domain.url=http://localhost:9000
-
 # Datasource
 road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=testRoadApplication
 road.datasource.username=road
@@ -15,6 +10,11 @@ app.type=web
 # Web application type. Should be none for daemon process and servlet for web application
 spring.main.web-application-type=servlet
 
+# Http-server port
+server.port = 9000
+
+# Domain for the app ie. https://digitraffic.fi
+dt.domain.url=http://localhost:9000
 
 mqtt.server.url=tcp://address:port
 mqtt.server.username=
@@ -31,7 +31,6 @@ metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
 metadata.server.path.weather=/LOTJU/TiesaaPerustiedot/v6
 metadata.server.path.image = /LOTJU/KameraKuvavarasto
 metadata.server.health.ttlInSeconds = 10
-metadata.server.image.ttlInSeconds = 10
 # TVT
 metadata.server.health.value=ok
 
@@ -49,7 +48,6 @@ dt.job.ForecastSectionV1DataUpdateJob.schedule =               0 0/5 * * * ?
 dt.job.ForecastSectionV2DataUpdateJob.schedule =               0 0/5 * * * ?
 # Every 1 h
 dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
-dt.job.WeatherHistoryUpdateJob.schedule =                      0 3 * ? * * *
 dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 0 0/1 * * ?
 dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
 dt.job.CameraHistoryDeleteJob.schedule =                       0 0 0/1 * * ?

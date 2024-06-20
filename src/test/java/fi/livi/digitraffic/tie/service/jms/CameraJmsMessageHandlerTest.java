@@ -9,9 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -24,16 +21,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-
+import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -43,6 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -53,7 +48,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -62,12 +56,14 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
+import jakarta.jms.JMSException;
 import jakarta.persistence.EntityManager;
 
-@Deprecated(forRemoval = true, since = "TODO remove when DPO-2422 KCA is in production")
-@Disabled("Does not execute properly with other tests")
-public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
-    private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
+@TestPropertySource(properties = {
+        "metadata.server.addresses=http://localhost:8898" // Overlaps with another test port
+})
+public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
+    private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageHandlerTest.class);
 
     private static final String IMAGE_SUFFIX = "image.jpg";
     private static final String IMAGE_DIR = "lotju/kuva/";
@@ -99,22 +95,23 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     @Value("${metadata.server.path.image}")
     private String lotjuImagePath;
 
+    //private final WeathercamDataJMSMessageMarshaller messageMarshaller = new WeathercamDataJMSMessageMarshaller();
+
     private final Map<String, byte[]> imageFilesMap = new HashMap<>();
 
     private WireMockServer wm;
 
-    private final int sationsCount = 50;
+    private final int stationsCount = 50;
     private final int presetsPerStationCount = 5;
-    private final int burstSize = 25;
-    private final int port = 8899;
 
     @BeforeEach
     public void initData() throws IOException {
         TestUtils.truncateCameraData(entityManager);
         generateImageFilesMap();
 
-        wm = new WireMockServer(options().port(port));
+        wm = new WireMockServer(options().port(8898));
         wm.start();
+        log.info("WireMockServer options: {}", wm.getOptions());
         log.info("lotjuImagePath: {}", lotjuImagePath);
         log.info("healthPath: {}", healthPath);
         createHealthOKStubFor(healthPath);
@@ -124,9 +121,9 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
         createHttpResponseStubFor(4);// + IMAGE_SUFFIX);
         createHttpResponseStubFor(5);// + IMAGE_SUFFIX);
 
-
         // 250 presets
-        final List<List<CameraPreset>> cs = TestUtils.generateDummyCameraStations(sationsCount,presetsPerStationCount);
+        final List<List<CameraPreset>> cs =
+                TestUtils.generateDummyCameraStations(stationsCount, presetsPerStationCount);
         cs.forEach(camera -> camera.forEach(preset -> entityManager.persist(preset)));
 
         entityManager.flush();
@@ -134,8 +131,10 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     }
 
     @AfterEach
-    public void after() {
-        wm.stop();
+    public void cleanUp() {
+        if (wm.isRunning()) {
+            wm.stop();
+        }
     }
 
     private void generateImageFilesMap() throws IOException {
@@ -157,10 +156,10 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     @Test
     public void testPerformanceForReceivedMessages() throws IOException, JMSException {
 
-        final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> dataUpdater = createJMSDataUpdater();
+        final JMSMessageHandler.JMSDataUpdater<KuvaProtos.Kuva> dataUpdater = createJMSDataUpdater();
 
-        final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener =
-            new JMSMessageListener<>(new WeathercamDataJMSMessageMarshaller(), dataUpdater, true, log);
+        final JMSMessageHandler<KuvaProtos.Kuva> cameraJmsMessageListener =
+                new JMSMessageHandler<>(JMSMessageHandler.JMSMessageType.WEATHERCAM_DATA, dataUpdater, new WeathercamDataJMSMessageMarshaller(), lockingService.getInstanceId());
 
         Instant time = Instant.now().minusSeconds(60);
 
@@ -175,7 +174,8 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
         int iteration = 0;
         while (presetIterator.hasNext()) {
             iteration++;
-            maxHandleTime += burstSize*85; // allowed time per preset 85 ms
+            final int burstSize = 25;
+            maxHandleTime += burstSize * 85; // allowed time per preset 85 ms
             final StopWatch sw = StopWatch.createStarted();
 
             while (presetIterator.hasNext()) {
@@ -193,9 +193,10 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
 
                 time = time.plusMillis(1000);
 
-                cameraJmsMessageListener.onMessage(createBytesMessage(kuva));
+                final ActiveMQBytesMessage bm = createBytesMessage(kuva);
+                cameraJmsMessageListener.onMessage(bm);
 
-                if (jmsKuvaMessages.size() >= burstSize*iteration) {
+                if (jmsKuvaMessages.size() >= burstSize * iteration) {
                     break;
                 }
             }
@@ -213,22 +214,25 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
             }
         }
 
-        assertEquals(sationsCount * presetsPerStationCount, jmsKuvaMessages.size());
+        assertEquals(stationsCount * presetsPerStationCount, jmsKuvaMessages.size());
 
         log.info("Handle kuva data total took {} ms and max was {} ms success={}",
-                 handleDataTotalTime, maxHandleTime, (handleDataTotalTime <= maxHandleTime ? "OK" : "FAIL"));
+                handleDataTotalTime, maxHandleTime, (handleDataTotalTime <= maxHandleTime ? "OK" : "FAIL"));
 
         log.info("Check data validy");
 
         checkDataUpdated(jmsKuvaMessages);
 
-        final long latestImageTimestampToExpect = jmsKuvaMessages.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow();
-        final ZonedDateTime imageUpdatedInDb = dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_IMAGE_UPDATED);
-        assertEquals(Instant.ofEpochMilli(roundToZeroMillis(latestImageTimestampToExpect)), imageUpdatedInDb.toInstant(), "Latest image update time not correct");
+        final long latestImageTimestampToExpect =
+                jmsKuvaMessages.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow();
+        final ZonedDateTime imageUpdatedInDb =
+                dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_IMAGE_UPDATED);
+        assertEquals(Instant.ofEpochMilli(roundToZeroMillis(latestImageTimestampToExpect)),
+                imageUpdatedInDb.toInstant(), "Latest image update time not correct");
 
         log.info("Data is valid");
         assertTrue(handleDataTotalTime <= maxHandleTime,
-            "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
+                "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
     }
 
     private void checkDataUpdated(final List<KuvaProtos.Kuva> jmsKuvaMessages) throws IOException {
@@ -247,7 +251,8 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
             final Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
             final Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
 
-            assertEquals(kuvaTaken, presetPictureLastModified, "Preset not updated with kuva's timestamp " + preset.getPresetId());
+            assertEquals(kuvaTaken, presetPictureLastModified,
+                    "Preset not updated with kuva's timestamp " + preset.getPresetId());
         }
     }
 
@@ -263,8 +268,8 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
         final PutObjectResult result = new PutObjectResult();
         result.setVersionId(versionId);
         Mockito
-            .when(amazonS3.putObject(Mockito.anyString(), Mockito.eq(versionKey), Mockito.any(), Mockito.any()))
-            .thenReturn(result);
+                .when(amazonS3.putObject(Mockito.anyString(), Mockito.eq(versionKey), Mockito.any(), Mockito.any()))
+                .thenReturn(result);
     }
 
     private static KuvaProtos.Kuva createKuvaMessage(final CameraPreset preset, final Instant time) {
@@ -294,7 +299,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
         return kuvaBuilder.build();
     }
 
-    private JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> createJMSDataUpdater() {
+    private JMSMessageHandler.JMSDataUpdater<KuvaProtos.Kuva> createJMSDataUpdater() {
         return (data) -> {
             final StopWatch start = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
@@ -326,9 +331,9 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     private void createHealthOKStubFor(final String healthPath) {
         log.info("Create health mock with url: " + healthPath);
         wm.stubFor(get(urlEqualTo(healthPath))
-            .willReturn(aResponse().withBody("ok!")
-                .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
-                .withStatus(200)));
+                .willReturn(aResponse().withBody("ok!")
+                        .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
+                        .withStatus(200)));
     }
 
     private void createHttpResponseStubFor(final int kuvaId) {
@@ -340,30 +345,12 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
                         .withStatus(200)));
     }
 
-    public static BytesMessage createBytesMessage(final KuvaProtos.Kuva kuva) throws JMSException, IOException {
-        final org.apache.commons.io.output.ByteArrayOutputStream bous = new org.apache.commons.io.output.ByteArrayOutputStream(0);
-        kuva.writeDelimitedTo(bous);
-        final byte[] kuvaBytes = bous.toByteArray();
-
-        final BytesMessage bytesMessage = mock(BytesMessage.class);
-
-        when(bytesMessage.getBodyLength()).thenReturn((long)kuvaBytes.length);
-        when(bytesMessage.readBytes(any(byte[].class))).then(invocation -> {
-            final byte[] bytes = (byte[]) invocation.getArguments()[0];
-            System.arraycopy(kuvaBytes, 0, bytes, 0, kuvaBytes.length);
-
-            return kuvaBytes.length;
-        });
-
-        return bytesMessage;
-    }
-
     public static long roundToZeroMillis(final long epochMilli) {
         final long secs = Math.floorDiv(epochMilli, 1000);
         final int mos = Math.floorMod(epochMilli, 1000);
         if (mos >= 500) {
-            return (secs+1)*1000;
+            return (secs + 1) * 1000;
         }
-        return secs*1000;
+        return secs * 1000;
     }
 }

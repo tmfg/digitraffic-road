@@ -1,7 +1,10 @@
 # Datasource
+# Password stored in AWS Secrets Manager
 road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName=road-local-web
 road.datasource.username=road
 road.datasource.password=road
+#road.datasource.driver=com.amazonaws.secretsmanager.sql.AWSSecretsManagerPostgreSQLDriver
+#road.datasource.hikari.maximum-pool-size=10
 
 # daemon or web
 app.type=web
@@ -12,7 +15,7 @@ spring.main.web-application-type=servlet
 # Http-server port
 server.port = 9002
 
-# Domain for the app ie. https://digitraffic.fi
+# Domain for the app i.e. https://digitraffic.fi
 dt.domain.url=http://localhost:9002
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
@@ -26,12 +29,16 @@ dt.amazon.s3.sensordata.bucketName = sensordata-road-test
 dt.amazon.s3.sensordata.region = eu-west-1
 
 # Waze reverse geocoding
+# Stored in AWS Secrets Manager
 waze.reverseGeocodeToken=
 waze.reverseGeocodeEndpoint=
 
 # disable healthchecks
 management.health.jms.enabled=false
 management.health.db.enabled=false
+
+# Enable Waze
+dt.waze.enabled=true
 
 # Developer life improvements
 logging.level.root=INFO

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
@@ -45,7 +45,7 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
     @Override
     public JMSMessageListener<TiesaaProtos.TiesaaMittatieto> createJMSMessageListener() {
         final JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> handleData = sensorDataUpdateService::updateWeatherValueBuffer;
-        final WeatherMessageMarshaller messageMarshaller = new WeatherMessageMarshaller();
+        final WeatherDataJMSMessageMarshaller messageMarshaller = new WeatherDataJMSMessageMarshaller();
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),

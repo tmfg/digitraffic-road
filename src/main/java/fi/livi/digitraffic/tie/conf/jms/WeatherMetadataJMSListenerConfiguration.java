@@ -13,7 +13,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMetadataUpdatedMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMetadataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.weather.WeatherMetadataUpdateMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
@@ -48,8 +48,8 @@ public class WeatherMetadataJMSListenerConfiguration extends AbstractJMSListener
     public JMSMessageListener<WeatherMetadataUpdatedMessageDto> createJMSMessageListener() {
         final JMSMessageListener.JMSDataUpdater<WeatherMetadataUpdatedMessageDto> handleData =
             weatherMetadataUpdateMessageHandler::updateMetadataFromJms;
-        final WeatherMetadataUpdatedMessageMarshaller messageMarshaller =
-            new WeatherMetadataUpdatedMessageMarshaller(tiesaaMetadataChangeJaxb2Marshaller);
+        final WeatherMetadataJMSMessageMarshaller messageMarshaller =
+            new WeatherMetadataJMSMessageMarshaller(tiesaaMetadataChangeJaxb2Marshaller);
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),

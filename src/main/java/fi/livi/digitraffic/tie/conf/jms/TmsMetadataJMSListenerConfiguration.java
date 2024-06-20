@@ -13,7 +13,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMetadataUpdatedMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMetadataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.tms.TmsMetadataUpdateMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
@@ -47,8 +47,8 @@ public class TmsMetadataJMSListenerConfiguration extends AbstractJMSListenerConf
     @Override
     public JMSMessageListener<TmsMetadataUpdatedMessageDto> createJMSMessageListener() {
         final JMSMessageListener.JMSDataUpdater<TmsMetadataUpdatedMessageDto> handleData = tmsMetadataUpdateMessageHandler::updateMetadataFromJms;
-        final TmsMetadataUpdatedMessageMarshaller messageMarshaller =
-            new TmsMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller);
+        final TmsMetadataJMSMessageMarshaller messageMarshaller =
+            new TmsMetadataJMSMessageMarshaller(kameraMetadataChangeJaxb2Marshaller);
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),

@@ -5,9 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -20,12 +17,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,12 +42,12 @@ import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.tms.TmsStationService;
+import jakarta.jms.JMSException;
 
-@Deprecated(forRemoval = true, since = "TODO remove when DPO-2422 KCA is in production")
 @TestMethodOrder(MethodOrderer.MethodName.class)
-public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
+public class TmsJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
-    private static final Logger log = LoggerFactory.getLogger(TmsJmsMessageListenerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(TmsJMSMessageHandlerTest.class);
 
     static {
         try {
@@ -61,11 +56,16 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
             throw new RuntimeException(e);
         }
     }
+
     private static final DatatypeFactory datatypeFactory;
-    private static final XMLGregorianCalendar aikaikkunaAlku = datatypeFactory.newXMLGregorianCalendar("2016-02-16T10:00:00Z");
-    private static final XMLGregorianCalendar aikaikkunaLoppu = datatypeFactory.newXMLGregorianCalendar("2016-06-16T11:00:00Z");
-    private static final ZonedDateTime timeWindowStart = ZonedDateTime.parse("2016-02-16T12:00:00+02:00[Europe/Helsinki]");
-    private static final ZonedDateTime timeWindowEnd = ZonedDateTime.parse("2016-06-16T14:00:00+03:00[Europe/Helsinki]");
+    private static final XMLGregorianCalendar aikaikkunaAlku =
+            datatypeFactory.newXMLGregorianCalendar("2016-02-16T10:00:00Z");
+    private static final XMLGregorianCalendar aikaikkunaLoppu =
+            datatypeFactory.newXMLGregorianCalendar("2016-06-16T11:00:00Z");
+    private static final ZonedDateTime timeWindowStart =
+            ZonedDateTime.parse("2016-02-16T12:00:00+02:00[Europe/Helsinki]");
+    private static final ZonedDateTime timeWindowEnd =
+            ZonedDateTime.parse("2016-06-16T14:00:00+03:00[Europe/Helsinki]");
     private static int sensorValueToSet = new Random().nextInt(1000);
 
     @Autowired
@@ -87,16 +87,19 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         TestUtils.truncateTmsData(entityManager);
         TestUtils.commitAndEndTransactionAndStartNew();
     }
+
     /**
      * Send some data bursts to jms handler and test performance of database updates.
      */
     @Test
-    public void testPerformanceForReceivedMessages() throws JMSException, IOException {
+    public void testPerformanceForReceivedMessages()
+            throws JMSException, IOException {
 
         final Map<Long, TmsStation> lamsWithLotjuId = tmsStationService.findAllPublishableTmsStationsMappedByLotjuId();
-        final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater = createLamJMSDataUpdater();
-        final JMSMessageListener<LAMRealtimeProtos.Lam> tmsJmsMessageListener = createTmsJmsMessageListener(dataUpdater);
-        final List<RoadStationSensor> publishableSensors = findPublishableRoadStationSensors(RoadStationType.TMS_STATION);
+        final JMSMessageHandler.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater = createLamJMSDataUpdater();
+        final JMSMessageHandler<LAMRealtimeProtos.Lam> tmsJmsMessageListener = createTmsJmsMessageListener(dataUpdater);
+        final List<RoadStationSensor> publishableSensors =
+                findPublishableRoadStationSensors(RoadStationType.TMS_STATION);
 
         Iterator<TmsStation> stationsIter = lamsWithLotjuId.values().iterator();
 
@@ -107,7 +110,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         final List<LAMRealtimeProtos.Lam> data = new ArrayList<>(lamsWithLotjuId.size());
         Instant time = Instant.now();
 
-        while(testBurstsLeft > 0) {
+        while (testBurstsLeft > 0) {
             testBurstsLeft--;
 
             final StopWatch sw = StopWatch.createStarted();
@@ -124,7 +127,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
                 for (final LAMRealtimeProtos.Lam lam : lams) {
                     data.add(lam);
-                    tmsJmsMessageListener.onMessage(createBytesMessage(lam));
+                    final ActiveMQBytesMessage message = createBytesMessage(lam);
+                    tmsJmsMessageListener.onMessage(message);
                 }
 
                 time = time.plusMillis(2000);
@@ -136,7 +140,6 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
             tmsJmsMessageListener.drainQueueScheduled();
             handleDataTotalTime += swHandle.getTime();
-
 
             // send data with 1 s interval
             final long sleep = 1000 - sw.getTime();
@@ -151,29 +154,33 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         flushSensorBuffer(true);
 
         log.info("Handle tms data total tookMs={} and maxMs={} result={}",
-                 handleDataTotalTime,  maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
+                handleDataTotalTime, maxHandleTime, handleDataTotalTime <= maxHandleTime ? "(OK)" : "(FAIL)");
 
         checkDataValidity(data);
         assertTrue(handleDataTotalTime <= maxHandleTime,
-            "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
+                "Handle data took too much time " + handleDataTotalTime + " ms and max was " + maxHandleTime + " ms");
 
         checkLastUpdated();
     }
 
-
     private void checkLastUpdated() {
-        final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
-        final ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
+        final ZonedDateTime lastUpdated =
+                roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
+        final ZonedDateTime timeInPast2Minutes =
+                DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);
-        assertTrue(lastUpdated.isAfter(timeInPast2Minutes), "LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes);
+        assertTrue(lastUpdated.isAfter(timeInPast2Minutes),
+                "LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes);
 
-        final List<SensorValueDto> updated = roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
-            (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
+        final List<SensorValueDto> updated =
+                roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
+                        (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
         assertFalse(updated.isEmpty());
     }
 
-    private List<LAMRealtimeProtos.Lam> generateLams(final Instant time, final List<RoadStationSensor> availableSensors, final Long stationLotjuId) {
+    private List<LAMRealtimeProtos.Lam> generateLams(final Instant time, final List<RoadStationSensor> availableSensors,
+                                                     final Long stationLotjuId) {
         // Generate two different messages for same station to test filtering newest sensor data from both
         final LAMRealtimeProtos.Lam.Builder lamBuilder1 = LAMRealtimeProtos.Lam.newBuilder();
         final LAMRealtimeProtos.Lam.Builder lamBuilder2 = LAMRealtimeProtos.Lam.newBuilder();
@@ -216,7 +223,8 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         // Assert sensor values are updated to db
         final List<Long> lamLotjuIds = data.stream().map(LAMRealtimeProtos.Lam::getAsemaId).distinct().toList();
         final Map<Long, List<SensorValue>> valuesMap =
-            roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds, RoadStationType.TMS_STATION);
+                roadStationSensorService.findNonObsoleteSensorvaluesListMappedByTmsLotjuId(lamLotjuIds,
+                        RoadStationType.TMS_STATION);
 
         boolean timeWindowsFound = false;
         for (final LAMRealtimeProtos.Lam lam : data) {
@@ -228,10 +236,11 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
             for (final LAMRealtimeProtos.Lam.Anturi anturi : anturit) {
                 final Optional<SensorValue> found =
-                    sensorValues
-                        .stream()
-                        .filter(sensorValue -> anturi.getLaskennallinenAnturiId() == sensorValue.getRoadStationSensor().getLotjuId())
-                        .findFirst();
+                        sensorValues
+                                .stream()
+                                .filter(sensorValue -> anturi.getLaskennallinenAnturiId() ==
+                                        sensorValue.getRoadStationSensor().getLotjuId())
+                                .findFirst();
                 assertTrue(found.isPresent());
 
                 final SensorValue sv = found.get();
@@ -249,37 +258,20 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
         log.info("Data is valid");
     }
 
-    private JMSMessageListener<LAMRealtimeProtos.Lam> createTmsJmsMessageListener(final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater) {
-        return new JMSMessageListener<>(new TmsDataJMSMessageMarshaller(),
-            dataUpdater, true, log);
+    private JMSMessageHandler<LAMRealtimeProtos.Lam> createTmsJmsMessageListener(
+            final JMSMessageHandler.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater) {
+        return new JMSMessageHandler<>(JMSMessageHandler.JMSMessageType.TMS_DATA_REALTIME, dataUpdater,
+                new TmsDataJMSMessageMarshaller(), lockingService.getInstanceId());
     }
 
-    private JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> createLamJMSDataUpdater() {
+    private JMSMessageHandler.JMSDataUpdater<LAMRealtimeProtos.Lam> createLamJMSDataUpdater() {
         return (data) -> {
-                final StopWatch sw = StopWatch.createStarted();
+            final StopWatch sw = StopWatch.createStarted();
 
-                final int updated = sensorDataUpdateService.updateLamValueBuffer(data);
+            final int updated = sensorDataUpdateService.updateLamValueBuffer(data);
 
-                log.info("handleData tookMs={}", sw.getTime());
-                return updated;
-            };
-    }
-
-    public static BytesMessage createBytesMessage(final LAMRealtimeProtos.Lam lam) throws JMSException, IOException {
-        final ByteArrayOutputStream bous = new ByteArrayOutputStream(0);
-        lam.writeDelimitedTo(bous);
-        final byte[] lamBytes = bous.toByteArray();
-
-        final BytesMessage bytesMessage = mock(BytesMessage.class);
-
-        when(bytesMessage.getBodyLength()).thenReturn((long)lamBytes.length);
-        when(bytesMessage.readBytes(any(byte[].class))).then(invocation -> {
-            final byte[] bytes = (byte[]) invocation.getArguments()[0];
-            System.arraycopy(lamBytes, 0, bytes, 0, lamBytes.length);
-
-            return lamBytes.length;
-        });
-
-        return bytesMessage;
+            log.info("handleData tookMs={}", sw.getTime());
+            return updated;
+        };
     }
 }

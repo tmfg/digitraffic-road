@@ -13,7 +13,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.ImsJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
@@ -50,7 +50,7 @@ public class ImsTrafficIncidentJMSListenerConfiguration extends AbstractJMSListe
     @Override
     public JMSMessageListener<ExternalIMSMessage> createJMSMessageListener() {
         final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> handleData = v2Datex2UpdateService::updateTrafficDatex2ImsMessages;
-        final ImsMessageMarshaller messageMarshaller = new ImsMessageMarshaller(imsJaxb2Marshaller);
+        final ImsJMSMessageMarshaller messageMarshaller = new ImsJMSMessageMarshaller(imsJaxb2Marshaller);
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),

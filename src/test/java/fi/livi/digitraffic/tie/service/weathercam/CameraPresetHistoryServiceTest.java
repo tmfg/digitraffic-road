@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -241,7 +240,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     @Test
     public void cameraOrPresetPublicHistory() {
-        final int historySize = RandomUtils.nextInt(21, 28);
+        final int historySize = TestUtils.getRandomId(21, 27);
         final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc();
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         log.info("Generated history for camera {} from {} to {} (size {})", cameraId, lastModified, lastModified.minusHours(historySize-1), historySize);
@@ -490,7 +489,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
     @Test
     public void findcameraOrPresetChanges() {
         // Generate preset history
-        final int historySize = RandomUtils.nextInt(21, 28);
+        final int historySize = TestUtils.getRandomId(21, 27);
         final List<String> presetIds = generateHistoryForPublicPresets(2, historySize);
         final CameraPreset cp1 = cameraPresetService.findCameraPresetByPresetId(presetIds.get(1));
         final RoadStation rs1 = cp1.getRoadStation();
@@ -595,7 +594,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     @Test
     public void deleteOlderThanHours() {
-        final int historySize = RandomUtils.nextInt(40, 80);
+        final int historySize = TestUtils.getRandomId(40, 80);
         // handle possible gap between server and db times
         final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusMinutes(1);
         // History for historySize-1 hours backwards
@@ -627,7 +626,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
     @Rollback(false)
     @Test
     public void generateHistoryForInternalTesting() {
-        final int historySize = RandomUtils.nextInt(40, 80);
+        final int historySize = TestUtils.getRandomId(40, 80);
         // handle possible gap between server and db times
         final ZonedDateTime lastModified = getZonedDateTimeNowWithoutMillisAtUtc().plusSeconds(10);
         // History for 39 hours backwards

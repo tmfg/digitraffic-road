@@ -29,7 +29,7 @@ import progress.message.jclient.QueueConnectionFactory;
 import progress.message.jclient.Topic;
 
 public abstract class AbstractJMSListenerConfiguration<K> {
-    protected static final int JMS_CONNECTION_LOCK_EXPIRATION_S = 60;
+
     private static final String STATISTICS_PREFIX = "STATISTICS";
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger lockAcquiredCounter = new AtomicInteger();
@@ -84,19 +84,16 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     public void logMessagesReceived() {
         try {
             final JMSMessageListener<K> listener = getJMSMessageListener();
-            final JMSMessageListener<K>.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
+            final JMSMessageListener.JmsStatistics jmsStats = listener.getAndResetMessageCounter();
             final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
             final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
 
-            log.info(
-                    "method=logMessagesReceived prefix={} MessageListener lock acquired lockedPerMinuteCount={} and not acquired notLockedPerMinuteCount={}" +
-                            " times per minute ( instanceId={} )",
-                    STATISTICS_PREFIX, lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceId());
-            log.info(
-                    "method=logMessagesReceived prefix={} Received messagesReceivedCount={} messages, drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={}" +
-                            " db rows per minute. Current in memory queue size queueSize={}.",
-                    STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.dbRowsUpdated,
-                    jmsStats.queueSize);
+            log.info("""
+                            method=logMessagesReceived prefix={} Received messagesReceivedCount={} messages,
+                            drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={} db rows per minute.
+                            Current queueSize={} in memory. Lock lockedPerMinuteCount={} notLockedPerMinuteCount={} instanceId={}.""",
+                    STATISTICS_PREFIX, jmsStats.messagesReceived(), jmsStats.messagesDrained(), jmsStats.dbRowsUpdated(),
+                    jmsStats.queueSize(), lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceId());
         } catch (final Exception e) {
             log.error("logging statistics failed", e);
         }
@@ -258,7 +255,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     public class JMSExceptionListener implements ExceptionListener {
         private final JMSParameters jmsParameters;
 
-        public JMSExceptionListener(final JMSParameters jmsParameters) {
+        protected JMSExceptionListener(final JMSParameters jmsParameters) {
             this.jmsParameters = jmsParameters;
         }
 

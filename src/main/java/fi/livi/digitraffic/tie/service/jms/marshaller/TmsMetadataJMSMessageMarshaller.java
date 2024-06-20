@@ -16,10 +16,10 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.TmsMetadataUpdatedMessageDto;
 
-public class TmsMetadataUpdatedMessageMarshaller extends TextMessageMarshaller<TmsMetadataUpdatedMessageDto> {
-    private static final Logger log = LoggerFactory.getLogger(TmsMetadataUpdatedMessageMarshaller.class);
+public class TmsMetadataJMSMessageMarshaller extends TextJMSMessageMarshaller<TmsMetadataUpdatedMessageDto> {
+    private static final Logger log = LoggerFactory.getLogger(TmsMetadataJMSMessageMarshaller.class);
 
-    public TmsMetadataUpdatedMessageMarshaller(final Jaxb2Marshaller jaxb2Marshaller) {
+    public TmsMetadataJMSMessageMarshaller(final Jaxb2Marshaller jaxb2Marshaller) {
         super(jaxb2Marshaller);
     }
 

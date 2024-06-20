@@ -25,10 +25,6 @@ public class JMSMessageListener<K> implements MessageListener {
         int updateData(final List<K> data);
     }
 
-    public interface MessageMarshaller<K> {
-        List<K> unmarshalMessage(final Message message) throws JMSException;
-    }
-
     private static final int QUEUE_SIZE_WARNING_LIMIT = 5000;
     private static final int QUEUE_SIZE_OVERFLOW_LIMIT = 10000;
 
@@ -43,11 +39,11 @@ public class JMSMessageListener<K> implements MessageListener {
 
     private final boolean drainScheduled;
     private final JMSDataUpdater<K> dataUpdater;
-    private final MessageMarshaller<K> messageMarshaller;
+    private final JMSMessageMarshaller<K> jmsMessageMarshaller;
 
-    public JMSMessageListener(final MessageMarshaller<K> messageMarshaller, final JMSDataUpdater<K> dataUpdater, final boolean drainScheduled,
+    public JMSMessageListener(final JMSMessageMarshaller<K> jmsMessageMarshaller, final JMSDataUpdater<K> dataUpdater, final boolean drainScheduled,
                               final Logger log) {
-        this.messageMarshaller = messageMarshaller;
+        this.jmsMessageMarshaller = jmsMessageMarshaller;
         this.dataUpdater = dataUpdater;
         this.drainScheduled = drainScheduled;
         this.log = log;
@@ -91,7 +87,7 @@ public class JMSMessageListener<K> implements MessageListener {
 
     private List<K> unmarshalMessage(final Message message) {
         try {
-            return messageMarshaller.unmarshalMessage(message);
+            return jmsMessageMarshaller.unmarshalMessage(message);
         } catch (final JMSException jmse) {
             // getText() failed
             log.error(MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
@@ -158,25 +154,11 @@ public class JMSMessageListener<K> implements MessageListener {
 
     public JmsStatistics getAndResetMessageCounter() {
         return new JmsStatistics(messageCounter.getAndSet(0),
-                                 messageDrainedCounter.getAndSet(0),
-                                 dbRowsUpdatedCounter.getAndSet(0),
-                                 messageQueue.size());
+            messageDrainedCounter.getAndSet(0),
+            dbRowsUpdatedCounter.getAndSet(0),
+            messageQueue.size());
     }
 
-    public class JmsStatistics {
-        public final int messagesReceived;
-        public final int messagesDrained;
-        public final int dbRowsUpdated;
-        public final int queueSize;
-
-        public JmsStatistics(final int messagesReceived,
-                             final int messagesDrained,
-                             final int dbRowsUpdated,
-                             final int queueSize) {
-            this.messagesReceived = messagesReceived;
-            this.messagesDrained = messagesDrained;
-            this.dbRowsUpdated = dbRowsUpdated;
-            this.queueSize = queueSize;
-        }
+    public record JmsStatistics(int messagesReceived, int messagesDrained, int dbRowsUpdated, int queueSize) {
     }
 }

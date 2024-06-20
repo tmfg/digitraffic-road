@@ -16,10 +16,10 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 
-public class CameraMetadataUpdatedMessageMarshaller extends TextMessageMarshaller<CameraMetadataUpdatedMessageDto> {
-    private static final Logger log = LoggerFactory.getLogger(CameraMetadataUpdatedMessageMarshaller.class);
+public class WeathercamMetadataJMSMessageMarshaller extends TextJMSMessageMarshaller<CameraMetadataUpdatedMessageDto> {
+    private static final Logger log = LoggerFactory.getLogger(WeathercamMetadataJMSMessageMarshaller.class);
 
-    public CameraMetadataUpdatedMessageMarshaller(final Jaxb2Marshaller jaxb2Marshaller) {
+    public WeathercamMetadataJMSMessageMarshaller(final Jaxb2Marshaller jaxb2Marshaller) {
         super(jaxb2Marshaller);
     }
 

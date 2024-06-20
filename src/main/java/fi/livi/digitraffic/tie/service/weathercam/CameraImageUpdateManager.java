@@ -58,37 +58,42 @@ public class CameraImageUpdateManager {
     @PerformanceMonitor(maxInfoExcecutionTime = 100000,
                         maxWarnExcecutionTime = 10000)
     public int updateCameraData(final List<KuvaProtos.Kuva> data) {
-        final Collection<KuvaProtos.Kuva> latestKuvas = filterLatest(data);
-        final List<Future<Boolean>> futures = new ArrayList<>();
-        final StopWatch start = StopWatch.createStarted();
+        try {
+            final Collection<KuvaProtos.Kuva> latestKuvas = filterLatest(data);
+            final List<Future<Boolean>> futures = new ArrayList<>();
+            final StopWatch start = StopWatch.createStarted();
 
-        latestKuvas.forEach(kuva -> {
-            final UpdateJobManager task = new UpdateJobManager(kuva, cameraImageUpdateHandler, imageUpdateTimeout);
-            futures.add(jobThreadPool.submit(task));
-        });
+            latestKuvas.forEach(kuva -> {
+                final UpdateJobManager task = new UpdateJobManager(kuva, cameraImageUpdateHandler, imageUpdateTimeout);
+                futures.add(jobThreadPool.submit(task));
+            });
 
-        final Instant latestUpdate = getLatestUpdateTime(latestKuvas);
-        dataStatusService.updateDataUpdated(CAMERA_STATION_IMAGE_UPDATED, latestUpdate);
+            final Instant latestUpdate = getLatestUpdateTime(latestKuvas);
+            dataStatusService.updateDataUpdated(CAMERA_STATION_IMAGE_UPDATED, latestUpdate);
 
-        while (futures.stream().anyMatch(f -> !f.isDone())) {
-            ThreadUtil.delayMs(100L);
-        }
-        final long updateCount = futures.parallelStream().filter(p -> {
-            try {
-                return p.get();
-            } catch (final Exception e) {
-                log.error("method=updateCameraData UpdateJobManager task failed with error", e);
-                return false;
+            while (futures.stream().anyMatch(f -> !f.isDone())) {
+                ThreadUtil.delayMs(100L);
             }
-        }).count();
+            final long updateCount = futures.parallelStream().filter(p -> {
+                try {
+                    return p.get();
+                } catch (final Exception e) {
+                    log.error("method=updateCameraData UpdateJobManager task failed with error", e);
+                    return false;
+                }
+            }).count();
 
-        final String presetIds = data.stream().map(CameraImageUpdateHandler::resolvePresetIdFrom)
-            .collect(Collectors.joining(", "));
+            final String presetIds = data.stream().map(CameraImageUpdateHandler::resolvePresetIdFrom)
+                .collect(Collectors.joining(", "));
 
-        log.info(
-            "method=updateCameraData Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={} presetIds=[{}]",
-            updateCount, futures.size(), futures.size() - updateCount, start.getTime(), presetIds);
-        return (int) updateCount;
+            log.info(
+                "method=updateCameraData Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={} presetIds=[{}]",
+                updateCount, futures.size(), futures.size() - updateCount, start.getTime(), presetIds);
+            return (int) updateCount;
+        } catch (final Exception e) {
+            log.error("method=updateCameraData Error while handling Camera data", e);
+            return 0;
+        }
     }
 
     private Instant getLatestUpdateTime(final Collection<KuvaProtos.Kuva> latestKuvas) {

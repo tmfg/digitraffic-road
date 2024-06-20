@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.TmsDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
@@ -44,7 +44,7 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
     @Override
     public JMSMessageListener<LAMRealtimeProtos.Lam> createJMSMessageListener() {
         final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> handleData = sensorDataUpdateService::updateLamValueBuffer;
-        final TmsMessageMarshaller messageMarshaller = new TmsMessageMarshaller();
+        final TmsDataJMSMessageMarshaller messageMarshaller = new TmsDataJMSMessageMarshaller();
 
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),

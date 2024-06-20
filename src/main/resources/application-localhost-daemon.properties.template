@@ -1,7 +1,10 @@
 # Datasource
+# Password stored in AWS Secrets Manager
 road.datasource.url=jdbc:postgresql://localhost:54322/road?reWriteBatchedInserts=true&ApplicationName==road-local-daemon
 road.datasource.username=road
 road.datasource.password=road
+#road.datasource.driver=com.amazonaws.secretsmanager.sql.AWSSecretsManagerPostgreSQLDriver
+#road.datasource.hikari.maximum-pool-size=10
 
 # daemon or web
 app.type=daemon
@@ -9,6 +12,8 @@ app.type=daemon
 # Web application type. Should be none for daemon process and servlet for web application
 spring.main.web-application-type=none
 
+# This address is the mosquitto MQTT server address
+# Other properties stored in AWS Secrets Manager
 mqtt.server.url=tcp://localhost:1883
 mqtt.server.username=updater
 mqtt.server.password=updater
@@ -17,7 +22,7 @@ mqtt.server.connectionTimeout=5
 mqtt.server.keepAlive=30
 
 # Lotju SOAP APIs. If health is empty then health check is not performed.
-metadata.server.addresses=http://localhost:9011
+metadata.server.addresses=http://localhost:8182,http://localhost:8181
 metadata.server.path.health=/healthcheck
 metadata.server.path.tms=/LOTJU/LAMMetatiedot/v7
 metadata.server.path.camera=/LOTJU/KameraPerustiedot/v7
@@ -38,24 +43,24 @@ metadata.tmc.url = https://tie-test.digitraffic.fi/tmc/noncertified/
 # Only one of Day-of-Month and Day-of-Week can be set at the time (?=no value set)
 
 # Every 5 min
-dt.job.ForecastSectionV1DataUpdateJob.schedule =               0 0/5 * * * ?
-dt.job.ForecastSectionV2DataUpdateJob.schedule =               0 0/5 * * * ?
+dt.job.CameraHistoryDeleteJob.schedule =                       15 1/5 * ? * * *
+dt.job.ForecastSectionV1DataUpdateJob.schedule =               30 3/5 * ? * * *
+dt.job.ForecastSectionV2DataUpdateJob.schedule =               45 7/5 * ? * * *
 # Every 1 h
-dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 0/1 * * ?
+dt.job.CameraStationsStatusMetadataUpdateJob.schedule =        0 0 * ? * * *
 dt.job.WeatherHistoryUpdateJob.schedule =                      0 3 * ? * * *
-dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 0 0/1 * * ?
-dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 0 0/1 * * ?
-dt.job.CameraHistoryDeleteJob.schedule =                       0 0 0/1 * * ?
+dt.job.TmsStationsStatusMetadataUpdateJob.schedule =           0 5 * ? * * *
+dt.job.WeatherStationsStatusMetadataUpdateJob.schedule =       0 10 * ? * * *
 dt.job.RegionGeometryUpdateJob.schedule =                      0 0 0/1 * * ?
 # Every 12 h
-dt.job.CameraStationMetadataUpdateJob.schedule =                      0 0 3/12 * * ?
-dt.job.TmsStationMetadataUpdateJob.schedule =                  0 0 3/12 * * ?
-dt.job.WeatherStationMetadataUpdateJob.schedule =              0 0 3/12 * * ?
+dt.job.CameraStationMetadataUpdateJob.schedule =               0 25 3/12 ? * * *
+dt.job.TmsStationMetadataUpdateJob.schedule =                  0 30 3/12 ? * * *
+dt.job.WeatherStationMetadataUpdateJob.schedule =              0 35 3/12 ? * * *
 # Every 24 h
-dt.job.TmsStationSensorConstantsMetadataUpdateJob.schedule =   0 0 3 * * ?
-dt.job.LocationMetadataUpdateJob.schedule =                    0 0 3 * * ?
-dt.job.ForecastSectionV1MetadataUpdateJob.schedule =           0 0 3 * * ?
-dt.job.ForecastSectionV2MetadataUpdateJob.schedule =           0 0 3 * * ?
+dt.job.TmsStationSensorConstantsMetadataUpdateJob.schedule =   0 40 2 ? * * *
+dt.job.LocationMetadataUpdateJob.schedule =                    0 45 2 ? * * *
+dt.job.ForecastSectionV1MetadataUpdateJob.schedule =           0 50 2 ? * * *
+dt.job.ForecastSectionV2MetadataUpdateJob.schedule =           0 55 2 ? * * *
 
 # Weathercam url for public fetch. Append camera preset + .jpg to get image url
 weathercam.baseUrl=https://weathercam-test.digitraffic.fi/
@@ -63,13 +68,9 @@ weathercam.baseUrl=https://weathercam-test.digitraffic.fi/
 # AWS settings
 dt.amazon.s3.weathercam.bucketName = weathercam-road-test
 dt.amazon.s3.weathercam.region = eu-west-1
-dt.amazon.s3.weathercam.userAccessKey =
-dt.amazon.s3.weathercam.userSecretKey =
 
 dt.amazon.s3.sensordata.bucketName = sensordata-road-test
 dt.amazon.s3.sensordata.region = eu-west-1
-dt.amazon.s3.sensordata.userAccessKey =
-dt.amazon.s3.sensordata.userSecretKey =
 
 # JMS settings
 
@@ -89,8 +90,10 @@ jms.test.password=
 jms.weather.inQueue=topic://Digitraffic.TiesaaKeruu.Tietovirta.BIN.InTopic
 jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
 jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.BIN.InTopic
-#jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
-jms.camera.meta.inQueue=queue://Digitraffic.KameraMeta.Muutos.InQ
+jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ.TESTI
+jms.camera.meta.inQueue=queue://Digitraffic.KameraMeta.Muutos.InQ.TESTI
+jms.tms.meta.inQueue=queue://Digitraffic.LAMMeta.Muutos.InQ.TESTI
+jms.weather.meta.inQueue=queue://Digitraffic.TiesaaMeta.Muutos.InQ.TESTI
 
 # Services enabled/disabled
 
@@ -103,17 +106,37 @@ mqtt.enabled=true
 mqtt.tms.v2.enabled=true
 # Is WEATHER messages available
 mqtt.weather.v2.enabled=true
-# Is maintenane tracking messages available
+# Is maintenance tracking messages available
 mqtt.maintenance.v2.tracking.enabled=true
 # Is traffic messages available
-mqtt.trafficMessage.datex2.v2.enabled=true
 mqtt.trafficMessage.simple.v2.enabled=true
+mqtt.trafficMessage.datex2.v2.enabled=true
 
 # Road conditions / Forecast sections
 roadConditions.baseUrl=
 roadConditions.suid=
 roadConditions.user=
 roadConditions.pass=
+
+########################################
+# KCA ActiveMQ Artemis JMS integration #
+########################################
+
+# JMS connection properties in AWS secrets manager
+spring.artemis.broker-url=tcp://<host:port>
+spring.artemis.user=<user>
+spring.artemis.password=<pwd>
+
+# JMS topics and queues in AWS secrets manager
+kca.artemis.jms.enabled=false
+kca.artemis.jms.tms.data.realtime.topic=
+kca.artemis.jms.tms.data.up-to-date.topic=
+kca.artemis.jms.tms.metadata.queue=
+kca.artemis.jms.weather.data.topic=
+kca.artemis.jms.weather.metadata.queue=
+kca.artemis.jms.weathercam.data.topic=
+kca.artemis.jms.weathercam.metadata.queue=
+kca.artemis.jms.traffic-message.queue=
 
 # Developer life improvements
 logging.level.root=INFO

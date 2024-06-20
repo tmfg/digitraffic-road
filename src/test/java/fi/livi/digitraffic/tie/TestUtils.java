@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -180,10 +179,23 @@ public class TestUtils {
         return ra;
     }
 
-    public static Integer getRandomId(final int min, final int max) {
+    public static int getRandomId(final int min, final int max) {
         assertTrue(max > min);
         final Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
+    }
+
+    public static long getRandomLong(final long min, final long max) {
+        assertTrue(max > min);
+        final Random r = new Random();
+        return r.nextLong((max - min) + 1) + min;
+    }
+
+    public static String getRandomString(final int lenght) {
+        assertTrue(lenght > 0);
+        final byte[] array = new byte[lenght]; // length is bounded by 7
+        new Random().nextBytes(array);
+        return new String(array, StandardCharsets.UTF_8);
     }
 
     public static int getRandom(final int minInclusive, final int maxExclusive) {
@@ -309,7 +321,7 @@ public class TestUtils {
     private static String generateUniquePresetId(final String cameraId) {
         final AtomicReference<String> presetId = new AtomicReference<>();
         while (presetId.get() == null || reservedPresetIds.get().stream().anyMatch(reserved -> reserved.equals(presetId.get()))) {
-            presetId.set(CameraHelper.convertCameraIdToPresetId(cameraId, String.valueOf(RandomUtils.nextLong(0, 100))));
+            presetId.set(CameraHelper.convertCameraIdToPresetId(cameraId, String.valueOf(getRandomLong(0, 99))));
         }
         reservedPresetIds.get().add(presetId.get());
         return presetId.get();

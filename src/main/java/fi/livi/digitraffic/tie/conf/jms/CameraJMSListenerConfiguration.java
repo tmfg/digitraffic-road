@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
 import progress.message.jclient.QueueConnectionFactory;
 
@@ -47,7 +47,7 @@ public class CameraJMSListenerConfiguration extends AbstractJMSListenerConfigura
                 return 0;
             }
         };
-        final KuvaMessageMarshaller kuvaMarshaller = new KuvaMessageMarshaller();
+        final WeathercamDataJMSMessageMarshaller kuvaMarshaller = new WeathercamDataJMSMessageMarshaller();
 
         return new JMSMessageListener<>(kuvaMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),

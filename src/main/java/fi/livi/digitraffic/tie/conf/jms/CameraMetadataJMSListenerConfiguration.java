@@ -13,7 +13,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
-import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamMetadataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.weathercam.CameraMetadataUpdateMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
@@ -47,7 +47,7 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
         @Override
         public JMSMessageListener<CameraMetadataUpdatedMessageDto> createJMSMessageListener() {
             final JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> handleData = cameraMetadataUpdateMessageHandler::updateMetadataFromJms;
-            final CameraMetadataUpdatedMessageMarshaller messageMarshaller = new CameraMetadataUpdatedMessageMarshaller(
+            final WeathercamMetadataJMSMessageMarshaller messageMarshaller = new WeathercamMetadataJMSMessageMarshaller(
                 kameraMetadataChangeJaxb2Marshaller);
 
             return new JMSMessageListener<>(messageMarshaller, handleData,
