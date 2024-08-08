@@ -27,7 +27,7 @@ jobs:
         run: mvn install -T1.5C git-commit-id:revision install -e -U -DskipTests=true
       - name: Setup database
         working-directory: dbroad
-        run: docker-compose rm db && docker-compose up -d
+        run: docker compose rm db && docker compose up -d
       - name: Get database IP
         run: echo "db_addr=$(docker inspect dbroad_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Prepare test run
