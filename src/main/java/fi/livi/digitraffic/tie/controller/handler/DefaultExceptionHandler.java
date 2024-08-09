@@ -5,11 +5,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Path;
-import jakarta.xml.bind.MarshalException;
-
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
@@ -31,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.google.common.collect.Iterables;
 
@@ -38,6 +34,10 @@ import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.helper.LoggerHelper;
 import fi.livi.digitraffic.tie.service.BadRequestException;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
+import jakarta.xml.bind.MarshalException;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
@@ -190,6 +190,12 @@ public class DefaultExceptionHandler {
         final String errorMsg = String.format("Illegal %s: %s. Supported types: %s",
                                               HttpHeaders.CONTENT_TYPE, request.getHeader(HttpHeaders.CONTENT_TYPE), exception.getSupportedMediaTypes());
         return getErrorResponseEntityAndLogException(request, errorMsg, HttpStatus.INTERNAL_SERVER_ERROR, exception);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(final Exception exception, final ServletWebRequest request) {
+        return getErrorResponseEntityAndLogException(request, "Resource not found", HttpStatus.NOT_FOUND, exception);
     }
 
     @ExceptionHandler(Exception.class)
