@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignPropertiesV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.variablesign.Device;
@@ -54,7 +54,7 @@ public class VariableSignDataServiceV1 {
         final List<VariableSignFeatureV1> features = devices.stream()
             .map(d -> convert(d, dataMap))
             .filter(Objects::nonNull)
-            .filter(d -> testDataFilteringService.isProductionData(d))
+            .filter(testDataFilteringService::isProductionData)
             .toList();
 
         return new VariableSignFeatureCollectionV1(dataLastUpdated, features);
@@ -120,7 +120,7 @@ public class VariableSignDataServiceV1 {
             final Instant dataLastUpdated = getDataLastUpdated(data, deviceLastUpdated);
             final List<VariableSignFeatureV1> filtered = data.stream()
                 .map(d -> convert(device.get(), d))
-                .filter(d -> testDataFilteringService.isProductionData(d))
+                .filter(testDataFilteringService::isProductionData)
                 .collect(Collectors.toList());
 
             return new VariableSignFeatureCollectionV1(
@@ -136,7 +136,7 @@ public class VariableSignDataServiceV1 {
     }
 
     private Instant getDataLastUpdated(final List<DeviceData> data, final Instant deviceLastUpdated) {
-        return DateHelper.getGreatest(
+        return TimeUtil.getGreatest(
             data.stream().map(DeviceData::getCreated).max(Comparator.naturalOrder()).orElse(Instant.EPOCH),
             deviceLastUpdated);
     }

@@ -7,7 +7,7 @@ import java.util.Optional;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesDetailedV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.dto.roadstation.v1.StationRoadAddressV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
@@ -26,7 +26,7 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
         properties.setName(roadStation.getName());
         properties.setCollectionStatus(roadStation.getCollectionStatus());
         properties.setState(roadStation.getState());
-        properties.setDataUpdatedTime(DateHelper.getGreatest(roadStation.getModified(), childModified));
+        properties.setDataUpdatedTime(TimeUtil.getGreatest(roadStation.getModified(), childModified));
     }
 
     protected static void setRoadStationPropertiesDetailed(final RoadStationPropertiesDetailedV1<?> properties,
@@ -41,9 +41,9 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
 
         properties.setLiviId(roadStation.getLiviId());
         properties.setCountry(roadStation.getCountry());
-        properties.setStartTime(DateHelper.toInstant(roadStation.getStartDate()));
-        properties.setRepairMaintenanceTime(DateHelper.toInstant(roadStation.getRepairMaintenanceDate()));
-        properties.setAnnualMaintenanceTime(DateHelper.toInstant(roadStation.getAnnualMaintenanceDate()));
+        properties.setStartTime(TimeUtil.toInstant(roadStation.getStartDate()));
+        properties.setRepairMaintenanceTime(TimeUtil.toInstant(roadStation.getRepairMaintenanceDate()));
+        properties.setAnnualMaintenanceTime(TimeUtil.toInstant(roadStation.getAnnualMaintenanceDate()));
         // HOX: Removed temporary until LOTJU data is fixed in 2016
         // properties.setLocation(roadStation.getLocation());
         properties.setPurpose(roadStation.getPurpose());

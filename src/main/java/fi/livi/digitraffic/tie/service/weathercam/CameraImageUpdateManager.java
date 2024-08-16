@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
@@ -98,7 +98,7 @@ public class CameraImageUpdateManager {
 
     private Instant getLatestUpdateTime(final Collection<KuvaProtos.Kuva> latestKuvas) {
         try {
-            return DateHelper.toInstant(
+            return TimeUtil.toInstant(
                 latestKuvas.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow());
         } catch (final NoSuchElementException e) {
             return null;

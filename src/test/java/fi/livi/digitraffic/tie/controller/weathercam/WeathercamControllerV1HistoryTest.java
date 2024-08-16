@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.controller.weathercam;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getNowWithoutMillis;
-import static fi.livi.digitraffic.tie.helper.DateHelper.getNowWithoutNanos;
+import static fi.livi.digitraffic.common.util.TimeUtil.nowWithoutMillis;
+import static fi.livi.digitraffic.common.util.TimeUtil.nowWithoutNanos;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -71,7 +71,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
     public void getWeathercamPresetsHistoryByIdTooOldNotFound() throws Exception {
         final CameraPreset preset = cameras3Presets2.get(0).get(0);
 
-        insertHistoryTestData(preset.getPresetId(), getNowWithoutNanos().minus(25, HOURS));
+        insertHistoryTestData(preset.getPresetId(), nowWithoutNanos().minus(25, HOURS));
 
         getCameraHistoryJson(preset.getCameraId())
             .andExpect(status().isNotFound());
@@ -82,7 +82,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
     public void getWeathercamPresetsHistoryByIdIsFound() throws Exception {
         final CameraPreset preset = cameras3Presets2.get(0).get(0);
 
-        insertHistoryTestData(preset.getPresetId(), getNowWithoutNanos().minus(23, HOURS));
+        insertHistoryTestData(preset.getPresetId(), nowWithoutNanos().minus(23, HOURS));
 
         getCameraHistoryJson(preset.getCameraId())
             .andExpect(status().isOk())
@@ -96,7 +96,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
     public void getWeathercamPresetsHistoryByIdExistsWithoutSecret() throws Exception {
         final CameraPreset preset_0 = cameras3Presets2.get(0).get(0);
         final CameraPreset preset_1 = cameras3Presets2.get(0).get(1);
-        final Instant now = getNowWithoutMillis();
+        final Instant now = nowWithoutMillis();
 
         // Insert 4 versions for preset1 with one not public and one too old
         insertHistoryTestData(preset_0.getPresetId(), now.minus(25, HOURS)); // This is too old
@@ -132,7 +132,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
     public void getWeathercamPresetsHistoryByPresetIdExistsWithoutSecret() throws Exception {
         final CameraPreset preset_0 = cameras3Presets2.get(0).get(0);
         final CameraPreset preset_1 = cameras3Presets2.get(0).get(1);
-        final Instant now = getNowWithoutMillis();
+        final Instant now = nowWithoutMillis();
         // Insert 4 versions for preset1 with one not public and one too old
         insertHistoryTestData(preset_0.getPresetId(), now.minus(25, HOURS)); // This is too old
         final String versionId_0_0 = insertHistoryTestData(preset_0.getPresetId(), now.minus(1, HOURS));

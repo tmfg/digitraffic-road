@@ -74,7 +74,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.WeekdayTimePeriod;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
@@ -139,9 +139,9 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
+                    final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
-                    final Instant lastUpdated = DateHelper.roundInstantSeconds(getTransactionTimestamp());
+                    final Instant lastUpdated = TimeUtil.roundInstantSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType), lastUpdated);
@@ -166,9 +166,9 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
+                    final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
-                    final Instant lastUpdated = DateHelper.roundInstantSeconds(getTransactionTimestamp());
+                    final Instant lastUpdated = TimeUtil.roundInstantSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 2, situationType), lastUpdated);
@@ -193,7 +193,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
+                    final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
                     final ZonedDateTime end = start.plusHours(2);
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
@@ -210,7 +210,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void getRegionGeometry() throws Exception {
-        final Instant lastUpdated = DateHelper.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated = TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(true), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(6, result.getFeatures().size());
@@ -219,7 +219,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void getRegionGeometryWithoutGeometry() throws Exception {
-        final Instant lastUpdated = DateHelper.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated = TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(false), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(6, result.getFeatures().size());
@@ -228,7 +228,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void getRegionGeometryWithId() throws Exception {
-        final Instant lastUpdated = DateHelper.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated = TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(true, 3), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(1, result.getFeatures().size());

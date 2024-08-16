@@ -32,6 +32,7 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.UnexpectedRollbackException;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
@@ -45,7 +46,6 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAntu
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
@@ -304,7 +304,7 @@ public class TestUtils {
     public static JulkisuusVO createKameraJulkisuus(final Instant from, final JulkisuusTaso julkisuusTaso) {
         final JulkisuusVO julkisuus = new JulkisuusVO();
         julkisuus.setJulkisuusTaso(julkisuusTaso);
-        julkisuus.setAlkaen(DateHelper.toXMLGregorianCalendarAtUtc(from));
+        julkisuus.setAlkaen(TimeUtil.toXMLGregorianCalendarAtUtc(from));
         return julkisuus;
     }
 

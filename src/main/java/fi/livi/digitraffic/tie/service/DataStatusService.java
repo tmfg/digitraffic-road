@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.withoutMillis;
+import static fi.livi.digitraffic.common.util.TimeUtil.withoutMillis;
 import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_IMAGE_UPDATED;
 import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_METADATA;
 import static fi.livi.digitraffic.tie.model.DataType.CAMERA_STATION_METADATA_CHECK;
@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.common.dto.info.v1.UpdateInfoDtoV1;
 import fi.livi.digitraffic.common.dto.info.v1.UpdateInfosDtoV1;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1;
 import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
@@ -47,7 +48,6 @@ import fi.livi.digitraffic.tie.dto.info.v1.DataSourceInfoDtoV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataSource;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
@@ -115,7 +115,7 @@ public class DataStatusService {
 
     @Transactional(readOnly = true)
     public ZonedDateTime findDataUpdatedTime(final DataType dataType) {
-        return DateHelper.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataType));
+        return TimeUtil.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataType));
     }
 
     @Transactional(readOnly = true)
@@ -151,7 +151,7 @@ public class DataStatusService {
 
         final Instant max =
             updatedInfos.stream()
-                .map(updateInfoDtoV1 -> DateHelper.getGreatest(updateInfoDtoV1.getDataUpdatedTime(), updateInfoDtoV1.dataCheckedTime))
+                .map(updateInfoDtoV1 -> TimeUtil.getGreatest(updateInfoDtoV1.getDataUpdatedTime(), updateInfoDtoV1.dataCheckedTime))
                 .filter(Objects::nonNull)
                 .max(Instant::compareTo)
                 .orElse(Instant.EPOCH);
@@ -208,7 +208,7 @@ public class DataStatusService {
     private List<UpdateInfoDtoV1> getVariableSignInfos() {
         final DataSourceInfoDtoV1 signsInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.VARIABLE_SIGN_DATA);
 
-        final Instant jsonDataUpdated = DateHelper.getGreatest(deviceRepositoryV1.getLastUpdated(), deviceDataRepositoryV1.getLastUpdated());
+        final Instant jsonDataUpdated = TimeUtil.getGreatest(deviceRepositoryV1.getLastUpdated(), deviceDataRepositoryV1.getLastUpdated());
         final Instant datex2DataUpdated = deviceDataRepositoryV1.getDatex2LastUpdated();
         final Instant codeDescriptionsUpdated = LocalDate.of(2019, 10, 1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 

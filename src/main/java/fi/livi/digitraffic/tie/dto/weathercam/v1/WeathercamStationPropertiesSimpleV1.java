@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesSimpleV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Weathercam station properties object with basic information")
@@ -34,7 +34,7 @@ public class WeathercamStationPropertiesSimpleV1 extends RoadStationPropertiesSi
 
     public void addPreset(final WeathercamPresetSimpleV1 preset) {
         this.presets.add(preset);
-        setDataUpdatedTime(DateHelper.getGreatest(getDataUpdatedTime(), preset.getModified()));
+        setDataUpdatedTime(TimeUtil.getGreatest(getDataUpdatedTime(), preset.getModified()));
         Collections.sort(this.presets);
     }
 

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 
 @Service
@@ -85,7 +85,7 @@ public class WeatherService {
             .map(obj -> new WeatherSensorValueHistoryDto(mapId,
                 obj.getSensorId(),
                 obj.getSensorValue(),
-                DateHelper.toInstantWithOutMillis(obj.getMeasuredTime())))
+                TimeUtil.toInstantWithOutMillis(obj.getMeasuredTime())))
             .collect(Collectors.toList());
     }
 

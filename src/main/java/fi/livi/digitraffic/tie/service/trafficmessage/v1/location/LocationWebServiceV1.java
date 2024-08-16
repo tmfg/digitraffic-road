@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.v1.location;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.withoutMillis;
+import static fi.livi.digitraffic.common.util.TimeUtil.withoutMillis;
 import static org.springframework.data.domain.Sort.Order.asc;
 
 import java.time.Instant;

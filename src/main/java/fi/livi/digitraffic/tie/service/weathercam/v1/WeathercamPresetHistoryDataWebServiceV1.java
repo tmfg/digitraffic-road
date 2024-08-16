@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetHistory
 import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetHistoryItemDtoV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamPresetsHistoryDtoV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamsHistoryDtoV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
@@ -105,7 +105,7 @@ public class WeathercamPresetHistoryDataWebServiceV1 {
                 // 2. Map data/station to WeathercamPresetHistoryDataV1 list and calculate latest modification time for station
                 final AtomicReference<Instant> stationDataModified = new AtomicReference<>();
                 final List<WeathercamPresetPublicityHistoryV1> list = e.getValue().stream().map(h -> {
-                    stationDataModified.set(DateHelper.getGreatest(stationDataModified.get(), h.getModified()));
+                    stationDataModified.set(TimeUtil.getGreatest(stationDataModified.get(), h.getModified()));
                     return new WeathercamPresetPublicityHistoryV1(h.getPresetId(), h.getLastModified(), h.getModified(), h.getPublishableTo());
                 }).collect(Collectors.toList());
                 return new WeathercamStationPresetsPublicityHistoryV1(e.getKey(), list, stationDataModified.get());
@@ -155,7 +155,7 @@ public class WeathercamPresetHistoryDataWebServiceV1 {
     private WeathercamPresetHistoryDtoV1 convertToWeathercamPresetHistoryDtoV1(final AtomicReference<Instant> historyModified,
                                                                                final Map.Entry<String, List<CameraPresetHistory>> e) {
         final WeathercamPresetHistoryDtoV1 presetHistory = convertToWeathercamPresetHistory(e.getKey(), e.getValue());
-        historyModified.set(DateHelper.getGreatest(historyModified.get(), presetHistory.dataUpdatedTime));
+        historyModified.set(TimeUtil.getGreatest(historyModified.get(), presetHistory.dataUpdatedTime));
         return presetHistory;
     }
 
@@ -172,9 +172,9 @@ public class WeathercamPresetHistoryDataWebServiceV1 {
 
     private WeathercamPresetHistoryItemDtoV1 convertToWeathercamPresetHistoryItemDtoV1(final AtomicReference<Instant> historyModified,
                                                                                        final CameraPresetHistory historyItem) {
-        historyModified.set(DateHelper.getGreatest(historyModified.get(), historyItem.getModified()));
+        historyModified.set(TimeUtil.getGreatest(historyModified.get(), historyItem.getModified()));
         return new WeathercamPresetHistoryItemDtoV1(
-            DateHelper.toInstant(historyItem.getLastModified()),
+            TimeUtil.toInstant(historyItem.getLastModified()),
             weathercamS3Properties.getPublicUrlForVersion(historyItem.getPresetId(), historyItem.getVersionId()),
             historyItem.getSize());
     }

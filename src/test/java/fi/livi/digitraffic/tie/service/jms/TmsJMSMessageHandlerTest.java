@@ -35,7 +35,7 @@ import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
@@ -167,7 +167,7 @@ public class TmsJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest {
         final ZonedDateTime lastUpdated =
                 roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
         final ZonedDateTime timeInPast2Minutes =
-                DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
+                TimeUtil.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);
         assertTrue(lastUpdated.isAfter(timeInPast2Minutes),

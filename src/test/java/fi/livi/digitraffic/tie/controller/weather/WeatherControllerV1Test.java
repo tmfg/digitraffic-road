@@ -22,13 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.weather.WeatherStationRepository;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
@@ -61,7 +61,6 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
     private long stationMetaDataModifiedMillis;
     private long stationsMetaDataModifiedMillis;
     private long sensorsMetadataModifiedMillis;
-    private long dataModifiedMillis;
     private long dataLastUpdatedMillis;
 
     @BeforeEach
@@ -87,7 +86,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
         final SensorValue sv1 = new SensorValue(ws.getRoadStation(), publishable.get(0), 10.0, ZonedDateTime.now());
         final SensorValue sv2 = new SensorValue(ws.getRoadStation(), publishable.get(1), 10.0, ZonedDateTime.now());
-        this.dataLastUpdatedMillis =  DateHelper.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
+        this.dataLastUpdatedMillis =  TimeUtil.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
 
         sensorValueRepository.save(sv1); // 2023-11-06T13:18:32Z
         sensorValueRepository.save(sv2);
@@ -97,7 +96,6 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
         this.weatherStation = entityManager.find(WeatherStation.class, ws.getId());
         this.stationMetaDataModifiedMillis = weatherStation.getModified().toEpochMilli();
-        this.dataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.getSensorValueUpdatedDataType(RoadStationType.WEATHER_STATION)).toEpochMilli();
         this.stationsMetaDataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_METADATA).toEpochMilli();
         this.sensorsMetadataModifiedMillis = dataStatusService.findDataUpdatedInstant(DataType.WEATHER_STATION_SENSOR_METADATA).toEpochMilli();
     }

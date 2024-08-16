@@ -3,7 +3,7 @@ package fi.livi.digitraffic.tie.service.jms;
 import static fi.livi.digitraffic.tie.TestUtils.entityManagerFlushAndClear;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomString;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.helper.DateHelper.withoutMillis;
+import static fi.livi.digitraffic.common.util.TimeUtil.withoutMillis;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;

@@ -12,7 +12,7 @@ import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
@@ -21,7 +21,7 @@ public class Datex2Helper {
     private static final Logger log = LoggerFactory.getLogger(Datex2Helper.class);
 
     public static boolean isNewOrUpdatedSituation(final ZonedDateTime latestVersionTime, final Situation situation) {
-        return isNewOrUpdatedSituation(DateHelper.toInstant(latestVersionTime), situation);
+        return isNewOrUpdatedSituation(TimeUtil.toInstant(latestVersionTime), situation);
     }
 
     public static boolean isNewOrUpdatedSituation(final Instant latestVersionTime, final Situation situation) {
@@ -31,8 +31,8 @@ public class Datex2Helper {
 
     public static boolean isUpdatedRecord(final Instant latestVersionTime, final SituationRecord record) {
         // different resolution, so remove fractions of second
-        final Instant vTime = DateHelper.withoutMillis(record.getSituationRecordVersionTime());
-        return vTime.isAfter(DateHelper.withoutMillis(latestVersionTime) );
+        final Instant vTime = TimeUtil.withoutMillis(record.getSituationRecordVersionTime());
+        return vTime.isAfter(TimeUtil.withoutMillis(latestVersionTime) );
     }
 
     public static SituationPublication getSituationPublication(final D2LogicalModel model) {

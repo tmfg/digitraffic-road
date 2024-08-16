@@ -20,7 +20,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
@@ -125,7 +125,7 @@ public class CameraImageUpdateHandler {
     private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename,
                                          final boolean isPublic) {
         final ImageUpdateInfo info =
-            new ImageUpdateInfo(presetId, DateHelper.toZonedDateTimeAtUtc(kuva.getAikaleima()));
+            new ImageUpdateInfo(presetId, TimeUtil.toZonedDateTimeAtUtc(kuva.getAikaleima()));
         try {
             byte[] image = readKuva(kuva.getKuvaId(), info);
             try {

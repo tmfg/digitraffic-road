@@ -2,32 +2,32 @@ package fi.livi.digitraffic.tie.service.weather.forecast;
 
 import static fi.livi.digitraffic.tie.TestUtils.loadResource;
 import static java.time.temporal.ChronoUnit.HOURS;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.zip.GZIPOutputStream;
 
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okio.Buffer;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.helper.DateHelper;
-import org.springframework.web.reactive.function.client.WebClient;
+import fi.livi.digitraffic.common.util.TimeUtil;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okio.Buffer;
 
 @ConditionalOnExpression("'${config.test}' == 'true'")
 @Component
@@ -65,7 +65,7 @@ public class ForecastSectionTestHelper {
         serveGzippedResponse(server, version, false);
     }
 
-    public static final Instant NOW = DateHelper.getNowWithoutMillis();
+    public static final Instant NOW = TimeUtil.nowWithoutMillis();
     public final static String[] TIMES = new String[] { NOW.toString(),
                                                         NOW.plus(2, HOURS).toString(),
                                                         NOW.plus(4, HOURS).toString(),

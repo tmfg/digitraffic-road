@@ -43,7 +43,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureC
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
@@ -77,7 +77,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for (final SituationType situationType : values()) {
                     trafficMessageTestHelper.cleanDb();
-                    final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
+                    final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                     final ZonedDateTime end = start.plusHours(2);
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("activeIncidentsDatex2AndJsonEquals with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
@@ -109,7 +109,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         trafficMessageTestHelper.cleanDb();
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final SituationType situationType : values()) {
-                final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
+                final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                 final ZonedDateTime end = start.plusHours(2);
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
@@ -152,7 +152,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
 
     @Test
     public void findTrafficAnnouncementWithActiveAndDeactiveSituationRecordIsReturned() throws IOException {
-        final ZonedDateTime start = DateHelper.getZonedDateTimeNowAtUtc().minusHours(1);
+        final ZonedDateTime start = TimeUtil.getZonedDateTimeNowAtUtc().minusHours(1);
         final ZonedDateTime endTime = start.plusHours(2);
         // One active with json
         trafficMessageTestHelper.initImsDataFromFile("TrafficIncidentImsMessageV1_2_1WithActiveAndPassiveSituationRecord.xml",
@@ -196,7 +196,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         trafficMessageTestHelper.cleanDb();
         final ImsXmlVersion imsXmlVersion = ImsXmlVersion.getLatestVersion();
         final int count = getRandom(5, 15);
-        final ZonedDateTime initialTime = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(count);
+        final ZonedDateTime initialTime = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(count);
 
         // 1. create multiple versions for one situation
         final AtomicReference<ZonedDateTime> latestStart = new AtomicReference<>();

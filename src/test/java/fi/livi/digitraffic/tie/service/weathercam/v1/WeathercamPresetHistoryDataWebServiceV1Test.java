@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.service.weathercam.v1;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertTimesEqual;
-import static fi.livi.digitraffic.tie.helper.DateHelper.getNowWithoutMillis;
-import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
+import static fi.livi.digitraffic.common.util.TimeUtil.nowWithoutMillis;
+import static fi.livi.digitraffic.common.util.TimeUtil.toZonedDateTimeAtUtc;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -78,7 +78,7 @@ public class WeathercamPresetHistoryDataWebServiceV1Test extends AbstractDaemonT
         assertTrue(cp.isPresent());
 
         final CameraPreset preset = cp.get();
-        final Instant now = getNowWithoutMillis();
+        final Instant now = nowWithoutMillis();
         final CameraPresetHistory history = generateHistory(preset, now.minus(1, ChronoUnit.MINUTES));
         cameraPresetHistoryUpdateService.saveHistory(history);
 
@@ -110,7 +110,7 @@ public class WeathercamPresetHistoryDataWebServiceV1Test extends AbstractDaemonT
     @Test
     public void cameraOrPresetPublicHistory() {
         final int historySize = TestUtils.getRandomId(15, 27);
-        final Instant lastModified = getNowWithoutMillis();
+        final Instant lastModified = nowWithoutMillis();
         final String cameraId = generateHistoryForCamera(historySize, lastModified);
         log.info("Generated history for camera {} from {} to {} (size {})",
                  cameraId, lastModified, lastModified.minus(historySize-1, HOURS), historySize);
@@ -155,7 +155,7 @@ public class WeathercamPresetHistoryDataWebServiceV1Test extends AbstractDaemonT
 
     @Test
     public void findWeathercamPresetPublicityChangesAfter() {
-        final Instant start = getNowWithoutMillis().minus(3, HOURS);
+        final Instant start = nowWithoutMillis().minus(3, HOURS);
         final Instant change1 = start.plus(1, HOURS);
         final Instant change2 = start.plus(2, HOURS);
 

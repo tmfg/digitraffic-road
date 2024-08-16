@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getEpochSeconds;
+import static fi.livi.digitraffic.common.util.TimeUtil.getEpochSeconds;
 import static fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue.StatisticsType.STATUS;
 
 import java.time.Instant;
@@ -23,7 +23,6 @@ public class MqttMessageSenderV2 {
     private final ObjectMapper objectMapper;
 
     private final CachedLockingService cachedLockingService;
-    private final String lockName;
 
     private final AtomicReference<Instant> lastUpdated = new AtomicReference<>();
     private final AtomicReference<Instant> lastError = new AtomicReference<>();
@@ -40,7 +39,7 @@ public class MqttMessageSenderV2 {
         this.log = log;
         this.statisticsType = statisticsType;
 
-        this.lockName = this.getClass().getSimpleName() + '_' + statisticsType;
+        final String lockName = this.getClass().getSimpleName() + '_' + statisticsType;
         this.cachedLockingService = lockingService.createCachedLockingService(lockName);
     }
 

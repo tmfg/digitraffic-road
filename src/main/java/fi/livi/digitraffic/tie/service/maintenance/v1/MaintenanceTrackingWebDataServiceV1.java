@@ -1,12 +1,13 @@
 package fi.livi.digitraffic.tie.service.maintenance.v1;
 
+import static fi.livi.digitraffic.common.util.TimeUtil.toZonedDateTimeAtUtc;
+import static fi.livi.digitraffic.common.util.TimeUtil.withoutNanos;
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_DOMAIN_NAMES;
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_ROUTES;
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_MAINTENANCE_ROUTES_LATES;
 import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.GENERIC_ALL_DOMAINS;
 import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.GENERIC_MUNICIPALITY_DOMAINS;
 import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.STATE_ROADS_DOMAIN;
-import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
 import static java.time.temporal.ChronoUnit.HOURS;
 
 import java.time.Instant;
@@ -44,7 +45,6 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureColl
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.helper.MathUtils;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
@@ -94,7 +94,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
                                                                                             final Set<MaintenanceTrackingTask> taskIds,
                                                                                             final Set<String> normalizedDomains) {
         final Pair<Instant, Instant> fromTo = getFromAndToParamsIfNotSetWithHoursOfHistory(endFrom, 1);
-        final Instant lastUpdated = DateHelper.withoutNanos(maintenanceTrackingRepository.findLastUpdatedForDomain(normalizedDomains));
+        final Instant lastUpdated = withoutNanos(maintenanceTrackingRepository.findLastUpdatedForDomain(normalizedDomains));
 
         final StopWatch start = StopWatch.createStarted();
         final List<MaintenanceTrackingLatestFeatureV1> found =

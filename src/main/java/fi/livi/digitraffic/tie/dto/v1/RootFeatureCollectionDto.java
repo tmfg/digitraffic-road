@@ -9,7 +9,7 @@ import org.hibernate.annotations.Immutable;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import fi.livi.digitraffic.common.dto.LastModifiedSupport;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.metadata.geojson.FeatureCollection;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -17,10 +17,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "type", "features" })
 public class RootFeatureCollectionDto<FeatureType> extends FeatureCollection<FeatureType> implements LastModifiedSupport {
 
-    @Schema(description = "Data last updated date time", required = true)
+    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
     private final ZonedDateTime dataUpdatedTime;
 
-    @Schema(description = "Data last checked date time", required = true)
+    @Schema(description = "Data last checked date time", requiredMode = Schema.RequiredMode.REQUIRED)
     private final ZonedDateTime dataLastCheckedTime;
 
     public RootFeatureCollectionDto(final ZonedDateTime dataUpdatedTime,
@@ -41,6 +41,6 @@ public class RootFeatureCollectionDto<FeatureType> extends FeatureCollection<Fea
 
     @Override
     public Instant getLastModified() {
-        return DateHelper.toInstant(dataUpdatedTime);
+        return TimeUtil.toInstant(dataUpdatedTime);
     }
 }

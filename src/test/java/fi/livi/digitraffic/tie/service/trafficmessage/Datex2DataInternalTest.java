@@ -21,7 +21,7 @@ import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
@@ -46,7 +46,7 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
             for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                     for (final SituationType situationType : SituationType.values()) {
-                        final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
+                        final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                         final ZonedDateTime end = start.plusHours(2);
                         try {
                             trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);

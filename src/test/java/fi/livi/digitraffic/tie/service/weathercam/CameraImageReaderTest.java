@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
+import static fi.livi.digitraffic.common.util.TimeUtil.getZonedDateTimeNowAtUtc;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;

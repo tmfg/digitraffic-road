@@ -30,7 +30,7 @@ import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dto.roadstation.v1.StationRoadAddressV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDirectionV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationState;
@@ -69,10 +69,10 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
         p2.setDirection("9");
         p1.setPresetId(p1.getCameraId() + "01");
         p1.setDirection("1");
-        p1.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(imageUpdateTime1));
-        p1.setPictureLastModifiedDb(DateHelper.toZonedDateTimeAtUtc(imageUpdateTimeDb1));
-        p2.setPictureLastModified(DateHelper.toZonedDateTimeAtUtc(imageUpdateTime2));
-        p2.setPictureLastModifiedDb(DateHelper.toZonedDateTimeAtUtc(imageUpdateTimeDb2));
+        p1.setPictureLastModified(TimeUtil.toZonedDateTimeAtUtc(imageUpdateTime1));
+        p1.setPictureLastModifiedDb(TimeUtil.toZonedDateTimeAtUtc(imageUpdateTimeDb1));
+        p2.setPictureLastModified(TimeUtil.toZonedDateTimeAtUtc(imageUpdateTime2));
+        p2.setPictureLastModifiedDb(TimeUtil.toZonedDateTimeAtUtc(imageUpdateTimeDb2));
 
         preset1 = cameraPresetService.save(p1);
         preset2 = cameraPresetService.save(p2);
@@ -85,8 +85,8 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
         preset1 = entityManager.find(CameraPreset.class, preset1.getId());
         preset2 = entityManager.find(CameraPreset.class, preset2.getId());
 
-        stationModified = DateHelper.getGreatest(preset1.getRoadStation().getModified(),
-                                               DateHelper.getGreatest(preset1.getModified(), preset2.getModified()));
+        stationModified = TimeUtil.getGreatest(preset1.getRoadStation().getModified(),
+                                               TimeUtil.getGreatest(preset1.getModified(), preset2.getModified()));
 
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA, metadataUpdateTime);
         dataStatusService.updateDataUpdated(DataType.CAMERA_STATION_METADATA_CHECK, metadataCheckedTime);
@@ -234,7 +234,7 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
     }
 
     private static String getIsoDateWithoutMillis(final ZonedDateTime time) {
-        final Instant i = DateHelper.toInstant(time);
+        final Instant i = TimeUtil.toInstant(time);
         if (i == null) {
             return null;
         } else if (i.getNano() >= 500_000_000) {

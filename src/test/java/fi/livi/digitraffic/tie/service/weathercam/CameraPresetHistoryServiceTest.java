@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowWithoutMillisAtUtc;
+import static fi.livi.digitraffic.common.util.TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc;
 import static fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.MAX_IDS_SIZE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,7 +56,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
@@ -519,7 +519,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
             final boolean changeTo = i % 2 == 0; // 1:false -> 2:true -> 3:false
             final int changesCount = 4 - i;
             final int index = historySize * i/4;
-            final ZonedDateTime changedOn = DateHelper.toZonedDateTimeAtUtc(allAfter.get(index).getModified());
+            final ZonedDateTime changedOn = TimeUtil.toZonedDateTimeAtUtc(allAfter.get(index).getModified());
             log.info("Find changes from index {}/{} change to {} on {}", index, historySize, changeTo, changedOn);
 
             final List<PresetHistoryChangeDto> changesAfter =

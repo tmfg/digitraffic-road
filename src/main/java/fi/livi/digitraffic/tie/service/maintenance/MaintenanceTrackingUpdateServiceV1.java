@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils.GeometryType;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -158,7 +158,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                     getPreviousTrackingFromCacheOrFetchFromDb(cacheByHarjaWorkMachineIdAndContractId, harjaWorkMachineIdContractId);
 
                 final NextObservationStatus status = resolveNextObservationStatus(previousTracking, havainto, geometry);
-                final ZonedDateTime harjaObservationTime = DateHelper.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
+                final ZonedDateTime harjaObservationTime = TimeUtil.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
 
                 final BigDecimal direction = getDirection(havainto, trackingData.getId());
                 final Point firstPoint = (Point) PostgisGeometryUtils.snapToGrid(PostgisGeometryUtils.getStartPoint(geometry));
@@ -191,7 +191,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                         getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
 
                     final MaintenanceTracking created =
-                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
+                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, TimeUtil.toZonedDateTimeAtUtc(sendingTime),
                             harjaObservationTime, harjaObservationTime, lastPoint, simpleSnapped,
                             performedTasks, direction, STATE_ROADS_DOMAIN);
 
@@ -449,7 +449,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                 ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
             if (!timeGapInsideTheLimit && log.isDebugEnabled()) {
                 log.debug("previousCoordinateTime: {}, nextCoordinateTime: {}, timeGapInsideTheLimit: {} for {}",
-                          DateHelper.toZonedDateTimeAtUtc(previousCoordinateTime), DateHelper.toZonedDateTimeAtUtc(nextCoordinateTime),
+                          TimeUtil.toZonedDateTimeAtUtc(previousCoordinateTime), TimeUtil.toZonedDateTimeAtUtc(nextCoordinateTime),
                           timeGapInsideTheLimit, previousTracking.toStringTiny());
             }
             return timeGapInsideTheLimit;
@@ -464,8 +464,8 @@ public class MaintenanceTrackingUpdateServiceV1 {
             final boolean nextIsSameOrAfter = !nextCoordinateTime.isBefore(previousCoordinateTime);
             if (!nextIsSameOrAfter && log.isDebugEnabled()) {
                 log.debug("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {} for {}",
-                          DateHelper.toZonedDateTimeAtUtc(previousCoordinateTime),
-                          DateHelper.toZonedDateTimeAtUtc(nextCoordinateTime),
+                          TimeUtil.toZonedDateTimeAtUtc(previousCoordinateTime),
+                          TimeUtil.toZonedDateTimeAtUtc(nextCoordinateTime),
                           nextIsSameOrAfter, previousTracking.toStringTiny());
             }
             return nextIsSameOrAfter;

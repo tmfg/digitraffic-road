@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
+
 public final class AssertHelper {
     private AssertHelper() {}
 
@@ -30,7 +32,7 @@ public final class AssertHelper {
     }
 
     public static void assertTimesEqual(final ZonedDateTime t1, final ZonedDateTime t2) {
-        assertTimesEqual(DateHelper.toInstant(t1), DateHelper.toInstant(t2), 0);
+        assertTimesEqual(TimeUtil.toInstant(t1), TimeUtil.toInstant(t2), 0);
     }
 
     public static void assertTimesEqual(final Instant t1, final Instant t2) {
