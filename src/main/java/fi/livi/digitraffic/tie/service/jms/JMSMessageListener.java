@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -36,6 +37,8 @@ public class JMSMessageListener<K> implements MessageListener {
     private final AtomicInteger messageCounter = new AtomicInteger();
     private final AtomicInteger messageDrainedCounter = new AtomicInteger();
     private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
+    private final AtomicInteger jmsMessagesReceivedCounter = new AtomicInteger();
+    private final AtomicLong jmsMessagesReceivedTimeMsCounter = new AtomicLong();
 
     private final boolean drainScheduled;
     private final JMSDataUpdater<K> dataUpdater;
@@ -62,7 +65,8 @@ public class JMSMessageListener<K> implements MessageListener {
 
     @Override
     public void onMessage(final Message message) {
-        messageCounter.incrementAndGet();
+        final StopWatch start = StopWatch.createStarted();
+
         if (shutdownCalled.get()) {
             log.error("Not handling any messages anymore because app is shutting down");
             return;
@@ -83,6 +87,10 @@ public class JMSMessageListener<K> implements MessageListener {
                 }
             }
         }
+
+        messageCounter.addAndGet(data.size());
+        jmsMessagesReceivedCounter.incrementAndGet();
+        jmsMessagesReceivedTimeMsCounter.addAndGet(start.getTime());
     }
 
     private List<K> unmarshalMessage(final Message message) {
@@ -156,9 +164,11 @@ public class JMSMessageListener<K> implements MessageListener {
         return new JmsStatistics(messageCounter.getAndSet(0),
             messageDrainedCounter.getAndSet(0),
             dbRowsUpdatedCounter.getAndSet(0),
-            messageQueue.size());
+            messageQueue.size(),
+            jmsMessagesReceivedCounter.getAndSet(0),
+            jmsMessagesReceivedTimeMsCounter.getAndSet(0));
     }
 
-    public record JmsStatistics(int messagesReceived, int messagesDrained, int dbRowsUpdated, int queueSize) {
+    public record JmsStatistics(int messagesReceived, int messagesDrained, int dbRowsUpdated, int queueSize, int jmsMessagesReceivedCount, long jmsMessagesReceivedTimeMs) {
     }
 }

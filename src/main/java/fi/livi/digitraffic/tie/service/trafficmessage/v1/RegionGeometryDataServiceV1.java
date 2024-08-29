@@ -29,7 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dao.trafficmessage.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;

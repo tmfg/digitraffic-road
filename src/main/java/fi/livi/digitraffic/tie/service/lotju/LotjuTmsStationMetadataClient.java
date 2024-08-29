@@ -11,8 +11,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakio;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.HaeAnturiVakioArvot;

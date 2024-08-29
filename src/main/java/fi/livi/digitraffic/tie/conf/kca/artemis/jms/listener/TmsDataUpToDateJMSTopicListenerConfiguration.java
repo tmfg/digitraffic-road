@@ -4,21 +4,22 @@ import static fi.livi.digitraffic.tie.service.jms.JMSMessageHandler.JMSMessageTy
 
 import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.JmsListener;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
+import fi.livi.digitraffic.common.annotation.ConditionalOnPropertyNotBlank;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.ArtemisJMSConfiguration;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 import jakarta.jms.JMSException;
 
-@ConditionalOnExpression("""
-        T(org.apache.commons.lang3.StringUtils).isNotBlank('${kca.artemis.jms.tms.data.up-to-date.topic:}') &&
-        T(org.apache.commons.lang3.StringUtils).equals('${kca.artemis.jms.enabled:}', 'true')
-        """)
+@ConditionalOnPropertyNotBlank("kca.artemis.jms.tms.data.up-to-date.topic")
+@ConditionalOnBean(ArtemisJMSConfiguration.class)
+@ConditionalOnNotWebApplication
 @Configuration
 public class TmsDataUpToDateJMSTopicListenerConfiguration extends JMSListenerConfiguration<LAMRealtimeProtos.Lam> {
 

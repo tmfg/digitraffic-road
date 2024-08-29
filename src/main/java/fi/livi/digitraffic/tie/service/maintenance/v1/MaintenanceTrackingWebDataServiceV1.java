@@ -35,7 +35,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.controller.ControllerConstants;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingObservationDataRepository;

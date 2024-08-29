@@ -11,7 +11,7 @@ import fi.livi.digitraffic.tie.service.jms.JMSMessageMarshaller;
 import jakarta.annotation.PreDestroy;
 import jakarta.jms.JMSException;
 
-public class JMSListenerConfiguration<K> {
+public abstract class JMSListenerConfiguration<K> {
     private static final Logger log = LoggerFactory.getLogger(JMSListenerConfiguration.class);
     private final JMSMessageHandler<K> jmsMessageHandler;
 
@@ -39,6 +39,16 @@ public class JMSListenerConfiguration<K> {
     public void drainQueueScheduled() {
         jmsMessageHandler.drainQueueScheduled();
     }
+
+    /**
+     * Log statistics once in a minute
+     */
+    @NoJobLogging
+    @Scheduled(cron = "0 * * * * ?")
+    public void logStatistics() {
+        jmsMessageHandler.logStatistics();
+    }
+
 
     @PreDestroy
     public void onShutdown() {

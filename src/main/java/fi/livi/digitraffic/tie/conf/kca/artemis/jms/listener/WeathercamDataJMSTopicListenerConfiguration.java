@@ -2,11 +2,13 @@ package fi.livi.digitraffic.tie.conf.kca.artemis.jms.listener;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.JmsListener;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.common.annotation.ConditionalOnPropertyNotBlank;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.ArtemisJMSConfiguration;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageHandler;
@@ -14,10 +16,9 @@ import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamDataJMSMessageMa
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
 import jakarta.jms.JMSException;
 
-@ConditionalOnExpression("""
-        T(org.apache.commons.lang3.StringUtils).isNotBlank('${kca.artemis.jms.weathercam.data.topic:}') &&
-        T(org.apache.commons.lang3.StringUtils).equals('${kca.artemis.jms.enabled:}', 'true')
-        """)
+@ConditionalOnPropertyNotBlank("kca.artemis.jms.weathercam.data.topic")
+@ConditionalOnBean(ArtemisJMSConfiguration.class)
+@ConditionalOnNotWebApplication
 @Configuration
 public class WeathercamDataJMSTopicListenerConfiguration extends JMSListenerConfiguration<KuvaProtos.Kuva> {
 

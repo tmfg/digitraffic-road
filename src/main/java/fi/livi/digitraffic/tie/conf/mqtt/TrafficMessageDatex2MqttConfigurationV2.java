@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
@@ -51,7 +52,7 @@ public class TrafficMessageDatex2MqttConfigurationV2 {
         mqttMessageSender.setLastUpdated(Instant.now());
     }
 
-
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${mqtt.TrafficMessage.v2.pollingIntervalMs}")
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {

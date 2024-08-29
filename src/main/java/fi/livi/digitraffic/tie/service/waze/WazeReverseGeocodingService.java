@@ -1,13 +1,12 @@
 package fi.livi.digitraffic.tie.service.waze;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
-import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
-import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
-import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
+import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_REVERSE_GEOCODE;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +15,15 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
-import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_REVERSE_GEOCODE;
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
+import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
+import fi.livi.digitraffic.tie.helper.WazeReverseGeocodingApi;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 
 @ConditionalOnWebApplication
 @Service

@@ -7,17 +7,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
+import fi.livi.digitraffic.common.annotation.ConditionalOnPropertyNotBlank;
 import fi.livi.digitraffic.common.service.locking.LockingService;
+import fi.livi.digitraffic.tie.service.jms.JMSMessageHandler;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
-@ConditionalOnProperty(name = "jms.weather.inQueue")
+@ConditionalOnBean(JMSConfiguration.class)
+@ConditionalOnPropertyNotBlank("jms.weather.inQueue")
 @Configuration
 public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfiguration<TiesaaProtos.TiesaaMittatieto> {
     private static final Logger log = LoggerFactory.getLogger(WeatherJMSListenerConfiguration.class);
@@ -50,5 +53,10 @@ public class WeatherJMSListenerConfiguration extends AbstractJMSListenerConfigur
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),
                                         log);
+    }
+
+    @Override
+    protected JMSMessageHandler.JMSMessageType getJMSMessageType() {
+        return JMSMessageHandler.JMSMessageType.WEATHER_DATA;
     }
 }

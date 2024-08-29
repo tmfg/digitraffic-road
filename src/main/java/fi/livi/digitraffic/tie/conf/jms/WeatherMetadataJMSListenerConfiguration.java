@@ -7,18 +7,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import fi.livi.digitraffic.common.annotation.ConditionalOnPropertyNotBlank;
 import fi.livi.digitraffic.common.service.locking.LockingService;
+import fi.livi.digitraffic.tie.service.jms.JMSMessageHandler;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMetadataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.weather.WeatherMetadataUpdateMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
 
-@ConditionalOnProperty(name = "jms.weather.meta.inQueue")
+@ConditionalOnBean(JMSConfiguration.class)
+@ConditionalOnPropertyNotBlank("jms.weather.meta.inQueue")
 @Configuration
 public class WeatherMetadataJMSListenerConfiguration extends AbstractJMSListenerConfiguration<WeatherMetadataUpdatedMessageDto> {
     private static final Logger log = LoggerFactory.getLogger(WeatherMetadataJMSListenerConfiguration.class);
@@ -54,5 +57,10 @@ public class WeatherMetadataJMSListenerConfiguration extends AbstractJMSListener
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),
                                         log);
+    }
+
+    @Override
+    protected JMSMessageHandler.JMSMessageType getJMSMessageType() {
+        return JMSMessageHandler.JMSMessageType.WEATHER_METADATA;
     }
 }

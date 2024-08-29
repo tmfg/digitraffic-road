@@ -7,17 +7,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
+import fi.livi.digitraffic.common.annotation.ConditionalOnPropertyNotBlank;
 import fi.livi.digitraffic.common.service.locking.LockingService;
+import fi.livi.digitraffic.tie.service.jms.JMSMessageHandler;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.TmsDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 import progress.message.jclient.QueueConnectionFactory;
 
-@ConditionalOnProperty(name = "jms.tms.inQueue")
+@ConditionalOnBean(JMSConfiguration.class)
+@ConditionalOnPropertyNotBlank("jms.tms.inQueue")
 @Configuration
 public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguration<LAMRealtimeProtos.Lam> {
     private static final Logger log = LoggerFactory.getLogger(TmsJMSListenerConfiguration.class);
@@ -49,5 +52,10 @@ public class TmsJMSListenerConfiguration extends AbstractJMSListenerConfiguratio
         return new JMSMessageListener<>(messageMarshaller, handleData,
                                         isQueueTopic(getJmsParameters().getJmsQueueKeys()),
                                         log);
+    }
+
+    @Override
+    protected JMSMessageHandler.JMSMessageType getJMSMessageType() {
+        return JMSMessageHandler.JMSMessageType.TMS_DATA_UP_TO_DATE;
     }
 }

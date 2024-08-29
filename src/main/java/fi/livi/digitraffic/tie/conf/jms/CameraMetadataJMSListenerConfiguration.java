@@ -7,18 +7,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import fi.livi.digitraffic.common.annotation.ConditionalOnPropertyNotBlank;
 import fi.livi.digitraffic.common.service.locking.LockingService;
+import fi.livi.digitraffic.tie.service.jms.JMSMessageHandler;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamMetadataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.weathercam.CameraMetadataUpdateMessageHandler;
 import progress.message.jclient.QueueConnectionFactory;
 
-@ConditionalOnProperty(name = "jms.camera.meta.inQueue")
+@ConditionalOnBean(JMSConfiguration.class)
+@ConditionalOnPropertyNotBlank("jms.camera.meta.inQueue")
 @Configuration
 public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerConfiguration<CameraMetadataUpdatedMessageDto> {
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataJMSListenerConfiguration.class);
@@ -54,4 +57,9 @@ public class CameraMetadataJMSListenerConfiguration extends AbstractJMSListenerC
                                             isQueueTopic(getJmsParameters().getJmsQueueKeys()),
                                             log);
         }
+
+    @Override
+    protected JMSMessageHandler.JMSMessageType getJMSMessageType() {
+        return JMSMessageHandler.JMSMessageType.WEATHERCAM_METADATA;
+    }
 }

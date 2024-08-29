@@ -21,6 +21,7 @@ import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import fi.livi.digitraffic.common.service.locking.CachedLockingService;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import fi.livi.digitraffic.tie.service.jms.JMSMessageHandler;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import jakarta.annotation.PreDestroy;
 import jakarta.xml.bind.JAXBException;
@@ -62,6 +63,8 @@ public abstract class AbstractJMSListenerConfiguration<K> {
 
     protected abstract JMSMessageListener<K> createJMSMessageListener() throws JAXBException;
 
+    protected abstract JMSMessageHandler.JMSMessageType getJMSMessageType();
+
     private JMSMessageListener<K> getJMSMessageListener() throws JAXBException {
         if (messageListener == null) {
             messageListener = createJMSMessageListener();
@@ -80,6 +83,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
     /**
      * Log statistics once in minute
      */
+    @NoJobLogging
     @Scheduled(cron = "0 * * * * ?")
     public void logMessagesReceived() {
         try {
@@ -88,11 +92,14 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
             final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
 
+            final long timeMsPerJmsMsg =
+                    (jmsStats.jmsMessagesReceivedTimeMs() > 0) ?
+                    jmsStats.jmsMessagesReceivedTimeMs() / jmsStats.jmsMessagesReceivedCount() : 0;
             log.info("""
-                            method=logMessagesReceived prefix={} Received messagesReceivedCount={} messages,
-                            drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={} db rows per minute.
+                            method=logMessagesReceived prefix={} Received jmsMessageType={} jmsMessagesReceivedCount={} jmsMessagesReceivedTimeMs={} jmsMessagesReceivedTimeMsPerMsg={} jmsSrc=SONJA
+                            messagesReceivedCount={} messages, drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={} db rows per minute.
                             Current queueSize={} in memory. Lock lockedPerMinuteCount={} notLockedPerMinuteCount={} instanceId={}.""",
-                    STATISTICS_PREFIX, jmsStats.messagesReceived(), jmsStats.messagesDrained(), jmsStats.dbRowsUpdated(),
+                    STATISTICS_PREFIX, getJMSMessageType(), jmsStats.jmsMessagesReceivedCount(), jmsStats.jmsMessagesReceivedTimeMs(), timeMsPerJmsMsg, jmsStats.messagesReceived(), jmsStats.messagesDrained(), jmsStats.dbRowsUpdated(),
                     jmsStats.queueSize(), lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceId());
         } catch (final Exception e) {
             log.error("logging statistics failed", e);
@@ -204,7 +211,7 @@ public abstract class AbstractJMSListenerConfiguration<K> {
         }
     }
 
-    private Session createSessionAndConsumer(final List<String> jmsQueueKeys, final QueueConnection queueConnection)
+    private void createSessionAndConsumer(final List<String> jmsQueueKeys, final QueueConnection queueConnection)
             throws JMSException, JAXBException {
         final boolean drainScheduled = isQueueTopic(jmsQueueKeys);
         final Session session = drainScheduled ?
@@ -219,8 +226,6 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             final MessageConsumer consumer = session.createConsumer(createDestination(jmsQueueKey));
             consumer.setMessageListener(jmsMessageListener);
         }
-
-        return session;
     }
 
     private void closeConnectionQuietly() {

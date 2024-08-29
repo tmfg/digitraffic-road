@@ -22,8 +22,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryDao;

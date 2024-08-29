@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.conf.kca.artemis.jms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -20,8 +21,8 @@ import jakarta.jms.ConnectionFactory;
 /**
  * Custom configurations for Artemis JMS
  */
-@ConditionalOnProperty(name = "kca.artemis.jms.enabled",
-                       havingValue = "true")
+@ConditionalOnNotWebApplication
+@ConditionalOnProperty(name = "kca.artemis.jms.enabled", havingValue = "true")
 @Configuration
 @EnableJms // Enable Spring-artemis JMS auto configuration
 public class ArtemisJMSConfiguration {

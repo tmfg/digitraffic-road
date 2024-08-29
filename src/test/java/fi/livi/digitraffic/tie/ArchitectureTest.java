@@ -13,7 +13,7 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 
 /**
  * <a href="https://www.archunit.org/userguide/html/000_Index.html">ArchUnit User Guide</a>

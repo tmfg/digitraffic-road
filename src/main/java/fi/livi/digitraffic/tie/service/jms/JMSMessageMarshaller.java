@@ -9,5 +9,5 @@ import org.apache.activemq.artemis.jms.client.ActiveMQMessage;
 
 public interface JMSMessageMarshaller<K> {
     List<K> unmarshalMessage(final ActiveMQMessage message);
-    List<K> unmarshalMessage(Message message) throws JMSException;
+    List<K> unmarshalMessage(final Message message) throws JMSException;
 }

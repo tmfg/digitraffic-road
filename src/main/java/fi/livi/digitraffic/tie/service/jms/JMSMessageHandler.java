@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQMessage;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 
 public class JMSMessageHandler<K> {
     private static final Logger log = LoggerFactory.getLogger(JMSMessageHandler.class);
@@ -33,7 +33,10 @@ public class JMSMessageHandler<K> {
     // Statistics
     private final AtomicInteger messageCounter = new AtomicInteger();
     private final AtomicInteger messageDrainedCounter = new AtomicInteger();
+    private final AtomicLong messagesDrainingTimeMsCounter = new AtomicLong();
     private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
+    private final AtomicInteger jmsMessagesReceivedCounter = new AtomicInteger();
+    private final AtomicLong jmsMessagesReceivedTimeMsCounter = new AtomicLong();
 
     private final JMSDataUpdater<K> dataUpdater;
     private final JMSMessageMarshaller<K> jmsMessageMarshaller;
@@ -79,17 +82,20 @@ public class JMSMessageHandler<K> {
     }
 
     public void onMessage(final ActiveMQMessage activeMQMessage) {
+        final StopWatch start = StopWatch.createStarted();
         if (shutdownCalled.get()) {
             throw new IllegalStateException("Application shutdown called -> not handling messages");
         }
 
         final List<K> data = jmsMessageMarshaller.unmarshalMessage(activeMQMessage);
         handleUnmarshalledMessage(data);
+
+        messageCounter.addAndGet(data.size());
+        jmsMessagesReceivedCounter.incrementAndGet();
+        jmsMessagesReceivedTimeMsCounter.addAndGet(start.getTime());
     }
 
     private void handleUnmarshalledMessage(final List<K> messagePayload) {
-        messageCounter.incrementAndGet();
-
         if (CollectionUtils.isNotEmpty(messagePayload)) {
             messageQueue.addAll(messagePayload);
 
@@ -166,35 +172,52 @@ public class JMSMessageHandler<K> {
             messageDrainedCounter.addAndGet(drainedCount);
             final int updated = dataUpdater.updateData(targetList);
             dbRowsUpdatedCounter.addAndGet(updated);
+            messagesDrainingTimeMsCounter.addAndGet(start.getTime());
             log.info(
-                    "method=drainQueueInternal jmsMessageType={} JMS messages drainedCount={} queueToDrain={} updateCount={} tookMs={}",
+                    "method=drainQueueInternal jmsMessageType={} JMS messages drainedCount={} of queueToDrain={} updateCount={} tookMs={}",
                     jmsMessageType, drainedCount, queueToDrain, updated, start.getTime());
         }
 
     }
 
-    private JmsStatistics getAndResetMessageCounter() {
+    protected JmsStatistics getAndResetMessageCounter() {
         return new JmsStatistics(messageCounter.getAndSet(0),
                 messageDrainedCounter.getAndSet(0),
+                messagesDrainingTimeMsCounter.getAndSet(0),
                 dbRowsUpdatedCounter.getAndSet(0),
-                messageQueue.size());
-    }
-
-    private record JmsStatistics(int messagesReceived, int messagesDrained, int dbRowsUpdated, int queueSize) {
+                messageQueue.size(),
+                jmsMessagesReceivedCounter.getAndSet(0),
+                jmsMessagesReceivedTimeMsCounter.getAndSet(0));
     }
 
     /**
-     * Log statistics once in a minute
+     *
+     * @param messagesReceived how many messages have been received inside all JMS messages (one JMS message can have multiple messages in it)
+     * @param messagesDrained how many messages have been drained
+     * @param messagesDrainedTookMs how many has draining messages taken
+     * @param dbRowsUpdated how many db rows have been updated
+     * @param queueSize how many messages is in queue to be drained
+     * @param jmsMessagesReceivedCount how many JMS messages have been received
+     * @param jmsMessagesReceivedTimeMs how long has it taken to receive JMS messages before returning to caller
      */
-    @Scheduled(cron = "0 * * * * ?")
-    public void logMessagesReceived() {
+    protected record JmsStatistics(int messagesReceived, int messagesDrained, long messagesDrainedTookMs, int dbRowsUpdated, int queueSize, int jmsMessagesReceivedCount, long jmsMessagesReceivedTimeMs) {
+    }
+
+    /**
+     * Log statistics
+     */
+    public void logStatistics() {
         try {
             final JmsStatistics jmsStats = getAndResetMessageCounter();
+            final long timeMsPerJmsMsg =
+                    (jmsStats.jmsMessagesReceivedTimeMs() > 0) ?
+                    jmsStats.jmsMessagesReceivedTimeMs() / jmsStats.jmsMessagesReceivedCount() : 0;
             log.info("""
-                            method=logMessagesReceived jmsMessageType={} prefix={} Received messagesReceivedCount={} messages,
-                            drained messagesDrainedCount={} messages and updated dbRowsUpdatedCount={} db rows per minute.
+                            method=logMessagesReceived prefix={} Received jmsMessageType={} jmsMessagesReceivedCount={} jmsMessagesReceivedTimeMs={} jmsMessagesReceivedTimeMsPerMsg={} jmsSrc=KCA
+                            messagesReceivedCount={} messages, drained messagesDrainedCount={} messagesDrainedTookMs={} messages and updated dbRowsUpdatedCount={} db rows per minute.
                             Current queueSize={} in memory. Lock instanceId={}""",
-                    jmsMessageType, STATISTICS_PREFIX, jmsStats.messagesReceived, jmsStats.messagesDrained,
+                    STATISTICS_PREFIX, jmsMessageType, jmsStats.jmsMessagesReceivedCount, jmsStats.jmsMessagesReceivedTimeMs, timeMsPerJmsMsg,
+                    jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.messagesDrainedTookMs,
                     jmsStats.dbRowsUpdated, jmsStats.queueSize, instanceId);
         } catch (final Exception e) {
             log.error("method=logMessagesReceived jmsMessageType={} logging statistics failed", jmsMessageType, e);

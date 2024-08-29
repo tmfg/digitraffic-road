@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.dto.maintenance.mqtt.MaintenanceTrackingForMqttV2;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
@@ -50,6 +51,7 @@ public class MaintenanceTrackingMqttConfigurationV2 {
         mqttMessageSender.setLastUpdated(Instant.now());
     }
 
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${mqtt.maintenance.tracking.v2.pollingIntervalMs}")
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {

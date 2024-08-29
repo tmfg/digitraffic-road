@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.tie.annotation.NotTransactionalServiceMethod;
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.converter.weathercam.v1.WeathercamDataConverter;
 import fi.livi.digitraffic.tie.dao.weathercam.CameraPresetRepository;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationDataV1;
