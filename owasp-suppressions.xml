@@ -5,30 +5,15 @@
         Temporary suppressions, check and update these periodically
     -->
 
-    <!-- Waiting for update. We should not be are affected by this as schedules are hard coded. -->
-    <suppress until="2024-07-01">
-        <notes><![CDATA[file name: quartz-2.3.2.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.quartz\-scheduler/quartz@.*$</packageUrl>
+    <!-- Waiting for update. We should not be affected by this as schedules are hard coded. -->
+    <suppress until="2024-10-01">
+        <notes><![CDATA[
+   file name: quartz-2.3.2.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.quartz-scheduler/quartz@.*$</packageUrl>
         <cve>CVE-2023-39017</cve>
     </suppress>
 
-    <!-- Waiting for spring-cloud-starter-config 4.1.2 version and should not affect us. -->
-    <suppress until="2024-07-01">
-        <notes><![CDATA[file name: bcprov-jdk18on-1.77.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk18on@.*$</packageUrl>
-        <vulnerabilityName>CVE-2024-29857</vulnerabilityName>
-        <vulnerabilityName>CVE-2024-34447</vulnerabilityName>
-        <vulnerabilityName>CVE-2024-30171</vulnerabilityName>
-        <vulnerabilityName>CVE-2024-30172</vulnerabilityName>
-    </suppress>
-
-    <!-- Waiting for update to Spring version of jackson. Issue is not affecting us
-         as we are not using json input on our public APIs -->
-    <suppress until="2024-07-01">
-        <notes><![CDATA[file name: jackson-databind-2.15.4.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cve>CVE-2023-35116</cve>
-    </suppress>
 
     <!--
         Permanent suppressions
