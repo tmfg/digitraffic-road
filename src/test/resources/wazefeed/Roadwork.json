@@ -157,8 +157,8 @@
                 "slowTrafficTimes" : [ ],
                 "queuingTrafficTimes" : [ ],
                 "timeAndDuration" : {
-                    "startTime" : "2024-05-12T21:00:00.000Z",
-                    "endTime" : "2024-10-31T21:59:59.999Z"
+                    "startTime" : "2024-05-12T21:10:00.000Z",
+                    "endTime" : "2024-10-31T21:20:00.000Z"
                 }
             } ],
             "timeAndDuration" : {

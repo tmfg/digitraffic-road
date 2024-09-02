@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.converter.waze;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +8,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
@@ -29,12 +28,12 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.service.waze.WazeReverseGeocodingService;
 
+import static fi.livi.digitraffic.tie.converter.waze.WazeAnnouncementDurationConverter.getAnnouncementDuration;
+
 @ConditionalOnWebApplication
 @Component
 public class WazeDatex2JsonConverter {
     private static final Logger logger = LoggerFactory.getLogger(WazeDatex2JsonConverter.class);
-
-    private static final DateTimeFormatter wazeDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx");
 
     private final WazeDatex2MessageConverter wazeDatex2MessageConverter;
 
@@ -68,20 +67,13 @@ public class WazeDatex2JsonConverter {
             .orElse(null);
 
         final Optional<String> maybePolyline = maybeGeometry.flatMap(geometry -> formatPolyline(geometry, direction));
-
         final Optional<String> maybeStreet = maybeGeometry.flatMap(wazeReverseGeocodingService::getStreetName);
-
-        final String starttime = Optional.ofNullable(announcement.timeAndDuration.startTime)
-            .map(ts -> ts.format(wazeDateTimeFormatter))
-            .orElse(null);
-        final String endtime = Optional.ofNullable(announcement.timeAndDuration.endTime)
-            .map(ts -> ts.format(wazeDateTimeFormatter))
-            .orElse(null);
+        final Pair<String, String> duration = getAnnouncementDuration(announcement, maybeType);
 
         return maybePolyline.flatMap(polyline ->
             maybeStreet.flatMap(street ->
                 maybeType.map(type ->
-                    new WazeFeedIncidentDto(situationId, street, description, direction, polyline, type, starttime, endtime))));
+                    new WazeFeedIncidentDto(situationId, street, description, direction, polyline, type, duration.getLeft(), duration.getRight()))));
     }
 
     private Optional<WazeFeedLocationDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, final Geometry<?> geometry) {

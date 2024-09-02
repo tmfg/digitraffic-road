@@ -124,6 +124,9 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         final WazeFeedIncidentDto incident = announcement.incidents.get(0);
         assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
+        // check that times are from the roadworkphase, not from the announcement!
+        assertEquals(incident.starttime, "2024-05-12T21:10:00+00:00");
+        assertEquals(incident.endtime, "2024-10-31T21:20:00+00:00");
     }
 
     @Test
