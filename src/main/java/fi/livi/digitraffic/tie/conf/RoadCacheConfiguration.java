@@ -19,6 +19,7 @@ public class RoadCacheConfiguration implements CachingConfigurer {
     public static final String CACHE_MAINTENANCE_ROUTES = "maintenanceTracking";
     public static final String CACHE_MAINTENANCE_ROUTES_LATES = "maintenanceTrackingLatest";
     public static final String CACHE_MAINTENANCE_DOMAIN_NAMES = "maintenanceTrackingDomainNames";
+    public static final String CACHE_FREE_FLOW_SPEEDS = "freeFlowSpeeds";
 
     @Bean(name = CACHE_REVERSE_GEOCODE)
     public CaffeineCache cacheGeocode(
@@ -50,6 +51,15 @@ public class RoadCacheConfiguration implements CachingConfigurer {
             @Value("${cache.maintenance.routes.latest.size}")
             final int size) {
         return createCache(CACHE_MAINTENANCE_ROUTES_LATES, durationMs, size);
+    }
+
+    @Bean(name = CACHE_FREE_FLOW_SPEEDS)
+    public CaffeineCache cacheFreeFlowSpeeds(
+            @Value("${cache.free-flow-speeds.ms}")
+            final long durationMs,
+            @Value("${cache.free-flow-speeds.size}")
+            final int size) {
+        return createCache(CACHE_FREE_FLOW_SPEEDS, durationMs, size);
     }
 
     private CaffeineCache createCache(final String cacheName, final long expireAfterWritedMs, final Integer size) {

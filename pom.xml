@@ -46,6 +46,7 @@
                         <artifactId>dependency-check-maven</artifactId>
                         <version>10.0.3</version>
                         <configuration>
+                            <!--suppress UnresolvedMavenProperty -->
                             <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                             <failBuildOnCVSS>7</failBuildOnCVSS>
                             <suppressionFile>owasp-suppressions.xml</suppressionFile>
@@ -360,7 +361,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>7.4</version>
+            <version>8.0</version>
         </dependency>
 
         <dependency>
@@ -541,8 +542,10 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
+                            <!--suppress UnresolvedMavenProperty -->
                             <Implementation-Build>${buildNumber}</Implementation-Build>
                             <RoadApplication-Version>${project.version}</RoadApplication-Version>
+                            <!--suppress UnresolvedMavenProperty -->
                             <RoadApplication-Build>${buildNumber}</RoadApplication-Build>
                         </manifestEntries>
                     </archive>

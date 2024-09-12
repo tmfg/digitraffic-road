@@ -1,7 +1,8 @@
 package fi.livi.digitraffic.tie.dao.tms;
 
-import java.util.List;
+import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_FREE_FLOW_SPEEDS;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -38,10 +39,8 @@ public interface TmsFreeFlowSpeedRepository extends JpaRepository<TmsFreeFlowSpe
         WHERE rs.is_public = true
         """;
 
-    @Query(value = SELECT_TMS_AND_RS_NATURAL_IDS_AND_FREE_FLOW_SPEEDS + " ORDER BY rs.natural_id", nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<TmsFreeFlowSpeedDto> findAllPublicTmsFreeFlowSpeeds();
-
+    // sync = true -> With a same cache key only the first request will be processed and another will wait for the result for the first one
+    @Cacheable(cacheNames = CACHE_FREE_FLOW_SPEEDS, sync = true)
     @Query(value = SELECT_TMS_AND_RS_NATURAL_IDS_AND_FREE_FLOW_SPEEDS + " AND RS.NATURAL_ID = :roadStationNaturalId", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     TmsFreeFlowSpeedDto getTmsFreeFlowSpeedsByRoadStationNaturalId(final long roadStationNaturalId);

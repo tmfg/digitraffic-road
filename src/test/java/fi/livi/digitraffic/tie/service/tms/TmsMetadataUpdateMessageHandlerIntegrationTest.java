@@ -417,21 +417,21 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         TestUtils.entityManagerFlushAndClear(entityManager);
         if (sensorConstantName != null) {
             final LamAnturiVakioVO anturiVakio = TestUtils.createLamAnturiVakio(stationLotjuId, sensorConstantName);
-            tmsStationSensorConstantService.updateSensorConstant(anturiVakio);
+            tmsStationSensorConstantService.updateSensorConstant(anturiVakio, stationLotjuId);
             return anturiVakio.getId();
         }
         return null;
     }
 
     private String getSensorConstantOfStation(final Long roadStationId, final Long sensorConstantLotjuId) {
-        final List<String> result = entityManager.createNativeQuery(
+        final List<?> result = entityManager.createNativeQuery(
             "SELECT NAME " +
             "FROM TMS_SENSOR_CONSTANT " +
             "WHERE road_station_id = " + roadStationId +
             "  AND lotju_id = " + sensorConstantLotjuId +
             "  AND obsolete_date is null").getResultList();
         Assertions.assertTrue(result.size() <= 1);
-        return result.isEmpty() ? null : result.get(0);
+        return result.isEmpty() ? null : (String) result.get(0);
     }
 
     private void assertRoadAddressUpdateMessage(final UpdateType updateType) {
