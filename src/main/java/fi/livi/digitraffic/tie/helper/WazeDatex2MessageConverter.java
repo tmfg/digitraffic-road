@@ -684,7 +684,7 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final AuthorityOperation authorityOperation) {
-        return Optional.empty();
+        return Optional.of(SKIP_SUBTYPE);
     }
     private Optional<String> accept(final DisturbanceActivity disturbanceActivity) {
         return Optional.empty();
