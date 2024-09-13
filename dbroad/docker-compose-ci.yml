@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   db:
-    image: postgis/postgis:13-3.3-alpine
+    image: postgis/postgis:13-3.4-alpine
     restart: always
     environment:
       POSTGRES_USER: road
