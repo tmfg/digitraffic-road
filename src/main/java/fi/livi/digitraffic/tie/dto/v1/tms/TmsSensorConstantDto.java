@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Immutable
-@Schema(name = "TmsSensorConstant", description = "Sensor constant values of TMS Station")
+@Schema(name = "TmsSensorConstantV1", description = "Sensor constant values of TMS Station")
 @JsonPropertyOrder({ "roadStationId", "sensorConstantValues"})
-public class TmsSensorConstantDto {
+public class TmsSensorConstantDto { // TODO rename to TmsSensorConstantDtoV1
 
     @Schema(description = "Id of TMS station", required = true)
     private final Long roadStationId;

@@ -21,7 +21,7 @@ import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
@@ -46,7 +46,7 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
             for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                     for (final SituationType situationType : SituationType.values()) {
-                        final ZonedDateTime start = DateHelper.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
+                        final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
                         final ZonedDateTime end = start.plusHours(2);
                         try {
                             trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
@@ -67,6 +67,20 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
         final String xmlImsMessage = readImsMessageResourceContent(ImsXmlVersion.V1_2_1);
         final String jsonImsMessage = readResourceContent("classpath:tloik/ims/internal/datex2_json_multiple_regions_geometries.json");
         final String datex2ImsMessage = readResourceContent("classpath:tloik/ims/d2Message.xml").replace("GUID50001238", jsonGuid);
+
+        // Insert datex2 and message contents
+        final String msg = xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
+        final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(msg));
+        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+    }
+
+    @Disabled("Just for internal testing to import given simple json and xml traffic message to db")
+    @Rollback(value = false)
+    @Test
+    public void manualImportOfImsMessage() throws IOException {
+        final String xmlImsMessage = readImsMessageResourceContent(ImsXmlVersion.V1_2_1);
+        final String jsonImsMessage = readResourceContent("classpath:tloik/ims/internal/manualImportOfImsMessage-simple.json");
+        final String datex2ImsMessage = readResourceContent("classpath:tloik/ims/internal/manualImportOfImsMessage-datex2.xml");
 
         // Insert datex2 and message contents
         final String msg = xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);

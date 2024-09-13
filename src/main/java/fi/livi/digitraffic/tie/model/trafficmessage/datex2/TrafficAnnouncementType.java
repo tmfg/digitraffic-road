@@ -38,7 +38,6 @@ public enum TrafficAnnouncementType {
         return this.value;
     }
 
-    @JsonCreator
     public static TrafficAnnouncementType fromValue(final String value) {
         final TrafficAnnouncementType constant = CONSTANTS.get(value.toUpperCase());
         if (constant == null) {

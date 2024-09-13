@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDto;
@@ -50,6 +51,7 @@ public class ForecastSectionDataUpdater {
         this.dataStatusService = dataStatusService;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000) // normally takes around 12s
     @Transactional
     public Instant updateForecastSectionWeatherData(final ForecastSectionApiVersion version) {
         final ForecastSectionDataDto data = forecastSectionClient.getRoadConditions(version.getVersion());

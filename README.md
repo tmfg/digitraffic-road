@@ -3,7 +3,7 @@
 ## Development
 
 ### Preconditions
-1. Java 11 JDK
+1. Java 17 JDK
 2. Maven
 3. Git client
 
@@ -32,13 +32,13 @@ Before building application with tests enabled, start dbroad instance.
 See [dbroad/README.md](dbroad/README.md).
 
     $ mvn clean install
-    
+
     # Or with out tests
     $ mvn clean install -DskipTests
 
 ### Running the application
 
-    $ mvn spring-boot:run -Dspring-boot.run.profiles=localhost # localhost is default, you may leave it out :)
+    $ mvn spring-boot:run -Dspring-boot.run.profiles=localhost-daemon
 
 Or build the JAR file with:
 
@@ -58,10 +58,10 @@ Running may also require to specify the active Spring profile by setting _-Dspri
 
     $ mvn exec:exec@schemaspy
 
-Generated schemas can be found at `dbroad/schemaspy/schema` -directory    
+Generated schemas can be found at `dbroad/schemaspy/schema` -directory
 
 Or with custom parameters.
-    
+
     $ mvn exec:exec@schemaspy -Dexec.args="-o=/tmp/schema"
 
 Or without Maven

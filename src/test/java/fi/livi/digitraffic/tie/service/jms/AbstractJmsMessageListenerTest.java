@@ -19,6 +19,7 @@ import fi.livi.digitraffic.tie.service.SensorDataTestUpdateService;
 import fi.livi.digitraffic.tie.service.lotju.LotjuCameraStationMetadataClient;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateHandler;
 
+@Deprecated(forRemoval = true, since = "TODO remove when DPO-2422 KCA is in production")
 public abstract class AbstractJmsMessageListenerTest extends AbstractDaemonTest {
 
     @Autowired

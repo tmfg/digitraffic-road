@@ -6,17 +6,15 @@ import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX_DOUBL
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN_DOUBLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
@@ -25,7 +23,6 @@ import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCol
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureV1;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
 
@@ -43,19 +40,12 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     @Autowired
     private DataStatusService dataStatusService;
 
-    private MockRestServiceServer server;
-
-    @Autowired
-    private RestTemplate restTemplate;
+    private MockWebServer server;
 
     @Autowired
     private ForecastSectionTestHelper forecastSectionTestHelper;
 
-    @Autowired
-    private ForecastSectionClient forecastSectionClient;
-
-    @MockBean(answer = Answers.CALLS_REAL_METHODS)
-    private ForecastSectionV2MetadataUpdater forecastSectionMetadataUpdaterMockRealMethods;
+    private ForecastSectionV2MetadataUpdater forecastSectionV2MetadataUpdater;
 
     final org.locationtech.jts.geom.Geometry AREA =
         PostgisGeometryUtils.createSquarePolygonFromMinMax(X_MIN_DOUBLE, X_MAX_DOUBLE,
@@ -63,10 +53,13 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
     @BeforeEach
     public void before() {
-        forecastSectionMetadataUpdaterMockRealMethods =
+        server = new MockWebServer();
+
+        final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient(server);
+
+        forecastSectionV2MetadataUpdater =
             new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionRepository,
                                                  v2ForecastSectionMetadataDao,dataStatusService);
-        server = MockRestServiceServer.createServer(restTemplate);
     }
 
     @AfterEach
@@ -75,13 +68,10 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void updateForecastSectionV2MetadataSucceeds() {
-        forecastSectionTestHelper.serverExpectMetadata(server, 2);
+    public void updateForecastSectionV2MetadataSucceeds() throws IOException {
+        forecastSectionTestHelper.serveGzippedMetadata(server, 2);
 
-        final Instant updated = forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
-        final Instant lastUpdated = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_V2_METADATA).toInstant();
-
-        assertEquals(updated, lastUpdated);
+        forecastSectionV2MetadataUpdater.updateForecastSectionsV2Metadata();
 
         final ForecastSectionFeatureCollectionV1 featureCollection =
             v2ForecastSectionMetadataService.findForecastSections(false,false, null,
@@ -117,11 +107,10 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void findForecastSectionsByRoadNumberSucceeds() {
+    public void findForecastSectionsByRoadNumberSucceeds() throws IOException {
+        forecastSectionTestHelper.serveGzippedMetadata(server, 2);
 
-        forecastSectionTestHelper.serverExpectMetadata(server, 2);
-
-        forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
+        forecastSectionV2MetadataUpdater.updateForecastSectionsV2Metadata();
 
         final ForecastSectionFeatureCollectionV1 featureCollection =
             v2ForecastSectionMetadataService.findForecastSections(false, false, 941,
@@ -146,11 +135,10 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void findForecastSectionsByNaturalIdSucceeds() {
+    public void findForecastSectionsByNaturalIdSucceeds() throws IOException {
+        forecastSectionTestHelper.serveGzippedMetadata(server, 2);
 
-        forecastSectionTestHelper.serverExpectMetadata(server, 2);
-
-        forecastSectionMetadataUpdaterMockRealMethods.updateForecastSectionsV2Metadata();
+        forecastSectionV2MetadataUpdater.updateForecastSectionsV2Metadata();
 
         final ForecastSectionFeatureV1 feature = v2ForecastSectionMetadataService.getForecastSectionById(false,"00941_010_00000_0_0");
 

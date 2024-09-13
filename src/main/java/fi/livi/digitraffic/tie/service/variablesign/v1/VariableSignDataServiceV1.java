@@ -1,12 +1,7 @@
 package fi.livi.digitraffic.tie.service.variablesign.v1;
 
-import java.time.Instant;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,7 +18,7 @@ import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignPropertiesV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.variablesign.Device;
@@ -37,11 +32,14 @@ public class VariableSignDataServiceV1 {
     private final DeviceDataRepositoryV1 deviceDataRepositoryV1;
     private final CodeDescriptionRepositoryV1 codeDescriptionRepositoryV1;
 
+    private final TestDataFilteringService testDataFilteringService;
+
     public VariableSignDataServiceV1(final DeviceRepositoryV1 deviceRepositoryV1, final DeviceDataRepositoryV1 deviceDataRepositoryV1,
-                                     final CodeDescriptionRepositoryV1 codeDescriptionRepositoryV1) {
+                                     final CodeDescriptionRepositoryV1 codeDescriptionRepositoryV1, final TestDataFilteringService testDataFilteringService) {
         this.deviceRepositoryV1 = deviceRepositoryV1;
         this.deviceDataRepositoryV1 = deviceDataRepositoryV1;
         this.codeDescriptionRepositoryV1 = codeDescriptionRepositoryV1;
+        this.testDataFilteringService = testDataFilteringService;
     }
 
     @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 3000)
@@ -56,6 +54,7 @@ public class VariableSignDataServiceV1 {
         final List<VariableSignFeatureV1> features = devices.stream()
             .map(d -> convert(d, dataMap))
             .filter(Objects::nonNull)
+            .filter(testDataFilteringService::isProductionData)
             .toList();
 
         return new VariableSignFeatureCollectionV1(dataLastUpdated, features);
@@ -78,6 +77,7 @@ public class VariableSignDataServiceV1 {
             VariableSignPropertiesV1.Carriageway.byValue(device.getCarriageway()),
             data.getDisplayValue(),
             data.getAdditionalInformation(),
+            data.getCreated(),
             data.getEffectDate(),
             data.getCause(),
             VariableSignPropertiesV1.Reliability.byValue(data.getReliability()),
@@ -95,8 +95,18 @@ public class VariableSignDataServiceV1 {
     }
 
     @Transactional(readOnly = true)
-    public List<TrafficSignHistoryV1> listVariableSignHistory(final String deviceId) {
-        return deviceDataRepositoryV1.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
+    public List<TrafficSignHistoryV1> listVariableSignHistory(final String deviceId, final Date effectiveDate) {
+        final List<TrafficSignHistoryV1> history;
+        if(effectiveDate != null) {
+            final Instant start = effectiveDate.toInstant();
+            final Instant end = effectiveDate.toInstant().plus(Period.ofDays(1));
+
+            history = deviceDataRepositoryV1.getDeviceDataByDeviceIdAndEffectDateBetweenOrderByEffectDateDesc(deviceId, start, end);
+        } else {
+            history = deviceDataRepositoryV1.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
+        }
+
+        return testDataFilteringService.filter(deviceId, history);
     }
 
     @Transactional(readOnly = true)
@@ -104,17 +114,18 @@ public class VariableSignDataServiceV1 {
         final Optional<Device> device = deviceRepositoryV1.findById(deviceId);
 
         if(device.isPresent()) {
-
             final Instant deviceLastUpdated = device.get().getModified();
             final List<Long> latest = deviceDataRepositoryV1.findLatestData(deviceId);
             final List<DeviceData> data = deviceDataRepositoryV1.findDistinctByIdIn(latest);
             final Instant dataLastUpdated = getDataLastUpdated(data, deviceLastUpdated);
+            final List<VariableSignFeatureV1> filtered = data.stream()
+                .map(d -> convert(device.get(), d))
+                .filter(testDataFilteringService::isProductionData)
+                .collect(Collectors.toList());
 
             return new VariableSignFeatureCollectionV1(
                 dataLastUpdated,
-                data.stream()
-                    .map(d -> convert(device.get(), d))
-                    .collect(Collectors.toList()));
+                filtered);
         }
 
         throw new ObjectNotFoundException(Device.class, deviceId);
@@ -125,7 +136,7 @@ public class VariableSignDataServiceV1 {
     }
 
     private Instant getDataLastUpdated(final List<DeviceData> data, final Instant deviceLastUpdated) {
-        return DateHelper.getGreatest(
+        return TimeUtil.getGreatest(
             data.stream().map(DeviceData::getCreated).max(Comparator.naturalOrder()).orElse(Instant.EPOCH),
             deviceLastUpdated);
     }

@@ -1,0 +1,176 @@
+{
+    "geometry" : {
+        "type" : "Point",
+        "coordinates" : [ 22.85828, 60.898445 ]
+    },
+    "type" : "Feature",
+    "properties" : {
+        "situationId" : "GUID50428624",
+        "version" : 1,
+        "situationType" : "road work",
+        "releaseTime" : "2024-05-14T10:02:08.018Z",
+        "versionTime" : "2024-05-14T10:02:08.017Z",
+        "announcements" : [ {
+            "language" : "fi",
+            "title" : "Tie 12603, eli Auvaistentie, Loimaa. Tietyö. ",
+            "location" : {
+                "countryCode" : 6,
+                "locationTableNumber" : 17,
+                "locationTableVersion" : "1.11.43",
+                "description" : "Tie 12603, eli Auvaistentie, Loimaa.\nTarkempi paikka: Paikasta Kytömaantien risteys 400 m, suuntaan Ylhäinen. Mökköisten silta."
+            },
+            "locationDetails" : {
+                "roadAddressLocation" : {
+                    "primaryPoint" : {
+                        "municipality" : "Loimaa",
+                        "province" : "Varsinais-Suomi",
+                        "country" : "Suomi",
+                        "roadAddress" : {
+                            "road" : 12603,
+                            "roadSection" : 1,
+                            "distance" : 3697
+                        },
+                        "roadName" : "Auvaistentie",
+                        "alertCLocation" : {
+                            "locationCode" : 24700,
+                            "name" : "Kytömaantien risteys",
+                            "distance" : 413
+                        }
+                    },
+                    "secondaryPoint" : {
+                        "municipality" : "Loimaa",
+                        "province" : "Varsinais-Suomi",
+                        "country" : "Suomi",
+                        "roadAddress" : {
+                            "road" : 12603,
+                            "roadSection" : 1,
+                            "distance" : 3697
+                        },
+                        "roadName" : "Auvaistentie",
+                        "alertCLocation" : {
+                            "locationCode" : 24701,
+                            "name" : "Ylhäinen",
+                            "distance" : 455
+                        }
+                    },
+                    "direction" : "unknown"
+                }
+            },
+            "features" : [ ],
+            "roadWorkPhases" : [ {
+                "id" : "GUID50430489",
+                "location" : {
+                    "countryCode" : 6,
+                    "locationTableNumber" : 17,
+                    "locationTableVersion" : "1.11.43",
+                    "description" : "Tie 12603, eli Auvaistentie, Loimaa.\nTarkempi paikka: Paikasta Kytömaantien risteys 400 m, suuntaan Ylhäinen. Mökköisten silta."
+                },
+                "locationDetails" : {
+                    "roadAddressLocation" : {
+                        "primaryPoint" : {
+                            "municipality" : "Loimaa",
+                            "province" : "Varsinais-Suomi",
+                            "country" : "Suomi",
+                            "roadAddress" : {
+                                "road" : 12603,
+                                "roadSection" : 1,
+                                "distance" : 3697
+                            },
+                            "roadName" : "Auvaistentie",
+                            "alertCLocation" : {
+                                "locationCode" : 24700,
+                                "name" : "Kytömaantien risteys",
+                                "distance" : 413
+                            }
+                        },
+                        "secondaryPoint" : {
+                            "municipality" : "Loimaa",
+                            "province" : "Varsinais-Suomi",
+                            "country" : "Suomi",
+                            "roadAddress" : {
+                                "road" : 12603,
+                                "roadSection" : 1,
+                                "distance" : 3697
+                            },
+                            "roadName" : "Auvaistentie",
+                            "alertCLocation" : {
+                                "locationCode" : 24701,
+                                "name" : "Ylhäinen",
+                                "distance" : 455
+                            }
+                        },
+                        "direction" : "unknown"
+                    }
+                },
+                "worktypes" : [ {
+                    "type" : "bridge",
+                    "description" : "Siltatyö"
+                }, {
+                    "type" : "road construction",
+                    "description" : "Tienrakennus"
+                }, {
+                    "type" : "other",
+                    "description" : ""
+                } ],
+                "restrictions" : [ {
+                    "type" : "road closed",
+                    "restriction" : {
+                        "name" : "Tie on suljettu liikenteeltä"
+                    }
+                }, {
+                    "type" : "detour",
+                    "restriction" : {
+                        "name" : "Kiertotie käytössä"
+                    }
+                } ],
+                "restrictionsLiftable" : false,
+                "severity" : "highest",
+                "workingHours" : [ {
+                    "weekday" : "Thursday",
+                    "startTime" : "00:00",
+                    "endTime" : "00:00"
+                }, {
+                    "weekday" : "Saturday",
+                    "startTime" : "00:00",
+                    "endTime" : "00:00"
+                }, {
+                    "weekday" : "Wednesday",
+                    "startTime" : "00:00",
+                    "endTime" : "00:00"
+                }, {
+                    "weekday" : "Sunday",
+                    "startTime" : "00:00",
+                    "endTime" : "00:00"
+                }, {
+                    "weekday" : "Friday",
+                    "startTime" : "00:00",
+                    "endTime" : "00:00"
+                }, {
+                    "weekday" : "Monday",
+                    "startTime" : "00:00",
+                    "endTime" : "00:00"
+                }, {
+                    "weekday" : "Tuesday",
+                    "startTime" : "00:00",
+                    "endTime" : "00:00"
+                } ],
+                "slowTrafficTimes" : [ ],
+                "queuingTrafficTimes" : [ ],
+                "timeAndDuration" : {
+                    "startTime" : "2024-05-12T21:10:00.000Z",
+                    "endTime" : "2024-10-31T21:20:00.000Z"
+                }
+            } ],
+            "timeAndDuration" : {
+                "startTime" : "2024-05-12T21:00:00.000Z",
+                "endTime" : "2024-10-31T21:59:59.999Z"
+            },
+            "additionalInformation" : "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+            "sender" : "Fintraffic Tieliikennekeskus Turku"
+        } ],
+        "contact" : {
+            "phone" : "02002100",
+            "email" : "turku.liikennekeskus@fintraffic.fi"
+        }
+    }
+}

@@ -42,7 +42,7 @@ public class LotjuWeatherStationMetadataClient extends AbstractLotjuMetadataClie
         super(tiesaaMetadataJaxb2Marshaller, lotjuMetadataProperties, lotjuMetadataProperties.getPath().weather);
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 30000) // Normally takes around 20s
     @Retryable(maxAttempts = 5)
     public List<TiesaaAsemaVO> getTiesaaAsemas() {
         log.info("Fetching TiesaaAsemas from " + getDefaultUri());

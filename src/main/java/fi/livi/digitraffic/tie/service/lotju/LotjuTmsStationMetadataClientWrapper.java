@@ -45,6 +45,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         this.lotjuTmsStationMetadataClient = lotjuTmsStationMetadataClient;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000) // Normally takes around 10s
     public List<LamAsemaVO> getLamAsemas() {
         return lotjuTmsStationMetadataClient.getLamAsemas();
     }
@@ -140,7 +141,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         return allAnturiVakios;
     }
 
-    public List<LamAnturiVakioArvoVO> getAnturiVakioArvos(final long anturiVakioArvoLotjuId) {
+    public List<LamAnturiVakioArvoVO> getAnturiVakioArvos(final long anturiVakioLotjuId) {
         final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos = new ArrayList<>();
 
         final ExecutorService executor = Executors.newFixedThreadPool(5);
@@ -148,8 +149,8 @@ public class LotjuTmsStationMetadataClientWrapper {
 
         final StopWatch start = StopWatch.createStarted();
         IntStream.range(1,13).forEach(month ->
-            completionService.submit(() -> lotjuTmsStationMetadataClient.getAnturiVakioArvot(anturiVakioArvoLotjuId, month, 1)));
-        log.info("method=getAnturiVakioArvos for 12 months");
+            completionService.submit(() -> lotjuTmsStationMetadataClient.getAnturiVakioArvot(anturiVakioLotjuId, month, 1)));
+        log.info("method=getAnturiVakioArvos for 12 months for anturi lojtuId: {}", anturiVakioLotjuId);
 
         // It's necessary to wait all executors to complete.
         IntStream.range(1,13).forEach(month -> {
@@ -210,6 +211,43 @@ public class LotjuTmsStationMetadataClientWrapper {
         return distincLamAnturiVakios;
     }
 
+    @PerformanceMonitor(maxWarnExcecutionTime = 120000, maxErrorExcecutionTime = 200000)
+    public List<LamAnturiVakioArvoVO> getAsemanLamAnturiVakioArvos(final long roadStationLotjuId) {
+
+        final List<LamAnturiVakioArvoVO> lamAnturiVakioArvos = new ArrayList<>();
+
+        final ExecutorService executor = Executors.newFixedThreadPool(5);
+        final CompletionService<List<LamAnturiVakioArvoVO>> completionService = new ExecutorCompletionService<>(executor);
+
+        final StopWatch start = StopWatch.createStarted();
+        int monthCounter = 0;
+        while (monthCounter < 12) {
+            monthCounter++;
+            final int month = monthCounter;
+            completionService.submit(() -> lotjuTmsStationMetadataClient.getAsemanAnturiVakioArvos(roadStationLotjuId, month, 1));
+        }
+        log.info("method=getAsemanLamAnturiVakioArvos Fetch LamAnturiVakioArvos for {} months", monthCounter);
+
+        // It's necessary to wait all executors to complete.
+        for (int i = 0; i < monthCounter; i++) {
+            try {
+                final List<LamAnturiVakioArvoVO> values = completionService.take().get();
+                lamAnturiVakioArvos.addAll(values);
+                log.debug("method=getAsemanLamAnturiVakioArvos Got {} LamAnturiVakioArvos, {}/{}", values.size(), i+1, monthCounter);
+            } catch (final InterruptedException | ExecutionException e) {
+                log.error("method=getAsemanLamAnturiVakioArvos Error while fetching LamAnturiVakioArvos", e);
+                executor.shutdownNow();
+                throw new RuntimeException(e);
+            }
+        }
+        executor.shutdown();
+
+        final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
+
+        log.info("method=getAsemanLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
+            lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getTime());
+        return distincLamAnturiVakios;
+    }
     /**
      * When LamAnturiVakioArvos are fetched for every month there is distinct values.
      *
@@ -232,7 +270,7 @@ public class LotjuTmsStationMetadataClientWrapper {
             .collect(Collectors.toList());
     }
 
-    private class LamAnturiVakioArvoWrapper {
+    private static class LamAnturiVakioArvoWrapper {
 
         private final LamAnturiVakioArvoVO vakio;
 

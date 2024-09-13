@@ -15,6 +15,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
+import fi.livi.digitraffic.common.service.locking.CachedLockingService;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.AbstractVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
@@ -22,7 +24,6 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.RoadStationService;
@@ -40,26 +41,26 @@ public class WeatherStationUpdater  {
     private final RoadStationUpdateService roadStationUpdateService;
     private final WeatherStationService weatherStationService;
     private final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper;
-    private final ClusteredLocker.ClusteredLock lock;
     private final DataStatusService dataStatusService;
     private final RoadStationService roadStationService;
     private final RoadStationSensorService roadStationSensorService;
+    private final CachedLockingService cachedLockingService;
 
     @Autowired
     public WeatherStationUpdater(final RoadStationUpdateService roadStationUpdateService,
                                  final WeatherStationService weatherStationService,
                                  final LotjuWeatherStationMetadataClientWrapper lotjuWeatherStationMetadataClientWrapper,
-                                 final ClusteredLocker clusteredLocker,
+                                 final LockingService lockingService,
                                  final DataStatusService dataStatusService,
                                  final RoadStationService roadStationService,
                                  final RoadStationSensorService roadStationSensorService) {
         this.roadStationUpdateService = roadStationUpdateService;
         this.weatherStationService = weatherStationService;
         this.lotjuWeatherStationMetadataClientWrapper = lotjuWeatherStationMetadataClientWrapper;
-        this.lock = clusteredLocker.createClusteredLock(this.getClass().getSimpleName(), 10000);
         this.dataStatusService = dataStatusService;
         this.roadStationService = roadStationService;
         this.roadStationSensorService = roadStationSensorService;
+        this.cachedLockingService = lockingService.createCachedLockingService(this.getClass().getSimpleName());
     }
 
     public boolean updateWeatherStationAndSensors(final long lotjuId,
@@ -87,7 +88,12 @@ public class WeatherStationUpdater  {
      * @return true if data was updated
      */
     private boolean updateWeatherStationAndSensors(final TiesaaAsemaVO tiesaaAsema) {
-        lock.lock();
+        // Try to get lock for 10s and then gives up
+        if (!cachedLockingService.lock(10000)) {
+            log.error("method=updateWeatherStationAndSensors did not get the lock {}",
+                    cachedLockingService.getLockInfoForLogging());
+            return false;
+        }
         try {
             log.debug("method=updateWeatherStationAndSensors got the lock");
             if (!validate(tiesaaAsema)) {
@@ -106,7 +112,7 @@ public class WeatherStationUpdater  {
 
             return updateStatus.isUpdateOrInsert() || result.getLeft() > 0 || result.getRight() > 0;
         } finally {
-            lock.unlock();
+            cachedLockingService.deactivate();
         }
     }
 
@@ -119,7 +125,7 @@ public class WeatherStationUpdater  {
         return updateWeatherStationsMetadata(tiesaaAsemas);
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 10000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 30000) // Normally takes around 20s to fetch data and few seconds to update
     public int updateWeatherStationsStatuses() {
         final List<TiesaaAsemaVO> allTiesaaAsemas = lotjuWeatherStationMetadataClientWrapper.getTiesaaAsemas();
 

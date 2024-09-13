@@ -42,13 +42,14 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
-import fi.livi.digitraffic.tie.service.jms.marshaller.CameraMetadataUpdatedMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamMetadataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.CameraMetadataUpdatedMessageDto.EntityType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.weathercam.CameraMetadataUpdateMessageHandler;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
+@Deprecated(forRemoval = true, since = "TODO remove when DPO-2422 KCA is in production")
 public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(CameraMetadataUpdateJmsMessageListenerTest.class);
 
@@ -72,7 +73,7 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         // Create listener
         final JMSMessageListener.JMSDataUpdater<CameraMetadataUpdatedMessageDto> dataUpdater =
                 (data) -> cameraMetadataUpdateMessageHandler.updateMetadataFromJms(data);
-        cameraMetadataJmsMessageListener = new JMSMessageListener<>(new CameraMetadataUpdatedMessageMarshaller(kameraMetadataChangeJaxb2Marshaller),
+        cameraMetadataJmsMessageListener = new JMSMessageListener<>(new WeathercamMetadataJMSMessageMarshaller(kameraMetadataChangeJaxb2Marshaller),
                 dataUpdater, false, log);
     }
 
@@ -247,12 +248,10 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
         for(final long id : lotjuIds) {
             asemaIds.append("        <id>").append(id).append("</id>\n");
         }
-        return String.format(
-            "<metatietomuutos tyyppi=\"%s\" aika=\"%s\" entiteetti=\"%s\" id=\"%d\">\n" +
-                "    <asemat>\n" +
-                "%s" +
-                "    </asemat>\n" +
-            "</metatietomuutos>",
+        return String.format("""
+                <metatietomuutos tyyppi="%s" aika="%s" entiteetti="%s" id="%d">
+                    <asemat>%s</asemat>
+                </metatietomuutos>""",
             tyyppi.getExternalValue(), Instant.now(), entiteetti.getExternalValue(), lotjuId, asemaIds);
     }
 
@@ -262,9 +261,9 @@ public class CameraMetadataUpdateJmsMessageListenerTest extends AbstractJmsMessa
             asemaIds.append("        <id>").append(id).append("</id>\n");
         }
         return String.format("""
-                        <metatietomuutos tyyppi="%s" aika="%s" entiteetti="TIEOSOITE" id="%d">
-                            <asemat>%s</asemat>
-                        </metatietomuutos>""",
+                <metatietomuutos tyyppi="%s" aika="%s" entiteetti="TIEOSOITE" id="%d">
+                    <asemat>%s</asemat>
+                </metatietomuutos>""",
             tyyppi.getExternalValue(), Instant.now(), lotjuId, asemaIds);
     }
 

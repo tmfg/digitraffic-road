@@ -42,7 +42,7 @@ public interface MaintenanceTrackingObservationDataRepository extends JpaReposit
                 SELECT id
                 FROM maintenance_tracking_observation_data
                 WHERE observation_time <= :deleteDataBefore
-                  AND status <>  'UNHANDLED'
+                  AND status in ('HANDLED', 'ERROR') -- this uses index <> 'UNHANDLED' is not
                 ORDER BY observation_time
                 LIMIT :maxToDelete
             )""", nativeQuery = true)

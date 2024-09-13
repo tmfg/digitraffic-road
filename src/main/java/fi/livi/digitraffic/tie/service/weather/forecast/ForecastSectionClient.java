@@ -1,28 +1,28 @@
 package fi.livi.digitraffic.tie.service.weather.forecast;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesDto;
+import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesEntry;
+import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDto;
+import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionV2Dto;
 import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesDto;
-import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesEntry;
-import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDto;
-import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionV2Dto;
-import fi.livi.digitraffic.tie.service.RestTemplateGzipService;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 @ConditionalOnNotWebApplication
 @Component
@@ -38,41 +38,62 @@ public class ForecastSectionClient {
 
     private final Map<String, String> keyValues;
     private final ObjectMapper objectMapper;
-    private final RestTemplateGzipService restTemplateGzipService;
 
-    public ForecastSectionClient(final RestTemplateGzipService restTemplateGzipService,
+    private final WebClient webClient;
+
+    public ForecastSectionClient(final WebClient webClient,
                                  final ObjectMapper objectMapper,
                                  @Value("${roadConditions.baseUrl}") final String baseUrl,
                                  @Value("${roadConditions.suid}") final String suid,
                                  @Value("${roadConditions.user}") final String user,
                                  @Value("${roadConditions.pass}") final String pass) {
         this.objectMapper = objectMapper;
-        this.restTemplateGzipService = restTemplateGzipService;
-        keyValues = new HashMap<>();
-        keyValues.put(KEY_BASE_URL, baseUrl);
-        keyValues.put(KEY_SUID, suid);
-        keyValues.put(KEY_USER, user);
-        keyValues.put(KEY_PASS, pass);
+        this.webClient = webClient;
+
+        this.objectMapper.registerModule(new JavaTimeModule());
+
+        keyValues = Map.of(
+            KEY_BASE_URL, baseUrl,
+            KEY_SUID, suid,
+            KEY_USER, user,
+            KEY_PASS, pass);
+    }
+
+    private <T> T getFromUrl(final String url, final Class<T> clazz) {
+        final DataBuffer db = webClient.get().uri(url)
+            .accept(MediaType.APPLICATION_OCTET_STREAM)
+            .retrieve().bodyToMono(DataBuffer.class).block();
+
+        // ok, DataBuffer holds the response that is gzipped
+
+        try(final InputStream dbIs = db.asInputStream(); final GZIPInputStream gis = new GZIPInputStream(dbIs)) {
+            final T object = objectMapper.readerFor(clazz).readValue(gis);
+
+            return object;
+        } catch (final Exception e) {
+            log.error("Error converting response", e);
+
+            return null;
+        } finally {
+            DataBufferUtils.release(db);
+        }
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public List<ForecastSectionCoordinatesDto> getForecastSectionV1Metadata() {
-        final LinkedHashMap<String, Object> response =
-            restTemplateGzipService.getForGzippedObject(getMetadataUrl(1), LinkedHashMap.class,
-                                                        "getForecastSectionV1Metadata", getMetadataUrlLoggerSafe(1));
+        final LinkedHashMap<String, Object> response = getFromUrl(getMetadataUrl(1), LinkedHashMap.class);
+
         return response == null ? Collections.emptyList() : response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public ForecastSectionV2Dto getForecastSectionV2Metadata() {
-        return restTemplateGzipService.getForGzippedObject(getMetadataUrl(2), ForecastSectionV2Dto.class,
-                                                           "getForecastSectionV2Metadata", getMetadataUrlLoggerSafe(2));
+        return getFromUrl(getMetadataUrl(2), ForecastSectionV2Dto.class);
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public ForecastSectionDataDto getRoadConditions(final int version) {
-        return restTemplateGzipService.getForGzippedObject(getDataUrl(version), ForecastSectionDataDto.class,
-                                                           "getRoadConditionsV" + version, getDataUrlLoggerSafe(version));
+        return getFromUrl(getDataUrl(version), ForecastSectionDataDto.class);
     }
 
     protected ForecastSectionCoordinatesDto mapForecastSectionCoordinates(final Map.Entry<String, Object> forecastSection) {
@@ -85,16 +106,8 @@ public class ForecastSectionClient {
         return getUrlWithVersion(version, true, false);
     }
 
-    private String getMetadataUrlLoggerSafe(final int version) {
-        return getUrlWithVersion(version, true, true);
-    }
-
     private String getDataUrl(final int version) {
         return getUrlWithVersion(version, false, false);
-    }
-
-    private String getDataUrlLoggerSafe(final int version) {
-        return getUrlWithVersion(version, false, true);
     }
 
     private String getUrlWithVersion(final int version, final boolean metadata, final boolean loggerSafe) {

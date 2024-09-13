@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getEpochSeconds;
+import static fi.livi.digitraffic.common.util.TimeUtil.getEpochSeconds;
 import static fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue.StatisticsType.STATUS;
 
 import java.time.Instant;
@@ -13,7 +13,8 @@ import org.slf4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
+import fi.livi.digitraffic.common.service.locking.CachedLockingService;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 
 public class MqttMessageSenderV2 {
@@ -21,28 +22,25 @@ public class MqttMessageSenderV2 {
     private final MqttRelayQueue mqttRelay;
     private final ObjectMapper objectMapper;
 
-    private final ClusteredLocker clusteredLocker;
-    private final String lockName;
-    private final long instanceId;
+    private final CachedLockingService cachedLockingService;
 
     private final AtomicReference<Instant> lastUpdated = new AtomicReference<>();
     private final AtomicReference<Instant> lastError = new AtomicReference<>();
     private final MqttRelayQueue.StatisticsType statisticsType;
-    
+
     public MqttMessageSenderV2(final Logger log,
                                final MqttRelayQueue mqttRelay,
                                final ObjectMapper objectMapper,
                                final MqttRelayQueue.StatisticsType statisticsType,
-                               final ClusteredLocker clusteredLocker) {
+                               final LockingService lockingService) {
 
         this.mqttRelay = mqttRelay;
         this.objectMapper = objectMapper;
         this.log = log;
         this.statisticsType = statisticsType;
 
-        this.clusteredLocker = clusteredLocker;
-        this.lockName = this.getClass().getSimpleName() + '_' + statisticsType;
-        this.instanceId = ClusteredLocker.generateInstanceId();
+        final String lockName = this.getClass().getSimpleName() + '_' + statisticsType;
+        this.cachedLockingService = lockingService.createCachedLockingService(lockName);
     }
 
     public void sendMqttMessages(final Instant lastUpdated, final Collection<MqttDataMessageV2> messages) {
@@ -56,7 +54,7 @@ public class MqttMessageSenderV2 {
     }
 
     public boolean acquireLock() {
-        return clusteredLocker.tryLock(lockName, 60, instanceId);
+        return cachedLockingService.hasLock();
     }
 
     private void doSendMqttMessage(final MqttDataMessageV2 message) {

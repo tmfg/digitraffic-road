@@ -1,5 +1,7 @@
 name: Build
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 jobs:
   build:
     if: github.repository != 'tmfg/digitraffic-road'
@@ -18,7 +20,7 @@ jobs:
       - name: Setup dependencies
         run: cp -R digitraffic-build-dependencies/jms/ ~/.m2/
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: corretto
@@ -27,9 +29,9 @@ jobs:
         run: mvn install -T1.5C git-commit-id:revision install -e -U -DskipTests=true
       - name: Setup database
         working-directory: dbroad
-        run: docker-compose rm db && docker-compose up -d
+        run: docker compose rm db && docker compose up -d
       - name: Get database IP
-        run: echo "db_addr=$(docker inspect dbroad_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
+        run: echo "db_addr=$(docker inspect dbroad-db-1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Prepare test run
         run: cp src/test/resources/application-default.properties.template target/test-classes/application-ci.properties
       - name: Run tests
@@ -37,7 +39,7 @@ jobs:
         run: |
           mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -e -U -Dmaven.gitcommitid.skip=true -Dspring.jdbc.getParameterType.ignore=true -Dspring.profiles.active=ci -Dquartz.enabled=false -Droad.datasource.url=jdbc:postgresql://${{ env.db_addr }}:5432/road
       - name: Publish test results
-        uses: dorny/test-reporter@v1.6.0
+        uses: dorny/test-reporter@v1.8.0
         if: success() || failure()
         with:
           name: jUnit tests

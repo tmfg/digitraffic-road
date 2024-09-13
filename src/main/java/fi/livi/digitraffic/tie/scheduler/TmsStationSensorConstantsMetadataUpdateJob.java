@@ -20,17 +20,13 @@ public class TmsStationSensorConstantsMetadataUpdateJob extends SimpleUpdateJob 
     protected void doExecute(final JobExecutionContext context) throws Exception {
 
         final StopWatch stationsSensorConstantsWatch = StopWatch.createStarted();
-        final boolean updatedTmsStationSensorConstants =
-            tmsStationSensorConstantUpdater.updateTmsStationsSensorConstants();
+        tmsStationSensorConstantUpdater.updateTmsStationsSensorConstants();
         stationsSensorConstantsWatch.stop();
 
         final StopWatch stationsSensorConstantValuesWatch = StopWatch.createStarted();
-        final boolean updatedTmsStationSensorConstantValues = tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantsValues();
+        tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantsValues();
         stationsSensorConstantValuesWatch.stop();
 
-        if (updatedTmsStationSensorConstants || updatedTmsStationSensorConstantValues) {
-            dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_CONSTANT_METADATA);
-        }
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_CONSTANT_METADATA_CHECK);
 
         log.info("TmsStationSensorConstants took: sensorConstantsTimeMs={} ms, TmsStationSensorConstantValues took: sensorConstantsValuesTimeMs={}",

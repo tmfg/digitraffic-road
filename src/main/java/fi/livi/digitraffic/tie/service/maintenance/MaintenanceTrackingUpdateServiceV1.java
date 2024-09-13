@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils.GeometryType;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -102,6 +102,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
 
     @Transactional
     public int handleUnhandledMaintenanceTrackingObservationData(final int maxToHandle) {
+        final StopWatch start = StopWatch.createStarted();
         fromCacheCount = 0;
         fromDbCountAndMs = Pair.of(0,0L);
 
@@ -110,10 +111,11 @@ public class MaintenanceTrackingUpdateServiceV1 {
         final int count = (int) data.filter(trackingData -> handleMaintenanceTrackingObservationData(trackingData, cacheByHarjaWorkMachineIdAndContractId)).count();
         dataStatusService.updateDataUpdated(DataType.MAINTENANCE_TRACKING_DATA_CHECKED, STATE_ROADS_DOMAIN);
 
-        log.info("method=handleUnhandledMaintenanceTrackingObservationData Read data from db {} times and from cache {} times. Db queries tookTotal {} ms and average {} ms/query",
+        log.info("method=handleUnhandledMaintenanceTrackingObservationData Read data from db {} times and from cache {} times. Db queries tookTotal {} ms and average {} ms/query tookMs={}",
                  fromDbCountAndMs.getLeft(), fromCacheCount,
                  fromDbCountAndMs.getRight(),
-                 fromDbCountAndMs.getLeft() > 0 ? fromDbCountAndMs.getRight()/fromDbCountAndMs.getLeft() : 0);
+                 fromDbCountAndMs.getLeft() > 0 ? fromDbCountAndMs.getRight()/fromDbCountAndMs.getLeft() : 0,
+                start.getTime());
         return count;
     }
 
@@ -129,12 +131,12 @@ public class MaintenanceTrackingUpdateServiceV1 {
             trackingData.updateStatusToHandled();
 
         } catch (final Exception e) {
-            log.error(String.format("method=handleMaintenanceTrackingObservationData failed for id %d", trackingData.getId()), e);
+            // FIXME: DPO-2617
+            log.warn(String.format("method=handleMaintenanceTrackingObservationData failed for id %d", trackingData.getId()), e);
             trackingData.updateStatusToError();
             trackingData.appendHandlingInfo(ExceptionUtils.getStackTrace(e));
-            return false;
         }
-        return true;
+        return true; // We need to return always true, to count tracking as handled even when there is error in handling
     }
 
     private void handleRoute(final Havainto havainto,
@@ -156,7 +158,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                     getPreviousTrackingFromCacheOrFetchFromDb(cacheByHarjaWorkMachineIdAndContractId, harjaWorkMachineIdContractId);
 
                 final NextObservationStatus status = resolveNextObservationStatus(previousTracking, havainto, geometry);
-                final ZonedDateTime harjaObservationTime = DateHelper.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
+                final ZonedDateTime harjaObservationTime = TimeUtil.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
 
                 final BigDecimal direction = getDirection(havainto, trackingData.getId());
                 final Point firstPoint = (Point) PostgisGeometryUtils.snapToGrid(PostgisGeometryUtils.getStartPoint(geometry));
@@ -189,7 +191,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                         getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
 
                     final MaintenanceTracking created =
-                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, DateHelper.toZonedDateTimeAtUtc(sendingTime),
+                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, TimeUtil.toZonedDateTimeAtUtc(sendingTime),
                             harjaObservationTime, harjaObservationTime, lastPoint, simpleSnapped,
                             performedTasks, direction, STATE_ROADS_DOMAIN);
 
@@ -447,7 +449,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                 ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
             if (!timeGapInsideTheLimit && log.isDebugEnabled()) {
                 log.debug("previousCoordinateTime: {}, nextCoordinateTime: {}, timeGapInsideTheLimit: {} for {}",
-                          DateHelper.toZonedDateTimeAtUtc(previousCoordinateTime), DateHelper.toZonedDateTimeAtUtc(nextCoordinateTime),
+                          TimeUtil.toZonedDateTimeAtUtc(previousCoordinateTime), TimeUtil.toZonedDateTimeAtUtc(nextCoordinateTime),
                           timeGapInsideTheLimit, previousTracking.toStringTiny());
             }
             return timeGapInsideTheLimit;
@@ -462,8 +464,8 @@ public class MaintenanceTrackingUpdateServiceV1 {
             final boolean nextIsSameOrAfter = !nextCoordinateTime.isBefore(previousCoordinateTime);
             if (!nextIsSameOrAfter && log.isDebugEnabled()) {
                 log.debug("previousCoordinateTime: {}, nextCoordinateTime: {} nextIsSameOrAfter: {} for {}",
-                          DateHelper.toZonedDateTimeAtUtc(previousCoordinateTime),
-                          DateHelper.toZonedDateTimeAtUtc(nextCoordinateTime),
+                          TimeUtil.toZonedDateTimeAtUtc(previousCoordinateTime),
+                          TimeUtil.toZonedDateTimeAtUtc(nextCoordinateTime),
                           nextIsSameOrAfter, previousTracking.toStringTiny());
             }
             return nextIsSameOrAfter;

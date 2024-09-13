@@ -25,6 +25,6 @@ public class MaintenanceTrackingCleanupJobConfiguration {
      */
     @Scheduled(cron = "${maintenance.tracking.job.cleanup.cron}")
     public void deleteOldMaintenanceTrackingData() {
-        while(maintenanceTrackingUpdateServiceV1.deleteDataOlderThanDays(31, 1000) > 0);
+        while(maintenanceTrackingUpdateServiceV1.deleteDataOlderThanDays(7, 1000) > 0);
     }
 }

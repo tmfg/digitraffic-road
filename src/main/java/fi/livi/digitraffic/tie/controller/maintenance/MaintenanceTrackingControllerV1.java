@@ -43,7 +43,7 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureColl
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDtoV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingWebDataServiceV1;
 import io.swagger.v3.oas.annotations.Operation;
@@ -157,7 +157,7 @@ public class MaintenanceTrackingControllerV1 {
         validateTimeBetweenFromAndToMaxHours(endFrom, null, 24, END_TIME);
 
         return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackingRoutes(
-            DateHelper.floorInstantSeconds(endFrom), null,
+            TimeUtil.floorInstantSeconds(endFrom), null,
             MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(xMin, xMax, yMin, yMax),
             hasAllTasks(taskId) ? null : taskId,
             maintenanceTrackingWebDataServiceV1.normalizeAndValidateDomainParameter(domain));
@@ -224,10 +224,10 @@ public class MaintenanceTrackingControllerV1 {
         validateTimeBetweenFromAndToMaxHours(createdAfter, createdBefore, 24, CREATED_TIME);
 
         return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
-            DateHelper.floorInstantSeconds(endFrom),
-            DateHelper.floorInstantSeconds(endBefore),
-            DateHelper.floorInstantSeconds(createdAfter),
-            DateHelper.floorInstantSeconds(createdBefore),
+            TimeUtil.floorInstantSeconds(endFrom),
+            TimeUtil.floorInstantSeconds(endBefore),
+            TimeUtil.floorInstantSeconds(createdAfter),
+            TimeUtil.floorInstantSeconds(createdBefore),
             MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(xMin, xMax, yMin, yMax),
             hasAllTasks(taskId) ? null : taskId,
             maintenanceTrackingWebDataServiceV1.normalizeAndValidateDomainParameter(domain));

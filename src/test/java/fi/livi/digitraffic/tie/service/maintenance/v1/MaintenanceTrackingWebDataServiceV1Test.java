@@ -28,7 +28,6 @@ import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTracking
 import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.getTaskSetWithIndex;
 import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.getTaskWithIndex;
 import static java.util.Arrays.asList;
-import static org.apache.sshd.common.util.GenericUtils.asSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -44,7 +43,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +55,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.sshd.common.util.GenericUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -166,29 +164,29 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // start is exlusive -> nothing to return
         assertCollectionSize(0, findMaintenanceTrackings(
             null, null,
-            created, created.plus(1, ChronoUnit.MINUTES), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
+            created, created.plus(1, ChronoUnit.MINUTES), Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures());
 
         // end is exclusive -> nothing to return
         assertCollectionSize(0, findMaintenanceTrackings(
             null, null,
-            created.minus(1, ChronoUnit.MINUTES), created, GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
+            created.minus(1, ChronoUnit.MINUTES), created, Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures());
 
         // Both are created at the same time -> both are returned
         assertCollectionSize(2, findMaintenanceTrackings(
             null, null,
-            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures());
+            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures());
 
         // Created match both and endTime (exlusive) only first
         final List<MaintenanceTrackingFeatureV1> firstFound = findMaintenanceTrackings(
             start, start.plusMillis(1),
-            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures();
+            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures();
         assertCollectionSize(1, firstFound);
         assertEquals(first.getId(), firstFound.get(0).getProperties().id);
 
         // Created match both and endTime only first
         final List<MaintenanceTrackingFeatureV1> secondFound = findMaintenanceTrackings(
             created, created.plusMillis(1),
-            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures();
+            created.minusSeconds(1), created.plus(1, ChronoUnit.MINUTES), Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures();
         assertCollectionSize(1, secondFound);
         assertEquals(second.getId(), secondFound.get(0).getProperties().id);
     }
@@ -419,9 +417,9 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         features.forEach(f -> {
             final Set<MaintenanceTrackingTask> tasks = f.getProperties().tasks;
             if (tasks.size() == 2) {
-                assertEquals(new HashSet<>(asList(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING)), tasks);
+                assertEquals(Sets.newHashSet(PLOUGHING_AND_SLUSH_REMOVAL, CRACK_FILLING), tasks);
             } else {
-                assertEquals(new HashSet<>(GenericUtils.asSet(PAVING)), tasks);
+                assertEquals(Sets.newHashSet(PAVING), tasks);
             }
         });
     }
@@ -454,7 +452,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             null, null,
             AREA,
             Collections.emptySet(),
-            GenericUtils.asSet(STATE_ROADS_DOMAIN));
+            Sets.newHashSet(STATE_ROADS_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingPropertiesV1 props = result.getFeatures().get(0).getProperties();
 
@@ -491,7 +489,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             startTime, startTime,
             null, null, AREA,
             Collections.emptySet(),
-            GenericUtils.asSet(STATE_ROADS_DOMAIN));
+            Sets.newHashSet(STATE_ROADS_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -523,7 +521,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             null, null,
             AREA,
             Collections.emptySet(),
-            GenericUtils.asSet(STATE_ROADS_DOMAIN));
+            Sets.newHashSet(STATE_ROADS_DOMAIN));
         assertEquals(1, result.getFeatures().size());
         final MaintenanceTrackingPropertiesV1 props = result.getFeatures().get(0).getProperties();
 
@@ -559,7 +557,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             null, null,
             AREA,
             Collections.emptySet(),
-            GenericUtils.asSet(STATE_ROADS_DOMAIN));
+            Sets.newHashSet(STATE_ROADS_DOMAIN));
         assertEquals(0, result.getFeatures().size());
     }
 
@@ -583,7 +581,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             null, null,
             AREA,
             Collections.emptySet(),
-            GenericUtils.asSet(STATE_ROADS_DOMAIN));
+            Sets.newHashSet(STATE_ROADS_DOMAIN));
         final MaintenanceTrackingFeatureV1 feature1 = result1.getFeatures().get(0);
 
         final MaintenanceTrackingFeatureV1 feature2 =
@@ -614,7 +612,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void latestUpdateTime() throws JsonProcessingException, InterruptedException {
+    public void latestUpdateTime() throws JsonProcessingException {
 
         // Create 2 trackings with 1 s handling time gap -> creation time diff is 1 s
         final List<Tyokone> workMachines1 = createWorkMachines(1);
@@ -641,7 +639,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // and last update in data is same as created time of second
         final MaintenanceTrackingFeatureCollectionV1 fc = findMaintenanceTrackings(
             null, null,
-            null, null, GenericUtils.asSet(STATE_ROADS_DOMAIN));
+            null, null, Sets.newHashSet(STATE_ROADS_DOMAIN));
         assertCollectionSize(2, fc.getFeatures());
         final Instant lastUpdated = fc.getLastModified();
         final MaintenanceTrackingFeatureV1 first = fc.getFeatures().get(0);
@@ -651,7 +649,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void latestUpdateTimeWithDomain() throws InterruptedException {
+    public void latestUpdateTimeWithDomain() {
         // Create one tracking for both domains with 2 s diff between creation times
         final MaintenanceTrackingWorkMachine wm1 = testHelper.createAndSaveWorkMachine();
         final MaintenanceTrackingWorkMachine wm2 = testHelper.createAndSaveWorkMachine();
@@ -681,21 +679,21 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // find with first domain should have same update time as creation time and almost same the same data checked time
         final MaintenanceTrackingFeatureCollectionV1 fc1 = findMaintenanceTrackings(
             null, null,
-            null, null, GenericUtils.asSet(firstDomain));
+            null, null, Sets.newHashSet(firstDomain));
         assertCollectionSize(1, fc1.getFeatures());
         assertEquals(first.getCreated().toInstant(), fc1.getLastModified());
 
         // find with second domain should have same update time as creation time and almost same the same data checked time
         final MaintenanceTrackingFeatureCollectionV1 fc2 = findMaintenanceTrackings(
             null, null,
-            null, null, asSet(secondDomain));
+            null, null, Sets.newHashSet(secondDomain));
         assertCollectionSize(1, fc2.getFeatures());
         assertEquals(second.getCreated().toInstant(), fc2.getLastModified());
 
         // With both domains, the result has the newest creation time (=second domain)
         final MaintenanceTrackingFeatureCollectionV1 fcBoth = findMaintenanceTrackings(
             null, null,
-            null, null, asSet(secondDomain, firstDomain));
+            null, null, Sets.newHashSet(secondDomain, firstDomain));
         assertCollectionSize(2, fcBoth.getFeatures());
         assertEquals(second.getCreated().toInstant(), fcBoth.getLastModified());
     }
@@ -721,7 +719,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             // Second and third call should come from cache and have same values
             assertCollectionSize(
                 1,
-                findMaintenanceTrackings(null, null, null, null, GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures()
+                findMaintenanceTrackings(null, null, null, null, Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures()
             );
             assertCollectionSize(
                 1,
@@ -732,17 +730,17 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
 
         // Verify cached methods are called only once
         verify(maintenanceTrackingWebDataServiceV1, times(1)).findMaintenanceTrackingRoutes(
-            null, null, null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
+            null, null, null, null, null, Collections.emptySet(), Sets.newHashSet(STATE_ROADS_DOMAIN)
         );
         verify(maintenanceTrackingWebDataServiceV1, times(1)).findLatestMaintenanceTrackingRoutes(
-            null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
+            null, null, null, Collections.emptySet(), Sets.newHashSet(STATE_ROADS_DOMAIN)
         );
 
         maintenanceTrackingWebDataServiceV1.evictRoutesCache();
         maintenanceTrackingWebDataServiceV1.evictRoutesLatestCache();
         assertCollectionSize(
             3,
-            findMaintenanceTrackings(null, null, null, null, GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures()
+            findMaintenanceTrackings(null, null, null, null, Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures()
         );
         assertCollectionSize(
             3,
@@ -768,7 +766,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
 
         assertCollectionSize(
             1,
-            findMaintenanceTrackings(null, null, null, null, GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures()
+            findMaintenanceTrackings(null, null, null, null, Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures()
         );
         assertCollectionSize(
             1,
@@ -782,7 +780,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                 log.info("Thread {} start", current);
                 assertCollectionSize(
                     1,
-                    findMaintenanceTrackings(null, null, null, null, GenericUtils.asSet(STATE_ROADS_DOMAIN)).getFeatures()
+                    findMaintenanceTrackings(null, null, null, null, Sets.newHashSet(STATE_ROADS_DOMAIN)).getFeatures()
                 );
                 assertCollectionSize(
                     1,
@@ -796,10 +794,10 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // Verify cached methods are called only once
         // Only one thread should go in and other should come from cache
         verify(maintenanceTrackingWebDataServiceV1, times(1)).findMaintenanceTrackingRoutes(
-            null, null, null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
+            null, null, null, null, null, Collections.emptySet(), Sets.newHashSet(STATE_ROADS_DOMAIN)
         );
         verify(maintenanceTrackingWebDataServiceV1, times(1)).findLatestMaintenanceTrackingRoutes(
-            null, null, null, Collections.emptySet(), GenericUtils.asSet(STATE_ROADS_DOMAIN)
+            null, null, null, Collections.emptySet(), Sets.newHashSet(STATE_ROADS_DOMAIN)
         );
         logCache();
     }
@@ -871,8 +869,8 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         return maintenanceTrackingWebDataServiceV1.findLatestMaintenanceTrackingRoutes(
             start, end,
             MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(RANGE_X_MIN, RANGE_X_MAX, RANGE_Y_MIN, RANGE_Y_MAX),
-            asSet(tasks),
-            GenericUtils.asSet(STATE_ROADS_DOMAIN));
+            Sets.newHashSet(tasks),
+            Sets.newHashSet(STATE_ROADS_DOMAIN));
     }
 
     private void assertAllHasOnlyPointGeometries(final List<MaintenanceTrackingLatestFeatureV1> features) {
@@ -884,7 +882,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         return findMaintenanceTrackings(
             endFrom, endTo.plusMillis(1),
             null, null,
-            GenericUtils.asSet(STATE_ROADS_DOMAIN),
+            Sets.newHashSet(STATE_ROADS_DOMAIN),
             tasks);
     }
 
@@ -895,7 +893,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         return maintenanceTrackingWebDataServiceV1.findMaintenanceTrackingRoutes(
             endFrom, endBefore, changeAfter, changeBefore,
             MaintenanceTrackingWebDataServiceV1.convertToNormalizedAreaParameter(RANGE_X_MIN, RANGE_X_MAX, RANGE_Y_MIN, RANGE_Y_MAX),
-            asSet(tasks),
+            Sets.newHashSet(tasks),
             domains);
     }
 
@@ -908,7 +906,9 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             .forEach(p -> {
             // This is the first one to handle
             if (p.previousId == null) {
-                groupsByStartId.put(p.id, new ArrayList<>(Collections.singleton(p)));
+                // Created list can't be unmodifiable as it will be used on else-branch
+                // So List.of() is not usable here
+                groupsByStartId.put(p.id, new ArrayList<>(Sets.newHashSet(p)));
             } else {
                 // Find the first in group and add tracking to it's group
                 MaintenanceTrackingPropertiesV1 previous = p;

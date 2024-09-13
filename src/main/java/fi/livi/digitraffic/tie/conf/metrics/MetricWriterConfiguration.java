@@ -17,6 +17,7 @@ import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -29,6 +30,7 @@ import io.micrometer.core.instrument.search.RequiredSearch;
 /**
  * Measure pool statistics every 100ms and log min and max once a minute.
  */
+@ConditionalOnExpression("'${config.test}' != 'true'")
 @Configuration
 public class MetricWriterConfiguration implements MetricVisitor {
     private final MeterRegistry meterRegistry;

@@ -8,7 +8,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import fi.livi.digitraffic.tie.dto.data.v1.DataUpdatedSupportV1;
+import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({ "id", "forecasts" })

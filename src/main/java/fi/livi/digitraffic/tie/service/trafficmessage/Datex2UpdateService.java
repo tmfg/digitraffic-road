@@ -37,7 +37,7 @@ import fi.livi.digitraffic.tie.datex2.Situation;
 import fi.livi.digitraffic.tie.datex2.SituationPublication;
 import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.datex2.Validity;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.LoggerHelper;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -75,7 +75,7 @@ public class Datex2UpdateService {
 
     @Transactional
     public int updateTrafficDatex2ImsMessages(final List<ExternalIMSMessage> imsMessages) {
-        final ZonedDateTime now = DateHelper.getZonedDateTimeNowAtUtc();
+        final ZonedDateTime now = TimeUtil.getZonedDateTimeNowAtUtc();
         final int newAndUpdated = imsMessages.stream().mapToInt(imsMessage -> {
             if (log.isDebugEnabled()) {
                 log.debug("method=updateTrafficDatex2ImsMessages imsMessage d2Message datex2: {}",
@@ -246,11 +246,11 @@ public class Datex2UpdateService {
             .map(s -> s.getSituationRecords().stream()
                 .map(SituationRecord::getSituationRecordVersionTime).max(Comparator.naturalOrder()).orElseThrow())
             .max(Comparator.naturalOrder()).orElseThrow();
-        return DateHelper.toZonedDateTimeAtUtc(latest);
+        return TimeUtil.toZonedDateTimeAtUtc(latest);
     }
 
     private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
-        datex2.setPublicationTime(DateHelper.toZonedDateTimeAtUtc(payloadPublication.getPublicationTime()));
+        datex2.setPublicationTime(TimeUtil.toZonedDateTimeAtUtc(payloadPublication.getPublicationTime()));
         if (payloadPublication instanceof SituationPublication) {
             parseAndAppendSituationPublicationData((SituationPublication) payloadPublication, datex2);
         } else {
@@ -266,7 +266,7 @@ public class Datex2UpdateService {
             datex2.addSituation(d2Situation);
 
             d2Situation.setSituationId(situation.getId());
-            d2Situation.setVersionTime(DateHelper.toZonedDateTimeWithoutMillisAtUtc(situation.getSituationVersionTime()));
+            d2Situation.setVersionTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(situation.getSituationVersionTime()));
 
             parseAndAppendSituationRecordData(situation.getSituationRecords(), d2Situation);
         }
@@ -289,15 +289,15 @@ public class Datex2UpdateService {
             }
 
             d2SituationRecord.setSituationRecordId(record.getId());
-            d2SituationRecord.setCreationTime(DateHelper.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordCreationTime()));
-            d2SituationRecord.setVersionTime(DateHelper.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordVersionTime()));
-            d2SituationRecord.setObservationTime(DateHelper.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordObservationTime()));
+            d2SituationRecord.setCreationTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordCreationTime()));
+            d2SituationRecord.setVersionTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordVersionTime()));
+            d2SituationRecord.setObservationTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordObservationTime()));
 
             final Validity validy = record.getValidity();
             d2SituationRecord.setValidyStatus(Datex2SituationRecordValidyStatus.fromValue(validy.getValidityStatus().name()));
             final OverallPeriod period = validy.getValidityTimeSpecification();
-            d2SituationRecord.setOverallStartTime(DateHelper.toZonedDateTimeWithoutMillisAtUtc(period.getOverallStartTime()));
-            d2SituationRecord.setOverallEndTime(DateHelper.toZonedDateTimeWithoutMillisAtUtc(period.getOverallEndTime()));
+            d2SituationRecord.setOverallStartTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(period.getOverallStartTime()));
+            d2SituationRecord.setOverallEndTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(period.getOverallEndTime()));
 
             // lifeCycleManagement
             d2SituationRecord.setLifeCycleManagementCanceled(resolveIsLifeCycleManagementCanceled(record));

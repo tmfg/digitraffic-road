@@ -37,7 +37,7 @@ import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
-    public static final Logger log=LoggerFactory.getLogger(SensorDataS3WriterTest.class);
+    public static final Logger log = LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 
     @Autowired
     private AmazonS3 amazonS3;
@@ -73,7 +73,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
     @Test
     public void s3Bucket() throws IOException {
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = ZonedDateTime.now().withMinute(1);
         final ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
         final ZonedDateTime from = to.minusHours(1);
 
@@ -125,11 +125,11 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
                 builder.getGeneratedHistory().stream()
                     .peek(h -> h.setMeasuredTime(h.getMeasuredTime().truncatedTo(ChronoUnit.SECONDS))) // CSV is truncated
                     .filter(h -> h.getMeasuredTime().toEpochSecond() >= from.toEpochSecond() && h.getMeasuredTime().toEpochSecond() < to.toEpochSecond())
-                    .sorted(Comparator.comparing(SensorValueHistory::getMeasuredTime).thenComparing(SensorValueHistory::getSensorId))
+                    .sorted(Comparator.comparing(SensorValueHistory::getMeasuredTime).thenComparing(SensorValueHistory::getSensorId).thenComparing(SensorValueHistory::getSensorValue))
                     .toList();
             // Same ordering for csv
             final List<WeatherSensorValueHistoryDto> actualHistory = items.stream()
-                .sorted(Comparator.comparing(WeatherSensorValueHistoryDto::getMeasuredTime).thenComparing(WeatherSensorValueHistoryDto::getSensorId))
+                .sorted(Comparator.comparing(WeatherSensorValueHistoryDto::getMeasuredTime).thenComparing(WeatherSensorValueHistoryDto::getSensorId).thenComparing(WeatherSensorValueHistoryDto::getSensorValue))
                 .toList();
             assertHistory(expectedHistory, actualHistory);
         } catch (final Exception e) {

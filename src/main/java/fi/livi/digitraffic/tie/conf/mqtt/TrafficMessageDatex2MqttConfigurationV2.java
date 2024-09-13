@@ -17,11 +17,12 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
+import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.helper.MqttUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 import fi.livi.digitraffic.tie.mqtt.MqttDataMessageV2;
 import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
-import fi.livi.digitraffic.tie.service.ClusteredLocker;
 import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageMqttDataServiceV1;
 
@@ -44,14 +45,14 @@ public class TrafficMessageDatex2MqttConfigurationV2 {
     public TrafficMessageDatex2MqttConfigurationV2(final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1,
                                                    final MqttRelayQueue mqttRelay,
                                                    final ObjectMapper objectMapper,
-                                                   final ClusteredLocker clusteredLocker) {
+                                                   final LockingService lockingService) {
         this.trafficMessageMqttDataServiceV1 = trafficMessageMqttDataServiceV1;
-        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TRAFFIC_MESSAGE_DATEX, clusteredLocker);
+        this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TRAFFIC_MESSAGE_DATEX, lockingService);
 
         mqttMessageSender.setLastUpdated(Instant.now());
     }
 
-
+    @NoJobLogging
     @Scheduled(fixedDelayString = "${mqtt.TrafficMessage.v2.pollingIntervalMs}")
     public void pollAndSendMessages() {
         if (mqttMessageSender.acquireLock()) {

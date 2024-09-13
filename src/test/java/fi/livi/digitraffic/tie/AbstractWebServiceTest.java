@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfigur
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
-import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.conf.RoadCacheConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
@@ -50,7 +49,7 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
              showSql = false)
 @Import({// configurations
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
-         Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RestTemplate.class, RetryTemplate.class,
+         Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class, RetryTemplate.class,
          RoadCacheConfiguration.class,
 
          // Services V1

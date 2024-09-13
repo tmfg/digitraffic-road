@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.service.jms;
 
 import static fi.livi.digitraffic.tie.TestUtils.entityManagerFlushAndClear;
-import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
+import static fi.livi.digitraffic.tie.TestUtils.getRandomString;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.helper.DateHelper.withoutMillis;
+import static fi.livi.digitraffic.common.util.TimeUtil.withoutMillis;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.xml.transform.StringResult;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
@@ -35,12 +34,12 @@ import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1.ImsMessage;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
-import fi.livi.digitraffic.tie.service.jms.marshaller.ImsMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.ImsJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 
+@Deprecated(forRemoval = true, since = "TODO remove when DPO-2422 KCA is in production")
 public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     private static final Logger log = LoggerFactory.getLogger(ImsDatex2JmsMessageListenerTest.class);
 
@@ -50,10 +49,6 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     @Autowired
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller jaxb2MarshallerimsJaxb2Marshaller;
-
-    @Autowired
-    @Qualifier("imsJaxb2Marshaller")
-    private Jaxb2Marshaller imsJaxb2Marshaller;
 
     @BeforeEach
     public void cleanDb() {
@@ -134,7 +129,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
 
     private JMSMessageListener<ExternalIMSMessage> createImsJmsMessageListener() {
         final JMSMessageListener.JMSDataUpdater<ExternalIMSMessage> dataUpdater = (data) ->  trafficMessageTestHelper.getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(data);
-        return new JMSMessageListener<>(new ImsMessageMarshaller(jaxb2MarshallerimsJaxb2Marshaller), dataUpdater, false, log);
+        return new JMSMessageListener<>(new ImsJMSMessageMarshaller(jaxb2MarshallerimsJaxb2Marshaller), dataUpdater, false, log);
     }
 
     private void sendJmsMessage(final ImsXmlVersion xmlVersion, final SituationType situationType, final ImsJsonVersion jsonVersion,
@@ -145,13 +140,7 @@ public class ImsDatex2JmsMessageListenerTest extends AbstractJmsMessageListenerT
     }
 
     private void createAndSendJmsMessage(final String xmlImsMessage, final JMSMessageListener<ExternalIMSMessage> messageListener) {
-        messageListener.onMessage(createTextMessage(xmlImsMessage, getRandomId(1000, 9999).toString()));
-    }
-
-    public String convertImsMessageToString(final ImsMessage imsMessage) {
-        final StringResult result = new StringResult();
-        imsJaxb2Marshaller.marshal(imsMessage, result);
-        return result.toString();
+        messageListener.onMessage(createTextMessage(xmlImsMessage, getRandomString(4)));
     }
 
     private TrafficMessageDataServiceV1 getV2Datex2DataService() {

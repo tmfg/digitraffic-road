@@ -13,7 +13,7 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.KameraVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.TieosoiteVO;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
@@ -39,7 +39,7 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         final boolean isPublicPreviousOld = to.isPublicPrevious();
         final ZonedDateTime publicityStartTimeOld = to.getPublicityStartTime();
 
-        final ZonedDateTime publicityStartTimeNew = kamera.getJulkisuus() != null ? DateHelper.toZonedDateTimeWithoutMillisAtUtc(kamera.getJulkisuus().getAlkaen()) : null;
+        final ZonedDateTime publicityStartTimeNew = kamera.getJulkisuus() != null ? TimeUtil.toZonedDateTimeWithoutMillisAtUtc(kamera.getJulkisuus().getAlkaen()) : null;
         final boolean isPublicNew = kamera.getJulkisuus() != null && JulkisuusTaso.JULKINEN == kamera.getJulkisuus().getJulkisuusTaso();
         final boolean changed = to.updatePublicity(isPublicNew, publicityStartTimeNew);
         if ( changed ) {
@@ -67,9 +67,9 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         to.setProvince(kamera.getMaakunta());
         to.setProvinceCode(kamera.getMaakuntaKoodi());
         to.setLiviId(kamera.getLiviId());
-        to.setStartDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(kamera.getAlkamisPaiva()));
-        to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(kamera.getKorjaushuolto()));
-        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(kamera.getVuosihuolto()));
+        to.setStartDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(kamera.getAlkamisPaiva()));
+        to.setRepairMaintenanceDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(kamera.getKorjaushuolto()));
+        to.setAnnualMaintenanceDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(kamera.getVuosihuolto()));
         to.setState(RoadStationState.fromTilaTyyppi(kamera.getAsemanTila()));
         to.setLocation(kamera.getAsemanSijainti());
         to.setCountry(kamera.getMaa());

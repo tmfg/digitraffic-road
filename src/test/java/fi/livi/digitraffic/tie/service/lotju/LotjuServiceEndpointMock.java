@@ -53,7 +53,7 @@ public abstract class LotjuServiceEndpointMock {
      * Must be called before api-operations
      */
     protected void initService() {
-        log.info("Init LotjuServiceEndpointMock with address " + metadataServerAddress + " and serviceClass " + metatiedotClass);
+        log.info("method=initService Init LotjuServiceEndpointMock with address {} and serviceClass {}", metadataServerAddress, metatiedotClass);
         final JaxWsServerFactoryBean svrFactory = new JaxWsServerFactoryBean();
         svrFactory.setServiceClass(metatiedotClass);
         svrFactory.setAddress(metadataServerAddress);

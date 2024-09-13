@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 
+import okhttp3.mockwebserver.MockWebServer;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,15 +20,12 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.weather.forecast.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.RestTemplateGzipService;
 import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionClient;
 import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionDataUpdater;
 import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionTestHelper;
@@ -47,23 +45,16 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     private DataStatusService dataStatusService;
 
     @Autowired
-    private RestTemplate restTemplate;
-
-    private MockRestServiceServer server;
+    private ForecastSectionTestHelper forecastSectionTestHelper;
+    private MockWebServer server;
 
     @BeforeEach
     public void initData() throws IOException {
         final StopWatch start = StopWatch.createStarted();
-        if (!isBeanRegistered(RestTemplateGzipService.class)) {
-            final RestTemplateGzipService restTemplateGzipService = beanFactory.createBean(RestTemplateGzipService.class);
-            beanFactory.registerSingleton(restTemplateGzipService.getClass().getCanonicalName(), restTemplateGzipService);
-        }
-        final ForecastSectionTestHelper forecastSectionTestHelper =
-            isBeanRegistered(ForecastSectionTestHelper.class) ?
-                beanFactory.getBean(ForecastSectionTestHelper.class) :
-                beanFactory.createBean(ForecastSectionTestHelper.class);
 
-        final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient();
+        server = new MockWebServer();
+
+        final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient(server);
 
         final ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdater =
             new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
@@ -74,13 +65,11 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
         final ForecastSectionDataUpdater forecastSectionDataUpdater =
             new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
 
-        server = MockRestServiceServer.createServer(restTemplate);
+        forecastSectionTestHelper.serveGzippedMetadata(server,1);
+        forecastSectionTestHelper.serveGzippedMetadata(server,2);
 
-        forecastSectionTestHelper.serverExpectMetadata(server,1);
-        forecastSectionTestHelper.serverExpectMetadata(server,2);
-
-        forecastSectionTestHelper.serverExpectData(server,1);
-        forecastSectionTestHelper.serverExpectData(server,2);
+        forecastSectionTestHelper.serveGzippedData(server,1);
+        forecastSectionTestHelper.serveGzippedData(server,2);
 
         forecastSectionMetadataUpdater.updateForecastSectionV1Metadata();
         forecastSectionV2MetadataUpdater.updateForecastSectionsV2Metadata();
@@ -92,8 +81,8 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
     }
 
     @AfterEach
-    public void reset() {
-        server.reset();
+    public void after() throws IOException {
+        server.close();
     }
 
     @Test

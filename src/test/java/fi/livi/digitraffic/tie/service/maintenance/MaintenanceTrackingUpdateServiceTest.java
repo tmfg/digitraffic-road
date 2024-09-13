@@ -50,7 +50,7 @@ import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
@@ -480,8 +480,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
 
     @Test
     public void deleteDataOlderThanDays() throws IOException {
-        final Instant start10Days = DateHelper.getNowWithoutMillis().minus(10, ChronoUnit.DAYS);
-        final Instant start9Days = DateHelper.getNowWithoutMillis().minus(9, ChronoUnit.DAYS);
+        final Instant start10Days = TimeUtil.nowWithoutMillis().minus(10, ChronoUnit.DAYS);
+        final Instant start9Days = TimeUtil.nowWithoutMillis().minus(9, ChronoUnit.DAYS);
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithPoints(start10Days, 10, 1, 1, SuoritettavatTehtavat.ASFALTOINTI));
         testHelper.saveTrackingDataAsObservations(

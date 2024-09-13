@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TieosoiteVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
@@ -41,9 +41,9 @@ public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoa
         to.setProvince(ta.getMaakunta());
         to.setProvinceCode(ta.getMaakuntaKoodi());
         to.setLiviId(ta.getLiviId());
-        to.setStartDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(ta.getAlkamisPaiva()));
-        to.setRepairMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(ta.getKorjaushuolto()));
-        to.setAnnualMaintenanceDate(DateHelper.toZonedDateTimeWithoutMillisAtUtc(ta.getVuosihuolto()));
+        to.setStartDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(ta.getAlkamisPaiva()));
+        to.setRepairMaintenanceDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(ta.getKorjaushuolto()));
+        to.setAnnualMaintenanceDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(ta.getVuosihuolto()));
         to.setState(RoadStationState.fromTilaTyyppi(ta.getAsemanTila()));
         to.setLocation(ta.getAsemanSijainti());
         to.setCountry(ta.getMaa());

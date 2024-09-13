@@ -1,8 +1,6 @@
 package fi.livi.digitraffic.tie.mqtt;
 
-
-
-import static fi.livi.digitraffic.tie.helper.DateHelper.getEpochSeconds;
+import static fi.livi.digitraffic.common.util.TimeUtil.getEpochSeconds;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

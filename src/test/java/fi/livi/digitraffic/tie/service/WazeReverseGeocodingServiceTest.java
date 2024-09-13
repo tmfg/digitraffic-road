@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import fi.livi.digitraffic.tie.service.waze.WazeReverseGeocodingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +48,39 @@ public class WazeReverseGeocodingServiceTest extends AbstractRestWebTest {
         assertEquals(streetName, result.orElse(null));
     }
 
-    @Test void shouldUseTheFirstCoordinatePairFromMultiLineString() {
-        final double latitude = 26.26;
-        final double longitude = 65.65;
-        final List<List<Double>> coords = List.of(List.of(longitude, latitude), List.of(24.24, 63.63));
+    @Test
+    void shouldUseTheMiddleCoordinatePairFromMultiLineString() {
+        final double latitude1 = 26.26;
+        final double longitude1 = 65.65;
+        final double latitude2 = 24.24;
+        final double longitude2 = 63.63;
+
+        final List<List<Double>> coords = List.of(List.of(longitude1, latitude1), List.of(longitude2, latitude2));
         final MultiLineString geometry = new MultiLineString();
         geometry.addLineString(coords);
 
         when(this.wazeReverseGeocodingApi.fetch(anyDouble(), anyDouble())).thenReturn(Optional.empty());
         wazeReverseGeocodingService.getStreetName(geometry);
 
-        verify(this.wazeReverseGeocodingApi, times(1)).fetch(latitude, longitude);
+        verify(this.wazeReverseGeocodingApi, times(1)).fetch(latitude2, longitude2);
+    }
+
+    @Test
+    void testEmptyMultilineString() {
+        final MultiLineString geometry = new MultiLineString();
+
+        wazeReverseGeocodingService.getStreetName(geometry);
+
+        verify(this.wazeReverseGeocodingApi, times(0)).fetch(anyDouble(), anyDouble());
+    }
+
+    @Test
+    void testMultilineStringWithEmptyLinestring() {
+        final MultiLineString geometry = new MultiLineString(List.of(List.of()));
+
+        wazeReverseGeocodingService.getStreetName(geometry);
+
+        verify(this.wazeReverseGeocodingApi, times(0)).fetch(anyDouble(), anyDouble());
     }
 
     @Test

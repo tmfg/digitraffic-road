@@ -2,13 +2,11 @@ package fi.livi.digitraffic.tie.service.weather.forecast;
 
 import static fi.livi.digitraffic.tie.TestUtils.loadResource;
 import static java.time.temporal.ChronoUnit.HOURS;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -16,43 +14,38 @@ import java.time.Instant;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.livi.digitraffic.tie.helper.DateHelper;
-import fi.livi.digitraffic.tie.service.RestTemplateGzipService;
+import fi.livi.digitraffic.common.util.TimeUtil;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okio.Buffer;
 
-@ConditionalOnNotWebApplication
+@ConditionalOnExpression("'${config.test}' == 'true'")
 @Component
 public class ForecastSectionTestHelper {
-    private static final Logger log = LoggerFactory.getLogger(ForecastSectionTestHelper.class);
-
     private final String baseUrl;
     private final String suid;
     private final String user;
     private final String pass;
-    private final RestTemplateGzipService restTemplateGzipService;
+    private final WebClient webClient;
     private final ObjectMapper objectMapper;
 
-    public ForecastSectionTestHelper(final RestTemplateGzipService restTemplateGzipService,
+    public ForecastSectionTestHelper(final WebClient webClient,
                                      final ObjectMapper objectMapper,
                                      @Value("${roadConditions.baseUrl}") final String baseUrl,
                                      @Value("${roadConditions.suid}") final String suid,
                                      @Value("${roadConditions.user}") final String user,
                                      @Value("${roadConditions.pass}") final String pass) {
-        this.restTemplateGzipService = restTemplateGzipService;
+        this.webClient = webClient;
         this.objectMapper = objectMapper;
         this.baseUrl = baseUrl;
         this.suid = suid;
@@ -60,19 +53,19 @@ public class ForecastSectionTestHelper {
         this.pass = pass;
     }
 
-    public ForecastSectionClient createForecastSectionClient() {
-        return new ForecastSectionClient(restTemplateGzipService, objectMapper, baseUrl, suid, user, pass);
+    public ForecastSectionClient createForecastSectionClient(final MockWebServer server) {
+        return new ForecastSectionClient(webClient, objectMapper, server.url("").toString(), suid, user, pass);
     }
 
-    public void serverExpectMetadata(final MockRestServiceServer server, final int version) {
-        serverExpect(server, version, true);
+    public void serveGzippedMetadata(final MockWebServer server, final int version) throws IOException {
+        serveGzippedResponse(server, version, true);
     }
 
-    public void serverExpectData(final MockRestServiceServer server, final int version) {
-        serverExpect(server, version, false);
+    public void serveGzippedData(final MockWebServer server, final int version) throws IOException {
+        serveGzippedResponse(server, version, false);
     }
 
-    public static final Instant NOW = DateHelper.getNowWithoutMillis();
+    public static final Instant NOW = TimeUtil.nowWithoutMillis();
     public final static String[] TIMES = new String[] { NOW.toString(),
                                                         NOW.plus(2, HOURS).toString(),
                                                         NOW.plus(4, HOURS).toString(),
@@ -84,19 +77,15 @@ public class ForecastSectionTestHelper {
                                                                 "TIME_6",
                                                                 "TIME_12" };
 
-    private void serverExpect(final MockRestServiceServer server, final int version, final boolean metadata) {
-        final String url = getUrl(version, metadata);
+    private void serveGzippedResponse(final MockWebServer server, final int version, final boolean metadata) throws IOException {
         final String resourcePattern = getResourcePattern(version, metadata);
-        final Resource data = loadForecastResourceAsGzippedResource(resourcePattern);
+        final byte[] data = gzippedBytes(resourcePattern);
 
-
-
-        log.info("serverExpect {}", url);
-        log.info("serverReturn {}", resourcePattern);
-        server.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
-              .andExpect(method(HttpMethod.GET))
-              .andExpect(header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE))
-              .andRespond(MockRestResponseCreators.withSuccess(data, MediaType.APPLICATION_OCTET_STREAM));
+        // DO NOT set encoding as gzip! Because the real service does not
+        server.enqueue(new MockResponse()
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM)
+            .setBody(new Buffer().write(data))
+        );
     }
 
     private String getResourcePattern(final int version, final boolean metadata) {
@@ -142,31 +131,34 @@ public class ForecastSectionTestHelper {
         throw new IllegalArgumentException("Unsuported version " + version);
     }
 
-    private Resource loadForecastResourceAsGzippedResource(final String resourcePattern) {
+    private byte[] gzippedBytes(final String resourcePattern) throws IOException {
         final Resource data = loadResource(resourcePattern);
         // Resource already gzipped
         if (resourcePattern.contains(".gz")) {
-            return data;
+            return data.getContentAsByteArray();
         }
 
         // Manipulate and gzip resource
-        try {
-            final ByteArrayOutputStream byteArrayOs = new ByteArrayOutputStream();
-            final GZIPOutputStream gzipOs = new GZIPOutputStream(byteArrayOs);
-            final Reader decoder = new InputStreamReader(data.getInputStream(), StandardCharsets.UTF_8);
-            final BufferedReader buffered = new BufferedReader(decoder);
-            String line = buffered.readLine();
-            while (line != null) {
+        final ByteArrayOutputStream byteArrayOs = new ByteArrayOutputStream(); // does not need closing
+        try(final GZIPOutputStream gzipOs = new GZIPOutputStream(byteArrayOs);
+            final InputStream dis = data.getInputStream();
+            final Reader decoder = new InputStreamReader(dis, StandardCharsets.UTF_8);
+            final BufferedReader buffered = new BufferedReader(decoder)) {
+
+            while(buffered.ready()) {
+                final String line = buffered.readLine();
                 final String resultLine = StringUtils.replaceEach(line, PLACEHOLDERS, TIMES);
                 gzipOs.write(resultLine.getBytes(StandardCharsets.UTF_8));
-                line = buffered.readLine();
             }
+
+            // must be closed to flush content to byte array
             gzipOs.close();
-            byteArrayOs.close();
-            return new ByteArrayResource(byteArrayOs.toByteArray());
+
+            return byteArrayOs.toByteArray();
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
+
 
     }
 }

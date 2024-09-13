@@ -70,6 +70,11 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
     Instant getCountingSiteDataLastUpdated();
 
     @Query(value = """
+       select max(modified)
+       from counting_site_counter""", nativeQuery = true)
+    Instant getCountingSiteCounterLastUpdated();
+
+    @Query(value = """
            select si.id, si.source
                 , si.update_interval as updateInterval
                 , si.recommended_fetch_interval as recommendedFetchInterval

@@ -2,8 +2,8 @@
 
 package fi.livi.digitraffic.tie.controller.tms;
 
+import static fi.livi.digitraffic.common.util.TimeUtil.getGreatest;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
-import static fi.livi.digitraffic.tie.helper.DateHelper.getGreatest;
 import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
@@ -33,7 +34,6 @@ import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
@@ -68,7 +68,6 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     private TmsStation tmsStation;
     private long metadataLastModifiedMillis;
-    private long dataLastMeasuredMillis;
     private long dataLastUpdatedMillis;
 
     @BeforeEach
@@ -96,8 +95,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         final SensorValue sv2 = new SensorValue(tms.getRoadStation(), publishable.get(1), 10.0, measured.minusMinutes(1));
         sensorValueRepository.save(sv1);
         sensorValueRepository.save(sv2);
-        this.dataLastMeasuredMillis =  DateHelper.roundInstantSeconds(measured.toInstant()).toEpochMilli();
-        this.dataLastUpdatedMillis =  DateHelper.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
+        this.dataLastUpdatedMillis =  TimeUtil.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
 
         dataStatusService.updateDataUpdated(DataType.getSensorValueUpdatedDataType(RoadStationType.TMS_STATION));
 
@@ -107,7 +105,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         this.tmsStation = entityManager.find(TmsStation.class, tms.getId());
         final Instant sensorsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA);
         final Instant stationsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_METADATA);
-        this.metadataLastModifiedMillis = DateHelper.roundInstantSeconds(getGreatest(sensorsUpdated, stationsUpdated)).toEpochMilli();
+        this.metadataLastModifiedMillis = TimeUtil.roundInstantSeconds(getGreatest(sensorsUpdated, stationsUpdated)).toEpochMilli();
     }
 
     @AfterEach
@@ -282,7 +280,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         final LamAnturiVakioVO vakio = tmsTestHelper.createAndSaveLamAnturiVakio(tmsStation.getLotjuId(), vakioNimi);
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio, vakioArvo);
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
-        final long constantsUpdated = DateHelper.roundInstantSeconds(
+        final long constantsUpdated = TimeUtil.roundInstantSeconds(
             dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA)).toEpochMilli();
         mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS))
             .andExpect(status().isOk())
@@ -309,7 +307,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         final LamAnturiVakioVO vakio = tmsTestHelper.createAndSaveLamAnturiVakio(tmsStation.getLotjuId(), vakioNimi);
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio, vakioArvo);
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
-        final long constantsUpdated = DateHelper.roundInstantSeconds(
+        final long constantsUpdated = TimeUtil.roundInstantSeconds(
             dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA)).toEpochMilli();
 
         // log.info(mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS))

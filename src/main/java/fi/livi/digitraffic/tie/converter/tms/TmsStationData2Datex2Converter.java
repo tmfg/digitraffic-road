@@ -34,7 +34,7 @@ import fi.livi.digitraffic.tie.datex2.TrafficFlow;
 import fi.livi.digitraffic.tie.datex2.TrafficSpeed;
 import fi.livi.digitraffic.tie.datex2.VehicleFlowValue;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 
 @ConditionalOnWebApplication
@@ -55,7 +55,7 @@ public class TmsStationData2Datex2Converter {
 
         final MeasuredDataPublication publication =
             new MeasuredDataPublication()
-                .withPublicationTime(DateHelper.toInstant(updated))
+                .withPublicationTime(TimeUtil.toInstant(updated))
                 .withPublicationCreator(new InternationalIdentifier()
                                             .withCountry(CountryEnum.FI)
                                             .withNationalIdentifier("FI"))
@@ -86,7 +86,7 @@ public class TmsStationData2Datex2Converter {
                 .withMeasurementSiteReference(new MeasurementSiteRecordVersionedReference()
                                                   .withId(TmsStationMetadata2Datex2Converter.getMeasurementSiteReference(station.getNaturalId(), sensorValue.getSensorNaturalId()))
                                                   .withVersion(TmsStationMetadata2Datex2Converter.MEASUREMENT_SITE_RECORD_VERSION))
-                .withMeasurementTimeDefault(DateHelper.toInstant(sensorValue.getStationLatestMeasuredTime()))
+                .withMeasurementTimeDefault(TimeUtil.toInstant(sensorValue.getStationLatestMeasuredTime()))
                 .withMeasuredValues(new SiteMeasurementsIndexMeasuredValue()
                                        .withIndex(1) // Only one measurement per sensor
                                        .withMeasuredValue(new MeasuredValue().withBasicData(data)));

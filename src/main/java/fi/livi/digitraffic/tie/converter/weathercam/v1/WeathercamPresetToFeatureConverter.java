@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detai
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesDetailedV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
@@ -67,12 +67,12 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
                         convertToSimpleFeature(cp);
                 weathercamFeatureMappedByCameraId.put(cp.getCameraId(), weathercamStationFeatureSimpleV1);
                 weathercamStationFeatureSimpleV1.getProperties().addPreset(convertToSimplePreset(cp));
-                lastModified.updateAndGet(current -> DateHelper.getGreatest(current, weathercamStationFeatureSimpleV1.getLastModified()));
+                lastModified.updateAndGet(current -> TimeUtil.getGreatest(current, weathercamStationFeatureSimpleV1.getLastModified()));
             });
 
         final List<WeathercamStationFeatureSimpleV1> sortedById =
             weathercamFeatureMappedByCameraId.values().stream().sorted(Comparator.comparing(WeathercamStationFeatureBaseV1::getId)).collect(Collectors.toList());
-        return new WeathercamStationFeatureCollectionSimpleV1(DateHelper.getGreatest(dataLastUpdated, lastModified.get()), sortedById);
+        return new WeathercamStationFeatureCollectionSimpleV1(TimeUtil.getGreatest(dataLastUpdated, lastModified.get()), sortedById);
     }
 
     private WeathercamPresetSimpleV1 convertToSimplePreset(final CameraPreset cp) {

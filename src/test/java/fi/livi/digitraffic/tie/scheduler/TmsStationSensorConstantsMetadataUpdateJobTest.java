@@ -4,16 +4,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.livi.digitraffic.common.util.StringUtil;
+import fi.livi.digitraffic.tie.dao.tms.TmsFreeFlowSpeedRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.lotju.LotjuTmsStationMetadataClient;
+import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantUpdater;
 import fi.livi.digitraffic.tie.service.tms.TmsStationUpdater;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
@@ -35,17 +44,30 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
     private TmsDataWebServiceV1 tmsDataWebServiceV1;
 
     @Autowired
+    private TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository;
+
+    @Autowired
+    private TmsSensorConstantDao tmsSensorConstantDao;
+
+    @Autowired
     private LotjuLAMMetatiedotServiceEndpointMock lotjuLAMMetatiedotServiceMock;
 
     @Autowired
     private LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
 
+    @Autowired
+    private TmsStationSensorConstantService tmsStationSensorConstantService;
+
     @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
-        if (!isBeanRegistered(TmsDataWebServiceV1.class)) {
-            final TmsDataWebServiceV1 tmsDataWebServiceV1 = beanFactory.createBean(TmsDataWebServiceV1.class);
-            beanFactory.registerSingleton(tmsDataWebServiceV1.getClass().getCanonicalName(), tmsDataWebServiceV1);
-            this.tmsDataWebServiceV1 = tmsDataWebServiceV1;
+        if (this.tmsDataWebServiceV1 == null) {
+            if (!isBeanRegistered(TmsDataWebServiceV1.class)) {
+                final TmsDataWebServiceV1 tmsDataWebServiceV1 = beanFactory.createBean(TmsDataWebServiceV1.class);
+                beanFactory.registerSingleton(tmsDataWebServiceV1.getClass().getCanonicalName(), tmsDataWebServiceV1);
+                this.tmsDataWebServiceV1 = tmsDataWebServiceV1;
+            } else {
+                this.tmsDataWebServiceV1 = beanFactory.getBean(TmsDataWebServiceV1.class);
+            }
         }
         setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(lotjuTmsStationMetadataClient);
     }
@@ -56,7 +78,7 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
     }
 
     @Test
-    public void testUpdateTmsStationsSensorConstants() {
+    public void updateTmsStationsSensorConstants() {
         lotjuLAMMetatiedotServiceMock.initStateAndService();
 
         // Update TMS stations to initial state (ids: 1, 310 and 581 non obsolete stations and 2 obsolete)
@@ -146,6 +168,91 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
         assertEquals(106, (long) vvapaas2SummerAfter.getValue());
     }
 
+    @Test
+    public void freeFlowSpeedCacheWorks() {
+        lotjuLAMMetatiedotServiceMock.initStateAndService();
+        // this state have valid VVAPAAS1 instead of VVAPAAS11 constant
+        lotjuLAMMetatiedotServiceMock.setStateAfterChange(true);
+
+        // Update TMS stations to initial state (ids: 1, 310 and 581 non obsolete stations and 2 obsolete)
+        tmsStationUpdater.updateTmsStations();
+        tmsStationSensorConstantUpdater.updateTmsStationsSensorConstants();
+        tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantsValues();
+        entityManager.flush();
+        entityManager.clear();
+
+        final long RS_NATURAL_ID = 23001;
+        final TmsFreeFlowSpeedDto values =
+                tmsFreeFlowSpeedRepository.getTmsFreeFlowSpeedsByRoadStationNaturalId(RS_NATURAL_ID);
+
+        System.out.println(StringUtil.toJsonString(values));
+        /*
+         *     <!-- VVAPAAS1 -->
+         *     <ns2:lamanturivakiot>
+         *         <id>1092</id>
+         *         <anturiVakioId>747</anturiVakioId>
+         *         <arvo>105</arvo>
+         *         <voimassaAlku>401</voimassaAlku>
+         *         <voimassaLoppu>1031</voimassaLoppu>
+         *     </ns2:lamanturivakiot>
+         *     <ns2:lamanturivakiot>
+         *         <id>1534</id>
+         *         <anturiVakioId>747</anturiVakioId>
+         *         <arvo>95</arvo>
+         *         <voimassaAlku>1101</voimassaAlku>
+         *         <voimassaLoppu>331</voimassaLoppu>
+         *     </ns2:lamanturivakiot>
+         *     <!-- VVAPAAS2 -->
+         *     <ns2:lamanturivakiot>
+         *         <id>3259</id>
+         *         <anturiVakioId>1578</anturiVakioId>
+         *         <arvo>105</arvo>
+         *         <voimassaAlku>401</voimassaAlku>
+         *         <voimassaLoppu>1031</voimassaLoppu>
+         *     </ns2:lamanturivakiot>
+         *     <ns2:lamanturivakiot>
+         *         <id>1535</id>
+         *         <anturiVakioId>1578</anturiVakioId>
+         *         <arvo>95</arvo>
+         *         <voimassaAlku>1101</voimassaAlku>
+         *         <voimassaLoppu>331</voimassaLoppu>
+         *     </ns2:lamanturivakiot>
+         */
+        // Create and update new free flow speeds to db
+        final int upsert = tmsSensorConstantDao.updateSensorConstantValues(Arrays.asList(
+                createLamAnturiVakioArvo(1092L, 747L, 2000, 401, 1031), // VVAPAAS1
+                createLamAnturiVakioArvo(1534L, 747L, 2000, 1101, 331), // VVAPAAS1
+                createLamAnturiVakioArvo(3259L, 1578L, 3000, 401, 1031),// VVAPAAS2
+                createLamAnturiVakioArvo(1535L, 1578L, 3000, 1101, 331) // VVAPAAS2
+        ));
+        assertEquals(4, upsert);
+        entityManager.flush();
+        entityManager.clear();
+        // Values should still come from cache
+        final TmsFreeFlowSpeedDto valuesCached =
+                tmsFreeFlowSpeedRepository.getTmsFreeFlowSpeedsByRoadStationNaturalId(RS_NATURAL_ID);
+        assertEquals(values.getFreeFlowSpeed1(), valuesCached.getFreeFlowSpeed1());
+        assertEquals(values.getFreeFlowSpeed2(), valuesCached.getFreeFlowSpeed2());
+
+        // Not updating anything, but reset cache for the station
+        tmsStationSensorConstantService.updateSingleSensorConstantValues(Collections.emptyList(), RS_NATURAL_ID);
+
+        // Now real values should be read from db and not cache
+        final TmsFreeFlowSpeedDto valuesCacheReset =
+                tmsFreeFlowSpeedRepository.getTmsFreeFlowSpeedsByRoadStationNaturalId(RS_NATURAL_ID);
+        assertEquals(2000, valuesCacheReset.getFreeFlowSpeed1());
+        assertEquals(3000, valuesCacheReset.getFreeFlowSpeed2());
+    }
+
+    private LamAnturiVakioArvoVO createLamAnturiVakioArvo(final long id, final long anturiVakioId, final int arvo, final int voimassaAlku, final int voimassaLoppu){
+        final LamAnturiVakioArvoVO value = new LamAnturiVakioArvoVO();
+        value.setId(id);
+        value.setAnturiVakioId(anturiVakioId);
+        value.setArvo(arvo);
+        value.setVoimassaAlku(voimassaAlku);
+        value.setVoimassaLoppu(voimassaLoppu);
+        return value;
+    }
     private TmsSensorConstantValueDto findConstantValue(final String sensorConstantName, final long stationNaturalId,
                                                         final int validDate, final TmsStationsSensorConstantsDataDtoV1 sensorConstantValues) {
         final TmsStationSensorConstantDtoV1 stationConstants = findSensorConstantsOfStation(stationNaturalId, sensorConstantValues);

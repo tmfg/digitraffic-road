@@ -96,4 +96,17 @@ public class SensorValueHistory {
     public void setTimeWindowEnd(final ZonedDateTime timeWindowEnd) {
         this.timeWindowEnd = timeWindowEnd;
     }
+
+    @Override
+    public String toString() {
+        return "SensorValueHistory{" +
+            "id=" + id +
+            ", roadStationId=" + roadStationId +
+            ", sensorId=" + sensorId +
+            ", sensorValue=" + sensorValue +
+            ", measuredTime=" + measuredTime +
+            ", timeWindowStart=" + timeWindowStart +
+            ", timeWindowEnd=" + timeWindowEnd +
+            '}';
+    }
 }

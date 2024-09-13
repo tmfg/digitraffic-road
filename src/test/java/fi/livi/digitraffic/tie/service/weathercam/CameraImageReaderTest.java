@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getZonedDateTimeNowAtUtc;
+import static fi.livi.digitraffic.common.util.TimeUtil.getZonedDateTimeNowAtUtc;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -8,10 +8,10 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.service.lotju.AbstractMultiDestinationProviderTest;
 
 public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest {
@@ -31,7 +31,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         // Health response from server OK
         server1WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 1
-        final int id = randomId();
+        final int id = TestUtils.getRandomId(1, 999999);
         final String presetId = randomPresetId();
         serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, OK, img1);
         final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
@@ -48,7 +48,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         server1WhenRequestHealthThenReturn(INTERNAL_SERVER_ERROR, NOT_OK_RESPONSE_CONTENT);
         server2WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 1
-        final int id = randomId();
+        final int id = TestUtils.getRandomId(1, 999999);
         final String presetId = randomPresetId();
         serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, OK, img1);
         serverWhenRequestUrlThenReturn(wireMockServer2, dataPath + "/" +  id, OK, img2);
@@ -68,7 +68,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         server1WhenRequestHealthThenReturn(OK, getOkResponseString());
         server2WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 1
-        final int id = randomId();
+        final int id = TestUtils.getRandomId(1,9999);
         final String presetId = randomPresetId();
         serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, INTERNAL_SERVER_ERROR, (String) null);
         serverWhenRequestUrlThenReturn(wireMockServer2, dataPath + "/" +  id, OK, img2);
@@ -89,11 +89,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
     }
 
     private String randomPresetId() {
-        return "C" + RandomUtils.nextInt(1000000, 10000000);
+        return "C" + TestUtils.getRandomLong(1000000, 9999999);
 
-    }
-
-    private int randomId() {
-        return RandomUtils.nextInt();
     }
 }

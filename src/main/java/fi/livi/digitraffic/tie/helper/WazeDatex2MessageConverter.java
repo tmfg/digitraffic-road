@@ -172,6 +172,7 @@ import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.FOLLOW_
 import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.USE_ENTRY;
 import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.USE_EXIT;
 import static fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum.USE_INTERSECTION_OR_JUNCTION;
+import static fi.livi.digitraffic.tie.datex2.RoadMaintenanceTypeEnum.*;
 import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.CARRIAGEWAY_CLOSURES;
 import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.CAR_POOL_LANE_IN_OPERATION;
 import static fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum.CLEAR_A_LANE_FOR_EMERGENCY_VEHICLES;
@@ -242,6 +243,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import fi.livi.digitraffic.tie.datex2.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -251,58 +253,14 @@ import org.springframework.stereotype.Component;
 import com.sun.xml.ws.util.StringUtils;
 
 import fi.livi.digitraffic.tie.converter.waze.WazeDatex2Converter;
-import fi.livi.digitraffic.tie.datex2.AbnormalTraffic;
-import fi.livi.digitraffic.tie.datex2.AbnormalTrafficExtensionType;
-import fi.livi.digitraffic.tie.datex2.AbnormalTrafficTypeEnum;
-import fi.livi.digitraffic.tie.datex2.Accident;
-import fi.livi.digitraffic.tie.datex2.AccidentTypeEnum;
-import fi.livi.digitraffic.tie.datex2.AnimalPresenceObstruction;
-import fi.livi.digitraffic.tie.datex2.AnimalPresenceTypeEnum;
-import fi.livi.digitraffic.tie.datex2.AuthorityOperation;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.DisturbanceActivity;
-import fi.livi.digitraffic.tie.datex2.EnvironmentalObstruction;
-import fi.livi.digitraffic.tie.datex2.EnvironmentalObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFault;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultExtensionType;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemFaultTypeEnum;
-import fi.livi.digitraffic.tie.datex2.EquipmentOrSystemTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ExtendedEquipmentOrSystemFaultTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ExtendedTrafficTrendTypeEnum;
-import fi.livi.digitraffic.tie.datex2.GeneralNetworkManagement;
-import fi.livi.digitraffic.tie.datex2.GeneralNetworkManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.GeneralObstruction;
-import fi.livi.digitraffic.tie.datex2.InfrastructureDamageObstruction;
-import fi.livi.digitraffic.tie.datex2.InfrastructureDamageTypeEnum;
-import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.NonWeatherRelatedRoadConditions;
-import fi.livi.digitraffic.tie.datex2.ObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.PoorEnvironmentConditions;
-import fi.livi.digitraffic.tie.datex2.PoorEnvironmentTypeEnum;
-import fi.livi.digitraffic.tie.datex2.PublicEvent;
-import fi.livi.digitraffic.tie.datex2.PublicEventTypeEnum;
-import fi.livi.digitraffic.tie.datex2.ReroutingManagement;
-import fi.livi.digitraffic.tie.datex2.ReroutingManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagement;
-import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementExtensionType;
-import fi.livi.digitraffic.tie.datex2.RoadOrCarriagewayOrLaneManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.Situation;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.SituationRecord;
-import fi.livi.digitraffic.tie.datex2.SpeedManagement;
-import fi.livi.digitraffic.tie.datex2.TrafficFlowCharacteristicsEnum;
-import fi.livi.digitraffic.tie.datex2.TrafficTrendTypeEnum;
-import fi.livi.digitraffic.tie.datex2.TransitInformation;
-import fi.livi.digitraffic.tie.datex2.VehicleObstruction;
-import fi.livi.digitraffic.tie.datex2.VehicleObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.WeatherRelatedRoadConditions;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
 
 @Component
 public class WazeDatex2MessageConverter {
     private static final Logger logger = LoggerFactory.getLogger(WazeDatex2MessageConverter.class);
+
+    // use this string, when you want to skip some type-enum without error
+    private static final String SKIP_SUBTYPE = "SKIP_SUBTYPE-5O7jh8ytZjQLKCurmFwYowFBaghhMk3U-SKIP_SUBTYPE";
 
     private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
 
@@ -325,6 +283,8 @@ public class WazeDatex2MessageConverter {
     private final Map<TrafficTrendTypeEnum, String> trafficTrendTypeEnumMap = new HashMap<>();
     private final Map<VehicleObstructionTypeEnum, String> vehicleObstructionTypeMap = new HashMap<>();
     private final Map<WeatherRelatedRoadConditionTypeEnum, String> weatherRelatedRoadConditionTypeMap = new HashMap<>();
+    private final Map<ConstructionWorkTypeEnum, String> constructionWorksTypeMap = new HashMap<>();
+    private final Map<RoadMaintenanceTypeEnum, String> maintenanceWorksTypeMap = new HashMap<>();
 
     @Autowired
     public WazeDatex2MessageConverter(final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller) {
@@ -566,7 +526,6 @@ public class WazeDatex2MessageConverter {
         publicEventTypeEnumStringMap.put(TRADE_FAIR, "trade fair");
         publicEventTypeEnumStringMap.put(WATER_SPORTS_MEETING, "water sports meeting");
         publicEventTypeEnumStringMap.put(WINTER_SPORTS_MEETING, "winter sports meeting");
-        publicEventTypeEnumStringMap.put(PublicEventTypeEnum.OTHER, "other");
 
         reroutingManagementTypeMap.put(DO_NOT_FOLLOW_DIVERSION_SIGNS, "Do not follow diversion signs");
         reroutingManagementTypeMap.put(DO_NOT_USE_ENTRY, "Do not use entry");
@@ -644,6 +603,19 @@ public class WazeDatex2MessageConverter {
         weatherRelatedRoadConditionTypeMap.put(SURFACE_WATER, "Surface water");
         weatherRelatedRoadConditionTypeMap.put(WET_AND_ICY_ROAD, "Wet and icy road");
         weatherRelatedRoadConditionTypeMap.put(WET_ICY_PAVEMENT, "Wet icy pavement");
+
+        maintenanceWorksTypeMap.put(RESURFACING_WORK, "Resurfacing work");
+        maintenanceWorksTypeMap.put(MAINTENANCE_WORK, "Maintenance work");
+        maintenanceWorksTypeMap.put(ROADSIDE_WORK, "Roadside work");
+        maintenanceWorksTypeMap.put(ROADWORKS, "Roadworks");
+        maintenanceWorksTypeMap.put(ROADWORKS_CLEARANCE, "Roadworks clearance");
+        maintenanceWorksTypeMap.put(ROAD_MARKING_WORK, "Road marking work");
+        maintenanceWorksTypeMap.put(GRASS_CUTTING_WORK, "Grass cutting work");
+        maintenanceWorksTypeMap.put(TREE_AND_VEGETATION_CUTTING_WORK, "Tree and vegetation cutting work");
+        maintenanceWorksTypeMap.put(OTHER, SKIP_SUBTYPE); // skip other, too vague
+
+        constructionWorksTypeMap.put(ConstructionWorkTypeEnum.CONSTRUCTION_WORK, "Construction work");
+        constructionWorksTypeMap.put(ConstructionWorkTypeEnum.BLASTING_WORK, "Blasting work");
     }
 
     public String export(final String situationId, final String datex2Message) {
@@ -701,7 +673,6 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final Accident accident) {
-
         return accident.getAccidentTypes()
             .stream()
             .findFirst()
@@ -713,7 +684,7 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final AuthorityOperation authorityOperation) {
-        return Optional.empty();
+        return Optional.of(SKIP_SUBTYPE);
     }
     private Optional<String> accept(final DisturbanceActivity disturbanceActivity) {
         return Optional.empty();
@@ -832,6 +803,17 @@ public class WazeDatex2MessageConverter {
             .map(x -> weatherRelatedRoadConditionTypeMap.getOrDefault(x, null));
     }
 
+    private Optional<String> accept(final ConstructionWorks constructionWorks) {
+        return Optional.ofNullable(constructionWorks.getConstructionWorkType())
+            .map(x -> constructionWorksTypeMap.getOrDefault(x, null));
+    }
+
+    private Optional<String> accept(final MaintenanceWorks maintenanceWorks) {
+        return maintenanceWorks.getRoadMaintenanceTypes().stream()
+            .findFirst()
+            .map(x -> maintenanceWorksTypeMap.getOrDefault(x, null));
+    }
+
     private Optional<String> accept(final String situationId, final SituationRecord situationRecord) {
         final Optional<String> result;
         final String situationRecordType;
@@ -893,6 +875,12 @@ public class WazeDatex2MessageConverter {
         } else if (situationRecord instanceof WeatherRelatedRoadConditions) {
             result = accept((WeatherRelatedRoadConditions) situationRecord);
             situationRecordType = "WeatherRelatedRoadConditions";
+        } else if (situationRecord instanceof ConstructionWorks) {
+            result = accept((ConstructionWorks) situationRecord);
+            situationRecordType = "ConstructionWorks";
+        } else if (situationRecord instanceof MaintenanceWorks) {
+            result = accept((MaintenanceWorks) situationRecord);
+            situationRecordType = "MaintenanceWorks";
         } else {
             logger.error("method=accept unknown class {} in {}", situationRecord.getClass().getSimpleName(), situationId);
             return Optional.empty();
@@ -902,6 +890,8 @@ public class WazeDatex2MessageConverter {
             logger.error("method=accept unknown {} record in situation {}", situationRecordType, situationId);
         }
 
-        return result;
+        // SKIP_SUBTYPE means, that we want to skip this event subtype, but it's ok and no need to log error
+        // (for example OTHER subtype for MaintenanceWorks)
+        return result.filter(v -> v != SKIP_SUBTYPE);
     }
 }

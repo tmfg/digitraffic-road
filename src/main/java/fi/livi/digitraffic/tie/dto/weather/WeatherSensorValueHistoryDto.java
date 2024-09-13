@@ -72,4 +72,14 @@ public class WeatherSensorValueHistoryDto implements SensorValueHistoryDto {
     public void setMeasured(final Instant measured) {
         this.measured = measured;
     }
+
+    @Override
+    public String toString() {
+        return "WeatherSensorValueHistoryDto{" +
+            "roadStationId=" + roadStationId +
+            ", sensorId=" + sensorId +
+            ", sensorValue=" + sensorValue +
+            ", measured=" + measured +
+            '}';
+    }
 }

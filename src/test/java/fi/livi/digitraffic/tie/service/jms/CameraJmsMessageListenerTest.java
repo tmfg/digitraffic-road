@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,17 +23,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -60,11 +59,12 @@ import fi.livi.digitraffic.tie.helper.CameraHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.jms.marshaller.KuvaMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 import jakarta.persistence.EntityManager;
 
+@Deprecated(forRemoval = true, since = "TODO remove when DPO-2422 KCA is in production")
 @Disabled("Does not execute properly with other tests")
 public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageListenerTest.class);
@@ -133,6 +133,11 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
         entityManager.clear();
     }
 
+    @AfterEach
+    public void after() {
+        wm.stop();
+    }
+
     private void generateImageFilesMap() throws IOException {
         int i = 5;
         while (i > 0) {
@@ -155,7 +160,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
         final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> dataUpdater = createJMSDataUpdater();
 
         final JMSMessageListener<KuvaProtos.Kuva> cameraJmsMessageListener =
-            new JMSMessageListener<>(new KuvaMessageMarshaller(), dataUpdater, true, log);
+            new JMSMessageListener<>(new WeathercamDataJMSMessageMarshaller(), dataUpdater, true, log);
 
         Instant time = Instant.now().minusSeconds(60);
 
@@ -196,7 +201,7 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
             }
 
             final long generation = sw.getTime();
-            assertTrue(!jmsKuvaMessages.isEmpty(), "Data was empty");
+            assertFalse(jmsKuvaMessages.isEmpty(), "Data was empty");
             final StopWatch drain = StopWatch.createStarted();
             cameraJmsMessageListener.drainQueueScheduled();
             handleDataTotalTime += drain.getTime();
@@ -264,16 +269,16 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
 
     private static KuvaProtos.Kuva createKuvaMessage(final CameraPreset preset, final Instant time) {
         // Kuva: {"asemanNimi":"Vaalimaa_testi","nimi":"C0364302201610110000.jpg","esiasennonNimi":"esiasento2","esiasentoId":3324,"kameraId":1703,"aika":2016-10-10T21:00:40Z,"tienumero":7,"tieosa":42,"tieosa":false,"url":"https://testioag.liikennevirasto.fi/LOTJU/KameraKuvavarasto/6845284"}
-        final int kuvaIndex = RandomUtils.nextInt(1, 6);
+        final int kuvaIndex = TestUtils.getRandomId(1, 5);
 
         final KuvaProtos.Kuva.Builder kuvaBuilder = KuvaProtos.Kuva.newBuilder();
         kuvaBuilder.setEsiasentoId(preset.getLotjuId());
         kuvaBuilder.setKameraId(preset.getCameraLotjuId());
         kuvaBuilder.setNimi(preset.getPresetId() + "1234.jpg");
         kuvaBuilder.setAikaleima(time.toEpochMilli());
-        kuvaBuilder.setAsemanNimi("Suomenmaa " + RandomUtils.nextLong(1000, 9999));
-        kuvaBuilder.setEsiasennonNimi("Esiasento" + RandomUtils.nextLong(1000, 9999));
-        kuvaBuilder.setEtaisyysTieosanAlusta(RandomUtils.nextInt(0, 99999));
+        kuvaBuilder.setAsemanNimi("Suomenmaa " + TestUtils.getRandomString(4));
+        kuvaBuilder.setEsiasennonNimi("Esiasento" + TestUtils.getRandomString(4));
+        kuvaBuilder.setEtaisyysTieosanAlusta(TestUtils.getRandomId(0, 99999));
         kuvaBuilder.setJulkinen(true);
         kuvaBuilder.setLiviId("" + kuvaIndex);
         kuvaBuilder.setKuvaId(kuvaIndex);
@@ -286,12 +291,11 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
         kuvaBuilder.setXKoordinaatti("12345.67");
         kuvaBuilder.setYKoordinaatti("23456.78");
 
-        final KuvaProtos.Kuva kuva = kuvaBuilder.build();
-        return kuva;
+        return kuvaBuilder.build();
     }
 
     private JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> createJMSDataUpdater() {
-        final JMSMessageListener.JMSDataUpdater<KuvaProtos.Kuva> dataUpdater = (data) -> {
+        return (data) -> {
             final StopWatch start = StopWatch.createStarted();
             if (TestTransaction.isActive()) {
                 TestTransaction.flagForCommit();
@@ -309,7 +313,6 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
             log.info("handleData tookMs={}", start.getTime());
             return updated;
         };
-        return dataUpdater;
     }
 
     private byte[] readCameraImageFromS3(final String presetId) throws IOException {
@@ -327,7 +330,6 @@ public class CameraJmsMessageListenerTest extends AbstractDaemonTest {
                 .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
                 .withStatus(200)));
     }
-    final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(100);
 
     private void createHttpResponseStubFor(final int kuvaId) {
         final String path = StringUtils.appendIfMissing(lotjuImagePath, "/") + kuvaId;

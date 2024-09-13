@@ -1,0 +1,206 @@
+{
+  "geometry": {
+    "type": "MultiLineString",
+    "coordinates": [
+      [
+        [
+          25.614423,
+          60.809151
+        ],
+        [
+          25.614184,
+          60.809135
+        ],
+        [
+          25.613785,
+          60.809123
+        ],
+        [
+          25.613782,
+          60.809123
+        ],
+        [
+          25.613407,
+          60.809096
+        ],
+        [
+          25.613057,
+          60.809055
+        ],
+        [
+          25.612726,
+          60.809026
+        ],
+        [
+          25.61238,
+          60.809008
+        ],
+        [
+          25.611936,
+          60.809002
+        ],
+        [
+          25.611554,
+          60.809002
+        ],
+        [
+          25.611101,
+          60.809008
+        ],
+        [
+          25.610765,
+          60.809009
+        ]
+      ]
+    ]
+  },
+  "type": "Feature",
+  "properties": {
+    "situationId": "GUID50376179",
+    "version": 5,
+    "situationType": "road work",
+    "releaseTime": "2020-10-26T12:34:52.239Z",
+    "announcements": [
+      {
+        "language": "fi",
+        "title": "Tie 11805, Orimattila. Tietyö peruttu. ",
+        "location": {
+          "countryCode": 6,
+          "locationTableNumber": 17,
+          "locationTableVersion": "1.11.37",
+          "description": "Tie 11805 välillä Järvikylä - Karkkula, Orimattila.\nTarkempi paikka: Paikasta Järvikylä 1,6 km, vaikutusalue 200 m, suuntaan Huhdanoja."
+        },
+        "locationDetails": {
+          "roadAddressLocation": {
+            "primaryPoint": {
+              "municipality": "Orimattila",
+              "province": "Päijät-Häme",
+              "country": "Suomi",
+              "roadAddress": {
+                "road": 11805,
+                "roadSection": 1,
+                "distance": 1599
+              },
+              "alertCLocation": {
+                "locationCode": 23588,
+                "name": "Järvikylä",
+                "distance": 1599
+              }
+            },
+            "secondaryPoint": {
+              "municipality": "Orimattila",
+              "province": "Päijät-Häme",
+              "country": "Suomi",
+              "roadAddress": {
+                "road": 11805,
+                "roadSection": 1,
+                "distance": 1799
+              },
+              "alertCLocation": {
+                "locationCode": 23589,
+                "name": "Huhdanoja",
+                "distance": 6306
+              }
+            },
+            "direction": "both"
+          }
+        },
+        "features": [],
+        "roadWorkPhases": [
+          {
+            "id": "GUID50377090",
+            "location": {
+              "countryCode": 6,
+              "locationTableNumber": 17,
+              "locationTableVersion": "1.11.37",
+              "description": "Tie 11805 välillä Järvikylä - Karkkula, Orimattila.\nTarkempi paikka: Paikasta Järvikylä 1,6 km, vaikutusalue 200 m, suuntaan Huhdanoja."
+            },
+            "locationDetails": {
+              "roadAddressLocation": {
+                "primaryPoint": {
+                  "municipality": "Orimattila",
+                  "province": "Päijät-Häme",
+                  "country": "Suomi",
+                  "roadAddress": {
+                    "road": 11805,
+                    "roadSection": 1,
+                    "distance": 1599
+                  },
+                  "alertCLocation": {
+                    "locationCode": 23588,
+                    "name": "Järvikylä",
+                    "distance": 1599
+                  }
+                },
+                "secondaryPoint": {
+                  "municipality": "Orimattila",
+                  "province": "Päijät-Häme",
+                  "country": "Suomi",
+                  "roadAddress": {
+                    "road": 11805,
+                    "roadSection": 1,
+                    "distance": 1799
+                  },
+                  "alertCLocation": {
+                    "locationCode": 23589,
+                    "name": "Huhdanoja",
+                    "distance": 6306
+                  }
+                },
+                "direction": "both"
+              }
+            },
+            "features": [
+              {
+                "name": "Massanvaihto"
+              },
+              {
+                "name": "Kiertotie käytössä"
+              }
+            ],
+            "severity": "high",
+            "workingHours": [
+              {
+                "weekday": "ti",
+                "startTime": "07:00:00.000",
+                "endTime": "09:00:00.000"
+              },
+              {
+                "weekday": "ke",
+                "startTime": "07:00:00.000",
+                "endTime": "09:00:00.000"
+              },
+              {
+                "weekday": "ma",
+                "startTime": "07:00:00.000",
+                "endTime": "09:00:00.000"
+              },
+              {
+                "weekday": "to",
+                "startTime": "07:00:00.000",
+                "endTime": "09:00:00.000"
+              }
+            ],
+            "comment": "Kiertotie Luhtikyläntien 1631, Päärniläntien 1631, Helsingintien 164 ja Huhdantien 11805 kautta.",
+            "timeAndDuration": {
+              "startTime": "2020-11-09T00:00:00.000Z",
+              "endTime": "2020-11-12T23:59:59.999Z"
+            }
+          }
+        ],
+        "earlyClosing": "canceled",
+        "comment": "Kiertotie Luhtikyläntien 1631, Päärniläntien 1631, Helsingintien 164 ja Huhdantien 11805 kautta.",
+        "timeAndDuration": {
+          "startTime": "2020-11-09T00:00:00.000Z",
+          "endTime": "2020-11-12T00:00:00.000Z"
+        },
+        "additionalInformation": "Liikenne- ja kelitiedot verkossa: http://liikennetilanne.tmfg.fi/",
+        "sender": "Tieliikennekeskus Tampere - ITM Finland"
+      }
+    ],
+    "contact": {
+      "phone": "02002100",
+      "email": "tampere.liikennekeskus@tmfg.fi"
+    }
+  }
+}

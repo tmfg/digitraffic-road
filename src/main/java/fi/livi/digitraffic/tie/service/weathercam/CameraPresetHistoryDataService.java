@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.toZonedDateTimeAtUtc;
+import static fi.livi.digitraffic.common.util.TimeUtil.toZonedDateTimeAtUtc;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -26,7 +26,7 @@ import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryChangeDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDataDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryDto;
 import fi.livi.digitraffic.tie.dto.v1.camera.PresetHistoryPresenceDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
@@ -44,7 +44,7 @@ public class CameraPresetHistoryDataService {
         TOO_OLD("History version is over 24 h old and for that reason not publishable"),
         ILLEGAL_KEY("Preset image name did not match correct regex format ^C([0-9]{7})\\.jpg$ for S3 key");
 
-        private final String description;
+        public final String description;
 
         HistoryStatus(final String description) {
             this.description = description;
@@ -139,7 +139,7 @@ public class CameraPresetHistoryDataService {
     @Transactional(readOnly = true)
     public CameraHistoryPresencesDto findCameraOrPresetHistoryPresences(final String cameraOrPresetId, final ZonedDateTime fromTime,
                                                                         final ZonedDateTime toTime) {
-        return findCameraOrPresetHistoryPresences(cameraOrPresetId, DateHelper.toInstant(fromTime), DateHelper.toInstant(toTime));
+        return findCameraOrPresetHistoryPresences(cameraOrPresetId, TimeUtil.toInstant(fromTime), TimeUtil.toInstant(toTime));
     }
 
     /**

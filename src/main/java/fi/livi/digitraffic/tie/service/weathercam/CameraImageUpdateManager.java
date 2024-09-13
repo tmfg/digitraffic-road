@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Component;
 import fi.ely.lotju.kamera.proto.KuvaProtos;
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
@@ -43,50 +44,62 @@ public class CameraImageUpdateManager {
     private static final ExecutorService updateTaskThreadPool = Executors.newFixedThreadPool(5);
 
     @Autowired
-    CameraImageUpdateManager(@Value("${camera-image-uploader.imageUpdateTimeout}")
-                             final int imageUpdateTimeout,
-                             final CameraImageUpdateHandler cameraImageUpdateHandler,
-                             final DataStatusService dataStatusService) {
+    CameraImageUpdateManager(
+        @Value("${camera-image-uploader.imageUpdateTimeout}")
+        final int imageUpdateTimeout,
+        final CameraImageUpdateHandler cameraImageUpdateHandler,
+        final DataStatusService dataStatusService) {
         this.imageUpdateTimeout = imageUpdateTimeout;
         this.cameraImageUpdateHandler = cameraImageUpdateHandler;
         this.dataStatusService = dataStatusService;
     }
 
     // Log only on warn and error level. Warn when over 10 s execution time as normally its around 6 s.
-    @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 10000)
+    @PerformanceMonitor(maxInfoExcecutionTime = 100000,
+                        maxWarnExcecutionTime = 10000)
     public int updateCameraData(final List<KuvaProtos.Kuva> data) {
-        final Collection<KuvaProtos.Kuva> latestKuvas = filterLatest(data);
-        final List<Future<Boolean>> futures = new ArrayList<>();
-        final StopWatch start = StopWatch.createStarted();
+        try {
+            final Collection<KuvaProtos.Kuva> latestKuvas = filterLatest(data);
+            final List<Future<Boolean>> futures = new ArrayList<>();
+            final StopWatch start = StopWatch.createStarted();
 
-        latestKuvas.forEach(kuva -> {
-            final UpdateJobManager task = new UpdateJobManager(kuva, cameraImageUpdateHandler, imageUpdateTimeout);
-            futures.add(jobThreadPool.submit(task));
-        });
+            latestKuvas.forEach(kuva -> {
+                final UpdateJobManager task = new UpdateJobManager(kuva, cameraImageUpdateHandler, imageUpdateTimeout);
+                futures.add(jobThreadPool.submit(task));
+            });
 
-        final Instant latestUpdate = getLatestUpdateTime(latestKuvas);
-        dataStatusService.updateDataUpdated(CAMERA_STATION_IMAGE_UPDATED, latestUpdate);
+            final Instant latestUpdate = getLatestUpdateTime(latestKuvas);
+            dataStatusService.updateDataUpdated(CAMERA_STATION_IMAGE_UPDATED, latestUpdate);
 
-        while ( futures.stream().anyMatch(f -> !f.isDone()) ) {
-            ThreadUtil.delayMs(100L);
-        }
-        final long updateCount = futures.parallelStream().filter(p -> {
-            try {
+            while (futures.stream().anyMatch(f -> !f.isDone())) {
+                ThreadUtil.delayMs(100L);
+            }
+            final long updateCount = futures.parallelStream().filter(p -> {
+                try {
                     return p.get();
                 } catch (final Exception e) {
-                    log.error("method=updateCameraData UpdateJobManager task failed with error" , e);
+                    log.error("method=updateCameraData UpdateJobManager task failed with error", e);
                     return false;
                 }
-        }).count();
+            }).count();
 
+            final String presetIds = data.stream().map(CameraImageUpdateHandler::resolvePresetIdFrom)
+                .collect(Collectors.joining(", "));
 
-        log.info("method=updateCameraData Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={}", updateCount, futures.size(), futures.size()-updateCount, start.getTime());
-        return (int) updateCount;
+            log.info(
+                "method=updateCameraData Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={} presetIds=[{}]",
+                updateCount, futures.size(), futures.size() - updateCount, start.getTime(), presetIds);
+            return (int) updateCount;
+        } catch (final Exception e) {
+            log.error("method=updateCameraData Error while handling Camera data", e);
+            return 0;
+        }
     }
 
     private Instant getLatestUpdateTime(final Collection<KuvaProtos.Kuva> latestKuvas) {
         try {
-            return DateHelper.toInstant(latestKuvas.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow());
+            return TimeUtil.toInstant(
+                latestKuvas.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow());
         } catch (final NoSuchElementException e) {
             return null;
         }
@@ -99,7 +112,7 @@ public class CameraImageUpdateManager {
             if (kuva.hasEsiasentoId()) {
                 final KuvaProtos.Kuva currentKamera = kuvaMappedByPresetLotjuId.get(kuva.getEsiasentoId());
 
-                if ( currentKamera == null || currentKamera.getAikaleima() < kuva.getAikaleima()) {
+                if (currentKamera == null || currentKamera.getAikaleima() < kuva.getAikaleima()) {
                     if (currentKamera != null) {
                         log.info("Replace {} with {}", currentKamera.getAikaleima(), kuva.getAikaleima());
                     }
@@ -112,13 +125,13 @@ public class CameraImageUpdateManager {
         return kuvaMappedByPresetLotjuId.values();
     }
 
-
     private static class UpdateJobManager implements Callable<Boolean> {
 
         private final long timeout;
         private final ImageUpdateTask task;
 
-        private UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateHandler cameraImageUpdateHandler, final long timeout) {
+        private UpdateJobManager(final KuvaProtos.Kuva kuva, final CameraImageUpdateHandler cameraImageUpdateHandler,
+                                 final long timeout) {
             this.timeout = timeout;
             this.task = new ImageUpdateTask(kuva, cameraImageUpdateHandler);
         }
@@ -128,13 +141,15 @@ public class CameraImageUpdateManager {
             Future<Boolean> future = null;
             String presetId = null;
             try {
-                presetId = CameraImageUpdateHandler.resolvePresetIdFrom(null, task.kuva);
+                presetId = CameraImageUpdateHandler.resolvePresetIdFrom(task.kuva);
                 future = updateTaskThreadPool.submit(task);
                 return future.get(timeout, TimeUnit.MILLISECONDS);
             } catch (final TimeoutException e) {
-                log.error("ImageUpdateTasks failed to complete for presetId={} before timeoutMs={} ms", presetId, timeout);
+                log.error("ImageUpdateTasks failed to complete for presetId={} before timeoutMs={} ms", presetId,
+                    timeout);
             } catch (final Exception e) {
-                log.error(String.format("ImageUpdateTasks failed to complete for presetId=%s with exception", presetId), e);
+                log.error(String.format("ImageUpdateTasks failed to complete for presetId=%s with exception", presetId),
+                    e);
             } finally {
                 // This is safe even if task is already finished
                 if (future != null) {
@@ -159,7 +174,8 @@ public class CameraImageUpdateManager {
             try {
                 return cameraImageUpdateHandler.handleKuva(kuva);
             } catch (final Exception e) {
-                log.error(String.format("Error while calling cameraImageUpdateService.handleKuva with %s", ToStringHelper.toString(kuva)), e);
+                log.error(String.format("Error while calling cameraImageUpdateService.handleKuva with %s",
+                    ToStringHelper.toString(kuva)), e);
                 throw new RuntimeException(e);
             }
         }

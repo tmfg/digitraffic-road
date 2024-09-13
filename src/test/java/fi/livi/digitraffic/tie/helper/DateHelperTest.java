@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractTest;
 
 public class DateHelperTest extends AbstractTest {
@@ -55,9 +56,9 @@ public class DateHelperTest extends AbstractTest {
     @Test
     public void getInLastModifiedHeaderFormat() throws ParseException {
         final String srcString = "Tue, 03 Sep 2019 13:56:36 GMT";
-        final java.util.Date srcDate = DateUtils.parseDate(srcString, DateHelper.LAST_MODIFIED_FORMAT);
+        final java.util.Date srcDate = DateUtils.parseDate(srcString, TimeUtil.LAST_MODIFIED_FORMAT);
         final Instant srcInstant = Instant.ofEpochMilli(srcDate.getTime());
-        assertEquals(srcString, DateHelper.getInLastModifiedHeaderFormat(srcInstant));
+        assertEquals(srcString, TimeUtil.getInLastModifiedHeaderFormat(srcInstant));
     }
 
     /**
@@ -136,7 +137,7 @@ public class DateHelperTest extends AbstractTest {
     public void getNewest() {
         final Instant now = Instant.now();
         final Instant older = now.minusNanos(1);
-        final Instant newest = DateHelper.getGreatest(now, older);
+        final Instant newest = TimeUtil.getGreatest(now, older);
         assertEquals(now, newest);
     }
 
@@ -148,18 +149,18 @@ public class DateHelperTest extends AbstractTest {
         final String DATE_STRING_SUMMER_Z = "2016-06-22T07:10:01.102Z";
 
         final GregorianCalendar wc = GregorianCalendar.from((ZonedDateTime.parse(DATE_STRING_WINTER)));
-        final ZonedDateTime winterTime = DateHelper.toZonedDateTimeAtUtc(DatatypeFactory.newInstance().newXMLGregorianCalendar(wc));
+        final ZonedDateTime winterTime = TimeUtil.toZonedDateTimeAtUtc(DatatypeFactory.newInstance().newXMLGregorianCalendar(wc));
         assertEquals(DATE_STRING_WINTER_Z, ISO_OFFSET_DATE_TIME.format(winterTime));
 
         final GregorianCalendar sc = GregorianCalendar.from((ZonedDateTime.parse(DATE_STRING_SUMMER)));
-        final ZonedDateTime summerTime = DateHelper.toZonedDateTimeAtUtc(DatatypeFactory.newInstance().newXMLGregorianCalendar(sc));
+        final ZonedDateTime summerTime = TimeUtil.toZonedDateTimeAtUtc(DatatypeFactory.newInstance().newXMLGregorianCalendar(sc));
         assertEquals(DATE_STRING_SUMMER_Z, ISO_OFFSET_DATE_TIME.format(summerTime));
     }
 
     @Test
     public void xmlGregorianCalendarToInstant() throws DatatypeConfigurationException {
         final GregorianCalendar wc = GregorianCalendar.from((ZonedDateTime.parse(DATE_STRING_OFFSET_2)));
-        final Instant instant = DateHelper.toInstant(DatatypeFactory.newInstance().newXMLGregorianCalendar(wc));
+        final Instant instant = TimeUtil.toInstant(DatatypeFactory.newInstance().newXMLGregorianCalendar(wc));
         assertEquals(DATE_STRING_Z, instant.toString());
     }
 
@@ -167,7 +168,7 @@ public class DateHelperTest extends AbstractTest {
     public void zonedDateTimeToInstant() {
         final ZonedDateTime zdt = ZonedDateTime.of(2019, 12, 1, 10, 15, 20, 500, ZoneOffset.UTC);
         final String DATE_STRING_NANOS = "2019-12-01T10:15:20.000000500Z";
-        final Instant instant = DateHelper.toInstant(zdt);
+        final Instant instant = TimeUtil.toInstant(zdt);
         assertEquals(DATE_STRING_NANOS, instant.toString());
     }
 
@@ -175,7 +176,7 @@ public class DateHelperTest extends AbstractTest {
     public void epocMillisToInstant() {
         final ZonedDateTime zdt = ZonedDateTime.of(2019, 12, 1, 10, 15, 20, 500000000, ZoneOffset.UTC);
         final String DATE_STRING_NANOS = "2019-12-01T10:15:20.500Z";
-        final Instant instant = DateHelper.toInstant(zdt.toInstant().toEpochMilli());
+        final Instant instant = TimeUtil.toInstant(zdt.toInstant().toEpochMilli());
         assertEquals(DATE_STRING_NANOS, instant.toString());
     }
 
@@ -183,17 +184,17 @@ public class DateHelperTest extends AbstractTest {
     public void xmlGregorianCalendarToZonedDateTimeWithoutMillis() throws DatatypeConfigurationException {
         final GregorianCalendar gc = GregorianCalendar.from((ZonedDateTime.parse(DATE_STRING_OFFSET_2).plusNanos(500000000)));
         final XMLGregorianCalendar xmlDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
-        final Instant instant = DateHelper.toInstant(xmlDate);
+        final Instant instant = TimeUtil.toInstant(xmlDate);
         assertEquals(DATE_STRING_MILLIS_Z, instant.toString());
 
-        final ZonedDateTime zdtWithOutMillis = DateHelper.toZonedDateTimeWithoutMillisAtUtc(xmlDate);
+        final ZonedDateTime zdtWithOutMillis = TimeUtil.toZonedDateTimeWithoutMillisAtUtc(xmlDate);
         assertEquals(DATE_STRING_Z, zdtWithOutMillis.toString());
     }
 
     @Test
     public void zdtToZonedDateTimeAtUtc() {
         final ZonedDateTime timeAtOffset2 = ZonedDateTime.parse(DATE_STRING_OFFSET_2);
-        final ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(timeAtOffset2);
+        final ZonedDateTime utc = TimeUtil.toZonedDateTimeAtUtc(timeAtOffset2);
 
         assertEquals(0, utc.getOffset().getTotalSeconds());
         assertEquals(timeAtOffset2.toEpochSecond() , utc.toEpochSecond());
@@ -202,7 +203,7 @@ public class DateHelperTest extends AbstractTest {
     @Test
     public void instantToZonedDateTimeAtUtc() {
         final Instant instant = Instant.parse(DATE_STRING_Z);
-        final ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(instant);
+        final ZonedDateTime utc = TimeUtil.toZonedDateTimeAtUtc(instant);
         assertEquals(0, utc.getOffset().getTotalSeconds());
         assertEquals(instant.getEpochSecond() , utc.toEpochSecond());
     }
@@ -211,7 +212,7 @@ public class DateHelperTest extends AbstractTest {
     @Test
     public void epochMillisToZonedDateTimeAtUtc() {
         final Instant instant = Instant.parse(DATE_STRING_Z);
-        final ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(instant.toEpochMilli());
+        final ZonedDateTime utc = TimeUtil.toZonedDateTimeAtUtc(instant.toEpochMilli());
         assertEquals(0, utc.getOffset().getTotalSeconds());
         assertEquals(instant.getEpochSecond() , utc.toEpochSecond());
     }
@@ -220,7 +221,7 @@ public class DateHelperTest extends AbstractTest {
     public void dateToZonedDateTimeAtUtc() {
         final Instant instant = Instant.parse(DATE_STRING_Z);
         final java.util.Date date = Date.from(instant);
-        final ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(date);
+        final ZonedDateTime utc = TimeUtil.toZonedDateTimeAtUtc(date);
         assertEquals(0, utc.getOffset().getTotalSeconds());
         assertEquals(instant.getEpochSecond() , utc.toEpochSecond());
     }
@@ -228,25 +229,25 @@ public class DateHelperTest extends AbstractTest {
     @Test
     public void zdtToXMLGregorianCalendarAtUtc() {
         final ZonedDateTime timeAtOffset2 = ZonedDateTime.parse(DATE_STRING_OFFSET_2);
-        final XMLGregorianCalendar xmlUtc = DateHelper.toXMLGregorianCalendarAtUtc(timeAtOffset2);
+        final XMLGregorianCalendar xmlUtc = TimeUtil.toXMLGregorianCalendarAtUtc(timeAtOffset2);
         assertEquals(XML_DATE_STRING_Z, xmlUtc.toString());
-        final ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(xmlUtc);
+        final ZonedDateTime utc = TimeUtil.toZonedDateTimeAtUtc(xmlUtc);
         assertEquals(timeAtOffset2.toEpochSecond() , utc.toEpochSecond());
     }
 
     @Test
     public void instantToXMLGregorianCalendarAtUtc() {
         final Instant instant = Instant.parse(DATE_STRING_Z);
-        final XMLGregorianCalendar xmlUtc = DateHelper.toXMLGregorianCalendarAtUtc(instant);
+        final XMLGregorianCalendar xmlUtc = TimeUtil.toXMLGregorianCalendarAtUtc(instant);
         assertEquals(XML_DATE_STRING_Z, xmlUtc.toString());
-        final ZonedDateTime utc = DateHelper.toZonedDateTimeAtUtc(xmlUtc);
+        final ZonedDateTime utc = TimeUtil.toZonedDateTimeAtUtc(xmlUtc);
         assertEquals(instant.getEpochSecond() , utc.toEpochSecond());
     }
 
     @Test
     public void zonedDateTimeNowAtUtc() {
         final long now = ZonedDateTime.now().toInstant().getEpochSecond();
-        final ZonedDateTime utc = DateHelper.getZonedDateTimeNowAtUtc();
+        final ZonedDateTime utc = TimeUtil.getZonedDateTimeNowAtUtc();
 
         assertEquals(0, utc.getOffset().getTotalSeconds());
         assertEquals(now , utc.toEpochSecond(), 1.0);
@@ -255,7 +256,7 @@ public class DateHelperTest extends AbstractTest {
     @Test
     public void zonedDateTimeToSqlTimestamp() {
         final ZonedDateTime now = Instant.now().atZone(ZoneOffset.UTC);
-        final Timestamp sqlTimestamp = DateHelper.toSqlTimestamp(now);
+        final Timestamp sqlTimestamp = TimeUtil.toSqlTimestamp(now);
 
         assertEquals(now.toInstant().toEpochMilli(), sqlTimestamp.getTime());
     }
@@ -263,7 +264,7 @@ public class DateHelperTest extends AbstractTest {
     @Test
     public void sqlTimestampToZonedDateTime() {
         final Timestamp sqlTimestamp = new Timestamp(Instant.now().toEpochMilli());
-        final ZonedDateTime zonedDateTime = DateHelper.toZonedDateTimeAtUtc(sqlTimestamp);
+        final ZonedDateTime zonedDateTime = TimeUtil.toZonedDateTimeAtUtc(sqlTimestamp);
 
         assertEquals(sqlTimestamp.getTime(), zonedDateTime.toInstant().toEpochMilli());
     }

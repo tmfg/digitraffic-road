@@ -41,7 +41,6 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
         super(kameraMetadataJaxb2Marshaller, lotjuMetadataProperties, lotjuMetadataProperties.getPath().camera);
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Retryable(maxAttempts = 5)
     public List<KameraVO> getKameras() {
         final HaeKaikkiKamerat request = new HaeKaikkiKamerat();

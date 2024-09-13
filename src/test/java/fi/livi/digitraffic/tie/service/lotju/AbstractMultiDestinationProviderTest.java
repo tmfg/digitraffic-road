@@ -9,8 +9,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +17,14 @@ import org.springframework.http.HttpStatus;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
 
 public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemonTest {
     private static final Logger log = LoggerFactory.getLogger(AbstractMultiDestinationProviderTest.class);
 
-    public static final int RANDOM_PORT1 = (int)RandomUtils.nextLong(6000,6500);
-    public static final int RANDOM_PORT2 = (int)RandomUtils.nextLong(6500,7000);
+    public static final int RANDOM_PORT1 = TestUtils.getRandomId(6000,6499);
+    public static final int RANDOM_PORT2 = TestUtils.getRandomId(6500,7000);
 
     protected final static String baseUrl1 = "http://localhost:" + RANDOM_PORT1;
     protected final static String baseUrl2 = "http://localhost:" + RANDOM_PORT2;
@@ -130,10 +129,10 @@ public abstract class AbstractMultiDestinationProviderTest extends AbstractDaemo
 
     /**
      * Returns ok and adds randomly extra string after that
-     * @return
+     * @return ok + random string
      */
     public static String getOkResponseString() {
-        final String value = OK_RESPONSE_CONTENT + RandomStringUtils.randomAlphanumeric(RandomUtils.nextInt(0, 2));
+        final String value = OK_RESPONSE_CONTENT + TestUtils.getRandomString(2);
         log.info("getOkResponseString {}", value);
         return value;
     }

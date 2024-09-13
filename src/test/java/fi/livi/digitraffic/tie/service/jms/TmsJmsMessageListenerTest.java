@@ -40,14 +40,15 @@ import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
-import fi.livi.digitraffic.tie.service.jms.marshaller.TmsMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.TmsDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 
+@Deprecated(forRemoval = true, since = "TODO remove when DPO-2422 KCA is in production")
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
@@ -162,7 +163,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     private void checkLastUpdated() {
         final ZonedDateTime lastUpdated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
-        final ZonedDateTime timeInPast2Minutes = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
+        final ZonedDateTime timeInPast2Minutes = TimeUtil.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);
         assertTrue(lastUpdated.isAfter(timeInPast2Minutes), "LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes);
@@ -249,7 +250,7 @@ public class TmsJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
     }
 
     private JMSMessageListener<LAMRealtimeProtos.Lam> createTmsJmsMessageListener(final JMSMessageListener.JMSDataUpdater<LAMRealtimeProtos.Lam> dataUpdater) {
-        return new JMSMessageListener<>(new TmsMessageMarshaller(),
+        return new JMSMessageListener<>(new TmsDataJMSMessageMarshaller(),
             dataUpdater, true, log);
     }
 

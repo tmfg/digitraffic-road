@@ -124,8 +124,8 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "    FROM forecast_section f\n" +
         "    WHERE version = :version\n" +
         "      AND (cast(:area as geometry) IS NULL OR ST_INTERSECTS(cast(:area as geometry), f.geometry) = TRUE)\n" +
-        "      AND (:id IS NULL OR f.natural_id = :id)\n" +
-        "      AND (:roadNumber IS NULL OR f.road_number = :roadNumber)\n" +
+        "      AND (cast(:id as varchar) IS NULL OR f.natural_id = :id)\n" +
+        "      AND (cast(:roadNumber as numeric) IS NULL OR f.road_number = :roadNumber)\n" +
         "), max_from_all as (\n" +
         "    SELECT max(f.modified) as modified FROM forecast_section f WHERE version = :version\n" +
         ")\n" +
@@ -146,6 +146,10 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
     default Instant getLastModified(final int version,
                                     final String id) {
         return getLastModified(version, null,null, id);
+    }
+
+    default Instant getLastModified(final int version) {
+        return getLastModified(version, null, null, null);
     }
 
 }

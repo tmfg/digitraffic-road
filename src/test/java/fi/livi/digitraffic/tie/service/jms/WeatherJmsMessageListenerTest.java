@@ -35,16 +35,16 @@ import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
-import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherMessageMarshaller;
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.weather.WeatherStationService;
 
-
+@Deprecated(forRemoval = true, since = "TODO remove when DPO-2422 KCA is in production")
 public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTest {
 
     private static final Logger log = LoggerFactory.getLogger(WeatherJmsMessageListenerTest.class);
@@ -274,7 +274,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
 
     private static JMSMessageListener<TiesaaProtos.TiesaaMittatieto> createTiesaaMittatietoJMSMessageListener(
             final JMSMessageListener.JMSDataUpdater<TiesaaProtos.TiesaaMittatieto> dataUpdater) {
-        return new JMSMessageListener<>(new WeatherMessageMarshaller(),
+        return new JMSMessageListener<>(new WeatherDataJMSMessageMarshaller(),
             dataUpdater, true, log);
     }
 
@@ -287,7 +287,7 @@ public class WeatherJmsMessageListenerTest extends AbstractJmsMessageListenerTes
     }
 
     private static void assertLastUpdated(final ZonedDateTime lastUpdated) {
-        final ZonedDateTime limit = DateHelper.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
+        final ZonedDateTime limit = TimeUtil.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
 
         assertTrue(lastUpdated.isAfter(limit), String.format("LastUpdated not fresh %s, should be after %s", lastUpdated, limit));
     }

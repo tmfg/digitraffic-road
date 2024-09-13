@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -33,6 +32,7 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.UnexpectedRollbackException;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.EsiasentoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.Julkisuus;
 import fi.livi.digitraffic.tie.external.lotju.metadata.kamera.JulkisuusTaso;
@@ -46,7 +46,6 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAntu
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.helper.DateHelper;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
@@ -120,6 +119,7 @@ public class TestUtils {
         cp.setDirection("1");
         cp.setCameraLotjuId(cp.getLotjuId());
         cp.setPictureLastModified(ZonedDateTime.now());
+        cp.setPictureLastModifiedDb(cp.getPictureLastModified().plusSeconds(10));
 
         return cp;
     }
@@ -179,10 +179,23 @@ public class TestUtils {
         return ra;
     }
 
-    public static Integer getRandomId(final int min, final int max) {
+    public static int getRandomId(final int min, final int max) {
         assertTrue(max > min);
         final Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
+    }
+
+    public static long getRandomLong(final long min, final long max) {
+        assertTrue(max > min);
+        final Random r = new Random();
+        return r.nextLong((max - min) + 1) + min;
+    }
+
+    public static String getRandomString(final int lenght) {
+        assertTrue(lenght > 0);
+        final byte[] array = new byte[lenght]; // length is bounded by 7
+        new Random().nextBytes(array);
+        return new String(array, StandardCharsets.UTF_8);
     }
 
     public static int getRandom(final int minInclusive, final int maxExclusive) {
@@ -291,7 +304,7 @@ public class TestUtils {
     public static JulkisuusVO createKameraJulkisuus(final Instant from, final JulkisuusTaso julkisuusTaso) {
         final JulkisuusVO julkisuus = new JulkisuusVO();
         julkisuus.setJulkisuusTaso(julkisuusTaso);
-        julkisuus.setAlkaen(DateHelper.toXMLGregorianCalendarAtUtc(from));
+        julkisuus.setAlkaen(TimeUtil.toXMLGregorianCalendarAtUtc(from));
         return julkisuus;
     }
 
@@ -308,7 +321,7 @@ public class TestUtils {
     private static String generateUniquePresetId(final String cameraId) {
         final AtomicReference<String> presetId = new AtomicReference<>();
         while (presetId.get() == null || reservedPresetIds.get().stream().anyMatch(reserved -> reserved.equals(presetId.get()))) {
-            presetId.set(CameraHelper.convertCameraIdToPresetId(cameraId, String.valueOf(RandomUtils.nextLong(0, 100))));
+            presetId.set(CameraHelper.convertCameraIdToPresetId(cameraId, String.valueOf(getRandomLong(0, 99))));
         }
         reservedPresetIds.get().add(presetId.get());
         return presetId.get();
@@ -411,7 +424,6 @@ public class TestUtils {
     public static void truncateTmsData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE tms_station DISABLE TRIGGER tms_station_prevent_delete_t").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id not in (select natural_id from road_station_sensor where lotju_id <= 252 AND road_station_type = 'TMS_STATION') AND road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id > 252 AND road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM tms_sensor_constant_value WHERE created > '1970-01-01T00:00Z'").executeUpdate();
@@ -425,7 +437,6 @@ public class TestUtils {
     public static void truncateWeatherData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE weather_station DISABLE TRIGGER weather_station_prevent_delete_t").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM allowed_road_station_sensor WHERE natural_id > " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id >= " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM weather_station WHERE created > '1970-01-01T00:00Z'").executeUpdate();
@@ -506,15 +517,6 @@ public class TestUtils {
         anturi.setKuvausEn(anturi.getEsitysnimiEn());
         anturi.setKuvausSe(anturi.getEsitysnimiSe());
         return anturi;
-    }
-
-    public static void addAllowedSensor(final long lotjuId, final RoadStationType roadStationType, final EntityManager entityManager) {
-        entityManager.createNativeQuery(
-            "INSERT INTO ALLOWED_ROAD_STATION_SENSOR " +
-            "SELECT NEXTVAL('seq_allowed_sensor') as id, " +
-            lotjuId + " as natural_id, '" +
-            roadStationType.name() + "' as road_station_type" +
-            " ON CONFLICT DO NOTHING").executeUpdate();
     }
 
     public static void updateCameraHistoryModified(final String presetId, final String versionId, final Instant modified,

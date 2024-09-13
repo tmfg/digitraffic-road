@@ -15,7 +15,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 @Component
@@ -96,7 +96,7 @@ public class CameraImageS3Writer {
 
     private ObjectMetadata createS3Metadata(final long timestampEpochMillis, final long contentLength) {
         final ObjectMetadata metadata = new ObjectMetadata();
-        final String lastModifiedInHeaderFormat = DateHelper.getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
+        final String lastModifiedInHeaderFormat = TimeUtil.getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
         metadata.addUserMetadata(LAST_MODIFIED_USER_METADATA_HEADER, lastModifiedInHeaderFormat);
         metadata.setContentType("image/jpeg");
         metadata.setContentLength(contentLength);

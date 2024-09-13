@@ -55,7 +55,7 @@ public class TmsMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateM
     @Test // TMS_SENSOR
     public void tmsSensornMessagesShouldNotTriggerUpdate() {
         for (final UpdateType updateType : UpdateType.values()) {
-            verifyMessageWontTriggersUpdate(updateType, EntityType.TMS_SENSOR);
+            verifyMessageWontTriggersUpdate(updateType);
         }
     }
 
@@ -89,9 +89,8 @@ public class TmsMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateM
         }
     }
 
-    private void verifyMessageWontTriggersUpdate(final UpdateType updateType,
-                                                 final EntityType entityType) {
-        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(getRandomLotjuId(), entityType, updateType, getRandomLotjuId()));
+    private void verifyMessageWontTriggersUpdate(final UpdateType updateType) {
+        tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(getRandomLotjuId(), EntityType.TMS_SENSOR, updateType, getRandomLotjuId()));
         verifyNoInteractions(tmsStationUpdater);
         verifyNoInteractions(tmsSensorUpdater);
     }
@@ -113,15 +112,17 @@ public class TmsMetadataUpdateMessageHandlerTest extends AbstractMetadataUpdateM
     }
 
     private void verifyTmsSensorConstantMessagesTriggersUpdate(final UpdateType updateType) {
-        when(tmsStationSensorConstantUpdater.updateTmsStationsSensorConstant(SENSOR_CONSTANT_LOTJU_ID, updateType)).thenReturn(true);
+        when(tmsStationSensorConstantUpdater.updateTmsStationsSensorConstant(SENSOR_CONSTANT_LOTJU_ID, updateType, STATION_LOTJU_ID1)).thenReturn(true);
         tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(SENSOR_CONSTANT_LOTJU_ID, EntityType.TMS_SENSOR_CONSTANT, updateType, STATION_LOTJU_ID1));
-        verify(tmsStationSensorConstantUpdater, times(1)).updateTmsStationsSensorConstant(eq(SENSOR_CONSTANT_LOTJU_ID), eq(updateType));
+        verify(tmsStationSensorConstantUpdater, times(1)).updateTmsStationsSensorConstant(eq(SENSOR_CONSTANT_LOTJU_ID), eq(updateType), eq(STATION_LOTJU_ID1));
     }
 
     private void verifyTmsSensorConstantValueMessagesTriggersUpdate(final UpdateType updateType) {
-        when(tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(SENSOR_CONSTANT_VALUE_LOTJU_ID, updateType)).thenReturn(true);
+        when(tmsStationSensorConstantUpdater.updateTmsStationsSensorConstantValue(SENSOR_CONSTANT_VALUE_LOTJU_ID, STATION_LOTJU_ID1,
+				updateType)).thenReturn(true);
         tmsMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(SENSOR_CONSTANT_VALUE_LOTJU_ID, EntityType.TMS_SENSOR_CONSTANT_VALUE, updateType, STATION_LOTJU_ID1));
-        verify(tmsStationSensorConstantUpdater, times(1)).updateTmsStationsSensorConstantValue(eq(SENSOR_CONSTANT_VALUE_LOTJU_ID), eq(updateType));
+        verify(tmsStationSensorConstantUpdater, times(1)).updateTmsStationsSensorConstantValue(eq(SENSOR_CONSTANT_VALUE_LOTJU_ID),
+            eq(STATION_LOTJU_ID1), eq(updateType));
     }
 
     private void verifyRoadAddressMessageTriggersUpdate(final UpdateType updateType) {

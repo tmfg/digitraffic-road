@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.tms.v1;
 
-import static fi.livi.digitraffic.tie.helper.DateHelper.getGreatest;
+import static fi.livi.digitraffic.common.util.TimeUtil.getGreatest;
 
 import java.time.Instant;
 import java.util.Collections;

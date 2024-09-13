@@ -258,7 +258,6 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final TiesaaAsemaVO tsa = createTiesaaAsema(ROAD_STATION_LOTJU_ID);
         assertEquals(UpdateStatus.INSERTED, weatherStationService.updateOrInsertWeatherStation(tsa));
         final int sensorsCountBeforeUpdate = getWeatherSensorsFromDb().size();
-        TestUtils.addAllowedSensor(NEW_LOTJU_ID, RoadStationType.WEATHER_STATION, entityManager);
 
         // 2. Send insert message
         final TiesaaLaskennallinenAnturiVO anturi = createAnturiListWith(Pair.of(NEW_LOTJU_ID, NEW_LOTJU_ID)).get(0);
@@ -291,8 +290,6 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
 
         final TiesaaLaskennallinenAnturiVO anturi = TestUtils.createTiesaaLaskennallinenAnturis(1).get(0);
         assertEquals(UpdateStatus.INSERTED, roadStationSensorService.updateOrInsert(anturi));
-        entityManager.createNativeQuery("INSERT INTO allowed_road_station_sensor (id, natural_id, road_station_type) " +
-                                        "VALUES (nextval('SEQ_ALLOWED_SENSOR'), " + anturi.getVanhaId() + ", 'WEATHER_STATION')").executeUpdate();
 
         // 2. Send update message
         final String newDesc = "Uusi kuvaus";

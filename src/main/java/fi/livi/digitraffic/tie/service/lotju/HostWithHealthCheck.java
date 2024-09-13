@@ -1,25 +1,25 @@
 package fi.livi.digitraffic.tie.service.lotju;
 
+import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
+import fi.livi.digitraffic.tie.service.IllegalArgumentException;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
+
 import java.net.URI;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-
-import fi.livi.digitraffic.tie.conf.RestTemplateConfiguration;
-import fi.livi.digitraffic.tie.conf.properties.LotjuMetadataProperties;
-import fi.livi.digitraffic.tie.service.IllegalArgumentException;
-
 public class HostWithHealthCheck {
     private static final Logger log = LoggerFactory.getLogger(HostWithHealthCheck.class);
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
     private final URI dataUrl;
     private final String baseUrl;
     private final String healthUrl;
@@ -42,7 +42,7 @@ public class HostWithHealthCheck {
         this.healthOkValue = healthOkValue;
         this.healthUrl = StringUtils.isNotEmpty(healthPath) ? (baseUrl + healthPath) : null;
         this.dataUrl = URI.create(baseUrl + dataPath);
-        restTemplate = RestTemplateConfiguration.createRestTemplate(10, 10);
+        this.webClient = createWebClient();
 
         if (StringUtils.isBlank(baseUrl)) {
             throw new IllegalArgumentException(String.format("Param baseUrl:\"%s\" can't be empty value", baseUrl));
@@ -56,6 +56,13 @@ public class HostWithHealthCheck {
 
         log.info("Created HostWithHealthCheck healthCheckUrl={} dataUrl={} healthTtlSeconds={} healthOkValue={}",
             healthUrl, dataUrl, healthTtlSeconds, healthOkValue);
+    }
+
+    private WebClient createWebClient() {
+        final HttpClient httpClient = HttpClient.create()
+            .responseTimeout(Duration.ofSeconds(10));
+
+        return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
     }
 
     /**
@@ -94,8 +101,7 @@ public class HostWithHealthCheck {
      */
     private String doRequestHealthString() {
         try {
-            final ResponseEntity<String> response = restTemplate.getForEntity(healthUrl, String.class);
-            return response.getBody();
+            return webClient.get().uri(healthUrl).retrieve().bodyToMono(String.class).block();
         } catch (final Exception e) {
             log.warn(String.format("method=doRequestHealthStatus Health check for healthCheckUrl=%s failed", healthUrl), e);
             return e.getMessage(); // Can be null

@@ -54,7 +54,7 @@ import fi.livi.digitraffic.tie.external.harja.entities.OrganisaatioSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ViivageometriasijaintiSchema;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData;
@@ -471,11 +471,11 @@ public class MaintenanceTrackingServiceTestHelperV1 {
     }
 
     public static Instant getTimeHoursInPast(final int hours) {
-        return DateHelper.getNowWithoutMillis().minus(hours, ChronoUnit.HOURS);
+        return TimeUtil.nowWithoutMillis().minus(hours, ChronoUnit.HOURS);
     }
 
     public static Instant getStartTimeOneDayInPast() {
-        return DateHelper.getNowWithoutMillis().minus(1, ChronoUnit.DAYS);
+        return TimeUtil.nowWithoutMillis().minus(1, ChronoUnit.DAYS);
     }
 
     public MaintenanceTrackingWorkMachine createAndSaveWorkMachine() {

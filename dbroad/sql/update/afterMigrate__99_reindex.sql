@@ -19,8 +19,8 @@ reindex (VERBOSE) table forecast_section_weather;
 reindex (VERBOSE) table forecast_section;
 reindex (VERBOSE) table link_id;
 reindex (VERBOSE) table locking_table;
--- reindex (VERBOSE) table maintenance_tracking; -- takes 13 mins
--- reindex (VERBOSE) table maintenance_tracking_data; -- takes 100 s
+reindex (VERBOSE) table maintenance_tracking; -- takes 8 s
+reindex (VERBOSE) table maintenance_tracking_observation_data; -- takes 100 s
 reindex (VERBOSE) table maintenance_tracking_task;
 reindex (VERBOSE) table road_segment;
 reindex (VERBOSE) table road_station;

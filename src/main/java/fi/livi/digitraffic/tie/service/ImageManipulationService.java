@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 
@@ -18,7 +16,7 @@ public class ImageManipulationService {
      * @param in image file contents
      * @return image file contents without Exif metadata
      */
-    public static byte[] removeJpgExifMetadata(final byte[] in) throws ImageWriteException, ImageReadException, IOException {
+    public static byte[] removeJpgExifMetadata(final byte[] in) throws IOException {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         exifRewriter.removeExifMetadata(in, os);
         return os.toByteArray();

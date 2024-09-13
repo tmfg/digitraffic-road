@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
 
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
@@ -74,6 +74,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractTest {
     }
 
     public Instant getTransactionTimestampRoundedToSeconds() {
-        return DateHelper.roundInstantSeconds(getTransactionTimestamp());
+        TimeUtil.roundInstantSeconds(getTransactionTimestamp());
+        return TimeUtil.roundInstantSeconds(getTransactionTimestamp());
     }
 }

@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.lotju;
 
 import java.net.URI;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -50,9 +51,8 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
         public Object marshalSendAndReceive(final Object requestPayload, final WebServiceMessageCallback requestCallback) {
             final DestinationProvider dp = getDestinationProvider();
 
-            if ( dp instanceof MultiDestinationProvider ) {
-                final MultiDestinationProvider mdp = (MultiDestinationProvider) dp;
-                int tryCount = 0;
+            if (dp instanceof final MultiDestinationProvider mdp) {
+				int tryCount = 0;
 
                 Exception lastException;
                 do {
@@ -72,6 +72,8 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
                         log.warn("method=marshalSendAndReceive returned error for dataUrl={} reason: {}", dataUri, lastException.getMessage());
                     }
                 } while (tryCount < mdp.getDestinationsCount());
+
+                log.error("method=marshalSendAndReceive error dataUrl={} stacktrace: {}", mdp.getDestinationsAsString(), ExceptionUtils.getStackTrace(lastException));
                 throw new IllegalStateException(String.format("No host found to return data without error dataUrls=%s", mdp.getDestinationsAsString()),
                                                 lastException);
             }

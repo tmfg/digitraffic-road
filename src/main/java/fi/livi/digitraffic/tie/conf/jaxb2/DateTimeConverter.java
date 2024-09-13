@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 
 /**
  * Converts xmlType="xs:dateTime" field as Instant (Z-time).
@@ -27,6 +27,6 @@ public class DateTimeConverter {
         if (from == null) {
             return null;
         }
-        return DateHelper.toIsoDateTimeWithMillisAtUtc(from);
+        return TimeUtil.toIsoDateTimeWithMillisAtUtc(from);
     }
 }

@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.common.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionDto;
-import fi.livi.digitraffic.tie.dto.LastModifiedSupport;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureSimpleV1;
@@ -17,7 +17,7 @@ import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionPropertiesV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.RoadSegmentDtoV1;
-import fi.livi.digitraffic.tie.helper.DateHelper;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
 import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSection;
@@ -91,7 +91,7 @@ public class ForecastSectionToFeatureCollectionConverterV1 {
     }
 
     private Instant getLastModified(final List<? extends LastModifiedSupport> features, final Instant lastModifiedFallback) {
-        return DateHelper.getGreatest(
+        return TimeUtil.getGreatest(
             features.stream().map(LastModifiedSupport::getLastModified).max(Comparator.naturalOrder()).orElse(null),
             lastModifiedFallback);
     }

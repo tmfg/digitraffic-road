@@ -7,16 +7,22 @@ import static fi.livi.digitraffic.tie.service.WazeFeedServiceTestHelper.readDate
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.service.waze.WazeFeedService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -24,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -56,6 +63,9 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     @MockBean
     private WazeReverseGeocodingApi wazeReverseGeocodingApi;
 
+    @SpyBean
+    private Datex2Repository datex2Repository;
+
     public static final String EXAMPLE_WAZE_REVERSE_GEOCODING_RESPONSE = "{\"lat\":60.1,\"lon\":21.3,\"radius\":50,\"result\":[{\"distance\":3.1415,\"names\":[\"Lautta\"]},{\"distance\":20.24164959825527,\"names\":[\"192 - Kivimaantie\"]}]}";
 
     @BeforeEach
@@ -68,20 +78,59 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         wazeFeedServiceTestHelper.cleanup();
     }
 
+
+    private void assertWazeType(final WazeFeedIncidentDto incident, final WazeFeedIncidentDto.WazeType expected) {
+        assertEquals(expected.type.name(), incident.type);
+        assertEquals(expected.getSubtype(), incident.subtype);
+
+
+    }
     @Test
-    @Disabled
-    public void getAListOfWazeAnnouncements() {
+    public void getAListOfWazeAnnouncements() throws IOException {
         wazeFeedServiceTestHelper.insertSituation();
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
 
         assertEquals(1, incidents.size());
+        assertWazeType(incidents.get(0), WazeFeedIncidentDto.WazeType.ACCIDENT_NONE);
     }
 
     @Test
-    @Disabled
-    public void announcementIsProperlyFormatted() {
+    public void flood() throws IOException {
+        final Datex2 d2 = new Datex2(SituationType.ROAD_WORK, null);
+        d2.setMessage(readDatex2MessageFromFile("Flood.xml"));
+        d2.setJsonMessage(readDatex2MessageFromFile("Flood.json"));
+
+        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class))).thenReturn(Arrays.asList(d2));
+
+        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
+        assertEquals(1, announcement.incidents.size());
+
+        final WazeFeedIncidentDto incident = announcement.incidents.get(0);
+        assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_HAZARD);
+    }
+
+    @Test
+    public void roadwork() throws IOException {
+        final Datex2 d2 = new Datex2(SituationType.ROAD_WORK, null);
+        d2.setMessage(readDatex2MessageFromFile("Roadwork.xml"));
+        d2.setJsonMessage(readDatex2MessageFromFile("Roadwork.json"));
+
+        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class))).thenReturn(Arrays.asList(d2));
+
+        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
+        assertEquals(1, announcement.incidents.size());
+
+        final WazeFeedIncidentDto incident = announcement.incidents.get(0);
+        assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
+        // check that times are from the roadworkphase, not from the announcement!
+        assertEquals(incident.starttime, "2024-05-12T21:10:00+00:00");
+        assertEquals(incident.endtime, "2024-10-31T21:20:00+00:00");
+    }
+
+    @Test
+    public void announcementIsProperlyFormatted() throws IOException {
         final String situationId = "GUID12345";
         final ZonedDateTime startTime = ZonedDateTime.parse("2021-07-28T13:09:47.470Z");
 
@@ -89,7 +138,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
             new WazeFeedServiceTestHelper.SituationParams(situationId, startTime,
                     ACCIDENT_REPORT, RoadAddressLocation.Direction.BOTH);
 
-        wazeFeedServiceTestHelper.insertSituation(params, "");
+        wazeFeedServiceTestHelper.insertSituation(params, readDatex2MessageFromFile("TrafficSituationAbnormalTraffic.xml"));
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
@@ -98,15 +147,13 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final WazeFeedIncidentDto incident = incidents.get(0);
 
         assertEquals(situationId, incident.id);
-        assertEquals(WazeFeedIncidentDto.Type.ACCIDENT, incident.type);
-        assertEquals("", incident.description);
-        assertTrue(incident.description.length() <= 40);
+        assertWazeType(incident, WazeFeedIncidentDto.WazeType.HAZARD_ON_ROAD_LANE_CLOSED);
+        assertEquals("Accident. Lane closures. Queuing traffic.", incident.description);
         assertEquals("FINTRAFFIC", incident.reference);
     }
 
     @Test
-    @Disabled
-    public void pointInAnnouncement() {
+    public void pointInAnnouncement() throws IOException {
         final Point point = new Point(25.182835, 61.575153);
 
         wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, point);
@@ -133,8 +180,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
-    @Disabled
-    public void onewayDirectionInAccidents() {
+    public void onewayDirectionInAccidents() throws IOException {
         wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.POS);
         wazeFeedServiceTestHelper.insertSituation("GUID1235", RoadAddressLocation.Direction.NEG);
         wazeFeedServiceTestHelper.insertSituation("GUID1236", RoadAddressLocation.Direction.UNKNOWN);
@@ -147,8 +193,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
-    @Disabled
-    public void unsupportedGeometryTypesAreFilteredFromResults() {
+    public void unsupportedGeometryTypesAreFilteredFromResults() throws IOException {
         final List<List<Double>> coords = List.of(List.of(25.180874, 61.569262), List.of(25.180826, 61.569394));
         final MultiLineString geometry = new MultiLineString();
         geometry.addLineString(coords);
@@ -166,8 +211,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
-    @Disabled
-    public void bothDirectionsCoordinatesAreReturnedAsProperlyFormattedPolyline() {
+    public void bothDirectionsCoordinatesAreReturnedAsProperlyFormattedPolyline() throws IOException {
         final MultiLineString geometry = new MultiLineString();
         geometry.addLineString(List.of(List.of(25.180874, 61.569262), List.of(25.180826, 61.569394)));
 
@@ -184,7 +228,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
-    @Disabled
     public void noIncidents() {
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
@@ -318,13 +361,13 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
     @Test
     @Disabled
-    public void filterPreliminaryAccidentReports() {
+    public void filterPreliminaryAccidentReports() throws IOException {
         final WazeFeedServiceTestHelper.SituationParams params = new WazeFeedServiceTestHelper.SituationParams();
         params.situationId = wazeFeedServiceTestHelper.nextSituationRecord();
         params.trafficAnnouncementType = PRELIMINARY_ACCIDENT_REPORT;
 
         // datex2 database record having preliminary accident report type
-        wazeFeedServiceTestHelper.insertSituation(params);
+        wazeFeedServiceTestHelper.insertSituation(params, readDatex2MessageFromFile("TrafficSituationEquipmentOrSystemFault.xml"));
 
         // datex2 announcement type column having incorrect announcement type, but real preliminary accident report type still in json format
         params.situationId = wazeFeedServiceTestHelper.nextSituationRecord();
