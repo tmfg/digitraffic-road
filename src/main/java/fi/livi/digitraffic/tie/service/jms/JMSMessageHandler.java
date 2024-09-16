@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.jms;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -12,6 +14,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.jms.JMSException;
 
 public class JMSMessageHandler<K> {
     private static final Logger log = LoggerFactory.getLogger(JMSMessageHandler.class);
@@ -37,6 +41,7 @@ public class JMSMessageHandler<K> {
     private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
     private final AtomicInteger jmsMessagesReceivedCounter = new AtomicInteger();
     private final AtomicLong jmsMessagesReceivedTimeMsCounter = new AtomicLong();
+    private final AtomicLong jmsMessagesTransferTimeMs = new AtomicLong();
 
     private final JMSDataUpdater<K> dataUpdater;
     private final JMSMessageMarshaller<K> jmsMessageMarshaller;
@@ -81,8 +86,11 @@ public class JMSMessageHandler<K> {
         shutdownCalled.set(true);
     }
 
-    public void onMessage(final ActiveMQMessage activeMQMessage) {
+    public void onMessage(final ActiveMQMessage activeMQMessage) throws JMSException {
         final StopWatch start = StopWatch.createStarted();
+        final Instant msgSendTime = Instant.ofEpochMilli(activeMQMessage.getJMSTimestamp());
+        final Instant receivedTime = Instant.now();
+
         if (shutdownCalled.get()) {
             throw new IllegalStateException("Application shutdown called -> not handling messages");
         }
@@ -93,6 +101,7 @@ public class JMSMessageHandler<K> {
         messageCounter.addAndGet(data.size());
         jmsMessagesReceivedCounter.incrementAndGet();
         jmsMessagesReceivedTimeMsCounter.addAndGet(start.getTime());
+        jmsMessagesTransferTimeMs.addAndGet(Duration.between(msgSendTime, receivedTime).toMillis());
     }
 
     private void handleUnmarshalledMessage(final List<K> messagePayload) {
@@ -181,13 +190,15 @@ public class JMSMessageHandler<K> {
     }
 
     protected JmsStatistics getAndResetMessageCounter() {
-        return new JmsStatistics(messageCounter.getAndSet(0),
+        return new JmsStatistics(
+                messageCounter.getAndSet(0),
                 messageDrainedCounter.getAndSet(0),
                 messagesDrainingTimeMsCounter.getAndSet(0),
                 dbRowsUpdatedCounter.getAndSet(0),
                 messageQueue.size(),
                 jmsMessagesReceivedCounter.getAndSet(0),
-                jmsMessagesReceivedTimeMsCounter.getAndSet(0));
+                jmsMessagesReceivedTimeMsCounter.getAndSet(0),
+                jmsMessagesTransferTimeMs.getAndSet(0));
     }
 
     /**
@@ -199,8 +210,9 @@ public class JMSMessageHandler<K> {
      * @param queueSize how many messages is in queue to be drained
      * @param jmsMessagesReceivedCount how many JMS messages have been received
      * @param jmsMessagesReceivedTimeMs how long has it taken to receive JMS messages before returning to caller
+     * @param jmsMessagesTransferTimeMs how long it took to get the message from broker
      */
-    protected record JmsStatistics(int messagesReceived, int messagesDrained, long messagesDrainedTookMs, int dbRowsUpdated, int queueSize, int jmsMessagesReceivedCount, long jmsMessagesReceivedTimeMs) {
+    public record JmsStatistics(int messagesReceived, int messagesDrained, long messagesDrainedTookMs, int dbRowsUpdated, int queueSize, int jmsMessagesReceivedCount, long jmsMessagesReceivedTimeMs, long jmsMessagesTransferTimeMs) {
     }
 
     /**
@@ -210,13 +222,17 @@ public class JMSMessageHandler<K> {
         try {
             final JmsStatistics jmsStats = getAndResetMessageCounter();
             final long timeMsPerJmsMsg =
-                    (jmsStats.jmsMessagesReceivedTimeMs() > 0) ?
+                    (jmsStats.jmsMessagesReceivedCount() > 0) ?
                     jmsStats.jmsMessagesReceivedTimeMs() / jmsStats.jmsMessagesReceivedCount() : 0;
+            final long jmsMessagesTransferTimePerMsgMs =
+                    (jmsStats.jmsMessagesReceivedCount() > 0) ?
+                    jmsStats.jmsMessagesTransferTimeMs() / jmsStats.jmsMessagesReceivedCount() : 0;
+
             log.info("""
-                            method=logMessagesReceived prefix={} Received jmsMessageType={} jmsMessagesReceivedCount={} jmsMessagesReceivedTimeMs={} jmsMessagesReceivedTimeMsPerMsg={} jmsSrc=KCA
+                            method=logMessagesReceived prefix={} Received jmsMessageType={} jmsMessagesReceivedCount={} jmsMessagesReceivedTimeMs={} jmsMessagesReceivedTimeMsPerMsg={} jmsMessagesTransferTimePerMsgMs={} jmsSrc=KCA
                             messagesReceivedCount={} messages, drained messagesDrainedCount={} messagesDrainedTookMs={} messages and updated dbRowsUpdatedCount={} db rows per minute.
                             Current queueSize={} in memory. Lock instanceId={}""",
-                    STATISTICS_PREFIX, jmsMessageType, jmsStats.jmsMessagesReceivedCount, jmsStats.jmsMessagesReceivedTimeMs, timeMsPerJmsMsg,
+                    STATISTICS_PREFIX, jmsMessageType, jmsStats.jmsMessagesReceivedCount, jmsStats.jmsMessagesReceivedTimeMs, timeMsPerJmsMsg, jmsMessagesTransferTimePerMsgMs,
                     jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.messagesDrainedTookMs,
                     jmsStats.dbRowsUpdated, jmsStats.queueSize, instanceId);
         } catch (final Exception e) {

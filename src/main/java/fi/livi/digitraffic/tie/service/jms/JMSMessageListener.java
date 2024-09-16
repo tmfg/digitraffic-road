@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.jms;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -35,10 +37,12 @@ public class JMSMessageListener<K> implements MessageListener {
 
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
     private final AtomicInteger messageCounter = new AtomicInteger();
+    private final AtomicLong messagesDrainingTimeMsCounter = new AtomicLong();
     private final AtomicInteger messageDrainedCounter = new AtomicInteger();
     private final AtomicInteger dbRowsUpdatedCounter = new AtomicInteger();
     private final AtomicInteger jmsMessagesReceivedCounter = new AtomicInteger();
     private final AtomicLong jmsMessagesReceivedTimeMsCounter = new AtomicLong();
+    private final AtomicLong jmsMessagesTransferTimeMs = new AtomicLong();
 
     private final boolean drainScheduled;
     private final JMSDataUpdater<K> dataUpdater;
@@ -72,6 +76,14 @@ public class JMSMessageListener<K> implements MessageListener {
             return;
         }
 
+        final Instant msgSendTime;
+        try {
+            msgSendTime = Instant.ofEpochMilli(message.getJMSTimestamp());
+        } catch (final JMSException e) {
+            throw new RuntimeException(e);
+        }
+        final Instant receivedTime = Instant.now();
+
         final List<K> data = unmarshalMessage(message);
 
         if (CollectionUtils.isNotEmpty(data)) {
@@ -91,6 +103,7 @@ public class JMSMessageListener<K> implements MessageListener {
         messageCounter.addAndGet(data.size());
         jmsMessagesReceivedCounter.incrementAndGet();
         jmsMessagesReceivedTimeMsCounter.addAndGet(start.getTime());
+        jmsMessagesTransferTimeMs.addAndGet(Duration.between(msgSendTime, receivedTime).toMillis());
     }
 
     private List<K> unmarshalMessage(final Message message) {
@@ -136,39 +149,40 @@ public class JMSMessageListener<K> implements MessageListener {
 
             // Allocate array with current message queue size and drain same amount of messages
             final ArrayList<K> targetList = new ArrayList<>(queueToDrain);
-            int counter = 0;
-            while (counter < queueToDrain) {
+            int drainedCount = 0;
+            while (drainedCount < queueToDrain) {
                 final K next = messageQueue.poll();
                 if (next != null) {
                     targetList.add(next);
-                    counter++;
+                    drainedCount++;
                 } else {
                     log.error("Next in message queue should never be null");
                     break;
                 }
             }
 
-            if ( counter > 0 && !shutdownCalled.get() ) {
-                log.info("method=drainQueueInternal JMS messages drainedCount={} queueToDrain={}", counter, queueToDrain);
-                messageDrainedCounter.addAndGet(counter);
+            if ( drainedCount > 0 && !shutdownCalled.get() ) {
+                log.info("method=drainQueueInternal JMS messages drainedCount={} queueToDrain={}", drainedCount, queueToDrain);
+                messageDrainedCounter.addAndGet(drainedCount);
                 final int updated = dataUpdater.updateData(targetList);
                 dbRowsUpdatedCounter.addAndGet(updated);
-                log.info("method=drainQueueInternal JMS messages updated counter={} updateCount={} tookMs={}", counter, updated, start.getTime());
+                messagesDrainingTimeMsCounter.addAndGet(start.getTime());
+                log.info("method=drainQueueInternal JMS messages updated counter={} updateCount={} tookMs={}", drainedCount, updated, start.getTime());
             }
         } else {
             log.info("method=drainQueueInternal drainQueueInternal: Shutdown called");
         }
     }
 
-    public JmsStatistics getAndResetMessageCounter() {
-        return new JmsStatistics(messageCounter.getAndSet(0),
-            messageDrainedCounter.getAndSet(0),
-            dbRowsUpdatedCounter.getAndSet(0),
-            messageQueue.size(),
-            jmsMessagesReceivedCounter.getAndSet(0),
-            jmsMessagesReceivedTimeMsCounter.getAndSet(0));
-    }
-
-    public record JmsStatistics(int messagesReceived, int messagesDrained, int dbRowsUpdated, int queueSize, int jmsMessagesReceivedCount, long jmsMessagesReceivedTimeMs) {
+    public JMSMessageHandler.JmsStatistics getAndResetMessageCounter() {
+        return new JMSMessageHandler.JmsStatistics(
+                messageCounter.getAndSet(0),
+                messageDrainedCounter.getAndSet(0),
+                messagesDrainingTimeMsCounter.getAndSet(0),
+                dbRowsUpdatedCounter.getAndSet(0),
+                messageQueue.size(),
+                jmsMessagesReceivedCounter.getAndSet(0),
+                jmsMessagesReceivedTimeMsCounter.getAndSet(0),
+                jmsMessagesTransferTimeMs.getAndSet(0));
     }
 }

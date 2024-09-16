@@ -39,6 +39,7 @@ import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
+import jakarta.jms.JMSException;
 
 public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
     private static final Logger log = LoggerFactory.getLogger(ImsJmsMessageHandlerTest.class);
@@ -151,7 +152,11 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
     private void createAndSendJmsMessage(final String xmlImsMessage,
                                          final JMSMessageHandler<ExternalIMSMessage> messageListener) {
         final ActiveMQTextMessage tm = createTextMessage(xmlImsMessage, getRandomString(4));
-        messageListener.onMessage(tm);
+        try {
+            messageListener.onMessage(tm);
+        } catch (final JMSException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private TrafficMessageDataServiceV1 getV2Datex2DataService() {
