@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
+import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.dao.trafficmessage.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
@@ -38,6 +39,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProper
 import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -54,6 +56,8 @@ public class RegionGeometryDataServiceV1 {
     private final DataStatusService dataStatusService;
 
     private RegionStatus regionStatus = new RegionStatus();
+
+    public static Point EMPTY_POINT = new Point(Collections.emptyList());
 
     static {
         geoJsonWriter = new GeoJsonWriter(GeometryConstants.COORDINATE_SCALE_6_DIGITS);
@@ -142,22 +146,28 @@ public class RegionGeometryDataServiceV1 {
 
     @NotTransactionalServiceMethod
     public Geometry<?> getGeoJsonGeometryUnion(final Instant effectiveDate, final Integer...ids) {
-        final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
-        for (final int id : ids) {
-            final RegionGeometry region = getAreaLocationRegionEffectiveOn(id, effectiveDate);
-            if (region != null) {
-                final org.locationtech.jts.geom.Geometry geometry = region.getGeometry();
-                if(geometry.isValid()) {
-                    geometryCollection.add(geometry);
-                } else {
-                    // Try to make geometry valid by adding 0 buffer around it
-                    geometryCollection.add(geometry.buffer(0));
-                    log.warn("RegionGeometry is not valid id: {} locationCode: {} name: {} effectiveDate: {}", region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate());
+        try {
+            final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
+            for (final int id : ids) {
+                final RegionGeometry region = getAreaLocationRegionEffectiveOn(id, effectiveDate);
+                if (region != null) {
+                    final org.locationtech.jts.geom.Geometry geometry = region.getGeometry();
+                    if (geometry.isValid()) {
+                        geometryCollection.add(geometry);
+                    } else {
+                        // Try to make geometry valid by adding 0 buffer around it
+                        geometryCollection.add(geometry.buffer(0));
+                        log.warn("RegionGeometry is not valid id: {} locationCode: {} name: {} effectiveDate: {}",
+                                region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate());
+                    }
                 }
             }
+            final org.locationtech.jts.geom.Geometry union = PostgisGeometryUtils.union(geometryCollection);
+            return convertToGeojson(union);
+        } catch (final Exception e) {
+            log.error("method=getGeoJsonGeometryUnion failed with parameters effectiveDate: {}, ids: {}. Returning empty point as fallback.", effectiveDate, ids, e);
+            return EMPTY_POINT;
         }
-        final org.locationtech.jts.geom.Geometry union = PostgisGeometryUtils.union(geometryCollection);
-        return convertToGeojson(union);
     }
 
     public static List<RegionGeometryFeature> convertToDtoList(final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode, final boolean includeGeometry) {
@@ -178,7 +188,7 @@ public class RegionGeometryDataServiceV1 {
         try {
             return geometryReader.readValue(geoJson);
         } catch (final JsonProcessingException e) {
-            log.error(MessageFormat.format("method=convertToGeojson Failed to convert {0} to GeoJSON", geoJson), e);
+            log.error(StringUtil.format("method=convertToGeojson Failed to convert {} to GeoJSON", geoJson), e);
             throw new RuntimeException(e);
         }
     }

@@ -68,6 +68,9 @@ public class RegionGeometryTestHelper {
     }
 
     public static RegionGeometry createNewRegionGeometry(final int locationCode, final Instant effectiveDate, final String commitId, final AreaType type) {
+        if (locationCode < 0) {
+            return null;
+        }
         try {
             final Geometry geometry = GEOJSON_READER.read(getGeneratedGeoJsonPolygon(locationCode));
             return new RegionGeometry(

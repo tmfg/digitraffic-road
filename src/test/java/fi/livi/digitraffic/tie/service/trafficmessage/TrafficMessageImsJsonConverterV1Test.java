@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DynamicTest;
@@ -86,7 +86,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
     }
 
     @TestFactory
-    public Collection<DynamicTest> convertImsSimpleJsonVersionToGeoJsonFeatureObject_V1() throws IOException {
+    public Collection<DynamicTest> convertImsSimpleJsonVersionToGeoJsonFeatureObject_V1() {
         final List<DynamicTest> tests = new ArrayList<>();
 
         for (final SituationType st : SituationType.values()) {
@@ -181,6 +181,27 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
 
         assertNotNull(resultWithGeometry.getGeometry());
         assertNotNull(resultWithoutGeometry.getGeometry());
+    }
+
+    @Test
+    public void convertNonExistingGeometriesToEmptyPoint() throws IOException {
+
+        final ImsJsonVersion jsonVersion = ImsJsonVersion.getLatestVersion();
+        final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
+        final String json = readStaticImsJmessageResourceContent(
+                "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
+                ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+        // replace area codes with invalid codes
+        final String jsonWithIvalidLocationRefs = RegExUtils.replacePattern(json, "\"locationCode\".{3}\\d*,", "\"locationCode\" : -1,");
+
+        final Instant now = Instant.now();
+        log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
+        final TrafficAnnouncementFeature ta =
+                datex2JsonConverterV1.convertToFeatureJsonObject_V1(jsonWithIvalidLocationRefs, situationType, GENERAL, true, now);
+
+        // Should return empty point as backup
+        assertGeometry(ta.getGeometry(), Point);
+        assertTrue(ta.getGeometry().getCoordinates().isEmpty());
     }
 
     private void validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(final SituationType st, final ImsJsonVersion version,
