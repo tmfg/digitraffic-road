@@ -16,20 +16,15 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 public class AmazonS3ClientConfiguration {
 
     @Bean
-    public AmazonS3 weathercamS3Client(final @Value("${dt.amazon.s3.weathercam.region}") String region) {
-        return build(region);
-    }
-
-    @Bean
-    public AmazonS3 sensorDataS3Client(final @Value("${dt.amazon.s3.sensordata.region}") String region) {
+    public AmazonS3 s3Client(final @Value("${dt.amazon.s3.region}") String region) {
         return build(region);
     }
 
     private AmazonS3 build(final String region) {
         return AmazonS3ClientBuilder
-            .standard()
-            .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
-            .withRegion(region)
-            .build();
+                .standard()
+                .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
+                .withRegion(region)
+                .build();
     }
 }
