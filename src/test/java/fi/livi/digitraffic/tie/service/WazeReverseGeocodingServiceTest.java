@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyDouble;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.service.waze.WazeReverseGeocodingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,5 +117,34 @@ public class WazeReverseGeocodingServiceTest extends AbstractRestWebTest {
 
         assertNotNull(reverseGeocode);
         assertTrue(reverseGeocode.isEmpty());
+    }
+
+    @Test
+    public void cacheWorksReturnNearestStreetName() {
+        final Point geometry = new Point(1, 2);
+        final String streetNameOld = "Street before";
+        final String streetNameUpdated = "Street after";
+        final String responseTemplate = "{\"lat\":1.1,\"lon\":1.1,\"radius\":0,\"result\":[{\"distance\":100,\"names\":[\"foo\",\"bar\"]},{\"distance\":10,\"names\":[\"{}\",\"baz\"]}]}";
+        final String RESPONSE_OLD = StringUtil.format(responseTemplate, streetNameOld);
+        final String RESPONSE_NEW = StringUtil.format(responseTemplate, streetNameUpdated);
+
+        // First call goes to api and gets cached
+        when(this.wazeReverseGeocodingApi.fetch(anyDouble(), anyDouble())).thenReturn(Optional.of(RESPONSE_OLD));
+        final Optional<String> oldResultFromApi = wazeReverseGeocodingService.getStreetName(geometry);
+        assertEquals(streetNameOld, oldResultFromApi.orElse(null));
+
+        // Update new value to api
+        when(this.wazeReverseGeocodingApi.fetch(anyDouble(), anyDouble())).thenReturn(Optional.of(RESPONSE_NEW));
+
+        // Second call comes from cache and equals with previous
+        final Optional<String> oldResultFromCache = wazeReverseGeocodingService.getStreetName(geometry);
+        assertEquals(streetNameOld, oldResultFromApi.orElse(null));
+        assertEquals(oldResultFromApi.orElseThrow(), oldResultFromCache.orElseThrow());
+
+        // After cache evict third call should go to api
+        wazeReverseGeocodingService.evictCache();
+        final Optional<String> newResultFromApi = wazeReverseGeocodingService.getStreetName(geometry);
+        assertEquals(streetNameUpdated, newResultFromApi.orElse(null));
+        assertNotEquals(oldResultFromApi.orElseThrow(), newResultFromApi.orElseThrow());
     }
 }
