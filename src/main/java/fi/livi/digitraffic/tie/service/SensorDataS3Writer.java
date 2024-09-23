@@ -31,7 +31,8 @@ import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 public class SensorDataS3Writer {
     private static final Logger log = LoggerFactory.getLogger(SensorDataS3Writer.class);
 
-    private static final String CSV_HEADER = "RoadStationId;SensorId;SensorValue;MeasuredTime;TimeWindowStart;TimeWindowEnd\n";
+    private static final String CSV_HEADER =
+            "RoadStationId;SensorId;SensorValue;MeasuredTime;TimeWindowStart;TimeWindowEnd\n";
     private static final String NOT_FOUND = "404";
     private static final int BUFFER_SIZE = 65536;
 
@@ -46,16 +47,16 @@ public class SensorDataS3Writer {
     public SensorDataS3Writer(final RoadStationService roadStationService,
                               final SensorValueHistoryRepository repository,
                               final SensorDataS3Properties sensorDataS3Properties,
-                              final AmazonS3 sensorDataS3Client) {
+                              final AmazonS3 s3Client) {
         this.roadStationService = roadStationService;
         this.repository = repository;
         this.s3Properties = sensorDataS3Properties;
-        this.s3Client = sensorDataS3Client;
+        this.s3Client = s3Client;
     }
 
     /**
      * @param from inclusive
-     * @param to exclusive
+     * @param to   exclusive
      * @return written sensor values count
      */
     @Transactional(readOnly = true)
@@ -73,27 +74,29 @@ public class SensorDataS3Writer {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream(BUFFER_SIZE);
 
         try (final ZipOutputStream zos = new ZipOutputStream(bos);
-            final OutputStreamWriter osw = new OutputStreamWriter(zos)) {
+                final OutputStreamWriter osw = new OutputStreamWriter(zos)) {
 
             // .csv file
             zos.putNextEntry(new ZipEntry(s3Properties.getFilename(SensorDataS3Properties.CSV)));
 
             // csv-builder
             final StatefulBeanToCsv csvWriter = new StatefulBeanToCsvBuilder<WeatherSensorValueHistoryDto>(osw)
-                .withSeparator(';')
-                .withApplyQuotesToAll(false)
-                .build();
+                    .withSeparator(';')
+                    .withApplyQuotesToAll(false)
+                    .build();
 
-            csvWriter.write(repository.streamAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(from, to)
-                .map(item -> {
-                    counter.getAndIncrement();
-                    // Internal road_station_id must be mapped back to road_station's natural_id (API uses natural ids)
-                    return new WeatherSensorValueHistoryDto(mapToNaturalId(item),
-                        item.getSensorId(),
-                        item.getSensorValue(),
-                        item.getMeasuredTime().toInstant());
-                })
-             );
+            csvWriter.write(
+                    repository.streamAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(
+                                    from, to)
+                            .map(item -> {
+                                counter.getAndIncrement();
+                                // Internal road_station_id must be mapped back to road_station's natural_id (API uses natural ids)
+                                return new WeatherSensorValueHistoryDto(mapToNaturalId(item),
+                                        item.getSensorId(),
+                                        item.getSensorValue(),
+                                        item.getMeasuredTime().toInstant());
+                            })
+            );
 
             osw.flush();
             zos.closeEntry();
@@ -113,7 +116,8 @@ public class SensorDataS3Writer {
             // Local copy-to-file hack
             //FileUtils.copyInputStreamToFile(inputStream, new File(fileName));
 
-            log.info("method=writeSensorData Collected addCount={} , window {} - {} , file {}", counter.get(), from, to, fileName);
+            log.info("method=writeSensorData Collected addCount={} , window {} - {} , file {}", counter.get(), from, to,
+                    fileName);
 
             return counter.get();
         } catch (final Exception e) {
