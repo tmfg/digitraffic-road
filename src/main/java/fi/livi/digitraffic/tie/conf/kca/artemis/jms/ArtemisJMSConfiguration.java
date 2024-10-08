@@ -51,7 +51,7 @@ public class ArtemisJMSConfiguration {
     @Scheduled(fixedRate = 1000)
     public void connectDisconnect() {
         if (lock.hasLock() && !jmsListenerEndpointRegistry.isRunning()) {
-            log.info("method=connectDisconnect type={}} {}", ConnectinType.CONNECTING, lock.getLockInfoForLogging());
+            log.info("method=connectDisconnect type={} {}", ConnectinType.CONNECTING, lock.getLockInfoForLogging());
             jmsListenerEndpointRegistry.start();
         } else if (!lock.hasLock() && jmsListenerEndpointRegistry.isRunning() ) {
             log.info("method=connectDisconnect type={} {}", ConnectinType.DISCONNECTING, lock.getLockInfoForLogging());

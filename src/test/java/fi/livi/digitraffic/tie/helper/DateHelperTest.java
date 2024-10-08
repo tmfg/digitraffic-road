@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -56,7 +57,7 @@ public class DateHelperTest extends AbstractTest {
     @Test
     public void getInLastModifiedHeaderFormat() throws ParseException {
         final String srcString = "Tue, 03 Sep 2019 13:56:36 GMT";
-        final java.util.Date srcDate = DateUtils.parseDate(srcString, TimeUtil.LAST_MODIFIED_FORMAT);
+        final java.util.Date srcDate = DateUtils.parseDate(srcString, Locale.US, TimeUtil.LAST_MODIFIED_FORMAT);
         final Instant srcInstant = Instant.ofEpochMilli(srcDate.getTime());
         assertEquals(srcString, TimeUtil.getInLastModifiedHeaderFormat(srcInstant));
     }

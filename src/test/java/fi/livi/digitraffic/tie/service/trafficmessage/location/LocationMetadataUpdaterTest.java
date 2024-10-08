@@ -1,5 +1,9 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.location;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,17 +13,57 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+import com.github.tomakehurst.wiremock.WireMockServer;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
 public class LocationMetadataUpdaterTest extends AbstractServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(LocationMetadataUpdaterTest.class);
+
     @Autowired
     private LocationMetadataUpdater locationMetadataUpdater;
+
+    @Value("${metadata.tmc.url}")
+    private String tmcUrl;
+
+    private WireMockServer wm;
+
+    @BeforeEach
+    public void initData() throws IOException {
+        wm = new WireMockServer(options().port(8897));
+        wm.start();
+        log.info("WireMockServer options: {}", wm.getOptions());
+        log.info("tmcUrl: {}", tmcUrl);
+        final String body =
+                TestUtils.loadResource("classpath:/locations/latest.txt").getContentAsString(StandardCharsets.UTF_8);
+        wm.stubFor(get(urlEqualTo("/tmc/noncertified/latest.txt"))
+                .willReturn(aResponse()
+                        .withGzipDisabled(true)
+                        .withBody(body)
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
+                        .withStatus(200)));
+    }
+
+    @AfterEach
+    public void cleanUp() {
+        wm.stop();
+        wm = null;
+    }
 
     @Test
     @Disabled

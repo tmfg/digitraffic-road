@@ -1,0 +1,3 @@
+format	filename	version                                                                                                                                                                                      <region:eu-west-1>
+dat	FI_LC_noncertified_1_11_44.zip	1.11.44
+csv	FI_LC_noncertified_simple_1_11_44.zip	1.11.44
