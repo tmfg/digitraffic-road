@@ -35,7 +35,7 @@ metadata.server.health.ttlInSeconds = 10
 metadata.server.health.value=ok
 
 # TMC locations url
-metadata.tmc.url = https://tie-test.digitraffic.fi/tmc/noncertified/
+metadata.tmc.url = http://localhost:8897/tmc/noncertified/
 
 # Job schedules in ms or by cron in UTC
 # Cron: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html
