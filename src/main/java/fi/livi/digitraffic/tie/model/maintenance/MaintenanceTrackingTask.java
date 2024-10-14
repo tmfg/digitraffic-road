@@ -1,48 +1,55 @@
 package fi.livi.digitraffic.tie.model.maintenance;
 
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUSVIITOITUS_JA_KINOSTIMET;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUS_JA_SOHJONPOISTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.HARJAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.JYRAYS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.KELINTARKASTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.KONEELLINEN_NIITTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.KONEELLINEN_VESAKONRAIVAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.KUUMENNUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LIIKENNEMERKKIEN_PUHDISTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LIIK_OPAST_JA_OHJAUSL_HOITO_SEKA_REUNAPAALUJEN_KUN_PITO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LINJAHIEKOITUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LUMENSIIRTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.LUMIVALLIEN_MADALTAMINEN;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.L_JA_P_ALUEIDEN_PUHDISTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.MUU;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.OJITUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTETYN_TIEN_SORAPIENTAREEN_TAYTTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAANNEJAAN_POISTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PALTEEN_POISTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PINNAN_TASAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PISTEHIEKOITUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SEKOITUS_TAI_STABILOINTI;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SILTOJEN_PUHDISTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORAPIENTAREEN_TAYTTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORASTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORATEIDEN_MUOKKAUSHOYLAYS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORATEIDEN_POLYNSIDONTA;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SORATEIDEN_TASAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SULAMISVEDEN_HAITTOJEN_TORJUNTA;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.SUOLAUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TIEMERKINTA;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TIESTOTARKASTUS;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TILAAJAN_LAADUNVALVONTA;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.TURVALAITE;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.ASFALTOINTI;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.AURAUSVIITOITUS_JA_KINOSTIMET;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.AURAUS_JA_SOHJONPOISTO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.HARJAUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.JYRAYS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.KELINTARKASTUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.KONEELLINEN_NIITTO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.KONEELLINEN_VESAKONRAIVAUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.KUUMENNUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.LIIKENNEMERKKIEN_PUHDISTUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.LIIK_OPAST_JA_OHJAUSL_HOITO_SEKA_REUNAPAALUJEN_KUN_PITO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.LINJAHIEKOITUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.LUMENSIIRTO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.LUMIVALLIEN_MADALTAMINEN;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.L_JA_P_ALUEIDEN_PUHDISTUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.MUU;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.OJITUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PAALLYSTEIDEN_JUOTOSTYOT;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PAALLYSTEIDEN_PAIKKAUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PAALLYSTETYN_TIEN_SORAPIENTAREEN_TAYTTO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PAANNEJAAN_POISTO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PALTEEN_POISTO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PINNAN_TASAUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PISTEHIEKOITUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SEKOITUS_TAI_STABILOINTI;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SILTOJEN_PUHDISTUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SORAPIENTAREEN_TAYTTO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SORASTUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SORATEIDEN_MUOKKAUSHOYLAYS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SORATEIDEN_POLYNSIDONTA;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SORATEIDEN_TASAUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SULAMISVEDEN_HAITTOJEN_TORJUNTA;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.SUOLAUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.TIEMERKINTA;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.TIESTOTARKASTUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.TILAAJAN_LAADUNVALVONTA;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.TURVALAITE;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.MoreObjects;
 
 import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
-import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
+import fi.livi.digitraffic.common.util.StringUtil;
+import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public enum MaintenanceTrackingTask implements DataUpdatedSupportV1 {
@@ -57,8 +64,8 @@ public enum MaintenanceTrackingTask implements DataUpdatedSupportV1 {
     CRACK_FILLING(PAALLYSTEIDEN_JUOTOSTYOT, "Päällysteiden juotostyöt", "Fyllning av sprickor i beläggningen", "Crack filling", Constants.MODIFIED_2020_04_23),
     DITCHING(OJITUS, "Ojitus", "Dikning", "Ditching", Constants.MODIFIED_2020_04_23),
     DUST_BINDING_OF_GRAVEL_ROAD_SURFACE(SORATEIDEN_POLYNSIDONTA, "Sorateiden pölynsidonta", "Dammbindning av grusväg", "Dust binding of gravel road surface", Constants.MODIFIED_2020_04_23),
-    FILLING_OF_GRAVEL_ROAD_SHOULDERS(SORAPIENTAREEN_TAYTTO, "Sorapientareen täyttö", "Fyllning av gruskanter", "Filling of gravel road shoulders", Constants.MODIFIED_2020_04_23),
-    FILLING_OF_ROAD_SHOULDERS(PAALLYSTETYN_TIEN_SORAPIENTAREEN_TAYTTO, "Päällystetyn tien sorapientareen täyttö", "Belagda vägars kantfyllning", "Filling of road shoulders", Constants.MODIFIED_2020_04_23),
+    FILLING_OF_GRAVEL_ROAD_SHOULDERS(SORAPIENTAREEN_TAYTTO, "Sorapientareen täyttö", "Fyllning av grusväg gruskanter", "Filling of gravel road shoulders", Constants.MODIFIED_2020_04_23),
+    FILLING_OF_ROAD_SHOULDERS(PAALLYSTETYN_TIEN_SORAPIENTAREEN_TAYTTO, "Päällystetyn tien sorapientareen täyttö", "Belagda vägars kantfyllning", "Filling of paved road shoulders", Constants.MODIFIED_2020_04_23),
     HEATING(KUUMENNUS, "Kuumennus", "Upphettning", "Heating", Constants.MODIFIED_2020_04_23),
     LEVELLING_GRAVEL_ROAD_SURFACE(SORATEIDEN_TASAUS, "Sorateiden tasaus", "Utjämning av grusväg", "Levelling gravel road surface", Constants.MODIFIED_2020_04_23),
     LEVELLING_OF_ROAD_SHOULDERS(PALTEEN_POISTO, "Palteen poisto", "Kantskärning", "Levelling of road shoulders", Constants.MODIFIED_2020_04_23),
@@ -84,7 +91,19 @@ public enum MaintenanceTrackingTask implements DataUpdatedSupportV1 {
     SPOT_SANDING(PISTEHIEKOITUS, "Pistehiekoitus", "Punktsandning", "Spot sanding", Constants.MODIFIED_2020_04_23),
     SPREADING_OF_CRUSH(SORASTUS, "Sorastus", "Grusning", "Spreading of crush", Constants.MODIFIED_2020_04_23),
     TRANSFER_OF_SNOW(LUMENSIIRTO, "Lumensiirto", "Bortforsling av snömassor", "Transfer of snow", Constants.MODIFIED_2020_04_23),
-    UNKNOWN(null, "Tuntematon", "Obekant", "Unknown", Constants.MODIFIED_2020_03_30);
+    SERVICE_ROUND(SuoritettavatTehtavatSchema.HUOLTOKIERROS, "Huoltokierros", "Servicerunda", "Service round", Constants.MODIFIED_2024_10_21),
+    ENSURING_TRAFFIC_IN_RASPUTITSA(SuoritettavatTehtavatSchema.LIIKENTEEN_VARMISTAMINEN_KELIRIKKOKOHTEESSA, "Liikenteen varmistaminen kelirikkokohteessa", "Säkra trafik i menföre", "Ensuring traffic in frost heave damage location", Constants.MODIFIED_2024_10_21),
+    OTHER_OPERATIONS_OF_LIGHTING_CONTRACTS(SuoritettavatTehtavatSchema.MUUT_VALAISTUSURAKOIDEN_TOIMENPITEET, "Muut valaistusurakoiden toimenpiteet", "Andra mått på belysningskontrakt", "Other operations of lighting contracts", Constants.MODIFIED_2024_10_21),
+    LEVELLING_OF_ROAD_SHOULDERS_UNDER_RAILING(SuoritettavatTehtavatSchema.PALTEEN_POISTO_KAITEEN_ALTA, "Palteen poisto kaiteen alta", "Kantskärning från under räcket", "Levelling of road shoulders under the railing", Constants.MODIFIED_2024_10_21),
+    DUST_BINDING_OF_PAVED_ROAD_SURFACE(SuoritettavatTehtavatSchema.PAALLYSTETYN_TIEN_POLYNSIDONTA, "Paallystetyn tien polynsidonta", "Dammbindning av belagda väg", "Dust binding of paved road surface", Constants.MODIFIED_2024_10_21),
+    RENEWAL_OF_EDGE_COLUMNS(SuoritettavatTehtavatSchema.REUNAPAALUJEN_UUSIMINEN, "Reunapaalujen uusiminen", "Förnyelse av reflektorstolpe", "Renewal of reflector posts", Constants.MODIFIED_2024_10_21),
+    GARBAGE_OLLECTION(SuoritettavatTehtavatSchema.ROSKIEN_KERUU, "Roskien keruu", "Sophämtning", "Garbage collection", Constants.MODIFIED_2024_10_21),
+    GROUP_REPLACEMENT_OF_LAMPS(SuoritettavatTehtavatSchema.RYHMAVAIHTO, "Valaisimien ryhmavaihto", "Gruppbyte av lampor", "Group replacement of lamps", Constants.MODIFIED_2024_10_21),
+    PLOUGHING_OF_SLUSH_DITCH(SuoritettavatTehtavatSchema.SOHJO_OJIEN_TEKO, "Sohjo-ojien teko", "Plöjning av slask dike", "Ploughing of slush ditch", Constants.MODIFIED_2024_10_21),
+    UNKNOWN(null, "Tuntematon", "Obekant", "Unknown", Constants.MODIFIED_2020_03_30),
+    ;
+
+    private static final Logger log = LoggerFactory.getLogger(MaintenanceTrackingTask.class);
 
     private final String harjaEnumName;
     private final String nameFi;
@@ -92,7 +111,7 @@ public enum MaintenanceTrackingTask implements DataUpdatedSupportV1 {
     private final String nameEn;
     private final Instant dataUpdated;
 
-    MaintenanceTrackingTask(final SuoritettavatTehtavat harjaEnum, final String nameFi, final String nameSv, final String nameEn, final String dataUpdated) {
+    MaintenanceTrackingTask(final SuoritettavatTehtavatSchema harjaEnum, final String nameFi, final String nameSv, final String nameEn, final String dataUpdated) {
         this.harjaEnumName = harjaEnum != null ? harjaEnum.name() : null;
         this.nameFi = nameFi;
         this.nameSv = nameSv;
@@ -133,9 +152,36 @@ public enum MaintenanceTrackingTask implements DataUpdatedSupportV1 {
     }
 
     private static class Constants {
+        public static final String MODIFIED_2024_10_21 = "2024-10-21T00:00:00Z";
         public static final String MODIFIED_2020_03_30 = "2020-03-30T00:00:00Z";
         public static final String MODIFIED_2020_04_02 = "2020-04-02T00:00:00Z";
         public static final String MODIFIED_2020_04_09 = "2020-04-09T00:00:00Z";
         public static final String MODIFIED_2020_04_23 = "2020-04-23T00:00:00Z";
+    }
+
+    /**
+     * Generates SQL for db update ie. <code>/dbroad/sql/update/V3/V3.17.0__DPO-2617_maintenance_tracking_tasks_values.sql</code>
+     */
+    public static void main(final String[] args) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("""
+                UPDATE SQL:
+                INSERT INTO maintenance_tracking_task_value (name, name_harja, name_fi, name_sv, name_en)
+                VALUES
+                """);
+        final String values = Arrays.stream(MaintenanceTrackingTask.values())
+                .map(t ->
+                        StringUtil.format("  ('{}', '{}', '{}', '{}', '{}')",
+                                t.name(), MoreObjects.firstNonNull(t.getHarjaEnumName(), "TUNTEMATON"), t.getNameFi(), t.getNameSv(), t.getNameEn()))
+                .collect(Collectors.joining(",\n"));
+        sb.append(values);
+        sb.append("\n");
+        sb.append("""
+                on conflict (name) do update\s
+                  SET name_harja = excluded.name_harja
+                    , name_fi = excluded.name_fi
+                    , name_sv = excluded.name_sv
+                    , name_en = excluded.name_en;""");
+        log.info(sb.toString());
     }
 }

@@ -60,7 +60,6 @@ import jakarta.jms.JMSException;
 import jakarta.persistence.EntityManager;
 
 @TestPropertySource(properties = {
-        "road.datasource.hikari.maximum-pool-size=6",
         "metadata.server.addresses=http://localhost:8898" // Overlaps with another test port
 })
 public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {

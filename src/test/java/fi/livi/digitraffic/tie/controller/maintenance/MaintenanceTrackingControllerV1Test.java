@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.controller.maintenance;
 
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.ASFALTOINTI;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PAALLYSTEIDEN_PAIKKAUS;
 import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER;
 import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER;
 import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.RANGE_X;
@@ -47,9 +47,9 @@ import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
-import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
@@ -288,7 +288,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
                 // end and start will be the same
                 final TyokoneenseurannanKirjausRequestSchema havainnot =
                     createMaintenanceTrackingWithLineString(start, 10, 1, Collections.singletonList(machine),
-                        SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]);
+                        SuoritettavatTehtavatSchema.values()[i], SuoritettavatTehtavatSchema.values()[i + 1]);
                 testHelper.saveTrackingDataAsObservations(havainnot);
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -300,7 +300,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         // find with first task should only find the first tracking for machine 1.
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start, start.plusSeconds(1), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[0].name())),
+                start, start.plusSeconds(1), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavatSchema.values()[0].name())),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 1)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
             .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
@@ -309,7 +309,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         // Search with second task should return trackings for machine 1. and 2.
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
-                start, start.plusSeconds(1), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavat.values()[1].name())),
+                start, start.plusSeconds(1), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavatSchema.values()[1].name())),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 2)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
             .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
@@ -333,7 +333,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
                 final TyokoneenseurannanKirjausRequestSchema seuranta =
                     createMaintenanceTrackingWithLineString(
                         start.plus(i * 10L, ChronoUnit.MINUTES), 10, 1, workMachines,
-                        SuoritettavatTehtavat.values()[i], SuoritettavatTehtavat.values()[i + 1]);
+                        SuoritettavatTehtavatSchema.values()[i], SuoritettavatTehtavatSchema.values()[i + 1]);
                 testHelper.saveTrackingDataAsObservations(seuranta);
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -397,11 +397,11 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         // Generate trackings for 50 minutes changing tasks every 10 minutes
         IntStream.range(0, 5).forEach(i -> {
             try {
-                log.info(SuoritettavatTehtavat.values()[i].name());
+                log.info(SuoritettavatTehtavatSchema.values()[i].name());
                 testHelper.saveTrackingDataAsObservations( // end time will be start+9 min
                     createMaintenanceTrackingWithPoints(
                         start.plus(i * 10L, ChronoUnit.MINUTES), 10, 1, workMachines,
-                        SuoritettavatTehtavat.values()[i]));
+                        SuoritettavatTehtavatSchema.values()[i]));
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -416,7 +416,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
         expectOkFeatureCollectionWithSize(
             getLatestTrackingsJson(
-                start, new HashSet<>(Collections.singleton(MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[4].name()))),
+                start, new HashSet<>(Collections.singleton(MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavatSchema.values()[4].name()))),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount);
     }
 

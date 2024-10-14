@@ -42,10 +42,10 @@ import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingObservationDat
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
-import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
-import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiViivasijaintiCombinedSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils.GeometryType;
@@ -231,14 +231,22 @@ public class MaintenanceTrackingUpdateServiceV1 {
     }
 
     private static BigDecimal getDirection(final Havainto havainto, final long trackingDataId) {
-        if (havainto.getSuunta() != null) {
-            final BigDecimal value = BigDecimal.valueOf(havainto.getSuunta());
-            if (value.intValue() > 360 || value.intValue() < 0) {
-                log.error("Illegal direction value {} for trackingData id {}. Value should be between 0-360 degrees. Havainto: {}",
-                          value, trackingDataId, ToStringHelper.toStringExcluded(havainto, "sijainti"));
+        if (havainto.getSuunta() != null && havainto.getSuunta() instanceof Number) {
+            try {
+                final BigDecimal value = new BigDecimal(havainto.getSuunta().toString());
+                if (value.intValue() > 360 || value.intValue() < 0) {
+                    log.error(
+                            "Illegal direction value {} for trackingData id {}. Value should be between 0-360 degrees. Havainto: {}",
+                            value, trackingDataId, ToStringHelper.toStringExcluded(havainto, "sijainti"));
+                    return null;
+                }
+                return value;
+            } catch (final NumberFormatException e) {
+                log.error(
+                        "Illegal direction value {} for trackingData id {}. Value should be number between 0-360 degrees. Havainto: {}",
+                        havainto.getSuunta(), trackingDataId, ToStringHelper.toStringExcluded(havainto, "sijainti"));
                 return null;
             }
-            return value;
         }
         return null;
     }
@@ -309,7 +317,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
         return 0;
     }
 
-    private static Set<MaintenanceTrackingTask> getMaintenanceTrackingTasksFromHarjaTasks(final List<SuoritettavatTehtavat> harjaTasks) {
+    private static Set<MaintenanceTrackingTask> getMaintenanceTrackingTasksFromHarjaTasks(final List<SuoritettavatTehtavatSchema> harjaTasks) {
         return harjaTasks == null ? null : harjaTasks.stream()
             .map(tehtava -> {
                 final MaintenanceTrackingTask task = MaintenanceTrackingTask.getByharjaEnumName(tehtava.name());
@@ -409,7 +417,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
         return PostgisGeometryUtils.createLineStringWithZ(coordinates);
     }
 
-    private static List<Coordinate> resolveCoordinatesAsWGS84(final GeometriaSijaintiSchema sijainti) {
+    private static List<Coordinate> resolveCoordinatesAsWGS84(final GeometriaSijaintiViivasijaintiCombinedSchema sijainti) {
         if (sijainti.getViivageometria() != null) {
             final List<List<Object>> lineStringCoords = sijainti.getViivageometria().getCoordinates();
             return lineStringCoords.stream().map(point -> {

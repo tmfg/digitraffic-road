@@ -5,10 +5,10 @@ import static fi.livi.digitraffic.tie.TestUtils.flushCommitEndTransactionAndStar
 import static fi.livi.digitraffic.tie.TestUtils.getRandom;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingDao.STATE_ROADS_DOMAIN;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.ASFALTOINTI;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.AURAUS_JA_SOHJONPOISTO;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_JUOTOSTYOT;
-import static fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat.PAALLYSTEIDEN_PAIKKAUS;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.ASFALTOINTI;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.AURAUS_JA_SOHJONPOISTO;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PAALLYSTEIDEN_JUOTOSTYOT;
+import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.PAALLYSTEIDEN_PAIKKAUS;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.Type.Point;
 import static fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask.CRACK_FILLING;
@@ -82,9 +82,9 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingPropertiesV1;
-import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
 import fi.livi.digitraffic.tie.metadata.geojson.Feature;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -272,7 +272,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         IntStream.range(0, 5).forEach(idx -> {
             final Instant start = startTime.plus(idx*10L, ChronoUnit.MINUTES);
             final TyokoneenseurannanKirjausRequestSchema seuranta =
-                createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, SuoritettavatTehtavat.values()[idx]);
+                createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, SuoritettavatTehtavatSchema.values()[idx]);
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta);
             } catch (final JsonProcessingException e) {
@@ -309,10 +309,10 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final Instant startTime = getStartTimeOneHourInPast();
         // tracking with job 1
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines, SuoritettavatTehtavatSchema.ASFALTOINTI));
         // tracking with job 2
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime.plus(10, ChronoUnit.MINUTES), 10, 2, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plus(10, ChronoUnit.MINUTES), 10, 2, workMachines, SuoritettavatTehtavatSchema.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as they have different jobs
@@ -331,11 +331,11 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         final Instant startTime = getStartTimeOneHourInPast();
         // tracking with job 1
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime, 10, 1, workMachines, SuoritettavatTehtavatSchema.ASFALTOINTI));
         testHelper.saveTrackingDataAsObservations(
             createMaintenanceTrackingWithLineString(startTime.plus(1, ChronoUnit.MINUTES), 10, 1, workMachines));
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime.plus(2, ChronoUnit.MINUTES), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plus(2, ChronoUnit.MINUTES), 10, 1, workMachines, SuoritettavatTehtavatSchema.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as they have different jobs
@@ -358,11 +358,11 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // tracking with startime T1 and end time T1+9
         // 10 observations / machine
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime, 10, 1, workMachines, SuoritettavatTehtavatSchema.ASFALTOINTI));
         // tracking with startime T1+30s and end time T1+9m+30s
         // 10 observations / machine, each time between first observations points times
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithPoints(startTime.plusSeconds(30), 10, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithPoints(startTime.plusSeconds(30), 10, 1, workMachines, SuoritettavatTehtavatSchema.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         // 2 tracking should be made as first one's end time is after second one's start time.
@@ -379,10 +379,10 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
         // Create 2 messages that are combined as one tracking
         // 10 observations
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime, 10, 1,1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime, 10, 1,1, workMachines, SuoritettavatTehtavatSchema.ASFALTOINTI));
         // 10 observations
         testHelper.saveTrackingDataAsObservations(
-            createMaintenanceTrackingWithLineString(startTime.plus(10, ChronoUnit.MINUTES), 10, 2, 1, workMachines, SuoritettavatTehtavat.ASFALTOINTI));
+            createMaintenanceTrackingWithLineString(startTime.plus(10, ChronoUnit.MINUTES), 10, 2, 1, workMachines, SuoritettavatTehtavatSchema.ASFALTOINTI));
         testHelper.handleUnhandledWorkMachineObservations(1000);
 
         final List<MaintenanceTrackingFeatureV1> features = findMaintenanceTrackingsInclusiveEnd(startTime, startTime.plus(20, ChronoUnit.MINUTES)).getFeatures();

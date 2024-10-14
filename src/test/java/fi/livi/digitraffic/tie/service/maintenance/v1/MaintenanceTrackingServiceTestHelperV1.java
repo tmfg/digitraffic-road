@@ -44,14 +44,14 @@ import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingWorkMachineRepository;
 import fi.livi.digitraffic.tie.external.harja.Havainnot;
 import fi.livi.digitraffic.tie.external.harja.Havainto;
-import fi.livi.digitraffic.tie.external.harja.SuoritettavatTehtavat;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
-import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiViivasijaintiCombinedSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.Lahettaja;
 import fi.livi.digitraffic.tie.external.harja.entities.OrganisaatioSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
+import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ViivageometriasijaintiSchema;
 import fi.livi.digitraffic.common.util.TimeUtil;
@@ -156,18 +156,18 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                                                                                    final int jobId,
                                                                                    final Tyokone workMachine,
                                                                                    final List<List<Double>> coordinatesEtrs,
-                                                                                   final SuoritettavatTehtavat...tasks) {
+                                                                                   final SuoritettavatTehtavatSchema...tasks) {
 
         final List<List<Object>> coordinatesEtrsAsObjects
             = coordinatesEtrs.stream()
                 .map(outer -> outer.stream().map(innner -> (Object)innner).collect(Collectors.toList()))
                 .collect(Collectors.toList());
 
-        final GeometriaSijaintiSchema sijainti = coordinatesEtrsAsObjects.size() == 1 ?
-            new GeometriaSijaintiSchema().withKoordinaatit(new KoordinaattisijaintiSchema()
+        final GeometriaSijaintiViivasijaintiCombinedSchema sijainti = coordinatesEtrsAsObjects.size() == 1 ?
+            new GeometriaSijaintiViivasijaintiCombinedSchema().withKoordinaatit(new KoordinaattisijaintiSchema()
                 .withX((double)coordinatesEtrsAsObjects.get(0).get(0))
                 .withY((double)coordinatesEtrsAsObjects.get(0).get(1))) :
-            new GeometriaSijaintiSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinatesEtrsAsObjects));
+            new GeometriaSijaintiViivasijaintiCombinedSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinatesEtrsAsObjects));
         final List<Havainnot> havainnot = singletonList(
             new Havainnot().withHavainto(
                 new Havainto()
@@ -196,7 +196,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                                                                                                  final int pointsPerObservation,
                                                                                                  final int jobId,
                                                                                                  final int machineCount,
-                                                                                                 final SuoritettavatTehtavat...tasks) {
+                                                                                                 final SuoritettavatTehtavatSchema...tasks) {
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         return createMaintenanceTracking(observationTime, pointsPerObservation, jobId, 1, workMachines, true, tasks);
     }
@@ -214,7 +214,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                                                                                                  final int pointsPerObservation,
                                                                                                  final int jobId,
                                                                                                  final List<Tyokone> workMachines,
-                                                                                                 final SuoritettavatTehtavat...tasks) {
+                                                                                                 final SuoritettavatTehtavatSchema...tasks) {
         return createMaintenanceTracking(observationTime, pointsPerObservation, 1, jobId, workMachines, true, tasks);
     }
 
@@ -233,7 +233,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                                                                                                  final int ordinal,
                                                                                                  final int jobId,
                                                                                                  final List<Tyokone> workMachines,
-                                                                                                 final SuoritettavatTehtavat...tasks) {
+                                                                                                 final SuoritettavatTehtavatSchema...tasks) {
         return createMaintenanceTracking(observationTime, observationCount, ordinal, jobId, workMachines, true, tasks);
     }
 
@@ -241,7 +241,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                                                                                              final int observationCount,
                                                                                              final int jobId,
                                                                                              final int machineCount,
-                                                                                             final SuoritettavatTehtavat...tasks) {
+                                                                                             final SuoritettavatTehtavatSchema...tasks) {
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         return createMaintenanceTracking(observationTime, observationCount, 1, jobId, workMachines, false, tasks);
     }
@@ -258,7 +258,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                                                                                              final int observationCount,
                                                                                              final int jobId,
                                                                                              final List<Tyokone> workMachines,
-                                                                                             final SuoritettavatTehtavat...tasks) {
+                                                                                             final SuoritettavatTehtavatSchema...tasks) {
         return createMaintenanceTracking(observationTime, observationCount, 1, jobId, workMachines, false, tasks);
     }
 
@@ -277,7 +277,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                                                                                              final int ordinal,
                                                                                              final int jobId,
                                                                                              final List<Tyokone> workMachines,
-                                                                                             final SuoritettavatTehtavat...tasks) {
+                                                                                             final SuoritettavatTehtavatSchema...tasks) {
         return createMaintenanceTracking(observationTime, pointsCount, ordinal, jobId, workMachines, false, tasks);
     }
 
@@ -294,7 +294,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                                                                                     final int jobId,
                                                                                     final List<Tyokone> workMachines,
                                                                                     final boolean lineString,
-                                                                                    final SuoritettavatTehtavat...tasks) {
+                                                                                    final SuoritettavatTehtavatSchema...tasks) {
         final OtsikkoSchema otsikko = createOtsikko(observationTime);
         final List<Havainnot> havainnot =
             workMachines.stream().map(workMachine ->
@@ -310,7 +310,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
      * Else returns {observationCount} point observations
      */
     private static List<Havainnot> createHavainnot(final Instant observationTime, final Tyokone workMachine, final int jobId,
-                                                   final int pointsCount, final int ordinal, final List<SuoritettavatTehtavat> tasks, final boolean lineString) {
+                                                   final int pointsCount, final int ordinal, final List<SuoritettavatTehtavatSchema> tasks, final boolean lineString) {
 
         // This sets speed < 50 km/h and distance between points < 0,5 km
         final double coordinateFactor = 100;
@@ -322,8 +322,8 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                 .mapToObj(i -> Arrays.<Object>asList(RANGE_X_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor,
                                                 RANGE_Y_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor)).collect(toList());
 
-            final GeometriaSijaintiSchema sijainti =
-                new GeometriaSijaintiSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinates));
+            final GeometriaSijaintiViivasijaintiCombinedSchema sijainti =
+                new GeometriaSijaintiViivasijaintiCombinedSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinates));
             return singletonList(
                 new Havainnot().withHavainto(
                     new Havainto()
@@ -342,7 +342,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
                         .withTyokone(workMachine)
                         .withUrakkaid(jobId)
                         .withSijainti(
-                            new GeometriaSijaintiSchema()
+                            new GeometriaSijaintiViivasijaintiCombinedSchema()
                                 .withKoordinaatit(new KoordinaattisijaintiSchema(RANGE_X_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor,
                                                                                 RANGE_Y_MIN_ETRS + (i + additionToCoordinates) * coordinateFactor, 0.0)))
                         .withSuoritettavatTehtavat(tasks)
@@ -444,7 +444,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
     }
 
     public static MaintenanceTrackingTask getTaskWithIndex(final int enumIndex) {
-        return MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavat.values()[enumIndex].name());
+        return MaintenanceTrackingTask.getByharjaEnumName(SuoritettavatTehtavatSchema.values()[enumIndex].name());
     }
 
     public void saveTrackingFromResourceToDbAsObservations(final String path) throws IOException {

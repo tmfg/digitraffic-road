@@ -8,8 +8,14 @@
       "type": "object",
       "additionalProperties": false,
       "$ref": "koordinaattisijainti.schema.json",
-      "required": true
+      "required": false
+    },
+    "viivageometria": {
+      "id": "urn:harja/viivageometria",
+      "type": "object",
+      "additionalProperties": false,
+      "$ref": "viivageometriasijainti.schema.json",
+      "required": false
     }
   }
 }
-
