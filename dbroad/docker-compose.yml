@@ -11,7 +11,7 @@ services:
     command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all -c max_connections=200
 
   db-init:
-    image: flyway/flyway:10.18-alpine
+    image: flyway/flyway:10.19-alpine
     volumes:
       - "./sql:/flyway/sql"
       - "./files:/flyway/conf"
