@@ -29,6 +29,7 @@
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
         <spring.cloud.version>4.1.3</spring.cloud.version>
         <proj4j.version>1.3.0</proj4j.version>
+        <org.jvnet.jaxb.version>4.0.8</org.jvnet.jaxb.version>
         <project.digitraffic-common-java.directory>lib/digitraffic-common-java</project.digitraffic-common-java.directory>
     </properties>
 
@@ -276,7 +277,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <version>2.6.0</version>
         </dependency>
 
         <!-- Static Reader of META-INF/MANIFEST.MF Files -->
@@ -624,157 +625,197 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-xjc-plugin</artifactId>
-                <version>4.0.1</version>
+                <!-- https://github.com/highsource/jaxb-tools?tab=readme-ov-file#jaxb-maven-plugin-->
+                <groupId>org.jvnet.jaxb</groupId>
+                <artifactId>jaxb-maven-plugin</artifactId>
+                <version>${org.jvnet.jaxb.version}</version>
                 <configuration>
-                    <extensions>
-                        <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:4.0.0</extension>
-                        <extension>net.java.dev.jaxb2-commons:jaxb-fluent-api:2.1.8</extension>
-                        <extension>org.jvnet.jaxb2_commons:jaxb2-basics:1.11.1</extension>
-                    </extensions>
+                    <specVersion>3.0</specVersion>
+                    <extension>true</extension>
+                    <args>
+                        <arg>-Xannotate</arg> <!-- Annotate with XmlRootElement with annox, see e.g. DATEXII_3_Bindings.xjb -->
+                    <!--<arg>-XremoveAnnotation</arg>--> <!-- remove annotations defined in bindigs file with annox:removeAnnotation -->
+                        <arg>-XautoNameResolution</arg> <!-- Fix: A class/interface with the same name is already in use. -->
+                        <arg>-Xvalue-constructor</arg>
+                        <arg>-Xfluent-api</arg><!-- Generate withProperty methods -->
+                        <arg>-mark-generated</arg>
+                        <arg>-Xinheritance</arg>
+                        <arg>-Xsimplify</arg> <!-- Simplify classess and e.g. use plural property names where applicable -->
+                    </args>
+                    <plugins>
+                        <!-- General plugings e.g. fluent-api -->
+                        <plugin>
+                            <groupId>org.jvnet.jaxb</groupId>
+                            <artifactId>jaxb-plugins</artifactId>
+                            <version>4.0.8</version>
+                        </plugin>
+                        <!-- Annotate with XmlRootElement with annox, see e.g. DATEXII_3_Bindings.xjb -->
+                        <plugin>
+                            <groupId>org.jvnet.jaxb</groupId>
+                            <artifactId>jaxb-plugin-annotate</artifactId>
+                            <version>4.0.8</version>
+                        </plugin>
+                    </plugins>
                 </configuration>
                 <executions>
+                    <!--Datex2 3.5 -->
                     <execution>
-                        <id>generate-sources</id>
-                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>xsdtojava</goal>
+                            <goal>generate</goal>
                         </goals>
+                        <id>DATEXII_3_5</id>
                         <configuration>
-                            <sourceRoot>${project.build.directory}/generated-sources/cxf</sourceRoot>
-                            <xsdOptions>
-                                <xsdOption>
-                                    <extension>true</extension>
-                                    <bindingFiles>
-                                        <bindingFile>${basedir}/src/main/resources/schemas/datex2/DATEXIIBinding.xjb</bindingFile>
-                                    </bindingFiles>
-                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.datex2</packagename>
-                                    <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name is already in use. -->
-                                        <extensionArg>-XautoNameResolution</extensionArg>
-                                        <!--Generate withProperty methods-->
-                                        <extensionArg>-Xfluent-api</extensionArg>
-                                        <extensionArg>-npa</extensionArg>
-                                        <extensionArg>-mark-generated</extensionArg>
-                                        <extensionArg>-extension</extensionArg>
-                                        <!-- Generate episode file for D2LogicalModel -->
-                                        <extensionArg>-episode</extensionArg>
-                                        <extensionArg>D2LogicalModel.episode</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
-                                    <extension>true</extension>
-                                    <bindingFiles>
-                                        <bindingFile>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseBinding.xjb</bindingFile>
-                                    </bindingFiles>
-                                    <xsd>${basedir}/src/main/resources/schemas/datex2/DATEXIIResponseSchema_1_1.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.datex2.response</packagename>
-                                    <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name is already in use. -->
-                                        <extensionArg>-XautoNameResolution</extensionArg>
-                                        <!--Generate withProperty methods-->
-                                        <extensionArg>-Xfluent-api</extensionArg>
-                                        <extensionArg>-npa</extensionArg>
-                                        <extensionArg>-mark-generated</extensionArg>
-                                        <!-- Use episode file for D2LogicalModel imports-->
-                                        <extensionArg>-b</extensionArg>
-                                        <extensionArg>D2LogicalModel.episode</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/lotju/jms/metadata/metatietomuutos_kamera_tietovirta.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.external.lotju.metatietomuutos.kamera.tietovirta</packagename>
-                                    <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name is already in use. -->
-                                        <extensionArg>-XautoNameResolution</extensionArg>
-                                        <!--Generate withProperty methods-->
-                                        <extensionArg>-Xfluent-api</extensionArg>
-                                        <extensionArg>-npa</extensionArg>
-                                        <extensionArg>-mark-generated</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/lotju/jms/metadata/metatietomuutos_lam_tietovirta.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.external.lotju.metatietomuutos.lam.tietovirta</packagename>
-                                    <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name is already in use. -->
-                                        <extensionArg>-XautoNameResolution</extensionArg>
-                                        <!--Generate withProperty methods-->
-                                        <extensionArg>-Xfluent-api</extensionArg>
-                                        <extensionArg>-npa</extensionArg>
-                                        <extensionArg>-mark-generated</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
-                                    <xsd>${basedir}/src/main/resources/schemas/lotju/jms/metadata/metatietomuutos_tiesaa_tietovirta.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.external.lotju.metatietomuutos.tiesaa.tietovirta</packagename>
-                                    <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name is already in use. -->
-                                        <extensionArg>-XautoNameResolution</extensionArg>
-                                        <!--Generate withProperty methods-->
-                                        <extensionArg>-Xfluent-api</extensionArg>
-                                        <extensionArg>-npa</extensionArg>
-                                        <extensionArg>-mark-generated</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
-                                    <extension>true</extension>
-                                    <bindingFiles>
-                                        <bindingFile>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessageBinding_1_2_0.xjb</bindingFile>
-                                        <bindingFile>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessageContentBinding_1_2_0.xjb</bindingFile>
-                                    </bindingFiles>
-                                    <xsd>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessage_1_2_0.xsd</xsd>
-                                    <packagename>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0</packagename>
-                                    <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
-                                             is already in use. Use a class customization to resolve this conflict -->
-                                        <extensionArg>-XautoNameResolution</extensionArg>
-                                        <!--Generate withProperty methods-->
-                                        <extensionArg>-Xfluent-api</extensionArg>
-                                        <extensionArg>-npa</extensionArg>
-                                        <extensionArg>-mark-generated</extensionArg>
-                                        <!-- Inherit given interfaces in binding files -->
-                                        <extensionArg>-Xinheritance</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                                <xsdOption>
-                                    <extension>true</extension>
-                                    <xsd>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessage_1_2_1.xsd</xsd>
-                                    <bindingFiles>
-                                        <bindingFile>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessageBinding_1_2_1.xjb</bindingFile>
-                                        <bindingFile>${basedir}/src/main/resources/schemas/tloik/ims/ImsXmlMessageContentBinding_1_2_1.xjb</bindingFile>
-                                    </bindingFiles>
-                                    <packagename>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1</packagename>
-                                    <extensionArgs>
-                                        <!-- Fix: A class/interface with the same name "fi.livi.digitraffic.tie.datex2.GroupOfParkingSpaces"
-                                             is already in use. Use a class customization to resolve this conflict -->
-                                        <extensionArg>-XautoNameResolution</extensionArg>
-                                        <!--Generate withProperty methods-->
-                                        <extensionArg>-Xfluent-api</extensionArg>
-                                        <extensionArg>-npa</extensionArg>
-                                        <extensionArg>-mark-generated</extensionArg>
-                                        <!-- Inherit given interfaces in binding files -->
-                                        <extensionArg>-Xinheritance</extensionArg>
-                                    </extensionArgs>
-                                </xsdOption>
-                            </xsdOptions>
+                        <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/datex2/3_5/xml</schemaDirectory>
+                            <schemaIncludes>DATEXII_3_D2Payload.xsd</schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
+                                <bindingInclude>datex2/3_5/xml/DATEXII_3.xjb</bindingInclude>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.external.datex2.v3_5</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/datex2-v3_5-xml</generateDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!--Datex2 2.2.3 with Finnish definitions -->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>DATEXIISchema_2_2_3_with_definitions_FI</id>
+                        <configuration>
+                        <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/datex2/2_2_3_fi</schemaDirectory>
+                            <schemaIncludes>
+                                <include>DATEXIISchema_2_2_3_with_definitions_FI.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas/</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
+                                <bindingInclude>datex2/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xjb</bindingInclude>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.datex2.v2_2_3_fi</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/datex2-v2_2_3_fi-xml</generateDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!-- Lotju Camera metadata JMS message -->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>metatietomuutos_kamera_tietovirta</id>
+                        <configuration>
+                        <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/lotju/jms/metadata</schemaDirectory>
+                            <schemaIncludes>
+                                <include>metatietomuutos_kamera_tietovirta.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas/</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.external.lotju.metatietomuutos.kamera.tietovirta</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/lotju-kamera-metadata-xml</generateDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!-- Lotju LAM metadata JMS message -->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>metatietomuutos_lam_tietovirta</id>
+                        <configuration>
+                        <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/lotju/jms/metadata</schemaDirectory>
+                            <schemaIncludes>
+                                <include>metatietomuutos_lam_tietovirta.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas/</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.external.lotju.metatietomuutos.lam.tietovirta</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/lotju-lam-metadata-xml</generateDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!-- Lotju Weather metadata JMS message -->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>metatietomuutos_tiesaa_tietovirta</id>
+                        <configuration>
+                        <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/lotju/jms/metadata</schemaDirectory>
+                            <schemaIncludes>
+                                <include>metatietomuutos_tiesaa_tietovirta.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas/</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.external.lotju.metatietomuutos.tiesaa.tietovirta</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/lotju-tiesaa-metadata-xml</generateDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!-- TLOIK IMS JMS traffic message -->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>tloik-ims_1_2_0</id>
+                        <configuration>
+                        <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/tloik/ims</schemaDirectory>
+                            <schemaIncludes>
+                                <include>ImsXmlMessage_1_2_0.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingFile>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingFile>
+                                <bindingFile>tloik/ims/ImsXmlMessage_1_2_0.xjb</bindingFile>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/tloik-ims_1_2_0-xml</generateDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!-- TLOIK IMS JMS traffic message -->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>tloik-ims_1_2_1</id>
+                        <configuration>
+                        <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/tloik/ims</schemaDirectory>
+                            <schemaIncludes>
+                                <include>ImsXmlMessage_1_2_1.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingFile>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingFile>
+                                <bindingFile>tloik/ims/ImsXmlMessage_1_2_1.xjb</bindingFile>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/tloik-ims_1_2_1-xml</generateDirectory>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
 
+            </plugin>
             <plugin>
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
                 <version>1.2.1</version>
 
                 <configuration>
-                    <sourceDirectory>${basedir}/src/main/resources/schemas/</sourceDirectory>
-                    <targetPackage>fi.livi.digitraffic.tie.external</targetPackage>
-                    <outputDirectory>${project.build.directory}/generated-sources/json</outputDirectory>
-                    <dateTimeType>java.time.ZonedDateTime</dateTimeType>
+                    <dateTimeType>java.time.Instant</dateTimeType>
                     <dateType>java.time.LocalDate</dateType>
                     <includes>
                         <include>**/*.json</include>
@@ -782,12 +823,41 @@
                     <includeJsr303Annotations>true</includeJsr303Annotations>
                     <includeConstructors>true</includeConstructors>
                     <generateBuilders>true</generateBuilders>
+                    <initializeCollections>false</initializeCollections>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>json-harja</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/resources/schemas/harja</sourceDirectory>
+                            <targetPackage>fi.livi.digitraffic.tie.external.harja</targetPackage>
+                            <outputDirectory>${project.build.directory}/generated-sources/harja-json</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>json-tloik</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/resources/schemas/tloik</sourceDirectory>
+                            <targetPackage>fi.livi.digitraffic.tie.external.tloik</targetPackage>
+                            <outputDirectory>${project.build.directory}/generated-sources/tloik-json/</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>json-datex_3_5</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/resources/schemas/datex2/3_5/json</sourceDirectory>
+                            <targetPackage>fi.livi.digitraffic.tie.external.datex2.v3_5.json</targetPackage>
+                            <outputDirectory>${project.build.directory}/generated-sources/datex2-v3_5-json</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -922,6 +992,7 @@
                         <configuration>
                             <sources>
                                 <source>${project.digitraffic-common-java.directory}/src/main/java</source>
+                                <source>${project.build.directory}/generated-sources/*</source>
                             </sources>
                         </configuration>
                     </execution>

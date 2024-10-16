@@ -84,11 +84,9 @@ public class MetricWriterConfiguration implements MetricVisitor {
     @Scheduled(fixedRate = 1000*60)
     @NoJobLogging
     void printMetrics() {
-        metricMap.keySet().forEach(this::logMeasurement);
-
-        //logAllAvailableMetrics();
-
+        final HashMap<MetricKey, Double> copyMetrics = new HashMap<>(metricMap);
         metricMap.clear();
+        copyMetrics.keySet().forEach(this::logMeasurement);
     }
 
     @Scheduled(fixedRate = 50)

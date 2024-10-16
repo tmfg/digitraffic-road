@@ -35,7 +35,7 @@ public class ArtemisJMSConfiguration {
 
     final static String LOCK_NAME = ArtemisJMSConfiguration.class.getSimpleName() + ".JMS_LOCK";
 
-    private enum ConnectinType {
+    private enum Operation {
         CONNECTING,
         DISCONNECTING
     }
@@ -51,10 +51,10 @@ public class ArtemisJMSConfiguration {
     @Scheduled(fixedRate = 1000)
     public void connectDisconnect() {
         if (lock.hasLock() && !jmsListenerEndpointRegistry.isRunning()) {
-            log.info("method=connectDisconnect type={} {}", ConnectinType.CONNECTING, lock.getLockInfoForLogging());
+            log.info("method=connectDisconnect operation={} {}", Operation.CONNECTING, lock.getLockInfoForLogging());
             jmsListenerEndpointRegistry.start();
         } else if (!lock.hasLock() && jmsListenerEndpointRegistry.isRunning() ) {
-            log.info("method=connectDisconnect type={} {}", ConnectinType.DISCONNECTING, lock.getLockInfoForLogging());
+            log.info("method=connectDisconnect operation={} {}", Operation.DISCONNECTING, lock.getLockInfoForLogging());
             jmsListenerEndpointRegistry.stop();
         }
     }

@@ -7,6 +7,7 @@ import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -19,20 +20,29 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
+import fi.livi.digitraffic.tie.controller.beta.BetaController;
+import fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.ConfidentialityValueEnum;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
@@ -45,6 +55,7 @@ import fi.livi.digitraffic.tie.model.tms.TmsStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
 
 /**
  * Test for {@link TmsControllerV1}
@@ -66,8 +77,15 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     @Autowired
     private TmsTestHelper tmsTestHelper;
 
+    @Autowired
+    private Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
+
+    @Autowired
+    private Jaxb2Marshaller datex2v3_5Jaxb2Marshaller;
+
     private TmsStation tmsStation;
     private long metadataLastModifiedMillis;
+    private Instant metadataLastModified;
     private long dataLastUpdatedMillis;
 
     @BeforeEach
@@ -80,6 +98,14 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
         assertFalse(publishable.isEmpty());
 
+        final RoadStationSensor sensor1 = publishable.stream()
+                .filter(s -> s.getNameFi().equals("KESKINOPEUS_60MIN_KIINTEA_SUUNTA1")).findFirst().orElseThrow();
+
+        final RoadStationSensor sensor2 = publishable.stream()
+                .filter(s -> s.getNameFi().equals("OHITUKSET_60MIN_KIINTEA_SUUNTA1")).findFirst().orElseThrow();
+
+
+
         roadStationSensorService.updateSensorsOfRoadStation(tms.getRoadStationId(),
             RoadStationType.TMS_STATION,
             publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
@@ -91,8 +117,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
 
         final ZonedDateTime measured = ZonedDateTime.now().minusMinutes(2);
-        final SensorValue sv1 = new SensorValue(tms.getRoadStation(), publishable.get(0), 10.0, measured);
-        final SensorValue sv2 = new SensorValue(tms.getRoadStation(), publishable.get(1), 10.0, measured.minusMinutes(1));
+        final SensorValue sv1 = new SensorValue(tms.getRoadStation(), sensor1, 10.0, measured);
+        final SensorValue sv2 = new SensorValue(tms.getRoadStation(), sensor2, 10.0, measured.minusMinutes(1));
         sensorValueRepository.save(sv1);
         sensorValueRepository.save(sv2);
         this.dataLastUpdatedMillis =  TimeUtil.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
@@ -105,7 +131,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         this.tmsStation = entityManager.find(TmsStation.class, tms.getId());
         final Instant sensorsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA);
         final Instant stationsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_METADATA);
-        this.metadataLastModifiedMillis = TimeUtil.roundInstantSeconds(getGreatest(sensorsUpdated, stationsUpdated)).toEpochMilli();
+        this.metadataLastModified = getGreatest(sensorsUpdated, stationsUpdated);
+        this.metadataLastModifiedMillis = TimeUtil.roundInstantSeconds(metadataLastModified).toEpochMilli();
     }
 
     @AfterEach
@@ -326,5 +353,39 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
             .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, constantsUpdated));
+    }
+
+    @Test
+    public void tmsBetaStationsDatex2RestApi() throws Exception {
+
+        final String xmlResponse =
+                mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.TMS_STATIONS_DATEX2_PATH + ".xml"))
+                        .andReturn().getResponse().getContentAsString();
+
+        final MeasurementSiteTablePublication publication = (MeasurementSiteTablePublication) datex2v3_5Jaxb2Marshaller.unmarshal(new StringSource(StringUtils.trim(xmlResponse)));
+
+        assertEquals(metadataLastModified, publication.getPublicationTime());
+        assertEquals("FI", publication.getPublicationCreator().getCountry());
+        assertEquals(TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
+        assertEquals("fi", publication.getLang());
+        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
+        assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+    }
+
+    @Test
+    public void tmsBetaDataDatex2RestApi() throws Exception {
+
+        final String xmlResponse =
+                mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.TMS_DATA_DATEX2_PATH + ".xml"))
+                        .andReturn().getResponse().getContentAsString();
+
+        final MeasuredDataPublication publication = (MeasuredDataPublication) datex2v3_5Jaxb2Marshaller.unmarshal(new StringSource(StringUtils.trim(xmlResponse)));
+
+        assertEquals(metadataLastModified, publication.getPublicationTime());
+        assertEquals("FI", publication.getPublicationCreator().getCountry());
+        assertEquals(TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
+        assertEquals("fi", publication.getLang());
+        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
+        assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
     }
 }

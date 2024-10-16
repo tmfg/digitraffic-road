@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;

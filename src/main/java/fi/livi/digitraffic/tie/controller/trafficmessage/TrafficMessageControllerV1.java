@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationFeatureCollectionV1;

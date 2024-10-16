@@ -57,12 +57,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.Situation;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadWorkPhase;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TimeAndDuration;
@@ -74,7 +75,6 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.WeekdayTimePeriod;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
@@ -85,7 +85,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     private static final Logger log = getLogger(TrafficMessageControllerV1Test.class);
 
     @Autowired
-    @Qualifier("datex2Jaxb2Marshaller")
+    @Qualifier("datex2v2_2_3_fiJaxb2Marshaller")
     private Jaxb2Marshaller datex2Jaxb2Marshaller;
 
     @Autowired

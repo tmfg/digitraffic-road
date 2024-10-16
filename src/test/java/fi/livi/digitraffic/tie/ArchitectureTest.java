@@ -30,7 +30,7 @@ public class ArchitectureTest extends AbstractTest {
                 location.contains("/target/classes/") &&
                 location.contains("fi/livi/digitraffic") &&
                 // Skip generated classes
-                !location.contains("fi/livi/digitraffic/tie/datex2") &&
+                !location.contains("fi/livi/digitraffic/tie/datex2/v2_2_3_fi") &&
                 !location.contains("fi/livi/digitraffic/tie/external"))
             .importPath("target/classes/fi/livi/digitraffic/tie/");
 

@@ -681,21 +681,21 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
             null, null,
             null, null, Sets.newHashSet(firstDomain));
         assertCollectionSize(1, fc1.getFeatures());
-        assertEquals(first.getCreated().toInstant(), fc1.getLastModified());
+        assertEquals(first.getCreated(), fc1.getLastModified());
 
         // find with second domain should have same update time as creation time and almost same the same data checked time
         final MaintenanceTrackingFeatureCollectionV1 fc2 = findMaintenanceTrackings(
             null, null,
             null, null, Sets.newHashSet(secondDomain));
         assertCollectionSize(1, fc2.getFeatures());
-        assertEquals(second.getCreated().toInstant(), fc2.getLastModified());
+        assertEquals(second.getCreated(), fc2.getLastModified());
 
         // With both domains, the result has the newest creation time (=second domain)
         final MaintenanceTrackingFeatureCollectionV1 fcBoth = findMaintenanceTrackings(
             null, null,
             null, null, Sets.newHashSet(secondDomain, firstDomain));
         assertCollectionSize(2, fcBoth.getFeatures());
-        assertEquals(second.getCreated().toInstant(), fcBoth.getLastModified());
+        assertEquals(second.getCreated(), fcBoth.getLastModified());
     }
 
     @Test

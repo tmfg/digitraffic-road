@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings
+        xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jaxb https://jakarta.ee/xml/ns/jaxb/bindingschema_3_0.xsd"
+        jaxb:extensionBindingPrefixes="xjc annox"
+        version="3.0">
+
+    <!-- asCharInWord see https://docs.datex2.eu/v3.3/developers/ this helps to avoid class names to overlap e.g. names _EnumA and EnumA -->
+    <!-- fixedAttributeAsConstantProperty -> generates fixed values as constant fields-->
+    <jaxb:globalBindings underscoreBinding="asCharInWord" fixedAttributeAsConstantProperty="true" >
+<!--        <jaxb:serializable/>-->
+        <xjc:simple/>
+        <jaxb:javaType name="java.time.Instant" xmlType="xs:dateTime"
+                       printMethod="java.time.format.DateTimeFormatter.ISO_INSTANT.format"
+                       parseMethod="java.time.Instant.parse"/>
+        <jaxb:javaType name="java.time.LocalDate" xmlType="xs:date"
+                       printMethod="java.time.format.DateTimeFormatter.ISO_LOCAL_DATE.format"
+                       parseMethod="java.time.LocalDate.parse"/>
+    </jaxb:globalBindings>
+
+</jaxb:bindings>

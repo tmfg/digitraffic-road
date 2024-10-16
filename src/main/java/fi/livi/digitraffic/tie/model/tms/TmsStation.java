@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.model.tms;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.FetchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
@@ -203,5 +205,9 @@ public class TmsStation extends ReadOnlyCreatedAndModifiedFields {
 
     public Long getRoadStationNaturalId() {
         return roadStation != null ? roadStation.getNaturalId() : null;
+    }
+
+    public Instant getMaxModified() {
+        return TimeUtil.getGreatest(this.getModified(), getRoadStation().getModified());
     }
 }

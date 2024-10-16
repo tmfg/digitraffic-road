@@ -213,6 +213,14 @@ public class JMSMessageHandler<K> {
      * @param jmsMessagesTransferTimeMs how long it took to get the message from broker
      */
     public record JmsStatistics(int messagesReceived, int messagesDrained, long messagesDrainedTookMs, int dbRowsUpdated, int queueSize, int jmsMessagesReceivedCount, long jmsMessagesReceivedTimeMs, long jmsMessagesTransferTimeMs) {
+
+        public long getTimePerMessageMs() {
+            return (jmsMessagesReceivedTimeMs() > 0) ? jmsMessagesReceivedTimeMs() / jmsMessagesReceivedCount() : 0;
+        }
+
+        public long getMessagesTransferTimePerMessageMs() {
+            return (jmsMessagesReceivedCount() > 0) ? jmsMessagesTransferTimeMs() / jmsMessagesReceivedCount() : 0;
+        }
     }
 
     /**
@@ -221,18 +229,11 @@ public class JMSMessageHandler<K> {
     public void logStatistics() {
         try {
             final JmsStatistics jmsStats = getAndResetMessageCounter();
-            final long timeMsPerJmsMsg =
-                    (jmsStats.jmsMessagesReceivedCount() > 0) ?
-                    jmsStats.jmsMessagesReceivedTimeMs() / jmsStats.jmsMessagesReceivedCount() : 0;
-            final long jmsMessagesTransferTimePerMsgMs =
-                    (jmsStats.jmsMessagesReceivedCount() > 0) ?
-                    jmsStats.jmsMessagesTransferTimeMs() / jmsStats.jmsMessagesReceivedCount() : 0;
-
             log.info("""
                             method=logMessagesReceived prefix={} Received jmsMessageType={} jmsMessagesReceivedCount={} jmsMessagesReceivedTimeMs={} jmsMessagesReceivedTimeMsPerMsg={} jmsMessagesTransferTimePerMsgMs={} jmsSrc=KCA
                             messagesReceivedCount={} messages, drained messagesDrainedCount={} messagesDrainedTookMs={} messages and updated dbRowsUpdatedCount={} db rows per minute.
                             Current queueSize={} in memory. Lock instanceId={}""",
-                    STATISTICS_PREFIX, jmsMessageType, jmsStats.jmsMessagesReceivedCount, jmsStats.jmsMessagesReceivedTimeMs, timeMsPerJmsMsg, jmsMessagesTransferTimePerMsgMs,
+                    STATISTICS_PREFIX, jmsMessageType, jmsStats.jmsMessagesReceivedCount, jmsStats.jmsMessagesReceivedTimeMs, jmsStats.getTimePerMessageMs(), jmsStats.getMessagesTransferTimePerMessageMs(),
                     jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.messagesDrainedTookMs,
                     jmsStats.dbRowsUpdated, jmsStats.queueSize, instanceId);
         } catch (final Exception e) {

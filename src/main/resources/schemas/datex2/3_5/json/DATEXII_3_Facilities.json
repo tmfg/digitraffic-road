@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "Image": {
+      "title": "Image",
+      "description": "An image, with encoded data and identification of format",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "imageData": {
+          "title": "imageData",
+          "description": "Encoded image data",
+          "$ref": "DATEXII_3_Common.json#/definitions/Base64Binary"
+        },
+        "imageFormat": {
+          "title": "imageFormat",
+          "description": "Identifies the image format of the associated image data",
+          "$ref": "DATEXII_3_Facilities.json#/definitions/ImageFormatEnumG"
+        },
+        "imageExtensionG": {
+          "title": "imageExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "imageData",
+        "imageFormat"
+      ]
+    },
+    "ImageFormatEnum": {
+      "title": "ImageFormatEnum",
+      "description": "Identifies an image format",
+      "type": "string",
+      "enum": [
+        "bmp",
+        "gif",
+        "jpeg",
+        "png",
+        "extendedG"
+      ]
+    },
+    "ImageFormatEnumG": {
+      "title": "ImageFormatEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Facilities.json#/definitions/ImageFormatEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "TimeZone": {
+      "title": "TimeZone",
+      "description": "Identifies a time zone by specifying the difference to UTC in hours and minutes, as defined in ISO 8601.",
+      "$ref": "DATEXII_3_Common.json#/definitions/String"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings
+        xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jaxb https://jakarta.ee/xml/ns/jaxb/bindingschema_3_0.xsd"
+        jaxb:extensionBindingPrefixes="xjc annox"
+        version="3.0">
+
+<!--    If simplify plugin is not possible to use we can get @XmlRootElement annotations with custom bindings -->
+<!--    <jaxb:bindings schemaLocation="DATEXIISchema_2_2_3_with_definitions_FI.xsd" node="/xs:schema">-->
+<!--        <jaxb:bindings node="xs:complexType[@name='PayloadPublication']">-->
+<!--            <annox:annotate>-->
+<!--                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="PayloadPublication" />-->
+<!--            </annox:annotate>-->
+<!--        </jaxb:bindings>-->
+<!--        <jaxb:bindings node="xs:complexType[@name='D2LogicalModel']">-->
+<!--            <annox:annotate>-->
+<!--                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="D2LogicalModel" namespace = "http://datex2.eu/schema/2/2_0"  />-->
+<!--            </annox:annotate>-->
+<!--        </jaxb:bindings>-->
+<!--    </jaxb:bindings>-->
+</jaxb:bindings>

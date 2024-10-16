@@ -4802,7 +4802,7 @@
       <xs:enumeration value="trafficMayBuildUp"/>
     </xs:restriction>
   </xs:simpleType>
- 
+
   <xs:complexType name="ExternalReferencing">
     <xs:annotation>
       <xs:documentation>A location defined by reference to an external/other referencing system.</xs:documentation>

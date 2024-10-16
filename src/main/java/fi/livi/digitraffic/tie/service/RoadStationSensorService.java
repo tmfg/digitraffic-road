@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -125,10 +126,14 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, List<SensorValueDto>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType) {
-        final List<SensorValueDto> sensors = roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
-                        roadStationType,
-                        sensorValueTimeLimitInMins.get(roadStationType));
+    public Map<Long, List<SensorValueDto>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType, final Collection<String> sensorNames) {
+        final List<SensorValueDto> sensors = sensorNames == null || sensorNames.isEmpty() ?
+                                             roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
+                                                     roadStationType, sensorValueTimeLimitInMins.get(roadStationType)) :
+                                             roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
+                                                     roadStationType,
+                                                     sensorValueTimeLimitInMins.get(roadStationType),
+                                                     sensorNames);
 
         return sensors.parallelStream()
             .collect(Collectors.groupingBy(SensorValueDto::getRoadStationNaturalId, Collectors.mapping(Function.identity(), toList())));

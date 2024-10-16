@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified"
+           xmlns:fac="http://datex2.eu/schema/3/facilities" version="3.5"
+           targetNamespace="http://datex2.eu/schema/3/facilities" xmlns:com="http://datex2.eu/schema/3/common"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:complexType name="_ImageFormatEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:ImageFormatEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="Image">
+    <xs:annotation>
+      <xs:documentation>An image, with encoded data and identification of format</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="imageData" type="com:Base64Binary" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Encoded image data</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="imageFormat" type="fac:_ImageFormatEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Identifies the image format of the associated image data</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_imageExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="ImageFormatEnum">
+    <xs:annotation>
+      <xs:documentation>Identifies an image format</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="bmp">
+        <xs:annotation>
+          <xs:documentation>The bmp image format</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="gif">
+        <xs:annotation>
+          <xs:documentation>The gif image format</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="jpeg">
+        <xs:annotation>
+          <xs:documentation>The jpeg image format</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="png">
+        <xs:annotation>
+          <xs:documentation>The png image format</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TimeZone">
+    <xs:annotation>
+      <xs:documentation>Identifies a time zone by specifying the difference to UTC in hours and minutes, as defined in ISO 8601.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:String">
+      <xs:pattern value="[-+][0-9][0-9]:[0-9][0-9]|Z" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.external.lotju.metatietomuutos.tiesaa.tietovirta.Metatietomuutos;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.MetadataUpdatedMessageDto.UpdateType;
 import fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto;
@@ -29,9 +28,9 @@ public class WeatherMetadataJMSMessageMarshaller extends TextJMSMessageMarshalle
         final Metatietomuutos muutos = (Metatietomuutos) object;
         final WeatherMetadataUpdatedMessageDto dto =
             new WeatherMetadataUpdatedMessageDto(muutos.getId(),
-                                                 new HashSet<>(muutos.getAsemat().getId()),
+                                                 new HashSet<>(muutos.getAsemat().getIds()),
                                                  UpdateType.fromExternalValue(muutos.getTyyppi()),
-                                                 TimeUtil.toInstant(muutos.getAika()),
+                                                 muutos.getAika(),
                                                  EntityType.fromExternalValue(muutos.getEntiteetti()));
         return Collections.singletonList(dto);
     }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.5"
+           targetNamespace="http://datex2.eu/schema/3/d2Payload" xmlns:com="http://datex2.eu/schema/3/common"
+           xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/locationExtension" schemaLocation="DATEXII_3_LocationExtension.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/commonExtension" schemaLocation="DATEXII_3_CommonExtension.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/vms" schemaLocation="DATEXII_3_Vms.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/roadTrafficData" schemaLocation="DATEXII_3_RoadTrafficData.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/facilities" schemaLocation="DATEXII_3_Facilities.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:element name="payload" type="com:PayloadPublication">
+    <xs:unique name="_payloadMeasurementSiteConstraint">
+      <xs:selector xpath=".//roa:measurementSite" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadMeasurementSiteTableConstraint">
+      <xs:selector xpath=".//roa:measurementSiteTable" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

@@ -8,17 +8,18 @@ import static fi.livi.digitraffic.tie.service.variablesign.v1.TestDataFilteringS
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.controller.ApiConstants;
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class VariableSignControllerV1Test extends AbstractRestWebTest {
     private ResultActions getJson(final String url) throws Exception {
@@ -27,7 +28,8 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         return response;
     }
 
-    private static final ZonedDateTime now = ZonedDateTime.now();
+    private final static Instant NOW_DATETIME = Instant.now();
+    private final static LocalDate NOW_DATE = LocalDate.ofInstant(NOW_DATETIME, ZoneId.of("UTC"));
 
     private static final String FILTERING_ID = testDevices.iterator().next();
 
@@ -39,7 +41,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         entityManager.createNativeQuery(
             "insert into device_data(device_id,display_value,additional_information,effect_date,cause,reliability) " +
                 "values ('ID1','80',null,:time,null,'NORMAALI');")
-            .setParameter("time", now)
+            .setParameter("time", NOW_DATETIME)
             .executeUpdate();
 
         entityManager.createNativeQuery(
@@ -181,7 +183,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     public void historyExistsWrongDate() throws Exception {
         insertTestData();
 
-        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + now.toLocalDate().plusDays(1).format(DateTimeFormatter.ISO_DATE))
+        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + NOW_DATE.plusDays(1).format(DateTimeFormatter.ISO_DATE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.empty()));
     }
@@ -190,7 +192,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     public void historyExistsCorrectDate() throws Exception {
         insertTestData();
 
-        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + now.toLocalDate().format(DateTimeFormatter.ISO_DATE))
+        getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + NOW_DATE.format(DateTimeFormatter.ISO_DATE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }

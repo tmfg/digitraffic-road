@@ -90,11 +90,11 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
                 final int hash = HashCodeBuilder.reflectionHashCode(cameraPreset);
                 final String before = cameraPreset.toString();
 
-                log.debug("Updating camera preset " + cameraPreset);
+                log.debug("method=updateOrInsertRoadStationAndPresetsUpdating camera preset " + cameraPreset);
 
                 if ( updateCameraPresetAtributes(kamera, esiasento, cameraPreset) ||
                     hash != HashCodeBuilder.reflectionHashCode(cameraPreset) ) {
-                    log.info("Updated CameraPreset:\n{} -> \n{}", before, cameraPreset);
+                    log.info("method=updateOrInsertRoadStationAndPresets Updated CameraPreset:\n{} -> \n{}", before, cameraPreset);
                     updated++;
                     cameraPresetService.save(cameraPreset);
                 }
@@ -115,9 +115,9 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
                 cameraPresetService.save(cp);
                 if (roadStationNew) {
-                    log.info("Created new {} and RoadStation {}", cp, rs);
+                    log.info("method=updateOrInsertRoadStationAndPresets Created new {} and RoadStation {}", cp, rs);
                 } else {
-                    log.info("Created new {}", cp);
+                    log.info("method=updateOrInsertRoadStationAndPresets Created new {}", cp);
                 }
                 inserted++;
             }

@@ -8,7 +8,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingObservationDataRepository;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
@@ -54,7 +54,6 @@ import fi.livi.digitraffic.tie.external.harja.entities.OtsikkoSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.TunnisteSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.ViivageometriasijaintiSchema;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData;
@@ -171,7 +170,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
         final List<Havainnot> havainnot = singletonList(
             new Havainnot().withHavainto(
                 new Havainto()
-                    .withHavaintoaika(observationTime.atZone(ZoneOffset.UTC))
+                    .withHavaintoaika(observationTime)
                     .withTyokone(workMachine)
                     .withUrakkaid(jobId)
                     .withSijainti(sijainti)
@@ -327,7 +326,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
             return singletonList(
                 new Havainnot().withHavainto(
                     new Havainto()
-                        .withHavaintoaika(observationTime.atZone(ZoneOffset.UTC))
+                        .withHavaintoaika(observationTime)
                         .withTyokone(workMachine)
                         .withUrakkaid(jobId)
                         .withSijainti(sijainti)
@@ -338,7 +337,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
             return IntStream.range(0, pointsCount).mapToObj(i ->
                 new Havainnot().withHavainto(
                     new Havainto()
-                        .withHavaintoaika(observationTime.atZone(ZoneOffset.UTC).plusMinutes(i))
+                        .withHavaintoaika(observationTime.plus(i, ChronoUnit.MINUTES))
                         .withTyokone(workMachine)
                         .withUrakkaid(jobId)
                         .withSijainti(
@@ -359,7 +358,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
             new Lahettaja("Tievoima",
             new OrganisaatioSchema("Tie huolto Oy", "8561566-0")),
             new TunnisteSchema(123),
-            startTime.atZone(ZoneOffset.UTC));
+            startTime);
     }
 
     public String getFormatedTrackingJson(final String trackingJsonPath) throws IOException {
@@ -407,13 +406,13 @@ public class MaintenanceTrackingServiceTestHelperV1 {
 
     public void saveTrackingDataAsObservations(final TyokoneenseurannanKirjausRequestSchema seuranta) throws JsonProcessingException {
         final String sendingSystem = seuranta.getOtsikko().getLahettaja().getJarjestelma();
-        final Instant sendingTime = seuranta.getOtsikko().getLahetysaika().toInstant();
+        final Instant sendingTime = seuranta.getOtsikko().getLahetysaika();
 
         for(final Havainnot havainnot : seuranta.getHavainnot()) {
             final Havainto h = havainnot.getHavainto();
             final String json = jsonWriterForHavainto.writeValueAsString(h);
             final Map<String, Object> valuesMap = new HashMap<>();
-            valuesMap.put("observationTime", h.getHavaintoaika().toInstant().toString());
+            valuesMap.put("observationTime", h.getHavaintoaika().toString());
             valuesMap.put("sendingTime", sendingTime.toString());
             valuesMap.put("json", json);
             valuesMap.put("harjaWorkmachineId", h.getTyokone().getId());
@@ -463,7 +462,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
 
     public static Instant getEndTime(final TyokoneenseurannanKirjausRequestSchema seuranta) {
         final List<Havainnot> havainnot = seuranta.getHavainnot();
-        return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika().toInstant();
+        return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
     }
 
     public static Instant getStartTimeOneHourInPast() {

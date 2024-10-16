@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.model.maintenance;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,13 +45,13 @@ public class MaintenanceTracking {
     private String sendingSystem;
 
     @Column
-    private ZonedDateTime sendingTime;
+    private Instant sendingTime;
 
     @Column
-    private ZonedDateTime startTime;
+    private Instant startTime;
 
     @Column
-    private ZonedDateTime endTime;
+    private Instant endTime;
 
     @Column
     private Point lastPoint;
@@ -72,10 +72,10 @@ public class MaintenanceTracking {
     private String messageOriginalId;
 
     @Column(insertable = false, updatable = false) // auto generated
-    private ZonedDateTime created;
+    private Instant created;
 
     @Column(insertable = false, updatable = false) // auto updated
-    private ZonedDateTime modified;
+    private Instant modified;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="WORK_MACHINE_ID", referencedColumnName = "ID", nullable = false, updatable = false)
@@ -100,7 +100,7 @@ public class MaintenanceTracking {
     }
 
     public MaintenanceTracking(final MaintenanceTrackingObservationData maintenanceTrackingObservationData, final MaintenanceTrackingWorkMachine workMachine,
-                               final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
+                               final String sendingSystem, final Instant sendingTime, final Instant startTime, final Instant endTime,
                                final Point lastPoint, final Geometry geometry, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
                                final String domain) {
         this(workMachine, sendingSystem, sendingTime, startTime, endTime, lastPoint, geometry, tasks, direction, domain);
@@ -108,7 +108,7 @@ public class MaintenanceTracking {
     }
 
     private MaintenanceTracking(final MaintenanceTrackingWorkMachine workMachine,
-                                final String sendingSystem, final ZonedDateTime sendingTime, final ZonedDateTime startTime, final ZonedDateTime endTime,
+                                final String sendingSystem, final Instant sendingTime, final Instant startTime, final Instant endTime,
                                 final Point lastPoint, final Geometry geometry, final Set<MaintenanceTrackingTask> tasks, final BigDecimal direction,
                                 final String domain) {
         checkGeometry(geometry);
@@ -140,19 +140,19 @@ public class MaintenanceTracking {
         return sendingSystem;
     }
 
-    public ZonedDateTime getSendingTime() {
+    public Instant getSendingTime() {
         return sendingTime;
     }
 
-    public ZonedDateTime getStartTime() {
+    public Instant getStartTime() {
         return startTime;
     }
 
-    public ZonedDateTime getEndTime() {
+    public Instant getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(final ZonedDateTime endTime) {
+    public void setEndTime(final Instant endTime) {
         this.endTime = endTime;
     }
 
@@ -165,7 +165,7 @@ public class MaintenanceTracking {
         this.geometry = geometry;
     }
 
-    public ZonedDateTime getCreated() {
+    public Instant getCreated() {
         return created;
     }
 
@@ -218,7 +218,7 @@ public class MaintenanceTracking {
         return ToStringHelper.toStringExcluded(this, "lineString");
     }
 
-    public void appendGeometry(final Geometry geometryToAppend, final ZonedDateTime geometryObservationTime, final BigDecimal direction) {
+    public void appendGeometry(final Geometry geometryToAppend, final Instant geometryObservationTime, final BigDecimal direction) {
         final LineString result = PostgisGeometryUtils.combineToLinestringWithZ(getGeometry(), geometryToAppend);
         final Geometry simpleSnapped = PostgisGeometryUtils.snapToGrid(PostgisGeometryUtils.simplify(result));
         setGeometry(simpleSnapped);

@@ -337,4 +337,20 @@ public class RoadStationSensor {
     public boolean isPublishable() {
         return publishable;
     }
+
+    public boolean isSpeedSensor() {
+        return StringUtils.contains(getNameFi(), "NOPEUS");
+    }
+
+    public boolean isFlowSensor() {
+        return StringUtils.contains(getNameFi(), "OHITUKSET");
+    }
+
+    /**
+     * E.g. moving average measurement
+     * @return is this moving measurement
+     */
+    public boolean isMovingMeasurement() {
+        return StringUtils.contains(getNameFi(), "LIUKUVA");
+    }
 }

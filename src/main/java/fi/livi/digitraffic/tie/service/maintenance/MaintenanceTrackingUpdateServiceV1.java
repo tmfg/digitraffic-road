@@ -8,7 +8,6 @@ import static fi.livi.digitraffic.tie.service.maintenance.MaintenanceTrackingUpd
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingObservationDataRepository;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingWorkMachineRepository;
@@ -46,7 +46,6 @@ import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.entities.GeometriaSijaintiViivasijaintiCombinedSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils.GeometryType;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -158,7 +157,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                     getPreviousTrackingFromCacheOrFetchFromDb(cacheByHarjaWorkMachineIdAndContractId, harjaWorkMachineIdContractId);
 
                 final NextObservationStatus status = resolveNextObservationStatus(previousTracking, havainto, geometry);
-                final ZonedDateTime harjaObservationTime = TimeUtil.toZonedDateTimeAtUtc(havainto.getHavaintoaika());
+                final Instant harjaObservationTime = havainto.getHavaintoaika();
 
                 final BigDecimal direction = getDirection(havainto, trackingData.getId());
                 final Point firstPoint = (Point) PostgisGeometryUtils.snapToGrid(PostgisGeometryUtils.getStartPoint(geometry));
@@ -191,7 +190,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                         getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
 
                     final MaintenanceTracking created =
-                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, TimeUtil.toZonedDateTimeAtUtc(sendingTime),
+                        new MaintenanceTracking(trackingData, workMachine, sendingSystem, sendingTime,
                             harjaObservationTime, harjaObservationTime, lastPoint, simpleSnapped,
                             performedTasks, direction, STATE_ROADS_DOMAIN);
 
@@ -255,7 +254,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                                                                       final Geometry nextGeometry) {
 
         final Set<MaintenanceTrackingTask> performedTasks = getMaintenanceTrackingTasksFromHarjaTasks(havainto.getSuoritettavatTehtavat());
-        final ZonedDateTime harjaObservationTime = havainto.getHavaintoaika();
+        final Instant harjaObservationTime = havainto.getHavaintoaika();
         final Point nextTrackingFirstPoint = PostgisGeometryUtils.getStartPoint(nextGeometry);
         final boolean isInsideLimitsToCombine = isInsideTheLimitsForCombiningToPreviousTracking(previousTracking, harjaObservationTime, nextTrackingFirstPoint);
         final boolean isTasksChanged = isTasksChangedNullSafe(performedTasks, previousTracking);
@@ -272,7 +271,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
     }
 
     private static boolean isInsideTheLimitsForCombiningToPreviousTracking(final MaintenanceTracking previousTracking,
-                                                                           final ZonedDateTime nextTrackingTime,
+                                                                           final Instant nextTrackingTime,
                                                                            final Point nextTrackingFirstPoint) {
         return
             previousTracking != null &&
@@ -292,7 +291,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
         return distanceBetween < distinctLineStringObservationGapKm;
     }
 
-    private static double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime havaintoaika,
+    private static double resolveSpeedInKmHNullSafe(final MaintenanceTracking previousTracking, final Instant havaintoaika,
                                                     final Point nextTrackingFirstPoint) {
         if (previousTracking == null) {
             return 0.0;
@@ -309,9 +308,9 @@ public class MaintenanceTrackingUpdateServiceV1 {
         return 0.0;
     }
 
-    private static long getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(final MaintenanceTracking previousTracking, final ZonedDateTime nextCoordinateTime) {
+    private static long getTimeDiffBetweenPreviousAndNextInSecondsNullSafe(final MaintenanceTracking previousTracking, final Instant nextCoordinateTime) {
         if (previousTracking != null) {
-            final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
+            final Instant previousCoordinateTime = previousTracking.getEndTime();
             return previousCoordinateTime.until(nextCoordinateTime, ChronoUnit.SECONDS);
         }
         return 0;
@@ -338,7 +337,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
      * @param appendLatestPoint Should the latest point be appended to the geometry
      */
     private static void updateAsFinishedNullSafeAndAppendLastGeometry(final MaintenanceTracking trackingToFinish, final Point latestPoint,
-                                                                      final BigDecimal direction, final ZonedDateTime latestGeometryOservationTime,
+                                                                      final BigDecimal direction, final Instant latestGeometryOservationTime,
                                                                       final boolean appendLatestPoint) {
         if (trackingToFinish != null && !trackingToFinish.isFinished()) {
             if (appendLatestPoint) {
@@ -449,9 +448,9 @@ public class MaintenanceTrackingUpdateServiceV1 {
         return Collections.emptyList();
     }
 
-    private static boolean isNextCoordinateTimeInsideTheLimitNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
+    private static boolean isNextCoordinateTimeInsideTheLimitNullSafe(final Instant nextCoordinateTime, final MaintenanceTracking previousTracking) {
         if (previousTracking != null) {
-            final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
+            final Instant previousCoordinateTime = previousTracking.getEndTime();
             // It's allowed for next to be same or after the previous time
             final boolean timeGapInsideTheLimit =
                 ChronoUnit.MINUTES.between(previousCoordinateTime, nextCoordinateTime) <= distinctObservationGapMinutes;
@@ -465,9 +464,9 @@ public class MaintenanceTrackingUpdateServiceV1 {
         return false;
     }
 
-    private static boolean isNextCoordinateTimeSameOrAfterPreviousNullSafe(final ZonedDateTime nextCoordinateTime, final MaintenanceTracking previousTracking) {
+    private static boolean isNextCoordinateTimeSameOrAfterPreviousNullSafe(final Instant nextCoordinateTime, final MaintenanceTracking previousTracking) {
         if (previousTracking != null) {
-            final ZonedDateTime previousCoordinateTime = previousTracking.getEndTime();
+            final Instant previousCoordinateTime = previousTracking.getEndTime();
             // It's allowed for next to be same or after the previous time
             final boolean nextIsSameOrAfter = !nextCoordinateTime.isBefore(previousCoordinateTime);
             if (!nextIsSameOrAfter && log.isDebugEnabled()) {

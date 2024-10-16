@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings
+        xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jaxb https://jakarta.ee/xml/ns/jaxb/bindingschema_3_0.xsd"
+        xmlns:annox="urn:jaxb.jvnet.org:annox"
+        jaxb:extensionBindingPrefixes="xjc annox"
+        version="3.0">
+
+    <!-- See https://docs.datex2.eu/v3.3/developers/ this helps to avoid class names to overlap e.g. names _EnumA and EnumA -->
+    <!--    <jaxb:globalBindings underscoreBinding="asCharInWord" /> <- This is already in global config! -->
+    <jaxb:bindings schemaLocation="DATEXII_3_LocationReferencing.xsd" node="//xs:element[@name='_namedAreaExtension']">
+        <jaxb:property name="_locNamedAreaExtension" />
+    </jaxb:bindings>
+
+    <!-- If simplify plugin is not possible to use we can get @XmlRootElement annotations with custom bindings -->
+    <jaxb:bindings schemaLocation="DATEXII_3_Common.xsd" node="/xs:schema">
+        <jaxb:bindings node="xs:complexType[@name='PayloadPublication']">
+            <annox:annotate>
+                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="PayloadPublication" namespace = "https://datex2.eu/schema/3/common" />
+            </annox:annotate>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="DATEXII_3_RoadTrafficData.xsd" node="/xs:schema">
+        <jaxb:bindings node="xs:complexType[@name='MeasuredDataPublication']">
+            <annox:annotate>
+                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="MeasuredDataPublication" namespace = "https://datex2.eu/schema/3/roadTrafficData" />
+            </annox:annotate>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="DATEXII_3_RoadTrafficData.xsd" node="/xs:schema">
+        <jaxb:bindings node="xs:complexType[@name='MeasurementSiteTablePublication']">
+            <annox:annotate>
+                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="MeasurementSiteTablePublication" namespace = "https://datex2.eu/schema/3/roadTrafficData" />
+            </annox:annotate>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+
+</jaxb:bindings>

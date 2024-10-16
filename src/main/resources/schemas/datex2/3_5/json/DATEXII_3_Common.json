@@ -1,0 +1,3260 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "AngleInDegrees": {
+      "title": "AngleInDegrees",
+      "description": "An integer number representing an angle in whole degrees between 0 and 359.",
+      "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger",
+      "minimum": 0.0,
+      "maximum": 359.0
+    },
+    "ApplicationRateValue": {
+      "title": "ApplicationRateValue",
+      "description": "A measured or calculated value of the application rate of a substance.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "applicationRate": {
+          "title": "applicationRate",
+          "description": "A value of the rate of application of a substance expressed in kilogrammes per square metre.",
+          "$ref": "DATEXII_3_Common.json#/definitions/IntensityKilogramsPerSquareMetre"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "applicationRateValueExtensionG": {
+          "title": "applicationRateValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "applicationRate"
+      ]
+    },
+    "Base64Binary": {
+      "title": "Base64Binary",
+      "description": "Binary data in base 64 encoding, for example for image data.",
+      "type": "string"
+    },
+    "Boolean": {
+      "title": "Boolean",
+      "description": "Boolean has the value space required to support the mathematical concept of binary-valued logic: {true, false}. ",
+      "type": "boolean"
+    },
+    "CalendarWeekWithinMonth": {
+      "title": "CalendarWeekWithinMonth",
+      "description": "Specification of periods defined by relevant calendar weeks in a month, see ISO8601. Note: Calendar weeks start with Monday. First week is the week containing the first of the month.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicableDay": {
+          "title": "applicableDay",
+          "description": "Applicable day of the week. \"All days of the week\" is expressed by non-inclusion of this attribute.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/DayEnumG"
+          },
+          "minItems": 0,
+          "maxItems": 7
+        },
+        "applicableMonth": {
+          "title": "applicableMonth",
+          "description": "Applicable month of the year.  \"All months of the year\" is expressed by non-inclusion of this attribute.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/MonthOfYearEnumG"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "applicableCalenderWeekWithinMonth": {
+          "title": "applicableCalenderWeekWithinMonth",
+          "description": "Calender week in month. See ISO8601.  \"All weeks of the month\" is expressed by not using the CalendarWeekOfMonth class. Note: Calendar weeks start with Monday. First week is the week containing the first of the month.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/CalendarWeekWithinMonthEnumG"
+          },
+          "minItems": 1,
+          "maxItems": 6
+        },
+        "dayWeekMonthExtensionG": {
+          "title": "dayWeekMonthExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "calendarWeekWithinMonthExtensionG": {
+          "title": "calendarWeekWithinMonthExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "applicableCalenderWeekWithinMonth"
+      ]
+    },
+    "CalendarWeekWithinMonthEnum": {
+      "title": "CalendarWeekWithinMonthEnum",
+      "description": "Calendar week within month (see ISO8601).",
+      "type": "string",
+      "enum": [
+        "firstWeek",
+        "secondWeek",
+        "thirdWeek",
+        "fourthWeek",
+        "fifthWeek",
+        "sixthWeek",
+        "lastWeek",
+        "extendedG"
+      ]
+    },
+    "CalendarWeekWithinMonthEnumG": {
+      "title": "CalendarWeekWithinMonthEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/CalendarWeekWithinMonthEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "ComparisonOperatorEnum": {
+      "title": "ComparisonOperatorEnum",
+      "description": "Logical comparison operations.",
+      "type": "string",
+      "enum": [
+        "equalTo",
+        "greaterThan",
+        "greaterThanOrEqualTo",
+        "lessThan",
+        "lessThanOrEqualTo",
+        "extendedG"
+      ]
+    },
+    "ComparisonOperatorEnumG": {
+      "title": "ComparisonOperatorEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/ComparisonOperatorEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "ComputationMethodEnum": {
+      "title": "ComputationMethodEnum",
+      "description": "Types of computational methods used in deriving data values for data sets.",
+      "type": "string",
+      "enum": [
+        "arithmeticAverageOfSamplesBasedOnAFixedNumberOfSamples",
+        "arithmeticAverageOfSamplesInATimePeriod",
+        "harmonicAverageOfSamplesInATimePeriod",
+        "medianOfSamplesInATimePeriod",
+        "movingAverageOfSamples",
+        "extendedG"
+      ]
+    },
+    "ComputationMethodEnumG": {
+      "title": "ComputationMethodEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "ConcentrationKilogramsPerCubicMetre": {
+      "title": "ConcentrationKilogramsPerCubicMetre",
+      "description": "Concentration defined in kilograms per cubic metre (equivalent to grams per litre under standard conditions).",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "ConcentrationMicrogramsPerCubicMetre": {
+      "title": "ConcentrationMicrogramsPerCubicMetre",
+      "description": "A measure of concentration defined in µg/m3 (micrograms/cubic metre).",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "ConfidentialityValueEnum": {
+      "title": "ConfidentialityValueEnum",
+      "description": "Values of confidentiality.",
+      "type": "string",
+      "enum": [
+        "internalUse",
+        "noRestriction",
+        "restrictedToAuthorities",
+        "restrictedToAuthoritiesAndTrafficOperators",
+        "extendedG"
+      ]
+    },
+    "ConfidentialityValueEnumG": {
+      "title": "ConfidentialityValueEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/ConfidentialityValueEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "CountryCode": {
+      "title": "CountryCode",
+      "description": "EN ISO 3166-1 alpha-2 two-letter country code",
+      "$ref": "DATEXII_3_Common.json#/definitions/String",
+      "maxLength": 2
+    },
+    "DataValueG": {
+      "title": "DataValueG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comKilogramsConcentrationValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/KilogramsConcentrationValue"
+        },
+        "comApplicationRateValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/ApplicationRateValue"
+        },
+        "roaTrafficStatusValue": {
+          "$ref": "DATEXII_3_RoadTrafficData.json#/definitions/TrafficStatusValue"
+        },
+        "roaDurationValue": {
+          "$ref": "DATEXII_3_RoadTrafficData.json#/definitions/DurationValue"
+        },
+        "comPercentageValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/PercentageValue"
+        },
+        "comFrictionValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/FrictionValue"
+        },
+        "comMicrogramsConcentrationValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/MicrogramsConcentrationValue"
+        },
+        "comWindSpeedValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/WindSpeedValue"
+        },
+        "comTemperatureValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureValue"
+        },
+        "comVehicleFlowValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/VehicleFlowValue"
+        },
+        "roaDateTimeValue": {
+          "$ref": "DATEXII_3_RoadTrafficData.json#/definitions/DateTimeValue"
+        },
+        "comSpeedValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/SpeedValue"
+        },
+        "comDirectionCompassValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/DirectionCompassValue"
+        },
+        "comDirectionBearingValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/DirectionBearingValue"
+        },
+        "comIntegerMetreDistanceValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/IntegerMetreDistanceValue"
+        },
+        "comPressureValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/PressureValue"
+        },
+        "comFloatingPointMetreDistanceValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/FloatingPointMetreDistanceValue"
+        },
+        "comPrecipitationIntensityValue": {
+          "$ref": "DATEXII_3_Common.json#/definitions/PrecipitationIntensityValue"
+        }
+      }
+    },
+    "DateTime": {
+      "title": "DateTime",
+      "description": "A combination of integer-valued year, month, day, hour, minute properties, a decimal-valued second property and a time zone property from which it is possible to determine the local time, the equivalent UTC time and the time zone offset from UTC.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "DayEnum": {
+      "title": "DayEnum",
+      "description": "Days of the week.",
+      "type": "string",
+      "enum": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+        "extendedG"
+      ]
+    },
+    "DayEnumG": {
+      "title": "DayEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/DayEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "DayWeekMonth": {
+      "title": "DayWeekMonth",
+      "description": "Specification of periods defined by the intersection of days or instances of them, calendar weeks and months.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicableDay": {
+          "title": "applicableDay",
+          "description": "Applicable day of the week. \"All days of the week\" is expressed by non-inclusion of this attribute.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/DayEnumG"
+          },
+          "minItems": 0,
+          "maxItems": 7
+        },
+        "applicableMonth": {
+          "title": "applicableMonth",
+          "description": "Applicable month of the year.  \"All months of the year\" is expressed by non-inclusion of this attribute.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/MonthOfYearEnumG"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "dayWeekMonthExtensionG": {
+          "title": "dayWeekMonthExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "DayWeekMonthG": {
+      "title": "DayWeekMonthG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comDayWeekMonth": {
+          "$ref": "DATEXII_3_Common.json#/definitions/DayWeekMonth"
+        },
+        "comInstanceOfDayWithinMonth": {
+          "$ref": "DATEXII_3_Common.json#/definitions/InstanceOfDayWithinMonth"
+        },
+        "comCalendarWeekWithinMonth": {
+          "$ref": "DATEXII_3_Common.json#/definitions/CalendarWeekWithinMonth"
+        }
+      }
+    },
+    "Decimal": {
+      "title": "Decimal",
+      "description": "A decimal number whose value space is the set of numbers that can be obtained by multiplying an integer by a non-positive power of ten, i.e., expressible as i × 10^-n where i and n are integers and n >= 0.",
+      "type": "number"
+    },
+    "DirectionBearingValue": {
+      "title": "DirectionBearingValue",
+      "description": "A measured or calculated value of direction as a bearing.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "directionBearing": {
+          "title": "directionBearing",
+          "description": "A value of direction expressed in terms of a bearing measured in whole degrees. Unless otherwise specified the reference direction corresponding to 0 degrees is North. Values increase in the clockwise direction.",
+          "$ref": "DATEXII_3_Common.json#/definitions/AngleInDegrees"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "directionBearingValueExtensionG": {
+          "title": "directionBearingValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "directionBearing"
+      ]
+    },
+    "DirectionCompassEnum": {
+      "title": "DirectionCompassEnum",
+      "description": "Cardinal direction points of the compass.",
+      "type": "string",
+      "enum": [
+        "east",
+        "eastNorthEast",
+        "eastSouthEast",
+        "north",
+        "northEast",
+        "northNorthEast",
+        "northNorthWest",
+        "northWest",
+        "south",
+        "southEast",
+        "southSouthEast",
+        "southSouthWest",
+        "southWest",
+        "west",
+        "westNorthWest",
+        "westSouthWest",
+        "extendedG"
+      ]
+    },
+    "DirectionCompassEnumG": {
+      "title": "DirectionCompassEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/DirectionCompassEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "DirectionCompassValue": {
+      "title": "DirectionCompassValue",
+      "description": "A measured or calculated value of direction as a point of the compass.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "directionCompass": {
+          "title": "directionCompass",
+          "description": "A value of direction expressed in terms of points of the compass.",
+          "$ref": "DATEXII_3_Common.json#/definitions/DirectionCompassEnumG"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "directionCompassValueExtensionG": {
+          "title": "directionCompassValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "directionCompass"
+      ]
+    },
+    "EmissionClassificationEuroEnum": {
+      "title": "EmissionClassificationEuroEnum",
+      "description": "Classification of emission according to the Euro emission classification (based on serveral amendments on 1970 Directive 70/220/EEC). Note htat vehicleType as well as fuelType are mandatory to provide to make this classification explicit.",
+      "type": "string",
+      "enum": [
+        "euro5",
+        "euro5a",
+        "euro5b",
+        "euro6",
+        "euro6a",
+        "euro6b",
+        "euro6c",
+        "euroV",
+        "euroVI",
+        "other",
+        "extendedG"
+      ]
+    },
+    "EmissionClassificationEuroEnumExtensionTypeG": {
+      "title": "EmissionClassificationEuroEnumExtensionTypeG",
+      "type": "string",
+      "enum": [
+        "euro0",
+        "euro1",
+        "euro2",
+        "euro3",
+        "euro4",
+        "euro6d",
+        "euro6dTemp",
+        "euroIV",
+        "euroUnknown",
+        "euroI",
+        "euroII",
+        "euroIII"
+      ]
+    },
+    "EmissionClassificationEuroEnumG": {
+      "title": "EmissionClassificationEuroEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/EmissionClassificationEuroEnum"
+        },
+        "extendedValueG": {
+          "$ref": "DATEXII_3_Common.json#/definitions/EmissionClassificationEuroEnumExtensionTypeG"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "Emissions": {
+      "title": "Emissions",
+      "description": "Emission characteristics of vehicles.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "emissionClassificationEuro": {
+          "title": "emissionClassificationEuro",
+          "description": "The minimum Euro emission classification the vehicle(s) have to comply with according to the 1970 Directive 70/220/EEC and its several amendments. Note that vehicleType and fuelType need to be provided in order to make this classification explicit.",
+          "$ref": "DATEXII_3_Common.json#/definitions/EmissionClassificationEuroEnumG"
+        },
+        "emissionClassificationOther": {
+          "title": "emissionClassificationOther",
+          "description": "Some other (probably locally defined) value(s) for emission classification.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/String"
+          },
+          "minItems": 0
+        },
+        "emissionLevel": {
+          "title": "emissionLevel",
+          "description": "The low emission level of a vehicle.",
+          "$ref": "DATEXII_3_Common.json#/definitions/LowEmissionLevelEnumG"
+        },
+        "emissionsExtensionG": {
+          "title": "emissionsExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/EmissionsExtensionTypeG"
+        }
+      }
+    },
+    "EmissionsExtensionTypeG": {
+      "title": "EmissionsExtensionTypeG",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "EmissionsExtension": {
+          "title": "EmissionsExtension",
+          "$ref": "DATEXII_3_CommonExtension.json#/definitions/EmissionsExtension"
+        }
+      }
+    },
+    "ExtensionTypeG": {
+      "title": "ExtensionTypeG",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "Fault": {
+      "title": "Fault",
+      "description": "Information about a fault relating to a specific piece of equipment or process.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "faultLastUpdateTime": {
+          "title": "faultLastUpdateTime",
+          "description": "The date and time at which the fault information as specified in this instance was last updated.",
+          "$ref": "DATEXII_3_Common.json#/definitions/DateTime"
+        },
+        "faultExtensionG": {
+          "title": "faultExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "faultLastUpdateTime"
+      ]
+    },
+    "FaultG": {
+      "title": "FaultG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comFault": {
+          "$ref": "DATEXII_3_Common.json#/definitions/Fault"
+        },
+        "roaPhysicalQuantityFault": {
+          "$ref": "DATEXII_3_RoadTrafficData.json#/definitions/PhysicalQuantityFault"
+        }
+      }
+    },
+    "Float": {
+      "title": "Float",
+      "description": "A floating point number whose value space consists of the values m × 2^e, where m is an integer whose absolute value is less than 2^24, and e is an integer between -149 and 104, inclusive.",
+      "type": "number"
+    },
+    "FloatingPointMetreDistanceValue": {
+      "title": "FloatingPointMetreDistanceValue",
+      "description": "A measured or calculated value of distance in metres in a floating point format.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "distance": {
+          "title": "distance",
+          "description": "A value of distance expressed in metres in a floating point format.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MetresAsFloat"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "floatingPointMetreDistanceValueExtensionG": {
+          "title": "floatingPointMetreDistanceValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "distance"
+      ]
+    },
+    "FrictionValue": {
+      "title": "FrictionValue",
+      "description": "A measured or calculated value of road surface friction.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "friction": {
+          "title": "friction",
+          "description": "Friction, usually a value between 0 and 1.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Float"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "frictionValueExtensionG": {
+          "title": "frictionValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "friction"
+      ]
+    },
+    "FuelTypeEnum": {
+      "title": "FuelTypeEnum",
+      "description": "Type of fuel used by a vehicle.",
+      "type": "string",
+      "enum": [
+        "all",
+        "battery",
+        "biodiesel",
+        "diesel",
+        "dieselBatteryHybrid",
+        "ethanol",
+        "hydrogen",
+        "liquidGas",
+        "lpg",
+        "methane",
+        "petrol",
+        "petrol95Octane",
+        "petrol98Octane",
+        "petrolBatteryHybrid",
+        "petrolLeaded",
+        "petrolUnleaded",
+        "unknown",
+        "other",
+        "extendedG"
+      ]
+    },
+    "FuelTypeEnumG": {
+      "title": "FuelTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/FuelTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "GrossWeightCharacteristic": {
+      "title": "GrossWeightCharacteristic",
+      "description": "Gross weight characteristic of a vehicle.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comparisonOperator": {
+          "title": "comparisonOperator",
+          "description": "The operator to be used in the vehicle characteristic comparison operation.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComparisonOperatorEnumG"
+        },
+        "grossVehicleWeight": {
+          "title": "grossVehicleWeight",
+          "description": "The gross weight of the vehicle and its load, including any trailers.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Tonnes"
+        },
+        "typeOfWeight": {
+          "title": "typeOfWeight",
+          "description": "The meaning of the weight value",
+          "$ref": "DATEXII_3_Common.json#/definitions/WeightTypeEnumG"
+        },
+        "grossWeightCharacteristicExtensionG": {
+          "title": "grossWeightCharacteristicExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "comparisonOperator",
+        "grossVehicleWeight",
+        "typeOfWeight"
+      ]
+    },
+    "HeaderInformation": {
+      "title": "HeaderInformation",
+      "description": "Management information relating to the data contained within a publication.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "confidentiality": {
+          "title": "confidentiality",
+          "description": "The extent to which the related information may be circulated, according to the recipient type.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ConfidentialityValueEnumG"
+        },
+        "allowedDeliveryChannel": {
+          "title": "allowedDeliveryChannel",
+          "description": "The allowed delivery channel.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/InformationDeliveryServicesEnumG"
+          },
+          "minItems": 0
+        },
+        "informationStatus": {
+          "title": "informationStatus",
+          "description": "The status of the related information (real, test, exercise ....).",
+          "$ref": "DATEXII_3_Common.json#/definitions/InformationStatusEnumG"
+        },
+        "headerInformationExtensionG": {
+          "title": "headerInformationExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "informationStatus"
+      ]
+    },
+    "HeaviestAxleWeightCharacteristic": {
+      "title": "HeaviestAxleWeightCharacteristic",
+      "description": "Weight characteristic of the heaviest axle on the vehicle.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comparisonOperator": {
+          "title": "comparisonOperator",
+          "description": "The operator to be used in the vehicle characteristic comparison operation.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComparisonOperatorEnumG"
+        },
+        "heaviestAxleWeight": {
+          "title": "heaviestAxleWeight",
+          "description": "The weight of the heaviest axle on the vehicle.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Tonnes"
+        },
+        "heaviestAxleWeightCharacteristicExtensionG": {
+          "title": "heaviestAxleWeightCharacteristicExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "comparisonOperator",
+        "heaviestAxleWeight"
+      ]
+    },
+    "Hectopascal": {
+      "title": "Hectopascal",
+      "description": "A measure of pressure defined in hectopascal.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "HeightCharacteristic": {
+      "title": "HeightCharacteristic",
+      "description": "Height characteristic of a vehicle.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comparisonOperator": {
+          "title": "comparisonOperator",
+          "description": "The operator to be used in the vehicle characteristic comparison operation.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComparisonOperatorEnumG"
+        },
+        "vehicleHeight": {
+          "title": "vehicleHeight",
+          "description": "The height of the highest part, excluding antennae, of an individual vehicle above the road surface, in metres.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MetresAsFloat"
+        },
+        "heightCharacteristicExtensionG": {
+          "title": "heightCharacteristicExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "comparisonOperator",
+        "vehicleHeight"
+      ]
+    },
+    "Humidity": {
+      "title": "Humidity",
+      "description": "Details of atmospheric humidity.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relativeHumidity": {
+          "title": "relativeHumidity",
+          "description": "The amount of water vapour in the air, as a percentage of the amount of water vapour in saturated air at the same temperature and at atmospheric pressure. The measurement is taken between 1.5 and 2 m above the ground and behind a meteorological screen.",
+          "$ref": "DATEXII_3_Common.json#/definitions/PercentageValue"
+        },
+        "humidityExtensionG": {
+          "title": "humidityExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "relativeHumidity"
+      ]
+    },
+    "InformationDeliveryServicesEnum": {
+      "title": "InformationDeliveryServicesEnum",
+      "description": "List of service channels or devices on which information or data exchanged can be delivered.",
+      "type": "string",
+      "enum": [
+        "anyGeneralDeliveryService",
+        "safetyServices",
+        "vms",
+        "extendedG"
+      ]
+    },
+    "InformationDeliveryServicesEnumG": {
+      "title": "InformationDeliveryServicesEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/InformationDeliveryServicesEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "InformationStatusEnum": {
+      "title": "InformationStatusEnum",
+      "description": "Status of the related information (i.e. real, test or exercise).",
+      "type": "string",
+      "enum": [
+        "real",
+        "securityExercise",
+        "technicalExercise",
+        "test",
+        "extendedG"
+      ]
+    },
+    "InformationStatusEnumG": {
+      "title": "InformationStatusEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/InformationStatusEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "InstanceOfDayEnum": {
+      "title": "InstanceOfDayEnum",
+      "description": "Instances of a day of the week in a month",
+      "type": "string",
+      "enum": [
+        "firstInstance",
+        "secondInstance",
+        "thirdInstance",
+        "fourthInstance",
+        "fifthInstance",
+        "lastInstance",
+        "extendedG"
+      ]
+    },
+    "InstanceOfDayEnumG": {
+      "title": "InstanceOfDayEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/InstanceOfDayEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "InstanceOfDayWithinMonth": {
+      "title": "InstanceOfDayWithinMonth",
+      "description": "Specification of periods defined by the instance of a specific weekday within a month (e.g. 3rd Tuesday in May)",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicableDay": {
+          "title": "applicableDay",
+          "description": "Applicable day of the week. \"All days of the week\" is expressed by non-inclusion of this attribute.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/DayEnumG"
+          },
+          "minItems": 0,
+          "maxItems": 7
+        },
+        "applicableMonth": {
+          "title": "applicableMonth",
+          "description": "Applicable month of the year.  \"All months of the year\" is expressed by non-inclusion of this attribute.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/MonthOfYearEnumG"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "applicableInstanceOfDayWithinMonth": {
+          "title": "applicableInstanceOfDayWithinMonth",
+          "description": "The specified integer instance of the specified applicable day within a month.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/InstanceOfDayEnumG"
+          },
+          "minItems": 1,
+          "maxItems": 5
+        },
+        "dayWeekMonthExtensionG": {
+          "title": "dayWeekMonthExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "instanceOfDayWithinMonthExtensionG": {
+          "title": "instanceOfDayWithinMonthExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "applicableInstanceOfDayWithinMonth"
+      ]
+    },
+    "Integer": {
+      "title": "Integer",
+      "description": "An integer number whose value space is the set {-2147483648, -2147483647, -2147483646, ..., -2, -1, 0, 1, 2, ..., 2147483645, 2147483646, 2147483647}.",
+      "type": "integer"
+    },
+    "IntegerMetreDistanceValue": {
+      "title": "IntegerMetreDistanceValue",
+      "description": "A measured or calculated value of distance in whole metres.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "integerMetreDistance": {
+          "title": "integerMetreDistance",
+          "description": "A value of distance expressed in metres in a non-negative integer format.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MetresAsNonNegativeInteger"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "integerMetreDistanceValueExtensionG": {
+          "title": "integerMetreDistanceValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "integerMetreDistance"
+      ]
+    },
+    "IntensityKilogramsPerSquareMetre": {
+      "title": "IntensityKilogramsPerSquareMetre",
+      "description": "A measure of the quantity of application of a substance to an area defined in kilograms per square metre.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "IntensityMillimetresPerHour": {
+      "title": "IntensityMillimetresPerHour",
+      "description": "A measure of precipitation intensity defined in millimetres per hour.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "InternationalIdentifier": {
+      "title": "InternationalIdentifier",
+      "description": "An identifier/name whose range is specific to the particular country.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "country": {
+          "title": "country",
+          "description": "EN ISO 3166-1 two-character country code.",
+          "$ref": "DATEXII_3_Common.json#/definitions/CountryCode"
+        },
+        "nationalIdentifier": {
+          "title": "nationalIdentifier",
+          "description": "Identifier or name unique within the specified country.",
+          "$ref": "DATEXII_3_Common.json#/definitions/String"
+        },
+        "internationalIdentifierExtensionG": {
+          "title": "internationalIdentifierExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "country",
+        "nationalIdentifier"
+      ]
+    },
+    "KilogramsConcentrationValue": {
+      "title": "KilogramsConcentrationValue",
+      "description": "A measured or calculated value of concentration of a substance in kilograms per unit volume.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "kilogramsConcentration": {
+          "title": "kilogramsConcentration",
+          "description": "A value defining the amount of a substance in a given volume (concentration) expressed in kilograms per cubic metre.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ConcentrationKilogramsPerCubicMetre"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "kilogramsConcentrationValueExtensionG": {
+          "title": "kilogramsConcentrationValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "kilogramsConcentration"
+      ]
+    },
+    "KilometresPerHour": {
+      "title": "KilometresPerHour",
+      "description": "A measure of speed defined in kilometres per hour.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "Language": {
+      "title": "Language",
+      "description": "A language datatype, identifies a specified language by an ISO 639-1 2-alpha code.",
+      "type": "string"
+    },
+    "LengthCharacteristic": {
+      "title": "LengthCharacteristic",
+      "description": "Length characteristic of a vehicle.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comparisonOperator": {
+          "title": "comparisonOperator",
+          "description": "The operator to be used in the vehicle characteristic comparison operation.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComparisonOperatorEnumG"
+        },
+        "vehicleLength": {
+          "title": "vehicleLength",
+          "description": "The overall distance between the front and back of an individual vehicle, including the length of any trailers, couplings, embedded features etc.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MetresAsFloat"
+        },
+        "lengthCharacteristicExtensionG": {
+          "title": "lengthCharacteristicExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "comparisonOperator",
+        "vehicleLength"
+      ]
+    },
+    "LoadTypeEnum": {
+      "title": "LoadTypeEnum",
+      "description": "Types of load carried by a vehicle.",
+      "type": "string",
+      "enum": [
+        "abnormalLoad",
+        "ammunition",
+        "chemicals",
+        "combustibleMaterials",
+        "corrosiveMaterials",
+        "debris",
+        "empty",
+        "explosiveMaterials",
+        "extraHighLoad",
+        "extraLongLoad",
+        "extraWideLoad",
+        "fuel",
+        "glass",
+        "goods",
+        "hazardousMaterials",
+        "liquid",
+        "livestock",
+        "materials",
+        "materialsDangerousForPeople",
+        "materialsDangerousForTheEnvironment",
+        "materialsDangerousForWater",
+        "oil",
+        "ordinary",
+        "perishableProducts",
+        "petrol",
+        "pharmaceuticalMaterials",
+        "radioactiveMaterials",
+        "refrigeratedGoods",
+        "refuse",
+        "toxicMaterials",
+        "vehicles",
+        "other",
+        "extendedG"
+      ]
+    },
+    "LoadTypeEnumG": {
+      "title": "LoadTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/LoadTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "LongString": {
+      "title": "LongString",
+      "description": "A character string with no specified length limit, whose value space is the set of finite-length sequences of characters. Every character has a corresponding Universal Character Set code point (as defined in ISO/IEC 10646), which is an integer.",
+      "type": "string"
+    },
+    "LowEmissionLevelEnum": {
+      "title": "LowEmissionLevelEnum",
+      "description": "The emission level of a vehicle.",
+      "type": "string",
+      "enum": [
+        "lowLevelEmission",
+        "freeOfEmission",
+        "extendedG"
+      ]
+    },
+    "LowEmissionLevelEnumG": {
+      "title": "LowEmissionLevelEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/LowEmissionLevelEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "MetresAsFloat": {
+      "title": "MetresAsFloat",
+      "description": "A measure of distance defined in metres in a floating point format.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "MetresAsNonNegativeInteger": {
+      "title": "MetresAsNonNegativeInteger",
+      "description": "A measure of distance defined in metres in a non negative integer format.",
+      "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+    },
+    "MetresPerSecond": {
+      "title": "MetresPerSecond",
+      "description": "A measure of speed defined in metres per second.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "MicrogramsConcentrationValue": {
+      "title": "MicrogramsConcentrationValue",
+      "description": "A measured or calculated value of concentration of a substance in micrograms per unit volume.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "microgramsConcentration": {
+          "title": "microgramsConcentration",
+          "description": "A value of the amount of a substance in a given volume (concentration) expressed in µg/m3 (micrograms/cubic metre).",
+          "$ref": "DATEXII_3_Common.json#/definitions/ConcentrationMicrogramsPerCubicMetre"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "microgramsConcentrationValueExtensionG": {
+          "title": "microgramsConcentrationValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "microgramsConcentration"
+      ]
+    },
+    "MonthOfYearEnum": {
+      "title": "MonthOfYearEnum",
+      "description": "A list of the months of the year.",
+      "type": "string",
+      "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        "extendedG"
+      ]
+    },
+    "MonthOfYearEnumG": {
+      "title": "MonthOfYearEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/MonthOfYearEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "MultilingualString": {
+      "title": "MultilingualString",
+      "description": "A multilingual string, whereby the same text may be expressed in more than one language.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/MultiLingualStringValue"
+          }
+        }
+      }
+    },
+    "MultiLingualStringValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lang": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "lang",
+        "value"
+      ]
+    },
+    "NamedAreaG": {
+      "title": "NamedAreaG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "locNamedArea": {
+          "$ref": "DATEXII_3_LocationReferencing.json#/definitions/NamedArea"
+        },
+        "locNutsNamedArea": {
+          "$ref": "DATEXII_3_LocationReferencing.json#/definitions/NutsNamedArea"
+        },
+        "locIsoNamedArea": {
+          "$ref": "DATEXII_3_LocationReferencing.json#/definitions/IsoNamedArea"
+        },
+        "locxNamedAreaExtended": {
+          "$ref": "DATEXII_3_LocationExtension.json#/definitions/NamedAreaExtended"
+        }
+      }
+    },
+    "NonNegativeInteger": {
+      "title": "NonNegativeInteger",
+      "description": "An integer number whose value space is the set {0, 1, 2, ..., 2147483645, 2147483646, 2147483647}.",
+      "type": "integer",
+      "minimum": 0.0
+    },
+    "NumberOfAxlesCharacteristic": {
+      "title": "NumberOfAxlesCharacteristic",
+      "description": "Number of axles characteristic of a vehicle.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comparisonOperator": {
+          "title": "comparisonOperator",
+          "description": "The operator to be used in the vehicle characteristic comparison operation.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComparisonOperatorEnumG"
+        },
+        "numberOfAxles": {
+          "title": "numberOfAxles",
+          "description": "The total number of axles of an individual vehicle.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfAxlesCharacteristicExtensionG": {
+          "title": "numberOfAxlesCharacteristicExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "comparisonOperator",
+        "numberOfAxles"
+      ]
+    },
+    "PayloadPublicationG": {
+      "title": "PayloadPublicationG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "versionG": {
+          "type": "string",
+          "default": "3.5"
+        },
+        "modelBaseVersionG": {
+          "type": "string",
+          "default": "3"
+        },
+        "extensionNameG": {
+          "type": "string"
+        },
+        "extensionVersionG": {
+          "type": "string"
+        },
+        "profileNameG": {
+          "type": "string"
+        },
+        "profileVersionG": {
+          "type": "string"
+        },
+        "roaElaboratedDataPublication": {
+          "$ref": "DATEXII_3_RoadTrafficData.json#/definitions/ElaboratedDataPublication"
+        },
+        "roaMeasuredDataPublication": {
+          "$ref": "DATEXII_3_RoadTrafficData.json#/definitions/MeasuredDataPublication"
+        },
+        "roaMeasurementSiteTablePublication": {
+          "$ref": "DATEXII_3_RoadTrafficData.json#/definitions/MeasurementSiteTablePublication"
+        }
+      },
+      "required": [
+        "modelBaseVersionG"
+      ]
+    },
+    "Percentage": {
+      "title": "Percentage",
+      "description": "A ratio expressed as an amount per hundred, such that for example the value 100 represents the case where a quantity is equal to the reference value it is compared with, while the value 50 represents a ratio of one half.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "PercentageValue": {
+      "title": "PercentageValue",
+      "description": "A measured or calculated value expressed as a percentage (amount per hundred).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "percentage": {
+          "title": "percentage",
+          "description": "A value expressed as a percentage (amount per hundred).",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "percentageValueExtensionG": {
+          "title": "percentageValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "percentage"
+      ]
+    },
+    "Period": {
+      "title": "Period",
+      "description": "A continuous time period or a set of discontinuous time periods defined by the intersection of a set of criteria all within an overall delimiting interval.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "startOfPeriod": {
+          "title": "startOfPeriod",
+          "description": "Start of period.",
+          "$ref": "DATEXII_3_Common.json#/definitions/DateTime"
+        },
+        "endOfPeriod": {
+          "title": "endOfPeriod",
+          "description": "End of a period.",
+          "$ref": "DATEXII_3_Common.json#/definitions/DateTime"
+        },
+        "periodName": {
+          "title": "periodName",
+          "description": "The name of the period.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "recurringTimePeriodOfDay": {
+          "title": "recurringTimePeriodOfDay",
+          "description": "A recurring period of a day.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/TimePeriodOfDay"
+          },
+          "minItems": 0
+        },
+        "recurringDayWeekMonthPeriod": {
+          "title": "recurringDayWeekMonthPeriod",
+          "description": "A recurring period defined in terms of days of the week, weeks of the month and months of the year. ",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/DayWeekMonthG"
+          },
+          "minItems": 0
+        },
+        "recurringSpecialDay": {
+          "title": "recurringSpecialDay",
+          "description": "A recurring period in terms of special days.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/SpecialDayG"
+          },
+          "minItems": 0
+        },
+        "periodExtensionG": {
+          "title": "periodExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "PollutantTypeEnum": {
+      "title": "PollutantTypeEnum",
+      "description": "Types of pollutant that can be measured in the atmosphere.",
+      "type": "string",
+      "enum": [
+        "benzeneTolueneXylene",
+        "carbonMonoxide",
+        "lead",
+        "methane",
+        "nitricOxide",
+        "nitrogenDioxide",
+        "nitrogenMonoxide",
+        "nitrogenOxides",
+        "nonMethaneHydrocarbons",
+        "ozone",
+        "particulates10",
+        "polycyclicAromaticHydrocarbons",
+        "primaryParticulate",
+        "sulphurDioxide",
+        "totalHydrocarbons",
+        "extendedG"
+      ]
+    },
+    "PollutantTypeEnumG": {
+      "title": "PollutantTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/PollutantTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "Pollution": {
+      "title": "Pollution",
+      "description": "Details of atmospheric pollution.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pollutantType": {
+          "title": "pollutantType",
+          "description": "The type of pollutant in the air.",
+          "$ref": "DATEXII_3_Common.json#/definitions/PollutantTypeEnumG"
+        },
+        "pollutantConcentration": {
+          "title": "pollutantConcentration",
+          "description": "The average concentration of the pollutant in the air.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MicrogramsConcentrationValue"
+        },
+        "pollutionExtensionG": {
+          "title": "pollutionExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "pollutantType"
+      ]
+    },
+    "PrecipitationDetail": {
+      "title": "PrecipitationDetail",
+      "description": "Details of precipitation (rain, snow etc.).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "precipitationType": {
+          "title": "precipitationType",
+          "description": "The type of precipitation which is affecting the driving conditions.",
+          "$ref": "DATEXII_3_Common.json#/definitions/PrecipitationTypeEnumG"
+        },
+        "precipitationIntensityGrade": {
+          "title": "precipitationIntensityGrade",
+          "description": "The intensity of precipitation expressed by enumerated value,",
+          "$ref": "DATEXII_3_Common.json#/definitions/PrecipitationIntensityEnumG"
+        },
+        "precipitationIntensity": {
+          "title": "precipitationIntensity",
+          "description": "The height of the precipitation received per unit time.",
+          "$ref": "DATEXII_3_Common.json#/definitions/PrecipitationIntensityValue"
+        },
+        "depositionDepth": {
+          "title": "depositionDepth",
+          "description": "The equivalent depth of the water layer resulting from precipitation or deposition on a non-porous horizontal surface. Non liquid precipitation is considered as melted in water form. ",
+          "$ref": "DATEXII_3_Common.json#/definitions/FloatingPointMetreDistanceValue"
+        },
+        "precipitationDetailExtensionG": {
+          "title": "precipitationDetailExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "PrecipitationIntensityEnum": {
+      "title": "PrecipitationIntensityEnum",
+      "description": "Intensity of precipitation.",
+      "type": "string",
+      "enum": [
+        "light",
+        "noPhenomena",
+        "moderate",
+        "heavy",
+        "violent",
+        "severe",
+        "extendedG"
+      ]
+    },
+    "PrecipitationIntensityEnumG": {
+      "title": "PrecipitationIntensityEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/PrecipitationIntensityEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "PrecipitationIntensityValue": {
+      "title": "PrecipitationIntensityValue",
+      "description": "A measured or calculated value of the accumulation rate of precipitation.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "millimetresPerHourIntensity": {
+          "title": "millimetresPerHourIntensity",
+          "description": "A value of precipitation intensity expressed in units of millimetres per hour.",
+          "$ref": "DATEXII_3_Common.json#/definitions/IntensityMillimetresPerHour"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "precipitationIntensityValueExtensionG": {
+          "title": "precipitationIntensityValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "millimetresPerHourIntensity"
+      ]
+    },
+    "PrecipitationTypeEnum": {
+      "title": "PrecipitationTypeEnum",
+      "description": "Types of precipitation.",
+      "type": "string",
+      "enum": [
+        "clearIce",
+        "dew",
+        "diamondDust",
+        "drizzle",
+        "freezingRain",
+        "glaze",
+        "hail",
+        "hardRime",
+        "hoarFrost",
+        "iceCrystals",
+        "icePellets",
+        "liquidFreezing",
+        "liquidNotFreezing",
+        "noPrecipitation",
+        "rain",
+        "rime",
+        "sleet",
+        "smallHail",
+        "snow",
+        "snowGrains",
+        "snowPellets",
+        "softRime",
+        "solid",
+        "wetSnow",
+        "whiteDev",
+        "unknown",
+        "extendedG"
+      ]
+    },
+    "PrecipitationTypeEnumG": {
+      "title": "PrecipitationTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/PrecipitationTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "Pressure": {
+      "title": "Pressure",
+      "description": "Details of atmospheric pressure.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pressureValue": {
+          "title": "pressureValue",
+          "$ref": "DATEXII_3_Common.json#/definitions/PressureValue"
+        },
+        "pressureExtensionG": {
+          "title": "pressureExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "pressureValue"
+      ]
+    },
+    "PressureValue": {
+      "title": "PressureValue",
+      "description": "A measured or calculated value of atmospheric pressure.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "pressure": {
+          "title": "pressure",
+          "description": "Atmospheric pressure.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Hectopascal"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "pressureValueExtensionG": {
+          "title": "pressureValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "pressure"
+      ]
+    },
+    "PublicEventTypeEnum": {
+      "title": "PublicEventTypeEnum",
+      "description": "Types of public events.",
+      "type": "string",
+      "enum": [
+        "agriculturalShow",
+        "airShow",
+        "artEvent",
+        "athleticsMeeting",
+        "commercialEvent",
+        "culturalEvent",
+        "ballGame",
+        "baseballGame",
+        "basketballGame",
+        "beerFestival",
+        "bicycleRace",
+        "boatRace",
+        "boatShow",
+        "boxingTournament",
+        "bullFight",
+        "ceremonialEvent",
+        "concert",
+        "cricketMatch",
+        "exhibition",
+        "fair",
+        "festival",
+        "filmFestival",
+        "filmTVMaking",
+        "fireworkDisplay",
+        "flowerEvent",
+        "foodFestival",
+        "footballMatch",
+        "funfair",
+        "gardeningOrFlowerShow",
+        "golfTournament",
+        "hockeyGame",
+        "horseRaceMeeting",
+        "internationalSportsMeeting",
+        "majorEvent",
+        "marathon",
+        "market",
+        "match",
+        "motorShow",
+        "motorSportRaceMeeting",
+        "openAirConcert",
+        "parade",
+        "procession",
+        "raceMeeting",
+        "rugbyMatch",
+        "severalMajorEvents",
+        "show",
+        "showJumping",
+        "soundAndLightShow",
+        "sportsMeeting",
+        "stateOccasion",
+        "streetFestival",
+        "tennisTournament",
+        "theatricalEvent",
+        "tournament",
+        "tradeFair",
+        "waterSportsMeeting",
+        "wineFestival",
+        "winterSportsMeeting",
+        "unknown",
+        "other",
+        "extendedG"
+      ]
+    },
+    "PublicEventTypeEnumG": {
+      "title": "PublicEventTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/PublicEventTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "PublicHoliday": {
+      "title": "PublicHoliday",
+      "description": "Specification of a specific public holiday in case specialDayType is set to 'publicHoliday'.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "intersectWithApplicableDays": {
+          "title": "intersectWithApplicableDays",
+          "description": "When true, the period is the intersection of applicable days and this special day. When false, the period is the union of applicable days and this special day.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "specialDayType": {
+          "title": "specialDayType",
+          "description": "Specification of a special day, for example schoolDay, publicHoliday, ...",
+          "$ref": "DATEXII_3_Common.json#/definitions/SpecialDayTypeEnumG"
+        },
+        "publicEvent": {
+          "title": "publicEvent",
+          "description": "Type of public event on this special day.",
+          "$ref": "DATEXII_3_Common.json#/definitions/PublicEventTypeEnumG"
+        },
+        "publicHolidayName": {
+          "title": "publicHolidayName",
+          "description": "Specification of a specific public holiday by its name.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "namedArea": {
+          "title": "namedArea",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/NamedAreaG"
+          },
+          "minItems": 0
+        },
+        "specialDayExtensionG": {
+          "title": "specialDayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "publicHolidayExtensionG": {
+          "title": "publicHolidayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "intersectWithApplicableDays",
+        "specialDayType",
+        "publicHolidayName"
+      ]
+    },
+    "Reference": {
+      "title": "Reference",
+      "description": "A reference to an identifiable managed object where the identifier is unique.  It comprises an identifier (e.g. UUID) and a string identifying the class of the referenced object.",
+      "type": "object",
+      "properties": {
+        "idG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "idG"
+      ]
+    },
+    "RoadSurfaceConditionMeasurements": {
+      "title": "RoadSurfaceConditionMeasurements",
+      "description": "Measurements of the road surface condition which relate specifically to the weather.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "temperatureBelowOrAboveRoadSurface": {
+          "title": "temperatureBelowOrAboveRoadSurface",
+          "description": "Temperature measurements below or above the road surface.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/TemperatureBelowOrAboveRoadSurface"
+          },
+          "minItems": 0
+        },
+        "roadSurfaceTemperature": {
+          "title": "roadSurfaceTemperature",
+          "description": "The temperature measured on the road surface.",
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureValue"
+        },
+        "protectionTemperature": {
+          "title": "protectionTemperature",
+          "description": "The road surface temperature down to which the surface is protected from freezing.",
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureValue"
+        },
+        "deIcingApplicationRate": {
+          "title": "deIcingApplicationRate",
+          "description": "Indicates the rate at which de-icing agents have been applied to the specified road.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ApplicationRateValue"
+        },
+        "deIcingConcentration": {
+          "title": "deIcingConcentration",
+          "description": "Indicates the concentration of de-icing agent present in surface water on the specified road.",
+          "$ref": "DATEXII_3_Common.json#/definitions/KilogramsConcentrationValue"
+        },
+        "friction": {
+          "title": "friction",
+          "description": "The friction value of the road.",
+          "$ref": "DATEXII_3_Common.json#/definitions/FrictionValue"
+        },
+        "depthOfSnow": {
+          "title": "depthOfSnow",
+          "description": "The depth of snow recorded on the road surface.",
+          "$ref": "DATEXII_3_Common.json#/definitions/FloatingPointMetreDistanceValue"
+        },
+        "waterFilmThickness": {
+          "title": "waterFilmThickness",
+          "description": "The depth of standing water to be found on the road surface.",
+          "$ref": "DATEXII_3_Common.json#/definitions/FloatingPointMetreDistanceValue"
+        },
+        "iceLayerThickness": {
+          "title": "iceLayerThickness",
+          "description": "The depth of ice to be found on the road surface.",
+          "$ref": "DATEXII_3_Common.json#/definitions/FloatingPointMetreDistanceValue"
+        },
+        "icePercentage": {
+          "title": "icePercentage",
+          "description": "The percentage of ice in the water.",
+          "$ref": "DATEXII_3_Common.json#/definitions/PercentageValue"
+        },
+        "roadSurfaceConditionMeasurementsExtensionG": {
+          "title": "roadSurfaceConditionMeasurementsExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "Seconds": {
+      "title": "Seconds",
+      "description": "Seconds.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "Source": {
+      "title": "Source",
+      "description": "Details of the source from which the information was obtained.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sourceCountry": {
+          "title": "sourceCountry",
+          "description": "EN ISO 3166-1 two-character country code of the source of the information.",
+          "$ref": "DATEXII_3_Common.json#/definitions/CountryCode"
+        },
+        "sourceIdentification": {
+          "title": "sourceIdentification",
+          "description": "Language independent textual code or identifier for the organisation or the equipment that has produced the information.",
+          "$ref": "DATEXII_3_Common.json#/definitions/String"
+        },
+        "sourceName": {
+          "title": "sourceName",
+          "description": "The name of the organisation which has produced the information relating to this version of the information.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "sourceType": {
+          "title": "sourceType",
+          "description": "Information about the technology used for measuring the data or the method used for obtaining qualitative descriptions relating to this version of the information.",
+          "$ref": "DATEXII_3_Common.json#/definitions/SourceTypeEnumG"
+        },
+        "reliable": {
+          "title": "reliable",
+          "description": "An indication as to whether the source deems the associated information to be reliable/correct. \"True\" indicates it is deemed reliable.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "sourceExtensionG": {
+          "title": "sourceExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "SourceTypeEnum": {
+      "title": "SourceTypeEnum",
+      "description": "Type of sources from which situation information may be derived.",
+      "type": "string",
+      "enum": [
+        "automobileClubPatrol",
+        "cameraObservation",
+        "freightVehicleOperator",
+        "inductionLoopMonitoringStation",
+        "infraredMonitoringStation",
+        "microwaveMonitoringStation",
+        "mobileTelephoneCaller",
+        "nonPoliceEmergencyServicePatrol",
+        "otherInformation",
+        "otherOfficialVehicle",
+        "policePatrol",
+        "privateBreakdownService",
+        "publicAndPrivateUtilities",
+        "registeredMotoristObserver",
+        "roadAuthorities",
+        "roadOperatorPatrol",
+        "roadsideTelephoneCaller",
+        "spotterAircraft",
+        "trafficMonitoringStation",
+        "transitOperator",
+        "vehicleProbeMeasurement",
+        "videoProcessingMonitoringStation",
+        "extendedG"
+      ]
+    },
+    "SourceTypeEnumG": {
+      "title": "SourceTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/SourceTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "SpecialDay": {
+      "title": "SpecialDay",
+      "description": "Specification of a special type of day, possibly also a public holiday. Can be country or region specific.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "intersectWithApplicableDays": {
+          "title": "intersectWithApplicableDays",
+          "description": "When true, the period is the intersection of applicable days and this special day. When false, the period is the union of applicable days and this special day.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "specialDayType": {
+          "title": "specialDayType",
+          "description": "Specification of a special day, for example schoolDay, publicHoliday, ...",
+          "$ref": "DATEXII_3_Common.json#/definitions/SpecialDayTypeEnumG"
+        },
+        "publicEvent": {
+          "title": "publicEvent",
+          "description": "Type of public event on this special day.",
+          "$ref": "DATEXII_3_Common.json#/definitions/PublicEventTypeEnumG"
+        },
+        "namedArea": {
+          "title": "namedArea",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/NamedAreaG"
+          },
+          "minItems": 0
+        },
+        "specialDayExtensionG": {
+          "title": "specialDayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "intersectWithApplicableDays",
+        "specialDayType"
+      ]
+    },
+    "SpecialDayG": {
+      "title": "SpecialDayG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comSpecialDay": {
+          "$ref": "DATEXII_3_Common.json#/definitions/SpecialDay"
+        },
+        "comPublicHoliday": {
+          "$ref": "DATEXII_3_Common.json#/definitions/PublicHoliday"
+        }
+      }
+    },
+    "SpecialDayTypeEnum": {
+      "title": "SpecialDayTypeEnum",
+      "description": "Collection of special types of days.",
+      "type": "string",
+      "enum": [
+        "dayBeforePublicHoliday",
+        "publicHoliday",
+        "dayFollowingPublicHoliday",
+        "longWeekendDay",
+        "inLieuOfPublicHoliday",
+        "schoolDay",
+        "schoolHolidays",
+        "publicEventDay",
+        "other",
+        "extendedG"
+      ]
+    },
+    "SpecialDayTypeEnumG": {
+      "title": "SpecialDayTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/SpecialDayTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "SpeedValue": {
+      "title": "SpeedValue",
+      "description": "A measured or calculated value of speed.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "speed": {
+          "title": "speed",
+          "description": "A value of speed expressed in kilometres per hour.",
+          "$ref": "DATEXII_3_Common.json#/definitions/KilometresPerHour"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "speedValueExtensionG": {
+          "title": "speedValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "speed"
+      ]
+    },
+    "String": {
+      "title": "String",
+      "description": "A character string whose value space is the set of finite-length sequences of characters. Every character has a corresponding Universal Character Set code point (as defined in ISO/IEC 10646), which is an integer.",
+      "type": "string",
+      "maxLength": 1024
+    },
+    "Temperature": {
+      "title": "Temperature",
+      "description": "Details of atmospheric temperature.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "airTemperature": {
+          "title": "airTemperature",
+          "description": "The air temperature measured in the shade between 1.5 and 2 metres above ground level.",
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureValue"
+        },
+        "dewPointTemperature": {
+          "title": "dewPointTemperature",
+          "description": "The temperature to which the air would have to cool (at constant pressure and water vapour content) in order to reach saturation.",
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureValue"
+        },
+        "maximumTemperature": {
+          "title": "maximumTemperature",
+          "description": "The maximum temperature during the forecast or measurement period.",
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureValue"
+        },
+        "minimumTemperature": {
+          "title": "minimumTemperature",
+          "description": "The minimum temperature during the forecast or measurement period.",
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureValue"
+        },
+        "temperatureExtensionG": {
+          "title": "temperatureExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "TemperatureBelowOrAboveRoadSurface": {
+      "title": "TemperatureBelowOrAboveRoadSurface",
+      "description": "Mesurement of temperature below or above the road surface.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "heightBelowOrAboveRoadSurface": {
+          "title": "heightBelowOrAboveRoadSurface",
+          "description": "The height of the measurement either below (negative value) or above (positive value) the road surface.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MetresAsFloat"
+        },
+        "temperatureBelowOrAboveRoadSurface": {
+          "title": "temperatureBelowOrAboveRoadSurface",
+          "description": "The temperature measured at the specified height below or above the road surface.",
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureValue"
+        },
+        "temperatureBelowOrAboveRoadSurfaceExtensionG": {
+          "title": "temperatureBelowOrAboveRoadSurfaceExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "heightBelowOrAboveRoadSurface",
+        "temperatureBelowOrAboveRoadSurface"
+      ]
+    },
+    "TemperatureCelsius": {
+      "title": "TemperatureCelsius",
+      "description": "A measure of temperature defined in degrees Celsius.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "TemperatureValue": {
+      "title": "TemperatureValue",
+      "description": "A measured or calculated value of temperature.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "temperature": {
+          "title": "temperature",
+          "description": "A value of temperature expressed in degrees Celsius.",
+          "$ref": "DATEXII_3_Common.json#/definitions/TemperatureCelsius"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "temperatureValueExtensionG": {
+          "title": "temperatureValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "temperature"
+      ]
+    },
+    "Time": {
+      "title": "Time",
+      "description": "An instant of time that recurs every day. The value space of time is the space of time of day values as defined in § 5.3 of [ISO 8601]. Specifically, it is a set of zero-duration daily time instances.",
+      "type": "string"
+    },
+    "TimePeriodOfDay": {
+      "title": "TimePeriodOfDay",
+      "description": "Specification of a continuous period of time within a 24 hour period.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "startTimeOfPeriod": {
+          "title": "startTimeOfPeriod",
+          "description": "Start of time period.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Time"
+        },
+        "endTimeOfPeriod": {
+          "title": "endTimeOfPeriod",
+          "description": "End of time period.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Time"
+        },
+        "timePeriodOfDayExtensionG": {
+          "title": "timePeriodOfDayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "endTimeOfPeriod",
+        "startTimeOfPeriod"
+      ]
+    },
+    "TimePrecisionEnum": {
+      "title": "TimePrecisionEnum",
+      "description": "List of precisions to which times can be given.",
+      "type": "string",
+      "enum": [
+        "tenthsOfSecond",
+        "second",
+        "minute",
+        "quarterHour",
+        "halfHour",
+        "hour",
+        "extendedG"
+      ]
+    },
+    "TimePrecisionEnumG": {
+      "title": "TimePrecisionEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/TimePrecisionEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "Tonnes": {
+      "title": "Tonnes",
+      "description": "A measure of weight defined in metric tonnes.",
+      "$ref": "DATEXII_3_Common.json#/definitions/Float"
+    },
+    "TrafficTrendTypeEnum": {
+      "title": "TrafficTrendTypeEnum",
+      "description": "List of terms used to describe the trend in traffic conditions.",
+      "type": "string",
+      "enum": [
+        "trafficBuildingUp",
+        "trafficEasing",
+        "trafficStable",
+        "unknown",
+        "extendedG"
+      ]
+    },
+    "TrafficTrendTypeEnumG": {
+      "title": "TrafficTrendTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/TrafficTrendTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "Url": {
+      "title": "Url",
+      "description": "A Uniform Resource Locator (URL) address comprising a compact string of characters for a resource available on the Internet.",
+      "type": "string"
+    },
+    "VehicleCharacteristics": {
+      "title": "VehicleCharacteristics",
+      "description": "The characteristics of a vehicle, e.g. lorry of gross weight greater than 30 tonnes.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fuelType": {
+          "title": "fuelType",
+          "description": "The type of fuel used by the vehicle.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/FuelTypeEnumG"
+          },
+          "minItems": 0
+        },
+        "loadType": {
+          "title": "loadType",
+          "description": "The type of load carried by the vehicle, especially in respect of hazardous loads.",
+          "$ref": "DATEXII_3_Common.json#/definitions/LoadTypeEnumG"
+        },
+        "vehicleEquipment": {
+          "title": "vehicleEquipment",
+          "description": "The type of equipment in use or on board the vehicle.",
+          "$ref": "DATEXII_3_Common.json#/definitions/VehicleEquipmentEnumG"
+        },
+        "vehicleType": {
+          "title": "vehicleType",
+          "description": "Vehicle type.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/VehicleTypeEnumG"
+          },
+          "minItems": 0
+        },
+        "vehicleUsage": {
+          "title": "vehicleUsage",
+          "description": "The type of usage of the vehicle (i.e. for what purpose is the vehicle being used).",
+          "$ref": "DATEXII_3_Common.json#/definitions/VehicleUsageEnumG"
+        },
+        "yearOfFirstRegistration": {
+          "title": "yearOfFirstRegistration",
+          "description": "Year of first registration of the vehicle",
+          "$ref": "DATEXII_3_Common.json#/definitions/Year"
+        },
+        "grossWeightCharacteristic": {
+          "title": "grossWeightCharacteristic",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/GrossWeightCharacteristic"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "heightCharacteristic": {
+          "title": "heightCharacteristic",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/HeightCharacteristic"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "lengthCharacteristic": {
+          "title": "lengthCharacteristic",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/LengthCharacteristic"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "widthCharacteristic": {
+          "title": "widthCharacteristic",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/WidthCharacteristic"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "heaviestAxleWeightCharacteristic": {
+          "title": "heaviestAxleWeightCharacteristic",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/HeaviestAxleWeightCharacteristic"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "numberOfAxlesCharacteristic": {
+          "title": "numberOfAxlesCharacteristic",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Common.json#/definitions/NumberOfAxlesCharacteristic"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "emissions": {
+          "title": "emissions",
+          "$ref": "DATEXII_3_Common.json#/definitions/Emissions"
+        },
+        "vehicleCharacteristicsExtensionG": {
+          "title": "vehicleCharacteristicsExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "VehicleEquipmentEnum": {
+      "title": "VehicleEquipmentEnum",
+      "description": "Types of vehicle equipment in use or on board.",
+      "type": "string",
+      "enum": [
+        "notUsingSnowChains",
+        "notUsingSnowChainsOrTyres",
+        "snowChainsInUse",
+        "snowTyresInUse",
+        "snowChainsOrTyresInUse",
+        "withoutSnowTyresOrChainsOnBoard",
+        "extendedG"
+      ]
+    },
+    "VehicleEquipmentEnumG": {
+      "title": "VehicleEquipmentEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/VehicleEquipmentEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "VehicleFlowValue": {
+      "title": "VehicleFlowValue",
+      "description": "A measured or calculated value of the flow rate of vehicles.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "vehicleFlowRate": {
+          "title": "vehicleFlowRate",
+          "description": "A value of vehicle flow rate expressed in vehicles per hour.",
+          "$ref": "DATEXII_3_Common.json#/definitions/VehiclesPerHour"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "vehicleFlowValueExtensionG": {
+          "title": "vehicleFlowValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "vehicleFlowRate"
+      ]
+    },
+    "VehiclesPerHour": {
+      "title": "VehiclesPerHour",
+      "description": "Vehicles per hour.",
+      "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+    },
+    "VehicleTypeEnum": {
+      "title": "VehicleTypeEnum",
+      "description": "Types of vehicle.",
+      "type": "string",
+      "enum": [
+        "agriculturalVehicle",
+        "anyVehicle",
+        "articulatedBus",
+        "articulatedTrolleyBus",
+        "articulatedVehicle",
+        "bicycle",
+        "bus",
+        "car",
+        "caravan",
+        "carOrLightVehicle",
+        "carWithCaravan",
+        "carWithTrailer",
+        "constructionOrMaintenanceVehicle",
+        "fourWheelDrive",
+        "heavyGoodsVehicle",
+        "heavyGoodsVehicleWithTrailer",
+        "heavyDutyTransporter",
+        "heavyVehicle",
+        "highSidedVehicle",
+        "lightCommercialVehicle",
+        "largeCar",
+        "largeGoodsVehicle",
+        "lightCommercialVehicleWithTrailer",
+        "longHeavyLorry",
+        "lorry",
+        "metro",
+        "minibus",
+        "moped",
+        "motorcycle",
+        "motorcycleWithSideCar",
+        "motorhome",
+        "motorscooter",
+        "passengerCar",
+        "smallCar",
+        "tanker",
+        "threeWheeledVehicle",
+        "trailer",
+        "tram",
+        "trolleyBus",
+        "twoWheeledVehicle",
+        "van",
+        "vehicleWithCaravan",
+        "vehicleWithCatalyticConverter",
+        "vehicleWithoutCatalyticConverter",
+        "vehicleWithTrailer",
+        "withEvenNumberedRegistrationPlates",
+        "withOddNumberedRegistrationPlates",
+        "unknown",
+        "other",
+        "extendedG"
+      ]
+    },
+    "VehicleTypeEnumExtensionTypeG": {
+      "title": "VehicleTypeEnumExtensionTypeG",
+      "type": "string",
+      "enum": [
+        "electricBike",
+        "electricScooter",
+        "personalLightElectricVehicle"
+      ]
+    },
+    "VehicleTypeEnumG": {
+      "title": "VehicleTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/VehicleTypeEnum"
+        },
+        "extendedValueG": {
+          "$ref": "DATEXII_3_Common.json#/definitions/VehicleTypeEnumExtensionTypeG"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "VehicleUsageEnum": {
+      "title": "VehicleUsageEnum",
+      "description": "Types of usage of a vehicle.",
+      "type": "string",
+      "enum": [
+        "agricultural",
+        "carSharing",
+        "cityLogistics",
+        "commercial",
+        "emergencyServices",
+        "military",
+        "nonCommercial",
+        "patrol",
+        "recoveryServices",
+        "roadMaintenanceOrConstruction",
+        "roadOperator",
+        "taxi",
+        "extendedG"
+      ]
+    },
+    "VehicleUsageEnumG": {
+      "title": "VehicleUsageEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/VehicleUsageEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "VersionedReference": {
+      "title": "VersionedReference",
+      "description": "A reference to an identifiable version managed object where the combination of the identifier and version is unique. It comprises an identifier (e.g. UUID), a version (NonNegativeInteger) and a string identifying the class of the referenced object.",
+      "type": "object",
+      "properties": {
+        "idG": {
+          "type": "string"
+        },
+        "versionG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "idG"
+      ]
+    },
+    "Visibility": {
+      "title": "Visibility",
+      "description": "Details of atmospheric visibility.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minimumVisibilityDistance": {
+          "title": "minimumVisibilityDistance",
+          "description": "The minimum distance, measured or estimated, beyond which drivers may be unable to clearly see a vehicle or an obstacle.",
+          "$ref": "DATEXII_3_Common.json#/definitions/IntegerMetreDistanceValue"
+        },
+        "visibilityExtensionG": {
+          "title": "visibilityExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "minimumVisibilityDistance"
+      ]
+    },
+    "WeatherRelatedRoadConditionTypeEnum": {
+      "title": "WeatherRelatedRoadConditionTypeEnum",
+      "description": "Types of road surface conditions which are related to the weather.",
+      "type": "string",
+      "enum": [
+        "blackIce",
+        "deepSnow",
+        "dry",
+        "freezingOfWetRoads",
+        "freezingPavements",
+        "freezingRain",
+        "freshSnow",
+        "glaze",
+        "ice",
+        "iceBuildUp",
+        "iceWithWheelBarTracks",
+        "icyPatches",
+        "looseSnow",
+        "moist",
+        "normalWinterConditionsForPedestrians",
+        "notDry",
+        "packedSnow",
+        "rime",
+        "roadSurfaceMelting",
+        "slippery",
+        "slushOnRoad",
+        "slushStrings",
+        "snow",
+        "snowDrifts",
+        "snowOnPavement",
+        "wetAndIcyRoad",
+        "snowOnTheRoad",
+        "wetIcyPavement",
+        "streamingWater",
+        "surfaceWater",
+        "wet",
+        "other",
+        "extendedG"
+      ]
+    },
+    "WeatherRelatedRoadConditionTypeEnumG": {
+      "title": "WeatherRelatedRoadConditionTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/WeatherRelatedRoadConditionTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "WeightTypeEnum": {
+      "title": "WeightTypeEnum",
+      "description": "Type of weight - describing the meaning of a vehicle weight value",
+      "type": "string",
+      "enum": [
+        "actual",
+        "maximumPermitted",
+        "extendedG"
+      ]
+    },
+    "WeightTypeEnumG": {
+      "title": "WeightTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Common.json#/definitions/WeightTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "WidthCharacteristic": {
+      "title": "WidthCharacteristic",
+      "description": "Width characteristic of a vehicle.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "comparisonOperator": {
+          "title": "comparisonOperator",
+          "description": "The operator to be used in the vehicle characteristic comparison operation.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComparisonOperatorEnumG"
+        },
+        "vehicleWidth": {
+          "title": "vehicleWidth",
+          "description": "The maximum width of an individual vehicle, including any features embedded or fixed on it, in metres.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MetresAsFloat"
+        },
+        "widthCharacteristicExtensionG": {
+          "title": "widthCharacteristicExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "comparisonOperator",
+        "vehicleWidth"
+      ]
+    },
+    "Wind": {
+      "title": "Wind",
+      "description": "Wind conditions on the road. ",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "windMeasurementHeight": {
+          "title": "windMeasurementHeight",
+          "description": "The height in metres above the road surface at which the wind is measured.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MetresAsNonNegativeInteger"
+        },
+        "windSpeed": {
+          "title": "windSpeed",
+          "description": "The wind speed averaged over at least 10 minutes, measured at a default height of10 metres (meteorological standard) above the road surface, unless measurement height is specified.",
+          "$ref": "DATEXII_3_Common.json#/definitions/WindSpeedValue"
+        },
+        "maximumWindSpeed": {
+          "title": "maximumWindSpeed",
+          "description": "The maximum wind speed in a measurement period of 10 minutes.",
+          "$ref": "DATEXII_3_Common.json#/definitions/WindSpeedValue"
+        },
+        "windDirectionBearing": {
+          "title": "windDirectionBearing",
+          "description": "The average direction from which the wind blows, in terms of a bearing measured in degrees (0 - 359).",
+          "$ref": "DATEXII_3_Common.json#/definitions/DirectionBearingValue"
+        },
+        "maximumWindDirectionBearing": {
+          "title": "maximumWindDirectionBearing",
+          "description": "The direction from which the maximum wind blows, in terms of a bearing measured in degrees (0 - 359).",
+          "$ref": "DATEXII_3_Common.json#/definitions/DirectionBearingValue"
+        },
+        "windDirectionCompass": {
+          "title": "windDirectionCompass",
+          "description": "The average direction from which the wind blows, in terms of points of the compass.",
+          "$ref": "DATEXII_3_Common.json#/definitions/DirectionCompassValue"
+        },
+        "maximumWindDirectionCompass": {
+          "title": "maximumWindDirectionCompass",
+          "description": "The direction from which the maximum wind blows, in terms of points of the compass.",
+          "$ref": "DATEXII_3_Common.json#/definitions/DirectionCompassValue"
+        },
+        "windExtensionG": {
+          "title": "windExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "WindSpeedValue": {
+      "title": "WindSpeedValue",
+      "description": "A measured or calculated value of wind speed.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dataError": {
+          "title": "dataError",
+          "description": "Indication of whether the value is deemed to be erroneous by the supplier (true = erroneous). If not present, the data value is assumed to be ok. This may be used when automatic fault detection information relating to sensors is available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "reasonForDataError": {
+          "title": "reasonForDataError",
+          "description": "The reason why the value is deemed to be erroneous by the supplier.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "accuracy": {
+          "title": "accuracy",
+          "description": "The extent to which the value is expected to be free from error, measured as a percentage of the data value. 100% means fully accurate.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Percentage"
+        },
+        "computationalMethod": {
+          "title": "computationalMethod",
+          "description": "Method of computation which has been used to compute this data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/ComputationMethodEnumG"
+        },
+        "numberOfIncompleteInputs": {
+          "title": "numberOfIncompleteInputs",
+          "description": "The number of inputs detected but not completed during the sampling or measurement period; e.g. vehicles detected entering but not exiting the detection zone.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "numberOfInputValuesUsed": {
+          "title": "numberOfInputValuesUsed",
+          "description": "The number of input values used in the sampling or measurement period to determine the data value.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "windSpeed": {
+          "title": "windSpeed",
+          "description": "A value of wind speed expressed in metres per second.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MetresPerSecond"
+        },
+        "dataValueExtensionG": {
+          "title": "dataValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "windSpeedValueExtensionG": {
+          "title": "windSpeedValueExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "windSpeed"
+      ]
+    },
+    "Year": {
+      "title": "Year",
+      "description": "A year.",
+      "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+    }
+  }
+}

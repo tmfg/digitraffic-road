@@ -7,4 +7,7 @@
     <jaxb:bindings schemaLocation="ImsXmlMessage_1_2_0.xsd" node="//xs:element[@name='imsMessage']/xs:complexType[1]">
         <inheritance:implements>fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage</inheritance:implements>
     </jaxb:bindings>
+    <jaxb:bindings schemaLocation="ImsXmlMessage_1_2_0.xsd" node="//xs:element[@name='messageContent']/xs:complexType[1]">
+        <inheritance:implements>fi.livi.digitraffic.tie.conf.jms.ExternalImsMessageContent</inheritance:implements>
+    </jaxb:bindings>
 </jaxb:bindings>

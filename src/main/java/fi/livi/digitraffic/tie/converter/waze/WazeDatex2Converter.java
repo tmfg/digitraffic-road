@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.converter.waze;
 
-import static fi.livi.digitraffic.tie.datex2.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_OPEN;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_OPEN;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import fi.livi.digitraffic.tie.datex2.*;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -18,6 +16,16 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.OverallPeriod;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagement;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationRecord;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TransitInformation;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ValidityStatusEnum;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi._RoadOrCarriagewayOrLaneManagementExtensionType;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
@@ -128,7 +136,7 @@ public class WazeDatex2Converter {
             .filter(sr -> sr instanceof RoadOrCarriagewayOrLaneManagement)
             .anyMatch(sr -> Optional.of((RoadOrCarriagewayOrLaneManagement) sr)
                 .map(RoadOrCarriagewayOrLaneManagement::getRoadOrCarriagewayOrLaneManagementExtension)
-                .map(RoadOrCarriagewayOrLaneManagementExtensionType::getRoadOrCarriagewayOrLaneManagementType)
+                .map(_RoadOrCarriagewayOrLaneManagementExtensionType::getRoadOrCarriagewayOrLaneManagementType)
                 .map(x -> x.equals(ICE_ROAD_OPEN))
                 .orElse(false));
     }
@@ -139,7 +147,7 @@ public class WazeDatex2Converter {
             .stream()
             .anyMatch(sr -> sr instanceof TransitInformation);
     }
-    
+
     public static boolean isValidWazeEntry(final WazeDatex2FeatureDto feature) {
         return hasGeometry(feature)
             && hasActiveSituationRecords(feature)

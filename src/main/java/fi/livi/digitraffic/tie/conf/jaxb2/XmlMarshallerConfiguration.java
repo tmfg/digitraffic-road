@@ -44,13 +44,13 @@ public class XmlMarshallerConfiguration {
     }
 
     @Bean
-    public Jaxb2Marshaller datex2Jaxb2Marshaller() {
-        return createMarshaller("fi.livi.digitraffic.tie.datex2");
+    public Jaxb2Marshaller datex2v2_2_3_fiJaxb2Marshaller() {
+        return createMarshaller("fi.livi.digitraffic.tie.datex2.v2_2_3_fi");
     }
 
     @Bean
-    public Jaxb2Marshaller datex2ResponseJaxb2Marshaller() {
-        return createMarshaller("fi.livi.digitraffic.tie.datex2.response");
+    public Jaxb2Marshaller datex2v3_5Jaxb2Marshaller() {
+        return createMarshaller("fi.livi.digitraffic.tie.external.datex2.v3_5");
     }
 
     private static Jaxb2Marshaller createMarshaller(final String...contextPaths) {

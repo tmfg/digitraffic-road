@@ -1,0 +1,1010 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "ColourEnum": {
+      "title": "ColourEnum",
+      "description": "Colours.",
+      "type": "string",
+      "enum": [
+        "amber",
+        "blue",
+        "green",
+        "red",
+        "white",
+        "whiteYellow",
+        "extendedG"
+      ]
+    },
+    "ColourEnumG": {
+      "title": "ColourEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/ColourEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "CompositePictogram": {
+      "title": "CompositePictogram",
+      "description": "A composite pictogram representing a diagrammatic schema in association with an embedded regular sign.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "customPictogramCode": {
+          "title": "customPictogramCode",
+          "description": "If a custom code list (not based on GDD) is being used, this is the code of the pictogram using the pictogram code list identified in the corresponding PictogramDisplayArea object",
+          "$ref": "DATEXII_3_Common.json#/definitions/String"
+        },
+        "additionalDescription": {
+          "title": "additionalDescription",
+          "description": "Additional description of the pictogram.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "pictogramFlashing": {
+          "title": "pictogramFlashing",
+          "description": "Indication of whether the pictogram is flashing.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "pictogramInInverseColour": {
+          "title": "pictogramInInverseColour",
+          "description": "The pictogram is displayed in inverse colour (i.e. the colours are the inverse of normal).",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "viennaConventionCompliant": {
+          "title": "viennaConventionCompliant",
+          "description": "Indicates that the displayed pictogram conforms with the Vienna Convention defined pictogram list as modified by \"UNECE Consolidated Resolution on Road Signs and Signals\".",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "pictogramInformationType": {
+          "title": "pictogramInformationType",
+          "description": "Allows characterising the type of displayed information",
+          "$ref": "DATEXII_3_Vms.json#/definitions/InformationTypeEnumG"
+        },
+        "pictogramDescription": {
+          "title": "pictogramDescription",
+          "description": "Description of the displayed composed pictogram.",
+          "$ref": "DATEXII_3_Vms.json#/definitions/CompositePictogramEnumG"
+        },
+        "gddStructure": {
+          "title": "gddStructure",
+          "$ref": "DATEXII_3_Vms.json#/definitions/GddStructure"
+        },
+        "regularPictogram": {
+          "title": "regularPictogram",
+          "$ref": "DATEXII_3_Vms.json#/definitions/RegularPictogram"
+        },
+        "pictogramExtensionG": {
+          "title": "pictogramExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "compositePictogramExtensionG": {
+          "title": "compositePictogramExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "pictogramDescription",
+        "regularPictogram"
+      ]
+    },
+    "CompositePictogramEnum": {
+      "title": "CompositePictogramEnum",
+      "description": "Identifies a pictogram used only for building a composite pictogram",
+      "type": "string",
+      "enum": [
+        "conditionOnCurrentSectionAfterNextExit",
+        "conditionAtNextExit",
+        "conditionOnCurrentSectionAfterSecondtExit",
+        "conditionAtSecondExit",
+        "restrictionOnCurrentSectionAfterNextExit",
+        "restrictionAtNextExit",
+        "restrictionOnCurrentSectionAfterSecondExit",
+        "restrictionAtSecondtExit",
+        "extendedG"
+      ]
+    },
+    "CompositePictogramEnumG": {
+      "title": "CompositePictogramEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/CompositePictogramEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "DisplayAreaSettingsG": {
+      "title": "DisplayAreaSettingsG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vmsTextDisplay": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/TextDisplay"
+        },
+        "vmsSupplementaryPictogram": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/SupplementaryPictogram"
+        },
+        "vmsSupplementaryText": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/SupplementaryText"
+        },
+        "vmsPictogramDisplay": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/PictogramDisplay"
+        },
+        "vmsMultiPageDisplay": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/MultiPageDisplay"
+        }
+      }
+    },
+    "DisplayedNumericalInformation": {
+      "title": "DisplayedNumericalInformation",
+      "description": "Numerical information displayed on a sign",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "numericalInformationType": {
+          "title": "numericalInformationType",
+          "description": "Type of numerical information displayed",
+          "$ref": "DATEXII_3_Vms.json#/definitions/DisplayedNumericalInformationTypeEnumG"
+        },
+        "numericValue": {
+          "title": "numericValue",
+          "description": "The value displayed. In the special case where the unit of measure is feet and inches, the part of the number after the decimal separator is the number of inches.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Decimal"
+        },
+        "unitOfMeasure": {
+          "title": "unitOfMeasure",
+          "description": "The unit of measure for the numeric value. This may be displayed or predefined for a type of sign.",
+          "$ref": "DATEXII_3_Vms.json#/definitions/UnitOfMeasureEnumG"
+        },
+        "displayedNumericalInformationExtensionG": {
+          "title": "displayedNumericalInformationExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "numericalInformationType",
+        "numericValue",
+        "unitOfMeasure"
+      ]
+    },
+    "DisplayedNumericalInformationTypeEnum": {
+      "title": "DisplayedNumericalInformationTypeEnum",
+      "description": "Type of numerical information displayed",
+      "type": "string",
+      "enum": [
+        "distance",
+        "height",
+        "length",
+        "rateOfIncline",
+        "sectionLength",
+        "speed",
+        "weight",
+        "weightPerAxle",
+        "width",
+        "extendedG"
+      ]
+    },
+    "DisplayedNumericalInformationTypeEnumG": {
+      "title": "DisplayedNumericalInformationTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/DisplayedNumericalInformationTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "GddPictogramAttributes": {
+      "title": "GddPictogramAttributes",
+      "description": "ISO 14823 Graphic Data Dictionary attributes with textual or numeric data to supplement a pictogram identification.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "attributes": {
+          "title": "attributes",
+          "description": "ISO 14823 \"attributes\" data frame which augments the basic identification of the type of pictogram with further textual or numeric data. The encoding shall follow unaligned packed encoding rules (UPER) [ISO/IEC 8825-2:2015]",
+          "$ref": "DATEXII_3_Common.json#/definitions/Base64Binary"
+        },
+        "gddPictogramAttributesExtensionG": {
+          "title": "gddPictogramAttributesExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "attributes"
+      ]
+    },
+    "GddPictogramCategoryCode": {
+      "title": "GddPictogramCategoryCode",
+      "description": "A 3-digit code to identify a pictogram, as defined in ISO 14823 Graphic Data Dictionary. That standard is inconsistent in its definition of the value range; this model uses the more permissive definition where the bounds are 100 and 999.",
+      "type": "integer",
+      "minimum": 0.0,
+      "exclusiveMinimum": true
+    },
+    "GddPictogramIdentification": {
+      "title": "GddPictogramIdentification",
+      "description": "Group of codes that uniquely identifies a kind of pictogram, according to the ISO 14823 Graphic Data Dictionary",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "country": {
+          "title": "country",
+          "description": "Country code used to either allow associating a country-specific rendering with the coded pictogram or distinguish nationally-defined pictogram codes.",
+          "$ref": "DATEXII_3_Common.json#/definitions/CountryCode"
+        },
+        "serviceCategory": {
+          "title": "serviceCategory",
+          "description": "Category used to group pictograms for a given usage",
+          "$ref": "DATEXII_3_Vms.json#/definitions/GddServiceCategoryEnumG"
+        },
+        "pictogramCategoryCode": {
+          "title": "pictogramCategoryCode",
+          "description": "Code that identifies a pictogram for a given country and service category.",
+          "$ref": "DATEXII_3_Vms.json#/definitions/GddPictogramCategoryCode"
+        },
+        "gddPictogramIdentificationExtensionG": {
+          "title": "gddPictogramIdentificationExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "country",
+        "pictogramCategoryCode",
+        "serviceCategory"
+      ]
+    },
+    "GddServiceCategoryEnum": {
+      "title": "GddServiceCategoryEnum",
+      "description": "Type of service offered by the pictogram, as defined in ISO 14823.",
+      "type": "string",
+      "enum": [
+        "dangerWarning",
+        "regulatory",
+        "informative",
+        "publicFacilities",
+        "ambientConditions",
+        "roadConditions",
+        "extendedG"
+      ]
+    },
+    "GddServiceCategoryEnumG": {
+      "title": "GddServiceCategoryEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/GddServiceCategoryEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "GddStructure": {
+      "title": "GddStructure",
+      "description": "Graphic Data Dictionary structure, to identify a pictogram by code and optional supplementary attributes",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "gddPictogramIdentification": {
+          "title": "gddPictogramIdentification",
+          "$ref": "DATEXII_3_Vms.json#/definitions/GddPictogramIdentification"
+        },
+        "gddPictogramAttributes": {
+          "title": "gddPictogramAttributes",
+          "$ref": "DATEXII_3_Vms.json#/definitions/GddPictogramAttributes"
+        },
+        "gddStructureExtensionG": {
+          "title": "gddStructureExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "gddPictogramIdentification"
+      ]
+    },
+    "Image": {
+      "title": "Image",
+      "description": "An image, with encoded data and identification of format",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "imageData": {
+          "title": "imageData",
+          "description": "Encoded image data",
+          "$ref": "DATEXII_3_Common.json#/definitions/Base64Binary"
+        },
+        "imageFormat": {
+          "title": "imageFormat",
+          "description": "Identifies the image format of the associated image data",
+          "$ref": "DATEXII_3_Vms.json#/definitions/ImageFormatEnumG"
+        },
+        "imageExtensionG": {
+          "title": "imageExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "imageData",
+        "imageFormat"
+      ]
+    },
+    "ImageFormatEnum": {
+      "title": "ImageFormatEnum",
+      "description": "Identifies an image format",
+      "type": "string",
+      "enum": [
+        "bmp",
+        "gif",
+        "jpeg",
+        "png",
+        "tiff",
+        "extendedG"
+      ]
+    },
+    "ImageFormatEnumG": {
+      "title": "ImageFormatEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/ImageFormatEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "InformationTypeEnum": {
+      "title": "InformationTypeEnum",
+      "description": "Type of text characterisation.",
+      "type": "string",
+      "enum": [
+        "situationInformation",
+        "warning",
+        "prohibition",
+        "obligation",
+        "destination",
+        "travelTime",
+        "delay",
+        "location",
+        "vehicleType",
+        "generalInformation",
+        "blank",
+        "other",
+        "extendedG"
+      ]
+    },
+    "InformationTypeEnumG": {
+      "title": "InformationTypeEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/InformationTypeEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "MultiPageDisplay": {
+      "title": "MultiPageDisplay",
+      "description": "A display of multiple pages, sequentially displayed in order of their \"pageNumber\".",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isBlank": {
+          "title": "isBlank",
+          "description": "Identifies whether this display area is blank. The absence of this attribute has no semantics.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legallyBinding": {
+          "title": "legallyBinding",
+          "description": "The semantics of this display are legally binding for road users",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legalBasis": {
+          "title": "legalBasis",
+          "description": "Identifies any legal basis for the elements displayed",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "sequenceGroupNumber": {
+          "title": "sequenceGroupNumber",
+          "description": "Where MultiPageDisplay instances have the same sequenceGroupNumber, the timed progression through their pages is synchronised.",
+          "$ref": "DATEXII_3_Common.json#/definitions/NonNegativeInteger"
+        },
+        "displayAreaSettings": {
+          "title": "displayAreaSettings",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Vms.json#/definitions/multiPageDisplayPageNumberDisplayAreaSettingsG"
+          },
+          "minItems": 0
+        },
+        "displayAreaSettingsExtensionG": {
+          "title": "displayAreaSettingsExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "multiPageDisplayExtensionG": {
+          "title": "multiPageDisplayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "multiPageDisplayPageNumberDisplayAreaSettingsG": {
+      "title": "multiPageDisplayPageNumberDisplayAreaSettingsG",
+      "type": "object",
+      "properties": {
+        "displayAreaSettings": {
+          "title": "displayAreaSettings",
+          "$ref": "DATEXII_3_Vms.json#/definitions/DisplayAreaSettingsG"
+        },
+        "pageNumber": {
+          "title": "pageNumber",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "displayAreaSettings",
+        "pageNumber"
+      ]
+    },
+    "PictogramDisplay": {
+      "title": "PictogramDisplay",
+      "description": "A display of a pictogram on one area on a VMS, potentially with associated supplemental information or instructions.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isBlank": {
+          "title": "isBlank",
+          "description": "Identifies whether this display area is blank. The absence of this attribute has no semantics.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legallyBinding": {
+          "title": "legallyBinding",
+          "description": "The semantics of this display are legally binding for road users",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legalBasis": {
+          "title": "legalBasis",
+          "description": "Identifies any legal basis for the elements displayed",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "isPrimaryPictogram": {
+          "title": "isPrimaryPictogram",
+          "description": "Indicates if the given pictogram display area is considered as the primary pictogram (= True) or not (= False).",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "pictogram": {
+          "title": "pictogram",
+          "$ref": "DATEXII_3_Vms.json#/definitions/PictogramG"
+        },
+        "supplementaryInformationDisplay": {
+          "title": "supplementaryInformationDisplay",
+          "$ref": "DATEXII_3_Vms.json#/definitions/SupplementaryInformationDisplayG"
+        },
+        "image": {
+          "title": "image",
+          "$ref": "DATEXII_3_Vms.json#/definitions/Image"
+        },
+        "displayAreaSettingsExtensionG": {
+          "title": "displayAreaSettingsExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "pictogramDisplayExtensionG": {
+          "title": "pictogramDisplayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "pictogram"
+      ]
+    },
+    "PictogramEnum": {
+      "title": "PictogramEnum",
+      "description": "Types of pictogram not currently covered by ISO 14823 Graphic Data Dictionary",
+      "type": "string",
+      "enum": [
+        "blankVoid",
+        "bridgeClosed",
+        "carParkFull",
+        "carParkSpacesAvailable",
+        "corridorForEmergencyVehicleAccess",
+        "curveArrowToLeft",
+        "curveArrowToRight",
+        "dangerOfFire",
+        "doubleExitToLeft",
+        "doubleExitToRight",
+        "endOfAdvisorySpeed",
+        "fastenChildrensSeatBelts",
+        "fastenYourSeatBelt",
+        "fire",
+        "footballMatch",
+        "hardShoulderNotRunning",
+        "hardShoulderRunning",
+        "horizontalDiversionToLeft",
+        "horizontalDiversionToRight",
+        "keepASafeDistance",
+        "keepLeft",
+        "keepRight",
+        "lane1ClosedOf2",
+        "lane2ClosedOf2",
+        "lane1ClosedOf3",
+        "lane3ClosedOf3",
+        "lanes1And2ClosedOf3",
+        "lanes2And3ClosedOf3",
+        "lane1ClosedOf4",
+        "lane4ClosedOf4",
+        "lanes1And2ClosedOf4",
+        "lanes3And4ClosedOf4",
+        "lanes1And2And3ClosedOf4",
+        "lanes2And3And4ClosedOf4",
+        "leftHandLaneClosed",
+        "narrowLanesAhead",
+        "obliqueArrowToLeft",
+        "obliqueArrowToRight",
+        "pollutionOrSmogAlert",
+        "rightHandLaneClosed",
+        "singleExitToLeft",
+        "singleExitToRight",
+        "smoke",
+        "snowPloughInAction",
+        "speedCamerasInAction",
+        "straightVerticalArrow",
+        "trafficDeviatedToOppositeCarriagewayAhead",
+        "trafficPartiallyDeviatedToOppositeCarriagewayAhead",
+        "tunnelClosed",
+        "verticalDiversion",
+        "other",
+        "extendedG"
+      ]
+    },
+    "PictogramEnumG": {
+      "title": "PictogramEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/PictogramEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "PictogramG": {
+      "title": "PictogramG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vmsCompositePictogram": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/CompositePictogram"
+        },
+        "vmsRegularPictogram": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/RegularPictogram"
+        }
+      }
+    },
+    "RegularPictogram": {
+      "title": "RegularPictogram",
+      "description": "A regular pictogram displayable on a VMS panel.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "customPictogramCode": {
+          "title": "customPictogramCode",
+          "description": "If a custom code list (not based on GDD) is being used, this is the code of the pictogram using the pictogram code list identified in the corresponding PictogramDisplayArea object",
+          "$ref": "DATEXII_3_Common.json#/definitions/String"
+        },
+        "additionalDescription": {
+          "title": "additionalDescription",
+          "description": "Additional description of the pictogram.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "pictogramFlashing": {
+          "title": "pictogramFlashing",
+          "description": "Indication of whether the pictogram is flashing.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "pictogramInInverseColour": {
+          "title": "pictogramInInverseColour",
+          "description": "The pictogram is displayed in inverse colour (i.e. the colours are the inverse of normal).",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "viennaConventionCompliant": {
+          "title": "viennaConventionCompliant",
+          "description": "Indicates that the displayed pictogram conforms with the Vienna Convention defined pictogram list as modified by \"UNECE Consolidated Resolution on Road Signs and Signals\".",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "pictogramInformationType": {
+          "title": "pictogramInformationType",
+          "description": "Allows characterising the type of displayed information",
+          "$ref": "DATEXII_3_Vms.json#/definitions/InformationTypeEnumG"
+        },
+        "pictogramDescription": {
+          "title": "pictogramDescription",
+          "description": "Description of the pictogram.",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Vms.json#/definitions/PictogramEnumG"
+          },
+          "minItems": 0
+        },
+        "presenceOfRedTriangle": {
+          "title": "presenceOfRedTriangle",
+          "description": "Indication of the presence of a red triangle around the pictogram, often used to indicate imminence, typically within 2 km, of signed danger.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "gddStructure": {
+          "title": "gddStructure",
+          "$ref": "DATEXII_3_Vms.json#/definitions/GddStructure"
+        },
+        "displayedNumericalInformation": {
+          "title": "displayedNumericalInformation",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Vms.json#/definitions/DisplayedNumericalInformation"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "pictogramExtensionG": {
+          "title": "pictogramExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "regularPictogramExtensionG": {
+          "title": "regularPictogramExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "SupplementalPictogramEnum": {
+      "title": "SupplementalPictogramEnum",
+      "description": "Types of pictograms displayable in supplementary panels (normally below the main pictogram display which it qualifies).",
+      "type": "string",
+      "enum": [
+        "distanceToTheBeginningOfTheApplicationZone",
+        "exceptAnyPowerDrivenVehicleDrawingTrailer",
+        "exceptBus",
+        "exceptGoodsVehicles",
+        "exceptSemitrailer",
+        "exceptVehiclesCarryingDangerousGoods",
+        "inCaseOfIceOrSnow",
+        "lengthOfTheApplicationZone",
+        "restrictedToAnyPowerDrivenVehicleDrawingTrailer",
+        "restrictedToBus",
+        "restrictedToGoodsVehicles",
+        "restrictedToSemiTrailer",
+        "restrictedToVehiclesCarryingDangerousGoods",
+        "maintenanceVehicles",
+        "snowPloughs",
+        "other",
+        "extendedG"
+      ]
+    },
+    "SupplementalPictogramEnumG": {
+      "title": "SupplementalPictogramEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/SupplementalPictogramEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "SupplementaryInformationDisplayG": {
+      "title": "SupplementaryInformationDisplayG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vmsSupplementaryPictogram": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/SupplementaryPictogram"
+        },
+        "vmsSupplementaryText": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/SupplementaryText"
+        }
+      }
+    },
+    "SupplementaryPictogram": {
+      "title": "SupplementaryPictogram",
+      "description": "An additional pictogram that is displayed in the panel which is supplemental to the associated pictogram display.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isBlank": {
+          "title": "isBlank",
+          "description": "Identifies whether this display area is blank. The absence of this attribute has no semantics.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legallyBinding": {
+          "title": "legallyBinding",
+          "description": "The semantics of this display are legally binding for road users",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legalBasis": {
+          "title": "legalBasis",
+          "description": "Identifies any legal basis for the elements displayed",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "pictogramDescription": {
+          "title": "pictogramDescription",
+          "description": "Description of the displayed supplementary pictogram.",
+          "$ref": "DATEXII_3_Vms.json#/definitions/SupplementalPictogramEnumG"
+        },
+        "pictogramCode": {
+          "title": "pictogramCode",
+          "description": "The code of the supplementary pictogram from the supplementary pictogram code list referenced in the corresponding SupplementaryPanelArea.",
+          "$ref": "DATEXII_3_Common.json#/definitions/String"
+        },
+        "pictogramUrl": {
+          "title": "pictogramUrl",
+          "description": "Reference to a URL from where an image of the displayed supplementary pictogram can be obtained.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Url"
+        },
+        "additionalDescription": {
+          "title": "additionalDescription",
+          "description": "Additional free text description of the supplementary pictogram.",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "pictogramFlashing": {
+          "title": "pictogramFlashing",
+          "description": "Indication of whether the pictogram is flashing.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "pictogramInformationType": {
+          "title": "pictogramInformationType",
+          "description": "Allows characterising the type of displayed information",
+          "$ref": "DATEXII_3_Vms.json#/definitions/InformationTypeEnumG"
+        },
+        "displayAreaSettingsExtensionG": {
+          "title": "displayAreaSettingsExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "supplementaryInformationDisplayExtensionG": {
+          "title": "supplementaryInformationDisplayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "supplementaryPictogramExtensionG": {
+          "title": "supplementaryPictogramExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "SupplementaryText": {
+      "title": "SupplementaryText",
+      "description": "Text used in a supplementary display associated with a pictogram",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isBlank": {
+          "title": "isBlank",
+          "description": "Identifies whether this display area is blank. The absence of this attribute has no semantics.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legallyBinding": {
+          "title": "legallyBinding",
+          "description": "The semantics of this display are legally binding for road users",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legalBasis": {
+          "title": "legalBasis",
+          "description": "Identifies any legal basis for the elements displayed",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "textLine": {
+          "title": "textLine",
+          "description": "One line of text displayed in the panel which is supplemental to the pictogram display.",
+          "$ref": "DATEXII_3_Vms.json#/definitions/TextLine"
+        },
+        "displayAreaSettingsExtensionG": {
+          "title": "displayAreaSettingsExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "supplementaryInformationDisplayExtensionG": {
+          "title": "supplementaryInformationDisplayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "supplementaryTextExtensionG": {
+          "title": "supplementaryTextExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "textLine"
+      ]
+    },
+    "TextDisplay": {
+      "title": "TextDisplay",
+      "description": "A page of text (comprising one or more ordered lines) that are displayed simultaneously on the VMS. ",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isBlank": {
+          "title": "isBlank",
+          "description": "Identifies whether this display area is blank. The absence of this attribute has no semantics.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legallyBinding": {
+          "title": "legallyBinding",
+          "description": "The semantics of this display are legally binding for road users",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "legalBasis": {
+          "title": "legalBasis",
+          "description": "Identifies any legal basis for the elements displayed",
+          "$ref": "DATEXII_3_Common.json#/definitions/MultilingualString"
+        },
+        "textCode": {
+          "title": "textCode",
+          "description": "The code of the specific text, from the defined code list.",
+          "$ref": "DATEXII_3_Common.json#/definitions/String"
+        },
+        "textImageUrl": {
+          "title": "textImageUrl",
+          "description": "Reference to a URL from where an image of the displayed text can be obtained.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Url"
+        },
+        "textLine": {
+          "title": "textLine",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Vms.json#/definitions/textDisplayLineIndexTextLineG"
+          },
+          "minItems": 0
+        },
+        "displayAreaSettingsExtensionG": {
+          "title": "displayAreaSettingsExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        },
+        "textDisplayExtensionG": {
+          "title": "textDisplayExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      }
+    },
+    "textDisplayLineIndexTextLineG": {
+      "title": "textDisplayLineIndexTextLineG",
+      "type": "object",
+      "properties": {
+        "textLine": {
+          "title": "textLine",
+          "$ref": "DATEXII_3_Vms.json#/definitions/TextLine"
+        },
+        "lineIndex": {
+          "title": "lineIndex",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "textLine",
+        "lineIndex"
+      ]
+    },
+    "TextLine": {
+      "title": "TextLine",
+      "description": "A single line of text displayed on a text display area or supplementary panel or corresponding to a displayed text. It may correspond to the entire text in the case that text segmentation in lines is not available.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "textLine": {
+          "title": "textLine",
+          "description": "A free-text string that is displayed on a single line on the text display area. It may correspond to the entire text in the case that text segmentation in lines is not available.",
+          "$ref": "DATEXII_3_Common.json#/definitions/String"
+        },
+        "lineLanguage": {
+          "title": "lineLanguage",
+          "description": "The language of the displayed text, specified by an ISO 639-1 language code.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Language"
+        },
+        "lineColour": {
+          "title": "lineColour",
+          "description": "The colour of the displayed text.",
+          "$ref": "DATEXII_3_Vms.json#/definitions/ColourEnumG"
+        },
+        "lineFlashing": {
+          "title": "lineFlashing",
+          "description": "Indication of whether the displayed text is flashing.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "lineHtml": {
+          "title": "lineHtml",
+          "description": "The displayed line of text defined by an HTML string showing text formatting tags.",
+          "$ref": "DATEXII_3_Common.json#/definitions/String"
+        },
+        "isExactTextOnSign": {
+          "title": "isExactTextOnSign",
+          "description": "Confirms whether the specified text is exactly as displayed, or whether it is just a semantic equivalent.",
+          "$ref": "DATEXII_3_Common.json#/definitions/Boolean"
+        },
+        "textInformationType": {
+          "title": "textInformationType",
+          "description": "Allows characterising the type of displayed information",
+          "type": "array",
+          "items": {
+            "$ref": "DATEXII_3_Vms.json#/definitions/InformationTypeEnumG"
+          },
+          "minItems": 0
+        },
+        "textLineExtensionG": {
+          "title": "textLineExtensionG",
+          "$ref": "DATEXII_3_Common.json#/definitions/ExtensionTypeG"
+        }
+      },
+      "required": [
+        "textLine"
+      ]
+    },
+    "UnitOfMeasureEnum": {
+      "title": "UnitOfMeasureEnum",
+      "description": "Identifies a unit of measure for a physical quantity",
+      "type": "string",
+      "enum": [
+        "feet",
+        "feetAndInches",
+        "kilometres",
+        "kilometresPerHour",
+        "metres",
+        "miles",
+        "milesPerHour",
+        "percentage",
+        "tonnes",
+        "yards",
+        "extendedG"
+      ]
+    },
+    "UnitOfMeasureEnumG": {
+      "title": "UnitOfMeasureEnumG",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "DATEXII_3_Vms.json#/definitions/UnitOfMeasureEnum"
+        },
+        "extendedValueG": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    }
+  }
+}

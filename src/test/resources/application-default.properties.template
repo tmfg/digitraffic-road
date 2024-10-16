@@ -105,13 +105,15 @@ dt.job.scheduler.enabled=false
 # if set to false no messages are sent to mqtt.  Should be true for daemon process
 mqtt.enabled=false
 # Is TMS messages available. Should be true for daemon process
-mqtt.tms.enabled=false
-# Is TMS messages available. Should be true for daemon process
-mqtt.tms.enabled=false
+mqtt.tms.v2.enabled=false
 # Is WEATHER messages available
-mqtt.weather.enabled=false
-# Is maintenane tracking messages available
-mqtt.maintenance.tracking.enabled=false
+mqtt.weather.v2.enabled=false
+# Is maintenance tracking messages available
+mqtt.maintenance.v2.tracking.enabled=false
+# Is traffic messages available
+mqtt.trafficMessage.simple.v2.enabled=false
+mqtt.trafficMessage.datex2.v2.enabled=false
+
 
 # Developer life improvements
 logging.level.root=WARN

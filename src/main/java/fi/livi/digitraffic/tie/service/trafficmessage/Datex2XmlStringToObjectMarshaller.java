@@ -7,15 +7,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.xml.transform.StringResult;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import jakarta.xml.bind.JAXBElement;
 
 @Component
 public class Datex2XmlStringToObjectMarshaller {
     private final Jaxb2Marshaller datex2Jaxb2Marshaller;
 
-    public Datex2XmlStringToObjectMarshaller(@Qualifier("datex2Jaxb2Marshaller")
-                                    final Jaxb2Marshaller datex2Jaxb2Marshaller) {
+    public Datex2XmlStringToObjectMarshaller(@Qualifier("datex2v2_2_3_fiJaxb2Marshaller")
+                                             final Jaxb2Marshaller datex2Jaxb2Marshaller) {
         this.datex2Jaxb2Marshaller = datex2Jaxb2Marshaller;
     }
 

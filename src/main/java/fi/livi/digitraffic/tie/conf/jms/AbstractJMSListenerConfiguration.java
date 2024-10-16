@@ -92,18 +92,11 @@ public abstract class AbstractJMSListenerConfiguration<K> {
             final int lockedPerMinute = lockAcquiredCounter.getAndSet(0);
             final int notLockedPerMinute = lockNotAcquiredCounter.getAndSet(0);
 
-            final long timeMsPerJmsMsg =
-                    (jmsStats.jmsMessagesReceivedTimeMs() > 0) ?
-                    jmsStats.jmsMessagesReceivedTimeMs() / jmsStats.jmsMessagesReceivedCount() : 0;
-            final long jmsMessagesTransferTimePerMsgMs =
-                    (jmsStats.jmsMessagesReceivedCount() > 0) ?
-                    jmsStats.jmsMessagesTransferTimeMs() / jmsStats.jmsMessagesReceivedCount() : 0;
-
             log.info("""
                             method=logMessagesReceived prefix={} Received jmsMessageType={} jmsMessagesReceivedCount={} jmsMessagesReceivedTimeMs={} jmsMessagesReceivedTimeMsPerMsg={} jmsMessagesTransferTimePerMsgMs={} jmsSrc=KCA
                             messagesReceivedCount={} messages, drained messagesDrainedCount={} messagesDrainedTookMs={} messages and updated dbRowsUpdatedCount={} db rows per minute.
                             Current queueSize={} in memory. Lock lockedPerMinuteCount={} notLockedPerMinuteCount={} instanceId={}""",
-                    STATISTICS_PREFIX, getJMSMessageType(), jmsStats.jmsMessagesReceivedCount(), jmsStats.jmsMessagesReceivedTimeMs(), timeMsPerJmsMsg, jmsMessagesTransferTimePerMsgMs, jmsStats.messagesReceived(), jmsStats.messagesDrained(), jmsStats.messagesDrainedTookMs(), jmsStats.dbRowsUpdated(),
+                    STATISTICS_PREFIX, getJMSMessageType(), jmsStats.jmsMessagesReceivedCount(), jmsStats.jmsMessagesReceivedTimeMs(), jmsStats.getTimePerMessageMs(), jmsStats.getMessagesTransferTimePerMessageMs(), jmsStats.messagesReceived(), jmsStats.messagesDrained(), jmsStats.messagesDrainedTookMs(), jmsStats.dbRowsUpdated(),
                     jmsStats.queueSize(), lockedPerMinute, notLockedPerMinute, getJmsParameters().getLockInstanceId());
         } catch (final Exception e) {
             log.error("logging statistics failed", e);

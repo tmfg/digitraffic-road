@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.service.jms;
 
+import static fi.livi.digitraffic.common.util.TimeUtil.withoutMillis;
 import static fi.livi.digitraffic.tie.TestUtils.entityManagerFlushAndClear;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomString;
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.common.util.TimeUtil.withoutMillis;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
@@ -27,10 +27,10 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.Situation;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.SituationRecord;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationRecord;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;

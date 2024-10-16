@@ -3,7 +3,8 @@ package fi.livi.digitraffic.tie.service.trafficmessage;
 import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -33,7 +34,7 @@ public class ImsJsonMessageTestFactory {
         final TrafficAnnouncementProperties.SituationType situationType,
         final boolean areaLocation,
         final ObjectReader readerForGeometry) throws IOException {
-        return createJsonMessage(situationType, TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL, areaLocation, ZonedDateTime.now(),
+        return createJsonMessage(situationType, TrafficAnnouncementProperties.TrafficAnnouncementType.GENERAL, areaLocation, Instant.now(),
             fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Restriction.Type.NARROW_LANES,
             "Nopeusrajoitus", 40.0, "km/h",
             fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Worktype.Type.BRIDGE,
@@ -45,7 +46,7 @@ public class ImsJsonMessageTestFactory {
             final TrafficAnnouncementProperties.SituationType situationType,
             final TrafficAnnouncementProperties.TrafficAnnouncementType trafficAnnouncementType,
             final boolean createWithAreaLocation,
-            final ZonedDateTime releaseTime, final Restriction.Type restrictionType, final String restrictionName, final Double restrictionQuantity, final String restrictionUnit,
+            final Instant releaseTime, final Restriction.Type restrictionType, final String restrictionName, final Double restrictionQuantity, final String restrictionUnit,
             final Worktype.Type worktype,
             final String geometryPath,
             final ObjectReader readerForGeometry)
@@ -83,7 +84,7 @@ public class ImsJsonMessageTestFactory {
                     .withLastActiveItinerarySegment(
                         new LastActiveItinerarySegment()
                             .withEndTime(releaseTime)
-                            .withStartTime(releaseTime.minusHours(1))
+                            .withStartTime(releaseTime.minus(1, ChronoUnit.HOURS))
                             .withLegs(Collections.singletonList(
                                 new ItineraryLeg()
                                     .withRoadLeg(
@@ -102,9 +103,9 @@ public class ImsJsonMessageTestFactory {
 
     }
 
-    private static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TimeAndDuration createTimeAndDuration(final ZonedDateTime releaseTime) {
+    private static fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TimeAndDuration createTimeAndDuration(final Instant releaseTime) {
         return new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TimeAndDuration(
-            releaseTime, releaseTime.plusHours(2),
+            releaseTime, releaseTime.plus(2, ChronoUnit.HOURS),
             new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.EstimatedDuration().withInformal("Yli 6 tuntia")
                 .withMaximum(MAX_DURATION)
                 .withMinimum(MIN_DURATION));
@@ -130,7 +131,7 @@ public class ImsJsonMessageTestFactory {
         return new fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Location(358, 10, "1.1.1", "Location description");
     }
 
-    private static RoadWorkPhase createRoadWorkPhase(final ZonedDateTime releaseTime, final Restriction.Type restrictionType, final String featureName, final Double featureQuantity,
+    private static RoadWorkPhase createRoadWorkPhase(final Instant releaseTime, final Restriction.Type restrictionType, final String featureName, final Double featureQuantity,
                                                      final String featureUnit, final Worktype.Type wokType) {
         return new RoadWorkPhase()
             .withComment("Työn aloitus")

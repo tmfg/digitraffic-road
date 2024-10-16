@@ -2,7 +2,7 @@ package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import java.time.ZonedDateTime;
 
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 

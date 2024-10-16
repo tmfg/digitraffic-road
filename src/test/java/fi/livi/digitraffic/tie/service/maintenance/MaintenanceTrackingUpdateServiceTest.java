@@ -172,10 +172,10 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
                 final Havainto h = havainto.getHavainto();
                 final String formatedJson = testHelper.getFormatedObservationJson(h);
                 final MaintenanceTrackingObservationData observation =
-                        unhandled.stream()
-                                .filter(o -> o.getHarjaWorkmachineId().equals(h.getTyokone().getId().longValue()) &&
-                                        o.getObservationTime().equals(h.getHavaintoaika().toInstant()))
-                                .findFirst().orElseThrow();
+                    unhandled.stream()
+                        .filter(o -> o.getHarjaWorkmachineId().equals(h.getTyokone().getId().longValue()) &&
+                                     o.getObservationTime().equals(h.getHavaintoaika()))
+                        .findFirst().orElseThrow();
                 assertEquals(formatedJson, observation.getJson());
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -222,8 +222,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
             assertEquals(10, g.size());
             assertEquals(1, start.getTasks().size());
             assertTrue(start.getTasks().contains(MaintenanceTrackingTask.PAVING));
-            assertEquals(now, start.getStartTime().toInstant());
-            assertEquals(now.plus(9, ChronoUnit.MINUTES), end.getEndTime().toInstant());
+            assertEquals(now, start.getStartTime());
+            assertEquals(now.plus(9, ChronoUnit.MINUTES), end.getEndTime());
         });
 
         // Check all generated work machines exists
@@ -275,8 +275,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
             assertEquals(trackingMessagesCount * observationCountPerTracking, g.size());
             assertEquals(1, start.getTasks().size());
             assertTrue(start.getTasks().contains(MaintenanceTrackingTask.PAVING));
-            assertEquals(startTime, start.getStartTime().toInstant());
-            assertEquals(endTime, end.getEndTime().toInstant());
+            assertEquals(startTime, start.getStartTime());
+            assertEquals(endTime, end.getEndTime());
         });
 
         checkAllWorkMachinesExists(groups, machineCount);

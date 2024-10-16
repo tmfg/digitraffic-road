@@ -8,11 +8,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.Situation;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.SituationRecord;
 import fi.livi.digitraffic.common.util.TimeUtil;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationRecord;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;

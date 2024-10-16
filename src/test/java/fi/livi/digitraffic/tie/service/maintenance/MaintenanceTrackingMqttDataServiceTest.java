@@ -59,7 +59,7 @@ public class MaintenanceTrackingMqttDataServiceTest extends AbstractServiceTest 
 
         final List<MaintenanceTracking> all = maintenanceTrackingRepository.findAll();
         assertCollectionSize(2, all);
-        final Instant created = all.get(0).getCreated().toInstant();
+        final Instant created = all.get(0).getCreated();
 
         // no data as param is exlusive
         assertCollectionSize(0, maintenanceTrackingWebDataServiceV1.findTrackingsForMqttCreatedAfter(created));

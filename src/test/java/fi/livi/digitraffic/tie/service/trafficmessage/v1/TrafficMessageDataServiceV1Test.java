@@ -31,10 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryServiceAndGitMock;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.Situation;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TimeAndDuration;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
@@ -43,7 +44,6 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureC
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 

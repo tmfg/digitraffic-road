@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 
 public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
 

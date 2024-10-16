@@ -2,12 +2,15 @@ package fi.livi.digitraffic.tie.conf;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,9 +36,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.TransformedResource;
 
 import fi.livi.digitraffic.common.config.DeprecationInterceptor;
-import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2D2LogicalModelHttpMessageConverter;
-import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2Datex2ResponseHttpMessageConverter;
+import fi.livi.digitraffic.common.util.StringUtil;
+import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2RootElementHttpMessageConverter;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
 import jakarta.servlet.Filter;
 
 @ConditionalOnWebApplication
@@ -45,13 +51,26 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
 
     // Match when there is no http in location start
     private final static String SCHEMA_LOCATION_REGEXP = "schemaLocation=\"((?!http))";
-    private final static String SCHEMA_PATH = "/schemas/datex2/";
-    private final String schemaDomainUrlAndPath;
+    private final static String DATEX2_SCHEMA_ROOT_PATH = "/schemas/datex2";
+    private final String dtDomainAndSchemaRootLocation;
+    private final String dtDomain;
 
     @Autowired
     public RoadWebApplicationConfiguration(final ConfigurableApplicationContext applicationContext,
-                                           final @Value("${dt.domain.url}") String schemaDomainUrl) {
-        this.schemaDomainUrlAndPath = schemaDomainUrl + SCHEMA_PATH;
+                                           final @Value("${dt.domain.url}") String domainUrl) {
+
+        try {
+            // For some reason @Value is not working on test
+            this.dtDomain = StringUtils.isNotBlank(domainUrl) &&
+                            StringUtils.containsNone(domainUrl, "${") ?
+                            domainUrl : applicationContext.getEnvironment().getProperty("dt.domain.url");
+
+            this.dtDomainAndSchemaRootLocation =
+                    new URI(StringUtil.format("{}/{}", dtDomain, DATEX2_SCHEMA_ROOT_PATH)).normalize().toString();
+        } catch (final URISyntaxException e) {
+            log.error("Failed to create dtDomainAndSchemaRootLocation {}", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     /** Support for etag and conditional HTTP-requests */
@@ -63,27 +82,48 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         return shallowEtagHeaderFilter;
     }
 
-    @Override
-    public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
-        // put first
-        converters.add(0, new Jaxb2D2LogicalModelHttpMessageConverter(schemaDomainUrlAndPath));
-        converters.add(0, new Jaxb2Datex2ResponseHttpMessageConverter(schemaDomainUrlAndPath));
+    @Bean
+    public HttpMessageConverter<Object> xmlHttpMessageConverterForD2LogicalModel() {
+        return new Jaxb2RootElementHttpMessageConverter(D2LogicalModel.class,
+                "http://datex2.eu/schema/2/2_0",
+                dtDomainAndSchemaRootLocation + "/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
+    }
+
+    @Bean
+    public HttpMessageConverter<Object> xmlHttpMessageConverterForMeasurementSiteTablePublication() {
+        return new Jaxb2RootElementHttpMessageConverter(
+                MeasurementSiteTablePublication.class,
+                "https://datex2.eu/schema/3/roadTrafficData/DATEXII_3_RoadTrafficData.xsd");
+    }
+
+    @Bean
+    public HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication() {
+        return new Jaxb2RootElementHttpMessageConverter(
+                MeasuredDataPublication.class,
+                "https://datex2.eu/schema/3/roadTrafficData/DATEXII_3_RoadTrafficData.xsd");
     }
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         // Add datex2 schema locations to default static file path and
-        registry.addResourceHandler(SCHEMA_PATH + "/**")
+        registry.addResourceHandler(DATEX2_SCHEMA_ROOT_PATH + "/**")
             .addResourceLocations("classpath:/schemas/datex2/")
             // cache resource -> this is converted only once per resource
             .resourceChain(true)
             // add current domain and path to schemaLocation-attribute
             .addTransformer((request, resource, transformerChain) -> {
+                // Get path part: /foo/bar/schema.sxd -> /foo/bar
+                final String requestPath = StringUtils.substringBeforeLast(request.getRequestURI(), "/");
+                // Create new uri https://dtDomain/foo/bar/
+                final String domainAndPath = URI.create(StringUtil.format("{}/{}/", dtDomain, requestPath)).normalize().toString();
+
                 final String schema = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
                 final String newSchema =
-                    RegExUtils.replaceAll(schema, SCHEMA_LOCATION_REGEXP, String.format("schemaLocation=\"%s", schemaDomainUrlAndPath));
+                    RegExUtils.replaceAll(schema, SCHEMA_LOCATION_REGEXP,
+                            StringUtil.format("schemaLocation=\"{}", domainAndPath));
                 return new TransformedResource(resource, newSchema.getBytes());
-            });
+            })
+        ;
     }
 
     /**
@@ -129,7 +169,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 // By default many client's sends long list of accepted types or */* etc.
                 // If specific path is asked, then check if json is in accepted formats return json otherwise xml.
                 final String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
-                if ( path.contains("datex2") ) {
+                if ( StringUtils.contains(path, "datex2") && !StringUtils.endsWith(path, "json" ) ) {
                     return containsJson(fromHeaders) ?
                                 Collections.singletonList(DtMediaType.APPLICATION_JSON) :
                                 Collections.singletonList(DtMediaType.APPLICATION_XML);

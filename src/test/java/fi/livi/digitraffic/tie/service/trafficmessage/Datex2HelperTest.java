@@ -22,15 +22,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.datex2.Accident;
-import fi.livi.digitraffic.tie.datex2.Comment;
-import fi.livi.digitraffic.tie.datex2.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.GenericPublication;
-import fi.livi.digitraffic.tie.datex2.MultilingualString;
-import fi.livi.digitraffic.tie.datex2.MultilingualStringValue;
-import fi.livi.digitraffic.tie.datex2.Situation;
-import fi.livi.digitraffic.tie.datex2.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.SituationRecord;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Accident;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Comment;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GenericPublication;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.MultilingualString;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.MultilingualStringValue;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationRecord;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 

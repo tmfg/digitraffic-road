@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +64,7 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     }
 
     protected ResultActions executeGet(final String url) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
+        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url).characterEncoding(StandardCharsets.UTF_8);
         get.contentType(MediaType.APPLICATION_JSON);
         return mockMvc.perform(get);
     }

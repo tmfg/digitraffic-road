@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashSet;
@@ -248,7 +247,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
 
         final List<MaintenanceTracking> allTrackings = maintenanceTrackingRepository.findAll();
         AssertHelper.assertCollectionSize(machineCount, allTrackings);
-        final Instant created = allTrackings.get(0).getCreated().toInstant();
+        final Instant created = allTrackings.get(0).getCreated();
 
 
         // Exlusive created parameters same as tracking created time -> not returning anything
@@ -340,8 +339,8 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             }
         });
         testHelper.handleUnhandledWorkMachineObservations(1000);
-        final Instant min = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
-        final Instant max = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).max(ZonedDateTime::compareTo).orElseThrow().toInstant();
+        final Instant min = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(Instant::compareTo).orElseThrow();
+        final Instant max = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).max(Instant::compareTo).orElseThrow();
 
         log.info("min {} max {} from: {}", min, max, start);
         log.info("Machine count {}", machineCount);
@@ -407,8 +406,8 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             }
         });
         testHelper.handleUnhandledWorkMachineObservations(1000);
-        final Instant min = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
-        final Instant max = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(ZonedDateTime::compareTo).orElseThrow().toInstant();
+        final Instant min = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(Instant::compareTo).orElseThrow();
+        final Instant max = maintenanceTrackingRepository.findAll().stream().map(MaintenanceTracking::getEndTime).min(Instant::compareTo).orElseThrow();
 
         log.info("min {} max {} from: {}", min, max, start);
         log.info("Machine count {}", machineCount);
