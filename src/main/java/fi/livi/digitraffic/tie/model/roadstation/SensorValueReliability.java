@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public enum SensorValueReliability {
     }
 
     public static SensorValueReliability fromSrcType(final String srcType) {
-        if (srcType == null) {
+        if (StringUtils.isBlank(srcType)) {
             return null;
         }
         final SensorValueReliability value = lookup.get(srcType);
@@ -44,9 +45,5 @@ public enum SensorValueReliability {
 
     public String getSrcType() {
         return srcTypeString;
-    }
-
-    public static void main(final String[] args) {
-        SensorValueReliability.fromSrcType(null);
     }
 }
