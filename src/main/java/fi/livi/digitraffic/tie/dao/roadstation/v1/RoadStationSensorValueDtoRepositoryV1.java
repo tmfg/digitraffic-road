@@ -31,7 +31,8 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
              , max(sv.measured) over(partition by sv.road_station_id) stationLatestMeasuredTime
              , max(sv.modified) over(partition by sv.road_station_id) stationLatestModifiedTime
              , sv.modified
-             """;
+             , sv.reliability
+        """;
 
     String SQL_FROM = """
         from road_station rs

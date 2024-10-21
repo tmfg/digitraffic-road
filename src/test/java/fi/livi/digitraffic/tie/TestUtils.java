@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -526,5 +527,12 @@ public class TestUtils {
                                                       modified.toString(), presetId, versionId)).executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE camera_preset_history ENABLE TRIGGER camera_preset_history_modified_t").executeUpdate();
         entityManager.flush();
+    }
+
+    private static final SecureRandom random = new SecureRandom();
+
+    public static <T extends Enum<?>> T getRandomEnum(final Class<T> clazz){
+        final int x = random.nextInt(clazz.getEnumConstants().length);
+        return clazz.getEnumConstants()[x];
     }
 }

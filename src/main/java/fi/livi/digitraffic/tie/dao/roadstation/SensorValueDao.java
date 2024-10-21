@@ -24,18 +24,24 @@ public class SensorValueDao {
               , measured = :measured
               , time_window_start = :timeWindowStart
               , time_window_end = :timeWindowEnd
+              , reliability = :reliability
             WHERE sv.road_station_id = :roadStationId
-            AND sv.road_station_sensor_id = (select id from road_station_sensor where lotju_id = :sensorLotjuId and road_station_type = :stationType and publishable = true)""";
+            AND sv.road_station_sensor_id = (
+                select id from road_station_sensor
+                where lotju_id = :sensorLotjuId
+                  and road_station_type = :stationType
+                  and publishable = true
+            )""";
 
-    private static final String INSERT =
-            "INSERT INTO sensor_value(id, road_station_id, road_station_sensor_id, value,\n" +
-            "                         measured, time_window_start, time_window_end)\n" +
-            "SELECT nextval('seq_sensor_value'), :roadStationId, sensor.id,\n" +
-            "       :value, :measured, :timeWindowStart, :timeWindowEnd\n" +
-            "FROM ROAD_STATION_SENSOR sensor\n" +
-            "WHERE sensor.lotju_id = :sensorLotjuId\n" +
-            "  AND sensor.road_station_type = :stationType\n" +
-            "  AND sensor.publishable = true";
+    private static final String INSERT = """
+                    INSERT INTO sensor_value(id, road_station_id, road_station_sensor_id, value,
+                                             measured, time_window_start, time_window_end, reliability)
+                    SELECT nextval('seq_sensor_value'), :roadStationId, sensor.id,
+                           :value, :measured, :timeWindowStart, :timeWindowEnd, :reliability
+                    FROM ROAD_STATION_SENSOR sensor
+                    WHERE sensor.lotju_id = :sensorLotjuId
+                      AND sensor.road_station_type = :stationType
+                      AND sensor.publishable = true""";
 
     @Autowired
     public SensorValueDao(final NamedParameterJdbcTemplate jdbcTemplate) {
@@ -71,7 +77,8 @@ public class SensorValueDao {
             .addValue("sensorLotjuId", p.getSensorLotjuId(), JDBCType.NUMERIC.getVendorTypeNumber())
             .addValue("stationType", p.getStationType(), JDBCType.VARCHAR.getVendorTypeNumber())
             .addValue("timeWindowStart", p.getTimeWindowStart(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber())
-            .addValue("timeWindowEnd", p.getTimeWindowEnd(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber()))
+            .addValue("timeWindowEnd", p.getTimeWindowEnd(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber())
+            .addValue("reliability", p.getReliability(), JDBCType.VARCHAR.getVendorTypeNumber()))
             .toArray(MapSqlParameterSource[]::new);
     }
 }

@@ -9,8 +9,10 @@ import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 
+import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueReliability;
 
 public class SensorValueHistoryBuilder {
     private final Logger log;
@@ -125,6 +127,7 @@ public class SensorValueHistoryBuilder {
         model.setSensorId(sensor);
         model.setSensorValue(value);
         model.setMeasuredTime(time);
+        model.setReliability(TestUtils.getRandomEnum(SensorValueReliability.class));
 
         return model;
     }

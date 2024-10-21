@@ -7,6 +7,8 @@ import org.hibernate.annotations.Immutable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
@@ -38,6 +40,9 @@ public class SensorValueHistory {
 
     @Column(name = "time_window_end")
     private ZonedDateTime timeWindowEnd;
+
+    @Enumerated(EnumType.STRING)
+    private SensorValueReliability reliability;
 
     public SensorValueHistory() {}
 
@@ -97,6 +102,14 @@ public class SensorValueHistory {
         this.timeWindowEnd = timeWindowEnd;
     }
 
+    public void setReliability(final SensorValueReliability reliability) {
+        this.reliability = reliability;
+    }
+
+    public SensorValueReliability getReliability() {
+        return reliability;
+    }
+
     @Override
     public String toString() {
         return "SensorValueHistory{" +
@@ -107,6 +120,7 @@ public class SensorValueHistory {
             ", measuredTime=" + measuredTime +
             ", timeWindowStart=" + timeWindowStart +
             ", timeWindowEnd=" + timeWindowEnd +
+            ", reliability=" + reliability +
             '}';
     }
 }

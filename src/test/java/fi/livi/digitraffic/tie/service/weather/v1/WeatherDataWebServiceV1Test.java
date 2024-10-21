@@ -22,6 +22,7 @@ import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationDataDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationsDataDtoV1;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueReliability;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
@@ -62,8 +63,8 @@ public class WeatherDataWebServiceV1Test extends AbstractWebServiceTest {
             entityManager.persist(s);
             entityManager.flush();
 
-            sensorValue1 = new SensorValue(s.getRoadStation(), publishable.get(0), getRandom(0, 100), ZonedDateTime.now());
-            sensorValue2 = new SensorValue(s.getRoadStation(), publishable.get(1), getRandom(101, 200), ZonedDateTime.now());
+            sensorValue1 = new SensorValue(s.getRoadStation(), publishable.get(0), getRandom(0, 100), ZonedDateTime.now(), SensorValueReliability.OK);
+            sensorValue2 = new SensorValue(s.getRoadStation(), publishable.get(1), getRandom(101, 200), ZonedDateTime.now(), SensorValueReliability.OK);
             sensorValueRepository.save(sensorValue1);
             sensorValueRepository.save(sensorValue2);
         });

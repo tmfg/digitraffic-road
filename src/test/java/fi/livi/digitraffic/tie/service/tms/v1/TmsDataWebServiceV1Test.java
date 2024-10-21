@@ -70,8 +70,8 @@ public class TmsDataWebServiceV1Test extends AbstractWebServiceTest {
             entityManager.persist(s);
             entityManager.flush();
 
-            sensorValue1 = new SensorValue(s.getRoadStation(), publishable.get(0), getRandom(0, 100), ZonedDateTime.now());
-            sensorValue2 = new SensorValue(s.getRoadStation(), publishable.get(1), getRandom(101, 200), ZonedDateTime.now());
+            sensorValue1 = new SensorValue(s.getRoadStation(), publishable.get(0), getRandom(0, 100), ZonedDateTime.now(), null);
+            sensorValue2 = new SensorValue(s.getRoadStation(), publishable.get(1), getRandom(101, 200), ZonedDateTime.now(), null);
             sensorValueRepository.save(sensorValue1);
             sensorValueRepository.save(sensorValue2);
         });

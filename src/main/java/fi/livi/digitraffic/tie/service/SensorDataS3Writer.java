@@ -80,7 +80,7 @@ public class SensorDataS3Writer {
             zos.putNextEntry(new ZipEntry(s3Properties.getFilename(SensorDataS3Properties.CSV)));
 
             // csv-builder
-            final StatefulBeanToCsv csvWriter = new StatefulBeanToCsvBuilder<WeatherSensorValueHistoryDto>(osw)
+            final StatefulBeanToCsv<WeatherSensorValueHistoryDto> csvWriter = new StatefulBeanToCsvBuilder<WeatherSensorValueHistoryDto>(osw)
                     .withSeparator(';')
                     .withApplyQuotesToAll(false)
                     .build();
@@ -94,7 +94,8 @@ public class SensorDataS3Writer {
                                 return new WeatherSensorValueHistoryDto(mapToNaturalId(item),
                                         item.getSensorId(),
                                         item.getSensorValue(),
-                                        item.getMeasuredTime().toInstant());
+                                        item.getMeasuredTime().toInstant(),
+                                        item.getReliability());
                             })
             );
 

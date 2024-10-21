@@ -7,6 +7,7 @@ import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.helper.TimestampCache;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueReliability;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.service.lotju.LotjuAnturiWrapper;
 
@@ -18,6 +19,7 @@ public class SensorValueUpdateParameterDto {
     private final String stationType;
     private final OffsetDateTime timeWindowStart;
     private final OffsetDateTime timeWindowEnd;
+    private final SensorValueReliability reliability;
 
     public SensorValueUpdateParameterDto(final LotjuAnturiWrapper<LAMRealtimeProtos.Lam.Anturi> wrapper, final TimestampCache timestampCache) {
 
@@ -29,6 +31,7 @@ public class SensorValueUpdateParameterDto {
         this.stationType = RoadStationType.TMS_STATION.name();
         this.timeWindowStart = anturi.hasAikaikkunaAlku() ? timestampCache.get(anturi.getAikaikkunaAlku()) : null;
         this.timeWindowEnd = anturi.hasAikaikkunaLoppu() ? timestampCache.get(anturi.getAikaikkunaLoppu()) : null;
+        this.reliability = null;
     }
 
     public SensorValueUpdateParameterDto(final TimestampCache timestampCache, final LotjuAnturiWrapper<TiesaaProtos.TiesaaMittatieto.Anturi> wrapper) {
@@ -40,6 +43,7 @@ public class SensorValueUpdateParameterDto {
         this.stationType = RoadStationType.WEATHER_STATION.name();
         this.timeWindowStart = null;
         this.timeWindowEnd = null;
+        this.reliability = SensorValueReliability.fromSrcType(anturi.getLuotettavuus());
     }
 
     public BigDecimal getValue() {
@@ -68,5 +72,9 @@ public class SensorValueUpdateParameterDto {
 
     public OffsetDateTime getTimeWindowEnd() {
         return timeWindowEnd;
+    }
+
+    public SensorValueReliability getReliability() {
+        return reliability;
     }
 }

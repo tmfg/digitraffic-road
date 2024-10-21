@@ -17,8 +17,8 @@ public class SensorValueHistoryDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final String INSERT = "INSERT INTO SENSOR_VALUE_HISTORY (id, road_station_id, road_station_sensor_id, value, measured) " +
-        "VALUES (nextval('seq_sensor_value_history'), :road_station_id, :road_station_sensor_id, :value, :measured)";
+    private static final String INSERT = "INSERT INTO SENSOR_VALUE_HISTORY (id, road_station_id, road_station_sensor_id, value, measured, reliability) " +
+        "VALUES (nextval('seq_sensor_value_history'), :road_station_id, :road_station_sensor_id, :value, :measured, :reliability)";
 
     private static final String CLEAN = "DELETE FROM SENSOR_VALUE_HISTORY WHERE measured < :remove_before";
 
@@ -28,7 +28,7 @@ public class SensorValueHistoryDao {
     }
 
     /**
-     * @param params
+     * @param params sensor values
      * @return the number of rows inserted for each param.
      */
     public int[] insertSensorData(final List<SensorValueUpdateParameterDto> params) {
@@ -38,7 +38,8 @@ public class SensorValueHistoryDao {
             .addValue("road_station_id", p.getRoadStationId(), JDBCType.NUMERIC.getVendorTypeNumber())
             .addValue("road_station_sensor_id", p.getSensorLotjuId(), JDBCType.NUMERIC.getVendorTypeNumber())
             .addValue("timeWindowStart", p.getTimeWindowStart(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber())
-            .addValue("timeWindowEnd", p.getTimeWindowEnd(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber()))
+            .addValue("timeWindowEnd", p.getTimeWindowEnd(), JDBCType.TIMESTAMP_WITH_TIMEZONE.getVendorTypeNumber())
+            .addValue("reliability", p.getReliability(), JDBCType.VARCHAR.getVendorTypeNumber()))
             .toArray(MapSqlParameterSource[]::new);
 
         return jdbcTemplate.batchUpdate(INSERT, batchData);
@@ -49,7 +50,7 @@ public class SensorValueHistoryDao {
      * @return
      */
     public int cleanSensorData(final ZonedDateTime time) {
-        final HashMap<String, Object> params = new HashMap<String, Object>();
+        final HashMap<String, Object> params = new HashMap<>();
         params.put("remove_before", time.toOffsetDateTime());
 
         return jdbcTemplate.update(CLEAN, params);

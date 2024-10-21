@@ -34,6 +34,7 @@ import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueReliability;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 import fi.livi.digitraffic.tie.service.jms.marshaller.WeatherDataJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.weather.WeatherStationService;
@@ -185,8 +186,7 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
         for (final WeatherStation station : stations) {
             final ActiveMQBytesMessage bm =
                     createBytesMessage(
-                            generateTiesaaMittatieto(Instant.now(), publishableSensors, station.getLotjuId(), 1).get(
-                                    0));
+                            generateTiesaaMittatieto(Instant.now(), publishableSensors, station.getLotjuId(), 1).getFirst());
             jmsMessageHandler.onMessage(bm);
         }
         jmsMessageHandler.drainQueueScheduled();
@@ -214,8 +214,9 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
 
             anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(sensorValueToSet));
             anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
-            log.debug("Asema {} set anturi {} arvo {}", currentStationLotjuId, availableSensor.getLotjuId(),
-                    NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()));
+            anturiBuilder.setLuotettavuus(TestUtils.getRandomEnum(SensorValueReliability.class).getSrcType());
+            log.debug("Asema {} set anturi {} arvo {} luotettavuus {}", currentStationLotjuId, availableSensor.getLotjuId(),
+                    NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()), anturiBuilder.getLuotettavuus());
 
             if (!iter.hasNext()) {
                 iter = builders.iterator();
@@ -261,6 +262,7 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
 
                 assertEquals(NumberConverter.convertAnturiValueToDouble(anturi.getArvo()), found.get().getValue(),
                         0.05d);
+                assertEquals(anturi.getLuotettavuus(), found.get().getReliability().getSrcType());
             }
         }
         log.info("Data is valid");

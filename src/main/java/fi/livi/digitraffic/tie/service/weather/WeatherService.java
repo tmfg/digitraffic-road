@@ -85,7 +85,8 @@ public class WeatherService {
             .map(obj -> new WeatherSensorValueHistoryDto(mapId,
                 obj.getSensorId(),
                 obj.getSensorValue(),
-                TimeUtil.toInstantWithOutMillis(obj.getMeasuredTime())))
+                TimeUtil.toInstantWithOutMillis(obj.getMeasuredTime()),
+                obj.getReliability()))
             .collect(Collectors.toList());
     }
 

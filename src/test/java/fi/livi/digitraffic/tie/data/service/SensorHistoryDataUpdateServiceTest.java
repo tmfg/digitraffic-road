@@ -2,9 +2,11 @@ package fi.livi.digitraffic.tie.data.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
+import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
 import fi.livi.digitraffic.tie.service.weather.WeatherService;
@@ -53,6 +56,10 @@ public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
 
         final ZonedDateTime deleteTime = now.minusMinutes(61);
         assertNotEquals(0, weatherService.findWeatherHistoryData(10, deleteTime, null).size(), "Db not initialized");
+        final List<WeatherSensorValueHistoryDto> history =
+                weatherService.findWeatherHistoryData(10, deleteTime, null);
+
+        assertNotNull(history.getFirst().getReliability());
 
         assertEquals(builder.getElementCountAt(1), sensorDataUpdateService.cleanWeatherHistoryData(deleteTime), "Wrong amount of elements cleaned");
 

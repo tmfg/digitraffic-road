@@ -117,8 +117,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
 
         final ZonedDateTime measured = ZonedDateTime.now().minusMinutes(2);
-        final SensorValue sv1 = new SensorValue(tms.getRoadStation(), sensor1, 10.0, measured);
-        final SensorValue sv2 = new SensorValue(tms.getRoadStation(), sensor2, 10.0, measured.minusMinutes(1));
+        final SensorValue sv1 = new SensorValue(tms.getRoadStation(), sensor1, 10.0, measured, null);
+        final SensorValue sv2 = new SensorValue(tms.getRoadStation(), sensor2, 10.0, measured.minusMinutes(1), null);
         sensorValueRepository.save(sv1);
         sensorValueRepository.save(sv2);
         this.dataLastUpdatedMillis =  TimeUtil.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();

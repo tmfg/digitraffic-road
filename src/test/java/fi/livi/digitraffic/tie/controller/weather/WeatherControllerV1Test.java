@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller.weather;
 
 import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
+import static org.hamcrest.Matchers.equalToObject;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,6 +35,7 @@ import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueReliability;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 import fi.livi.digitraffic.tie.model.weather.WeatherStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -84,8 +86,8 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA);
         dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
 
-        final SensorValue sv1 = new SensorValue(ws.getRoadStation(), publishable.get(0), 10.0, ZonedDateTime.now());
-        final SensorValue sv2 = new SensorValue(ws.getRoadStation(), publishable.get(1), 10.0, ZonedDateTime.now());
+        final SensorValue sv1 = new SensorValue(ws.getRoadStation(), publishable.get(0), 10.0, ZonedDateTime.now(), SensorValueReliability.OK);
+        final SensorValue sv2 = new SensorValue(ws.getRoadStation(), publishable.get(1), 10.0, ZonedDateTime.now(), SensorValueReliability.OK);
         this.dataLastUpdatedMillis =  TimeUtil.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
 
         sensorValueRepository.save(sv1); // 2023-11-06T13:18:32Z
@@ -206,6 +208,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(jsonPath("$.stations[0].sensorValues[0].value", isA(Number.class)))
             .andExpect(jsonPath("$.stations[0].sensorValues[0].unit", isA(String.class)))
             .andExpect(jsonPath("$.stations[0].sensorValues[0].measuredTime", isA(String.class)))
+            .andExpect(jsonPath("$.stations[0].sensorValues[0].reliability", equalToObject("OK")))
             // TODO test measured time
             .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
             .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
