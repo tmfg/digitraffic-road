@@ -174,7 +174,7 @@ $$
 CREATE OR REPLACE FUNCTION update_pic_last_modified_db_column()
   RETURNS TRIGGER AS $$
 BEGIN
-  IF (to_jsonb(OLD.pic_last_modified) <> to_jsonb(NEW.pic_last_modified)) THEN
+  IF (coalesce(OLD.pic_last_modified, 'epoch') <> NEW.pic_last_modified) THEN
     NEW.pic_last_modified_db = now();
 END IF;
 RETURN NEW;
