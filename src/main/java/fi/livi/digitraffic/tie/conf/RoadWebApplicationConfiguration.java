@@ -170,6 +170,9 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 // If specific path is asked, then check if json is in accepted formats return json otherwise xml.
                 final String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
                 if ( StringUtils.contains(path, "datex2") && !StringUtils.endsWith(path, "json" ) ) {
+                    if (containsJson(fromHeaders)) {
+                        log.info("method=resolveMediaTypes type=json for path={}", path);
+                    }
                     return containsJson(fromHeaders) ?
                                 Collections.singletonList(DtMediaType.APPLICATION_JSON) :
                                 Collections.singletonList(DtMediaType.APPLICATION_XML);
