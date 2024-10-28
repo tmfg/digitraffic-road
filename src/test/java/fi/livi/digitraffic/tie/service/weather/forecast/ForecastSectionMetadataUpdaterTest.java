@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
-import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.dao.weather.forecast.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureV1;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
+import okhttp3.mockwebserver.MockWebServer;
 
 public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
@@ -35,10 +33,7 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
     private ForecastWebDataServiceV1 v2ForecastSectionMetadataService;
 
     @Autowired
-    private V2ForecastSectionMetadataDao v2ForecastSectionMetadataDao;
-
-    @Autowired
-    private DataStatusService dataStatusService;
+    private ForecastSectionMetadataUpdateService forecastSectionMetadataUpdateService;
 
     private MockWebServer server;
 
@@ -58,8 +53,7 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
         final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient(server);
 
         forecastSectionV2MetadataUpdater =
-            new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionRepository,
-                                                 v2ForecastSectionMetadataDao,dataStatusService);
+            new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionMetadataUpdateService);
     }
 
     @AfterEach

@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.IOException;
 import java.time.Instant;
 
-import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
-import fi.livi.digitraffic.tie.dao.weather.forecast.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionsWeatherDtoV1;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.weather.forecast.RoadCondition;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
+import okhttp3.mockwebserver.MockWebServer;
 
 public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
     @Autowired
@@ -40,7 +39,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
     private ForecastSectionV1MetadataUpdater forecastSectionMetadataUpdaterV1;
 
     @Autowired
-    private V2ForecastSectionMetadataDao v2ForecastSectionMetadataDao;
+    private ForecastSectionMetadataUpdateService forecastSectionMetadataUpdateService;
 
     @Autowired
     private DataStatusService dataStatusService;
@@ -54,11 +53,14 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
 
         final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient(server);
 
-        forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
-        forecastSectionMetadataUpdaterV2 =
-            new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionRepository, v2ForecastSectionMetadataDao, dataStatusService);
+        final ForecastSectionDataUpdateService forecastSectionDataUpdateService =
+                new ForecastSectionDataUpdateService(forecastSectionRepository, dataStatusService);
+        forecastSectionDataUpdater = new ForecastSectionDataUpdater(forecastSectionClient,
+                forecastSectionDataUpdateService);
         forecastSectionMetadataUpdaterV1 =
-            new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
+            new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionMetadataUpdateService);
+        forecastSectionMetadataUpdaterV2 =
+            new ForecastSectionV2MetadataUpdater(forecastSectionClient, forecastSectionMetadataUpdateService);
     }
 
     @AfterEach
@@ -74,7 +76,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
 
         forecastSectionMetadataUpdaterV1.updateForecastSectionV1Metadata();
 
-        final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V1);
+        final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherDataV1();
 
         final Instant lastUpdated = dataStatusService.findDataUpdatedInstant(DataType.FORECAST_SECTION_WEATHER_DATA);
 
@@ -102,7 +104,7 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
 
         forecastSectionMetadataUpdaterV2.updateForecastSectionsV2Metadata();
 
-        final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherData(ForecastSectionApiVersion.V2);
+        final Instant dataUpdated = forecastSectionDataUpdater.updateForecastSectionWeatherDataV2();
         final Instant dataLastUpdated = dataStatusService.findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_WEATHER_DATA);
 
         assertEquals(dataUpdated, dataLastUpdated);

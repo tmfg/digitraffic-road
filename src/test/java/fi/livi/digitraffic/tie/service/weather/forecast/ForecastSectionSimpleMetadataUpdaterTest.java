@@ -9,20 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.time.Instant;
 
-import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionSimpleV1;
-import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
-import org.springframework.web.reactive.function.client.WebClient;
+import okhttp3.mockwebserver.MockWebServer;
 
 public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest {
 
@@ -33,7 +29,7 @@ public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest
     private ForecastWebDataServiceV1 forecastWebDataServiceV1;
 
     @Autowired
-    private DataStatusService dataStatusService;
+    private ForecastSectionMetadataUpdateService forecastSectionMetadataUpdateService;
 
     private MockWebServer server;
 
@@ -49,7 +45,7 @@ public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest
         final ForecastSectionClient forecastSectionClient = forecastSectionTestHelper.createForecastSectionClient(server);
 
         forecastSectionV1MetadataUpdater =
-            new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionRepository, dataStatusService);
+            new ForecastSectionV1MetadataUpdater(forecastSectionClient, forecastSectionMetadataUpdateService);
     }
 
     @AfterEach

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,27 +54,33 @@ public class CameraStationUpdater {
     }
 
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 450000)
+    /* Takes normally 4 min 3/4 of the time takes to fetch data */
+    @PerformanceMonitor(maxWarnExcecutionTime = 6*60*1000)
     public boolean updateCameras() {
         log.info("method=updateCameras start");
+        final StopWatch timeAll = StopWatch.createStarted();
+        final StopWatch timeFetch = StopWatch.createStarted();
         final List<KameraVO> kameras = lotjuCameraStationMetadataClientWrapper.getKameras();
+        timeFetch.stop();
 
         final AtomicInteger updated = new AtomicInteger();
         final AtomicInteger inserted = new AtomicInteger();
 
         final List<Exception> errors = new ArrayList<>();
-
+        final AtomicLong incrementalFetchTookMs = new AtomicLong();
+        final AtomicLong incrementalUpdateTookMs = new AtomicLong();
         kameras.forEach(kamera -> {
                 try {
-                    final Pair<Integer, Integer> result = updateCameraStationAndPresets(kamera);
+                    final Pair<Integer, Integer> result = updateCameraStationAndPresets(kamera, incrementalFetchTookMs, incrementalUpdateTookMs);
                     updated.getAndAdd(result.getLeft());
                     inserted.getAndAdd(result.getRight());
                 } catch (final Exception e) {
                     errors.add(e);
-                    log.error(String.format("method=updateCameras had an error in method updateCameraStationAndPresets with camera lotjuId=%d", kamera.getId()), e);
+                    log.error("method=updateCameras had an error in method updateCameraStationAndPresets with camera lotjuId={}", kamera.getId(), e);
                 }
             });
 
+        final StopWatch timeUpdate = StopWatch.createStarted();
         final Set<Long> camerasLotjuIds = kameras.stream().map(AbstractVO::getId).collect(Collectors.toSet());
         final long obsoletePresets = cameraPresetService.obsoleteCameraPresetsExcludingCameraLotjuIds(camerasLotjuIds);
         final long obsoletedRoadStations = cameraPresetService.obsoleteCameraRoadStationsWithoutPublishablePresets();
@@ -82,11 +90,12 @@ public class CameraStationUpdater {
         log.info("updatedCameraPresetsCount={} CameraPresets", updated.get());
         log.info("insertedCameraPresetsCount={} CameraPresets", inserted.get());
         final boolean updatedCameras = updated.get() > 0 || inserted.get() > 0;
-        log.info("method=updateCameras end updatedBoolean={}", updatedCameras);
+        log.info("method=updateCameras operation=fetch updatedBoolean={} tookMs={} totalTimeMs={}", updatedCameras, timeFetch.getTime() + incrementalFetchTookMs.get(), timeAll.getTime());
+        log.info("method=updateCameras operation=update updatedBoolean={} tookMs={} totalTimeMs={}", updatedCameras, timeUpdate.getTime() + incrementalUpdateTookMs.get(), timeAll.getTime());
 
         if (!errors.isEmpty()) {
             throw new RuntimeException(
-                String.format("There was %d errors in method=updateCameras and here is thrown the first of them", errors.size()), errors.get(0));
+                StringUtil.format("method=updateCameras There was {} errors and here is thrown the first of them", errors.size()), errors.getFirst());
         }
 
         return updatedCameras;
@@ -112,27 +121,27 @@ public class CameraStationUpdater {
         if (!errors.isEmpty()) {
             throw new RuntimeException(
                 String.format("There was %d errors in method=updateCameraStationsStatuses and here is thrown the first one of them",
-                errors.size()), errors.get(0));
+                errors.size()), errors.getFirst());
         }
 
         return updateCount;
     }
 
 
-    private Pair<Integer, Integer> updateCameraStationAndPresets(final long cameraLotjuId) {
+    private Pair<Integer, Integer> updateCameraStationAndPresets(final long cameraLotjuId, final AtomicLong incrementalFetchTookMs, final AtomicLong incrementalUpdateTookMs) {
         final KameraVO kamera = lotjuCameraStationMetadataClientWrapper.getKamera(cameraLotjuId);
         if (kamera == null) {
             log.warn("method=updateCameraStationAndPresets No Camera found with lotjuId={}", cameraLotjuId);
             return Pair.of(0,0);
         }
-        return updateCameraStationAndPresets(kamera);
+        return updateCameraStationAndPresets(kamera, incrementalFetchTookMs, incrementalUpdateTookMs);
     }
 
     /**
      * @param kamera Camera to update
      * @return Pair of updated and inserted count of presets
      */
-    private Pair<Integer, Integer> updateCameraStationAndPresets(final KameraVO kamera) {
+    private Pair<Integer, Integer> updateCameraStationAndPresets(final KameraVO kamera, final AtomicLong incrementalFetchTookMs, final AtomicLong incrementalUpdateTookMs) {
         // Try to get lock for 10s and then gives up
         if (!cachedLockingService.lock(10000)) {
             throw new IllegalStateException(StringUtil.format("method=updateCameraStationAndPresets did not get the lock {}",
@@ -143,8 +152,14 @@ public class CameraStationUpdater {
             if (!validate(kamera)) {
                 return Pair.of(0,0);
             }
+            final StopWatch timeFetch = StopWatch.createStarted();
             final List<EsiasentoVO> eas = lotjuCameraStationMetadataClientWrapper.getEsiasentos(kamera.getId());
-            return cameraStationUpdateService.updateOrInsertRoadStationAndPresets(kamera, eas);
+            incrementalFetchTookMs.addAndGet(timeFetch.getTime());
+            final StopWatch timeUpdate = StopWatch.createStarted();
+            final Pair<Integer, Integer> result =
+                    cameraStationUpdateService.updateOrInsertRoadStationAndPresets(kamera, eas);
+            incrementalUpdateTookMs.addAndGet(timeUpdate.getTime());
+            return result;
 
         } finally {
             cachedLockingService.deactivate();
@@ -170,7 +185,7 @@ public class CameraStationUpdater {
     private boolean updateCameraStation(final KameraVO kamera) {
         // If camera station doesn't exist, we have to create it and the presets.
         if (roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId()) == null) {
-            final Pair<Integer, Integer> updated = updateCameraStationAndPresets(kamera);
+            final Pair<Integer, Integer> updated = updateCameraStationAndPresets(kamera, new AtomicLong(), new AtomicLong());
             return updated.getLeft() > 0 || updated.getRight() > 0;
         }
 
@@ -211,7 +226,7 @@ public class CameraStationUpdater {
 
         // If camera preset doesn't exist, we have to create it -> just update the whole station
         if (cameraPresetService.findCameraPresetByLotjuId(presetLotjuId) == null) {
-            final Pair<Integer, Integer> updated = updateCameraStationAndPresets(esiasento.getKameraId());
+            final Pair<Integer, Integer> updated = updateCameraStationAndPresets(esiasento.getKameraId(), new AtomicLong(), new AtomicLong());
             return updated.getLeft() > 0 || updated.getRight() > 0;
         }
 

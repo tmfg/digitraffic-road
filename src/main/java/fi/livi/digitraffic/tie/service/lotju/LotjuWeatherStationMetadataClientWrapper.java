@@ -42,7 +42,8 @@ public class LotjuWeatherStationMetadataClientWrapper {
         return lotjuWeatherStationClient.getTiesaaAsemas();
     }
 
-    @PerformanceMonitor(maxWarnExcecutionTime = 100000)
+    // Takes sometimes 2,5 minutes
+    @PerformanceMonitor(maxWarnExcecutionTime = 4*60*1000)
     public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tiesaaAsemaLotjuIds) {
         log.info("Fetching TiesaaLaskennallinenAnturis for roadWeatherStationCount={} TiesaaAsemas", tiesaaAsemaLotjuIds.size());
 
@@ -68,7 +69,7 @@ public class LotjuWeatherStationMetadataClientWrapper {
         });
         executor.shutdown();
 
-        log.info("Fetched sensorsCount={} Anturits, tookMs={}", countAnturis, start.getTime());
+        log.info("method=getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId Fetched sensorsCount={}     tookMs={}", countAnturis, start.getTime());
         return tiesaaAnturisMappedByRwsLotjuId;
     }
 
@@ -99,7 +100,7 @@ public class LotjuWeatherStationMetadataClientWrapper {
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer call() {
             final List<TiesaaLaskennallinenAnturiVO> anturis = lotjuWeatherStationClient.getTiesaaAsemanLaskennallisetAnturit(tiesaaAsemaLotjuId);
             tiesaaAnturisMappedByRwsLotjuId.put(tiesaaAsemaLotjuId, anturis);
             return anturis.size();
