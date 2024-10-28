@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 
-import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -96,7 +95,7 @@ public class RegionGeometryDataServiceV1 {
                         locationCodeToRegion.put(locationCode, new ArrayList<>());
                     }
                     // Add latest as 1st element -> will be in desc order
-                    locationCodeToRegion.get(locationCode).add(0, regionGeometry);
+                    locationCodeToRegion.get(locationCode).addFirst(regionGeometry);
                     log.info("method=refreshCache Added version {}", regionGeometry);
                 } else {
                     log.info("method=refreshCache Not adding version with illegal type {}", regionGeometry);
@@ -141,7 +140,7 @@ public class RegionGeometryDataServiceV1 {
         return regionsInDescOrder.stream()
             .filter(r -> r.getEffectiveDate().getEpochSecond() <= theMoment.getEpochSecond())
             .findFirst()
-            .orElse(regionsInDescOrder.get(0));
+            .orElse(regionsInDescOrder.getFirst());
     }
 
     @NotTransactionalServiceMethod
@@ -157,7 +156,7 @@ public class RegionGeometryDataServiceV1 {
                     } else {
                         // Try to make geometry valid by adding 0 buffer around it
                         geometryCollection.add(geometry.buffer(0));
-                        log.warn("RegionGeometry is not valid id: {} locationCode: {} name: {} effectiveDate: {}",
+                        log.warn("method=getGeoJsonGeometryUnion regionGeometry is not valid id: {} locationCode: {} name: {} effectiveDate: {}",
                                 region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate());
                     }
                 }
