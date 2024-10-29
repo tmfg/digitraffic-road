@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.dao.roadstation;
 
-import static org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE;
+import static org.hibernate.jpa.AvailableHints.HINT_FETCH_SIZE;
 
 import java.time.Instant;
 import java.util.Collection;

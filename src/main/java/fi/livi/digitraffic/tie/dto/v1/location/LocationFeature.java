@@ -10,16 +10,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema
 public final class LocationFeature implements Comparable<LocationFeature> {
 
-    @Schema(description = "\"Feature\": GeoJSON Feature Object", required = true, allowableValues = "Feature")
+    @Schema(description = "\"Feature\": GeoJSON Feature Object", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = "Feature")
     public final String type = "Feature";
 
-    @Schema(description = "Unique locationCode for this location", required = true)
+    @Schema(description = "Unique locationCode for this location", requiredMode = Schema.RequiredMode.REQUIRED)
     public final int id;
 
-    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", required = true)
+    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Point geometry;
 
-    @Schema(description = "Location properties.", required = true)
+    @Schema(description = "Location properties.", requiredMode = Schema.RequiredMode.REQUIRED)
     public final LocationProperties properties;
 
     public LocationFeature(final LocationDtoV1 l) {

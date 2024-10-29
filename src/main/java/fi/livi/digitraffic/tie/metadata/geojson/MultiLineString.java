@@ -22,13 +22,13 @@ public class MultiLineString extends Geometry<List<List<Double>>> {
     }
 
     // See https://github.com/swagger-api/swagger-core/issues/2949
-    @Schema(type = "String", required = true, allowableValues = { "MultiLineString" }, example = "MultiLineString")
+    @Schema(type = "String", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = { "MultiLineString" }, example = "MultiLineString")
     @Override
     public Type getType() {
         return super.getType();
     }
 
-    @Schema(required = true, example = "[ [ [100.00000000, 0.00000000], [101.00000000, 1.00000000] ], [ [102.00000000, 2.00000000], [103.00000000, 3.00000000] ] ]",
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "[ [ [100.00000000, 0.00000000], [101.00000000, 1.00000000] ], [ [102.00000000, 2.00000000], [103.00000000, 3.00000000] ] ]",
                       description = "An array of LineString coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, type = "List")
     @Override
     public List<List<List<Double>>> getCoordinates() {

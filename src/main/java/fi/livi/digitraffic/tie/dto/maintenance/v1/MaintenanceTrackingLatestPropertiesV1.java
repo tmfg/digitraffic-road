@@ -11,16 +11,16 @@ import java.util.Set;
 @Schema(description = "Maintenance tracking properties")
 public class MaintenanceTrackingLatestPropertiesV1 extends PropertiesV1 {
 
-    @Schema(description = "Id for the tracking", required = true)
+    @Schema(description = "Id for the tracking", requiredMode = Schema.RequiredMode.REQUIRED)
     private final long id;
 
-    @Schema(description = "Time of latest tracking", required = true)
+    @Schema(description = "Time of latest tracking", requiredMode = Schema.RequiredMode.REQUIRED)
     private Instant time;
 
-    @Schema(description = "Creation time of tracking", required = true)
+    @Schema(description = "Creation time of tracking", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant created;
 
-    @Schema(description = "Tasks done during maintenance work", required = true)
+    @Schema(description = "Tasks done during maintenance work", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Set<MaintenanceTrackingTask> tasks;
 
     @Schema(description = "Direction of the last observation")

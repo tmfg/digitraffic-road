@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "roadStationSensors" })
 public class TmsRoadStationsSensorsMetadata extends RootMetadataObjectDto {
 
-    @Schema(description = "Available sensors of weather stations", required = true)
+    @Schema(description = "Available sensors of weather stations", requiredMode = Schema.RequiredMode.REQUIRED)
     private final List<TmsRoadStationSensorDto> roadStationSensors;
 
     public TmsRoadStationsSensorsMetadata(final List<TmsRoadStationSensorDto> roadStationSensors, final ZonedDateTime lastUpdated, final ZonedDateTime dataLastCheckedTime) {

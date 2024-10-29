@@ -16,11 +16,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(subTypes = { TmsStationDto.class, WeatherStationDto.class })
 public abstract class AbstractStationWithSensorsDto {
 
-    @Schema(description = "Road station id", required = true)
+    @Schema(description = "Road station id", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "id")
     private long roadStationNaturalId;
 
-    @Schema(description = "Measured sensor values of the Weather Station", required = true)
+    @Schema(description = "Measured sensor values of the Weather Station", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<SensorValueDto> sensorValues = new ArrayList<>();
 
     @Schema(description = "Date and time of the sensor's measurement")

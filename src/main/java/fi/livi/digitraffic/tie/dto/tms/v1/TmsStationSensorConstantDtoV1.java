@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "dataUpdatedTime" })
 public class TmsStationSensorConstantDtoV1 extends StationDataV1<Long> {
 
-    @Schema(description = "TMS Stations sensor constant values", required = true)
+    @Schema(description = "TMS Stations sensor constant values", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "sensorConstantValues")
     public final List<TmsSensorConstantValueDto> sensorConstanValues;
 

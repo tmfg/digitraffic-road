@@ -11,25 +11,25 @@ import java.util.Set;
 @Schema(description = "Maintenance tracking properties")
 public class MaintenanceTrackingPropertiesV1 extends PropertiesV1 {
 
-    @Schema(description = "Id for the tracking", required = true)
+    @Schema(description = "Id for the tracking", requiredMode = Schema.RequiredMode.REQUIRED)
     public final long id;
 
     @Schema(description = "Id for the previous tracking if known")
     public final Long previousId;
 
-    @Schema(description = "Time when tracking was reported", required = true)
+    @Schema(description = "Time when tracking was reported", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant sendingTime;
 
-    @Schema(description = "Creation time of tracking", required = true)
+    @Schema(description = "Creation time of tracking", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant created;
 
-    @Schema(description = "Tasks done during maintenance work", required = true)
+    @Schema(description = "Tasks done during maintenance work", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Set<MaintenanceTrackingTask> tasks;
 
-    @Schema(description = "Start time of maintenance work tasks", required = true)
+    @Schema(description = "Start time of maintenance work tasks", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant startTime;
 
-    @Schema(description = "End time of maintenance work tasks", required = true)
+    @Schema(description = "End time of maintenance work tasks", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant endTime;
 
     @Schema(description = "Direction of the last observation")

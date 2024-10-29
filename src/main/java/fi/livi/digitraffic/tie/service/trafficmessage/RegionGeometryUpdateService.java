@@ -33,7 +33,7 @@ public class RegionGeometryUpdateService {
     @Transactional
     public void saveChanges(final List<RegionGeometry> changes) {
         final StopWatch start = StopWatch.createStarted();
-        changes.forEach(regionGeometryRepository::save);
+        regionGeometryRepository.saveAll(changes);
         log.info("method=saveChanges insertCount={} tookMs={}", changes.size(), start.getTime());
     }
 }

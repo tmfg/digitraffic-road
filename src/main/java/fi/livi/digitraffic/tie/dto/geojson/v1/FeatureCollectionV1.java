@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "GeoJSON Feature Collection Object")
 public class FeatureCollectionV1<FeatureType> extends FeatureCollection<FeatureType> implements LastModifiedSupport {
 
-    @Schema(description = "Data last updated date time", required = true)
+    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant dataUpdatedTime;
 
     public FeatureCollectionV1(final Instant dataUpdatedTime,

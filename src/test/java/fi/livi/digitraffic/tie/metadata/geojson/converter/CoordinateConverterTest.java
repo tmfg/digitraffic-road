@@ -84,7 +84,7 @@ public class CoordinateConverterTest {
                                final AtomicBoolean fail) {
         final Runnable runnable = () ->
             {
-                log.info("Start thread {}", Thread.currentThread().getId());
+                log.info("Start thread {}", Thread.currentThread().threadId());
                 int i = 1;
 
                 while (i < 1001 && !fail.get()) {
@@ -104,7 +104,7 @@ public class CoordinateConverterTest {
                     }
                     i++;
                 }
-                log.info("End thread {}", Thread.currentThread().getId());
+                log.info("End thread {}", Thread.currentThread().threadId());
             };
         final Thread thread = new Thread(runnable);
         thread.start();
@@ -118,7 +118,7 @@ public class CoordinateConverterTest {
         if ((Math.abs(d1 - d2) <= delta)) {
             return false;
         }
-        log.error("Values not equal {} and {} with delta {} on thread {}", d1, d2, delta, Thread.currentThread().getId());
+        log.error("Values not equal {} and {} with delta {} on thread {}", d1, d2, delta, Thread.currentThread().threadId());
         return true;
     }
 

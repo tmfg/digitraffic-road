@@ -47,7 +47,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractTest {
 
     /**
      * Calls {@linkplain AopTestUtils#getTargetObject(Object)} }
-     *
+     * <p>
      * Get the <em>target</em> object of the supplied {@code candidate} object.
      * <p>If the supplied {@code candidate} is a Spring
      * {@linkplain AopUtils#isAopProxy proxy}, the target of the proxy will

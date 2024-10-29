@@ -11,13 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WeathercamPresetHistoryDtoV1 {
 
-    @Schema(description = "Weathercam preset's id", required = true)
+    @Schema(description = "Weathercam preset's id", requiredMode = Schema.RequiredMode.REQUIRED)
     public final String id;
 
     @Schema(description = "Time when data was last updated")
     public final Instant dataUpdatedTime;
 
-    @Schema(description = "Weathercam preset's history", required = true)
+    @Schema(description = "Weathercam preset's history", requiredMode = Schema.RequiredMode.REQUIRED)
     public final List<WeathercamPresetHistoryItemDtoV1> history;
 
 

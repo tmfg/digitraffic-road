@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class CameraStationFeature extends Feature<Point, CameraProperties> {
 
-    @Schema(description = "Road station id, same as CameraStationProperties.roadStationId", required = true)
+    @Schema(description = "Road station id, same as CameraStationProperties.roadStationId", requiredMode = Schema.RequiredMode.REQUIRED)
     private String id;
 
     public CameraStationFeature(final Point geometry, final CameraProperties properties) {
@@ -25,7 +25,7 @@ public class CameraStationFeature extends Feature<Point, CameraProperties> {
         this.id = ToStringHelper.nullSafeToString(properties.getNaturalId());
     }
 
-    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", required = true, allowableValues = "Point")
+    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = "Point")
     @Override
     public Point getGeometry() {
         return super.getGeometry();

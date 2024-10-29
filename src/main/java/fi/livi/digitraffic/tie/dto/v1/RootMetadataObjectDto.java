@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "type", "features" })
 public class RootMetadataObjectDto extends RootDataObjectDto {
 
-    @Schema(description = "Data last checked date time", required = true)
+    @Schema(description = "Data last checked date time", requiredMode = Schema.RequiredMode.REQUIRED)
     public final ZonedDateTime dataLastCheckedTime;
 
     public RootMetadataObjectDto(final ZonedDateTime dataUpdatedTime,

@@ -1,13 +1,11 @@
 package fi.livi.digitraffic.tie.service.variablesign.v1;
 
 
-import fi.livi.digitraffic.tie.converter.waze.WazeDatex2Converter;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureV1;
 import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

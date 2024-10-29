@@ -34,7 +34,7 @@ public class Datex2Situation {
     @GeneratedValue(generator = "SEQ_DATEX2SITUATION")
     private Long id;
 
-    @Schema(description = "Situation id", required = true)
+    @Schema(description = "Situation id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String situationId;
 
@@ -43,7 +43,7 @@ public class Datex2Situation {
     @JoinColumn(name = "DATEX2_ID", nullable = false)
     private Datex2 datex2;
 
-    @Schema(description = "Situation records", required = true)
+    @Schema(description = "Situation records", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     @OneToMany(mappedBy = "situation", cascade = CascadeType.ALL)
     private List<Datex2SituationRecord> situationRecords;

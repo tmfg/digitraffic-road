@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.dto.wazefeed;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -35,7 +34,7 @@ public class WazeFeedIncidentDto implements Serializable {
         ACCIDENT,
         ROAD_CLOSED,
         JAM,
-        POLICE;
+        POLICE
     }
 
     public enum WazeType {

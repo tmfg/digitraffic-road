@@ -47,15 +47,15 @@ public class WeathercamControllerV1 {
 
     /**
      * API paths:
-     *
+     * <p>
      * Metadata
      * /api/weathercam/v/stations (simple)
      * /api/weathercam/v/stations/{id} (detailed)
-     *
+     * <p>
      * Data
      * /api/weathercam/v/stations/data (all)
      * /api/weathercam/v/stations/{id}/data (one station)
-     *
+     * <p>
      * Histories
      * /api/weathercam/v/stations/histories
      * /api/weathercam/v/stations/histories/changes

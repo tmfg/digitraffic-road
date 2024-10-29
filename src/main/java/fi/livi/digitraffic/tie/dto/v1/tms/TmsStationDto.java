@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder( value = {"id", "tmsNumber", "measuredTime", "sensorValues"})
 public class TmsStationDto extends AbstractStationWithSensorsDto {
 
-    @Schema(description = "TMS station number", required = true)
+    @Schema(description = "TMS station number", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "tmsNumber")
     private long tmsStationNaturalId;
 

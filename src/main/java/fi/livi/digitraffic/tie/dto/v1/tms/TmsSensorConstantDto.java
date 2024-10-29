@@ -14,10 +14,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "roadStationId", "sensorConstantValues"})
 public class TmsSensorConstantDto { // TODO rename to TmsSensorConstantDtoV1
 
-    @Schema(description = "Id of TMS station", required = true)
+    @Schema(description = "Id of TMS station", requiredMode = Schema.RequiredMode.REQUIRED)
     private final Long roadStationId;
 
-    @Schema(description = "TMS Stations sensor constant values", required = true)
+    @Schema(description = "TMS Stations sensor constant values", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "sensorConstantValues")
     private List<TmsSensorConstantValueDto> sensorConstantValues;
 

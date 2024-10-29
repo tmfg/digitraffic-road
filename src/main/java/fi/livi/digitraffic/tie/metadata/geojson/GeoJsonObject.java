@@ -12,7 +12,7 @@ public abstract class GeoJsonObject extends JsonAdditionalProperties implements 
     public GeoJsonObject() {
     }
 
-    @Schema(description = "GeoJSON Object Type", required = true)
+    @Schema(description = "GeoJSON Object Type", requiredMode = Schema.RequiredMode.REQUIRED)
     public abstract String getType();
 
     @Override

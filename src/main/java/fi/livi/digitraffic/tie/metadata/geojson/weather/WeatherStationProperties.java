@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class WeatherStationProperties extends RoadStationProperties {
 
     @JsonIgnore // Using road station's natural id
-    @Schema(name = "id", description = "Weather station's unique id", required = true)
+    @Schema(name = "id", description = "Weather station's unique id", requiredMode = Schema.RequiredMode.REQUIRED)
     private long id;
 
     @Schema(description = "Type of Weather Station")

@@ -15,7 +15,7 @@ public class WeatherStationPropertiesDetailedV1 extends RoadStationPropertiesDet
     @Schema(description = "Type of weather station")
     public final WeatherStationType stationType;
 
-    @Schema(description = "Is station master or slave station", required = true)
+    @Schema(description = "Is station master or slave station", requiredMode = Schema.RequiredMode.REQUIRED)
     public final boolean master;
 
     /** Sensors natural ids */

@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "dataUpdatedTime" })
 public class WeathercamStationPresetsPublicityHistoryV1 extends StationDataV1<String> {
 
-    @Schema(description = "Id of the weathercam station", required = true)
+    @Schema(description = "Id of the weathercam station", requiredMode = Schema.RequiredMode.REQUIRED)
     public final List<WeathercamPresetPublicityHistoryV1> presets;
 
     public WeathercamStationPresetsPublicityHistoryV1(final String id, final List<WeathercamPresetPublicityHistoryV1> presetsData, final Instant dataUpdatedTime) {

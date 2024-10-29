@@ -12,13 +12,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "locationCode", "name", "type", "effectiveDate" })
 public class RegionGeometryProperties extends Properties {
 
-    @Schema(description = "The name of the region", required = true)
+    @Schema(description = "The name of the region", requiredMode = Schema.RequiredMode.REQUIRED)
     public String name;
-    @Schema(description = "The Alert-C code of the region", required = true)
+    @Schema(description = "The Alert-C code of the region", requiredMode = Schema.RequiredMode.REQUIRED)
     public Integer locationCode;
-    @Schema(description = "The type of the region", required = true)
+    @Schema(description = "The type of the region", requiredMode = Schema.RequiredMode.REQUIRED)
     public AreaType type;
-    @Schema(description = "The moment, when the data comes into effect", required = true)
+    @Schema(description = "The moment, when the data comes into effect", requiredMode = Schema.RequiredMode.REQUIRED)
     public Instant effectiveDate;
 
     public RegionGeometryProperties(final String name, final Integer locationCode, final AreaType type, final Instant effectiveDate) {

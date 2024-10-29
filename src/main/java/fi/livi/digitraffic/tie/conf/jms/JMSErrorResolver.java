@@ -30,10 +30,8 @@ public class JMSErrorResolver {
         final Optional<Field> errorField = Arrays.stream(ErrorCodes.class.getDeclaredFields())
                 .filter(field -> isFieldValueEqualWithErrorCode(field, errCode) )
                 .findFirst();
-        if (errorField.isPresent()) {
-            return ErrorCodes.class.getSimpleName() + "." + errorField.get().getName();
-        }
-        return null;
+
+        return errorField.map(field -> ErrorCodes.class.getSimpleName() + "." + field.getName()).orElse(null);
     }
 
     private static boolean isFieldValueEqualWithErrorCode(final Field field, final String errCode) {

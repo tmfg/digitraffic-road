@@ -6,10 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class LocationProperties {
 
-    @Schema(description = "Unique locationCode for this location", required = true)
+    @Schema(description = "Unique locationCode for this location", requiredMode = Schema.RequiredMode.REQUIRED)
     public final int locationCode;
 
-    @Schema(description = "Code of location subtype", required = true)
+    @Schema(description = "Code of location subtype", requiredMode = Schema.RequiredMode.REQUIRED)
     public final String subtypeCode;
 
     @Schema(description = "Roadnumber for roads. Junctionno: the numbering of exits has only just begun on the very limited Finnish motorway network. The exit numbers will be included. NOTE: the roads, segments and points are not sorted in ascending order")
@@ -18,7 +18,7 @@ public class LocationProperties {
     @Schema(description = "Roadname if exists, L5.0 always have road name")
     public final String roadName;
 
-    @Schema(description = "For roads and segments this is the name of the starting point. For all other objects (linear (streets), area and point) this is the name of the object", required = true)
+    @Schema(description = "For roads and segments this is the name of the starting point. For all other objects (linear (streets), area and point) this is the name of the object", requiredMode = Schema.RequiredMode.REQUIRED)
     public final String firstName;
 
     @Schema(description = "For roads and segments this is the name of the ending point. For point locations the number of the intersecting road")

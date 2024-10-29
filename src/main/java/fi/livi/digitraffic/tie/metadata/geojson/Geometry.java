@@ -55,13 +55,13 @@ public abstract class Geometry<T> extends JsonAdditionalProperties implements Se
         this.coordinates = Arrays.asList(coordinates);
     }
 
-    @Schema(description = "GeoJson Geometry Object type", required = true)
+    @Schema(description = "GeoJson Geometry Object type", requiredMode = Schema.RequiredMode.REQUIRED)
     public Type getType() {
         return type;
     }
 
     @JsonSerialize(using = CoordinatesDecimalConverter.class)
-    @Schema(description = "GeoJson Geometry Object coordinates", required = true)
+    @Schema(description = "GeoJson Geometry Object coordinates", requiredMode = Schema.RequiredMode.REQUIRED)
     public List<T> getCoordinates() {
         return coordinates;
     }

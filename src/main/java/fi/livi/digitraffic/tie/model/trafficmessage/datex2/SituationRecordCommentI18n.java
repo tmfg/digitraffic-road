@@ -33,12 +33,12 @@ public class SituationRecordCommentI18n {
     @GeneratedValue(generator = "SEQ_SITUATION_RECORD_COMMENT")
     private Long id;
 
-    @Schema(description = "Comment language", required = true)
+    @Schema(description = "Comment language", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     @Length(min = 2, max = 2)
     private String lang;
 
-    @Schema(description = "Comment value", required = true)
+    @Schema(description = "Comment value", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String value;
 

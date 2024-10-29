@@ -10,13 +10,11 @@ import jakarta.validation.constraints.NotNull;
 @Schema(description = "Maintenance tracking domain")
 public interface MaintenanceTrackingDomainDtoV1 extends DataUpdatedSupportV1 {
 
-    @Schema(description = "Name of the maintenance tracking domain", required = true)
+    @Schema(description = "Name of the maintenance tracking domain", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     String getName();
 
-    @Schema(description = "Source and owner of the data", required = true)
+    @Schema(description = "Source and owner of the data", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     String getSource();
-//    @Schema(description = "Data last updated time", required = true)
-//    Instant getDataUpdatedTime();
 }

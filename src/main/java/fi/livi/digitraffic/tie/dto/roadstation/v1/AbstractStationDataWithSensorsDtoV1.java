@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "dataUpdatedTime" })
 public abstract class AbstractStationDataWithSensorsDtoV1 extends StationDataV1<Long> {
 
-    @Schema(description = "Measured sensor values of the station", required = true)
+    @Schema(description = "Measured sensor values of the station", requiredMode = Schema.RequiredMode.REQUIRED)
     public final List<SensorValueDtoV1> sensorValues;
 
     public AbstractStationDataWithSensorsDtoV1(final long roadStationNaturalId, final Instant updated,

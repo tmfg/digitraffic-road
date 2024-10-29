@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "dataUpdatedTime" })
 public abstract class StationDataV1<ID_TYPE> implements Serializable, LastModifiedSupport {
 
-    @Schema(description = "Id of the road station", required = true)
+    @Schema(description = "Id of the road station", requiredMode = Schema.RequiredMode.REQUIRED)
     public final ID_TYPE id;
 
     @Schema(description = "Time when data was last updated")

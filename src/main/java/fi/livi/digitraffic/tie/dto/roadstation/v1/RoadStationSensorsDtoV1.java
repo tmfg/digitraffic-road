@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Road station sensors metadata")
 public abstract class RoadStationSensorsDtoV1<T extends RoadStationSensorDtoV1> extends StationMetadataDtoV1  {
 
-    @Schema(description = "Available sensors of road stations", required = true)
+    @Schema(description = "Available sensors of road stations", requiredMode = Schema.RequiredMode.REQUIRED)
     public final List<T> sensors;
 
     public RoadStationSensorsDtoV1(final Instant dataUpdatedTime, final Instant dataLastCheckedTime, final List<T> sensors) {

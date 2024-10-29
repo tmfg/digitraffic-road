@@ -250,14 +250,14 @@ public class LotjuTmsStationMetadataClientWrapper {
     }
     /**
      * When LamAnturiVakioArvos are fetched for every month there is distinct values.
-     *
+     * <p>
      * For example
      * If A is valid on 1.1.–30.6. it will be returned for months 1–6
      * and if B is valid on 1.7.–31.12. it  will be returned for months 7–12.
      * So the result for months 1-12 will be
      * [A, A, A, A, A, A, B, B, B, B, B, B] and after filterDistinct -function
      * it will be reduced to [A, B]
-     *
+     * <p>
      * Returns distinct LamAnturiVakioArvos
      * @param lamAnturiVakioArvos values to reduce
      * @return distinct LamAnturiVakioArvo values

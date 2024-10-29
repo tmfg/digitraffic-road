@@ -20,13 +20,13 @@ public class MultiPolygon extends Geometry<List<List<List<Double>>>> {
     }
 
     // See https://github.com/swagger-api/swagger-core/issues/2949
-    @Schema(type = "String", required = true, allowableValues = { "MultiPolygon" }, example = "MultiPolygon")
+    @Schema(type = "String", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = { "MultiPolygon" }, example = "MultiPolygon")
     @Override
     public Type getType() {
         return super.getType();
     }
 
-    @Schema(required = true, example = "[ [ [ [30, 20], [45, 40], [10, 40], [30, 20] ] ], [ [ [15, 5], [40, 10], [10, 20], [5, 10], [15, 5] ] ] ]",
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "[ [ [ [30, 20], [45, 40], [10, 40], [30, 20] ] ], [ [ [15, 5], [40, 10], [10, 20], [5, 10], [15, 5] ] ] ]",
                       description = "An array of Polygon coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT, type = "List")
     @Override
     public List<List<List<List<Double>>>> getCoordinates() {

@@ -2,11 +2,11 @@ package fi.livi.digitraffic.tie.controller;
 
 /**
  * Sunset dates and deprecation notes
- *
+ * <p>
  * I.e. Sunset on 1.1.2022 -> create two constants, date in format YYYY-MM-DD:
  * SUNSET_2022_01_01    = "2022-01-01"
  * API_NOTE_2022_11_01 = SUNSET_TEXT + SUNSET_2022_01_01;
- *
+ * <p>
  * And add those values for deprecated APIs:
  * @Deprecated(forRemoval = true)
  * @Sunset(date = SUNSET_2022_01_01) OR @Sunset(tbd = true)

@@ -17,14 +17,14 @@ public class MaintenanceTrackingFeatureV1 extends Feature<Geometry<?>, Maintenan
         super(geometry, properties);
     }
 
-    @Schema(description = "GeoJSON Feature Object", required = true, allowableValues = "Feature")
+    @Schema(description = "GeoJSON Feature Object", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = "Feature")
     @Override
     public String getType() {
         return "Feature";
     }
 
 
-    @Schema(description = "GeoJSON Point or LineString Geometry Object containing route point(s)", required = true)
+    @Schema(description = "GeoJSON Point or LineString Geometry Object containing route point(s)", requiredMode = Schema.RequiredMode.REQUIRED)
     @Override
     public Geometry<?> getGeometry() {
         return super.getGeometry();

@@ -10,6 +10,6 @@ public class ObjectNotFoundException extends RuntimeException {
     }
 
     public ObjectNotFoundException(final String objectName, final Object identifier) {
-        super(String.format("Object of [%s] with identifier [%s]: not found", objectName, String.valueOf(identifier)));
+        super(String.format("Object of [%s] with identifier [%s]: not found", objectName, identifier));
     }
 }

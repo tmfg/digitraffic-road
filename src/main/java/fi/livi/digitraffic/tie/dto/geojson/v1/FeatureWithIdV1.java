@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class FeatureWithIdV1<G extends Geometry<?>, P extends PropertiesWithIdV1<ID_TYPE>, ID_TYPE> extends FeatureV1<G, P>  {
 
-    @Schema(description = "Id of the feature", required = true)
+    @Schema(description = "Id of the feature", requiredMode = Schema.RequiredMode.REQUIRED)
     public ID_TYPE getId() {
         return getProperties().id;
     }

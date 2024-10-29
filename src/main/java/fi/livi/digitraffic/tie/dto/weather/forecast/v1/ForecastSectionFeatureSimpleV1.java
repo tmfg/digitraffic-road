@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "type", "id", "geometry", "properties" })
 public class ForecastSectionFeatureSimpleV1 extends FeatureV1<LineString, ForecastSectionPropertiesSimpleV1> {
 
-    @Schema(description = "Forecast section identifier 15 characters ie. 00004_112_000_0, see properties id description.", required = true)
+    @Schema(description = "Forecast section identifier 15 characters ie. 00004_112_000_0, see properties id description.", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonPropertyOrder(value = "2")
     public final String id;
 

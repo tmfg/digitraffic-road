@@ -129,7 +129,7 @@ public abstract class LotjuServiceEndpointMock {
         }
     }
 
-    private class LotjuTestException extends RuntimeException {
+    private static class LotjuTestException extends RuntimeException {
         public LotjuTestException(final Exception e) {
             super(e);
         }

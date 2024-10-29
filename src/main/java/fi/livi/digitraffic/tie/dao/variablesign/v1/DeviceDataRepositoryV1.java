@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.dao.variablesign.v1;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;

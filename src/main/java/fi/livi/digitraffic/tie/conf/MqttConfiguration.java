@@ -82,7 +82,7 @@ public class MqttConfiguration {
      * must be called synchronized or from a single thread!
      *
      */
-    private class SingleThreadMessageHandler extends AbstractMqttMessageHandler<IMqttAsyncClient, MqttConnectOptions> implements MqttCallback, MqttPahoComponent {
+    private static class SingleThreadMessageHandler extends AbstractMqttMessageHandler<IMqttAsyncClient, MqttConnectOptions> implements MqttCallback, MqttPahoComponent {
         private final MqttPahoClientFactory clientFactory;
         private volatile IMqttAsyncClient client;
 

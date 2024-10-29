@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(subTypes = { CameraRootDataObjectDto.class, TmsRootDataObjectDto.class, TmsSensorConstantRootDto.class, WeatherRootDataObjectDto.class })
 public class RootDataObjectDto implements Serializable {
 
-    @Schema(description = "Data last updated date time", required = true)
+    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
     public final ZonedDateTime dataUpdatedTime;
 
     public RootDataObjectDto(final ZonedDateTime dataUpdatedTime) {

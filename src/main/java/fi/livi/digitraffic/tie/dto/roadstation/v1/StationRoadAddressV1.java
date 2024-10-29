@@ -19,7 +19,7 @@ public class StationRoadAddressV1 {
 
     /**
      * tierekisteri_tietosisallon_kuvaus.pdf
-     *
+     * <p>
      * Sijaintitarkenteita (4.11.2020)
      * Puoli: Tietolajin tie-/ajorata -tasoisuudesta riippuen ilmaistaan tiedon puoli suhteessa tieosoitteen kasvusuuntaan
      * 1 = oikealla
@@ -47,7 +47,7 @@ public class StationRoadAddressV1 {
     /**
      * Tieosoitejärjestelmä.pdf
      * 8. AJORATA
-     *
+     * <p>
      * Tiellä voi olla yksi tai kaksi ajorataa. Ns. tietason tietolajit (kuten tieluokka) ovat molemmille
      * ajoradoille yhteisiä, mutta esimerkiksi varusteet ja laitteet ovat yleensä ajoratakohtaisia.
      * Ajorata yksilöidään seuraavasti:

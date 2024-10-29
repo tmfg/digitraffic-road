@@ -19,7 +19,7 @@ import fi.livi.digitraffic.tie.service.ImageManipulationService;
 public class ImageManipulationServiceTest extends AbstractDaemonTest {
 
     @Test
-    public void imageExifRemovalSuccess() throws IOException, ImagingException {
+    public void imageExifRemovalSuccess() throws IOException {
         final byte[] imageWithExif = FileUtils.readFileToByteArray(loadResource("classpath:/lotju/kuva/exif.jpg").getFile());
         final byte[] imageWithoutExif = FileUtils.readFileToByteArray(loadResource("classpath:/lotju/kuva/noExif.jpg").getFile());
 
@@ -31,7 +31,7 @@ public class ImageManipulationServiceTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void imageWithoutExifShouldStaySame() throws IOException, ImagingException {
+    public void imageWithoutExifShouldStaySame() throws IOException {
         final Resource imgResource = loadResource("classpath:/lotju/kuva/noExif.jpg");
         final byte[] withExif = FileUtils.readFileToByteArray(imgResource.getFile());
         final byte[] withoutExif = ImageManipulationService.removeJpgExifMetadata(withExif);

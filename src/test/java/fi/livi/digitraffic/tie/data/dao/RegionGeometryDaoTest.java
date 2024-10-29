@@ -59,7 +59,7 @@ public class RegionGeometryDaoTest extends AbstractJpaTest {
 
     @Test
     public void getLatestCommitId() {
-        final Integer count = getRandomId(10, 50);
+        final int count = getRandomId(10, 50);
         final AtomicReference<String> latestCommitId = new AtomicReference<>();
         IntStream.range(0, count).forEach(i -> {
             final RegionGeometry src = RegionGeometryTestHelper.createNewRegionGeometry(1);
@@ -71,10 +71,10 @@ public class RegionGeometryDaoTest extends AbstractJpaTest {
 
     @Test
     public void findAllByOrderByIdAsc() {
-        final Integer count = getRandomId(10, 50);
+        final int count = getRandomId(10, 50);
         final List<RegionGeometry> allInOrder = new ArrayList<>();
         IntStream.range(0, count).forEach(i -> allInOrder.add(RegionGeometryTestHelper.createNewRegionGeometry(1)));
-        allInOrder.forEach(a -> regionGeometryRepository.save(a));
+        regionGeometryRepository.saveAll(allInOrder);
         // This will change default order for findAll
         entityManager.createNativeQuery(
             "UPDATE region_geometry\n" +

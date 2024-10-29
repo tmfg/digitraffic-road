@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class TmsStationFeature extends Feature<Point, TmsStationProperties> {
 
     // TODO: Remove this from next version as it is duplicated in properties
-    @Schema(description = "Same as TmsStationProperties.roadStationId", required = true)
+    @Schema(description = "Same as TmsStationProperties.roadStationId", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonPropertyOrder(value = "2")
     public final long id;
 
@@ -23,7 +23,7 @@ public class TmsStationFeature extends Feature<Point, TmsStationProperties> {
         this.id = id;
     }
 
-    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", required = true)
+    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", requiredMode = Schema.RequiredMode.REQUIRED)
     @Override
     public Point getGeometry() {
         return super.getGeometry();

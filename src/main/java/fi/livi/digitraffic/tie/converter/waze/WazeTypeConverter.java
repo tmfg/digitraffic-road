@@ -1,18 +1,15 @@
 package fi.livi.digitraffic.tie.converter.waze;
 
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Restriction;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto.WazeType.*;
@@ -72,7 +69,7 @@ public class WazeTypeConverter {
 
     // note, this is also a priority listing
     // if multiple mappings are present, the one higher in the list will be selected
-    private static List<Pair<String, WazeFeedIncidentDto.WazeType>> typeMapping = List.of(
+    private static final List<Pair<String, WazeFeedIncidentDto.WazeType>> typeMapping = List.of(
         Pair.of("<obstructionType>hazardsOnTheRoad",                    HAZARD_ON_ROAD),
         Pair.of("<obstructionType>objectOnTheRoad",                     HAZARD_ON_ROAD_OBJECT),
         Pair.of("<roadOrCarriagewayOrLaneManagementType>laneClosures",  HAZARD_ON_ROAD_LANE_CLOSED),

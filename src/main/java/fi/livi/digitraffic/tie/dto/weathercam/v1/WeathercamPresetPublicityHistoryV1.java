@@ -20,7 +20,7 @@ public class WeathercamPresetPublicityHistoryV1 extends StationMeasurementDataV1
         this.publishableTo = publishableTo;
     }
 
-    @Schema(description = "Id of the weathercam preset", required = true)
+    @Schema(description = "Id of the weathercam preset", requiredMode = Schema.RequiredMode.REQUIRED)
     public String getId() {
         return id;
     }

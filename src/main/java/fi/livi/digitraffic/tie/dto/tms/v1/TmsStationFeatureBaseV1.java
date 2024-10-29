@@ -18,13 +18,13 @@ public class TmsStationFeatureBaseV1<TmsStationPropertiesType extends RoadStatio
         super(geometry, properties);
     }
 
-    @Schema(description = "Id of the road station", required = true)
+    @Schema(description = "Id of the road station", requiredMode = Schema.RequiredMode.REQUIRED)
     @Override
     public Long getId() {
         return super.getId();
     }
 
-    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", required = true, allowableValues = "Point")
+    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = "Point")
     @Override
     public Point getGeometry() {
         return super.getGeometry();

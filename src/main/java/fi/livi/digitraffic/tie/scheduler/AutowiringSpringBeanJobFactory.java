@@ -8,7 +8,7 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
 /**
  * This JobFactory autowires automatically the created quartz bean with spring @Autowired dependencies.
- *
+ * <p>
  * Copy from https://gist.github.com/ihoneymon/d5c59ea2f4b959d2888d#file-autowiringspringbeanjobfactory-java
  */
 public class AutowiringSpringBeanJobFactory extends SpringBeanJobFactory implements

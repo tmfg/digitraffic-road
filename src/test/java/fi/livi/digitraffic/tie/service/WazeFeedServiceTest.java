@@ -21,7 +21,6 @@ import java.util.Optional;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 import fi.livi.digitraffic.tie.service.waze.WazeFeedService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

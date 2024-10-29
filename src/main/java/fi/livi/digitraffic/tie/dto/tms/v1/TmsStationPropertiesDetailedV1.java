@@ -13,16 +13,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "tmsNumber", "name" })
 public class TmsStationPropertiesDetailedV1 extends RoadStationPropertiesDetailedV1<Long> {
 
-    @Schema(description = "TMS station number", required = true)
+    @Schema(description = "TMS station number", requiredMode = Schema.RequiredMode.REQUIRED)
     public final long tmsNumber;
 
-    @Schema(description = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true)
+    @Schema(description = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", requiredMode = Schema.RequiredMode.REQUIRED)
     public final String direction1Municipality;
 
     @Schema(description = "Direction 1 municipality code")
     public final Integer direction1MunicipalityCode;
 
-    @Schema(description = "Direction 2 municipality (2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", required = true)
+    @Schema(description = "Direction 2 municipality (2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", requiredMode = Schema.RequiredMode.REQUIRED)
     public final String direction2Municipality;
 
     @Schema(description = "Direction 2 municipality code")

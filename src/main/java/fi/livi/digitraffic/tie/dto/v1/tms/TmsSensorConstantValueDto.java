@@ -32,11 +32,11 @@ public class TmsSensorConstantValueDto { // TODO rename to TmsSensorConstantValu
     @JsonIgnore
     private Instant modified;
 
-    @Schema(description = "Name of the sensor constant", required = true)
+    @Schema(description = "Name of the sensor constant", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String name;
 
-    @Schema(description = "Value of the sensor constant", required = true)
+    @Schema(description = "Value of the sensor constant", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private Integer value;
 
@@ -80,13 +80,13 @@ public class TmsSensorConstantValueDto { // TODO rename to TmsSensorConstantValu
         return validTo;
     }
 
-    @Schema(description = "Validity start in format mm-dd ie. value 01-31 is 31th of January", required = true)
+    @Schema(description = "Validity start in format mm-dd ie. value 01-31 is 31th of January", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("validFrom")
     public String getValidFromFormated() {
         return formatValidity(validFrom);
     }
 
-    @Schema(description = "Validity end in format mm-dd ie. value 01-31 is 31th of January", required = true)
+    @Schema(description = "Validity end in format mm-dd ie. value 01-31 is 31th of January", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("validTo")
     public String getValidToFormated() {
         return formatValidity(validTo);

@@ -24,17 +24,17 @@ public class TmsStationProperties extends RoadStationProperties {
     private long id;
 
     // NaturalId of tms station
-    @Schema(description = "TMS station number (naturalId) for legacy support", required = true)
+    @Schema(description = "TMS station number (naturalId) for legacy support", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "tmsNumber")
     private long tmsNaturalId;
 
-    @Schema(description = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", required = true)
+    @Schema(description = "Direction 1 municipality (1 = According to the road register address increasing direction. I.e. on the road 4 to Lahti, if we are in Korso.)", requiredMode = Schema.RequiredMode.REQUIRED)
     private String direction1Municipality;
 
     @Schema(description = "Direction 1 municipality code")
     private Integer direction1MunicipalityCode;
 
-    @Schema(description = "Direction 2 municipality (2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", required = true)
+    @Schema(description = "Direction 2 municipality (2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.)", requiredMode = Schema.RequiredMode.REQUIRED)
     private String direction2Municipality;
 
     @Schema(description = "Direction 2 municipality code")

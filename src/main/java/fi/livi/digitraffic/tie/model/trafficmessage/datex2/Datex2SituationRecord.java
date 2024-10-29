@@ -37,7 +37,7 @@ public class Datex2SituationRecord {
     @GeneratedValue(generator = "SEQ_DATEX2SITUATIONRECORD")
     private Long id;
 
-    @Schema(description = "Record id", required = true)
+    @Schema(description = "Record id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private String situationRecordId;
 
@@ -46,35 +46,35 @@ public class Datex2SituationRecord {
     @JoinColumn(name = "DATEX2_SITUATION_ID", nullable = false)
     private Datex2Situation situation;
 
-    @Schema(description = "Record validy status", required = true)
+    @Schema(description = "Record validy status", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     @Enumerated(EnumType.STRING)
     private Datex2SituationRecordValidyStatus validyStatus;
 
-    @Schema(description = "Record creation date time", required = true)
+    @Schema(description = "Record creation date time", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private ZonedDateTime creationTime;
 
-    @Schema(description = "Record version date time", required = true)
+    @Schema(description = "Record version date time", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private ZonedDateTime versionTime;
 
     @Schema(description = "Record observation date time")
     private ZonedDateTime observationTime;
 
-    @Schema(description = "Record overall start date time", required = true)
+    @Schema(description = "Record overall start date time", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     private ZonedDateTime overallStartTime;
 
     @Schema(description = "Record overall end date time")
     private ZonedDateTime overallEndTime;
 
-    @Schema(description = "Record type", required = true)
+    @Schema(description = "Record type", requiredMode = Schema.RequiredMode.REQUIRED)
     @Enumerated(EnumType.STRING)
     @NotNull
     private Datex2SituationRecordType type;
 
-    @Schema(description = "Record comments", required = true)
+    @Schema(description = "Record comments", requiredMode = Schema.RequiredMode.REQUIRED)
     @OneToMany(mappedBy = "situationRecord", cascade = CascadeType.ALL)
     private List<SituationRecordCommentI18n> publicComments;
 

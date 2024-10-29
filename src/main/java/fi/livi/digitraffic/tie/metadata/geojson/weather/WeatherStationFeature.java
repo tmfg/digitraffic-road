@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class WeatherStationFeature extends Feature<Point, WeatherStationProperties> {
 
     // TODO: Remove this from next version as it is duplicated in properties
-    @Schema(description = "Road station id, same as WeatherStationProperties.roadStationId", required = true)
+    @Schema(description = "Road station id, same as WeatherStationProperties.roadStationId", requiredMode = Schema.RequiredMode.REQUIRED)
     private long id;
 
     public WeatherStationFeature(final Point geometry, final WeatherStationProperties properties, final long id) {
@@ -22,7 +22,7 @@ public class WeatherStationFeature extends Feature<Point, WeatherStationProperti
         this.id = id;
     }
 
-    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", required = true)
+    @Schema(description = "GeoJSON Point Geometry Object. Point where station is located", requiredMode = Schema.RequiredMode.REQUIRED)
     @Override
     public Point getGeometry() {
         return super.getGeometry();

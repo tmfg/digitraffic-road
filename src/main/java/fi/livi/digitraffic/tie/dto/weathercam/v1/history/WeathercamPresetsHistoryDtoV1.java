@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WeathercamPresetsHistoryDtoV1 extends StationDataV1<String> {
 
-    @Schema(description = "Weathercam presets histories", required = true)
+    @Schema(description = "Weathercam presets histories", requiredMode = Schema.RequiredMode.REQUIRED)
     public final List<WeathercamPresetHistoryDtoV1> presets;
 
     public WeathercamPresetsHistoryDtoV1(final String cameraId, final Instant dataUpdatedTime, final List<WeathercamPresetHistoryDtoV1> presetsHistory) {

@@ -19,5 +19,4 @@ public enum DataSource {
     MAINTENANCE_TRACKING_MUNICIPALITY,
     COUNTING_SITE,
     COUNTING_SITE_DATA
-    ;
 }

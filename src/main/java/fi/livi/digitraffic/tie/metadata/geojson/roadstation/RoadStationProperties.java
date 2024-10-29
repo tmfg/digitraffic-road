@@ -33,7 +33,7 @@ public abstract class RoadStationProperties extends Properties {
     @Schema(description = "Road station's lotju id")
     private Long lotjuId;
 
-    @Schema(description = "Road station's id (naturalId)", required = true)
+    @Schema(description = "Road station's id (naturalId)", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("roadStationId")
     private long naturalId;
 
@@ -96,7 +96,7 @@ public abstract class RoadStationProperties extends Properties {
     private String purpose;
 
     @Schema(description = "Road station coordinates [LONGITUDE, LATITUDE, {ALTITUDE}]. Coordinates are in ETRS89 / ETRS-TM35FIN format. " +
-                              "Altitude is optional and measured in metres.)", required = true)
+                              "Altitude is optional and measured in metres.)", requiredMode = Schema.RequiredMode.REQUIRED)
     private final List<Double> coordinatesETRS89 = new ArrayList<>(3);
 
     public long getNaturalId() {

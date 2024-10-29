@@ -75,6 +75,6 @@ public class ForeignKeyIndexTest extends AbstractJpaTest {
         }
 
         assertTrue(foreignKeysWithoutIndex.isEmpty(),
-                "Found foreign key(s) without index. Add to the ignore list or create indexes. Something like: \n\n" + sb.toString());
+                "Found foreign key(s) without index. Add to the ignore list or create indexes. Something like: \n\n" + sb);
     }
 }

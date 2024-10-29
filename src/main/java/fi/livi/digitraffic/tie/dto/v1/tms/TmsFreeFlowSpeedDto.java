@@ -16,17 +16,17 @@ public class TmsFreeFlowSpeedDto {
 
     @Id
     @JsonProperty("id")
-    @Schema(description = "TMS station identifier (naturalId)", required = true)
+    @Schema(description = "TMS station identifier (naturalId)", requiredMode = Schema.RequiredMode.REQUIRED)
     private long roadStationNaturalId;
 
     @JsonProperty("tmsNumber")
-    @Schema(description = "TMS station number", required = true)
+    @Schema(description = "TMS station number", requiredMode = Schema.RequiredMode.REQUIRED)
     private long tmsNaturalId;
 
-    @Schema(description = "Free flow speed to direction 1 [km/h]", required = true)
+    @Schema(description = "Free flow speed to direction 1 [km/h]", requiredMode = Schema.RequiredMode.REQUIRED)
     private double freeFlowSpeed1;
 
-    @Schema(description = "Free flow speed to direction 2 [km/h]", required = true)
+    @Schema(description = "Free flow speed to direction 2 [km/h]", requiredMode = Schema.RequiredMode.REQUIRED)
     private double freeFlowSpeed2;
 
     public double getFreeFlowSpeed1() {

@@ -58,10 +58,8 @@ public class LocationWebServiceV1 {
         }
 
         final List<LocationFeatureV1> features =
-            locationRepository.findAllByVersion(lVersion)
-                .parallel().map((LocationDtoV1 l) -> new LocationFeatureV1(l, updated, lVersion))
-                .collect(Collectors.toList());
-        Collections.sort(features);
+                locationRepository.findAllByVersion(lVersion)
+                        .parallel().map((LocationDtoV1 l) -> new LocationFeatureV1(l, updated, lVersion)).sorted().collect(Collectors.toList());
         return new LocationFeatureCollectionV1(updated, lVersion, features);
     }
 

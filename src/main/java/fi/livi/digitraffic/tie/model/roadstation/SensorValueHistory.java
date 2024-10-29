@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.model.roadstation;
 
 import java.time.ZonedDateTime;
 
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Immutable;
 
 import jakarta.persistence.Column;
@@ -15,7 +14,6 @@ import jakarta.persistence.SequenceGenerator;
 
 @Entity
 @Immutable
-@DynamicUpdate(false)
 public class SensorValueHistory {
     @Id
     @SequenceGenerator(name = "SEQ_SENSOR_VALUE_HISTORY", sequenceName = "SEQ_SENSOR_VALUE_HISTORY", allocationSize = 1)

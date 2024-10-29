@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Road stations datas base", subTypes = { WeathercamStationsDataV1.class })
 public abstract class StationsDataV1<ID_TYPE, StationsDataType extends StationDataV1<ID_TYPE>> implements Serializable, LastModifiedSupport {
 
-    @Schema(description = "Time when data was last updated", required = true)
+    @Schema(description = "Time when data was last updated", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant dataUpdatedTime;
 
     @Schema(description = "Stations data")

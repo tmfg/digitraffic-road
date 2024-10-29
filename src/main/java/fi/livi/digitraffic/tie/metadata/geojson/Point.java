@@ -35,13 +35,13 @@ public class Point extends Geometry<Double> implements Serializable {
     }
 
     // See https://github.com/swagger-api/swagger-core/issues/2949
-    @Schema(type = "String", required = true, allowableValues = { "Point" }, example = "Point")
+    @Schema(type = "String", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = { "Point" }, example = "Point")
     @Override
     public Type getType() {
         return super.getType();
     }
 
-    @Schema(required = true, example = "[26.97677492, 65.34673850]",
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "[26.97677492, 65.34673850]",
                       description = "An array of coordinates. " + COORD_FORMAT_WGS84_LONG_INC_ALT)
     @Override
     public List<Double> getCoordinates() {

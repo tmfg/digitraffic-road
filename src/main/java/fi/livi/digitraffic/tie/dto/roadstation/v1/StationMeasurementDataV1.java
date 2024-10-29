@@ -12,10 +12,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "id", "measuredTime" })
 public class StationMeasurementDataV1<ID_TYPE> implements Serializable {
 
-    @Schema(description = "Sensor id", required = true)
+    @Schema(description = "Sensor id", requiredMode = Schema.RequiredMode.REQUIRED)
     public final ID_TYPE id;
 
-    @Schema(description = "Latest measurement time", required = true)
+    @Schema(description = "Latest measurement time", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant measuredTime;
 
     public StationMeasurementDataV1(final ID_TYPE id, final Instant measuredTime) {

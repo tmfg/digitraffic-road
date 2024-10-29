@@ -12,10 +12,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "type", "features" })
 public class FeatureCollection<FeatureType> extends GeoJsonObject implements Iterable<FeatureType> {
 
-    @Schema(description = "Type of GeoJSON Object", allowableValues = "FeatureCollection", example = "FeatureCollection", required = true)
+    @Schema(description = "Type of GeoJSON Object", allowableValues = "FeatureCollection", example = "FeatureCollection", requiredMode = Schema.RequiredMode.REQUIRED)
     private final String type = "FeatureCollection";
 
-    @Schema(description = "GeoJSON Feature Objects", required = true)
+    @Schema(description = "GeoJSON Feature Objects", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("features")
     private final List<FeatureType> features;
 

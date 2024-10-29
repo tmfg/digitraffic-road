@@ -17,7 +17,7 @@ public class MaintenanceTrackingLatestFeatureV1 extends Feature<Geometry<?>, Mai
         super(geometry, properties);
     }
 
-    @Schema(description = "GeoJSON Point or LineString Geometry Object containing route point(s)", required = true)
+    @Schema(description = "GeoJSON Point or LineString Geometry Object containing route point(s)", requiredMode = Schema.RequiredMode.REQUIRED)
     public Geometry<?> getGeometry() {
         return super.getGeometry();
     }

@@ -25,7 +25,7 @@ public class WeathercamPresetDetailedV1 extends WeathercamPresetSimpleV1 {
                           "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki, if we are in Korso.<br>\n" +
                           "3 = Increasing direction of the crossing road.<br>\n" +
                           "4 = Decreasing direction of the crossing road.<br>\n" +
-                          "5-99 = Special directions", required = true)
+                          "5-99 = Special directions", requiredMode = Schema.RequiredMode.REQUIRED)
     public final String directionCode;
 
     @Schema(description = "Image url")
@@ -42,7 +42,7 @@ public class WeathercamPresetDetailedV1 extends WeathercamPresetSimpleV1 {
     }
 
 
-    @Schema(description = "Direction of weathercam preset", required = true)
+    @Schema(description = "Direction of weathercam preset", requiredMode = Schema.RequiredMode.REQUIRED)
     public WeathercamPresetDirectionV1 getDirection() {
         return WeathercamPresetDirectionV1.getDirection(directionCode);
     }

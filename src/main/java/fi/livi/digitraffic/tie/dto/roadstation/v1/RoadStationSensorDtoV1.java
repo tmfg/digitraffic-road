@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder(value = {"id", "name", "shortName", "descriptionFi", "descriptionSv", "descriptionEn", "unit", "accuracy", "nameOld", "sensorValueDescriptions"})
 public abstract class RoadStationSensorDtoV1 {
 
-    @Schema(description = "Sensor id", required = true)
+    @Schema(description = "Sensor id", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("id")
     public final long naturalId;
 

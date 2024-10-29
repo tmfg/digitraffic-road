@@ -13,7 +13,7 @@ public class WeathercamPresetDataV1 extends StationMeasurementDataV1<String> {
         super(id, measuredTime);
     }
 
-    @Schema(description = "Id of the weathercam preset", required = true)
+    @Schema(description = "Id of the weathercam preset", requiredMode = Schema.RequiredMode.REQUIRED)
     public String getId() {
         return id;
     }

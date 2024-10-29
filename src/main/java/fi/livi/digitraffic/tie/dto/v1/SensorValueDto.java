@@ -26,16 +26,16 @@ public class SensorValueDto {
     @JsonIgnore
     private Long sensorValueId;
 
-    @Schema(description = "Measured sensor value", required = true)
+    @Schema(description = "Measured sensor value", requiredMode = Schema.RequiredMode.REQUIRED)
     private double sensorValue;
 
-    @Schema(description = "Measured sensor value unit", required = true)
+    @Schema(description = "Measured sensor value unit", requiredMode = Schema.RequiredMode.REQUIRED)
     private String sensorUnit;
 
     @JsonProperty("roadStationId")
     private Long roadStationNaturalId;
 
-    @Schema(description = "Sensor type id (naturalId)", required = true)
+    @Schema(description = "Sensor type id (naturalId)", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "id")
     private Long sensorNaturalId;
 
@@ -45,11 +45,11 @@ public class SensorValueDto {
     @JsonProperty("oldName")
     private String sensorNameOld;
 
-    @Schema(description = "Sensor name", required = true)
+    @Schema(description = "Sensor name", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "name")
     private String sensorNameFi;
 
-    @Schema(description = "Sensor short name", required = true)
+    @Schema(description = "Sensor short name", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "shortName")
     private String sensorShortNameFi;
 

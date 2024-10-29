@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class TmsStationPropertiesSimpleV1 extends RoadStationPropertiesSimpleV1<Long> {
 
     // NaturalId of tms station
-    @Schema(description = "TMS station number (naturalId) for legacy support", required = true)
+    @Schema(description = "TMS station number (naturalId) for legacy support", requiredMode = Schema.RequiredMode.REQUIRED)
     public final long tmsNumber;
 
     public TmsStationPropertiesSimpleV1(final long id, final long tmsNumber) {

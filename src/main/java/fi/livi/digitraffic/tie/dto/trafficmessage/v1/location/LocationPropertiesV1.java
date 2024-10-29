@@ -24,7 +24,7 @@ public class LocationPropertiesV1 extends PropertiesV1 implements DataUpdatedSup
     @Schema(description = "Roadname if exists, L5.0 always have road name")
     public final String roadName;
 
-    @Schema(description = "For roads and segments this is the name of the starting point. For all other objects (linear (streets), area and point) this is the name of the object", required = true)
+    @Schema(description = "For roads and segments this is the name of the starting point. For all other objects (linear (streets), area and point) this is the name of the object", requiredMode = Schema.RequiredMode.REQUIRED)
     public final String firstName;
 
     @Schema(description = "For roads and segments this is the name of the ending point. For point locations the number of the intersecting road")
