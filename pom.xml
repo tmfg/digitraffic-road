@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.3</version>
+        <version>3.3.5</version>
         <relativePath/>
     </parent>
 
@@ -240,7 +240,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version>
+            <version>3.17.0</version>
         </dependency>
 
         <dependency>
@@ -386,7 +386,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.2</version>
+            <version>5.11.3</version>
             <scope>test</scope>
         </dependency>
 
