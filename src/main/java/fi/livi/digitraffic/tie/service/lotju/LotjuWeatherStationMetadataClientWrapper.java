@@ -42,8 +42,8 @@ public class LotjuWeatherStationMetadataClientWrapper {
         return lotjuWeatherStationClient.getTiesaaAsemas();
     }
 
-    // Takes sometimes 2,5 minutes
-    @PerformanceMonitor(maxWarnExcecutionTime = 4*60*1000)
+    // Takes sometimes 2,5 minutes, warn=3min, error=4min
+    @PerformanceMonitor(maxWarnExcecutionTime = 180000, maxErrorExcecutionTime = 240000)
     public Map<Long, List<TiesaaLaskennallinenAnturiVO>> getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId(final Set<Long> tiesaaAsemaLotjuIds) {
         log.info("Fetching TiesaaLaskennallinenAnturis for roadWeatherStationCount={} TiesaaAsemas", tiesaaAsemaLotjuIds.size());
 

@@ -54,8 +54,8 @@ public class CameraStationUpdater {
     }
 
 
-    /* Takes normally 4 min 3/4 of the time takes to fetch data */
-    @PerformanceMonitor(maxWarnExcecutionTime = 6*60*1000)
+    /* Takes normally 4 min 3/4 of the time takes to fetch data warn 5 min error 6 min*/
+    @PerformanceMonitor(maxWarnExcecutionTime = 300000, maxErrorExcecutionTime = 360000)
     public boolean updateCameras() {
         log.info("method=updateCameras start");
         final StopWatch timeAll = StopWatch.createStarted();
