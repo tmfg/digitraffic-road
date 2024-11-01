@@ -7,21 +7,18 @@ import static fi.livi.digitraffic.tie.service.WazeFeedServiceTestHelper.readDate
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
-import fi.livi.digitraffic.tie.service.waze.WazeFeedService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -34,6 +31,7 @@ import org.springframework.context.annotation.Import;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.converter.waze.WazeDatex2JsonConverter;
+import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadAddressLocation;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedAnnouncementDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
@@ -46,6 +44,9 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiPoint;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiPolygon;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
+import fi.livi.digitraffic.tie.service.waze.WazeFeedService;
 
 @Import({ JacksonAutoConfiguration.class })
 public class WazeFeedServiceTest extends AbstractRestWebTest {
@@ -92,7 +93,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
 
         assertEquals(1, incidents.size());
-        assertWazeType(incidents.get(0), WazeFeedIncidentDto.WazeType.ACCIDENT_NONE);
+        assertWazeType(incidents.getFirst(), WazeFeedIncidentDto.WazeType.ACCIDENT_NONE);
     }
 
     @Test
@@ -101,12 +102,12 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         d2.setMessage(readDatex2MessageFromFile("Flood.xml"));
         d2.setJsonMessage(readDatex2MessageFromFile("Flood.json"));
 
-        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class))).thenReturn(Arrays.asList(d2));
+        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class))).thenReturn(List.of(d2));
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         assertEquals(1, announcement.incidents.size());
 
-        final WazeFeedIncidentDto incident = announcement.incidents.get(0);
+        final WazeFeedIncidentDto incident = announcement.incidents.getFirst();
         assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_HAZARD);
     }
 
@@ -116,12 +117,12 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         d2.setMessage(readDatex2MessageFromFile("Roadwork.xml"));
         d2.setJsonMessage(readDatex2MessageFromFile("Roadwork.json"));
 
-        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class))).thenReturn(Arrays.asList(d2));
+        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class))).thenReturn(List.of(d2));
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         assertEquals(1, announcement.incidents.size());
 
-        final WazeFeedIncidentDto incident = announcement.incidents.get(0);
+        final WazeFeedIncidentDto incident = announcement.incidents.getFirst();
         assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
         // check that times are from the roadworkphase, not from the announcement!
         assertEquals(incident.starttime, "2024-05-12T21:10:00+00:00");
@@ -143,12 +144,12 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(1, incidents.size());
 
-        final WazeFeedIncidentDto incident = incidents.get(0);
+        final WazeFeedIncidentDto incident = incidents.getFirst();
 
         assertEquals(situationId, incident.id);
         assertWazeType(incident, WazeFeedIncidentDto.WazeType.HAZARD_ON_ROAD_LANE_CLOSED);
         assertEquals("Accident. Lane closures. Queuing traffic.", incident.description);
-        assertEquals("FINTRAFFIC", incident.reference);
+        assertEquals("FINTRAFFIC", WazeFeedIncidentDto.reference);
     }
 
     @Test
@@ -161,7 +162,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(1, incidents.size());
 
-        final WazeFeedIncidentDto incident = incidents.get(0);
+        final WazeFeedIncidentDto incident = incidents.getFirst();
         assertEquals("61.575153 25.182835", incident.location.polyline);
         assertNull(incident.location.direction);
     }
@@ -220,7 +221,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
         assertEquals(incidents.size(), 1);
 
-        final WazeFeedIncidentDto incident = incidents.get(0);
+        final WazeFeedIncidentDto incident = incidents.getFirst();
 
         assertEquals("61.569262 25.180874 61.569394 25.180826 61.569394 25.180826 61.569262 25.180874", incident.location.polyline);
         assertEquals(WazeFeedLocationDto.Direction.BOTH_DIRECTIONS, incident.location.direction);

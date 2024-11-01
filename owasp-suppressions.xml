@@ -13,27 +13,6 @@
         <cve>CVE-2023-39017</cve>
     </suppress>
 
-    <suppress until="2024-11-01">
-        <notes><![CDATA[file name: spring-webflux-6.1.12.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring-webflux@.*$</packageUrl>
-        <!-- we don't use webflux -->
-        <cve>CVE-2024-38816</cve>
-    </suppress>
-
-    <suppress until="2024-11-01">
-        <notes><![CDATA[file name: swagger-ui-5.10.3.jar: swagger-ui-bundle.js]]></notes>
-        <packageUrl regex="true">^pkg:javascript/DOMPurify@.*$</packageUrl>
-        <!-- we don't use swagger-ui -->
-        <cve>CVE-2024-45801</cve>
-    </suppress>
-
-    <suppress until="2024-11-01">
-        <notes><![CDATA[file name: swagger-ui-5.10.3.jar: swagger-ui-es-bundle.js]]></notes>
-        <packageUrl regex="true">^pkg:javascript/DOMPurify@.*$</packageUrl>
-        <!-- we don't use swagger-ui -->
-        <cve>CVE-2024-45801</cve>
-    </suppress>
-
     <!--
         Permanent suppressions
     -->

@@ -28,7 +28,7 @@
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
                         <overallStartTime>2024-05-12T21:00:00.000Z</overallStartTime>
-                        <overallEndTime>2024-10-31T21:59:59.999Z</overallEndTime>
+                        <overallEndTime>2124-10-31T00:00:00Z</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <generalPublicComment>
