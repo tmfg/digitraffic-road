@@ -5,8 +5,9 @@
         Temporary suppressions, check and update these periodically
     -->
 
-    <!-- Waiting for update. We should not be affected by this as schedules are hard coded. -->
-    <suppress until="2024-11-01">
+    <!-- Waiting for update. This vulnerability is exploited via passing an unchecked argument.
+         We should not be affected by this as schedules are hard coded and not accessible for 3rd parties. -->
+    <suppress until="2024-12-01">
         <notes><![CDATA[file name: quartz-2.3.2.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.quartz-scheduler/quartz@.*$</packageUrl>
         <cve>CVE-2023-39017</cve>
