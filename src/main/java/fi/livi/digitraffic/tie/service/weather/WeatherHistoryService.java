@@ -57,7 +57,7 @@ public class WeatherHistoryService {
     }
 
     private List<SensorValueHistory> getHistoryValues(final long roadStationId, final Long sensorId, final Instant from, final Instant to) {
-        final var actualFrom = getSinceTime(from).minus(1, ChronoUnit.DAYS);
+        final var actualFrom = getSinceTime(from);
         final var actualTo = ObjectUtils.firstNonNull(to, Instant.now().plus(1, ChronoUnit.MINUTES));
 
         if(sensorId != null) {
