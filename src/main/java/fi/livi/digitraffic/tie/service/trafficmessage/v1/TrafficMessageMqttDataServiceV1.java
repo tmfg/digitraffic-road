@@ -66,7 +66,8 @@ public class TrafficMessageMqttDataServiceV1 {
                             true,
                             d2.getModified());
                     } catch (final Exception e) {
-                        log.error(String.format("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3 datex2.id: %s", d2.getId()), e);
+                        log.error("method=convertToFeatureCollection Failed on convertToFeatureJsonObjectV3 datex2.id: {} situationId={}",
+                                d2.getSituations().getFirst().getSituationId(), d2.getId(), e);
                         return null;
                     }
                 })

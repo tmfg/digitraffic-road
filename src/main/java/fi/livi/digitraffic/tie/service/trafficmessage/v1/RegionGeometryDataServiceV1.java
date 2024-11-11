@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
@@ -38,7 +39,6 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProper
 import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
-import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
@@ -55,8 +55,6 @@ public class RegionGeometryDataServiceV1 {
     private final DataStatusService dataStatusService;
 
     private RegionStatus regionStatus = new RegionStatus();
-
-    public static Point EMPTY_POINT = new Point(Collections.emptyList());
 
     static {
         geoJsonWriter = new GeoJsonWriter(GeometryConstants.COORDINATE_SCALE_6_DIGITS);
@@ -133,7 +131,7 @@ public class RegionGeometryDataServiceV1 {
     public RegionGeometry getAreaLocationRegionEffectiveOn(final int locationCode, final Instant theMoment) {
         final List<RegionGeometry> regionsInDescOrder = regionStatus.getRegionVersionsInDescOrder(locationCode);
         if (CollectionUtils.isEmpty(regionsInDescOrder)) {
-            log.warn("method=getAreaLocationRegionEffectiveOn No location with locationCode {} found", locationCode);
+            log.error("method=getAreaLocationRegionEffectiveOn No location with locationCode {} found", locationCode);
             return null;
         }
         // Find latest version that is valid on given moment or the first version
@@ -145,8 +143,8 @@ public class RegionGeometryDataServiceV1 {
 
     @NotTransactionalServiceMethod
     public Geometry<?> getGeoJsonGeometryUnion(final Instant effectiveDate, final Integer...ids) {
+        final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
         try {
-            final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
             for (final int id : ids) {
                 final RegionGeometry region = getAreaLocationRegionEffectiveOn(id, effectiveDate);
                 if (region != null) {
@@ -156,16 +154,24 @@ public class RegionGeometryDataServiceV1 {
                     } else {
                         // Try to make geometry valid by adding 0 buffer around it
                         geometryCollection.add(geometry.buffer(0));
-                        log.warn("method=getGeoJsonGeometryUnion regionGeometry is not valid id: {} locationCode: {} name: {} effectiveDate: {}",
-                                region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate());
+                        log.warn("method=getGeoJsonGeometryUnion regionGeometry is not valid id: {} locationCode: {} name: {} effectiveDate: {} valid after fix: {}",
+                                region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate(), geometry.isValid());
                     }
                 }
+            }
+            if (geometryCollection.isEmpty()) {
+                if (ObjectUtils.isNotEmpty(ids)) {
+                    log.error("method=getGeoJsonGeometryUnion No area geometries found with id's {}", (Object) ids);
+                }
+                return null;
             }
             final org.locationtech.jts.geom.Geometry union = PostgisGeometryUtils.union(geometryCollection);
             return convertToGeojson(union);
         } catch (final Exception e) {
-            log.error("method=getGeoJsonGeometryUnion failed with parameters effectiveDate: {}, ids: {}. Returning empty point as fallback.", effectiveDate, ids, e);
-            return EMPTY_POINT;
+            final String geometryTypes = geometryCollection.stream().map(org.locationtech.jts.geom.Geometry::getGeometryType)
+                    .collect(Collectors.joining(", "));
+            log.error("method=getGeoJsonGeometryUnion failed with parameters effectiveDate: {}, ids: {}, types: {}", effectiveDate, ids, geometryTypes, e);
+            throw e;
         }
     }
 
@@ -196,7 +202,7 @@ public class RegionGeometryDataServiceV1 {
         locationCodeToRegion.forEach((key, value) -> {
             final Iterator<RegionGeometry> iter = value.iterator();
             RegionGeometry latest = iter.next();
-            // Remove next elemets that are effective from the same date or later than latest value, when done
+            // Remove next elements that are effective from the same date or later than latest value, when done
             // do same for the next effective element that is earlier than latest
             while (iter.hasNext()) {
                 final RegionGeometry next = iter.next();

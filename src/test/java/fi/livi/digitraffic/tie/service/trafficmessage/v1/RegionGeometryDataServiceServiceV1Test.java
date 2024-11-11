@@ -1,12 +1,16 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 
 import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper.readRegionGeometry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +20,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.support.GenericApplicationContext;
 
 import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryGitMock;
@@ -24,6 +31,7 @@ import fi.livi.digitraffic.tie.dao.trafficmessage.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProperties;
+import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper;
@@ -32,9 +40,11 @@ import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryUpdateServic
 
 public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTestWithRegionGeometryGitMock {
 
+    private static final Logger log = LoggerFactory.getLogger(RegionGeometryDataServiceServiceV1Test.class);
+
     @Autowired
     private RegionGeometryRepository regionGeometryRepository;
-    @Autowired
+    @SpyBean
     private RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
     @Autowired
     private DataStatusService dataStatusService;
@@ -75,11 +85,11 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
         regionGeometryDataServiceV1.refreshCache();
 
         // Latest valid on time should be returned
-        assertVersion(commit3Changes.get(0),
+        assertVersion(commit3Changes.getFirst(),
                       regionGeometryDataServiceV1.getAreaLocationRegionEffectiveOn(1, secondAndThirdCommiteffectiveDate));
 
         // First commit should be returned
-        assertVersion(commit1Changes.get(0),
+        assertVersion(commit1Changes.getFirst(),
                       regionGeometryDataServiceV1.getAreaLocationRegionEffectiveOn(1, secondAndThirdCommiteffectiveDate.minusSeconds(1)));
     }
 
@@ -102,7 +112,7 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
 
         // Even when asking version valid from commit1, it should not be returned as it is not valid
         // Instead commit2 version should be returned although it's not effective but it's first effective that is valid
-        assertVersion(commit2Changes.get(0),
+        assertVersion(commit2Changes.getFirst(),
             regionGeometryDataServiceV1.getAreaLocationRegionEffectiveOn(1, firstCommiteffectiveDate));
     }
 
@@ -130,7 +140,7 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
             regionGeometryDataServiceV1.findAreaLocationRegions(false, false, commit1EffectiveDate, 1);
         assertCollectionSize(1, commit1Area1.getFeatures());
         final RegionGeometryProperties commit1Area1Props =
-            commit1Area1.getFeatures().get(0).getProperties();
+            commit1Area1.getFeatures().getFirst().getProperties();
         assertEquals(1, commit1Area1Props.locationCode);
         assertEquals(commit1EffectiveDate, commit1Area1Props.effectiveDate);
 
@@ -139,7 +149,7 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
             regionGeometryDataServiceV1.findAreaLocationRegions(false, false, commit2EffectiveDate, 1);
         assertCollectionSize(1, commit2Area1.getFeatures());
         final RegionGeometryProperties commit2Area1Props =
-            commit2Area1.getFeatures().get(0).getProperties();
+            commit2Area1.getFeatures().getFirst().getProperties();
         assertEquals(1, commit1Area1Props.locationCode);
         assertEquals(commit2EffectiveDate, commit2Area1Props.effectiveDate);
 
@@ -166,6 +176,28 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
         assertTrue(commitArea.getFeatures().isEmpty());
         assertTrue(effectiveDate.minusSeconds(1).isBefore(commitArea.getLastModified()));
         assertTrue(effectiveDate.plusSeconds(1).isAfter(commitArea.getLastModified()));
+    }
+
+    @Test
+    public void combineGeometriesThatFailedInProdEnv() {
+        final RegionGeometry kokkola =
+                readRegionGeometry(169, "Kokkola", ZonedDateTime.parse("2020-01-01T00:00:00.000+02:00").toInstant(), "123",
+                        AreaType.MUNICIPALITY);
+        final RegionGeometry lestijarvi =
+                readRegionGeometry(226, "Lestijärvi", ZonedDateTime.parse("2020-01-01T00:00:00.000+02:00").toInstant(), "123",
+                        AreaType.MUNICIPALITY);
+        doReturn(kokkola).when(regionGeometryDataServiceV1)
+                .getAreaLocationRegionEffectiveOn(eq(169), any(Instant.class));
+        doReturn(lestijarvi).when(regionGeometryDataServiceV1)
+                .getAreaLocationRegionEffectiveOn(eq(226), any(Instant.class));
+
+        final Geometry<?> area = regionGeometryDataServiceV1.getGeoJsonGeometryUnion(Instant.now(), 169, 226);
+        assertEquals(Geometry.Type.MultiPolygon, area.getType());
+        log.info("Got area: {}", area);
+
+        final Geometry<?> area2 = regionGeometryDataServiceV1.getGeoJsonGeometryUnion(Instant.now(), 226, 169);
+        assertEquals(Geometry.Type.MultiPolygon, area2.getType());
+        log.info("Got area: {}", area2);
     }
 
     private void assertVersion(final RegionGeometry expected, final RegionGeometry actual) {

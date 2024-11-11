@@ -62,7 +62,7 @@ public class TmsStationSensorConstantService {
     }
 
     @CacheEvict(cacheNames = RoadCacheConfiguration.CACHE_FREE_FLOW_SPEEDS, key = "#rsNaturalId")
-    @Transactional(readOnly = true)
+    @Transactional
     public boolean obsoleteSensorConstantWithLotjuId(final long lotjuId,
                                                      @SuppressWarnings("unused") final Long rsNaturalId) {
         return tmsSensorConstantDao.obsoleteSensorConstantWithLotjuId(lotjuId) > 0;
@@ -102,7 +102,7 @@ public class TmsStationSensorConstantService {
     }
 
     @CacheEvict(cacheNames = RoadCacheConfiguration.CACHE_FREE_FLOW_SPEEDS, key = "#rsNaturalId")
-    @Transactional(readOnly = true)
+    @Transactional
     public boolean updateSensorConstantValueToObsoleteWithSensorConstantValueLotjuId(final long sensorConstantValueLotjuId,
                                                                                      @SuppressWarnings("unused") final Long rsNaturalId) {
         return tmsSensorConstantDao.updateSensorConstantValueToObsoleteWithSensorConstantValueLotjuId(sensorConstantValueLotjuId) > 0;

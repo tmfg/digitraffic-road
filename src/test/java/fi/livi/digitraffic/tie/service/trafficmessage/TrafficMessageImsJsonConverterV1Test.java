@@ -184,7 +184,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
     }
 
     @Test
-    public void convertNonExistingGeometriesToEmptyPoint() throws IOException {
+    public void convertNonExistingGeometriesToNullGeometry() throws IOException {
 
         final ImsJsonVersion jsonVersion = ImsJsonVersion.getLatestVersion();
         final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
@@ -199,16 +199,15 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
         final TrafficAnnouncementFeature ta =
                 datex2JsonConverterV1.convertToFeatureJsonObject_V1(jsonWithIvalidLocationRefs, situationType, GENERAL, true, now);
 
-        // Should return empty point as backup
-        assertGeometry(ta.getGeometry(), Point);
-        assertTrue(ta.getGeometry().getCoordinates().isEmpty());
+        // Should return null geometry as backup
+        assertNull(ta.getGeometry());
     }
 
     private void validateImsSimpleJsonVersionToGeoJsonFeatureObjectV3(final SituationType st, final ImsJsonVersion version,
                                                                       final TrafficAnnouncementFeature feature, final Instant now) {
 
         final TrafficAnnouncementProperties props = feature.getProperties();
-        final TrafficAnnouncement announcement = props.announcements.get(0);
+        final TrafficAnnouncement announcement = props.announcements.getFirst();
 
         // Common
         assertContacts(props);
@@ -282,12 +281,12 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
             AssertHelper.assertCollectionSize(0, announcement.roadWorkPhases);
         } else {
             AssertHelper.assertCollectionSize(1, announcement.roadWorkPhases);
-            final RoadWorkPhase rwp = announcement.roadWorkPhases.get(0);
+            final RoadWorkPhase rwp = announcement.roadWorkPhases.getFirst();
             assertNotNull(rwp.location);
             assertNotNull(rwp.locationDetails.roadAddressLocation);
-            assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
-            assertNotNull(rwp.workingHours.get(0).startTime);
-            assertNotNull(rwp.workingHours.get(0).endTime);
+            assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.getFirst().weekday);
+            assertNotNull(rwp.workingHours.getFirst().startTime);
+            assertNotNull(rwp.workingHours.getFirst().endTime);
 
             if (version.version >= ImsJsonVersion.V0_2_15.version) {
                 assertEquals(WorkType.Type.CULVERT_REPLACEMENT, rwp.workTypes.get(1).type);
@@ -306,21 +305,21 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
             if (version.version >= ImsJsonVersion.V0_2_13.version) {
                 assertNotNull(rwp.restrictionsLiftable, "restrictionsLiftable should exist");
                 assertTrue(rwp.restrictionsLiftable);
-                assertNotNull(rwp.restrictions.get(0).restriction.description);
+                assertNotNull(rwp.restrictions.getFirst().restriction.description);
                 assertEquals(Restriction.Type.DETOUR_USING_ROADWAYS, rwp.restrictions.get(1).type);
                 assertNotNull(rwp.restrictions.get(1).restriction.description);
             }
 
             if (version.version > ImsJsonVersion.V0_2_10.version) {
-                assertEquals(WorkType.Type.LIGHTING, rwp.workTypes.get(0).type);
-                assertEquals("Valaistustyö", rwp.workTypes.get(0).description);
-                assertEquals(Restriction.Type.SPEED_LIMIT, rwp.restrictions.get(0).type);
-                assertEquals("Nopeusrajoitus", rwp.restrictions.get(0).restriction.name);
-                assertEquals(40.0, rwp.restrictions.get(0).restriction.quantity, 0.01);
-                assertEquals("km/h", rwp.restrictions.get(0).restriction.unit);
+                assertEquals(WorkType.Type.LIGHTING, rwp.workTypes.getFirst().type);
+                assertEquals("Valaistustyö", rwp.workTypes.getFirst().description);
+                assertEquals(Restriction.Type.SPEED_LIMIT, rwp.restrictions.getFirst().type);
+                assertEquals("Nopeusrajoitus", rwp.restrictions.getFirst().restriction.name);
+                assertEquals(40.0, rwp.restrictions.getFirst().restriction.quantity, 0.01);
+                assertEquals("km/h", rwp.restrictions.getFirst().restriction.unit);
             } else {
-                assertEquals(WorkType.Type.OTHER, rwp.workTypes.get(0).type);
-                assertEquals("Valaistustyö", rwp.workTypes.get(0).description);
+                assertEquals(WorkType.Type.OTHER, rwp.workTypes.getFirst().type);
+                assertEquals("Valaistustyö", rwp.workTypes.getFirst().description);
             }
 
             if (version.version >= ImsJsonVersion.V0_2_8.version) {
@@ -328,12 +327,12 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
             }
 
             if (version.version >= ImsJsonVersion.V0_2_17.version) {
-                assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
-                assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
-                assertNotNull(rwp.slowTrafficTimes.get(0).startTime);
-                assertNotNull(rwp.slowTrafficTimes.get(0).endTime);
-                assertNotNull(rwp.queuingTrafficTimes.get(0).startTime);
-                assertNotNull(rwp.queuingTrafficTimes.get(0).endTime);
+                assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.getFirst().weekday);
+                assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.getFirst().weekday);
+                assertNotNull(rwp.slowTrafficTimes.getFirst().startTime);
+                assertNotNull(rwp.slowTrafficTimes.getFirst().endTime);
+                assertNotNull(rwp.queuingTrafficTimes.getFirst().startTime);
+                assertNotNull(rwp.queuingTrafficTimes.getFirst().endTime);
             }
         }
     }
@@ -347,8 +346,8 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
             assertNotNull(announcement.lastActiveItinerarySegment.startTime);
             assertNotNull(announcement.lastActiveItinerarySegment.endTime);
             final ItineraryRoadLeg leg =
-                announcement.lastActiveItinerarySegment.legs.get(0).roadLeg;
-            assertEquals("Kotikatu 1", announcement.lastActiveItinerarySegment.legs.get(0).roadLeg.roadName);
+                announcement.lastActiveItinerarySegment.legs.getFirst().roadLeg;
+            assertEquals("Kotikatu 1", announcement.lastActiveItinerarySegment.legs.getFirst().roadLeg.roadName);
             assertNotNull(leg.startArea);
             assertNotNull(leg.endArea);
             assertNotNull(leg.roadNumber);

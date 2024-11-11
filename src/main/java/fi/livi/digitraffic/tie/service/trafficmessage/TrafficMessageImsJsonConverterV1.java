@@ -93,13 +93,22 @@ public class TrafficMessageImsJsonConverterV1 {
 
         if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
             if (includeAreaGeometry) {
-                feature.setGeometry(regionGeometryDataServiceV1.getGeoJsonGeometryUnion(feature.getProperties().releaseTime.toInstant(),
-                    announcementsWithAreas.stream()
+                final Instant effectiveDate = feature.getProperties().releaseTime.toInstant();
+                final Integer[] ids = announcementsWithAreas.stream()
                         .map(withArea ->
-                            withArea.locationDetails.areaLocation.areas.stream()
-                                .map(a -> a.locationCode).collect(Collectors.toList()))
+                                withArea.locationDetails.areaLocation.areas.stream()
+                                        .map(a -> a.locationCode).collect(Collectors.toList()))
                         .flatMap(Collection::stream)
-                        .toArray(Integer[]::new)));
+                        .toArray(Integer[]::new);
+                try {
+                    feature.setGeometry(
+                        regionGeometryDataServiceV1.getGeoJsonGeometryUnion(effectiveDate, ids)
+                    );
+                } catch (final Exception e) {
+                    // Fallback as null geometry to not fail the whole query that might contain multiple situations
+                    feature.setGeometry(null);
+                    log.error("method=getGeoJsonGeometryUnion for situationId={} failed with parameters effectiveDate: {}, ids: {}. Returning null geometry.", feature.getProperties().situationId, effectiveDate, ids, e);
+                }
             } else {
                 feature.setGeometry(null);
             }
@@ -109,10 +118,10 @@ public class TrafficMessageImsJsonConverterV1 {
     }
 
     private String convertImsJsonTo_V1Compatible(final String imsJson) throws JsonProcessingException {
-        return convertImsJsonToV3And_V1Compatible(imsJson, true);
+        return convertImsJsonToV3And_V1Compatible(imsJson);
     }
 
-    private String convertImsJsonToV3And_V1Compatible(final String imsJson, final boolean fixWorktypesToCamelCase) throws JsonProcessingException {
+    private String convertImsJsonToV3And_V1Compatible(final String imsJson) throws JsonProcessingException {
         final JsonNode root = genericJsonReader.readTree(imsJson);
 
         // append versionTime if missing
@@ -121,7 +130,7 @@ public class TrafficMessageImsJsonConverterV1 {
 
         final JsonNode announcements = readAnnouncementsFromTheImsJsonProperties(properties);
         // if announcements is found json might be V0_2_4 and features must be converted to V0_2_6 and V0_2_8 format
-        fixAnnouncements(announcements, fixWorktypesToCamelCase);
+        fixAnnouncements(announcements);
 
         // Return fixed json
         return objectMapper.writer().writeValueAsString(root);
@@ -133,7 +142,7 @@ public class TrafficMessageImsJsonConverterV1 {
         }
     }
 
-    private void fixAnnouncements(final JsonNode announcements, final boolean fixWorktypesToCamelCase) {
+    private void fixAnnouncements(final JsonNode announcements) {
         if (announcements == null || announcements.isEmpty()) {
             return;
         }
@@ -166,9 +175,8 @@ public class TrafficMessageImsJsonConverterV1 {
                         }
                         ((ObjectNode) roadWorkPhase).set("worktypes", worktypes);
                     }
-                    if (fixWorktypesToCamelCase) {
-                        fixWorktypesToCamelCase(roadWorkPhase);
-                    }
+
+                    fixWorktypesToCamelCase(roadWorkPhase);
                 }
             }
             final ArrayNode features = (ArrayNode) announcement.get("features");
