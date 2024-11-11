@@ -16,7 +16,6 @@ import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.*;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 
-import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorHistoryDtoV1;
 import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -55,8 +54,6 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Tag(name = WEATHER_TAG_V1)
 @RestController
@@ -412,14 +409,14 @@ public class WeatherControllerV1 {
     }
 
     @Operation(summary = "List the history of sensor values from the weather road station. Maximum history of 24h.")
-    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + STATIONS + "/{stationId}" + HISTORY, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + STATIONS + "/{id}" + HISTORY, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"),
             @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Station not found"),
             @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter(s)")})
     public WeatherStationSensorHistoryDtoV1 weatherDataHistory(
             @Parameter(description = "Weather station id", required = true)
             @PathVariable
-            final long stationId,
+            final long id,
 
             @Parameter(description = "List only history after given timestamp.  If you use this, you also have to use to-parameter.")
             @RequestParam(value="from", required = false)
@@ -435,7 +432,7 @@ public class WeatherControllerV1 {
             @RequestParam(value="sensorId", required = false)
             final Long sensorId) {
 
-        return weatherHistoryService.findWeatherHistoryData(stationId, sensorId, from, to);
+        return weatherHistoryService.findWeatherHistoryData(id, sensorId, from, to);
     }
 }
 
