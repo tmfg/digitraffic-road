@@ -51,7 +51,7 @@ public class WeatherHistoryService {
             throw new IllegalArgumentException("From > to");
         }
 
-        final var history = getHistoryValues(roadStationNaturalId, sensorId, from, to);
+        final var history = getHistoryValues(roadStationId.get(), sensorId, from, to);
 
         return createDto(roadStationNaturalId, history);
     }
