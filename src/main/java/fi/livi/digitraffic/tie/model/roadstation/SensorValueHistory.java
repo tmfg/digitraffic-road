@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.model.roadstation;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 import org.hibernate.annotations.Immutable;
 
@@ -50,7 +49,6 @@ public class SensorValueHistory {
                               final Double value,
                               final Instant measuredTime,
                               final SensorValueReliability reliability) {
-        System.out.println("Creating history with measuredTime " + measuredTime);
         this.roadStationId = roadStationId;
         this.sensorId = sensorId;
         this.sensorValue = value;
