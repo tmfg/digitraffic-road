@@ -163,7 +163,7 @@
             } ],
             "timeAndDuration" : {
                 "startTime" : "2024-05-12T21:00:00.000Z",
-                "endTime" : "2024-10-31T21:59:59.999Z"
+                "endTime" : "2124-10-31T00:00:00Z"
             },
             "additionalInformation" : "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
             "sender" : "Fintraffic Tieliikennekeskus Turku"
