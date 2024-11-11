@@ -65,7 +65,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         // Init same db-content
         builder = new SensorValueHistoryBuilder(repository, log)
             .truncate()
-            .setReferenceTime(time)
+            .setReferenceTime(time.toInstant())
             .buildRandom(10, 10, 10, 0, min)
             .buildRandom(50, 10, 10, min + 1, min + 61)
             .save();
@@ -124,7 +124,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
                 // This contains also data outside from-to time frame, so we filter those out
                 builder.getGeneratedHistory().stream()
                     .peek(h -> h.setMeasuredTime(h.getMeasuredTime().truncatedTo(ChronoUnit.SECONDS))) // CSV is truncated
-                    .filter(h -> h.getMeasuredTime().toEpochSecond() >= from.toEpochSecond() && h.getMeasuredTime().toEpochSecond() < to.toEpochSecond())
+                    .filter(h -> h.getMeasuredTime().toEpochMilli()/1000 >= from.toEpochSecond() && h.getMeasuredTime().getEpochSecond() < to.toEpochSecond())
                     .sorted(Comparator.comparing(SensorValueHistory::getMeasuredTime).thenComparing(SensorValueHistory::getSensorId).thenComparing(SensorValueHistory::getSensorValue))
                     .toList();
             // Same ordering for csv
@@ -148,7 +148,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
             assertEquals(expected.getSensorId(), actual.getSensorId());
             assertEquals(expectedRsNaturalId, actual.getRoadStationId());
             assertEquals(expected.getSensorValue(), actual.getSensorValue());
-            assertEquals(expected.getMeasuredTime().toInstant().truncatedTo(ChronoUnit.SECONDS), actual.getMeasuredTime());
+            assertEquals(expected.getMeasuredTime().truncatedTo(ChronoUnit.SECONDS), actual.getMeasuredTime());
         }
     }
 

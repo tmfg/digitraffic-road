@@ -1,10 +1,14 @@
 package fi.livi.digitraffic.tie.dao.roadstation;
 
 import java.sql.JDBCType;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import org.hibernate.type.SqlTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -45,14 +49,12 @@ public class SensorValueHistoryDao {
         return jdbcTemplate.batchUpdate(INSERT, batchData);
     }
 
-    /**
-     *
-     * @return
-     */
-    public int cleanSensorData(final ZonedDateTime time) {
-        final HashMap<String, Object> params = new HashMap<>();
-        params.put("remove_before", time.toOffsetDateTime());
+    public int cleanSensorData(final Instant time) {
+        final MapSqlParameterSource source = new MapSqlParameterSource();
 
-        return jdbcTemplate.update(CLEAN, params);
+        // this needs to be OffsetDateTime
+        source.addValue("remove_before", OffsetDateTime.ofInstant(time, ZoneId.of("UTC")));
+
+        return jdbcTemplate.update(CLEAN, source);
     }
 }

@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service;
 
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -86,15 +87,15 @@ public class SensorDataS3Writer {
                     .build();
 
             csvWriter.write(
-                    repository.streamAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(
-                                    from, to)
+                    repository.getAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(
+                                    from.toInstant(), to.toInstant()).stream()
                             .map(item -> {
                                 counter.getAndIncrement();
                                 // Internal road_station_id must be mapped back to road_station's natural_id (API uses natural ids)
                                 return new WeatherSensorValueHistoryDto(mapToNaturalId(item),
                                         item.getSensorId(),
                                         item.getSensorValue(),
-                                        item.getMeasuredTime().toInstant(),
+                                        item.getMeasuredTime(),
                                         item.getReliability());
                             })
             );

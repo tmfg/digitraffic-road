@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.roadstation;
 import static fi.ely.lotju.lam.proto.LAMRealtimeProtos.Lam;
 import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -271,7 +272,7 @@ public class SensorDataUpdateService {
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000) // Normally takes around 7s
     @Transactional
-    public int cleanWeatherHistoryData(final ZonedDateTime before) {
+    public int cleanWeatherHistoryData(final Instant before) {
         final StopWatch stopWatch = StopWatch.createStarted();
 
         final int removeCount = sensorValueHistoryDao.cleanSensorData(before);

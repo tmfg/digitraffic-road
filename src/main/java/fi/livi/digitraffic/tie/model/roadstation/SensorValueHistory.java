@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.model.roadstation;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import org.hibernate.annotations.Immutable;
@@ -31,18 +32,31 @@ public class SensorValueHistory {
     private Double sensorValue;
 
     @Column(name = "measured")
-    private ZonedDateTime measuredTime;
+    private Instant measuredTime;
 
     @Column(name = "time_window_start")
-    private ZonedDateTime timeWindowStart;
+    private Instant timeWindowStart;
 
     @Column(name = "time_window_end")
-    private ZonedDateTime timeWindowEnd;
+    private Instant timeWindowEnd;
 
     @Enumerated(EnumType.STRING)
     private SensorValueReliability reliability;
 
     public SensorValueHistory() {}
+
+    public SensorValueHistory(final long roadStationId,
+                              final long sensorId,
+                              final Double value,
+                              final Instant measuredTime,
+                              final SensorValueReliability reliability) {
+        System.out.println("Creating history with measuredTime " + measuredTime);
+        this.roadStationId = roadStationId;
+        this.sensorId = sensorId;
+        this.sensorValue = value;
+        this.measuredTime = measuredTime;
+        this.reliability = reliability;
+    }
 
     public Long getId() {
         return id;
@@ -68,11 +82,11 @@ public class SensorValueHistory {
         this.sensorValue = sensorValue;
     }
 
-    public ZonedDateTime getMeasuredTime() {
+    public Instant getMeasuredTime() {
         return measuredTime;
     }
 
-    public void setMeasuredTime(final ZonedDateTime measuredTime) {
+    public void setMeasuredTime(final Instant measuredTime) {
         this.measuredTime = measuredTime;
     }
 
@@ -84,19 +98,19 @@ public class SensorValueHistory {
         this.roadStationId = roadStationId;
     }
 
-    public ZonedDateTime getTimeWindowStart() {
+    public Instant getTimeWindowStart() {
         return timeWindowStart;
     }
 
-    public void setTimeWindowStart(final ZonedDateTime timeWindowStart) {
+    public void setTimeWindowStart(final Instant timeWindowStart) {
         this.timeWindowStart = timeWindowStart;
     }
 
-    public ZonedDateTime getTimeWindowEnd() {
+    public Instant getTimeWindowEnd() {
         return timeWindowEnd;
     }
 
-    public void setTimeWindowEnd(final ZonedDateTime timeWindowEnd) {
+    public void setTimeWindowEnd(final Instant timeWindowEnd) {
         this.timeWindowEnd = timeWindowEnd;
     }
 

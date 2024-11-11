@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.dao.roadstation;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.jpa.AvailableHints;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +19,7 @@ import jakarta.persistence.QueryHint;
 @Repository
 public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
 
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
+    @QueryHints(@QueryHint(name= AvailableHints.HINT_FETCH_SIZE, value="1000"))
     @EntityGraph(attributePaths = { "roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
     List<RoadStation> findByType(RoadStationType type);
 
@@ -40,8 +41,9 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
     @Query("""
             SELECT rs.id
             FROM RoadStation rs
-            WHERE rs.naturalId = :naturalId""")
-    Optional<Long> findByRoadStationId(@Param("naturalId") final long naturalId);
+            WHERE rs.naturalId = :naturalId
+            AND rs.type = WEATHER_STATION""")
+    Optional<Long> findWeatherStationIdByNaturalId(@Param("naturalId") final long naturalId);
 
     default void checkIsPublishableRoadStation(final long roadStationNaturalId, final RoadStationType type) {
         if ( !isPublishableRoadStation(roadStationNaturalId, type) ) {

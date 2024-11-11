@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,10 +20,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
-import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
 import fi.livi.digitraffic.tie.helper.SensorValueHistoryBuilder;
 import fi.livi.digitraffic.tie.service.roadstation.SensorDataUpdateService;
-import fi.livi.digitraffic.tie.service.weather.WeatherService;
+import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
 
 public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
     private static final Logger log = LoggerFactory.getLogger(SensorHistoryDataUpdateServiceTest.class);
@@ -30,7 +30,7 @@ public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
     @Autowired
     protected SensorDataUpdateService sensorDataUpdateService;
     @Autowired
-    protected WeatherService weatherService;
+    protected WeatherHistoryService weatherHistoryService;
     @Autowired
     protected SensorValueHistoryRepository repository;
 
@@ -44,9 +44,9 @@ public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
 
     @Test
     public void historyMaintenance() {
-        when(roadStationRepository.findByRoadStationId(10)).thenReturn(Optional.of(10L));
+        when(roadStationRepository.findWeatherStationIdByNaturalId(10)).thenReturn(Optional.of(10L));
 
-        final ZonedDateTime now = ZonedDateTime.now();
+        final Instant now = Instant.now();
         // Populate db
         final SensorValueHistoryBuilder builder = new SensorValueHistoryBuilder(repository, log)
             .setReferenceTime(now)
@@ -54,15 +54,15 @@ public class SensorHistoryDataUpdateServiceTest extends AbstractServiceTest {
             .buildWithStationId(10, 10, 10, 62, 120)
             .save();
 
-        final ZonedDateTime deleteTime = now.minusMinutes(61);
-        assertNotEquals(0, weatherService.findWeatherHistoryData(10, deleteTime, null).size(), "Db not initialized");
-        final List<WeatherSensorValueHistoryDto> history =
-                weatherService.findWeatherHistoryData(10, deleteTime, null);
+        final Instant deleteTime = now.minus(60, ChronoUnit.MINUTES);
+        final var response = weatherHistoryService.findWeatherHistoryData(10, null, deleteTime, Instant.now());
+        assertNotEquals(0, response.values.size(), "Db not initialized");
+        final var history = weatherHistoryService.findWeatherHistoryData(10, null, deleteTime, Instant.now());
 
-        assertNotNull(history.getFirst().getReliability());
+        assertNotNull(history.values.getFirst().getReliability());
 
         assertEquals(builder.getElementCountAt(1), sensorDataUpdateService.cleanWeatherHistoryData(deleteTime), "Wrong amount of elements cleaned");
 
-        assertEquals(builder.getElementCountAt(0), weatherService.findWeatherHistoryData(10, deleteTime, null).size(), "Db maintenance failed");
+        assertEquals(builder.getElementCountAt(0), weatherHistoryService.findWeatherHistoryData(10, null, deleteTime, Instant.now()).values.size(), "Db maintenance failed");
     }
 }

@@ -13,11 +13,14 @@ import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
-import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
-import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.*;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 
+import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorHistoryDtoV1;
+import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +54,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.List;
+
 @Tag(name = WEATHER_TAG_V1)
 @RestController
 @Validated
@@ -62,6 +69,7 @@ public class WeatherControllerV1 {
     private final RoadStationSensorServiceV1 roadStationSensorServiceV1;
 
     private final ForecastWebDataServiceV1 forecastWebDataServiceV1;
+    private final WeatherHistoryService weatherHistoryService;
 
     /**
      * API paths:
@@ -78,11 +86,12 @@ public class WeatherControllerV1 {
      * Forecasts data
      * /api/weather/v/forecast-sections/forecasts";
      * /api/weather/v/forecast-sections-simple/forecasts";
+     * Weather station history data
+     * /api/weather/v/stations/{id}/data/history
+     * /api/weather/v/stations/{id}/data/history/{id}/
      */
 
-    // public static final String API__WEATHER_BETA = API_WEATHER + BETA;
     public static final String API_WEATHER_V1 = API_WEATHER + V1;
-
     public static final String STATIONS = "/stations";
     public static final String SENSORS = "/sensors";
     public static final String DATA = "/data";
@@ -90,16 +99,19 @@ public class WeatherControllerV1 {
     public static final String FORECAST_SECTIONS = "/forecast-sections";
     public static final String FORECAST_SECTIONS_SIMPLE = "/forecast-sections-simple";
     public static final String FORECASTS = "/forecasts";
+    public static final String HISTORY = DATA + "/history";
 
 
     public WeatherControllerV1(final WeatherDataWebServiceV1 weatherDataWebServiceV1,
                                final WeatherStationMetadataWebServiceV1 weatherStationMetadataWebServiceV1,
                                final RoadStationSensorServiceV1 roadStationSensorServiceV1,
-                               final ForecastWebDataServiceV1 forecastWebDataServiceV1) {
+                               final ForecastWebDataServiceV1 forecastWebDataServiceV1,
+                               final WeatherHistoryService weatherHistoryService) {
         this.weatherDataWebServiceV1 = weatherDataWebServiceV1;
         this.weatherStationMetadataWebServiceV1 = weatherStationMetadataWebServiceV1;
         this.roadStationSensorServiceV1 = roadStationSensorServiceV1;
         this.forecastWebDataServiceV1 = forecastWebDataServiceV1;
+        this.weatherHistoryService = weatherHistoryService;
     }
 
     /* METADATA */
@@ -397,6 +409,33 @@ public class WeatherControllerV1 {
         final String id) {
 
         return forecastWebDataServiceV1.getForecastSectionWeatherDataById(ForecastSectionApiVersion.V2, id);
+    }
+
+    @Operation(summary = "List the history of sensor values from the weather road station. Maximum history of 24h.")
+    @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + STATIONS + "/{stationId}" + HISTORY, produces = APPLICATION_JSON_VALUE)
+    @ApiResponses({@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"),
+            @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Station not found"),
+            @ApiResponse(responseCode = HTTP_BAD_REQUEST, description = "Invalid parameter(s)")})
+    public WeatherStationSensorHistoryDtoV1 weatherDataHistory(
+            @Parameter(description = "Weather station id", required = true)
+            @PathVariable
+            final long stationId,
+
+            @Parameter(description = "List only history after given timestamp.  If you use this, you also have to use to-parameter.")
+            @RequestParam(value="from", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            final Instant from,
+
+            @Parameter(description = "List only history to given timestamp.  If you use this, you also have to use from-parameter.")
+            @RequestParam(value="to", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            final Instant to,
+
+            @Parameter(description = "List only history of the given sensor.")
+            @RequestParam(value="sensorId", required = false)
+            final Long sensorId) {
+
+        return weatherHistoryService.findWeatherHistoryData(stationId, sensorId, from, to);
     }
 }
 

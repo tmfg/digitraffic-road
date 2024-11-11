@@ -46,7 +46,7 @@ import fi.livi.digitraffic.tie.service.trafficmessage.location.LocationTypeUpdat
 import fi.livi.digitraffic.tie.service.trafficmessage.location.LocationUpdater;
 import fi.livi.digitraffic.tie.service.trafficmessage.location.MetadataFileFetcher;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.location.LocationWebServiceV1;
-import fi.livi.digitraffic.tie.service.weather.WeatherService;
+import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageReader;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateHandler;
@@ -69,7 +69,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
          RoadStationService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
          CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class,
          CameraPresetHistoryUpdateService.class, FlywayService.class,
-         WeatherService.class, SensorDataUpdateService.class,
+         WeatherHistoryService.class, SensorDataUpdateService.class,
          ImsJsonConverter.class, Datex2UpdateService.class,
          RegionGeometryUpdateService.class,
          MaintenanceTrackingUpdateServiceV1.class,

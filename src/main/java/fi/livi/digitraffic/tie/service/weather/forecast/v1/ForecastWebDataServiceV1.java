@@ -153,7 +153,7 @@ public class ForecastWebDataServiceV1 {
         if (dtos.isEmpty()) {
           throw new ObjectNotFoundException("Forecast section data", id);
         } else if (dtos.size() > 1) {
-            log.error("ForecastSectionWeatherRepository.findForecastSectionWeatherBy id " + id + " returned result of " + dtos.size() + " ids");
+            log.error("ForecastSectionWeatherRepository.findForecastSectionWeatherBy id {} returned result of {} ids", id, dtos.size());
         }
         return dtos.get(0);
     }

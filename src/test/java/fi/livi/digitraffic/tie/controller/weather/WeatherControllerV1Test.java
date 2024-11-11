@@ -106,7 +106,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void weatherStationsRestApi() throws Exception {
-        performAndLogLastModifiedHeder(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS)
+        performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS)
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
@@ -131,7 +131,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void weatherStationRestApi() throws Exception {
-        performAndLogLastModifiedHeder(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + "/" + weatherStation.getRoadStationNaturalId())
+        performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + "/" + weatherStation.getRoadStationNaturalId())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.type", is("Feature")))
@@ -170,7 +170,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void weatherSensorsRestApi() throws Exception {
-        performAndLogLastModifiedHeder(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.SENSORS)
+        performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.SENSORS)
             .andExpect(status().isOk())
             .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
             .andExpect(jsonPath("$.sensors[0].id", isA(Integer.class)))
@@ -193,7 +193,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void weatherDataRestApi() throws Exception {
-        performAndLogLastModifiedHeder(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA)
+        performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA)
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
@@ -217,7 +217,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void weatherDataByIdRestApi() throws Exception {
-        performAndLogLastModifiedHeder(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + "/" + weatherStation.getRoadStationNaturalId() + "/" + WeatherControllerV1.DATA)
+        performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + "/" + weatherStation.getRoadStationNaturalId() + "/" + WeatherControllerV1.DATA)
             .andExpect(status().isOk())
             .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
@@ -236,7 +236,7 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
     }
 
-    private ResultActions performAndLogLastModifiedHeder(final String url) throws Exception {
+    private ResultActions performAndLogLastModifiedHeader(final String url) throws Exception {
         final ResultActions result = mockMvc.perform(get(url));
         log.info("LAST-MODIFIED: {},  id: {}", result.andReturn().getResponse().getHeader(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER), weatherStation.getRoadStationNaturalId());
         return result;

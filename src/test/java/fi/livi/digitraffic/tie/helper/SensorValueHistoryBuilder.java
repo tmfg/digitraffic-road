@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.helper;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class SensorValueHistoryBuilder {
     private final SensorValueHistoryRepository repository;
     private final List<SensorValueHistory> list;
     private final List<Integer> createdCounts;
-    private ZonedDateTime refTime;
+    private Instant refTime;
     private ChronoUnit chronoUnit;
     private final Random random;
 
@@ -32,7 +33,7 @@ public class SensorValueHistoryBuilder {
         createdCounts = new ArrayList<>();
     }
 
-    public SensorValueHistoryBuilder setReferenceTime(final ZonedDateTime refTime) {
+    public SensorValueHistoryBuilder setReferenceTime(final Instant refTime) {
         this.refTime = refTime;
 
         return this;
@@ -109,10 +110,9 @@ public class SensorValueHistoryBuilder {
         return list;
     }
 
-    private ZonedDateTime getTime(final int start, final int stop) {
-        final ZonedDateTime time = refTime != null ?
-                                   refTime.minusMinutes(random.nextInt(start, stop)) :
-                                   ZonedDateTime.now().minusMinutes(random.nextInt(start, stop));
+    private Instant getTime(final int start, final int stop) {
+        final Instant time = (refTime != null ? refTime : Instant.now())
+                .minus(random.nextInt(start, stop), ChronoUnit.MINUTES);
 
         if (chronoUnit != null) {
             return time.truncatedTo(chronoUnit);
@@ -121,7 +121,7 @@ public class SensorValueHistoryBuilder {
         return time;
     }
 
-    private SensorValueHistory createDummyModel(final long roadStation, final long sensor, final double value, final ZonedDateTime time) {
+    private SensorValueHistory createDummyModel(final long roadStation, final long sensor, final double value, final Instant time) {
         final SensorValueHistory model = new SensorValueHistory();
         model.setRoadStationId(roadStation);
         model.setSensorId(sensor);

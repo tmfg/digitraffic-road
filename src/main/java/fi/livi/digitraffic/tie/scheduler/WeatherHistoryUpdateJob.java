@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.scheduler;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -28,7 +29,7 @@ public class WeatherHistoryUpdateJob extends SimpleUpdateJob {
         final ZonedDateTime now = ZonedDateTime.now();
         // Do one hour time window (xx:00 - xx:59)
         final ZonedDateTime to = now.truncatedTo(ChronoUnit.HOURS);
-        final ZonedDateTime from = to.minusHours(1);
+        final ZonedDateTime from = to.minus(1, ChronoUnit.HOURS);
 
         // Check missing history items. NOTE! DISABLED
         //sensorDataS3Writer.updateSensorDataS3History(from);
@@ -38,9 +39,9 @@ public class WeatherHistoryUpdateJob extends SimpleUpdateJob {
         // Write one hour time window to S3
         sensorDataS3Writer.writeSensorData(from, to);
 
-        log.info("Cleaning sensor data history, older than {}", to.minusHours(24));
+        log.info("Cleaning sensor data history, older than {}", to.minus(1, ChronoUnit.DAYS));
 
         // DB maintenance: remove history older than 24h
-        sensorDataUpdateService.cleanWeatherHistoryData(to.minusHours(24));
+        sensorDataUpdateService.cleanWeatherHistoryData(to.minus(1, ChronoUnit.DAYS).toInstant());
     }
 }

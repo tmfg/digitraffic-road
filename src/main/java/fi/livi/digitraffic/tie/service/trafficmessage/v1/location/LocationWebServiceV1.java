@@ -59,7 +59,8 @@ public class LocationWebServiceV1 {
 
         final List<LocationFeatureV1> features =
                 locationRepository.findAllByVersion(lVersion)
-                        .parallel().map((LocationDtoV1 l) -> new LocationFeatureV1(l, updated, lVersion)).sorted().collect(Collectors.toList());
+                        .parallel().map((LocationDtoV1 l) -> new LocationFeatureV1(l, updated, lVersion)).sorted()
+                        .collect(Collectors.toList());
         return new LocationFeatureCollectionV1(updated, lVersion, features);
     }
 
@@ -89,14 +90,14 @@ public class LocationWebServiceV1 {
         final List<LocationTypeDtoV1> types =
             locationTypeRepository.findAllByIdVersionOrderByIdTypeCode(lVersion);
         Collections.sort(types);
-        final List<LocationSubtypeDtoV1> suptypes =
+        final List<LocationSubtypeDtoV1> subtypes =
             locationSubtypeRepository.findAllByIdVersionOrderByIdSubtypeCode(lVersion);
-        Collections.sort(suptypes);
+        Collections.sort(subtypes);
         return new LocationTypesDtoV1(
             locationVersion.getDataUpdatedTime(),
             lVersion,
             types,
-            suptypes);
+            subtypes);
     }
 
     @Transactional(readOnly = true)
