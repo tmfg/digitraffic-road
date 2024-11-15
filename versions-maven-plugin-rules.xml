@@ -4,6 +4,7 @@
         <!-- Ignore Alpha's, Beta's, release candidates and milestones -->
         <ignoreVersion type="regex">(?i).*Alpha(?:-?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*a(?:-?\d+)?</ignoreVersion>
+        <ignoreVersion type="regex">(?i).*-alpha(?:(-|\.)?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*Beta(?:-?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*-B(?:-?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*RC(?:-?\d+)?</ignoreVersion>
