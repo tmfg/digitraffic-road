@@ -112,8 +112,8 @@ public class RoadStationSensor {
     private Integer lane;
 
     /** Normally not up to date in source system */
-    @Schema(description = "Preset direction " +
-        "(0 = Unknown direction. " +
+    @Schema(description = "Measurement direction " +
+        "0 = Unknown direction. " +
         "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi." +
         "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.")
     private Integer direction;

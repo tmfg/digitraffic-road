@@ -16,6 +16,8 @@ public class DtMediaType {
     public static final String APPLICATION_JSON_VALUE = MediaType.APPLICATION_JSON_UTF8_VALUE;
     public static final String APPLICATION_XML_VALUE = MediaType.APPLICATION_XML_VALUE + UTF_8_VALUE_SUFFIX;
 
+    public static final String TEXT_CSV_VALUE = "text/csv";
+
     @SuppressWarnings("deprecation")
     public static final MediaType APPLICATION_JSON = MediaType.APPLICATION_JSON_UTF8;
     public static final MediaType APPLICATION_XML = new MediaType("application", "xml", StandardCharsets.UTF_8);

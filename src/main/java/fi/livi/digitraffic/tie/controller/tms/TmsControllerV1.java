@@ -7,9 +7,12 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.TEXT_CSV_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationDataDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationFeatureCollectionSimpleV1;
@@ -32,6 +36,7 @@ import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,7 +46,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Validated
 @ConditionalOnWebApplication
 public class TmsControllerV1 {
-
+    private static final Logger log = LoggerFactory.getLogger(TmsControllerV1.class);
     private final TmsDataWebServiceV1 tmsDataWebServiceV1;
     private final TmsStationMetadataWebServiceV1 tmsStationMetadataWebServiceV1;
     private final RoadStationSensorServiceV1 roadStationSensorServiceV1;
@@ -179,6 +184,73 @@ public class TmsControllerV1 {
         @PathVariable
         final long id) {
         return tmsDataWebServiceV1.findPublishableSensorConstantsForStation(id);
+    }
+
+    @Operation(summary = "TMS raw history data (Traffic Measurement System / LAM)",
+               description = "More documentation at <a href=\"https://www.digitraffic.fi/en/road-traffic/lam/#tms-raw-data\">https://www.digitraffic.fi/en/road-traffic/lam/#tms-raw-data</a>")
+    @RequestMapping(method = RequestMethod.GET,
+                    path = "/api/tms/v1/history/raw/lamraw_{tmsNumber}_{yearShort}_{dayNumber}.csv",
+                    produces = TEXT_CSV_VALUE)
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS raw history data"))
+    public TmsRawHistoryCsv[] tmsRawHistory(
+            @Parameter(description = "TMS Station tmsNumber (Not station id!)", required = true )
+            @PathVariable()
+            final int tmsNumber,
+            @Parameter(description = "Year in short format, last two digits of the year", required = true)
+            @PathVariable
+            final int yearShort,
+            @Parameter(description = "Day of the year (i.e. ordinal date, value between 1-366, taking into account leap years). e.g. 1.1. = 1", required = true)
+            @PathVariable
+            final long dayNumber) {
+        log.error("method=tmsRawHistory called with parameters tmsNumber={} yearShort={} dayNumber={}. " +
+                  "This should never come to TmsControllerV1 but to CloudFront and there to LAM history lambda.",
+                tmsNumber, yearShort, dayNumber);
+        throw new UnsupportedOperationException(StringUtil.format("method=tmsRawHistory called with parameters tmsNumber={} yearShort={} dayNumber={}.", tmsNumber, yearShort, dayNumber));
+    }
+
+    public record TmsRawHistoryCsv(
+            @Schema(description = "TMS Station tmsNumber (Not station id!)", requiredMode = Schema.RequiredMode.REQUIRED)
+            int tmsNumber,
+            @Schema(description =  "Year in short format, last two digits of the year", requiredMode = Schema.RequiredMode.REQUIRED)
+            int yearShort,
+            @Schema(description =  "Day of the year (i.e. ordinal date, taking into account leap years). e.g. 1.1. = 1", minimum = "1", maximum = "366", requiredMode = Schema.RequiredMode.REQUIRED)
+            int dayNumber,
+            @Schema(description =  "Hour of the day (24h)", minimum = "0", maximum = "23", requiredMode = Schema.RequiredMode.REQUIRED)
+            int hour,
+            @Schema(description =  "Minute of the hour", minimum = "0", maximum = "59", requiredMode = Schema.RequiredMode.REQUIRED)
+            int minute,
+            @Schema(description =  "Second of the minute", minimum = "0", maximum = "59", requiredMode = Schema.RequiredMode.REQUIRED)
+            int second,
+            @Schema(description =  "Hundredth of the second", minimum = "0", maximum = "99", requiredMode = Schema.RequiredMode.REQUIRED)
+            int hundredthOfASecond,
+            @Schema(description =  "Length of the vehicle in meters", minimum = "0", maximum = "99", requiredMode = Schema.RequiredMode.REQUIRED)
+            double length,
+            @Schema(description =  "Lane", requiredMode = Schema.RequiredMode.REQUIRED)
+            int lane,
+            @Schema(description =  "Measurement direction </br>" +
+                    "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi.</br>" +
+                    "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.", requiredMode = Schema.RequiredMode.REQUIRED)
+            int direction,
+            @Schema(description =  "Vehicle class</br>" +
+                    "1 HA-PA (car or delivery van)</br>" +
+                    "2 KAIP (truck, no trailer)</br>" +
+                    "3 Buses</br>" +
+                    "4 KAPP (semi-trailer truck)</br>" +
+                    "5 KATP (truck with trailer)</br>" +
+                    "6 HA + PK (car or delivery van with trailer)</br>" +
+                    "7 HA + AV (car or delivery van with trailer or camper)", requiredMode = Schema.RequiredMode.REQUIRED)
+            int vehicleClass,
+            @Schema(description =  "Speed in km/h", requiredMode = Schema.RequiredMode.REQUIRED)
+            int speed,
+            @Schema(description =  "Is record faulty (0=valid record, 1=faulty record)", allowableValues = { "0", "1" }, requiredMode = Schema.RequiredMode.REQUIRED)
+            int faulty,
+            @Schema(description =  "Total time (technical)", requiredMode = Schema.RequiredMode.REQUIRED)
+            int totalTime,
+            @Schema(description =  "Time interval (technical)", requiredMode = Schema.RequiredMode.REQUIRED)
+            int timeTnterval,
+            @Schema(description =  "Queue start (technical)", requiredMode = Schema.RequiredMode.REQUIRED)
+            int queueStart) {
+
     }
 }
 
