@@ -106,7 +106,7 @@ public class RegionGeometryUpdateJobTestHelper {
                     }
 
                     @Override
-                    public boolean isConcurrentExectionDisallowed() {
+                    public boolean isConcurrentExecutionDisallowed() {
                         return false;
                     }
 
