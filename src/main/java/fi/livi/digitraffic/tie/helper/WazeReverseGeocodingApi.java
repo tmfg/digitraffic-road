@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.helper;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -13,21 +14,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 
 @ConditionalOnWebApplication
-@Component
+@Service
 public class WazeReverseGeocodingApi {
     private static final Logger logger = LoggerFactory.getLogger(WazeReverseGeocodingApi.class);
     private final String token;
     private final String endpoint;
 
-    public WazeReverseGeocodingApi(@Value("${waze.reverseGeocodeToken}") final String token, @Value("${waze.reverseGeocodeEndpoint}") final String endpoint) {
+    public WazeReverseGeocodingApi(
+            @Value("${waze.reverseGeocodeToken}")
+            final String token,
+            @Value("${waze.reverseGeocodeEndpoint}")
+            final String endpoint) {
         this.token = token;
         this.endpoint = endpoint;
     }
 
+    @NotTransactionalServiceMethod
     public Optional<String> fetch(final double latitude, final double longitude) {
+        final StopWatch start = StopWatch.createStarted();
         final CloseableHttpClient httpClient = HttpClients.createDefault();
         final String url = String.format("%s?lat=%s&lon=%s&token=%s", endpoint, latitude, longitude, token);
 
@@ -38,6 +47,11 @@ public class WazeReverseGeocodingApi {
             return httpClient.execute(httpGet, responseHandler);
         } catch (final IOException e) {
             logger.error("method=fetch Unable to fetch data from waze reverse geocode api", e);
+        } finally {
+            logger.info(
+                    "method=fetch for latitude {} and longitude {} tookMs={}",
+                    latitude, longitude,
+                    start.getTime());
         }
         return Optional.empty();
     }
