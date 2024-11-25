@@ -299,26 +299,6 @@
             <artifactId>spring-jms</artifactId>
         </dependency>
 
-        <!-- TODO remove when DPO-2422 KCA is in production -->
-        <!-- Sonic JMS Library -->
-        <dependency>
-            <groupId>com.progress.message</groupId>
-            <artifactId>sonic_Client</artifactId>
-            <version>8.6.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.progress.message</groupId>
-            <artifactId>sonic_Crypto</artifactId>
-            <version>8.6.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.progress.message</groupId>
-            <artifactId>sonic_XMessage</artifactId>
-            <version>8.6.0</version>
-        </dependency>
-
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>

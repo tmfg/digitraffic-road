@@ -5,9 +5,9 @@
                xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
                jaxb:extensionBindingPrefixes="xjc">
     <jaxb:bindings schemaLocation="ImsXmlMessage_1_2_1.xsd" node="//xs:element[@name='imsMessage']/xs:complexType[1]">
-        <inheritance:implements>fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage</inheritance:implements>
+        <inheritance:implements>fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage</inheritance:implements>
     </jaxb:bindings>
     <jaxb:bindings schemaLocation="ImsXmlMessage_1_2_1.xsd" node="//xs:element[@name='messageContent']/xs:complexType[1]">
-        <inheritance:implements>fi.livi.digitraffic.tie.conf.jms.ExternalImsMessageContent</inheritance:implements>
+        <inheritance:implements>fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalImsMessageContent</inheritance:implements>
     </jaxb:bindings>
 </jaxb:bindings>

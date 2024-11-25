@@ -77,26 +77,6 @@ dt.amazon.s3.sensordata.bucketName = sensordata-road-test
 dt.amazon.s3.sensordata.userAccessKey = dummy
 dt.amazon.s3.sensordata.userSecretKey = dummy
 
-# JMS settings
-
-# Sonja - disable by commenting url out
-#jms.connectionUrls=
-jms.userId=
-jms.password=
-
-# Sonja test - disable by commenting url out
-#jms.test.connectionUrls=
-jms.test.userId=
-jms.test.password=
-
-# JMS topics
-# Comment out to disable (Only daemon should have these enabled)
-#jms.weather.inQueue=topic://Digitraffic.TiesaaKeruu.Tietovirta.BIN.InTopic
-#jms.tms.inQueue=topic://LOTJU.LAMKeruu.Tietovirta.BIN.Ajantasa.OutTopic,topic://LOTJU.LAMKeruu.Tietovirta.BIN.Reaali.OutTopic
-#jms.camera.inQueue=topic://Digitraffic.KameraKeruu.Tietovirta.BIN.InTopic
-#jms.datex2.inQueue=queue://T-LOIK_Liikennetiedote.Digitraffic.Datex2.InQ
-#jms.camera.meta.inQueue=queue://Digitraffic.KameraMeta.Muutos.InQ
-
 # Services enabled/disabled
 
 # Is Quartz scheduler enabled. Should be true only for daemon process.

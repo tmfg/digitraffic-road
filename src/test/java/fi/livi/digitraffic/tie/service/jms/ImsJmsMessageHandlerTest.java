@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
+import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
@@ -120,10 +120,10 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
                     features.stream().filter(f -> f.getProperties().situationId.equals(s.getId())).findFirst();
             assertTrue(feature.isPresent());
 
-            final TrafficAnnouncement announcement = feature.get().getProperties().announcements.get(0);
-            final SituationRecord situationRecord = s.getSituationRecords().get(0);
+            final TrafficAnnouncement announcement = feature.get().getProperties().announcements.getFirst();
+            final SituationRecord situationRecord = s.getSituationRecords().getFirst();
             final String situationComment =
-                    situationRecord.getGeneralPublicComments().get(0).getComment().getValues().getValues().get(0)
+                    situationRecord.getGeneralPublicComments().getFirst().getComment().getValues().getValues().getFirst()
                             .getValue();
 
             assertTrue(situationComment.contains(announcement.title),

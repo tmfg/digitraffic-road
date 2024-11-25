@@ -13,12 +13,11 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
+import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
@@ -79,8 +78,6 @@ public class TrafficMessageTestHelper {
     public static final String SITUATION_VERSION_DATE_TIME_PLACEHOLDER = "SITUATION_VERSION_DATE_TIME";
     public static final String SITUATION_VERSION_PLACEHOLDER = "SITUATION_VERSION";
 
-    @Autowired
-    protected JdbcTemplate jdbcTemplate;
     @PersistenceContext
     protected EntityManager entityManager;
     @Autowired
@@ -125,17 +122,13 @@ public class TrafficMessageTestHelper {
 
 
     public static String getSituationIdForSituationType(final String situationTypeName) {
-        switch (situationTypeName) {
-        case "TRAFFIC_ANNOUNCEMENT":
-            return "GUID10000001";
-        case "EXEMPTED_TRANSPORT":
-            return "GUID10000002";
-        case "WEIGHT_RESTRICTION":
-            return "GUID10000003";
-        case "ROAD_WORK":
-            return "GUID10000004";
-        }
-        throw new IllegalStateException("Unknown SituationType " + situationTypeName);
+        return switch (situationTypeName) {
+            case "TRAFFIC_ANNOUNCEMENT" -> "GUID10000001";
+            case "EXEMPTED_TRANSPORT" -> "GUID10000002";
+            case "WEIGHT_RESTRICTION" -> "GUID10000003";
+            case "ROAD_WORK" -> "GUID10000004";
+            default -> throw new IllegalStateException("Unknown SituationType " + situationTypeName);
+        };
     }
 
     public void initImsDataFromFile(final String file, final ImsJsonVersion jsonVersion, final ZonedDateTime startTime,

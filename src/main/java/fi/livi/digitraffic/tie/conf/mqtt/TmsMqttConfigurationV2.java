@@ -40,9 +40,9 @@ public class TmsMqttConfigurationV2 {
     private static final Logger LOGGER = LoggerFactory.getLogger(TmsMqttConfigurationV2.class);
 
     public TmsMqttConfigurationV2(final MqttRelayQueue mqttRelay,
-                                final RoadStationSensorServiceV1 roadStationSensorService,
-                                final ObjectMapper objectMapper,
-                                final LockingService lockingService) {
+                                  final RoadStationSensorServiceV1 roadStationSensorService,
+                                  final ObjectMapper objectMapper,
+                                  final LockingService lockingService) {
 
         this.mqttMessageSender = new MqttMessageSenderV2(LOGGER, mqttRelay, objectMapper, TMS, lockingService);
         this.roadStationSensorService = roadStationSensorService;

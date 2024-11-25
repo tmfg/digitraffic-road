@@ -1,4 +1,4 @@
-package fi.livi.digitraffic.tie.conf.jms;
+package fi.livi.digitraffic.tie.conf.kca.artemis.jms.message;
 
 /**
  * Interface that different versions of ImsMessages should implement.

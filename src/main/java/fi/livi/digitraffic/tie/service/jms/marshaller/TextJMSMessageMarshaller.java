@@ -3,10 +3,6 @@ package fi.livi.digitraffic.tie.service.jms.marshaller;
 import java.util.Collections;
 import java.util.List;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-
 import org.apache.activemq.artemis.jms.client.ActiveMQMessage;
 import org.apache.activemq.artemis.jms.client.ActiveMQTextMessage;
 import org.apache.commons.lang3.StringUtils;
@@ -15,13 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.helper.ToStringHelper;
-import fi.livi.digitraffic.tie.service.jms.JMSMessageListener;
 import fi.livi.digitraffic.tie.service.jms.JMSMessageMarshaller;
 import jakarta.xml.bind.JAXBElement;
 
 public abstract class TextJMSMessageMarshaller<K> implements JMSMessageMarshaller<K> {
     private static final Logger log = LoggerFactory.getLogger(TextJMSMessageMarshaller.class);
+
+
 
     private final Jaxb2Marshaller jaxb2Marshaller;
 
@@ -31,8 +27,9 @@ public abstract class TextJMSMessageMarshaller<K> implements JMSMessageMarshalle
 
     /**
      * Override this to create custom transform for parsed object.
+     *
      * @param object Object parsed from text message.
-     * @param text Original text message.
+     * @param text   Original text message.
      * @return Transformed list of objects. Default returns singleton list of given object parameter.
      */
     protected List<K> transform(final Object object, final String text) {
@@ -40,25 +37,10 @@ public abstract class TextJMSMessageMarshaller<K> implements JMSMessageMarshalle
     }
 
     @Override
-    public List<K> unmarshalMessage(final Message message) throws JMSException {
-        assertTextMessage(message);
-
-        final String text = parseTextMessageText((TextMessage) message);
-
-        Object object = jaxb2Marshaller.unmarshal(new StringSource(text));
-        if (object instanceof JAXBElement) {
-            // For Datex2 messages extra stuff
-            object = ((JAXBElement<?>) object).getValue();
-        }
-
-        return transform(object, text);
-    }
-
-    @Override
     public List<K> unmarshalMessage(final ActiveMQMessage message) {
         try {
             final String messageText = getActiveMQTextMessage(message).getText();
-            final String text = parseTextMessageText(messageText);
+            final String text = trimTextMessageText(messageText);
             Object object = jaxb2Marshaller.unmarshal(new StringSource(text));
             if (object instanceof JAXBElement) {
                 // For Datex2 messages extra stuff
@@ -71,23 +53,11 @@ public abstract class TextJMSMessageMarshaller<K> implements JMSMessageMarshalle
         }
     }
 
-    private String parseTextMessageText(final TextMessage message) throws JMSException {
-        assertTextMessage(message);
-        return parseTextMessageText(message.getText());
-    }
-
-    private String parseTextMessageText(final String text) {
+    private String trimTextMessageText(final String text) {
         if (StringUtils.isBlank(text)) {
-            throw new IllegalArgumentException(JMSMessageListener.MESSAGE_UNMARSHALLING_ERROR + ": blank text");
+            throw new IllegalArgumentException("Message unmarshalling error: ActiveMQTextMessage text was blank");
         }
         return text.trim();
-    }
-
-    private void assertTextMessage(final Message message) {
-        if (!(message instanceof TextMessage)) {
-            log.error(JMSMessageListener.MESSAGE_UNMARSHALLING_ERROR_FOR_MESSAGE, ToStringHelper.toStringFull(message));
-            throw new IllegalArgumentException("Unknown message type: " + message.getClass());
-        }
     }
 
     private ActiveMQTextMessage getActiveMQTextMessage(final ActiveMQMessage message) {
