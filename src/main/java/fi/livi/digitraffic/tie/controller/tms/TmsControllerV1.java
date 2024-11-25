@@ -211,7 +211,7 @@ public class TmsControllerV1 {
     public record TmsRawHistoryCsv(
             @Schema(description = "TMS Station tmsNumber (Not station id!)", requiredMode = Schema.RequiredMode.REQUIRED)
             int tmsNumber,
-            @Schema(description =  "Year in short format, last two digits of the year", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description =  "Year in short format, last two digits of the year", minimum = "0", maximum = "99", requiredMode = Schema.RequiredMode.REQUIRED)
             int yearShort,
             @Schema(description =  "Day of the year (i.e. ordinal date, taking into account leap years). e.g. 1.1. = 1", minimum = "1", maximum = "366", requiredMode = Schema.RequiredMode.REQUIRED)
             int dayNumber,
@@ -223,13 +223,13 @@ public class TmsControllerV1 {
             int second,
             @Schema(description =  "Hundredth of the second", minimum = "0", maximum = "99", requiredMode = Schema.RequiredMode.REQUIRED)
             int hundredthOfASecond,
-            @Schema(description =  "Length of the vehicle in meters", minimum = "0", maximum = "99", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description =  "Length of the vehicle in meters", minimum = "1.0", maximum = "39.8", requiredMode = Schema.RequiredMode.REQUIRED)
             double length,
             @Schema(description =  "Lane", requiredMode = Schema.RequiredMode.REQUIRED)
             int lane,
             @Schema(description =  "Measurement direction </br>" +
                     "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi.</br>" +
-                    "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.", requiredMode = Schema.RequiredMode.REQUIRED)
+                    "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.", minimum = "1", maximum = "2", requiredMode = Schema.RequiredMode.REQUIRED)
             int direction,
             @Schema(description =  "Vehicle class</br>" +
                     "1 HA-PA (car or delivery van)</br>" +
@@ -238,11 +238,12 @@ public class TmsControllerV1 {
                     "4 KAPP (semi-trailer truck)</br>" +
                     "5 KATP (truck with trailer)</br>" +
                     "6 HA + PK (car or delivery van with trailer)</br>" +
-                    "7 HA + AV (car or delivery van with trailer or camper)", requiredMode = Schema.RequiredMode.REQUIRED)
+                    "7 HA + AV (car or delivery van with trailer or camper)",
+                    minimum = "1",  maximum = "7", requiredMode = Schema.RequiredMode.REQUIRED)
             int vehicleClass,
-            @Schema(description =  "Speed in km/h", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description =  "Speed in km/h", minimum = "2",  maximum = "188", requiredMode = Schema.RequiredMode.REQUIRED)
             int speed,
-            @Schema(description =  "Is record faulty (0=valid record, 1=faulty record)", allowableValues = { "0", "1" }, requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description =  "Is record faulty (0=valid record, 1=faulty record)", minimum = "0", maximum = "1", requiredMode = Schema.RequiredMode.REQUIRED)
             int faulty,
             @Schema(description =  "Total time (technical)", requiredMode = Schema.RequiredMode.REQUIRED)
             int totalTime,

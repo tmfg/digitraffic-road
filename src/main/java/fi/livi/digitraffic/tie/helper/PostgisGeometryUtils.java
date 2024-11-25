@@ -21,10 +21,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKBReader;
-import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
@@ -47,26 +44,18 @@ public class PostgisGeometryUtils {
     private static final Logger log = LoggerFactory.getLogger(PostgisGeometryUtils.class);
 
     private static final ThreadLocal<GeoJsonWriter> geoJsonWriter =
-        ThreadLocal.withInitial(() -> {
-            final GeoJsonWriter writer = new GeoJsonWriter(GeometryConstants.COORDINATE_SCALE_6_DIGITS);
-            writer.setEncodeCRS(false); // We use always EPSG:4326 = WGS84 - World Geodetic System 1984
-            return writer;
-        });
+            ThreadLocal.withInitial(() -> {
+                final GeoJsonWriter writer = new GeoJsonWriter(GeometryConstants.COORDINATE_SCALE_6_DIGITS);
+                writer.setEncodeCRS(false); // We use always EPSG:4326 = WGS84 - World Geodetic System 1984
+                writer.setForceCCW(false); // GeoJSON should be output following counter-clockwise orientation aka Right Hand Rule
+                return writer;
+            });
 
     private static final ThreadLocal<GeoJsonReader> geoJsonReader =
-        ThreadLocal.withInitial(() -> new GeoJsonReader(JTS_GEOMETRY_FACTORY));
+            ThreadLocal.withInitial(() -> new GeoJsonReader(JTS_GEOMETRY_FACTORY));
 
-    private static final ThreadLocal<WKBReader> wkbGeometryReader =
-        ThreadLocal.withInitial(() -> new WKBReader(JTS_GEOMETRY_FACTORY));
-
-    private static final ThreadLocal<WKBWriter> wkbGeometryWriter =
-        ThreadLocal.withInitial(() -> new WKBWriter(3));
     private static final ThreadLocal<WKTReader> wktGeometryReader =
-        ThreadLocal.withInitial(() -> new WKTReader(JTS_GEOMETRY_FACTORY));
-
-    private static final ThreadLocal<WKTWriter> wktGeometryWriter =
-        ThreadLocal.withInitial(() -> new WKTWriter(3));
-
+            ThreadLocal.withInitial(() -> new WKTReader(JTS_GEOMETRY_FACTORY));
 
     private static final ObjectReader dtGeoJsonReader = new ObjectMapper().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
 
@@ -77,7 +66,7 @@ public class PostgisGeometryUtils {
 
     public static Coordinate createCoordinateWithZFromETRS89ToWGS84(final double x, final double y, final Double z) {
         final fi.livi.digitraffic.tie.metadata.geojson.Point wgs84 =
-            CoordinateConverter.convertFromETRS89ToWGS84(new fi.livi.digitraffic.tie.metadata.geojson.Point(x, y, z));
+                CoordinateConverter.convertFromETRS89ToWGS84(new fi.livi.digitraffic.tie.metadata.geojson.Point(x, y, z));
         return createCoordinateWithZ(wgs84.getLongitude(), wgs84.getLatitude(), wgs84.getAltitude());
     }
 
@@ -101,9 +90,9 @@ public class PostgisGeometryUtils {
     public static Polygon createSquarePolygonFromMinMax(final double xMin, final double xMax,
                                                         final double yMin, final double yMax) {
         final Coordinate[] coordinates = new Coordinate[] {
-            new Coordinate(xMin, yMin, 0), new Coordinate(xMin, yMax, 0),
-            new Coordinate(xMax, yMax, 0), new Coordinate(xMax, yMin, 0),
-            new Coordinate(xMin, yMin, 0)
+                new Coordinate(xMin, yMin, 0), new Coordinate(xMin, yMax, 0),
+                new Coordinate(xMax, yMax, 0), new Coordinate(xMax, yMin, 0),
+                new Coordinate(xMin, yMin, 0)
         };
 
         return JTS_GEOMETRY_FACTORY.createPolygon(coordinates);
@@ -114,45 +103,17 @@ public class PostgisGeometryUtils {
         return createLineStringWithZ(Arrays.asList(coordinates));
     }
 
-    public static List<List<Double>> convertToGeoJSONGeometryCoordinates(final LineString lineString) {
-        return Arrays.stream(lineString.getCoordinates())
-            .map(c -> {
-                if (Double.isFinite(c.getZ())) {
-                    return Arrays.asList(c.getX(), c.getY(), c.getZ());
-                }
-                return Arrays.asList(c.getX(), c.getY());
-            })
-            .collect(Collectors.toList());
-    }
-
-    public static List<Double> convertToGeoJSONGeometryCoordinates(final Point point) {
-        final Coordinate c = point.getCoordinate();
-        return Arrays.asList(c.getX(), c.getY(), c.getZ());
-    }
-
     public static fi.livi.digitraffic.tie.metadata.geojson.LineString convertToGeoJSONLineString(final Geometry geometry)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
         if (geometry.getGeometryType().equals(Geometry.TYPENAME_LINESTRING)) {
             return convertGeometryToGeoJSONGeometry(geometry);
         }
         throw new IllegalArgumentException("Geometry must be LineString, but was " + geometry.getGeometryType() + ". Had coordinate count of " + geometry.getNumPoints());
     }
 
-    public static fi.livi.digitraffic.tie.metadata.geojson.MultiLineString convertToGeoJSONMultiLineLineString(final Geometry geometry)
-        throws IllegalArgumentException {
-        if (geometry.getGeometryType().equals(Geometry.TYPENAME_MULTILINESTRING)) {
-            return convertGeometryToGeoJSONGeometry(geometry);
-        }
-        throw new IllegalArgumentException("Geometry must be MultiLineString, but was " + geometry.getGeometryType() + ". Had coordinate count of " + geometry.getNumPoints());
-    }
-
     public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeometryToGeoJSONGeometry(final org.locationtech.jts.geom.Geometry geometry) {
         final String geoJson = geoJsonWriter.get().write(geometry);
         return convertGeoJSONStringToGeoJSON(geoJson);
-    }
-
-    public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeoJSONStringToGeoJSONFirstValid(final String...geoJsonString) {
-        return (T) Arrays.stream(geoJsonString).filter(json -> json != null).map(j -> convertGeoJSONStringToGeoJSON(j)).filter(g -> !((fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>) g).getCoordinates().isEmpty()).findFirst().orElse(null);
     }
 
     public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeoJSONStringToGeoJSON(final String geoJsonString) {
@@ -185,9 +146,9 @@ public class PostgisGeometryUtils {
         final double diffLon = Math.toRadians(toXLon - fromXLon);
 
         final double a =
-            Math.sin(diffLat / 2) * Math.sin(diffLat / 2) +
-                Math.cos(Math.toRadians(fromYLat)) * Math.cos(Math.toRadians(toYLat)) *
-                    Math.sin(diffLon / 2) * Math.sin(diffLon / 2);
+                Math.sin(diffLat / 2) * Math.sin(diffLat / 2) +
+                        Math.cos(Math.toRadians(fromYLat)) * Math.cos(Math.toRadians(toYLat)) *
+                                Math.sin(diffLon / 2) * Math.sin(diffLon / 2);
         final double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return GeometryConstants.EARTH_RADIUS_KM * c;
     }
@@ -198,8 +159,43 @@ public class PostgisGeometryUtils {
         return distanceKm / hours;
     }
 
+    private static final double BUFFER_DISTANCE = 0.0003; // 0.0001 decimal degrees was too small 0.0003 works just and just
+    private static final int MITRE_LIMIT = -10;
+    // Tested with geometries from https://tie.digitraffic.fi/api/traffic-message/v1/messages/GUID50439056?includeAreaGeometry=true&latest=true
+
+    /**
+     * Makes union of given geometries. Should return always a valid geometry.
+     * @param geometryCollection geometries to merge
+     * @return Valid union geometry.
+     */
     public static Geometry union(final List<Geometry> geometryCollection) {
-        return JTS_GEOMETRY_FACTORY.buildGeometry(geometryCollection).union();
+        // Add buffer around geometry edges to fill small gaps between joined geometries and form united geometry.
+        // And then remove the added extra at the end.
+        // This results in a loss of some meters in accuracy around corners and close or small shapes but that is acceptable.
+        final Geometry geometry = JTS_GEOMETRY_FACTORY
+                .buildGeometry(geometryCollection)
+                .buffer(BUFFER_DISTANCE, MITRE_LIMIT)
+                .union()
+                .buffer(-1 * BUFFER_DISTANCE, MITRE_LIMIT);
+
+//        This makes quite nice result, but has some bugs in result ie. small extra geometries
+//        final Geometry geometry =
+//                GeometrySnapper.snapToSelf(
+//                        JTS_GEOMETRY_FACTORY.buildGeometry(geometryCollection).union(),
+//                        0.001,
+//                        false);
+
+        if (!geometry.isValid()) {
+            return GeometryFixer.fix(geometry);
+        }
+        return geometry;
+
+        // This makes also holes in result
+        //        Geometry union = JTS_GEOMETRY_FACTORY.buildGeometry(geometryCollection).union();
+        //        if (!union.isValid()) {
+        //            union = GeometryFixer.fix(union);
+        //        }
+        //        return CoverageUnion.union(union);
     }
 
     public static Geometry convertGeoJsonGeometryToGeometry(final String geometryJson) throws ParseException {
@@ -239,7 +235,7 @@ public class PostgisGeometryUtils {
             final Point end = ls.getEndPoint();
 
             if (Math.abs(start.getX()-end.getX()) <= COORDINATE_SCALE_6_DIGITS_POSTGIS &&
-                Math.abs(start.getY()-end.getY()) <= COORDINATE_SCALE_6_DIGITS_POSTGIS) {
+                    Math.abs(start.getY()-end.getY()) <= COORDINATE_SCALE_6_DIGITS_POSTGIS) {
                 return ls.getStartPoint();
             }
         }
@@ -250,15 +246,11 @@ public class PostgisGeometryUtils {
         return geoJsonWriter.get().write(geometry);
     }
 
-    public static Geometry convertWKBToGeometry(final byte[] wkbBytes) throws ParseException {
-        return wkbGeometryReader.get().read(wkbBytes);
-    }
-
     public static String convertBoundsCoordinatesToWktPolygon(final Double xMin, final Double xMax, final Double yMin, final Double yMax) {
         if( xMin != null &&
-            xMax != null &&
-            yMin != null &&
-            yMax != null) {
+                xMax != null &&
+                yMin != null &&
+                yMax != null) {
 
             final String[] names  = new String[] { "xMin", "xMax", "yMin", "yMax" };
             final String[] values = new String[] { xMin.toString(), xMax.toString(), yMin.toString(), yMax.toString() };
@@ -270,12 +262,7 @@ public class PostgisGeometryUtils {
     }
 
     public static Geometry convertWktToGeomety(final String wktGeometry) throws ParseException {
-            return wktGeometryReader.get().read(wktGeometry);
-    }
-
-    public static fi.livi.digitraffic.tie.metadata.geojson.Geometry<?> convertWktToGeoJSON(final String geometryWkt) throws ParseException {
-        final Geometry geometry = convertWktToGeomety(geometryWkt);
-        return convertGeometryToGeoJSONGeometry(geometry);
+        return wktGeometryReader.get().read(wktGeometry);
     }
 
     public static boolean isPoint(final Geometry geometry) {
@@ -353,10 +340,10 @@ public class PostgisGeometryUtils {
             return geometry;
         }
         Arrays.stream(allowedResultTypes)
-            .filter(t -> t.typename.equals(geometry.getGeometryType()))
-            .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("Geometry " + geometry.getGeometryType() + " type not in given types " +
-                               Arrays.stream(allowedResultTypes).collect(Collectors.toSet())) );
+                .filter(t -> t.typename.equals(geometry.getGeometryType()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Geometry " + geometry.getGeometryType() + " type not in given types " +
+                        Arrays.stream(allowedResultTypes).collect(Collectors.toSet())) );
         return geometry;
     }
 
