@@ -68,16 +68,6 @@ jobs:
         run: |
           GIT_SHA=$(git rev-parse --short HEAD)
           echo "sha_short=$GIT_SHA" >> $GITHUB_OUTPUT
-      - name: Checkout dependencies
-        uses: actions/checkout@v4
-        with:
-          repository: tmfg/digitraffic-build-dependencies
-          ssh-key: ${{ secrets.DEPENDENCY_SSH_KEY }}
-          path: digitraffic-build-dependencies
-          sparse-checkout: |
-            jms
-      - name: Setup dependencies
-        run: cp -R digitraffic-build-dependencies/jms/ ~/.m2/
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -174,7 +164,7 @@ jobs:
         if: matrix.app == 'db'
         run: |
           cd digitraffic-ci/aws/db
-          
+
           docker build --no-cache \
               -t ${{ secrets.ECR_URL }}/dt-road-${{ matrix.app }}-repository:${{ needs.build.outputs.git_sha }} \
               --pull=true --file=Dockerfile .
