@@ -49,7 +49,7 @@ public class WazeReverseGeocodingApi {
             logger.error("method=fetch Unable to fetch data from waze reverse geocode api", e);
         } finally {
             logger.info(
-                    "method=fetch for latitude {} and longitude {} tookMs={}",
+                    "method=fetch reverse geocoding for lat: {} and lon: {} tookMs={}",
                     latitude, longitude,
                     start.getTime());
         }
