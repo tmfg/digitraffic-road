@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +29,6 @@ import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorValueDtoRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.dto.v1.TmsRoadStationsSensorsMetadata;
-import fi.livi.digitraffic.tie.dto.v1.WeatherRoadStationsSensorsMetadata;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
@@ -103,26 +100,6 @@ public class RoadStationSensorService {
     public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(final RoadStationType roadStationType) {
         final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
         return all.stream().collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
-    }
-
-    @Transactional(readOnly = true)
-    public WeatherRoadStationsSensorsMetadata findWeatherRoadStationsSensorsMetadata(final boolean onlyUpdateInfo) {
-        return new WeatherRoadStationsSensorsMetadata(
-            onlyUpdateInfo ?
-                Collections.emptyList() :
-                RoadStationSensorDtoConverter.convertWeatherSensors(findAllPublishableRoadStationSensors(RoadStationType.WEATHER_STATION)),
-            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.WEATHER_STATION)),
-            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.WEATHER_STATION)));
-    }
-
-    @Transactional(readOnly = true)
-    public TmsRoadStationsSensorsMetadata findTmsRoadStationsSensorsMetadata(final boolean onlyUpdateInfo) {
-        return new TmsRoadStationsSensorsMetadata(
-            onlyUpdateInfo ?
-                Collections.emptyList() :
-                RoadStationSensorDtoConverter.convertTmsSensors(findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION)),
-            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataTypeForRoadStationType(RoadStationType.TMS_STATION)),
-            dataStatusService.findDataUpdatedTime(DataType.getSensorMetadataCheckTypeForRoadStationType(RoadStationType.TMS_STATION)));
     }
 
     @Transactional(readOnly = true)

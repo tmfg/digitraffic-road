@@ -2,10 +2,6 @@ package fi.livi.digitraffic.tie.service.jms.marshaller;
 
 import java.util.List;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.apache.activemq.artemis.jms.client.ActiveMQMessage;
 import org.slf4j.Logger;
@@ -17,16 +13,6 @@ public abstract class BytesJMSMessageMarshaller<K> implements JMSMessageMarshall
     final Logger log = LoggerFactory.getLogger(BytesJMSMessageMarshaller.class);
 
     abstract List<K> getObjectFromBytes(final byte[] bytes);
-
-    public List<K> unmarshalMessage(final Message message) throws JMSException {
-        final BytesMessage bMessage = getBytesMessage(message);
-        final int bodyLength = (int) bMessage.getBodyLength();
-        final byte[] bytes = new byte[bodyLength];
-
-        bMessage.readBytes(bytes);
-
-        return getObjectFromBytes(bytes);
-    }
 
     public List<K> unmarshalMessage(final ActiveMQMessage message) {
         try {
@@ -43,12 +29,5 @@ public abstract class BytesJMSMessageMarshaller<K> implements JMSMessageMarshall
             throw new IllegalArgumentException("Unsupported message type: " + message.getClass());
         }
         return (ActiveMQBytesMessage) message;
-    }
-
-    private BytesMessage getBytesMessage(final Message message) {
-        if (!(message instanceof BytesMessage)) {
-            throw new IllegalArgumentException("Unsupported message type: " + message.getClass());
-        }
-        return (BytesMessage) message;
     }
 }

@@ -18,8 +18,7 @@ public class TmsRoadStationSensorDto extends RoadStationSensorDto {
     @Schema(description = "Lane of the sensor, 1st, 2nd, 3rd, etc.")
     private final Integer lane;
 
-    @Schema(description = "Preset direction " +
-        "(0 = Unknown direction. " +
+    @Schema(description = "Measurement direction " +
         "1 = According to the road register address increasing direction. I.e. on the road 4 to Rovaniemi." +
         "2 = According to the road register address decreasing direction. I.e. on the road 4 to Helsinki.")
     private final Integer direction;

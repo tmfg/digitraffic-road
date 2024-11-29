@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +41,12 @@ public class WazeFeedService {
 
     @Transactional(readOnly = true)
     public WazeFeedAnnouncementDto findActive() {
+        final StopWatch time = StopWatch.createStarted();
         final List<Datex2> activeIncidents = datex2Repository.findAllActiveBySituationTypeWithJson(1,
         SituationType.TRAFFIC_ANNOUNCEMENT.name(), SituationType.ROAD_WORK.name());
 
-        logger.info("method=findActive active incidents count=" + activeIncidents.size());
-
+        time.stop();
+        final StopWatch filterTime = StopWatch.createStarted();
         final List<WazeFeedIncidentDto> incidents = activeIncidents.stream()
             .map(this.wazeDatex2Converter::convertToWazeDatex2FeatureDto)
             .flatMap(Optional::stream)
@@ -53,7 +55,9 @@ public class WazeFeedService {
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
 
-        logger.info("method=findActive valid incidents count=" + incidents.size());
+        filterTime.stop();
+        logger.info("method=findActive valid incidents activeCount={} valid count={}, fetchTookMs={} filterTookMS={} tookMs={}",
+                    activeIncidents.size(), incidents.size(), time.getDuration().toMillis(), filterTime.getDuration().toMillis(), time.getDuration().toMillis() + filterTime.getDuration().toMillis());
 
         return new WazeFeedAnnouncementDto(incidents);
     }

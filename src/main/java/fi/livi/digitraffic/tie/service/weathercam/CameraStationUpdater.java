@@ -85,13 +85,10 @@ public class CameraStationUpdater {
         final long obsoletePresets = cameraPresetService.obsoleteCameraPresetsExcludingCameraLotjuIds(camerasLotjuIds);
         final long obsoletedRoadStations = cameraPresetService.obsoleteCameraRoadStationsWithoutPublishablePresets();
 
-        log.info("obsoletedCameraPresetsCount={} CameraPresets that are not active", obsoletePresets);
-        log.info("obsoletedRoadStationsCount={} Camera RoadStations without active presets", obsoletedRoadStations);
-        log.info("updatedCameraPresetsCount={} CameraPresets", updated.get());
-        log.info("insertedCameraPresetsCount={} CameraPresets", inserted.get());
+        log.info("method=updateCameras obsoletedCameraPresetsCount={} obsoletedRoadStationsCount={} updatedCameraPresetsCount={} insertedCameraPresetsCount={}", obsoletePresets, obsoletedRoadStations, updated.get(), inserted.get());
         final boolean updatedCameras = updated.get() > 0 || inserted.get() > 0;
-        log.info("method=updateCameras operation=fetch updatedBoolean={} tookMs={} totalTimeMs={}", updatedCameras, timeFetch.getTime() + incrementalFetchTookMs.get(), timeAll.getTime());
-        log.info("method=updateCameras operation=update updatedBoolean={} tookMs={} totalTimeMs={}", updatedCameras, timeUpdate.getTime() + incrementalUpdateTookMs.get(), timeAll.getTime());
+        log.info("method=updateCameras operation=fetch updatedBoolean={} tookMs={} totalTimeMs={}", updatedCameras, timeFetch.getDuration().toMillis() + incrementalFetchTookMs.get(), timeAll.getDuration().toMillis());
+        log.info("method=updateCameras operation=update updatedBoolean={} tookMs={} totalTimeMs={}", updatedCameras, timeUpdate.getDuration().toMillis() + incrementalUpdateTookMs.get(), timeAll.getDuration().toMillis());
 
         if (!errors.isEmpty()) {
             throw new RuntimeException(

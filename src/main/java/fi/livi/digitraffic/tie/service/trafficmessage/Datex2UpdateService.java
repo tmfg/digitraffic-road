@@ -26,7 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
-import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
+import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Comment;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
@@ -140,7 +140,7 @@ public class Datex2UpdateService {
 
     private boolean isNewOrUpdatedSituation(final D2LogicalModel d2, final SituationType situationType) {
         final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
-        final Situation situation = sp.getSituations().get(0);
+        final Situation situation = sp.getSituations().getFirst();
         final Instant versionTime = findSituationLatestVersionTime(situation.getId(), situationType);
         return Datex2Helper.isNewOrUpdatedSituation(versionTime, situation);
     }
@@ -229,7 +229,7 @@ public class Datex2UpdateService {
             datex2Repository.save(datex2);
             dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_DATA);
 
-            final String situationId = Datex2Helper.getSituationPublication(d2).getSituations().get(0).getId();
+            final String situationId = Datex2Helper.getSituationPublication(d2).getSituations().getFirst().getId();
             log.info("Update Datex2 situationId={}messageType situationType={} trafficAnnouncementType: {} with importTime={}",
                 situationId, message.situationType, message.trafficAnnouncementType, datex2.getImportTime());
             return true;
@@ -281,7 +281,7 @@ public class Datex2UpdateService {
             // Only first comment seems to be valid
             final List<Comment> pc = record.getGeneralPublicComments();
             if (pc != null && !pc.isEmpty()) {
-                final Comment comment = pc.get(0);
+                final Comment comment = pc.getFirst();
                 final MultilingualString.Values values = comment.getComment().getValues();
                 final List<SituationRecordCommentI18n> comments = joinComments(values.getValues());
                 d2SituationRecord.setPublicComments(comments);
@@ -322,11 +322,7 @@ public class Datex2UpdateService {
         final Map<String, SituationRecordCommentI18n> langToCommentMap = new HashMap<>();
         for (final MultilingualStringValue msv : value) {
             final String lang = msv.getLang();
-            SituationRecordCommentI18n i18n = langToCommentMap.get(lang);
-            if (i18n == null) {
-                i18n = new SituationRecordCommentI18n(lang);
-                langToCommentMap.put(lang, i18n);
-            }
+            final SituationRecordCommentI18n i18n = langToCommentMap.computeIfAbsent(lang, SituationRecordCommentI18n::new);
             i18n.setValue(StringUtils.join(i18n.getValue(), msv.getValue()));
         }
 

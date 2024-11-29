@@ -103,12 +103,12 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode =
             createRegionsInDescOrderMappedByLocationCode(0, 3, 7, 14, 408, 5898);
 
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(0).get(0));
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(3).get(0));
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(7).get(0));
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(14).get(0));
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(408).get(0));
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(5898).get(0));
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(0).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(3).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(7).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(14).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(408).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(5898).getFirst());
 
         final RegionGeometryFeatureCollection featureCollectionWithGeometry =
             createRegionGeometryFeatureCollection(RegionGeometryDataServiceV1.convertToDtoList(regionsInDescOrderMappedByLocationCode, true));
@@ -232,8 +232,8 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         final String json = getResponse(getRegionGeometryUrl(true, 3), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(1, result.getFeatures().size());
-        assertNotNull(result.getFeatures().get(0).getGeometry());
-        assertEquals(3, result.getFeatures().get(0).getProperties().locationCode);
+        assertNotNull(result.getFeatures().getFirst().getGeometry());
+        assertEquals(3, result.getFeatures().getFirst().getProperties().locationCode);
     }
 
     @Test
@@ -317,28 +317,28 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         final D2LogicalModel d2 = parseD2LogicalModel(d2xml);
 
         final TrafficAnnouncementFeatureCollection fc = parseSimpleJson(simpleJsonFeatureCollection);
-        final TrafficAnnouncementFeature feature = fc.getFeatures().get(0);
+        final TrafficAnnouncementFeature feature = fc.getFeatures().getFirst();
 
         final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
-        final Situation situation = sp.getSituations().get(0);
+        final Situation situation = sp.getSituations().getFirst();
         final TrafficAnnouncementProperties jsonProperties = feature.getProperties();
 
         assertEquals(situationId, situation.getId());
         assertEquals(situationId, jsonProperties.situationId);
 
-        final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.get(0).timeAndDuration;
+        final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.getFirst().timeAndDuration;
 
-        assertEquals(start.toInstant(), situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallStartTime());
+        assertEquals(start.toInstant(), situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification().getOverallStartTime());
         assertEquals(start.toInstant(), jsonTimeAndDuration.startTime.toInstant());
 
         final Instant versionTime = getVersionTime(start, imsJsonVersion).toInstant();
-        assertEquals(versionTime, situation.getSituationRecords().get(0).getSituationRecordVersionTime());
+        assertEquals(versionTime, situation.getSituationRecords().getFirst().getSituationRecordVersionTime());
         assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
 
-        assertEquals(end.toInstant(), situation.getSituationRecords().get(0).getValidity().getValidityTimeSpecification().getOverallEndTime());
+        assertEquals(end.toInstant(), situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification().getOverallEndTime());
         assertEquals(end.toInstant(), jsonTimeAndDuration.endTime.toInstant());
 
-        final String commentXml = situation.getSituationRecords().get(0).getGeneralPublicComments().get(0).getComment().getValues().getValues().stream()
+        final String commentXml = situation.getSituationRecords().getFirst().getGeneralPublicComments().getFirst().getComment().getValues().getValues().stream()
             .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
 
         assertEquals(situationType.name(), jsonProperties.getSituationType().name());
@@ -346,25 +346,25 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
             assertTrue(Sets.newHashSet(TrafficAnnouncementType.values()).contains(jsonProperties.getTrafficAnnouncementType()));
         }
 
-        final TrafficAnnouncement announcement = jsonProperties.announcements.get(0);
+        final TrafficAnnouncement announcement = jsonProperties.announcements.getFirst();
         assertTrue(commentXml.contains(announcement.title.trim()));
 
         if (imsJsonVersion.version >= ImsJsonVersion.V0_2_5.version && situationType.equals(SituationType.ROAD_WORK)) {
             final RoadWorkPhase rwp =
-                feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
-            assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.get(0).weekday);
-            assertEquals(LocalTime.parse("09:30:00.000"), rwp.workingHours.get(0).startTime);
-            assertEquals(LocalTime.parse("15:00:00.000"), rwp.workingHours.get(0).endTime);
+                feature.getProperties().announcements.getFirst().roadWorkPhases.getFirst();
+            assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.getFirst().weekday);
+            assertEquals(LocalTime.parse("09:30:00.000"), rwp.workingHours.getFirst().startTime);
+            assertEquals(LocalTime.parse("15:00:00.000"), rwp.workingHours.getFirst().endTime);
         }
         if (imsJsonVersion.version >= ImsJsonVersion.V0_2_17.version && situationType.equals(SituationType.ROAD_WORK)) {
             final RoadWorkPhase rwp =
-                feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
-            assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
-            assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
-            assertEquals(LocalTime.parse("10:30:00.000"), rwp.slowTrafficTimes.get(0).startTime);
-            assertEquals(LocalTime.parse("16:00:00.000"), rwp.slowTrafficTimes.get(0).endTime);
-            assertEquals(LocalTime.parse("11:30:00.000"), rwp.queuingTrafficTimes.get(0).startTime);
-            assertEquals(LocalTime.parse("17:00:00.000"), rwp.queuingTrafficTimes.get(0).endTime);
+                feature.getProperties().announcements.getFirst().roadWorkPhases.getFirst();
+            assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.getFirst().weekday);
+            assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.getFirst().weekday);
+            assertEquals(LocalTime.parse("10:30:00.000"), rwp.slowTrafficTimes.getFirst().startTime);
+            assertEquals(LocalTime.parse("16:00:00.000"), rwp.slowTrafficTimes.getFirst().endTime);
+            assertEquals(LocalTime.parse("11:30:00.000"), rwp.queuingTrafficTimes.getFirst().startTime);
+            assertEquals(LocalTime.parse("17:00:00.000"), rwp.queuingTrafficTimes.getFirst().endTime);
         }
     }
 

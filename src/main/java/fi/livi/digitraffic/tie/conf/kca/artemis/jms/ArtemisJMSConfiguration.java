@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpointRegistry;
+import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import fi.livi.digitraffic.common.annotation.NoJobLogging;
@@ -79,10 +80,14 @@ public class ArtemisJMSConfiguration {
         configurer.configure(factory, connectionFactory);
         factory.setPubSubDomain(true); // Topic
         factory.setAutoStartup(false); // Startup only when instance has a lock
-        log.info("method=jmsListenerContainerFactory created type={} instanceId={}", "Topic",
-                lock.getInstanceId());
+
+        log.info("method=jmsListenerContainerFactory created type={} instanceId={}, connection info: {}",
+                "Topic", lock.getInstanceId(), getConnectionFactoryInfo(connectionFactory));
+
         return factory;
     }
+
+
 
     /**
      * DefaultJmsListenerContainerFactory for queues
@@ -101,8 +106,23 @@ public class ArtemisJMSConfiguration {
         configurer.configure(factory, connectionFactory);
         factory.setPubSubDomain(false); // Queue
         factory.setAutoStartup(false); // Startup only when instance has a lock
-        log.info("method=jmsListenerContainerFactory created type={} instanceId={}", "Queue",
-                lock.getInstanceId());
+
+        log.info("method=jmsListenerContainerFactory created type={} instanceId={}, connection info: {}",
+                "Queue", lock.getInstanceId(), getConnectionFactoryInfo(connectionFactory));
+
         return factory;
+    }
+
+    private String getConnectionFactoryInfo(final ConnectionFactory connectionFactory) {
+        try {
+            final ConnectionFactory cf = ((CachingConnectionFactory) connectionFactory).getTargetConnectionFactory();
+            if (cf != null) {
+                // Replace key=value -pairs with key = value to not include them in search indexing
+                return cf.toString().replace("=", " = ");
+            }
+        } catch (final Exception e) {
+            log.error("method=getConnectionFactoryInfo Could not get connection factory info", e);
+        }
+        return "Could not get connection factory info";
     }
 }

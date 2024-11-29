@@ -13,8 +13,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.common.annotation.ConditionalOnPropertyNotBlank;
 import fi.livi.digitraffic.common.service.locking.LockingService;
-import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.ArtemisJMSConfiguration;
+import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
 import jakarta.jms.JMSException;

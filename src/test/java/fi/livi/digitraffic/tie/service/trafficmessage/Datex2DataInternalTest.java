@@ -19,9 +19,9 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.conf.jms.ExternalIMSMessage;
 import fi.livi.digitraffic.common.util.TimeUtil;
+import fi.livi.digitraffic.tie.AbstractServiceTest;
+import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;

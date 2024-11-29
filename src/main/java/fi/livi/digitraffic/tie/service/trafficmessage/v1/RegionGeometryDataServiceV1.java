@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.locationtech.jts.io.geojson.GeoJsonWriter;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +26,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
-import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.dao.trafficmessage.RegionGeometryRepository;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProperties;
-import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -48,20 +43,11 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 public class RegionGeometryDataServiceV1 {
     private static final Logger log = LoggerFactory.getLogger(RegionGeometryDataServiceV1.class);
 
-    private final static GeoJsonWriter geoJsonWriter;
-    private final static ObjectReader geometryReader;
-
     private final RegionGeometryRepository regionGeometryRepository;
     private final DataStatusService dataStatusService;
 
+    private final CountDownLatch dataPopulationLatch = new CountDownLatch(1); // Just wait for fist data population
     private RegionStatus regionStatus = new RegionStatus();
-
-    static {
-        geoJsonWriter = new GeoJsonWriter(GeometryConstants.COORDINATE_SCALE_6_DIGITS);
-        // Don't add crs to geometries as it's always EPSG:4326
-        geoJsonWriter.setEncodeCRS(false);
-        geometryReader = new ObjectMapper().readerFor(Geometry.class);
-    }
 
     @Autowired
     public RegionGeometryDataServiceV1(final RegionGeometryRepository regionGeometryRepository,
@@ -108,6 +94,7 @@ public class RegionGeometryDataServiceV1 {
         } catch (final Exception e) {
             log.error("method=refreshAreaLocationRegionCache failed", e);
         }
+        dataPopulationLatch.countDown();
         log.info("method=refreshAreaLocationRegionCache done tookMs={}", start.getTime());
     }
 
@@ -118,6 +105,7 @@ public class RegionGeometryDataServiceV1 {
 
     @NotTransactionalServiceMethod
     public RegionGeometryFeatureCollection findAreaLocationRegions(final boolean onlyUpdateInfo, final boolean includeGeometry, final Instant effectiveDate, final Integer id) {
+        awaitDataPopulation();
         final List<RegionGeometryFeature> geometries =
             onlyUpdateInfo ? Collections.emptyList() : filterRegionsAndConvertToDto(effectiveDate, includeGeometry,
                                                                                     (id != null ? new Integer[] { id } : new Integer[0]));
@@ -129,6 +117,7 @@ public class RegionGeometryDataServiceV1 {
 
     @NotTransactionalServiceMethod
     public RegionGeometry getAreaLocationRegionEffectiveOn(final int locationCode, final Instant theMoment) {
+        awaitDataPopulation();
         final List<RegionGeometry> regionsInDescOrder = regionStatus.getRegionVersionsInDescOrder(locationCode);
         if (CollectionUtils.isEmpty(regionsInDescOrder)) {
             log.error("method=getAreaLocationRegionEffectiveOn No location with locationCode {} found", locationCode);
@@ -143,6 +132,7 @@ public class RegionGeometryDataServiceV1 {
 
     @NotTransactionalServiceMethod
     public Geometry<?> getGeoJsonGeometryUnion(final Instant effectiveDate, final Integer...ids) {
+        awaitDataPopulation();
         final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
         try {
             for (final int id : ids) {
@@ -153,20 +143,23 @@ public class RegionGeometryDataServiceV1 {
                         geometryCollection.add(geometry);
                     } else {
                         // Try to make geometry valid by adding 0 buffer around it
-                        geometryCollection.add(geometry.buffer(0));
-                        log.warn("method=getGeoJsonGeometryUnion regionGeometry is not valid id: {} locationCode: {} name: {} effectiveDate: {} valid after fix: {}",
-                                region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate(), geometry.isValid());
+                        final String type = geometry.getGeometryType();
+                        geometryCollection.add(GeometryFixer.fix(geometry));
+                        log.warn("method=getGeoJsonGeometryUnion regionGeometry is not valid id: {} locationCode: {} name: {} " +
+                                 "effectiveDate: {} type: {} type after: {} valid after fix: {}",
+                                region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate(), type, geometryCollection.getLast().getGeometryType(),
+                                geometry.isValid());
                     }
                 }
             }
             if (geometryCollection.isEmpty()) {
                 if (ObjectUtils.isNotEmpty(ids)) {
-                    log.error("method=getGeoJsonGeometryUnion No area geometries found with id's {}", (Object) ids);
+                    log.error("method=getGeoJsonGeometryUnion No area geometries found with ids: {}", (Object) ids);
                 }
                 return null;
             }
             final org.locationtech.jts.geom.Geometry union = PostgisGeometryUtils.union(geometryCollection);
-            return convertToGeojson(union);
+            return PostgisGeometryUtils.convertGeometryToGeoJSONGeometry(union);
         } catch (final Exception e) {
             final String geometryTypes = geometryCollection.stream().map(org.locationtech.jts.geom.Geometry::getGeometryType)
                     .collect(Collectors.joining(", "));
@@ -184,18 +177,8 @@ public class RegionGeometryDataServiceV1 {
 
     private static RegionGeometryFeature convertToDto(final RegionGeometry geometry, final boolean includeGeometry) {
         return new RegionGeometryFeature(
-            includeGeometry ? convertToGeojson(geometry.getGeometry()) : null,
+            includeGeometry ? PostgisGeometryUtils.convertGeometryToGeoJSONGeometry(geometry.getGeometry()) : null,
             new RegionGeometryProperties(geometry.getName(), geometry.getLocationCode(), AreaType.valueOf(geometry.getType().name()), geometry.getEffectiveDate()));
-    }
-
-    private static Geometry<?> convertToGeojson(final org.locationtech.jts.geom.Geometry geometry) {
-        final String geoJson = geoJsonWriter.write(geometry);
-        try {
-            return geometryReader.readValue(geoJson);
-        } catch (final JsonProcessingException e) {
-            log.error(StringUtil.format("method=convertToGeojson Failed to convert {} to GeoJSON", geoJson), e);
-            throw new RuntimeException(e);
-        }
     }
 
     private void removeNeverValidValues(final Map<Integer, List<RegionGeometry>> locationCodeToRegion) {
@@ -266,6 +249,15 @@ public class RegionGeometryDataServiceV1 {
             }
         }
         return regions;
+    }
+
+    @NotTransactionalServiceMethod
+    public void awaitDataPopulation() {
+        try {
+            dataPopulationLatch.await();
+        } catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static class RegionStatus {
