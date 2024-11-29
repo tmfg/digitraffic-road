@@ -320,14 +320,14 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <version>6.6.2.Final</version>
+            <version>6.5.0.Final</version>
         </dependency>
 
         <!-- json column type -->
         <dependency>
             <groupId>io.hypersistence</groupId>
             <artifactId>hypersistence-utils-hibernate-63</artifactId>
-            <version>3.9.0</version>
+            <version>3.7.4</version>
         </dependency>
 
         <!-- Library to transform GeoJSON <-> jts Geometry.
