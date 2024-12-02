@@ -51,8 +51,8 @@ Or build the JAR file with:
 ### Running tests
 
 
-Copy the template application-default.properties.template to application-default.properties.
-Running may also require to specify the active Spring profile by setting _-Dspring.profiles.active=default_.
+Copy the template `application-default.properties.template` to `application-localhost.properties`.
+Running may also require to specify the active Spring profile by setting _-Dspring.profiles.active=localhost_.
 
 ### Generate SchemaSpy schemas from the db with Maven
 
