@@ -26,7 +26,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.xml.transform.StringSource;
 
@@ -55,7 +54,9 @@ import fi.livi.digitraffic.tie.model.tms.TmsStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Test for {@link TmsControllerV1}
@@ -76,12 +77,6 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     @Autowired
     private TmsTestHelper tmsTestHelper;
-
-    @Autowired
-    private Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
-
-    @Autowired
-    private Jaxb2Marshaller datex2v3_5Jaxb2Marshaller;
 
     private TmsStation tmsStation;
     private long metadataLastModifiedMillis;
@@ -362,7 +357,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.TMS_STATIONS_DATEX2_PATH + ".xml"))
                         .andReturn().getResponse().getContentAsString();
 
-        final MeasurementSiteTablePublication publication = (MeasurementSiteTablePublication) datex2v3_5Jaxb2Marshaller.unmarshal(new StringSource(StringUtils.trim(xmlResponse)));
+        final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
 
         assertEquals(metadataLastModified, publication.getPublicationTime());
         assertEquals("FI", publication.getPublicationCreator().getCountry());
@@ -379,7 +374,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.TMS_DATA_DATEX2_PATH + ".xml"))
                         .andReturn().getResponse().getContentAsString();
 
-        final MeasuredDataPublication publication = (MeasuredDataPublication) datex2v3_5Jaxb2Marshaller.unmarshal(new StringSource(StringUtils.trim(xmlResponse)));
+        final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
 
         assertEquals(metadataLastModified, publication.getPublicationTime());
         assertEquals("FI", publication.getPublicationCreator().getCountry());
@@ -387,5 +382,18 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         assertEquals("fi", publication.getLang());
         assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
         assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+    }
+
+    private <T> T unmarshalXml(final String xml, final Class<T> clazz) {
+        try {
+
+            final JAXBContext jc = JAXBContext.newInstance(clazz);
+            final Unmarshaller unmarshaller = jc.createUnmarshaller();
+            final JAXBElement<T> result =
+                    unmarshaller.unmarshal(new StringSource(StringUtils.trim(xml)), clazz);
+            return result.getValue();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

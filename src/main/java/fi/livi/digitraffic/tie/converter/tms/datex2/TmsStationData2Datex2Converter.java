@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.converter.tms.datex2;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_TABLE_IDENTIFIER;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.filterAllowedSensorValuesAndMapWithNaturalId;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.filterSortAndFillInMissingSensors;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.getHeaderInformation;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.getInternationalIdentifier;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.getMultiLangualString;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.resolvePeriodSecondsFromSensorName;
@@ -68,24 +69,25 @@ public class TmsStationData2Datex2Converter {
                         .withPublicationTime(updated)
                         .withPublicationCreator(getInternationalIdentifier())
                         .withLang("fi")
-                        .withHeaderInformation(TmsStation2Datex2ConverterCommon.getHeaderInformation(informationStatus))
-                        .withMeasurementSiteTableReferences(new _MeasurementSiteTableVersionedReference()
-                                .withId(MEASUREMENT_SITE_TABLE_IDENTIFIER)
+                        .withHeaderInformation(getHeaderInformation(informationStatus))
+                        .withMeasurementSiteTableReferences(
+                                new _MeasurementSiteTableVersionedReference()
+                                        .withId(MEASUREMENT_SITE_TABLE_IDENTIFIER)
                                 // Optional, no need to ref specific version of TMS station table
                                 //.withVersion(metadata update time))
                         );
 
-        stations.forEach((station, sensorValues) ->
-                publication.getSiteMeasurements().add(
-                        getSiteMeasurements(
-                                station, sensorValues
-                        )
-                )
-        );
+        publication.withSiteMeasurements(
+                stations.entrySet().stream().map((station) ->
+                        getSiteMeasurements(station.getKey(), station.getValue(), updated)).toList());
+
         return publication;
     }
 
-    private static fi.livi.digitraffic.tie.external.datex2.v3_5.SiteMeasurements getSiteMeasurements(final TmsStation station, final List<SensorValueDto> sensorValues) {
+    private static fi.livi.digitraffic.tie.external.datex2.v3_5.SiteMeasurements getSiteMeasurements(
+            final TmsStation station,
+            final List<SensorValueDto> sensorValues,
+            final Instant updated) {
 
         final fi.livi.digitraffic.tie.external.datex2.v3_5.SiteMeasurements measurementSite =
                 new SiteMeasurements()
@@ -99,19 +101,15 @@ public class TmsStationData2Datex2Converter {
 
         final List<_SiteMeasurementsIndexPhysicalQuantity>
                 indexedSiteMeasurementsPhysicalQuantities =
-                getSiteMeasurementsPhysicalQuantities(requiredSensors, sensorValues);
+                getSiteMeasurementsPhysicalQuantities(requiredSensors, sensorValues, updated);
 
         measurementSite.withPhysicalQuantities(indexedSiteMeasurementsPhysicalQuantities);
 
         final Instant minMeasuredTime = measurementSite.getPhysicalQuantities().stream()
                 .map(a -> {
-                    final MeasurementOrCalculationTime time =
-                            ((SinglePhysicalQuantity) a.getPhysicalQuantity()).getBasicData()
-                                    .getMeasurementOrCalculationTime();
-                    if (time != null) {
-                        return time.getTimeValue();
-                    }
-                    return null;
+                    final MeasurementOrCalculationTime time = ((SinglePhysicalQuantity)
+                            a.getPhysicalQuantity()).getBasicData().getMeasurementOrCalculationTime();
+                    return time != null ? time.getTimeValue() : null;
                 }).filter(Objects::nonNull)
                 .max(Instant::compareTo)
                 .orElse(null);
@@ -124,29 +122,35 @@ public class TmsStationData2Datex2Converter {
     }
 
     private static List<_SiteMeasurementsIndexPhysicalQuantity> getSiteMeasurementsPhysicalQuantities(
-            final List<RoadStationSensor> requiredSensors, final List<SensorValueDto> values) {
+            final List<RoadStationSensor> requiredSensors,
+            final List<SensorValueDto> values,
+            final Instant updated) {
         final Map<Long, SensorValueDto> valuesMap = filterAllowedSensorValuesAndMapWithNaturalId(values);
 
         final List<_SiteMeasurementsIndexPhysicalQuantity> measurements = new ArrayList<>();
         for (int i = 0; i < requiredSensors.size(); i++) {
             final RoadStationSensor sensor = requiredSensors.get(i);
             final SensorValueDto value = valuesMap.get(sensor.getNaturalId());
-            final PhysicalQuantity quantity = getSinglePhysicalQuantity(sensor, value);
+            final PhysicalQuantity quantity = getSinglePhysicalQuantity(sensor, value, updated);
             measurements.add(new _SiteMeasurementsIndexPhysicalQuantity(quantity, i+1));
         }
         return measurements;
     }
 
     private static PhysicalQuantity getSinglePhysicalQuantity(final RoadStationSensor sensor,
-                                                              final SensorValueDto sensorValue) {
+                                                              final SensorValueDto sensorValue,
+                                                              final Instant updated) {
         final SinglePhysicalQuantity quantity =
                 new SinglePhysicalQuantity()
                         .withBasicData(getBasicData(sensor, sensorValue));
         if (quantity.getBasicData() == null || sensorValue == null) {
             quantity.withPhysicalQuantityFaults(
-                    new PhysicalQuantityFault().withPhysicalQuantityFaultType(
-                            new _PhysicalQuantityFaultEnum().withValue(
-                                    PhysicalQuantityFaultEnum.NO_DATA_VALUES_AVAILABLE)));
+                    new PhysicalQuantityFault()
+                            .withPhysicalQuantityFaultType(
+                                new _PhysicalQuantityFaultEnum()
+                                        .withValue(
+                                                PhysicalQuantityFaultEnum.NO_DATA_VALUES_AVAILABLE))
+                            .withFaultLastUpdateTime(updated));
         }
         return quantity;
     }
@@ -193,24 +197,23 @@ public class TmsStationData2Datex2Converter {
             //  Fixed period
             if (sensorValue.getTimeWindowStart() != null && sensorValue.getTimeWindowEnd() != null) {
                 time.getPeriod()
-                        .withStartOfPeriod(sensorValue.getTimeWindowEnd().toInstant())
+                        .withStartOfPeriod(sensorValue.getTimeWindowStart().toInstant())
                         .withEndOfPeriod(sensorValue.getTimeWindowEnd().toInstant());
             } else { // running period
                 try {
-                    final Integer periodTimeS = resolvePeriodSecondsFromSensorName(sensorValue.getSensorNameFi());
                     final Instant end = sensorValue.getMeasuredTime().toInstant();
-                    final Instant start = end.minus(periodTimeS, ChronoUnit.SECONDS);
-                    time.getPeriod()
-                            .withStartOfPeriod(start)
-                            .withEndOfPeriod(end);
+                    final Integer periodTimeS = resolvePeriodSecondsFromSensorName(sensorValue.getSensorNameFi());
+                    if (periodTimeS != null) {
+                        final Instant start = end.minus(periodTimeS, ChronoUnit.SECONDS);
+                        time.getPeriod().withStartOfPeriod(start);
+                    }
+                    time.getPeriod().withEndOfPeriod(end);
                 } catch (final Exception e) {
                     log.error("method=withMeasurementOrCalculationTime Failed to calculate time period for sensor {}",
                             sensorValue.getSensorNameFi(), e);
                 }
             }
-
             basicData.withMeasurementOrCalculationTime(time);
         }
     }
-
 }

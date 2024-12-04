@@ -17,7 +17,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -92,7 +92,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
         for (final SituationType st : SituationType.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 tests.add(DynamicTest.dynamicTest("convert " + st + " version " + imsJsonVersion, () -> {
-                    final String json = readStaticImsJmessageResourceContent(imsJsonVersion, st.name(), ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+                    final String json = readStaticImsJmessageResourceContent(imsJsonVersion, st.name(), Instant.now().minus(1, ChronoUnit.HOURS), Instant.now().plus(1, ChronoUnit.HOURS), false);
                     final Instant now = Instant.now();
                     log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", st, imsJsonVersion);
                     final TrafficAnnouncementFeature ta =
@@ -112,7 +112,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
         final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
         final String json = readStaticImsJmessageResourceContent(
             "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
-            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+            ImsJsonVersion.V0_2_12, Instant.now().minus(1, ChronoUnit.HOURS), Instant.now().plus(1, ChronoUnit.HOURS), false);
         final Instant now = Instant.now();
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
@@ -129,7 +129,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
         final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
         final String json = readStaticImsJmessageResourceContent(
             "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
-            ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+            ImsJsonVersion.V0_2_12, Instant.now().minus(1, ChronoUnit.HOURS), Instant.now().plus(1, ChronoUnit.HOURS), false);
         final Instant now = Instant.now();
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
         final TrafficAnnouncementFeature ta =
@@ -190,7 +190,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
         final SituationType situationType = SituationType.EXEMPTED_TRANSPORT;
         final String json = readStaticImsJmessageResourceContent(
                 "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
-                ImsJsonVersion.V0_2_12, ZonedDateTime.now().minusHours(1), ZonedDateTime.now().plusHours(1), false);
+                ImsJsonVersion.V0_2_12, Instant.now().minus(1, ChronoUnit.HOURS), Instant.now().plus(1, ChronoUnit.HOURS), false);
         // replace area codes with invalid codes
         final String jsonWithIvalidLocationRefs = RegExUtils.replacePattern(json, "\"locationCode\".{3}\\d*,", "\"locationCode\" : -1,");
 

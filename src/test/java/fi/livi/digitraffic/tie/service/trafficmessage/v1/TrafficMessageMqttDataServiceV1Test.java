@@ -5,7 +5,7 @@ import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFI
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,9 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 
@@ -34,8 +34,8 @@ public class TrafficMessageMqttDataServiceV1Test extends AbstractDaemonTest {
     @BeforeEach
     public void initDb() throws IOException {
         trafficMessageTestHelper.cleanDb();
-        final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
-        final ZonedDateTime end = start.plusHours(2);
+        final Instant start = TimeUtil.nowWithoutMillis().minus(1, ChronoUnit.HOURS);
+        final Instant end = start.plus(2, ChronoUnit.HOURS);
         lastUpdated = TimeUtil.roundInstantSeconds(getTransactionTimestamp());
         trafficMessageTestHelper.initDataFromStaticImsResourceContent(
             TrafficMessageTestHelper.ImsXmlVersion.getLatestVersion(),

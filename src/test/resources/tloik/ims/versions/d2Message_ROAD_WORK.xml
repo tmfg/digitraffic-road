@@ -6,7 +6,7 @@
         </supplierIdentification>
     </exchange>
     <payloadPublication xsi:type="SituationPublication" lang="fi">
-        <publicationTime>2020-12-21T08:29:14.154Z</publicationTime>
+        <publicationTime>START_DATE_TIME</publicationTime>
         <publicationCreator>
             <country>fi</country>
             <nationalIdentifier>FTA</nationalIdentifier>

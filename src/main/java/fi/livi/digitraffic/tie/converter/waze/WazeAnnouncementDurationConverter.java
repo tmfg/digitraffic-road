@@ -1,19 +1,26 @@
 package fi.livi.digitraffic.tie.converter.waze;
 
+import static fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Restriction;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadWorkPhase;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
-
-import static fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION;
 
 public abstract class WazeAnnouncementDurationConverter {
-    private static final DateTimeFormatter wazeDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx");
+    // The timestamp must be in ISO8601 format in granularity of seconds and include the time zone offset.
+    //2023-04-07T09:00:00+01:00
+    private static final DateTimeFormatter wazeDateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx")
+                    .withZone(ZoneId.from(ZoneOffset.UTC));
 
     private WazeAnnouncementDurationConverter() {}
 
@@ -21,13 +28,13 @@ public abstract class WazeAnnouncementDurationConverter {
         return p.restrictions.stream().anyMatch(r -> r.type == Restriction.Type.ROAD_CLOSED);
     }
 
-    private static Pair<String, String> createDuration(final ZonedDateTime startTime, final ZonedDateTime endTime) {
+    private static Pair<String, String> createDuration(final Instant startTime, final Instant endTime) {
         final String starttime = Optional.ofNullable(startTime)
-                .map(ts -> ts.format(wazeDateTimeFormatter))
+                .map(wazeDateTimeFormatter::format)
                 .orElse(null);
 
         final String endtime = Optional.ofNullable(endTime)
-                .map(ts -> ts.format(wazeDateTimeFormatter))
+                .map(wazeDateTimeFormatter::format)
                 .orElse(null);
 
         return Pair.of(starttime, endtime);

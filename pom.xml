@@ -26,7 +26,7 @@
         <!-- https://mvnrepository.com/artifact/com.google.protobuf/protoc -->
         <com.google.protobuf.version>4.28.3</com.google.protobuf.version>
         <org.apache.cxf.version>4.0.5</org.apache.cxf.version>
-        <org.glassfish.metro.ws.version>4.0.4</org.glassfish.metro.ws.version>
+        <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
         <spring.cloud.version>4.1.3</spring.cloud.version>
         <proj4j.version>1.3.0</proj4j.version>
         <org.jvnet.jaxb.version>4.0.8</org.jvnet.jaxb.version>
@@ -232,12 +232,6 @@
         <!-- Web Service dependencies-->
 
         <dependency>
-            <groupId>org.glassfish.metro</groupId>
-            <artifactId>wsit-api</artifactId>
-            <version>${org.glassfish.metro.ws.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.17.0</version>
@@ -389,23 +383,16 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Libraries to handle JAXB marshalling/unmarshalling -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+            <version>${org.apache.cxf.version}</version>
+        </dependency>
+        <!-- For test WS server -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-netty-server</artifactId>
-            <version>${org.apache.cxf.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${org.apache.cxf.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
             <version>${org.apache.cxf.version}</version>
             <scope>test</scope>
         </dependency>

@@ -17,8 +17,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.ComputationMethodEnumG;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.LocationReferenceG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasuredOrDerivedDataTypeEnumG;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSite;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteIndexMeasurementSpecificCharacteristicsG;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTable;
@@ -43,7 +40,6 @@ import fi.livi.digitraffic.tie.model.tms.TmsStation;
 @ConditionalOnWebApplication
 @Component
 public class TmsStationMetadata2Datex2JsonConverter {
-    private static final Logger log = LoggerFactory.getLogger(TmsStationMetadata2Datex2JsonConverter.class);
 
     private final InformationStatusEnumG.InformationStatusEnum informationStatus;
 
@@ -92,7 +88,7 @@ public class TmsStationMetadata2Datex2JsonConverter {
                         .withIdG(station.getRoadStationNaturalId().toString())
                         .withMeasurementSiteRecordVersionTime(station.getMaxModified())
                         .withVersionG(station.getMaxModified().toString()) // not required
-                        .withMeasurementSiteIdentification(String.valueOf(station.getNaturalId()))
+                        .withMeasurementSiteIdentification(String.valueOf(station.getRoadStationNaturalId()))
                         .withMeasurementSiteName(getMeasurementSiteName(station))
                         .withMeasurementSiteLocation(
                                 new LocationReferenceG().withLocPointLocation(
@@ -127,11 +123,6 @@ public class TmsStationMetadata2Datex2JsonConverter {
 
     private static MeasurementSpecificCharacteristics createMeasurementSpecificCharacteristics(final RoadStationSensor sensor) {
 
-        final MeasuredOrDerivedDataTypeEnumG.MeasuredOrDerivedDataTypeEnum dataType =
-                sensor.isSpeedSensor() ?
-                MeasuredOrDerivedDataTypeEnumG.MeasuredOrDerivedDataTypeEnum.TRAFFIC_SPEED :
-                sensor.isFlowSensor() ? MeasuredOrDerivedDataTypeEnumG.MeasuredOrDerivedDataTypeEnum.TRAFFIC_FLOW : null;
-
         final ComputationMethodEnumG.ComputationMethodEnum computationMethod =
                 sensor.isMovingMeasurement() ? ComputationMethodEnumG.ComputationMethodEnum.MOVING_AVERAGE_OF_SAMPLES :
                 ComputationMethodEnumG.ComputationMethodEnum.ARITHMETIC_AVERAGE_OF_SAMPLES_IN_A_TIME_PERIOD;
@@ -139,9 +130,11 @@ public class TmsStationMetadata2Datex2JsonConverter {
         final Integer periodSeconds = resolvePeriodSecondsFromSensorName(sensor.getNameFi());
 
         return new MeasurementSpecificCharacteristics()
-                .withAccuracy(sensor.getAccuracy() != null ? Double.valueOf(sensor.getAccuracy()) : null)
+                // accuracy is % value, we don't have it.
+                //.withAccuracy(sensor.getAccuracy() != null ? Double.valueOf(sensor.getAccuracy()) : null)
                 .withComputationMethod(new ComputationMethodEnumG( computationMethod, null))
-                .withSpecificMeasurementValueType(new MeasuredOrDerivedDataTypeEnumG(dataType, sensor.getNameFi()))
+                // Not recommended to use like this
+                //.withSpecificMeasurementValueType(new MeasuredOrDerivedDataTypeEnumG(dataType, sensor.getNameFi()))
                 .withPeriod(periodSeconds != null ? Double.valueOf(periodSeconds) : null)
                 .withSpecificVehicleCharacteristics(new VehicleCharacteristics()
                         .withVehicleType(Collections.singletonList(new VehicleTypeEnumG().withValue(

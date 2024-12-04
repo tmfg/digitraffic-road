@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.converter.tms.datex2;
 
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.filterAllowedSensorValuesAndMapWithNaturalId;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.filterSortAndFillInMissingSensors;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.getHeaderInformation;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.getInternationalIdentifier;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.getMultiLangualString;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.resolvePeriodSecondsFromSensorName;
 import static fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum.REAL;
@@ -65,24 +67,27 @@ public class TmsStationData2Datex2JsonConverter {
         final MeasuredDataPublication publication =
                 new MeasuredDataPublication()
                         .withPublicationTime(updated)
-                        .withPublicationCreator(TmsStation2Datex2ConverterJsonCommon.getInternationalIdentifier())
+                        .withPublicationCreator(getInternationalIdentifier())
                         .withLang("fi")
-                        .withHeaderInformation(TmsStation2Datex2ConverterJsonCommon.getHeaderInformation(informationStatus))
-                        .withMeasurementSiteTableReference(Collections.singletonList(
+                        .withHeaderInformation(getHeaderInformation(informationStatus))
+                        .withMeasurementSiteTableReference(List.of(
                                 new MeasurementSiteTableVersionedReferenceG()
                                         .withIdG(TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_TABLE_IDENTIFIER)
-                                // Optional, no need to ref specific version of TMS station table
-                                //.withVersion(metadata update time))
-                                )
-                        );
+                                        // Optional, no need to ref specific version of TMS station table
+                                        //.withVersion(metadata update time))
+                        ));
 
         publication.setSiteMeasurements(
-                stations.entrySet().stream().map((station) -> getSiteMeasurements(station.getKey(), station.getValue())).toList());
+                stations.entrySet().stream().map((station) ->
+                        getSiteMeasurements(station.getKey(), station.getValue(), updated)).toList());
 
         return publication;
     }
 
-    private static SiteMeasurements getSiteMeasurements(final TmsStation station, final List<SensorValueDto> sensorValues) {
+    private static SiteMeasurements getSiteMeasurements(
+            final TmsStation station,
+            final List<SensorValueDto> sensorValues,
+            final Instant updated) {
 
         final SiteMeasurements measurementSite =
                 new SiteMeasurements()
@@ -96,7 +101,7 @@ public class TmsStationData2Datex2JsonConverter {
 
         final List<SiteMeasurementsIndexPhysicalQuantityG>
                 indexedSiteMeasurementsPhysicalQuantities =
-                getSiteMeasurementsPhysicalQuantities(requiredSensors, sensorValues);
+                getSiteMeasurementsPhysicalQuantities(requiredSensors, sensorValues, updated);
 
         measurementSite.withPhysicalQuantity(indexedSiteMeasurementsPhysicalQuantities);
 
@@ -104,8 +109,7 @@ public class TmsStationData2Datex2JsonConverter {
                 .map(a -> {
                     final MeasurementOrCalculationTime timeS = ObjectUtil.callAndIgnoreExeption(() ->
                             a.getPhysicalQuantity().getRoaSinglePhysicalQuantity().getBasicData().getRoaTrafficSpeed().getMeasurementOrCalculationTime());
-                    final MeasurementOrCalculationTime timeF = ObjectUtil.callAndIgnoreExeption(() -> a.getPhysicalQuantity().getRoaSinglePhysicalQuantity().getBasicData().getRoaTrafficFlow()
-                            .getMeasurementOrCalculationTime());
+                    final MeasurementOrCalculationTime timeF = ObjectUtil.callAndIgnoreExeption(() -> a.getPhysicalQuantity().getRoaSinglePhysicalQuantity().getBasicData().getRoaTrafficFlow().getMeasurementOrCalculationTime());
                     return TimeUtil.getGreatest(timeS != null ? timeS.getTimeValue() : null, timeF != null ? timeF.getTimeValue() : null);
                 }).filter(Objects::nonNull)
                 .max(Instant::compareTo)
@@ -119,30 +123,35 @@ public class TmsStationData2Datex2JsonConverter {
     }
 
     private static List<SiteMeasurementsIndexPhysicalQuantityG> getSiteMeasurementsPhysicalQuantities(
-            final List<RoadStationSensor> requiredSensors, final List<SensorValueDto> values) {
+            final List<RoadStationSensor> requiredSensors,
+            final List<SensorValueDto> values,
+            final Instant updated) {
         final Map<Long, SensorValueDto> valuesMap = filterAllowedSensorValuesAndMapWithNaturalId(values);
 
         final List<SiteMeasurementsIndexPhysicalQuantityG> measurements = new ArrayList<>();
         for (int i = 0; i < requiredSensors.size(); i++) {
             final RoadStationSensor sensor = requiredSensors.get(i);
             final SensorValueDto value = valuesMap.get(sensor.getNaturalId());
-            final PhysicalQuantityG quantity = getSinglePhysicalQuantity(sensor, value);
+            final PhysicalQuantityG quantity = getSinglePhysicalQuantity(sensor, value, updated);
             measurements.add(new SiteMeasurementsIndexPhysicalQuantityG(quantity, i+1));
         }
         return measurements;
     }
 
     private static PhysicalQuantityG getSinglePhysicalQuantity(final RoadStationSensor sensor,
-                                                              final SensorValueDto sensorValue) {
+                                                              final SensorValueDto sensorValue,
+                                                              final Instant updated) {
         final SinglePhysicalQuantity quantity =
                 new SinglePhysicalQuantity()
                         .withBasicData(getBasicData(sensor, sensorValue));
         if (quantity.getBasicData() == null || sensorValue == null) {
             quantity.withPhysicalQuantityFault(Collections.singletonList(
                     new PhysicalQuantityFault().withPhysicalQuantityFaultType(
-                            new PhysicalQuantityFaultEnumG().withValue(
-                                    PhysicalQuantityFaultEnumG.PhysicalQuantityFaultEnum.NO_DATA_VALUES_AVAILABLE))
-                    ));
+                            new PhysicalQuantityFaultEnumG()
+                                    .withValue(
+                                            PhysicalQuantityFaultEnumG.PhysicalQuantityFaultEnum.NO_DATA_VALUES_AVAILABLE))
+                            .withFaultLastUpdateTime(updated))
+                    );
         }
         return new PhysicalQuantityG().withRoaSinglePhysicalQuantity(quantity);
     }
@@ -193,12 +202,13 @@ public class TmsStationData2Datex2JsonConverter {
                         .withEndOfPeriod(sensorValue.getTimeWindowEnd().toInstant());
             } else { // running period
                 try {
-                    final Integer periodTimeS = resolvePeriodSecondsFromSensorName(sensorValue.getSensorNameFi());
                     final Instant end = sensorValue.getMeasuredTime().toInstant();
+                    final Integer periodTimeS = resolvePeriodSecondsFromSensorName(sensorValue.getSensorNameFi());
+                    if (periodTimeS != null) {
                     final Instant start = end.minus(periodTimeS, ChronoUnit.SECONDS);
-                    time.getPeriod()
-                            .withStartOfPeriod(start)
-                            .withEndOfPeriod(end);
+                        time.getPeriod().withStartOfPeriod(start);
+                    }
+                    time.getPeriod().withEndOfPeriod(end);
                 } catch (final Exception e) {
                     log.error("method=withMeasurementOrCalculationTime Failed to calculate time period for sensor {}",
                             sensorValue.getSensorNameFi(), e);

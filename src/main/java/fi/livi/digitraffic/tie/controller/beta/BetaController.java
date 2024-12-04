@@ -20,7 +20,6 @@ import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
 import fi.livi.digitraffic.tie.service.tms.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.tms.TmsStationDatex2Service;
-import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

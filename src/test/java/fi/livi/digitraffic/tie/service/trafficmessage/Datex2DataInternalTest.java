@@ -7,7 +7,8 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.JSON_MESS
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.stream.IntStream;
 
@@ -46,8 +47,8 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
             for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
                 for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                     for (final SituationType situationType : SituationType.values()) {
-                        final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
-                        final ZonedDateTime end = start.plusHours(2);
+                        final Instant start = TimeUtil.nowWithoutMillis().minus(1, ChronoUnit.HOURS);
+                        final Instant end = start.plus(2, ChronoUnit.HOURS);
                         try {
                             trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                         } catch (final IOException e) {

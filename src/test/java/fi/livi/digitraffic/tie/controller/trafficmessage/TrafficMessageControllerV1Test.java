@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -139,8 +139,8 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(1);
-                    final ZonedDateTime end = start.plusHours(2);
+                    final Instant start = TimeUtil.nowWithoutMillis().minus(1, ChronoUnit.HOURS);
+                    final Instant end = start.plus(2, ChronoUnit.HOURS);
                     final Instant lastUpdated = TimeUtil.roundInstantSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
@@ -166,8 +166,8 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
-                    final ZonedDateTime end = start.plusHours(2);
+                    final Instant start = TimeUtil.nowWithoutMillis().minus(3, ChronoUnit.HOURS);
+                    final Instant end = start.plus(2, ChronoUnit.HOURS);
                     final Instant lastUpdated = TimeUtil.roundInstantSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
@@ -193,8 +193,8 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
                 for(final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
-                    final ZonedDateTime start = TimeUtil.getZonedDateTimeNowWithoutMillisAtUtc().minusHours(3);
-                    final ZonedDateTime end = start.plusHours(2);
+                    final Instant start = TimeUtil.nowWithoutMillis().minus(3, ChronoUnit.HOURS);
+                    final Instant end = start.plus(2, ChronoUnit.HOURS);
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
                     log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType));
@@ -311,7 +311,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
     private void assertContentsMatch(final String d2xml, final String simpleJsonFeatureCollection, final SituationType situationType,
                                      final String situationId,
-                                     final ZonedDateTime start, final ZonedDateTime end,
+                                     final Instant start, final Instant end,
                                      final ImsJsonVersion imsJsonVersion)
         throws JsonProcessingException {
         final D2LogicalModel d2 = parseD2LogicalModel(d2xml);
@@ -328,15 +328,15 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
         final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.getFirst().timeAndDuration;
 
-        assertEquals(start.toInstant(), situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification().getOverallStartTime());
-        assertEquals(start.toInstant(), jsonTimeAndDuration.startTime.toInstant());
+        assertEquals(start, situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification().getOverallStartTime());
+        assertEquals(start, jsonTimeAndDuration.startTime);
 
-        final Instant versionTime = getVersionTime(start, imsJsonVersion).toInstant();
+        final Instant versionTime = getVersionTime(start, imsJsonVersion);
         assertEquals(versionTime, situation.getSituationRecords().getFirst().getSituationRecordVersionTime());
         assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
 
-        assertEquals(end.toInstant(), situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification().getOverallEndTime());
-        assertEquals(end.toInstant(), jsonTimeAndDuration.endTime.toInstant());
+        assertEquals(end, situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification().getOverallEndTime());
+        assertEquals(end, jsonTimeAndDuration.endTime);
 
         final String commentXml = situation.getSituationRecords().getFirst().getGeneralPublicComments().getFirst().getComment().getValues().getValues().stream()
             .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();

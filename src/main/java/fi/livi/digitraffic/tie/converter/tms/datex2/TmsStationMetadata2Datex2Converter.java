@@ -15,15 +15,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.external.datex2.v3_5.ComputationMethodEnum;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredOrDerivedDataTypeEnum;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSite;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTable;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
@@ -34,7 +31,6 @@ import fi.livi.digitraffic.tie.external.datex2.v3_5.PointLocation;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.VehicleCharacteristics;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.VehicleTypeEnum;
 import fi.livi.digitraffic.tie.external.datex2.v3_5._ComputationMethodEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._MeasuredOrDerivedDataTypeEnum;
 import fi.livi.digitraffic.tie.external.datex2.v3_5._MeasurementSiteIndexMeasurementSpecificCharacteristics;
 import fi.livi.digitraffic.tie.external.datex2.v3_5._VehicleTypeEnum;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
@@ -43,7 +39,6 @@ import fi.livi.digitraffic.tie.model.tms.TmsStation;
 @ConditionalOnWebApplication
 @Component
 public class TmsStationMetadata2Datex2Converter {
-    private static final Logger log = LoggerFactory.getLogger(TmsStationMetadata2Datex2Converter.class);
 
     private final InformationStatusEnum informationStatus;
 
@@ -100,7 +95,7 @@ public class TmsStationMetadata2Datex2Converter {
                         .withId(station.getRoadStationNaturalId().toString())
                         .withMeasurementSiteRecordVersionTime(station.getMaxModified())
                         .withVersion(station.getMaxModified().toString()) // not required
-                        .withMeasurementSiteIdentification(String.valueOf(station.getNaturalId()))
+                        .withMeasurementSiteIdentification(String.valueOf(station.getRoadStationNaturalId()))
                         .withMeasurementSiteName(getMeasurementSiteName(station))
                         .withMeasurementSiteLocation(
                                 new PointLocation()
@@ -134,11 +129,6 @@ public class TmsStationMetadata2Datex2Converter {
 
     private static MeasurementSpecificCharacteristics createMeasurementSpecificCharacteristics(final RoadStationSensor sensor) {
 
-        final MeasuredOrDerivedDataTypeEnum dataType =
-                sensor.isSpeedSensor() ?
-                    MeasuredOrDerivedDataTypeEnum.TRAFFIC_SPEED :
-                    sensor.isFlowSensor() ? MeasuredOrDerivedDataTypeEnum.TRAFFIC_FLOW : null;
-
         final ComputationMethodEnum computationMethod =
                 sensor.isMovingMeasurement() ? ComputationMethodEnum.MOVING_AVERAGE_OF_SAMPLES :
                 ComputationMethodEnum.ARITHMETIC_AVERAGE_OF_SAMPLES_IN_A_TIME_PERIOD;
@@ -146,9 +136,11 @@ public class TmsStationMetadata2Datex2Converter {
         final Integer periodSeconds = resolvePeriodSecondsFromSensorName(sensor.getNameFi());
 
         return new MeasurementSpecificCharacteristics()
-                .withAccuracy(sensor.getAccuracy() != null ? sensor.getAccuracy().floatValue() : 0)
+                // accuracy is % value, we don't have it.
+                //.withAccuracy(sensor.getAccuracy() != null ? sensor.getAccuracy().floatValue() : 0)
                 .withComputationMethod(new _ComputationMethodEnum( computationMethod, null))
-                .withSpecificMeasurementValueType(new _MeasuredOrDerivedDataTypeEnum(dataType, sensor.getNameFi()))
+                // Not recommended to use like this
+                //.withSpecificMeasurementValueType(new _MeasuredOrDerivedDataTypeEnum(dataType, sensor.getNameFi()))
                 .withPeriod(periodSeconds != null ? Float.valueOf(periodSeconds) : null)
                 .withSpecificVehicleCharacteristics(new VehicleCharacteristics()
                         .withVehicleTypes(Collections.singletonList(new _VehicleTypeEnum().withValue(VehicleTypeEnum.ANY_VEHICLE))));

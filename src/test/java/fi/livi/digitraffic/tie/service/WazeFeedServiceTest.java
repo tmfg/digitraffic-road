@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -125,14 +124,14 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final WazeFeedIncidentDto incident = announcement.incidents.getFirst();
         assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
         // check that times are from the roadworkphase, not from the announcement!
-        assertEquals(incident.starttime, "2024-05-12T21:10:00+00:00");
-        assertEquals(incident.endtime, "2024-10-31T21:20:00+00:00");
+        assertEquals("2024-05-12T21:10:00+00:00", incident.starttime);
+        assertEquals("2024-10-31T21:20:00+00:00", incident.endtime);
     }
 
     @Test
     public void announcementIsProperlyFormatted() throws IOException {
         final String situationId = "GUID12345";
-        final ZonedDateTime startTime = ZonedDateTime.parse("2021-07-28T13:09:47.470Z");
+        final Instant startTime = Instant.parse("2021-07-28T13:09:47.470Z");
 
         final WazeFeedServiceTestHelper.SituationParams params =
             new WazeFeedServiceTestHelper.SituationParams(situationId, startTime,
@@ -219,7 +218,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
-        assertEquals(incidents.size(), 1);
+        assertEquals(1, incidents.size());
 
         final WazeFeedIncidentDto incident = incidents.getFirst();
 
@@ -232,7 +231,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
 
-        assertEquals(incidents.size(), 0);
+        assertEquals(0, incidents.size());
     }
 
     @Test

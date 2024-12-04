@@ -251,13 +251,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.UnmarshallingFailureException;
 import org.springframework.stereotype.Component;
-
-import com.sun.xml.ws.util.StringUtils;
 
 import fi.livi.digitraffic.tie.converter.waze.WazeDatex2Converter;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AbnormalTraffic;

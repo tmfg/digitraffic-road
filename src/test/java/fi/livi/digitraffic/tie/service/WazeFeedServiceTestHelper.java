@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service;
 import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,7 @@ public class WazeFeedServiceTestHelper {
 
         final SituationParams params = new SituationParams(
             situationId,
-            ZonedDateTime.now(),
+            Instant.now(),
             fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT,
             fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.ACCIDENT_REPORT,
             direction,
@@ -140,26 +141,26 @@ public class WazeFeedServiceTestHelper {
 
         fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType situationType;
         fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType trafficAnnouncementType;
-        final ZonedDateTime startTime;
+        final Instant startTime;
         final RoadAddressLocation.Direction direction;
 
         SituationParams() {
             this(
                 null,
-                ZonedDateTime.now(),
+                Instant.now(),
                 fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.ACCIDENT_REPORT,
                 RoadAddressLocation.Direction.UNKNOWN
             );
         }
 
-        SituationParams(final String situationId, final ZonedDateTime startTime,
+        SituationParams(final String situationId, final Instant startTime,
                                final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction) {
             this(situationId, startTime, fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT, trafficAnnouncementType, direction, null);
 
             this.geometry = createDummyGeometry();
         }
 
-        SituationParams(final String situationId, final ZonedDateTime startTime,
+        SituationParams(final String situationId, final Instant startTime,
                         final fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType situationType,
                                final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType trafficAnnouncementType, final RoadAddressLocation.Direction direction,
                         final Geometry<?> geometry) {

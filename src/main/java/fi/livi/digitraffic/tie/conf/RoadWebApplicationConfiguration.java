@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RegExUtils;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
@@ -37,11 +39,13 @@ import org.springframework.web.servlet.resource.TransformedResource;
 
 import fi.livi.digitraffic.common.config.DeprecationInterceptor;
 import fi.livi.digitraffic.common.util.StringUtil;
+import fi.livi.digitraffic.tie.conf.jaxb2.DatexII_3_NamespacePrefixMapper;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2RootElementHttpMessageConverter;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.PayloadPublication;
 import jakarta.servlet.Filter;
 
 @ConditionalOnWebApplication
@@ -61,10 +65,12 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
 
         try {
             // For some reason @Value is not working on test
-            this.dtDomain = StringUtils.isNotBlank(domainUrl) &&
-                            StringUtils.containsNone(domainUrl, "${") ?
-                            domainUrl : applicationContext.getEnvironment().getProperty("dt.domain.url");
+            final String schemaDomainUrl =
+                    StringUtils.isNotBlank(domainUrl) && StringUtils.containsNone(domainUrl, "${") ?
+                        domainUrl :
+                        applicationContext.getEnvironment().getProperty("dt.domain.url");
 
+            this.dtDomain = Objects.requireNonNull(schemaDomainUrl).replaceAll("https", "http"); // Schema is always http
             this.dtDomainAndSchemaRootLocation =
                     new URI(StringUtil.format("{}/{}", dtDomain, DATEX2_SCHEMA_ROOT_PATH)).normalize().toString();
         } catch (final URISyntaxException e) {
@@ -84,23 +90,44 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
 
     @Bean
     public HttpMessageConverter<Object> xmlHttpMessageConverterForD2LogicalModel() {
-        return new Jaxb2RootElementHttpMessageConverter(D2LogicalModel.class,
-                "http://datex2.eu/schema/2/2_0",
-                dtDomainAndSchemaRootLocation + "/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
+        return new Jaxb2RootElementHttpMessageConverter<>(D2LogicalModel.class)
+                .withJaxbSchemaLocations(
+                        "http://datex2.eu/schema/2/2_0",
+                        dtDomainAndSchemaRootLocation + "/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
     }
 
     @Bean
     public HttpMessageConverter<Object> xmlHttpMessageConverterForMeasurementSiteTablePublication() {
-        return new Jaxb2RootElementHttpMessageConverter(
+//        This is not adding xsi:type attribute so we need to use below resolution
+//        return new Jaxb2RootElementHttpMessageConverter<>(
+//                MeasurementSiteTablePublication.class)
+//                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+//                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload");
+
+        return new Jaxb2RootElementHttpMessageConverter<>(
                 MeasurementSiteTablePublication.class,
-                "https://datex2.eu/schema/3/roadTrafficData/DATEXII_3_RoadTrafficData.xsd");
+                PayloadPublication.class,
+                "payload")
+                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload")
+                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+                .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
     @Bean
     public HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication() {
-        return new Jaxb2RootElementHttpMessageConverter(
+//        This is not adding xsi:type attribute so we need to use below resolution
+//        return new Jaxb2RootElementHttpMessageConverter<>(
+//                MeasuredDataPublication.class)
+//                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+//                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload");
+
+        return new Jaxb2RootElementHttpMessageConverter<>(
                 MeasuredDataPublication.class,
-                "https://datex2.eu/schema/3/roadTrafficData/DATEXII_3_RoadTrafficData.xsd");
+                PayloadPublication.class,
+                "payload")
+                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload")
+                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+                .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
     @Override
@@ -163,7 +190,8 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         private final HeaderContentNegotiationStrategy headerStragegy = new HeaderContentNegotiationStrategy();
 
         @Override
-        public List<MediaType> resolveMediaTypes(final NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
+        public List<MediaType> resolveMediaTypes(@NonNull
+                                                 final NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
             final List<MediaType> fromHeaders = headerStragegy.resolveMediaTypes(webRequest);
             try {
                 // By default many client's sends long list of accepted types or */* etc.

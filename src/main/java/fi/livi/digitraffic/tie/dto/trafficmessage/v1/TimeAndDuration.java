@@ -1,7 +1,7 @@
 
 package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -22,10 +22,10 @@ public class TimeAndDuration extends JsonAdditionalProperties {
 
     @Schema(description = "Start time of the situation", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
-    public ZonedDateTime startTime;
+    public Instant startTime;
 
     @Schema(description = "End time of the situation. If the end time has been passed, the situation can be assumed to be over. If end time is not given, there will be follow-up announcement about the situation.")
-    public ZonedDateTime endTime;
+    public Instant endTime;
 
     @Schema(description = "If exact endtime is not known, duration may be estimated.")
     public EstimatedDuration estimatedDuration;
@@ -33,7 +33,7 @@ public class TimeAndDuration extends JsonAdditionalProperties {
     public TimeAndDuration() {
     }
 
-    public TimeAndDuration(final ZonedDateTime startTime, final ZonedDateTime endTime, final EstimatedDuration estimatedDuration) {
+    public TimeAndDuration(final Instant startTime, final Instant endTime, final EstimatedDuration estimatedDuration) {
         super();
         this.startTime = startTime;
         this.endTime = endTime;

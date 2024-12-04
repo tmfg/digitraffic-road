@@ -1,9 +1,16 @@
 package fi.livi.digitraffic.tie.conf.jaxb2;
 
+import java.util.Map;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import jakarta.xml.bind.Marshaller;
+
+/**
+ * Jaxb Marshallers used to convert incoming xml data to POJO
+ */
 @Configuration
 public class XmlMarshallerConfiguration {
 
@@ -48,14 +55,10 @@ public class XmlMarshallerConfiguration {
         return createMarshaller("fi.livi.digitraffic.tie.datex2.v2_2_3_fi");
     }
 
-    @Bean
-    public Jaxb2Marshaller datex2v3_5Jaxb2Marshaller() {
-        return createMarshaller("fi.livi.digitraffic.tie.external.datex2.v3_5");
-    }
-
     private static Jaxb2Marshaller createMarshaller(final String...contextPaths) {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setContextPaths(contextPaths);
+        marshaller.setMarshallerProperties(Map.of(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE));
         return marshaller;
     }
 }

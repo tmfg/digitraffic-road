@@ -11,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -129,7 +130,7 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
             assertTrue(situationComment.contains(announcement.title),
                     String.format("Feature title \"%s\" should exist in situation comment \"%s\"", announcement.title,
                             situationComment));
-            assertEquals(withoutMillis(announcement.timeAndDuration.startTime.toInstant()),
+            assertEquals(withoutMillis(announcement.timeAndDuration.startTime),
                     withoutMillis(situationRecord.getValidity().getValidityTimeSpecification().getOverallStartTime()));
         }
     }
@@ -145,7 +146,7 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
                                 final ImsJsonVersion jsonVersion,
                                 final JMSMessageHandler<ExternalIMSMessage> messageListener) throws IOException {
         final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType.name(), jsonVersion,
-                ZonedDateTime.now().minusHours(1), null, false);
+                Instant.now().minus(1, ChronoUnit.HOURS), null, false);
         createAndSendJmsMessage(xmlImsMessage, messageListener);
     }
 

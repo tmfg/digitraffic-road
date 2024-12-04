@@ -14,30 +14,28 @@
         <jaxb:property name="_locNamedAreaExtension" />
     </jaxb:bindings>
 
+    <!-- Not needed at the moment but can be returned if needed -->
     <!-- If simplify plugin is not possible to use we can get @XmlRootElement annotations with custom bindings -->
-    <jaxb:bindings schemaLocation="DATEXII_3_Common.xsd" node="/xs:schema">
-        <jaxb:bindings node="xs:complexType[@name='PayloadPublication']">
-            <annox:annotate>
-                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="PayloadPublication" namespace = "https://datex2.eu/schema/3/common" />
-            </annox:annotate>
-        </jaxb:bindings>
-    </jaxb:bindings>
+<!--    <jaxb:bindings schemaLocation="DATEXII_3_Common.xsd" node="/xs:schema">-->
+<!--        <jaxb:bindings node="xs:complexType[@name='PayloadPublication']">-->
+<!--            <annox:annotate>-->
+<!--                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="d2:payload" namespace = "http://datex2.eu/schema/3/d2Payload" />-->
+<!--            </annox:annotate>-->
+<!--        </jaxb:bindings>-->
+<!--    </jaxb:bindings>-->
 
+    <!-- Generate XmlRootElement annotations fox JAXB -->
     <jaxb:bindings schemaLocation="DATEXII_3_RoadTrafficData.xsd" node="/xs:schema">
         <jaxb:bindings node="xs:complexType[@name='MeasuredDataPublication']">
             <annox:annotate>
-                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="MeasuredDataPublication" namespace = "https://datex2.eu/schema/3/roadTrafficData" />
+                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="payload" namespace = "http://datex2.eu/schema/3/d2Payload" />
             </annox:annotate>
         </jaxb:bindings>
-    </jaxb:bindings>
-
-    <jaxb:bindings schemaLocation="DATEXII_3_RoadTrafficData.xsd" node="/xs:schema">
-        <jaxb:bindings node="xs:complexType[@name='MeasurementSiteTablePublication']">
+            <jaxb:bindings node="xs:complexType[@name='MeasurementSiteTablePublication']">
             <annox:annotate>
-                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="MeasurementSiteTablePublication" namespace = "https://datex2.eu/schema/3/roadTrafficData" />
+                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="payload" namespace = "http://datex2.eu/schema/3/d2Payload" />
             </annox:annotate>
         </jaxb:bindings>
     </jaxb:bindings>
-
 
 </jaxb:bindings>
