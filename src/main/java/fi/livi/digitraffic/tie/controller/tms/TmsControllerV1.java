@@ -73,6 +73,7 @@ public class TmsControllerV1 {
     public static final String SENSORS = "/sensors";
     public static final String DATA = "/data";
     public static final String SENSOR_CONSTANTS = "/sensor-constants";
+    public static final String DATEX2 = "/datex2";
 
     public TmsControllerV1(final TmsDataWebServiceV1 tmsDataWebServiceV1,
                            final TmsStationMetadataWebServiceV1 tmsStationMetadataWebServiceV1,

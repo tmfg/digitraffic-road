@@ -35,7 +35,7 @@ import fi.livi.digitraffic.tie.controller.weathercam.WeathercamControllerV1;
 import fi.livi.digitraffic.tie.dao.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
-import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
 import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.dao.trafficmessage.location.LocationVersionRepository;
@@ -61,7 +61,7 @@ public class DataStatusService {
     private final Datex2Repository datex2Repository;
 
     private final TmsStationRepository tmsStationRepository;
-    private final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository;
+    private final TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoRepository;
     private final WeatherStationRepository weatherStationRepository;
     private final SensorValueRepository sensorValueRepository;
     private final ForecastSectionRepository forecastSectionRepository;
@@ -82,7 +82,7 @@ public class DataStatusService {
                              final DeviceRepositoryV1 deviceRepositoryV1,
                              final DeviceDataRepositoryV1 deviceDataRepositoryV1,
                              final LocationVersionRepository locationVersionRepository,
-                             final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository,
+                             final TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoRepository,
                              final ForecastSectionRepository forecastSectionRepository) {
         this.dataUpdatedRepository = dataUpdatedRepository;
         this.maintenanceTrackingRepository = maintenanceTrackingRepository;

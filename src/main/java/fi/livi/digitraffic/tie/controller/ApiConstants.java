@@ -15,6 +15,8 @@ public final class ApiConstants {
      * API data types
      */
 
+    public static final String XML = ".xml";
+
     /** Info api */
 
     public static final String INFO_TAG_V1 = "Info V1";

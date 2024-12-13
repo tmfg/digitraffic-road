@@ -13,16 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
-import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationDataDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
-import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.tms.TmsStationService;
@@ -35,14 +34,14 @@ public class TmsDataWebServiceV1 {
     private final RoadStationSensorServiceV1 roadStationSensorServiceV1;
     private final RoadStationRepository roadStationRepository;
     private final TmsStationSensorConstantService tmsStationSensorConstantServiceV1;
-    private final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository;
+    private final TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoRepository;
 
     @Autowired
     public TmsDataWebServiceV1(final TmsStationService tmsStationService,
                                final RoadStationSensorServiceV1 roadStationSensorServiceV1,
                                final RoadStationRepository roadStationRepository,
                                final TmsStationSensorConstantService tmsStationSensorConstantService,
-                               final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository) {
+                               final TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoRepository) {
         this.tmsStationService = tmsStationService;
         this.roadStationSensorServiceV1 = roadStationSensorServiceV1;
         this.roadStationRepository = roadStationRepository;
@@ -73,13 +72,11 @@ public class TmsDataWebServiceV1 {
 
     @Transactional(readOnly = true)
     public TmsStationDataDtoV1 findPublishableTmsData(final long roadStationNaturalId) {
-        if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.TMS_STATION) ) {
-            throw new ObjectNotFoundException("TmsStation", roadStationNaturalId);
-        }
+        final TmsStation tms = tmsStationService.findPublishableTmsStationByRoadStationNaturalId(roadStationNaturalId);
         final List<SensorValueDtoV1> sensorValues =
                 roadStationSensorServiceV1.findAllPublishableRoadStationSensorValues(roadStationNaturalId,
                                                                                      RoadStationType.TMS_STATION);
-        final TmsStation tms = tmsStationService.findPublishableTmsStationByRoadStationNaturalId(roadStationNaturalId);
+
         return createTmsStationDataDto(tms, sensorValues);
     }
 
@@ -91,12 +88,12 @@ public class TmsDataWebServiceV1 {
             return new TmsStationsSensorConstantsDataDtoV1(updated, Collections.emptyList());
         }
 
-        final List<TmsSensorConstantValueDto> allValues =
+        final List<TmsSensorConstantValueDtoV1> allValues =
             tmsSensorConstantValueDtoRepository.findAllPublishableSensorConstantValues();
 
         final List<TmsStationSensorConstantDtoV1> tscs =
             allValues.stream()
-                .collect(Collectors.groupingBy(TmsSensorConstantValueDto::getRoadStationId))
+                .collect(Collectors.groupingBy(TmsSensorConstantValueDtoV1::getRoadStationId))
             .entrySet().stream()
             .sorted(Map.Entry.comparingByKey())
             .map(e -> new TmsStationSensorConstantDtoV1(e.getKey(), e.getValue()))
@@ -108,7 +105,7 @@ public class TmsDataWebServiceV1 {
     @Transactional(readOnly = true)
     public TmsStationSensorConstantDtoV1 findPublishableSensorConstantsForStation(final long roadStationNaturalId) {
         roadStationRepository.checkIsPublishableTmsRoadStation(roadStationNaturalId);
-        final List<TmsSensorConstantValueDto> values =
+        final List<TmsSensorConstantValueDtoV1> values =
             tmsSensorConstantValueDtoRepository.findPublishableSensorConstantValueForStation(roadStationNaturalId);
 
         return new TmsStationSensorConstantDtoV1(roadStationNaturalId, values);

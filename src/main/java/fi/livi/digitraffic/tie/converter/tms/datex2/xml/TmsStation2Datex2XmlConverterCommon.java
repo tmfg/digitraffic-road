@@ -1,7 +1,6 @@
-package fi.livi.digitraffic.tie.converter.tms.datex2;
+package fi.livi.digitraffic.tie.converter.tms.datex2.xml;
 
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.ALLOWED_SENSOR_NAMES;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_NATIONAL_IDENTIFIER;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common.GENERIC_NAME_LANG_CODE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -20,40 +20,44 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.common.util.ObjectUtil;
-import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.ConfidentialityValueEnumG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.HeaderInformation;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InternationalIdentifier;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MultiLingualStringValue;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MultilingualString;
+import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.ConfidentialityValueEnum;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.HeaderInformation;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.InternationalIdentifier;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.MultilingualString;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.MultilingualStringValue;
+import fi.livi.digitraffic.tie.external.datex2.v3_5._ConfidentialityValueEnum;
+import fi.livi.digitraffic.tie.external.datex2.v3_5._InformationStatusEnum;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 
 @ConditionalOnWebApplication
 @Component
-public class TmsStation2Datex2ConverterJsonCommon {
-    private static final Logger log = LoggerFactory.getLogger(TmsStation2Datex2ConverterJsonCommon.class);
-
+public class TmsStation2Datex2XmlConverterCommon {
+    private static final Logger log = LoggerFactory.getLogger(TmsStation2Datex2XmlConverterCommon.class);
 
     public static InternationalIdentifier getInternationalIdentifier() {
         return new InternationalIdentifier()
                 .withCountry("FI")
-                .withNationalIdentifier(MEASUREMENT_SITE_NATIONAL_IDENTIFIER);
+                .withNationalIdentifier(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER);
     }
 
     public static MultilingualString getMeasurementSiteName(final TmsStation station) {
-        final String fi = station.getRoadStation().getNameFi();
+        // .getNameFi() is not always a real name
+        final String fi_gen = station.getRoadStation().getName();
+        final String fi = ObjectUtils.firstNonNull(station.getRoadStation().getName(), station.getRoadStation().getNameFi());
         final String sv = station.getRoadStation().getNameSv();
         final String en = station.getRoadStation().getNameEn();
-        final MultilingualString values = new MultilingualString().withValues(new ArrayList<>());
+        final MultilingualString.Values values = new MultilingualString.Values();
 
-        ObjectUtil.callIfNotNull(fi, () -> values.getValues().add(new MultiLingualStringValue(fi, "fi")));
-        ObjectUtil.callIfNotNull(sv, () -> values.getValues().add(new MultiLingualStringValue(sv, "sv")));
-        ObjectUtil.callIfNotNull(en, () -> values.getValues().add(new MultiLingualStringValue(en, "en")));
+        ObjectUtil.callIfNotNull(fi, () -> values.getValues().add(new MultilingualStringValue(fi_gen, GENERIC_NAME_LANG_CODE)));
+        ObjectUtil.callIfNotNull(fi, () -> values.getValues().add(new MultilingualStringValue(fi, "fi")));
+        ObjectUtil.callIfNotNull(sv, () -> values.getValues().add(new MultilingualStringValue(sv, "sv")));
+        ObjectUtil.callIfNotNull(en, () -> values.getValues().add(new MultilingualStringValue(en, "en")));
 
-        return values;
+        return new MultilingualString().withValues(values);
     }
 
     public static Integer resolvePeriodSecondsFromSensorName(final String nameFi) {
@@ -71,7 +75,7 @@ public class TmsStation2Datex2ConverterJsonCommon {
 
     public static List<RoadStationSensor> filterSortAndFillInMissingSensors(final List<RoadStationSensor> sensors) {
         final List<RoadStationSensor> filteredSensors = new ArrayList<>(filterAllowedSensors(sensors));
-        final List<String> missingSensorsNames = ALLOWED_SENSOR_NAMES.stream()
+        final List<String> missingSensorsNames = TmsDatex2Common.ALLOWED_SENSOR_NAMES.stream()
                 .filter(name -> filteredSensors.stream().noneMatch(sensor -> sensor.getNameFi().equals(name)))
                 .toList();
 
@@ -86,7 +90,7 @@ public class TmsStation2Datex2ConverterJsonCommon {
 
     private static List<RoadStationSensor> filterAllowedSensors(final List<RoadStationSensor> sensors) {
         return sensors.stream()
-                .filter(s -> ALLOWED_SENSOR_NAMES.contains(s.getNameFi()))
+                .filter(s -> TmsDatex2Common.ALLOWED_SENSOR_NAMES.contains(s.getNameFi()))
                 .toList();
     }
 
@@ -96,27 +100,28 @@ public class TmsStation2Datex2ConverterJsonCommon {
                 .toList();
     }
 
-    public static Map<Long, SensorValueDto> filterAllowedSensorValuesAndMapWithNaturalId(final List<SensorValueDto> values) {
+    public static Map<Long, SensorValueDtoV1> filterAllowedSensorValuesAndMapWithNaturalId(final List<SensorValueDtoV1> values) {
         return values.stream()
-                .filter(v -> ALLOWED_SENSOR_NAMES.contains(v.getSensorNameFi()))
-                .collect(Collectors.toMap(SensorValueDto::getSensorNaturalId, Function.identity()));
+                .filter(v -> TmsDatex2Common.ALLOWED_SENSOR_NAMES.contains(v.getSensorNameFi()))
+                .collect(Collectors.toMap(SensorValueDtoV1::getSensorNaturalId, Function.identity()));
     }
 
     public static HeaderInformation getHeaderInformation(final InformationStatusEnum informationStatus) {
         return new HeaderInformation()
-                .withConfidentiality(new ConfidentialityValueEnumG().withValue(ConfidentialityValueEnumG.ConfidentialityValueEnum.NO_RESTRICTION))
-                .withInformationStatus(new InformationStatusEnumG().withValue(informationStatus));
+                .withConfidentiality(new _ConfidentialityValueEnum().withValue(ConfidentialityValueEnum.NO_RESTRICTION))
+                .withInformationStatus(new _InformationStatusEnum().withValue(informationStatus));
     }
 
     @SafeVarargs
-    public static MultilingualString getMultiLangualString(final Pair<String, String>...valueLang) {
-        final List<MultiLingualStringValue> values = Arrays.stream(valueLang)
-                .map(v -> new MultiLingualStringValue(v.getLeft(), v.getRight())).toList();
-        return new MultilingualString().withValues(values);
+    public static MultilingualString getMultiLangualString(final Pair<String, String>...langValue) {
+        final List<MultilingualStringValue> values = Arrays.stream(langValue)
+                .map(v -> new MultilingualStringValue(v.getRight(), v.getLeft())).toList();
+        return new MultilingualString().withValues(new MultilingualString.Values().withValues(values));
     }
 
     public static MultilingualString getMultilingualString(final String lang, final String value) {
-        return new MultilingualString(Collections.singletonList(new MultiLingualStringValue(value, lang)));
+        return new MultilingualString(new MultilingualString.Values(
+                Collections.singletonList(new MultilingualStringValue(value, lang))));
     }
 
     private static int getDummyNaturalIdForSensorName(final String missingSensor) {

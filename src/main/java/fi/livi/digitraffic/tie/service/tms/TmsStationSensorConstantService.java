@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.conf.RoadCacheConfiguration;
 import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
-import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoRepository;
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 
@@ -23,11 +23,11 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 public class TmsStationSensorConstantService {
     private static final Logger log = LoggerFactory.getLogger(TmsStationSensorConstantService.class);
     private final TmsSensorConstantDao tmsSensorConstantDao;
-    private final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository;
+    private final TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoRepository;
 
     @Autowired
     public TmsStationSensorConstantService(final TmsSensorConstantDao tmsSensorConstantDao,
-                                           final TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository) {
+                                           final TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoRepository) {
 
         this.tmsSensorConstantDao = tmsSensorConstantDao;
 		this.tmsSensorConstantValueDtoRepository = tmsSensorConstantValueDtoRepository;
@@ -114,7 +114,7 @@ public class TmsStationSensorConstantService {
     }
 
     @Transactional(readOnly = true)
-    public TmsSensorConstantValueDto getStationSensorConstantValue(final long stationLotjuId, final long sensorConstantValueLotjuId) {
+    public TmsSensorConstantValueDtoV1 getStationSensorConstantValue(final long stationLotjuId, final long sensorConstantValueLotjuId) {
         return tmsSensorConstantValueDtoRepository.getStationSensorConstantValue(stationLotjuId, sensorConstantValueLotjuId);
     }
 }

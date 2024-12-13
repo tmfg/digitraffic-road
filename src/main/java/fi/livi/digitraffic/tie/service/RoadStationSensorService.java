@@ -1,11 +1,8 @@
 package fi.livi.digitraffic.tie.service;
 
-import static java.util.stream.Collectors.toList;
-
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -24,11 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Iterables;
 
-import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorRepository;
-import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorValueDtoRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
-import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
+import fi.livi.digitraffic.tie.dao.roadstation.v1.RoadStationSensorValueDtoRepositoryV1;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
@@ -49,9 +45,8 @@ import jakarta.persistence.metamodel.EntityType;
 public class RoadStationSensorService {
     private static final Logger log = LoggerFactory.getLogger(RoadStationSensorService.class);
 
-    private final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository;
+    private final RoadStationSensorValueDtoRepositoryV1 roadStationSensorValueDtoRepository;
     private final RoadStationSensorRepository roadStationSensorRepository;
-    private final RoadStationRepository roadStationRepository;
     private final DataStatusService dataStatusService;
     private final SensorValueRepository sensorValueRepository;
     private final EntityManager entityManager;
@@ -59,10 +54,9 @@ public class RoadStationSensorService {
     private final Map<RoadStationType, Integer> sensorValueTimeLimitInMins;
 
     @Autowired
-    public RoadStationSensorService(final RoadStationSensorValueDtoRepository roadStationSensorValueDtoRepository,
+    public RoadStationSensorService(final RoadStationSensorValueDtoRepositoryV1 roadStationSensorValueDtoRepository,
                                     final RoadStationSensorRepository roadStationSensorRepository,
                                     final DataStatusService dataStatusService,
-                                    final RoadStationRepository roadStationRepository,
                                     final SensorValueRepository sensorValueRepository,
                                     final EntityManager entityManager,
                                     @Value("${weatherStation.sensorValueTimeLimitInMinutes}")
@@ -71,7 +65,6 @@ public class RoadStationSensorService {
                                     final int tmsStationSensorValueTimeLimitInMins) {
         this.roadStationSensorValueDtoRepository = roadStationSensorValueDtoRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
-        this.roadStationRepository = roadStationRepository;
         this.dataStatusService = dataStatusService;
         this.sensorValueRepository = sensorValueRepository;
         this.entityManager = entityManager;
@@ -102,19 +95,7 @@ public class RoadStationSensorService {
         return all.stream().collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
     }
 
-    @Transactional(readOnly = true)
-    public Map<Long, List<SensorValueDto>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType, final Collection<String> sensorNames) {
-        final List<SensorValueDto> sensors = sensorNames == null || sensorNames.isEmpty() ?
-                                             roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
-                                                     roadStationType, sensorValueTimeLimitInMins.get(roadStationType)) :
-                                             roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValues(
-                                                     roadStationType,
-                                                     sensorValueTimeLimitInMins.get(roadStationType),
-                                                     sensorNames);
 
-        return sensors.parallelStream()
-            .collect(Collectors.groupingBy(SensorValueDto::getRoadStationNaturalId, Collectors.mapping(Function.identity(), toList())));
-    }
 
     @Transactional(readOnly = true)
     public ZonedDateTime getLatestSensorValueUpdatedTime(final RoadStationType roadStationType) {
@@ -144,7 +125,7 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueDto> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final ZonedDateTime updatedAfter, final RoadStationType roadStationType) {
+    public List<SensorValueDtoV1> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final ZonedDateTime updatedAfter, final RoadStationType roadStationType) {
         return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
                 roadStationType,
                 updatedAfter.toInstant());

@@ -33,9 +33,10 @@ import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
+import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.controller.beta.BetaController;
-import fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon;
+import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.ConfidentialityValueEnum;
@@ -351,17 +352,17 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
-    public void tmsBetaStationsDatex2RestApi() throws Exception {
+    public void tmsBetaStationsDatex2XmlRestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.TMS_STATIONS_DATEX2_PATH + ".xml"))
+                mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
         final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
 
         assertEquals(metadataLastModified, publication.getPublicationTime());
         assertEquals("FI", publication.getPublicationCreator().getCountry());
-        assertEquals(TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
+        assertEquals(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
         assertEquals("fi", publication.getLang());
         assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
         assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
@@ -371,14 +372,14 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     public void tmsBetaDataDatex2RestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.TMS_DATA_DATEX2_PATH + ".xml"))
+                mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
         final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
 
         assertEquals(metadataLastModified, publication.getPublicationTime());
         assertEquals("FI", publication.getPublicationCreator().getCountry());
-        assertEquals(TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
+        assertEquals(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
         assertEquals("fi", publication.getLang());
         assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
         assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());

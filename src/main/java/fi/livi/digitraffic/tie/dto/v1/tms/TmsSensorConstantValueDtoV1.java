@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotNull;
 @JsonPropertyOrder({ "name", "value", "validFrom", "validTo"})
 @Entity
 @Immutable
-public class TmsSensorConstantValueDto { // TODO rename to TmsSensorConstantValueDtoV1
+public class TmsSensorConstantValueDtoV1 {
 
     @JsonIgnore
     @Id
@@ -48,13 +48,13 @@ public class TmsSensorConstantValueDto { // TODO rename to TmsSensorConstantValu
     @NotNull
     private Integer validTo;
 
-    public TmsSensorConstantValueDto() {
+    public TmsSensorConstantValueDtoV1() {
     }
 
-    public TmsSensorConstantValueDto(@NotNull final Long lotjuId,
-                                     @NotNull final String name, @NotNull final Integer value,
-                                     @NotNull final Integer validFrom, @NotNull final Integer validTo,
-                                     @NotNull final Long roadStationId, @NotNull final Instant modified) {
+    public TmsSensorConstantValueDtoV1(@NotNull final Long lotjuId,
+                                       @NotNull final String name, @NotNull final Integer value,
+                                       @NotNull final Integer validFrom, @NotNull final Integer validTo,
+                                       @NotNull final Long roadStationId, @NotNull final Instant modified) {
         this.lotjuId = lotjuId;
         this.name = name;
         this.value = value;

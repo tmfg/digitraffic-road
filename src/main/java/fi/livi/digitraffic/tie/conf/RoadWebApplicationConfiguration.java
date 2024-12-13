@@ -190,6 +190,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         private final HeaderContentNegotiationStrategy headerStragegy = new HeaderContentNegotiationStrategy();
 
         @Override
+        @NonNull
         public List<MediaType> resolveMediaTypes(@NonNull
                                                  final NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
             final List<MediaType> fromHeaders = headerStragegy.resolveMediaTypes(webRequest);
@@ -197,9 +198,13 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 // By default many client's sends long list of accepted types or */* etc.
                 // If specific path is asked, then check if json is in accepted formats return json otherwise xml.
                 final String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
-                if ( StringUtils.contains(path, "datex2") && !StringUtils.endsWith(path, "json" ) ) {
+                if (StringUtils.endsWith(path, ".json" ) ) {
+                    return Collections.singletonList(DtMediaType.APPLICATION_JSON);
+                } else if (StringUtils.endsWith(path, ".xml") ) {
+                    return Collections.singletonList(DtMediaType.APPLICATION_XML);
+                } else if ( StringUtils.contains(path, ".datex2") ) {
                     if (containsJson(fromHeaders)) {
-                        log.info("method=resolveMediaTypes type=json for path={}", path);
+                        log.info("method=resolveMediaTypes type=json for path={} mediaTypes: {}", path, fromHeaders);
                     }
                     return containsJson(fromHeaders) ?
                                 Collections.singletonList(DtMediaType.APPLICATION_JSON) :

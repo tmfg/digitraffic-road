@@ -22,8 +22,7 @@ import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-
+import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 
 @ConditionalOnWebApplication
 @Service
@@ -32,16 +31,19 @@ public class TmsStationMetadataWebServiceV1 {
     private final DataStatusService dataStatusService;
     private final TmsStationToFeatureConverterV1 tmsStationToFeatureConverterV1;
     private final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository;
+    private final TmsStationService tmsStationService;
 
     @Autowired
     public TmsStationMetadataWebServiceV1(final TmsStationRepository tmsStationRepository,
                                           final DataStatusService dataStatusService,
                                           final TmsStationToFeatureConverterV1 tmsStationToFeatureConverterV1,
-                                          final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository) {
+                                          final TmsFreeFlowSpeedRepository tmsFreeFlowSpeedRepository,
+                                          final TmsStationService tmsStationService) {
         this.tmsStationRepository = tmsStationRepository;
         this.dataStatusService = dataStatusService;
         this.tmsStationToFeatureConverterV1 = tmsStationToFeatureConverterV1;
         this.tmsFreeFlowSpeedRepository = tmsFreeFlowSpeedRepository;
+        this.tmsStationService = tmsStationService;
     }
 
     @Transactional(readOnly = true)
@@ -55,17 +57,19 @@ public class TmsStationMetadataWebServiceV1 {
 
     @Transactional(readOnly = true)
     public TmsStationFeatureDetailedV1 getTmsStationById(final Long id) {
-        final TmsStation station = tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(id);
-        if(station == null) {
-            throw new ObjectNotFoundException(TmsStation.class, id);
-        }
-
+        final TmsStation station = getPublishableStationById(id);
         final TmsFreeFlowSpeedDto ffs = tmsFreeFlowSpeedRepository.getTmsFreeFlowSpeedsByRoadStationNaturalId(station.getRoadStationNaturalId());
 
         return tmsStationToFeatureConverterV1.convertToDetailedFeature(station, ffs != null ? ffs.getFreeFlowSpeed1OrNull() : null, ffs != null ? ffs.getFreeFlowSpeed2OrNull() : null);
     }
 
-    private List<TmsStation> findPublishableStations(final RoadStationState roadStationState) {
+    @Transactional(readOnly = true)
+    public TmsStation getPublishableStationById(final Long id) {
+        return tmsStationService.findPublishableTmsStationByRoadStationNaturalId(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TmsStation> findPublishableStations(final RoadStationState roadStationState) {
         return switch (roadStationState) {
             case ACTIVE -> tmsStationRepository.findByRoadStationPublishableIsTrueOrderByRoadStation_NaturalId();
             case REMOVED -> tmsStationRepository.findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsOrderByRoadStation_NaturalId
@@ -74,7 +78,8 @@ public class TmsStationMetadataWebServiceV1 {
         };
     }
 
-    private Instant getMetadataLastUpdated() {
+    @Transactional(readOnly = true)
+    public Instant getMetadataLastUpdated() {
         final Instant sensorsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_SENSOR_METADATA);
         final Instant stationsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_METADATA);
         return getGreatest(sensorsUpdated, stationsUpdated);

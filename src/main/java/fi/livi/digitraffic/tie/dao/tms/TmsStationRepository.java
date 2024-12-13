@@ -32,34 +32,8 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     List<TmsStation> findByRoadStationIsPublicIsTrueOrderByRoadStation_NaturalId();
 
-    TmsStation findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(final long roadStationNaturalId);
-
-    @Query("""
-            SELECT CASE WHEN COUNT(tms) > 0 THEN TRUE ELSE FALSE END
-            FROM TmsStation tms
-            WHERE tms.roadStation.naturalId = ?1
-              AND tms.roadStation.obsoleteDate is null
-              AND tms.roadStation.isPublic = true""")
-    boolean tmsExistsWithRoadStationNaturalId(final long roadStationNaturalId);
-
-    TmsStation findByRoadStationIsPublicIsTrueAndRoadStation_NaturalId(final Long naturalId);
-
-    TmsStation findByRoadStationIsPublicIsTrueAndNaturalId(final Long tmsNumber);
-
-    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
-    List<TmsStation> findByRoadStationPublishableIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(final Integer
-        roadNumber);
-
-    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
-    List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationCollectionStatusIsAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(
-        final CollectionStatus removedPermanently, final Integer roadNumber);
-
-    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "1000"))
-    @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
-    List<TmsStation> findByRoadStationIsPublicIsTrueAndRoadStationRoadAddressRoadNumberIsOrderByRoadStation_NaturalId(final Integer
-        roadNumber);
+    TmsStation findByRoadStationPublishableIsTrueAndRoadStation_NaturalId(final long roadStationNaturalId);
 
     @EntityGraph(attributePaths = {"roadStation", "roadStation.roadAddress"})
     TmsStation findByLotjuId(Long lotjuId);

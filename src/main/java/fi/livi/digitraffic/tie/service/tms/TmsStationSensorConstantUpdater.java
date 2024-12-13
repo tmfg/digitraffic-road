@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.common.util.ObjectUtil;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -52,7 +52,7 @@ public class TmsStationSensorConstantUpdater {
                                                    final long roadStationLotjuId) {
 
         final RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.TMS_STATION, roadStationLotjuId);
-        final Long rsNaturalId = ObjectUtil.callIfNotNull(rs, () -> rs.getNaturalId());
+        final Long rsNaturalId = ObjectUtil.callIfNotNull(rs, rs::getNaturalId);
         if (updateType.isDelete()) {
             if (tmsStationSensorConstantService.obsoleteSensorConstantWithLotjuId(anturilotjuId, rsNaturalId)) {
                 dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA);
@@ -121,7 +121,7 @@ public class TmsStationSensorConstantUpdater {
                 return true;
             }
         } else {
-            final TmsSensorConstantValueDto constantValue =
+            final TmsSensorConstantValueDtoV1 constantValue =
                 tmsStationSensorConstantService.getStationSensorConstantValue(roadStationLotjuId, lamAnturiVakioArvoLotjuId);
             if (constantValue != null) {
                 final Long lamAnturiVakioLotjuId = constantValue.getConstantLotjuId();

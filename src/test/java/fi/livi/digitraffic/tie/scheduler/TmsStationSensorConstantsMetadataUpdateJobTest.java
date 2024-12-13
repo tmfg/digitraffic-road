@@ -18,7 +18,7 @@ import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsFreeFlowSpeedDto;
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.service.lotju.LotjuLAMMetatiedotServiceEndpointMock;
 import fi.livi.digitraffic.tie.service.lotju.LotjuTmsStationMetadataClient;
@@ -142,16 +142,22 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
         assertNull(findConstantValue(TIEN_SUUNTA, 23826, sensorConstantValuesAfter));
 
         // Check constant values are updated
-        final TmsSensorConstantValueDto vvapaas1WinterAfter = findConstantValue(VVAPAAS1, 23001, 101, sensorConstantValuesAfter);
-        final TmsSensorConstantValueDto vvapaas1SummerAfter = findConstantValue(VVAPAAS1, 23001, 601, sensorConstantValuesAfter);
+        final TmsSensorConstantValueDtoV1
+                vvapaas1WinterAfter = findConstantValue(VVAPAAS1, 23001, 101, sensorConstantValuesAfter);
+        final TmsSensorConstantValueDtoV1
+                vvapaas1SummerAfter = findConstantValue(VVAPAAS1, 23001, 601, sensorConstantValuesAfter);
         // 95->100 ja 105->110
         assertEquals(100, (long) vvapaas1WinterAfter.getValue());
         assertEquals(110, (long) vvapaas1SummerAfter.getValue());
 
-        final TmsSensorConstantValueDto vvapaas2WinterBefore = findConstantValue(VVAPAAS2, 23001, 101, sensorConstantValuesBefore);
-        final TmsSensorConstantValueDto vvapaas2SummerBefore = findConstantValue(VVAPAAS2, 23001, 601, sensorConstantValuesBefore);
-        final TmsSensorConstantValueDto vvapaas2WinterAfter = findConstantValue(VVAPAAS2, 23001, 101, sensorConstantValuesAfter);
-        final TmsSensorConstantValueDto vvapaas2SummerAfter = findConstantValue(VVAPAAS2, 23001, 601, sensorConstantValuesAfter);
+        final TmsSensorConstantValueDtoV1
+                vvapaas2WinterBefore = findConstantValue(VVAPAAS2, 23001, 101, sensorConstantValuesBefore);
+        final TmsSensorConstantValueDtoV1
+                vvapaas2SummerBefore = findConstantValue(VVAPAAS2, 23001, 601, sensorConstantValuesBefore);
+        final TmsSensorConstantValueDtoV1
+                vvapaas2WinterAfter = findConstantValue(VVAPAAS2, 23001, 101, sensorConstantValuesAfter);
+        final TmsSensorConstantValueDtoV1
+                vvapaas2SummerAfter = findConstantValue(VVAPAAS2, 23001, 601, sensorConstantValuesAfter);
         // winter validity 1101 -> 1001 ja 331 -> 230, speed 95 -> 96
         // summer validity 401->301 ja 1031 -> 930, speed 105 -> 106
         assertEquals(1101, (long) vvapaas2WinterBefore.getValidFrom());
@@ -253,8 +259,8 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
         value.setVoimassaLoppu(voimassaLoppu);
         return value;
     }
-    private TmsSensorConstantValueDto findConstantValue(final String sensorConstantName, final long stationNaturalId,
-                                                        final int validDate, final TmsStationsSensorConstantsDataDtoV1 sensorConstantValues) {
+    private TmsSensorConstantValueDtoV1 findConstantValue(final String sensorConstantName, final long stationNaturalId,
+                                                          final int validDate, final TmsStationsSensorConstantsDataDtoV1 sensorConstantValues) {
         final TmsStationSensorConstantDtoV1 stationConstants = findSensorConstantsOfStation(stationNaturalId, sensorConstantValues);
         return stationConstants.sensorConstanValues
             .stream()
@@ -264,13 +270,13 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
             .orElse(null);
     }
 
-    private boolean isValidOn(final int validDate, final TmsSensorConstantValueDto v) {
+    private boolean isValidOn(final int validDate, final TmsSensorConstantValueDtoV1 v) {
         return (v.getValidFrom() <= validDate && v.getValidTo() >= validDate && v.getValidFrom() < v.getValidTo())
             || ( v.getValidFrom() >= v.getValidTo() && (validDate >= v.getValidFrom() || validDate <= v.getValidTo()) );
     }
 
-    private TmsSensorConstantValueDto findConstantValue(final String sensorConstantName, final long stationNaturalId,
-                                                        final TmsStationsSensorConstantsDataDtoV1 values) {
+    private TmsSensorConstantValueDtoV1 findConstantValue(final String sensorConstantName, final long stationNaturalId,
+                                                          final TmsStationsSensorConstantsDataDtoV1 values) {
         final TmsStationSensorConstantDtoV1 constants = findSensorConstantsOfStation(stationNaturalId, values);
         if (constants != null) {
             return constants.sensorConstanValues

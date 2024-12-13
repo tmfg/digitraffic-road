@@ -1,6 +1,9 @@
 package fi.livi.digitraffic.tie.dao.roadstation.v1;
 
+import static org.hibernate.jpa.HibernateHints.HINT_FETCH_SIZE;
+
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -10,8 +13,6 @@ import fi.livi.digitraffic.tie.dao.SqlRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import jakarta.persistence.QueryHint;
-
-import static org.hibernate.jpa.HibernateHints.HINT_FETCH_SIZE;
 
 public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
 
@@ -59,6 +60,19 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
     List<SensorValueDtoV1> findAllPublicPublishableRoadStationSensorValues(
             final RoadStationType roadStationType,
             final int timeLimitInMinutes);
+
+    @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
+    @Query(value = SQL_SELECT +
+            SQL_FROM +
+            SQL_WHERE_PUBLISHABLE +
+            " AND rs.road_station_type = :#{#roadStationType.name()}\n" +
+            " AND sv.measured > (now() -(:measuredTimeLimitInMinutes * interval '1 MINUTE'))\n" +
+            " AND s.name_fi IN (:sensorNames) ", nativeQuery = true)
+    List<SensorValueDtoV1> findAllPublicPublishableRoadStationSensorValues(
+            final RoadStationType roadStationType,
+            final int measuredTimeLimitInMinutes,
+            final Collection<String> sensorNames);
+
 
     @QueryHints(@QueryHint(name=HINT_FETCH_SIZE, value="3000"))
     @Query(value =

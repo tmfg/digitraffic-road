@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import jakarta.persistence.QueryHint;
 
-public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSensorConstantValueDto, Long> {
+public interface TmsSensorConstantValueDtoV1Repository extends JpaRepository<TmsSensorConstantValueDtoV1, Long> {
 
     String SELECT_LIST =
         "SELECT scv.LOTJU_ID, sc.lotju_id as constant_lotju_id, sc.NAME, scv.VALUE, scv.VALID_FROM, scv.VALID_TO, rs.natural_id as road_station_id, GREATEST(scv.modified, sc.modified) as modified\n";
@@ -28,7 +28,7 @@ public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSe
            nativeQuery = true)
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize",
                            value = "1000"))
-    List<TmsSensorConstantValueDto> findAllPublishableSensorConstantValues();
+    List<TmsSensorConstantValueDtoV1> findAllPublishableSensorConstantValues();
 
     @Query(value =
                SELECT_LIST +
@@ -44,7 +44,7 @@ public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSe
            nativeQuery = true)
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize",
                            value = "1000"))
-    List<TmsSensorConstantValueDto> findPublishableSensorConstantValueForStation(final long roadStationNaturalId);
+    List<TmsSensorConstantValueDtoV1> findPublishableSensorConstantValueForStation(final long roadStationNaturalId);
 
     @Query(value =
                SELECT_LIST +
@@ -57,12 +57,12 @@ public interface TmsSensorConstantValueDtoRepository extends JpaRepository<TmsSe
            nativeQuery = true)
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize",
                            value = "1000"))
-    TmsSensorConstantValueDto getStationSensorConstantValue(final long stationLotjuId, final long sensorConstantValueLotjuId);
+    TmsSensorConstantValueDtoV1 getStationSensorConstantValue(final long stationLotjuId, final long sensorConstantValueLotjuId);
 
     @Query(value = """
-            SELECT GREATEST(tsc.modified, tscv.modified) as data_last_updated 
-            FROM tms_sensor_constant tsc 
-            INNER JOIN tms_sensor_constant_value tscv 
+            SELECT GREATEST(tsc.modified, tscv.modified) as data_last_updated
+            FROM tms_sensor_constant tsc
+            INNER JOIN tms_sensor_constant_value tscv
             ON tscv.sensor_constant_lotju_id = tsc.lotju_id
             ORDER BY data_last_updated DESC
             LIMIT 1

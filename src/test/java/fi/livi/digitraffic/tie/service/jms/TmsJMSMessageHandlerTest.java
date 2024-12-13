@@ -33,9 +33,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.common.util.TimeUtil;
+import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
@@ -133,7 +133,7 @@ public class TmsJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
                 time = time.plusMillis(2000);
 
-            } while (data.size() < 100 && lamsWithLotjuId.values().size() > data.size());
+            } while (data.size() < 100 && lamsWithLotjuId.size() > data.size());
 
             log.info("Data generation tookMs={}", sw.getTime());
             final StopWatch swHandle = StopWatch.createStarted();
@@ -173,7 +173,7 @@ public class TmsJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest {
         assertTrue(lastUpdated.isAfter(timeInPast2Minutes),
                 "LastUpdated not fresh " + lastUpdated + " <= " + timeInPast2Minutes);
 
-        final List<SensorValueDto> updated =
+        final List<SensorValueDtoV1> updated =
                 roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter
                         (lastUpdated.minusSeconds(1), RoadStationType.TMS_STATION);
         assertFalse(updated.isEmpty());

@@ -1,13 +1,11 @@
-package fi.livi.digitraffic.tie.converter.tms.datex2;
+package fi.livi.digitraffic.tie.converter.tms.datex2.json;
 
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_TABLE_IDENTIFIER;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.resolveETRS89PointLocation;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.filterSortAndFillInMissingSensors;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.getHeaderInformation;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.getInternationalIdentifier;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.getMeasurementSiteName;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.getMultilingualString;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterJsonCommon.resolvePeriodSecondsFromSensorName;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common.filterSortAndFillInMissingSensors;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common.resolvePeriodSecondsFromSensorName;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStation2Datex2ConverterJsonCommon.getHeaderInformation;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStation2Datex2ConverterJsonCommon.getInternationalIdentifier;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStation2Datex2ConverterJsonCommon.getMeasurementSiteName;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStation2Datex2ConverterJsonCommon.getMultilingualString;
 import static fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum.REAL;
 import static fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum.TEST;
 
@@ -21,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.ComputationMethodEnumG;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.json.LocationReferenceG;
@@ -61,9 +60,9 @@ public class TmsStationMetadata2Datex2JsonConverter {
         // https://docs.datex2.eu/levels/mastering/roadtrafficdata/
         final MeasurementSiteTable siteTable =
             new MeasurementSiteTable()
-                .withIdG(MEASUREMENT_SITE_TABLE_IDENTIFIER)
+                .withIdG(TmsDatex2Common.MEASUREMENT_SITE_TABLE_IDENTIFIER)
                 .withVersionG(String.valueOf(metadataLastUpdated))
-                .withMeasurementSiteTableIdentification(MEASUREMENT_SITE_TABLE_IDENTIFIER)
+                .withMeasurementSiteTableIdentification(TmsDatex2Common.MEASUREMENT_SITE_TABLE_IDENTIFIER)
                 .withMeasurementSite(
                     stations.stream().map(station -> getMeasurementSiteRecord(
                             station,
@@ -79,7 +78,7 @@ public class TmsStationMetadata2Datex2JsonConverter {
 
 
     private static MeasurementSite getMeasurementSiteRecord(final TmsStation station, final List<RoadStationSensor> sensors) {
-        final fi.livi.digitraffic.tie.metadata.geojson.Point point = resolveETRS89PointLocation(station.getRoadStation());
+        final fi.livi.digitraffic.tie.metadata.geojson.Point point = TmsDatex2Common.resolveETRS89PointLocation(station.getRoadStation());
 
         final String measurementEquipmentType =
                 station.getCalculatorDeviceType() != null ? station.getCalculatorDeviceType().getValue() : null;
@@ -130,8 +129,8 @@ public class TmsStationMetadata2Datex2JsonConverter {
         final Integer periodSeconds = resolvePeriodSecondsFromSensorName(sensor.getNameFi());
 
         return new MeasurementSpecificCharacteristics()
-                // accuracy is % value, we don't have it.
-                //.withAccuracy(sensor.getAccuracy() != null ? Double.valueOf(sensor.getAccuracy()) : null)
+                // accuracy is % value
+                .withAccuracy(TmsDatex2Common.getSensorValueAccuracyPercentage())
                 .withComputationMethod(new ComputationMethodEnumG( computationMethod, null))
                 // Not recommended to use like this
                 //.withSpecificMeasurementValueType(new MeasuredOrDerivedDataTypeEnumG(dataType, sensor.getNameFi()))

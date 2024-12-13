@@ -27,9 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.dto.v1.SensorValueDto;
 import fi.livi.digitraffic.common.util.TimeUtil;
+import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
@@ -279,7 +279,7 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
                 roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION);
         assertLastUpdated(lastUpdated);
 
-        final List<SensorValueDto> updated =
+        final List<SensorValueDtoV1> updated =
                 roadStationSensorService.findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
                         lastUpdated.minusSeconds(1),
                         RoadStationType.WEATHER_STATION);

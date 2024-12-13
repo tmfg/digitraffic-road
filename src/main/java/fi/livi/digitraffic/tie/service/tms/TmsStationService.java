@@ -58,7 +58,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
 
     @Transactional(readOnly = true)
     public TmsStation findPublishableTmsStationByRoadStationNaturalId(final long roadStationNaturalId) {
-        final TmsStation entity = tmsStationRepository.findByRoadStation_NaturalIdAndRoadStationPublishableIsTrue(roadStationNaturalId);
+        final TmsStation entity = tmsStationRepository.findByRoadStationPublishableIsTrueAndRoadStation_NaturalId(roadStationNaturalId);
 
         if (entity == null) {
             throw new ObjectNotFoundException(TmsStation.class, roadStationNaturalId);

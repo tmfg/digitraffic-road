@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.roadstation.v1;
 import static java.util.stream.Collectors.toList;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -93,6 +94,20 @@ public class RoadStationSensorServiceV1 {
 
         return sensors.parallelStream()
             .collect(Collectors.groupingBy(SensorValueDtoV1::getRoadStationNaturalId, Collectors.mapping(Function.identity(), toList())));
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, List<SensorValueDtoV1>> findAllPublishableRoadStationSensorValuesMappedByNaturalId(final RoadStationType roadStationType, final Collection<String> sensorNames) {
+        final List<SensorValueDtoV1> sensors = sensorNames == null || sensorNames.isEmpty() ?
+                                             roadStationSensorValueDtoRepositoryV1.findAllPublicPublishableRoadStationSensorValues(
+                                                     roadStationType, sensorValueTimeLimitInMins.get(roadStationType)) :
+                                             roadStationSensorValueDtoRepositoryV1.findAllPublicPublishableRoadStationSensorValues(
+                                                     roadStationType,
+                                                     sensorValueTimeLimitInMins.get(roadStationType),
+                                                     sensorNames);
+
+        return sensors.parallelStream()
+                .collect(Collectors.groupingBy(SensorValueDtoV1::getRoadStationNaturalId, Collectors.mapping(Function.identity(), toList())));
     }
 
     @Transactional(readOnly = true)

@@ -33,9 +33,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorRepository;
-import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
 import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
@@ -77,7 +77,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
     private TmsStationSensorConstantService tmsStationSensorConstantService;
 
     @Autowired
-    private TmsSensorConstantValueDtoRepository tmsSensorConstantValueDtoRepository;
+    private TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoRepository;
 
     @AfterEach
     protected void clearDb() {
@@ -121,7 +121,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
             stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rsAfterInsert.getId(), RoadStationType.TMS_STATION);
         final List<Long> stationsSensors = rsSensorsNaturalIdsAfterInsert.get(rsAfterInsert.getId());
         AssertHelper.assertCollectionSize(1, stationsSensors);
-        final long addedSensorNaturalId = stationsSensors.get(0);
+        final long addedSensorNaturalId = stationsSensors.getFirst();
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), addedSensorNaturalId);
     }
 
@@ -155,7 +155,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
             stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rsAfterUpdate.getId(), RoadStationType.TMS_STATION);
         final List<Long> stationsSensors = rsSensorsNaturalIdsAfterUpdate.get(rsAfterUpdate.getId());
         AssertHelper.assertCollectionSize(1, stationsSensors);
-        final long addedSensorNaturalId = stationsSensors.get(0);
+        final long addedSensorNaturalId = stationsSensors.getFirst();
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2.getRight(), addedSensorNaturalId);
     }
 
@@ -184,7 +184,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final int sensorsCountBeforeUpdate = getTmsSensorsFromDb().size();
 
         // 2. Send insert message
-        final LamLaskennallinenAnturiVO anturi = createAnturiListWith(Pair.of(NEW_LOTJU_ID, NEW_LOTJU_ID)).get(0);
+        final LamLaskennallinenAnturiVO anturi = createAnturiListWith(Pair.of(NEW_LOTJU_ID, NEW_LOTJU_ID)).getFirst();
         when(lotjuTmsStationMetadataClient.getLamLaskennallinenAnturi(eq(NEW_LOTJU_ID))).thenReturn(anturi);
         when(lotjuTmsStationMetadataClient.getLamAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(lam);
         when(lotjuTmsStationMetadataClient.getLamAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(Collections.singletonList(anturi));
@@ -203,7 +203,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final Map<Long, List<Long>> rsSensorsNaturalIdsAfterUpdate = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(tmsId, RoadStationType.TMS_STATION);
         final List<Long> roadStationsSensors = rsSensorsNaturalIdsAfterUpdate.get(tmsId);
         AssertHelper.assertCollectionSize(1, roadStationsSensors);
-        assertEquals(NEW_LOTJU_ID, roadStationsSensors.get(0).longValue());
+        assertEquals(NEW_LOTJU_ID, roadStationsSensors.getFirst().longValue());
     }
 
 
@@ -212,7 +212,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         // 1. there is no sensor with new lotju id
         final int sensorsCountBeforeUpdate = getTmsSensorsFromDb().size();
 
-        final LamLaskennallinenAnturiVO anturi = TestUtils.createLamLaskennallinenAnturis(1).get(0);
+        final LamLaskennallinenAnturiVO anturi = TestUtils.createLamLaskennallinenAnturis(1).getFirst();
         assertEquals(UpdateStatus.INSERTED, roadStationSensorService.updateOrInsert(anturi));
 
         // 2. Send update message
@@ -233,7 +233,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
     @Test
     public void tmsComputationalSensorDeleteMessage() {
         // 1. there is no sensor with new lotju id
-        final LamLaskennallinenAnturiVO anturi = TestUtils.createLamLaskennallinenAnturis(1).get(0);
+        final LamLaskennallinenAnturiVO anturi = TestUtils.createLamLaskennallinenAnturis(1).getFirst();
         assertEquals(UpdateStatus.INSERTED, roadStationSensorService.updateOrInsert(anturi));
 
         // 2. Send update message
@@ -321,10 +321,10 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         TestUtils.commitAndEndTransactionAndStartNew();
 
         // 3. Check that new sensor constant value is added to station
-        final List<TmsSensorConstantValueDto> allValues =
+        final List<TmsSensorConstantValueDtoV1> allValues =
             tmsSensorConstantValueDtoRepository.findAllPublishableSensorConstantValues();
         AssertHelper.assertCollectionSize(1, allValues);
-        final TmsSensorConstantValueDto value = allValues.get(0);
+        final TmsSensorConstantValueDtoV1 value = allValues.getFirst();
         Assertions.assertEquals(95, value.getValue());
         Assertions.assertEquals(sensorName, value.getName());
     }
@@ -345,10 +345,10 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         TestUtils.commitAndEndTransactionAndStartNew();
 
         // 3. Check that new sensor constant value is updated
-        final List<TmsSensorConstantValueDto> allValues =
+        final List<TmsSensorConstantValueDtoV1> allValues =
             tmsSensorConstantValueDtoRepository.findAllPublishableSensorConstantValues();
         AssertHelper.assertCollectionSize(1, allValues);
-        final TmsSensorConstantValueDto value = allValues.get(0);
+        final TmsSensorConstantValueDtoV1 value = allValues.getFirst();
         Assertions.assertEquals(80, value.getValue());
         Assertions.assertEquals(SENSOR_CONSTANT_NAME_1, value.getName());
     }
@@ -367,7 +367,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         TestUtils.commitAndEndTransactionAndStartNew();
 
         // 3. Check that deleted sensor constant value is removed from station
-        final List<TmsSensorConstantValueDto> allValues =
+        final List<TmsSensorConstantValueDtoV1> allValues =
             tmsSensorConstantValueDtoRepository.findAllPublishableSensorConstantValues();
         AssertHelper.assertCollectionSize(0, allValues);
     }
@@ -431,7 +431,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
             "  AND lotju_id = " + sensorConstantLotjuId +
             "  AND obsolete_date is null").getResultList();
         Assertions.assertTrue(result.size() <= 1);
-        return result.isEmpty() ? null : (String) result.get(0);
+        return result.isEmpty() ? null : (String) result.getFirst();
     }
 
     private void assertRoadAddressUpdateMessage(final UpdateType updateType) {
@@ -471,8 +471,8 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
 
     private List<LamLaskennallinenAnturiVO> createAnturiListWith(final Pair<Long, Long> sensorLotjuIdAndNaturalId) {
         final List<LamLaskennallinenAnturiVO> anturit = TestUtils.createLamLaskennallinenAnturis(1);
-        anturit.get(0).setId(sensorLotjuIdAndNaturalId.getLeft());
-        anturit.get(0).setVanhaId(sensorLotjuIdAndNaturalId.getRight().intValue());
+        anturit.getFirst().setId(sensorLotjuIdAndNaturalId.getLeft());
+        anturit.getFirst().setVanhaId(sensorLotjuIdAndNaturalId.getRight().intValue());
         return anturit;
     }
 

@@ -1,13 +1,11 @@
-package fi.livi.digitraffic.tie.converter.tms.datex2;
+package fi.livi.digitraffic.tie.converter.tms.datex2.xml;
 
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.MEASUREMENT_SITE_TABLE_IDENTIFIER;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.filterSortAndFillInMissingSensors;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.getHeaderInformation;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.getInternationalIdentifier;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.getMeasurementSiteName;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.getMultilingualString;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.resolveETRS89PointLocation;
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsStation2Datex2ConverterCommon.resolvePeriodSecondsFromSensorName;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStation2Datex2XmlConverterCommon.filterSortAndFillInMissingSensors;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStation2Datex2XmlConverterCommon.getHeaderInformation;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStation2Datex2XmlConverterCommon.getInternationalIdentifier;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStation2Datex2XmlConverterCommon.getMeasurementSiteName;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStation2Datex2XmlConverterCommon.getMultilingualString;
+import static fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStation2Datex2XmlConverterCommon.resolvePeriodSecondsFromSensorName;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.ComputationMethodEnum;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum;
 import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSite;
@@ -38,17 +37,15 @@ import fi.livi.digitraffic.tie.model.tms.TmsStation;
 
 @ConditionalOnWebApplication
 @Component
-public class TmsStationMetadata2Datex2Converter {
+public class TmsStationMetadata2Datex2XmlConverter {
 
     private final InformationStatusEnum informationStatus;
 
-    public TmsStationMetadata2Datex2Converter(@Value("${dt.domain.url}") final String appUrl) {
+    public TmsStationMetadata2Datex2XmlConverter(@Value("${dt.domain.url}") final String appUrl) {
         this.informationStatus = appUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
 
     public MeasurementSiteTablePublication convertToXml(final List<TmsStation> stations, final Instant metadataLastUpdated) {
-
-
 
         final MeasurementSiteTablePublication measurementSiteTablePublication =
             new MeasurementSiteTablePublication()
@@ -60,9 +57,9 @@ public class TmsStationMetadata2Datex2Converter {
         // https://docs.datex2.eu/levels/mastering/roadtrafficdata/
         final MeasurementSiteTable siteTable =
             new MeasurementSiteTable()
-                .withId(MEASUREMENT_SITE_TABLE_IDENTIFIER)
+                .withId(TmsDatex2Common.MEASUREMENT_SITE_TABLE_IDENTIFIER)
                 .withVersion(String.valueOf(metadataLastUpdated))
-                .withMeasurementSiteTableIdentification(MEASUREMENT_SITE_TABLE_IDENTIFIER);
+                .withMeasurementSiteTableIdentification(TmsDatex2Common.MEASUREMENT_SITE_TABLE_IDENTIFIER);
 
         stations.forEach(station ->
                 siteTable.getMeasurementSites().add(
@@ -83,10 +80,8 @@ public class TmsStationMetadata2Datex2Converter {
         return measurementSiteTablePublication;
     }
 
-
-
     private static MeasurementSite getMeasurementSiteRecord(final TmsStation station, final List<RoadStationSensor> sensors) {
-        final fi.livi.digitraffic.tie.metadata.geojson.Point point = resolveETRS89PointLocation(station.getRoadStation());
+        final fi.livi.digitraffic.tie.metadata.geojson.Point point = TmsDatex2Common.resolveETRS89PointLocation(station.getRoadStation());
 
         final String measurementEquipmentType =
                 station.getCalculatorDeviceType() != null ? station.getCalculatorDeviceType().getValue() : null;
@@ -117,7 +112,7 @@ public class TmsStationMetadata2Datex2Converter {
     private static List<_MeasurementSiteIndexMeasurementSpecificCharacteristics> getMeasurementSpecificCharacteristics(final List<RoadStationSensor> sensors) {
 
         final List<MeasurementSpecificCharacteristics> measurementSpecificCharacteristics =
-                sensors.stream().map(TmsStationMetadata2Datex2Converter::createMeasurementSpecificCharacteristics).toList();
+                sensors.stream().map(TmsStationMetadata2Datex2XmlConverter::createMeasurementSpecificCharacteristics).toList();
 
         final List<_MeasurementSiteIndexMeasurementSpecificCharacteristics> indexedMeasurementSpecificCharacteristics = new ArrayList<>();
         for (int i = 0; i < measurementSpecificCharacteristics.size(); i++) {
@@ -136,8 +131,8 @@ public class TmsStationMetadata2Datex2Converter {
         final Integer periodSeconds = resolvePeriodSecondsFromSensorName(sensor.getNameFi());
 
         return new MeasurementSpecificCharacteristics()
-                // accuracy is % value, we don't have it.
-                //.withAccuracy(sensor.getAccuracy() != null ? sensor.getAccuracy().floatValue() : 0)
+                // accuracy is % value.
+                .withAccuracy((float) TmsDatex2Common.getSensorValueAccuracyPercentage())
                 .withComputationMethod(new _ComputationMethodEnum( computationMethod, null))
                 // Not recommended to use like this
                 //.withSpecificMeasurementValueType(new _MeasuredOrDerivedDataTypeEnum(dataType, sensor.getNameFi()))

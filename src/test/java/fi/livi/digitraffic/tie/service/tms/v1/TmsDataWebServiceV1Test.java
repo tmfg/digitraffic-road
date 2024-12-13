@@ -22,7 +22,7 @@ import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
-import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDto;
+import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -141,8 +141,8 @@ public class TmsDataWebServiceV1Test extends AbstractWebServiceTest {
 
         final TmsStationsSensorConstantsDataDtoV1 result = tmsDataWebServiceV1.findPublishableSensorConstants(false);
         AssertHelper.assertCollectionSize(1, result.stations);
-        AssertHelper.assertCollectionSize(1, result.stations.get(0).sensorConstanValues);
-        final TmsSensorConstantValueDto scv = result.stations.get(0).sensorConstanValues.get(0);
+        AssertHelper.assertCollectionSize(1, result.stations.getFirst().sensorConstanValues);
+        final TmsSensorConstantValueDtoV1 scv = result.stations.getFirst().sensorConstanValues.getFirst();
         assertEquals(vakioNimi, scv.getName());
         assertEquals(vakioArvo, scv.getValue());
         assertEquals("01-01", scv.getValidFromFormated());
@@ -160,7 +160,7 @@ public class TmsDataWebServiceV1Test extends AbstractWebServiceTest {
         final TmsStationSensorConstantDtoV1 result =
             tmsDataWebServiceV1.findPublishableSensorConstantsForStation(tmsStation.getRoadStationNaturalId());
         AssertHelper.assertCollectionSize(1, result.sensorConstanValues);
-        final TmsSensorConstantValueDto scv = result.sensorConstanValues.get(0);
+        final TmsSensorConstantValueDtoV1 scv = result.sensorConstanValues.getFirst();
         assertEquals(vakioNimi, scv.getName());
         assertEquals(vakioArvo, scv.getValue());
         assertEquals("01-01", scv.getValidFromFormated());
