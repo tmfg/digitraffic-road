@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.controller.beta;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
-import static fi.livi.digitraffic.tie.controller.beta.BetaController.API_BETA_BASE_PATH;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -32,12 +31,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Beta")
 @RestController
 @Validated
-@RequestMapping(API_BETA_BASE_PATH)
 @ConditionalOnWebApplication
 public class BetaController {
 
-    public static final String API_BETA_BASE_PATH = "/beta";
-    public static final String API_TMS_STATIONS_PATH = TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS;
+    public static final String API_TMS_STATIONS_PATH = TmsControllerV1.API_TMS_BETA + TmsControllerV1.STATIONS;
     private final TmsStationDatex2Service tmsStationDatex2Service;
     private final TmsDataDatex2Service tmsDataDatex2Service;
 

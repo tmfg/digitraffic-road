@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.controller.tms;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TMS;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.LAST_UPDATED_PARAM;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.TMS_TAG_V1;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V1;
@@ -66,7 +67,7 @@ public class TmsControllerV1 {
      * /api/tms/v/stations/{id}/sensor-constants
      */
 
-    // public static final String API_TMS_BETA = API_TMS + BETA;
+    public static final String API_TMS_BETA = API_TMS + BETA;
     public static final String API_TMS_V1 = API_TMS + V1;
 
     public static final String STATIONS = "/stations";
