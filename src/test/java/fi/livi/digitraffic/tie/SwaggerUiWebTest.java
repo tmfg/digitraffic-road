@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
-import fi.livi.digitraffic.tie.controller.beta.BetaController;
 import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
 import fi.livi.digitraffic.tie.service.BuildVersionService;
 
@@ -46,6 +45,6 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
             .andExpect(content().contentType(restContentType))
             .andExpect(jsonPath("$.openapi", is("3.0.1")))
             .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-            .andExpect(content().string(containsString(BetaController.API_BETA_BASE_PATH + "/")));
+            .andExpect(content().string(containsString(TmsControllerV1.API_TMS_BETA + "/")));
     }
 }

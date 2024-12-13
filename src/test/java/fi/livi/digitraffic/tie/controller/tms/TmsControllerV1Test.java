@@ -355,7 +355,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     public void tmsBetaStationsDatex2XmlRestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATEX2 + ApiConstants.XML))
+                mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
         final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
@@ -372,7 +372,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     public void tmsBetaDataDatex2RestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(BetaController.API_BETA_BASE_PATH + BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
+                mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
         final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
