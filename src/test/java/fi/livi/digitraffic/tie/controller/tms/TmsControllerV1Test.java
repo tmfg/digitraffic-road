@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.xml.transform.StringSource;
 
+import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
@@ -358,6 +360,28 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
+
+        checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
+
+        final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
+
+        assertEquals(metadataLastModified, publication.getPublicationTime());
+        assertEquals("FI", publication.getPublicationCreator().getCountry());
+        assertEquals(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
+        assertEquals("fi", publication.getLang());
+        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
+        assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+    }
+
+    @Test
+    public void tmsBetaStationsByIdDatex2XmlRestApi() throws Exception {
+
+        final String xmlResponse =
+                mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATEX2 + ApiConstants.XML))
+                        .andReturn().getResponse().getContentAsString();
+
+        checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
+
         final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
 
         assertEquals(metadataLastModified, publication.getPublicationTime());
@@ -375,6 +399,8 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
                 mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
+        checkXmlXsiType(xmlResponse, MeasuredDataPublication.class);
+
         final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
 
         assertEquals(metadataLastModified, publication.getPublicationTime());
@@ -383,6 +409,31 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         assertEquals("fi", publication.getLang());
         assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
         assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+    }
+
+    @Test
+    public void tmsBetaDataByIdDatex2RestApi() throws Exception {
+
+        final String xmlResponse =
+                mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
+                        .andReturn().getResponse().getContentAsString();
+
+        checkXmlXsiType(xmlResponse, MeasuredDataPublication.class);
+
+        final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
+
+        assertEquals(metadataLastModified, publication.getPublicationTime());
+        assertEquals("FI", publication.getPublicationCreator().getCountry());
+        assertEquals(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
+        assertEquals("fi", publication.getLang());
+        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
+        assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+    }
+
+    private void checkXmlXsiType(final String xmlResponse, final Class<?> xsiType) {
+        assertTrue(StringUtils.contains(xmlResponse, "<d2:payload"));
+        final String typeString = StringUtil.format("xsi:type=\"roa:{}\"", xsiType.getSimpleName());
+        assertTrue(StringUtils.contains(xmlResponse, typeString), StringUtil.format("Xml message didn't contain: {}"));
     }
 
     private <T> T unmarshalXml(final String xml, final Class<T> clazz) {

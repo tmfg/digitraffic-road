@@ -36,8 +36,6 @@ public class TmsDatex2Common {
             "OHITUKSET_60MIN_KIINTEA_SUUNTA2"
     );
 
-    public static final String GENERIC_NAME_LANG_CODE = "fi-gen";
-
     private static double SENSOR_VALUE_ACCURACY_PERCENTAGE;
 
     @Value("${tms.sensorValueAccuracyPercentage.totalAmounts}")

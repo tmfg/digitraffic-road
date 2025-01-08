@@ -87,7 +87,7 @@ public class TmsStationMetadata2Datex2JsonConverter {
                         .withIdG(station.getRoadStationNaturalId().toString())
                         .withMeasurementSiteRecordVersionTime(station.getMaxModified())
                         .withVersionG(station.getMaxModified().toString()) // not required
-                        .withMeasurementSiteIdentification(String.valueOf(station.getRoadStationNaturalId()))
+                        .withMeasurementSiteIdentification(station.getRoadStation().getName())
                         .withMeasurementSiteName(getMeasurementSiteName(station))
                         .withMeasurementSiteLocation(
                                 new LocationReferenceG().withLocPointLocation(

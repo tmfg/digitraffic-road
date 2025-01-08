@@ -92,40 +92,32 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     public HttpMessageConverter<Object> xmlHttpMessageConverterForD2LogicalModel() {
         return new Jaxb2RootElementHttpMessageConverter<>(D2LogicalModel.class)
                 .withJaxbSchemaLocations(
-                        "http://datex2.eu/schema/2/2_0",
+                        "https://datex2.eu/schema/2/2_0",
                         dtDomainAndSchemaRootLocation + "/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
     }
 
     @Bean
     public HttpMessageConverter<Object> xmlHttpMessageConverterForMeasurementSiteTablePublication() {
-//        This is not adding xsi:type attribute so we need to use below resolution
-//        return new Jaxb2RootElementHttpMessageConverter<>(
-//                MeasurementSiteTablePublication.class)
-//                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
-//                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload");
-
+        // To return child class in xml as xsi:type attribute we need to use custom implementation
+        // telling the child and parent classes
         return new Jaxb2RootElementHttpMessageConverter<>(
                 MeasurementSiteTablePublication.class,
                 PayloadPublication.class,
                 "payload")
-                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload")
+                .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
                 .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
                 .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
     @Bean
     public HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication() {
-//        This is not adding xsi:type attribute so we need to use below resolution
-//        return new Jaxb2RootElementHttpMessageConverter<>(
-//                MeasuredDataPublication.class)
-//                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
-//                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload");
-
+        // To return child class in xml as xsi:type attribute we need to use custom implementation
+        // telling the child and parent classes
         return new Jaxb2RootElementHttpMessageConverter<>(
                 MeasuredDataPublication.class,
                 PayloadPublication.class,
                 "payload")
-                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload")
+                .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
                 .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
                 .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }

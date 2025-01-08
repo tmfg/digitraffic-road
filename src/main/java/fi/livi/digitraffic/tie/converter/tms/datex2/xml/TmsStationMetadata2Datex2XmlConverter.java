@@ -90,7 +90,7 @@ public class TmsStationMetadata2Datex2XmlConverter {
                         .withId(station.getRoadStationNaturalId().toString())
                         .withMeasurementSiteRecordVersionTime(station.getMaxModified())
                         .withVersion(station.getMaxModified().toString()) // not required
-                        .withMeasurementSiteIdentification(String.valueOf(station.getRoadStationNaturalId()))
+                        .withMeasurementSiteIdentification(station.getRoadStation().getName())
                         .withMeasurementSiteName(getMeasurementSiteName(station))
                         .withMeasurementSiteLocation(
                                 new PointLocation()

@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.converter.tms.datex2.xml;
 
-import static fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common.GENERIC_NAME_LANG_CODE;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,14 +43,11 @@ public class TmsStation2Datex2XmlConverterCommon {
     }
 
     public static MultilingualString getMeasurementSiteName(final TmsStation station) {
-        // .getNameFi() is not always a real name
-        final String fi_gen = station.getRoadStation().getName();
         final String fi = ObjectUtils.firstNonNull(station.getRoadStation().getName(), station.getRoadStation().getNameFi());
         final String sv = station.getRoadStation().getNameSv();
         final String en = station.getRoadStation().getNameEn();
         final MultilingualString.Values values = new MultilingualString.Values();
 
-        ObjectUtil.callIfNotNull(fi, () -> values.getValues().add(new MultilingualStringValue(fi_gen, GENERIC_NAME_LANG_CODE)));
         ObjectUtil.callIfNotNull(fi, () -> values.getValues().add(new MultilingualStringValue(fi, "fi")));
         ObjectUtil.callIfNotNull(sv, () -> values.getValues().add(new MultilingualStringValue(sv, "sv")));
         ObjectUtil.callIfNotNull(en, () -> values.getValues().add(new MultilingualStringValue(en, "en")));
