@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingDomainDtoV1;
@@ -43,9 +44,9 @@ import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureColl
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingFeatureV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingLatestFeatureCollectionV1;
 import fi.livi.digitraffic.tie.dto.maintenance.v1.MaintenanceTrackingTaskDtoV1;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingWebDataServiceV1;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -54,7 +55,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 
-@Tag(name = ApiConstants.MAINTENANCE_TAG_V1)
+@Tag(name = ApiConstants.MAINTENANCE_TAG_V1,
+     description = "Road maintenance",
+     externalDocs = @ExternalDocumentation(description = "Documentation",
+                                           url = "https://www.digitraffic.fi/en/road-traffic/#road-maintenance-information"))
 @RestController
 @Validated
 @ConditionalOnWebApplication

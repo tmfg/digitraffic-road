@@ -33,13 +33,17 @@ import fi.livi.digitraffic.tie.dto.weathercam.v1.history.WeathercamsHistoryDtoV1
 import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamMetadataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weathercam.v1.WeathercamPresetHistoryDataWebServiceV1;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = ApiConstants.WEATHERCAM_TAG_V1)
+@Tag(name = ApiConstants.WEATHERCAM_TAG_V1,
+     description = "Weather cameras",
+     externalDocs = @ExternalDocumentation(description = "Documentation",
+                                           url = "https://www.digitraffic.fi/en/road-traffic/#weather-cameras"))
 @RestController
 @Validated
 @ConditionalOnWebApplication

@@ -37,7 +37,6 @@ import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
 import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
-import fi.livi.digitraffic.tie.controller.beta.BetaController;
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
@@ -354,10 +353,10 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
-    public void tmsBetaStationsDatex2XmlRestApi() throws Exception {
+    public void tmsStationsDatex2XmlRestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATEX2 + ApiConstants.XML))
+                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
 
@@ -374,10 +373,10 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
-    public void tmsBetaStationsByIdDatex2XmlRestApi() throws Exception {
+    public void tmsStationsByIdDatex2XmlRestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATEX2 + ApiConstants.XML))
+                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
         checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
@@ -393,10 +392,10 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
-    public void tmsBetaDataDatex2RestApi() throws Exception {
+    public void tmsDataDatex2RestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
+                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
         checkXmlXsiType(xmlResponse, MeasuredDataPublication.class);
@@ -412,10 +411,10 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
-    public void tmsBetaDataByIdDatex2RestApi() throws Exception {
+    public void tmsDataByIdDatex2RestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(BetaController.API_TMS_STATIONS_PATH + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
+                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
         checkXmlXsiType(xmlResponse, MeasuredDataPublication.class);

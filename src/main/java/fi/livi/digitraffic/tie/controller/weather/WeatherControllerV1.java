@@ -13,11 +13,13 @@ import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
-import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.*;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_BAD_REQUEST;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
+import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.metadata.geojson.Geometry.COORD_FORMAT_WGS84;
 
-import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorHistoryDtoV1;
-import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
+import java.time.Instant;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
@@ -38,12 +40,15 @@ import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionsWeatherDt
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationDataDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationFeatureDetailedV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorHistoryDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationsDataDtoV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
+import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
 import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,9 +58,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 
-import java.time.Instant;
-
-@Tag(name = WEATHER_TAG_V1)
+@Tag(name = WEATHER_TAG_V1,
+     description = "Road weather stations and road weather forecasts",
+     externalDocs = @ExternalDocumentation(description = "Documentation",
+                                           url = "https://www.digitraffic.fi/en/road-traffic/#current-data-of-road-weather-stations"))
 @RestController
 @Validated
 @ConditionalOnWebApplication

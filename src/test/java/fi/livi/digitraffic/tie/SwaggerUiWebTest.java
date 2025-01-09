@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,6 +46,7 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
             .andExpect(content().contentType(restContentType))
             .andExpect(jsonPath("$.openapi", is("3.0.1")))
             .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-            .andExpect(content().string(containsString(TmsControllerV1.API_TMS_BETA + "/")));
+            .andExpect(content().string(not(containsString( "/api/"))));
+            //.andExpect(content().string(containsString(TmsControllerV1.API_TMS_BETA + "/")));
     }
 }

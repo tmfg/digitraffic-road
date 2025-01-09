@@ -25,9 +25,9 @@ public class ResponseEntityWithLastModifiedHeader<T> extends ResponseEntity<T> {
         if (lastModified != null) {
             responseHeaders.setLastModified(lastModified);
         } else {
-            log.error(String.format(
-                "method=createHeaders %s should set non null value for last-modified value. Null value for request uri: %s",
-                ResponseEntityWithLastModifiedHeader.class.getSimpleName(), apiUri));
+            log.error(
+                    "method=createHeaders {} should set non null value for last-modified value. Null value for request uri: {}",
+                    ResponseEntityWithLastModifiedHeader.class.getSimpleName(), apiUri);
         }
         return responseHeaders;
     }

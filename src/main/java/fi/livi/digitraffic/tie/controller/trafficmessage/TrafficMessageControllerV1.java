@@ -38,6 +38,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatur
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.location.LocationWebServiceV1;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -45,7 +46,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = TRAFFIC_MESSAGE_TAG_V1)
+@Tag(name = TRAFFIC_MESSAGE_TAG_V1,
+     description = "Traffic messages",
+     externalDocs = @ExternalDocumentation(description = "Documentation",
+                                           url = "https://www.digitraffic.fi/en/road-traffic/#traffic-messages"))
 @RestController
 @Validated
 @ConditionalOnWebApplication

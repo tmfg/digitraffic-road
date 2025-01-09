@@ -30,13 +30,17 @@ import fi.livi.digitraffic.tie.dto.v1.VariableSignDescriptions;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
 import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureCollectionV1;
 import fi.livi.digitraffic.tie.service.variablesign.v1.VariableSignDataServiceV1;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = VARIABLE_SIGN_TAG_V1)
+@Tag(name = VARIABLE_SIGN_TAG_V1,
+     description = "Variable signs",
+     externalDocs = @ExternalDocumentation(description = "Documentation",
+                                           url = "https://www.digitraffic.fi/en/road-traffic/#variable-signs"))
 @RestController
 @Validated
 @ConditionalOnWebApplication
