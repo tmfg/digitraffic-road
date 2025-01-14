@@ -215,10 +215,12 @@ public class PostgisGeometryUtils {
             // First try keeping collapsed geometries
             final GeometryFixer fixer = new GeometryFixer(g);
             fixer.setKeepCollapsed(true);
+            fixer.setKeepMulti(false);
+
             final Geometry fixed = fixer.getResult();
             if ( fixed.getGeometryType().equals(Geometry.TYPENAME_GEOMETRYCOLLECTION) ) {
                 // GeometryCollection is not supported
-                return GeometryFixer.fix(g); // This should not produce collection as collapsed are not reserved
+                return GeometryFixer.fix(g, false); // This should not produce collection as collapsed are not reserved
             }
             return fixed;
         }

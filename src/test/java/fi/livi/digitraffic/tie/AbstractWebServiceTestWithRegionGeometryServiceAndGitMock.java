@@ -1,9 +1,13 @@
 package fi.livi.digitraffic.tie;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,4 +28,12 @@ public class AbstractWebServiceTestWithRegionGeometryServiceAndGitMock extends A
         when(regionGeometryDataServiceV1.getAreaLocationRegionEffectiveOn(eq(regionGeometry.getLocationCode()), any())).thenReturn(regionGeometry);
     }
 
+    protected void assertFeature(final TrafficAnnouncementFeature feature, final String expectedType, final int expectedCount) {
+        assertEquals(expectedType, feature.getGeometry().getType().toString());
+        assertEquals(expectedCount, feature.getGeometry().getCoordinates().size());
+    }
+
+    protected void assertMultiLineString(final TrafficAnnouncementFeature feature, final int expectedCount) {
+        assertFeature(feature, "MultiLineString", expectedCount);
+    }
 }

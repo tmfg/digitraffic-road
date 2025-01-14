@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
+import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
+
 import org.apache.commons.compress.utils.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -172,8 +174,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         final TrafficAnnouncementFeature
             feature = trafficMessageDataServiceV1.findBySituationIdJson("GUID50390596", false, true).getFeatures().getFirst();
         // Result geometry should only have one linestring and the invalid LineString should have be removed
-        assertEquals("LineString", feature.getGeometry().getType().toString());
-        assertTrue(feature.getGeometry().getCoordinates().size() > 2);
+        assertFeature(feature, "LineString", 42);
     }
 
     @Test
@@ -183,8 +184,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         final TrafficAnnouncementFeature
             feature = trafficMessageDataServiceV1.findBySituationIdJson("GUID50390964", false, true).getFeatures().getFirst();
         // Result geometry should only have one linestring and the invalid LineString should have be removed
-        assertEquals("Point", feature.getGeometry().getType().toString());
-        assertTrue(feature.getGeometry().getCoordinates().size() > 1);
+        assertFeature(feature, "Point", 2);
     }
 
     @Test
@@ -192,8 +192,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         trafficMessageTestHelper.initDataFromFile("TrafficIncidentImsMessageWithInvalidMultiPolygonGeometry.xml");
         final TrafficAnnouncementFeature feature = trafficMessageDataServiceV1.findBySituationIdJson("GUID50379978", false, true).getFeatures().getFirst();
         // Result geometry should only have one linestring and the invalid LineString should have be removed
-        assertEquals("Polygon", feature.getGeometry().getType().toString());
-        assertEquals(2, feature.getGeometry().getCoordinates().size());
+        assertFeature(feature, "Polygon", 2);
     }
 
     @Test
