@@ -47,7 +47,7 @@ public class WeathercamPermissionControllerV1 {
         @RequestParam(value = VERSION_ID_PARAM) final String versionId) {
 
         final HistoryStatus historyStatus = cameraPresetHistoryDataService.resolveHistoryStatusForVersion(imageName, versionId);
-        log.info("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
+        log.debug("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
 
         if ( historyStatus != PUBLIC ) {
             return createNotFoundResponse();
@@ -57,7 +57,7 @@ public class WeathercamPermissionControllerV1 {
             .location(weathercamS3Properties.getS3UriForVersion(imageName, versionId))
             .build();
 
-        log.info("method=imageVersion response={}", response);
+        log.debug("method=imageVersion response={}", response);
 
         return response;
     }
