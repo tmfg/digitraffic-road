@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.livi.digitraffic.common.annotation.CustomRequestParam;
 import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
@@ -67,7 +68,7 @@ public class TrafficMessageControllerV1 {
      * /api/traffic-message/v/messages/{GUID}/simple
      * /api/traffic-message/v/area-geometries
      * /api/traffic-message/v/area-geometries/{id}
-
+     * <p>
      * /api/traffic-message/v/locations
      * /api/traffic-message/v/locations/{id}
      * /api/traffic-message/v/locations/types
@@ -97,36 +98,47 @@ public class TrafficMessageControllerV1 {
     }
 
     @Operation(summary = "Active traffic messages as Datex2")
-    @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2 })
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK,
+                               description = "Successful retrieval of traffic messages"))
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> trafficMessageDatex2(
-        @Parameter(description = "Return traffic messages from given amount of hours in the past.")
-        @RequestParam(defaultValue = "0")
-        final @Range(min = 0) int inactiveHours,
-        @Parameter(description = "Situation type.", required = true)
-        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
-        final SituationType... situationType) {
+            @Parameter(description = "Return traffic messages from given amount of hours in the past.")
+            @RequestParam(defaultValue = "0")
+            final @Range(min = 0) int inactiveHours,
+            @Parameter(description = "Situation type.",
+                       required = true)
+            @CustomRequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
+            final SituationType... situationType) {
 
         final Pair<D2LogicalModel, Instant> active =
-            trafficMessageDataServiceV1.findActive(inactiveHours, situationType);
-        return ResponseEntityWithLastModifiedHeader.of(active.getLeft(), active.getRight(), API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2);
+                trafficMessageDataServiceV1.findActive(inactiveHours, situationType);
+        return ResponseEntityWithLastModifiedHeader.of(active.getLeft(), active.getRight(),
+                API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2);
     }
 
     @Operation(summary = "Traffic messages by situationId as Datex2")
-    @RequestMapping(method = RequestMethod.GET, produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" + DATEX2 })
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
-                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of traffic messages"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Situation id not found",
+                                 content = @Content) })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> trafficMessageDatex2BySituationId(
-        @Parameter(description = "Situation id.", required = true)
-        @PathVariable
-        final String situationId,
-        @Parameter(description = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned")
-        @RequestParam(defaultValue = "true")
-        final boolean latest) {
-        final Pair<D2LogicalModel, Instant> situation = trafficMessageDataServiceV1.findBySituationId(situationId, latest);
-        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(), API_TRAFFIC_MESSAGE_V1_MESSAGES + "/" + situationId + DATEX2);
+            @Parameter(description = "Situation id.",
+                       required = true)
+            @PathVariable
+            final String situationId,
+            @Parameter(description = "If the parameter value is true, then only the latest message will be returned otherwise all messages are returned")
+            @RequestParam(defaultValue = "true")
+            final boolean latest) {
+        final Pair<D2LogicalModel, Instant> situation =
+                trafficMessageDataServiceV1.findBySituationId(situationId, latest);
+        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
+                API_TRAFFIC_MESSAGE_V1_MESSAGES + "/" + situationId + DATEX2);
     }
 
     @Operation(summary = "Active traffic messages as simple JSON")
@@ -135,19 +147,22 @@ public class TrafficMessageControllerV1 {
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"))
+    @ApiResponses(@ApiResponse(responseCode = HTTP_OK,
+                               description = "Successful retrieval of traffic messages"))
     public TrafficAnnouncementFeatureCollection trafficMessageSimple(
-        @Parameter(description = "Return traffic messages from given amount of hours in the past.")
-        @RequestParam(defaultValue = "0")
-        @Range(min = 0)
-        final int inactiveHours,
-        @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
-        @RequestParam(defaultValue = "false")
-        final boolean includeAreaGeometry,
-        @Parameter(description = "Situation type.", required = true)
-        @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
-        final SituationType...situationType) {
+            @Parameter(description = "Return traffic messages from given amount of hours in the past.")
+            @RequestParam(defaultValue = "0")
+            @Range(min = 0)
+            final int inactiveHours,
+            @Parameter(description =
+                    "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
+                            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
+            @RequestParam(defaultValue = "false")
+            final boolean includeAreaGeometry,
+            @Parameter(description = "Situation type.",
+                       required = true)
+            @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
+            final SituationType... situationType) {
         return trafficMessageDataServiceV1.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
@@ -157,19 +172,24 @@ public class TrafficMessageControllerV1 {
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic messages"),
-                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Situation id not found", content = @Content) })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of traffic messages"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Situation id not found",
+                                 content = @Content) })
     public TrafficAnnouncementFeatureCollection trafficMessageSimpleBySituationId(
-        @Parameter(description = "Situation id.", required = true)
-        @PathVariable
-        final String situationId,
-        @Parameter(description = "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
-            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
-        @RequestParam(defaultValue = "false")
-        final boolean includeAreaGeometry,
-        @Parameter(description = "If the parameter value is true, then only the latest message will be returned")
-        @RequestParam(defaultValue = "false")
-        final boolean latest) {
+            @Parameter(description = "Situation id.",
+                       required = true)
+            @PathVariable
+            final String situationId,
+            @Parameter(description =
+                    "If the parameter value is false, then the GeoJson geometry will be empty for announcements with area locations. " +
+                            "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
+            @RequestParam(defaultValue = "false")
+            final boolean includeAreaGeometry,
+            @Parameter(description = "If the parameter value is true, then only the latest message will be returned")
+            @RequestParam(defaultValue = "false")
+            final boolean latest) {
         return trafficMessageDataServiceV1.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
@@ -179,18 +199,19 @@ public class TrafficMessageControllerV1 {
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of geometries") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of geometries") })
     public RegionGeometryFeatureCollection areaLocationRegions(
-        @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
-        @RequestParam(defaultValue = "true")
-        final boolean lastUpdated,
-        @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
-        @RequestParam(defaultValue = "false")
-        final boolean includeGeometry,
-        @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
-        @RequestParam(required = false)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime effectiveDate) {
+            @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
+            @RequestParam(defaultValue = "true")
+            final boolean lastUpdated,
+            @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
+            @RequestParam(defaultValue = "false")
+            final boolean includeGeometry,
+            @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            final ZonedDateTime effectiveDate) {
         return areaLocationRegions(lastUpdated, includeGeometry, effectiveDate, null);
     }
 
@@ -200,83 +221,111 @@ public class TrafficMessageControllerV1 {
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of geometries"),
-                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Geometry not not found", content = @Content) })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of geometries"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Geometry not not found",
+                                 content = @Content) })
     public RegionGeometryFeatureCollection areaLocationRegions(
-        @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
-        @RequestParam(defaultValue = "false")
-        final boolean lastUpdated,
-        @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
-        @RequestParam(defaultValue = "false")
-        final boolean includeGeometry,
-        @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
-        @RequestParam(required = false)
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        final ZonedDateTime effectiveDate,
-        @Parameter(description = "Location code id", required = true)
-        @PathVariable
-        final Integer locationCode) {
+            @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
+            @RequestParam(defaultValue = "false")
+            final boolean lastUpdated,
+            @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
+            @RequestParam(defaultValue = "false")
+            final boolean includeGeometry,
+            @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            final ZonedDateTime effectiveDate,
+            @Parameter(description = "Location code id",
+                       required = true)
+            @PathVariable
+            final Integer locationCode) {
         return regionGeometryDataServiceV1.findAreaLocationRegions(lastUpdated, includeGeometry, effectiveDate != null ?
-                                                                                                 effectiveDate.toInstant() : null, locationCode);
+                                                                                                 effectiveDate.toInstant() :
+                                                                                                 null, locationCode);
     }
 
     /* Alert-C -locations */
 
     @Operation(summary = "The static information of locations")
-    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS,
+    @RequestMapping(method = RequestMethod.GET,
+                    path = API_TRAFFIC_MESSAGE_V1_LOCATIONS,
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of locations") })
-    public LocationFeatureCollectionV1 locations (
-        @Parameter(description = "If parameter is given use this version.")
-        @RequestParam(value = "version", required = false, defaultValue = LocationWebServiceV1.LATEST)
-        final String version,
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of locations") })
+    public LocationFeatureCollectionV1 locations(
+            @Parameter(description = "If parameter is given use this version.")
+            @RequestParam(value = "version",
+                          required = false,
+                          defaultValue = LocationWebServiceV1.LATEST)
+            final String version,
 
-        @Parameter(description = "If parameter is given result will only contain update status.")
-        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-        final boolean lastUpdated) {
+            @Parameter(description = "If parameter is given result will only contain update status.")
+            @RequestParam(value = "lastUpdated",
+                          required = false,
+                          defaultValue = "false")
+            final boolean lastUpdated) {
 
         return locationWebServiceV1.findLocations(lastUpdated, version);
     }
 
     @Operation(summary = "The static information of one location")
-    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + "/{id}",
+    @RequestMapping(method = RequestMethod.GET,
+                    path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of location") })
     public LocationFeatureV1 locationById(
-        @Parameter(description = "If parameter is given use this version.")
-        @RequestParam(value = "version", required = false, defaultValue = LocationWebServiceV1.LATEST)
-        final String version,
+            @Parameter(description = "If parameter is given use this version.")
+            @RequestParam(value = "version",
+                          required = false,
+                          defaultValue = LocationWebServiceV1.LATEST)
+            final String version,
 
-        @PathVariable("id") final int id) {
+            @PathVariable("id")
+            final int id) {
         return locationWebServiceV1.getLocationById(id, version);
     }
 
     @Operation(summary = "List available location versions")
-    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + VERSIONS, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location versions") })
-    public ResponseEntityWithLastModifiedHeader<List<LocationVersionDtoV1>> locationVersions () {
+    @RequestMapping(method = RequestMethod.GET,
+                    path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + VERSIONS,
+                    produces = APPLICATION_JSON_VALUE)
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of location versions") })
+    public ResponseEntityWithLastModifiedHeader<List<LocationVersionDtoV1>> locationVersions() {
         final List<LocationVersionDtoV1> versions = locationWebServiceV1.findLocationVersions();
         final Instant lastModified =
-            versions.stream().map(LocationVersionDtoV1::getLastModified).max(Comparator.naturalOrder()).orElse(null);
-        return ResponseEntityWithLastModifiedHeader.of(versions, lastModified, API_TRAFFIC_MESSAGE_V1_LOCATIONS + VERSIONS);
+                versions.stream().map(LocationVersionDtoV1::getLastModified).max(Comparator.naturalOrder())
+                        .orElse(null);
+        return ResponseEntityWithLastModifiedHeader.of(versions, lastModified,
+                API_TRAFFIC_MESSAGE_V1_LOCATIONS + VERSIONS);
 
     }
 
     @Operation(summary = "The static information of location types and locationsubtypes")
-    @RequestMapping(method = RequestMethod.GET, path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + TYPES, produces = APPLICATION_JSON_VALUE)
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of location types and location subtypes") })
+    @RequestMapping(method = RequestMethod.GET,
+                    path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + TYPES,
+                    produces = APPLICATION_JSON_VALUE)
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of location types and location subtypes") })
     public LocationTypesDtoV1 locationTypes(
-        @Parameter(description = "If parameter is given use this version.")
-        @RequestParam(value = "version", required = false, defaultValue = LocationWebServiceV1.LATEST)
-        final String version,
+            @Parameter(description = "If parameter is given use this version.")
+            @RequestParam(value = "version",
+                          required = false,
+                          defaultValue = LocationWebServiceV1.LATEST)
+            final String version,
 
-        @Parameter(description = "If parameter is given result will only contain update status.")
-        @RequestParam(value = "lastUpdated", required = false, defaultValue = "false")
-        final boolean lastUpdated) {
+            @Parameter(description = "If parameter is given result will only contain update status.")
+            @RequestParam(value = "lastUpdated",
+                          required = false,
+                          defaultValue = "false")
+            final boolean lastUpdated) {
         return locationWebServiceV1.findLocationTypes(lastUpdated, version);
     }
 }
