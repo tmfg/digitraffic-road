@@ -161,7 +161,7 @@ public class TrafficMessageControllerV1 {
             final boolean includeAreaGeometry,
             @Parameter(description = "Situation type.",
                        required = true)
-            @RequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
+            @CustomRequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
             final SituationType... situationType) {
         return trafficMessageDataServiceV1.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
