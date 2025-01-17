@@ -100,7 +100,7 @@ public class JMSMessageHandler<K> {
 
         messageCounter.addAndGet(data.size());
         jmsMessagesReceivedCounter.incrementAndGet();
-        jmsMessagesReceivedTimeMsCounter.addAndGet(start.getTime());
+        jmsMessagesReceivedTimeMsCounter.addAndGet(start.getDuration().toMillis());
         jmsMessagesTransferTimeMs.addAndGet(Duration.between(msgSendTime, receivedTime).toMillis());
     }
 
@@ -158,7 +158,7 @@ public class JMSMessageHandler<K> {
                     "method=drainQueueInternal jmsMessageType={} JMS message queue size queueToDrainSize={} exceeds error limit queueWarningLimitSize={}",
                     jmsMessageType, queueToDrain, QUEUE_SIZE_WARNING_LIMIT);
         } else {
-            log.info("method=drainQueueInternal jmsMessageType={} JMS message queue size queueToDrainSize={}",
+            log.info("method=drainQueueInternal jmsMessageType={} queueToDrainSize={}",
                     jmsMessageType, queueToDrain);
         }
 
@@ -181,10 +181,10 @@ public class JMSMessageHandler<K> {
             messageDrainedCounter.addAndGet(drainedCount);
             final int updated = dataUpdater.updateData(targetList);
             dbRowsUpdatedCounter.addAndGet(updated);
-            messagesDrainingTimeMsCounter.addAndGet(start.getTime());
+            messagesDrainingTimeMsCounter.addAndGet(start.getDuration().toMillis());
             log.info(
-                    "method=drainQueueInternal jmsMessageType={} JMS messages drainedCount={} of queueToDrain={} updateCount={} tookMs={}",
-                    jmsMessageType, drainedCount, queueToDrain, updated, start.getTime());
+                    "method=drainQueueInternal jmsMessageType={} drainedCount={} of queueToDrain={} updateCount={} tookMs={}",
+                    jmsMessageType, drainedCount, queueToDrain, updated, start.getDuration().toMillis());
         }
 
     }
