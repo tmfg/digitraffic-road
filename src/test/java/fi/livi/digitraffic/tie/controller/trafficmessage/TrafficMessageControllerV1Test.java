@@ -94,35 +94,45 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     @Autowired
     private TrafficMessageTestHelper trafficMessageTestHelper;
 
-
     @Autowired
     private DataStatusService dataStatusService;
 
     @BeforeEach
     public void init() {
         final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode =
-            createRegionsInDescOrderMappedByLocationCode(0, 3, 7, 14, 408, 5898);
+                createRegionsInDescOrderMappedByLocationCode(0, 3, 7, 14, 408, 5898);
 
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(0).getFirst());
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(3).getFirst());
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(7).getFirst());
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(14).getFirst());
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(408).getFirst());
-        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(regionsInDescOrderMappedByLocationCode.get(5898).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(
+                regionsInDescOrderMappedByLocationCode.get(0).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(
+                regionsInDescOrderMappedByLocationCode.get(3).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(
+                regionsInDescOrderMappedByLocationCode.get(7).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(
+                regionsInDescOrderMappedByLocationCode.get(14).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(
+                regionsInDescOrderMappedByLocationCode.get(408).getFirst());
+        whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(
+                regionsInDescOrderMappedByLocationCode.get(5898).getFirst());
 
         final RegionGeometryFeatureCollection featureCollectionWithGeometry =
-            createRegionGeometryFeatureCollection(RegionGeometryDataServiceV1.convertToDtoList(regionsInDescOrderMappedByLocationCode, true));
+                createRegionGeometryFeatureCollection(
+                        RegionGeometryDataServiceV1.convertToDtoList(regionsInDescOrderMappedByLocationCode, true));
         final RegionGeometryFeatureCollection featureCollectionWithoutGeometry =
-            createRegionGeometryFeatureCollection(RegionGeometryDataServiceV1.convertToDtoList(regionsInDescOrderMappedByLocationCode, false));
+                createRegionGeometryFeatureCollection(
+                        RegionGeometryDataServiceV1.convertToDtoList(regionsInDescOrderMappedByLocationCode, false));
 
-        when(regionGeometryDataServiceV1.findAreaLocationRegions(eq(false), eq(true), isNull(), isNull())).thenReturn(featureCollectionWithGeometry);
-        when(regionGeometryDataServiceV1.findAreaLocationRegions(eq(false), eq(false), isNull(), isNull())).thenReturn(featureCollectionWithoutGeometry);
+        when(regionGeometryDataServiceV1.findAreaLocationRegions(eq(false), eq(true), isNull(), isNull())).thenReturn(
+                featureCollectionWithGeometry);
+        when(regionGeometryDataServiceV1.findAreaLocationRegions(eq(false), eq(false), isNull(), isNull())).thenReturn(
+                featureCollectionWithoutGeometry);
 
         // Map return value for locationCode 3
         final RegionGeometryFeature feature3 =
-            featureCollectionWithGeometry.getFeatures().stream().filter(f -> f.getProperties().locationCode.equals(3)).findFirst().orElseThrow();
+                featureCollectionWithGeometry.getFeatures().stream()
+                        .filter(f -> f.getProperties().locationCode.equals(3)).findFirst().orElseThrow();
         when(regionGeometryDataServiceV1.findAreaLocationRegions(eq(false), eq(true), isNull(), eq(3)))
-            .thenReturn(createRegionGeometryFeatureCollection(Collections.singletonList(feature3)));
+                .thenReturn(createRegionGeometryFeatureCollection(Collections.singletonList(feature3)));
     }
 
     @AfterEach
@@ -137,20 +147,24 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     public void getJsonAndXmlCurrentlyActive() throws Exception {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                for(final SituationType situationType : SituationType.values()) {
+                for (final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final Instant start = TimeUtil.nowWithoutMillis().minus(1, ChronoUnit.HOURS);
                     final Instant end = start.plus(2, ChronoUnit.HOURS);
                     final Instant lastUpdated = TimeUtil.roundInstantSeconds(getTransactionTimestamp());
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
-                    log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(),
+                            imsJsonVersion, start, end);
+                    log.info(
+                            "getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
+                            imsXmlVersion, imsJsonVersion, situationType);
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType), lastUpdated);
                     final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType), lastUpdated);
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatchesIsoDateTimeWithZ(xml);
                     assertTimesFormatMatchesIsoDateTimeWithZ(json);
-                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()), start, end, imsJsonVersion);
+                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()),
+                            start, end, imsJsonVersion);
                     assertTraficAnouncmentTypeUpperCase(json, situationType);
                 }
             }
@@ -164,20 +178,24 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     public void getJsonAndXmlCurrentlyInactiveWithInactiveHours() throws Exception {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                for(final SituationType situationType : SituationType.values()) {
+                for (final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final Instant start = TimeUtil.nowWithoutMillis().minus(3, ChronoUnit.HOURS);
                     final Instant end = start.plus(2, ChronoUnit.HOURS);
                     final Instant lastUpdated = TimeUtil.roundInstantSeconds(getTransactionTimestamp());
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
-                    log.info("getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(),
+                            imsJsonVersion, start, end);
+                    log.info(
+                            "getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
+                            imsXmlVersion, imsJsonVersion, situationType);
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 2, situationType), lastUpdated);
                     final String json = getResponse(getTrafficMessageUrlWithType(true, 2, situationType), lastUpdated);
                     assertIsValidDatex2Xml(xml);
                     assertTextIsValidJson(json);
                     assertTimesFormatMatchesIsoDateTimeWithZ(xml);
                     assertTimesFormatMatchesIsoDateTimeWithZ(json);
-                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()), start, end, imsJsonVersion);
+                    assertContentsMatch(xml, json, situationType, getSituationIdForSituationType(situationType.name()),
+                            start, end, imsJsonVersion);
                     assertTraficAnouncmentTypeUpperCase(json, situationType);
                 }
             }
@@ -191,12 +209,15 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     public void getJsonAndXmlCurrentlyInactive() throws Exception {
         for (final ImsXmlVersion imsXmlVersion : ImsXmlVersion.values()) {
             for (final ImsJsonVersion imsJsonVersion : ImsJsonVersion.values()) {
-                for(final SituationType situationType : SituationType.values()) {
+                for (final SituationType situationType : SituationType.values()) {
                     trafficMessageTestHelper.cleanDb();
                     final Instant start = TimeUtil.nowWithoutMillis().minus(3, ChronoUnit.HOURS);
                     final Instant end = start.plus(2, ChronoUnit.HOURS);
-                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(), imsJsonVersion, start, end);
-                    log.info("getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}", imsXmlVersion, imsJsonVersion, situationType);
+                    trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(),
+                            imsJsonVersion, start, end);
+                    log.info(
+                            "getJsonAndXmlCurrentlyPassive with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
+                            imsXmlVersion, imsJsonVersion, situationType);
                     final String xml = getResponse(getTrafficMessageUrlWithType(false, 0, situationType));
                     final String json = getResponse(getTrafficMessageUrlWithType(true, 0, situationType));
                     assertIsValidDatex2Xml(xml);
@@ -210,7 +231,8 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void getRegionGeometry() throws Exception {
-        final Instant lastUpdated = TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated =
+                TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(true), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(6, result.getFeatures().size());
@@ -219,7 +241,8 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void getRegionGeometryWithoutGeometry() throws Exception {
-        final Instant lastUpdated = TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated =
+                TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(false), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(6, result.getFeatures().size());
@@ -228,7 +251,8 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void getRegionGeometryWithId() throws Exception {
-        final Instant lastUpdated = TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
+        final Instant lastUpdated =
+                TimeUtil.withoutMillis(dataStatusService.findDataUpdatedInstant(TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA));
         final String json = getResponse(getRegionGeometryUrl(true, 3), lastUpdated);
         final RegionGeometryFeatureCollection result = parseRegionGeometryFeatureCollectionJson(json);
         assertEquals(1, result.getFeatures().size());
@@ -239,49 +263,72 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     @Test
     public void locationsApi() throws Exception {
         mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.type", is("FeatureCollection")))
-            .andExpect(jsonPath("$.features[0].type", is("Feature")))
-            .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.features[0].properties.subtypeCode", isA(String.class)))
-            .andExpect(jsonPath("$.features[0].properties.firstName", isA(String.class)))
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.type", is("FeatureCollection")))
+                .andExpect(jsonPath("$.features[0].type", is("Feature")))
+                .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
+                .andExpect(jsonPath("$.features[0].properties.subtypeCode", isA(String.class)))
+                .andExpect(jsonPath("$.features[0].properties.firstName", isA(String.class)))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
         ;
     }
 
     @Test
     public void locationsUpdatesOnlyApi() throws Exception {
         mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS)
-                .param("lastUpdated", "true"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(jsonPath("$.type", is("FeatureCollection")))
-            .andExpect(jsonPath("$.features").doesNotExist())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+                        .param("lastUpdated", "true"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.type", is("FeatureCollection")))
+                .andExpect(jsonPath("$.features").doesNotExist())
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
         ;
     }
 
     @Test
     public void locationsVersionsApi() throws Exception {
-        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.VERSIONS))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        mockMvc.perform(
+                        get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.VERSIONS))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
         ;
     }
 
     @Test
     public void locationsTypesApi() throws Exception {
-        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.TYPES))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$", notNullValue()))
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        mockMvc.perform(
+                        get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.TYPES))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        ;
+    }
+
+    @Test
+    public void nullsFilteredFromQueryParameterList() throws Exception {
+        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES)
+                        .param("situationType",
+                                "TRAFFIC_ANNOUNCEMENT")
+                        .param("situationType", "")
+                        .param("situationType", "ROAD_WORK"))
+                .andExpect(status().isOk())
+        ;
+
+        mockMvc.perform(
+                        get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES + TrafficMessageControllerV1.DATEX2
+                        )
+                                .param("situationType",
+                                        "TRAFFIC_ANNOUNCEMENT")
+                                .param("situationType", "")
+                                .param("situationType", "ROAD_WORK"))
+                .andExpect(status().isOk())
         ;
     }
 
@@ -295,12 +342,14 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         assertTrue(fc.getFeatures().isEmpty());
     }
 
-    private TrafficAnnouncementFeatureCollection parseSimpleJson(final String simpleJson) throws JsonProcessingException {
+    private TrafficAnnouncementFeatureCollection parseSimpleJson(final String simpleJson)
+            throws JsonProcessingException {
         final ObjectReader r = objectMapper.readerFor(TrafficAnnouncementFeatureCollection.class);
         return r.readValue(simpleJson);
     }
 
-    private RegionGeometryFeatureCollection parseRegionGeometryFeatureCollectionJson(final String regionGeometryFeatureCollection) throws JsonProcessingException {
+    private RegionGeometryFeatureCollection parseRegionGeometryFeatureCollectionJson(
+            final String regionGeometryFeatureCollection) throws JsonProcessingException {
         final ObjectReader r = objectMapper.readerFor(RegionGeometryFeatureCollection.class);
         return r.readValue(regionGeometryFeatureCollection);
     }
@@ -309,11 +358,12 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         return (D2LogicalModel) datex2Jaxb2Marshaller.unmarshal(new StringSource(d2xml));
     }
 
-    private void assertContentsMatch(final String d2xml, final String simpleJsonFeatureCollection, final SituationType situationType,
+    private void assertContentsMatch(final String d2xml, final String simpleJsonFeatureCollection,
+                                     final SituationType situationType,
                                      final String situationId,
                                      final Instant start, final Instant end,
                                      final ImsJsonVersion imsJsonVersion)
-        throws JsonProcessingException {
+            throws JsonProcessingException {
         final D2LogicalModel d2 = parseD2LogicalModel(d2xml);
 
         final TrafficAnnouncementFeatureCollection fc = parseSimpleJson(simpleJsonFeatureCollection);
@@ -328,22 +378,27 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
         final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.getFirst().timeAndDuration;
 
-        assertEquals(start, situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification().getOverallStartTime());
+        assertEquals(start, situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification()
+                .getOverallStartTime());
         assertEquals(start, jsonTimeAndDuration.startTime);
 
         final Instant versionTime = getVersionTime(start, imsJsonVersion);
         assertEquals(versionTime, situation.getSituationRecords().getFirst().getSituationRecordVersionTime());
         assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
 
-        assertEquals(end, situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification().getOverallEndTime());
+        assertEquals(end, situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification()
+                .getOverallEndTime());
         assertEquals(end, jsonTimeAndDuration.endTime);
 
-        final String commentXml = situation.getSituationRecords().getFirst().getGeneralPublicComments().getFirst().getComment().getValues().getValues().stream()
-            .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
+        final String commentXml =
+                situation.getSituationRecords().getFirst().getGeneralPublicComments().getFirst().getComment()
+                        .getValues().getValues().stream()
+                        .filter(c -> c.getLang().equals("fi")).findFirst().orElseThrow().getValue();
 
         assertEquals(situationType.name(), jsonProperties.getSituationType().name());
         if (situationType == TRAFFIC_ANNOUNCEMENT) {
-            assertTrue(Sets.newHashSet(TrafficAnnouncementType.values()).contains(jsonProperties.getTrafficAnnouncementType()));
+            assertTrue(Sets.newHashSet(TrafficAnnouncementType.values())
+                    .contains(jsonProperties.getTrafficAnnouncementType()));
         }
 
         final TrafficAnnouncement announcement = jsonProperties.announcements.getFirst();
@@ -351,14 +406,14 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
         if (imsJsonVersion.version >= ImsJsonVersion.V0_2_5.version && situationType.equals(SituationType.ROAD_WORK)) {
             final RoadWorkPhase rwp =
-                feature.getProperties().announcements.getFirst().roadWorkPhases.getFirst();
+                    feature.getProperties().announcements.getFirst().roadWorkPhases.getFirst();
             assertEquals(WeekdayTimePeriod.Weekday.MONDAY, rwp.workingHours.getFirst().weekday);
             assertEquals(LocalTime.parse("09:30:00.000"), rwp.workingHours.getFirst().startTime);
             assertEquals(LocalTime.parse("15:00:00.000"), rwp.workingHours.getFirst().endTime);
         }
         if (imsJsonVersion.version >= ImsJsonVersion.V0_2_17.version && situationType.equals(SituationType.ROAD_WORK)) {
             final RoadWorkPhase rwp =
-                feature.getProperties().announcements.getFirst().roadWorkPhases.getFirst();
+                    feature.getProperties().announcements.getFirst().roadWorkPhases.getFirst();
             assertEquals(WeekdayTimePeriod.Weekday.TUESDAY, rwp.slowTrafficTimes.getFirst().weekday);
             assertEquals(WeekdayTimePeriod.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.getFirst().weekday);
             assertEquals(LocalTime.parse("10:30:00.000"), rwp.slowTrafficTimes.getFirst().startTime);
@@ -384,25 +439,28 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         }
     }
 
-    private static String getTrafficMessageUrlWithType(final boolean json, final int inactiveHours, final SituationType situationType) {
+    private static String getTrafficMessageUrlWithType(final boolean json, final int inactiveHours,
+                                                       final SituationType situationType) {
         return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES +
-               (json ? "" : TrafficMessageControllerV1.DATEX2) +
-               "?inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
+                (json ? "" : TrafficMessageControllerV1.DATEX2) +
+                "?inactiveHours=" + inactiveHours + "&situationType=" + situationType.name();
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry) {
         return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES +
-            "?lastUpdated=false&includeGeometry=" + includeGeometry;
+                "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
     private static String getRegionGeometryUrl(final boolean includeGeometry, final int regionId) {
-        return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES + "/" + regionId +
-            "?lastUpdated=false&includeGeometry=" + includeGeometry;
+        return TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1 + TrafficMessageControllerV1.AREA_GEOMETRIES + "/" +
+                regionId +
+                "?lastUpdated=false&includeGeometry=" + includeGeometry;
     }
 
     private String getResponse(final String url) throws Exception {
         return getResponse(url, null);
     }
+
     private String getResponse(final String url, final Instant lastUpdated) throws Exception {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
 
@@ -414,7 +472,8 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         final ResultActions result = mockMvc.perform(get);
         if (lastUpdated != null) {
             result.andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                  .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, lastUpdated.toEpochMilli()));
+                    .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
+                            lastUpdated.toEpochMilli()));
         }
         return result.andReturn().getResponse().getContentAsString();
     }
@@ -422,11 +481,13 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     private void assertTraficAnouncmentTypeUpperCase(final String json, final SituationType situationType) {
         if (situationType.equals(TRAFFIC_ANNOUNCEMENT)) {
             final String trafficAnnouncementType =
-                StringUtils.substringBefore(
-                    StringUtils.substringAfter(
-                        StringUtils.substringAfter(
-                            StringUtils.substringAfter(json, "trafficAnnouncementType"), ":"), "\""), "\"");
-            final Set<String> values = Arrays.stream(TrafficAnnouncementType.values()).map(Enum::name).collect(Collectors.toSet());
+                    StringUtils.substringBefore(
+                            StringUtils.substringAfter(
+                                    StringUtils.substringAfter(
+                                            StringUtils.substringAfter(json, "trafficAnnouncementType"), ":"), "\""),
+                            "\"");
+            final Set<String> values =
+                    Arrays.stream(TrafficAnnouncementType.values()).map(Enum::name).collect(Collectors.toSet());
             assertTrue(values.contains(trafficAnnouncementType));
             assertTrue(StringUtils.isAllUpperCase(trafficAnnouncementType.replace("_", "")));
         }

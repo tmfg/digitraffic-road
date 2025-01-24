@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgis/postgis:13-3.4-alpine
+    image: postgis/postgis:14-3.5-alpine
     restart: always
     environment:
       POSTGRES_USER: road
