@@ -28,7 +28,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.RequiredSearch;
 
 /**
- * Measure pool statistics every 100ms and log min and max once a minute.
+ * Measure metrics every 50 and log min and max once a minute.
  */
 @ConditionalOnExpression("'${config.test}' != 'true'")
 @Configuration
@@ -86,7 +86,8 @@ public class MetricWriterConfiguration implements MetricVisitor {
     void printMetrics() {
         final HashMap<MetricKey, Double> copyMetrics = new HashMap<>(metricMap);
         metricMap.clear();
-        copyMetrics.keySet().forEach(this::logMeasurement);
+
+        copyMetrics.entrySet().forEach(e -> this.logMeasurement(e.getKey(), e.getValue()));
     }
 
     @Scheduled(fixedRate = 50)
@@ -178,9 +179,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
         }
     }
 
-    private void logMeasurement(final MetricKey metricKey) {
-        final Double value = metricMap.get(metricKey);
-
+    private void logMeasurement(final MetricKey metricKey, final Double value) {
         if(value != null) {
             // must set root-locale to use . as decimal separator
             if(metricKey.tag != null) {
