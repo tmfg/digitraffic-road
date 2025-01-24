@@ -28,7 +28,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.RequiredSearch;
 
 /**
- * Measure metrics every 50 and log min and max once a minute.
+ * Measure metrics every 50 ms and log min and max once a minute.
  */
 @ConditionalOnExpression("'${config.test}' != 'true'")
 @Configuration
