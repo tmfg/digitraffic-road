@@ -320,6 +320,16 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
                         .param("situationType", "ROAD_WORK"))
                 .andExpect(status().isOk())
         ;
+
+        mockMvc.perform(
+                        get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES + TrafficMessageControllerV1.DATEX2
+                        )
+                                .param("situationType",
+                                        "TRAFFIC_ANNOUNCEMENT")
+                                .param("situationType", "")
+                                .param("situationType", "ROAD_WORK"))
+                .andExpect(status().isOk())
+        ;
     }
 
     private void assertEmptyD2Situations(final String xml) {
