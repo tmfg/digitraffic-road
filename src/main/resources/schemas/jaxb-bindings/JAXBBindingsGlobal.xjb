@@ -14,7 +14,7 @@
 <!--        <jaxb:serializable/>-->
         <xjc:simple/>
         <jaxb:javaType name="java.time.Instant" xmlType="xs:dateTime"
-                       printMethod="java.time.format.DateTimeFormatter.ISO_INSTANT.format"
+                       printMethod="fi.livi.digitraffic.common.util.TimeUtil.ISO_DATE_TIME_WITH_MILLIS_AT_UTC.format"
                        parseMethod="java.time.Instant.parse"/>
         <jaxb:javaType name="java.time.LocalDate" xmlType="xs:date"
                        printMethod="java.time.format.DateTimeFormatter.ISO_LOCAL_DATE.format"
