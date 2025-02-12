@@ -386,8 +386,13 @@
 
         <!-- Libraries to handle JAXB marshalling/unmarshalling -->
         <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
             <version>${org.apache.cxf.version}</version>
         </dependency>
         <!-- For test WS server -->
