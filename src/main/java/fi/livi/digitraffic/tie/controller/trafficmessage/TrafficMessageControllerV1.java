@@ -43,6 +43,7 @@ import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -110,6 +111,7 @@ public class TrafficMessageControllerV1 {
             @Parameter(description = "Situation type.",
                        required = true)
             @CustomRequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
+            @Schema(defaultValue = "TRAFFIC_ANNOUNCEMENT")
             final SituationType... situationType) {
 
         final Pair<D2LogicalModel, Instant> active =
@@ -162,6 +164,7 @@ public class TrafficMessageControllerV1 {
             @Parameter(description = "Situation type.",
                        required = true)
             @CustomRequestParam(defaultValue = "TRAFFIC_ANNOUNCEMENT")
+            @Schema(defaultValue = "TRAFFIC_ANNOUNCEMENT")
             final SituationType... situationType) {
         return trafficMessageDataServiceV1.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
