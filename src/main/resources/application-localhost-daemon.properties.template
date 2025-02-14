@@ -82,7 +82,7 @@ mqtt.tms.v2.enabled=true
 # Is WEATHER messages available
 mqtt.weather.v2.enabled=true
 # Is maintenance tracking messages available
-mqtt.maintenance.v2.tracking.enabled=true
+mqtt.maintenance.tracking.v2.enabled=true
 # Is traffic messages available
 mqtt.trafficMessage.simple.v2.enabled=true
 mqtt.trafficMessage.datex2.v2.enabled=true
