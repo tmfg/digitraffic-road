@@ -3,9 +3,9 @@ package fi.livi.digitraffic.tie;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,7 +46,6 @@ import fi.livi.digitraffic.tie.service.trafficmessage.location.LocationTypeUpdat
 import fi.livi.digitraffic.tie.service.trafficmessage.location.LocationUpdater;
 import fi.livi.digitraffic.tie.service.trafficmessage.location.MetadataFileFetcher;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.location.LocationWebServiceV1;
-import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageReader;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateHandler;
@@ -69,7 +68,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
          RoadStationService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
          CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class,
          CameraPresetHistoryUpdateService.class, FlywayService.class,
-         WeatherHistoryService.class, SensorDataUpdateService.class,
+         SensorDataUpdateService.class,
          ImsJsonConverter.class, Datex2UpdateService.class,
          RegionGeometryUpdateService.class,
          MaintenanceTrackingUpdateServiceV1.class,
@@ -93,10 +92,10 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 })
 public abstract class AbstractServiceTest extends AbstractJpaTest {
 
-    @MockBean
+    @MockitoBean
     protected RegionGeometryGitClient regionGeometryGitClientMock;
 
-    @SpyBean
+    @MockitoSpyBean
     protected MetadataFileFetcher metadataFileFetcherSpy;
 
 }

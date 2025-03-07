@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.ely.lotju.lam.proto.LAMRealtimeProtos;
 import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
@@ -164,10 +163,9 @@ public class TmsJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest {
     }
 
     private void checkLastUpdated() {
-        final ZonedDateTime lastUpdated =
+        final Instant lastUpdated =
                 roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
-        final ZonedDateTime timeInPast2Minutes =
-                TimeUtil.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
+        final Instant timeInPast2Minutes = Instant.now().minusSeconds(2 * 60);
 
         log.info("lastUpdated={} vs now={}", lastUpdated, timeInPast2Minutes);
         assertTrue(lastUpdated.isAfter(timeInPast2Minutes),

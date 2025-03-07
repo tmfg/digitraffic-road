@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationDataDtoV1;
+import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorHistoryDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationsDataDtoV1;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
@@ -60,6 +62,7 @@ public class WeatherDataWebServiceV1 {
 
     }
 
+
     @Transactional(readOnly = true)
     public WeatherStationDataDtoV1 findPublishableWeatherData(final long roadStationNaturalId) {
         if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.WEATHER_STATION) ) {
@@ -72,10 +75,34 @@ public class WeatherDataWebServiceV1 {
         return createWeatherStationDataDto(ws, sensorValues);
     }
 
+    @Transactional(readOnly = true)
+    public WeatherStationSensorHistoryDtoV1 findPublishableWeatherHistoryData(final long roadStationNaturalId,
+                                                                              final Long sensorNaturalId,
+                                                                              final Instant from, final Instant to) {
+        if ( !roadStationRepository.isPublishableRoadStation(roadStationNaturalId, RoadStationType.WEATHER_STATION) ) {
+            throw new ObjectNotFoundException("WeatherStation", roadStationNaturalId);
+        }
+
+        final List<SensorValueHistoryDtoV1> sensorValues =
+                roadStationSensorServiceV1.findAllPublishableRoadStationSensorValuesHistory(roadStationNaturalId,
+                        RoadStationType.WEATHER_STATION,
+                        sensorNaturalId, from, to);
+        final WeatherStation ws = weatherStationService.findPublishableWeatherStationByRoadStationNaturalId(roadStationNaturalId);
+        return createWeatherStationDataHistoryDto(ws, sensorValues);
+    }
+
     private WeatherStationDataDtoV1 createWeatherStationDataDto(final WeatherStation ws, final List<SensorValueDtoV1> sensorValues) {
         return new WeatherStationDataDtoV1(
             ws.getRoadStationNaturalId(),
             SensorValueDtoV1.getStationLatestUpdated(sensorValues),
             sensorValues);
     }
+
+    private WeatherStationSensorHistoryDtoV1 createWeatherStationDataHistoryDto(final WeatherStation ws, final List<SensorValueHistoryDtoV1> sensorValues) {
+        return new WeatherStationSensorHistoryDtoV1(
+                ws.getRoadStationNaturalId(),
+                SensorValueHistoryDtoV1.getStationLatestUpdated(sensorValues),
+                sensorValues);
+    }
+
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
+import fi.livi.digitraffic.tie.dto.roadstation.v1.IdNaturalIdPair;
 import fi.livi.digitraffic.tie.dto.v1.StationSensors;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
@@ -39,7 +40,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
         where sensor.publishable = true
           and sensor.road_station_type = :#{#roadStationType.name()}
         GROUP BY rs_sensors.road_station_id
-order by rs_sensors.road_station_id""", nativeQuery = true)
+        order by rs_sensors.road_station_id""", nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<StationSensors> listStationPublishableSensorsByType(@Param("roadStationType") final RoadStationType roadStationType);
 
@@ -67,15 +68,15 @@ order by rs_sensors.road_station_id""", nativeQuery = true)
                                                                              @Param("roadStationType") final RoadStationType roadStationType);
 
     @Modifying(clearAutomatically = true)
-    @Query(value =
-            "DELETE FROM ROAD_STATION_SENSORS\n" +
-            "WHERE ROAD_STATION_ID = :roadStationId\n" +
-            "AND ROAD_STATION_SENSOR_ID NOT IN (\n" +
-            "    SELECT SENSOR.ID\n" +
-            "    FROM ROAD_STATION_SENSOR SENSOR\n" +
-            "    WHERE SENSOR.ROAD_STATION_TYPE = :#{#roadStationType.name()}\n" +
-            "      AND SENSOR.LOTJU_ID IN (:sensorsLotjuIds)\n" +
-            ")",
+    @Query(value = """
+                   DELETE FROM ROAD_STATION_SENSORS
+                   WHERE ROAD_STATION_ID = :roadStationId
+                   AND ROAD_STATION_SENSOR_ID NOT IN (
+                       SELECT SENSOR.ID
+                       FROM ROAD_STATION_SENSOR SENSOR
+                       WHERE SENSOR.ROAD_STATION_TYPE = :#{#roadStationType.name()}
+                         AND SENSOR.LOTJU_ID IN (:sensorsLotjuIds)
+                   )""",
            nativeQuery = true)
     int deleteNonExistingSensors(@Param("roadStationType") final RoadStationType roadStationType,
                                  @Param("roadStationId") final Long roadStationId,
@@ -107,4 +108,11 @@ order by rs_sensors.road_station_id""", nativeQuery = true)
     int insertNonExistingSensors(@Param("roadStationType") final RoadStationType roadStationType,
                                  @Param("roadStationId") final Long roadStationId,
                                  @Param("sensorsLotjuIds") final List<Long> sensorsLotjuIds);
+
+    @Query(value = """
+            SELECT s.id, s.natural_id as naturalId
+            FROM ROAD_STATION_SENSOR s
+            WHERE s.road_station_type = :#{#roadStationType.name()}
+            """, nativeQuery = true)
+    List<IdNaturalIdPair> getIdNaturalIdPairs(final RoadStationType roadStationType);
 }

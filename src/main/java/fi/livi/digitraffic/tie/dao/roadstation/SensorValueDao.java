@@ -34,14 +34,14 @@ public class SensorValueDao {
             )""";
 
     private static final String INSERT = """
-                    INSERT INTO sensor_value(id, road_station_id, road_station_sensor_id, value,
-                                             measured, time_window_start, time_window_end, reliability)
-                    SELECT nextval('seq_sensor_value'), :roadStationId, sensor.id,
-                           :value, :measured, :timeWindowStart, :timeWindowEnd, :reliability
-                    FROM ROAD_STATION_SENSOR sensor
-                    WHERE sensor.lotju_id = :sensorLotjuId
-                      AND sensor.road_station_type = :stationType
-                      AND sensor.publishable = true""";
+            INSERT INTO sensor_value(id, road_station_id, road_station_sensor_id, value,
+                                     measured, time_window_start, time_window_end, reliability)
+            SELECT nextval('seq_sensor_value'), :roadStationId, sensor.id,
+                   :value, :measured, :timeWindowStart, :timeWindowEnd, :reliability
+            FROM ROAD_STATION_SENSOR sensor
+            WHERE sensor.lotju_id = :sensorLotjuId
+              AND sensor.road_station_type = :stationType
+              AND sensor.publishable = true""";
 
     @Autowired
     public SensorValueDao(final NamedParameterJdbcTemplate jdbcTemplate) {

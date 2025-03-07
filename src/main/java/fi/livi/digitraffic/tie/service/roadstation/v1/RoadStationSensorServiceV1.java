@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.roadstation.v1;
 import static java.util.stream.Collectors.toList;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,8 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.v1.RoadStationSensorValueDtoRepositoryV1;
+import fi.livi.digitraffic.tie.dao.roadstation.v1.RoadStationSensorValueHistoryDtoRepositoryV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
+import fi.livi.digitraffic.tie.dto.v1.SensorValueHistoryDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
@@ -31,6 +35,7 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 public class RoadStationSensorServiceV1 {
 
     private final RoadStationSensorValueDtoRepositoryV1 roadStationSensorValueDtoRepositoryV1;
+    private final RoadStationSensorValueHistoryDtoRepositoryV1 roadStationSensorValueHistoryDtoRepositoryV1;
     private final RoadStationSensorRepository roadStationSensorRepository;
     private final RoadStationRepository roadStationRepository;
     private final DataStatusService dataStatusService;
@@ -39,6 +44,7 @@ public class RoadStationSensorServiceV1 {
 
     @Autowired
     public RoadStationSensorServiceV1(final RoadStationSensorValueDtoRepositoryV1 roadStationSensorValueDtoRepositoryV1,
+                                      final RoadStationSensorValueHistoryDtoRepositoryV1 roadStationSensorValueHistoryDtoRepositoryV1,
                                       final RoadStationSensorRepository roadStationSensorRepository,
                                       final DataStatusService dataStatusService,
                                       final RoadStationRepository roadStationRepository,
@@ -47,6 +53,7 @@ public class RoadStationSensorServiceV1 {
                                       @Value("${tmsStation.sensorValueTimeLimitInMinutes}")
                                       final int tmsStationSensorValueTimeLimitInMins) {
         this.roadStationSensorValueDtoRepositoryV1 = roadStationSensorValueDtoRepositoryV1;
+        this.roadStationSensorValueHistoryDtoRepositoryV1 = roadStationSensorValueHistoryDtoRepositoryV1;
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.roadStationRepository = roadStationRepository;
         this.dataStatusService = dataStatusService;
@@ -118,9 +125,9 @@ public class RoadStationSensorServiceV1 {
     @Transactional(readOnly = true)
     public List<SensorValueDtoV1> findAllPublishableRoadStationSensorValues(final long roadStationNaturalId,
                                                                             final RoadStationType roadStationType) {
-        final boolean publicAndNotObsolete = roadStationRepository.isPublishableRoadStation(roadStationNaturalId, roadStationType);
+        final boolean publishable = roadStationRepository.isPublishableRoadStation(roadStationNaturalId, roadStationType);
 
-        if ( !publicAndNotObsolete ) {
+        if ( !publishable ) {
             return Collections.emptyList();
         }
 
@@ -131,9 +138,60 @@ public class RoadStationSensorServiceV1 {
     }
 
     @Transactional(readOnly = true)
+    public List<SensorValueHistoryDtoV1> findAllPublishableRoadStationSensorValuesHistory(final long roadStationNaturalId,
+                                                                                          final RoadStationType roadStationType,
+                                                                                          final Long sensorNaturalId,
+                                                                                          final Instant from, final Instant to) {
+        final boolean publishable = roadStationRepository.isPublishableRoadStation(roadStationNaturalId, roadStationType);
+
+        if ( !publishable ) {
+            return Collections.emptyList();
+        }
+
+        if ((from == null && to != null) || (from != null && to == null)) {
+            throw new IllegalArgumentException("You must give both from and to");
+        }
+
+        if (from != null && from.isAfter(to)) {
+            throw new IllegalArgumentException("From > to");
+        }
+
+        final Instant actualFrom = getHistorySinceTime(from);
+        final Instant actualTo = ObjectUtils.firstNonNull(to, Instant.now().plus(1, ChronoUnit.MINUTES));
+
+        if (sensorNaturalId != null) {
+            return roadStationSensorValueHistoryDtoRepositoryV1.findAllPublicPublishableRoadStationSensorValues(
+                    roadStationNaturalId,
+                    sensorNaturalId,
+                    roadStationType,
+                    actualFrom, actualTo);
+        }
+
+        return roadStationSensorValueHistoryDtoRepositoryV1.findAllPublicPublishableRoadStationSensorValues(
+                roadStationNaturalId,
+                roadStationType,
+                actualFrom, actualTo);
+    }
+
+    @Transactional(readOnly = true)
     public List<SensorValueDtoV1> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final Instant updatedAfter, final RoadStationType roadStationType) {
         return roadStationSensorValueDtoRepositoryV1.findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
                 roadStationType,
                 updatedAfter);
+    }
+
+    private Instant getHistorySinceTime(final Instant since) {
+        if (since == null) {
+            // Set offset to -1h
+            return Instant.now().minus(1, ChronoUnit.HOURS);
+        }
+
+        final Instant lastDay = Instant.now().minus(1, ChronoUnit.DAYS);
+
+        if (since.isBefore(lastDay)) {
+            return lastDay;
+        }
+
+        return since;
     }
 }

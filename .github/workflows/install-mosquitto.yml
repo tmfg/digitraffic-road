@@ -14,7 +14,7 @@ on:
 jobs:
   log-parameters:
     if: github.repository != 'tmfg/digitraffic-road'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Create parameters.txt
         run: |
@@ -28,7 +28,7 @@ jobs:
           path: parameters.txt
   image:
     if: github.repository != 'tmfg/digitraffic-road'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write
       contents: read
@@ -65,8 +65,8 @@ jobs:
             --output type=docker \
             --tag ${{ secrets.ECR_URL }}/dt-road-mqtt-repository:latest \
             --pull=true \
-            --file=Dockerfile .          
-            
+            --file=Dockerfile .
+
           docker push ${{ secrets.ECR_URL }}/dt-road-mqtt-repository:latest
       - name: Update road-mqtt task-def
         id: update

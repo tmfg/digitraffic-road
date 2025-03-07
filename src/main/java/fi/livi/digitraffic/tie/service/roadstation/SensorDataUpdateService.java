@@ -5,7 +5,6 @@ import static fi.ely.lotju.tiesaa.proto.TiesaaProtos.TiesaaMittatieto;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +155,7 @@ public class SensorDataUpdateService {
 
         updateSensorHistoryData(updates, RoadStationType.WEATHER_STATION);
 
-        log.info("method=persistWeatherSensorValues weatherBuffer for db update {} / {} incomings", updates.size(), weatherValueBuffer.getIncomingElementCount());
+        log.info("method=persistWeatherSensorValues weatherBuffer for db update {} / {} incoming", updates.size(), weatherValueBuffer.getIncomingElementCount());
     }
 
     /**

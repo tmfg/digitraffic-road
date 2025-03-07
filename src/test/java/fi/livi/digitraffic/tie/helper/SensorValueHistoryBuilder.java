@@ -1,11 +1,14 @@
 package fi.livi.digitraffic.tie.helper;
 
+import static fi.livi.digitraffic.tie.helper.MathUtils.roundToScale;
+
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
@@ -56,15 +59,16 @@ public class SensorValueHistoryBuilder {
      * @param stop         End offset in minutes from current time
      * @return the builder
      */
-    public SensorValueHistoryBuilder buildRandom(final int maxAmount, final int maxStationId, final int maxSensorId, final int start,
+    public SensorValueHistoryBuilder buildRandom(final int maxAmount, final int maxStationId, final int maxSensorId,
+                                                 final int start,
                                                  final int stop) {
         final int count = random.nextInt(1, maxAmount);
 
         IntStream.range(0, count).forEach(i ->
-            list.add(createDummyModel(random.nextLong(1, maxStationId),
-                random.nextLong(1, maxSensorId),
-                random.nextDouble(0, 10),
-                getTime(start, stop))));
+                list.add(createDummyModel(random.nextLong(1, maxStationId),
+                        random.nextLong(1, maxSensorId),
+                        random.nextDouble(0, 10),
+                        getTime(start, stop))));
 
         createdCounts.add(count);
 
@@ -72,15 +76,21 @@ public class SensorValueHistoryBuilder {
         return this;
     }
 
-    public SensorValueHistoryBuilder buildWithStationId(final int maxAmount, final int stationId, final int maxSensorId, final int start,
+    public SensorValueHistoryBuilder buildWithStationId(final int maxAmount, final long stationId,
+                                                        final Set<Long> sensorIds, final int start,
                                                         final int stop) {
         final int count = random.nextInt(1, maxAmount);
 
+        if (maxAmount > sensorIds.size()) {
+            throw new IllegalArgumentException(
+                    "Sensor count " + maxAmount + " too large, maximum allowed is " + sensorIds.size());
+        }
+        final Iterator<Long> iter = sensorIds.iterator();
         IntStream.range(0, count).forEach(i ->
-            list.add(createDummyModel(stationId,
-                random.nextLong(1, maxSensorId),
-                random.nextDouble(0, 10),
-                getTime(start, stop))));
+                list.add(createDummyModel(stationId,
+                        iter.next(),
+                        random.nextDouble(0, 10),
+                        getTime(start, stop))));
 
         createdCounts.add(count);
 
@@ -90,7 +100,9 @@ public class SensorValueHistoryBuilder {
 
     public SensorValueHistoryBuilder save() {
         log.info("Total {} elements created", list.size());
-        list.forEach(i -> log.info("elem: {}, meas {}", i.getSensorValue(), i.getMeasuredTime()));
+        list.forEach(
+                i -> log.info("rsId: {}, sensorId: {}, value: {}, measured {}", i.getRoadStationId(), i.getSensorId(),
+                        i.getSensorValue(), i.getMeasuredTime()));
 
         repository.saveAll(list);
 
@@ -121,11 +133,12 @@ public class SensorValueHistoryBuilder {
         return time;
     }
 
-    private SensorValueHistory createDummyModel(final long roadStation, final long sensor, final double value, final Instant time) {
+    private SensorValueHistory createDummyModel(final long roadStationId, final long sensorId, final double value,
+                                                final Instant time) {
         final SensorValueHistory model = new SensorValueHistory();
-        model.setRoadStationId(roadStation);
-        model.setSensorId(sensor);
-        model.setSensorValue(value);
+        model.setRoadStationId(roadStationId);
+        model.setSensorId(sensorId);
+        model.setSensorValue(roundToScale(value, 2));
         model.setMeasuredTime(time);
         model.setReliability(TestUtils.getRandomEnum(SensorValueReliability.class));
 

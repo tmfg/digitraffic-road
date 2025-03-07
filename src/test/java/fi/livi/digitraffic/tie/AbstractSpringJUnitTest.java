@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,13 +61,6 @@ public abstract class AbstractSpringJUnitTest extends AbstractTest {
         return AopTestUtils.getTargetObject(candidate);
     }
 
-    protected boolean isBeanRegistered(final Class<?> c) {
-        try {
-            return beanFactory.getBean(c) != null;
-        } catch (final NoSuchBeanDefinitionException e) {
-            return false;
-        }
-    }
     public Instant getTransactionTimestamp() {
         return (Instant)entityManager.createNativeQuery("select now()").getSingleResult();
     }

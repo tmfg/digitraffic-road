@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.dao.tms.TmsFreeFlowSpeedRepository;
 import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
@@ -60,15 +59,7 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
 
     @BeforeEach
     public void setFirstDestinationProviderForLotjuClients() {
-        if (this.tmsDataWebServiceV1 == null) {
-            if (!isBeanRegistered(TmsDataWebServiceV1.class)) {
-                final TmsDataWebServiceV1 tmsDataWebServiceV1 = beanFactory.createBean(TmsDataWebServiceV1.class);
-                beanFactory.registerSingleton(tmsDataWebServiceV1.getClass().getCanonicalName(), tmsDataWebServiceV1);
-                this.tmsDataWebServiceV1 = tmsDataWebServiceV1;
-            } else {
-                this.tmsDataWebServiceV1 = beanFactory.getBean(TmsDataWebServiceV1.class);
-            }
-        }
+        this.tmsDataWebServiceV1 = registerBean(TmsDataWebServiceV1.class);
         setLotjuClientFirstDestinationProviderAndSaveOriginalToMap(lotjuTmsStationMetadataClient);
     }
 
@@ -191,7 +182,7 @@ public class TmsStationSensorConstantsMetadataUpdateJobTest extends AbstractMeta
         final TmsFreeFlowSpeedDto values =
                 tmsFreeFlowSpeedRepository.getTmsFreeFlowSpeedsByRoadStationNaturalId(RS_NATURAL_ID);
 
-        System.out.println(StringUtil.toJsonString(values));
+        //System.out.println(StringUtil.toJsonString(values));
         /*
          *     <!-- VVAPAAS1 -->
          *     <ns2:lamanturivakiot>

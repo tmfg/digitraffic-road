@@ -29,7 +29,7 @@ on:
 jobs:
   update:
     if: github.repository != 'tmfg/digitraffic-road'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: ${{ github.event.inputs.env }}
     permissions:
       id-token: write

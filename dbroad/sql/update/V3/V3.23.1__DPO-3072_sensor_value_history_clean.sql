@@ -1,0 +1,1 @@
+TRUNCATE sensor_value_history;

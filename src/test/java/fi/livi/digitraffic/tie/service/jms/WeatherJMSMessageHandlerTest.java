@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -27,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.ely.lotju.tiesaa.proto.TiesaaProtos;
 import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.helper.NumberConverter;
@@ -186,7 +184,8 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
         for (final WeatherStation station : stations) {
             final ActiveMQBytesMessage bm =
                     createBytesMessage(
-                            generateTiesaaMittatieto(Instant.now(), publishableSensors, station.getLotjuId(), 1).getFirst());
+                            generateTiesaaMittatieto(Instant.now(), publishableSensors, station.getLotjuId(),
+                                    1).getFirst());
             jmsMessageHandler.onMessage(bm);
         }
         jmsMessageHandler.drainQueueScheduled();
@@ -215,8 +214,10 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
             anturiBuilder.setArvo(NumberConverter.convertDoubleValueToBDecimal(sensorValueToSet));
             anturiBuilder.setLaskennallinenAnturiId(availableSensor.getLotjuId());
             anturiBuilder.setLuotettavuus(TestUtils.getRandomEnum(SensorValueReliability.class).getSrcType());
-            log.debug("Asema {} set anturi {} arvo {} luotettavuus {}", currentStationLotjuId, availableSensor.getLotjuId(),
-                    NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()), anturiBuilder.getLuotettavuus());
+            log.debug("Asema {} set anturi {} arvo {} luotettavuus {}", currentStationLotjuId,
+                    availableSensor.getLotjuId(),
+                    NumberConverter.convertAnturiValueToDouble(anturiBuilder.getArvo()),
+                    anturiBuilder.getLuotettavuus());
 
             if (!iter.hasNext()) {
                 iter = builders.iterator();
@@ -275,7 +276,7 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
     }
 
     public void assertDataIsJustUpdated() {
-        final ZonedDateTime lastUpdated =
+        final Instant lastUpdated =
                 roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.WEATHER_STATION);
         assertLastUpdated(lastUpdated);
 
@@ -286,9 +287,8 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
         assertFalse(updated.isEmpty());
     }
 
-    private static void assertLastUpdated(final ZonedDateTime lastUpdated) {
-        final ZonedDateTime limit = TimeUtil.toZonedDateTimeAtUtc(ZonedDateTime.now().minusMinutes(2).toInstant());
-
+    private static void assertLastUpdated(final Instant lastUpdated) {
+        final Instant limit = Instant.now().minusSeconds(2 * 60);
         assertTrue(lastUpdated.isAfter(limit),
                 String.format("LastUpdated not fresh %s, should be after %s", lastUpdated, limit));
     }

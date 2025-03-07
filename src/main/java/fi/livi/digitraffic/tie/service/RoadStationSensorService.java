@@ -1,9 +1,8 @@
 package fi.livi.digitraffic.tie.service;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +22,7 @@ import com.google.common.collect.Iterables;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.roadstation.v1.RoadStationSensorValueDtoRepositoryV1;
+import fi.livi.digitraffic.tie.dto.roadstation.v1.IdNaturalIdPair;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.tiesaa.TiesaaLaskennallinenAnturiVO;
@@ -51,32 +50,22 @@ public class RoadStationSensorService {
     private final SensorValueRepository sensorValueRepository;
     private final EntityManager entityManager;
 
-    private final Map<RoadStationType, Integer> sensorValueTimeLimitInMins;
-
     @Autowired
     public RoadStationSensorService(final RoadStationSensorValueDtoRepositoryV1 roadStationSensorValueDtoRepository,
                                     final RoadStationSensorRepository roadStationSensorRepository,
                                     final DataStatusService dataStatusService,
                                     final SensorValueRepository sensorValueRepository,
-                                    final EntityManager entityManager,
-                                    @Value("${weatherStation.sensorValueTimeLimitInMinutes}")
-                                    final int weatherStationSensorValueTimeLimitInMins,
-                                    @Value("${tmsStation.sensorValueTimeLimitInMinutes}")
-                                    final int tmsStationSensorValueTimeLimitInMins) {
+                                    final EntityManager entityManager) {
         this.roadStationSensorValueDtoRepository = roadStationSensorValueDtoRepository;
         this.roadStationSensorRepository = roadStationSensorRepository;
         this.dataStatusService = dataStatusService;
         this.sensorValueRepository = sensorValueRepository;
         this.entityManager = entityManager;
-
-        sensorValueTimeLimitInMins = new EnumMap<>(RoadStationType.class);
-        sensorValueTimeLimitInMins.put(RoadStationType.WEATHER_STATION, weatherStationSensorValueTimeLimitInMins);
-        sensorValueTimeLimitInMins.put(RoadStationType.TMS_STATION, tmsStationSensorValueTimeLimitInMins);
     }
 
     private CriteriaBuilder createCriteriaBuilder() {
         return entityManager
-            .getCriteriaBuilder();
+                .getCriteriaBuilder();
     }
 
     @Transactional(readOnly = true)
@@ -90,16 +79,15 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(final RoadStationType roadStationType) {
+    public Map<Long, RoadStationSensor> findAllRoadStationSensorsMappedByLotjuId(
+            final RoadStationType roadStationType) {
         final List<RoadStationSensor> all = findAllRoadStationSensors(roadStationType);
         return all.stream().collect(Collectors.toMap(RoadStationSensor::getLotjuId, Function.identity()));
     }
 
-
-
     @Transactional(readOnly = true)
-    public ZonedDateTime getLatestSensorValueUpdatedTime(final RoadStationType roadStationType) {
-        return dataStatusService.findDataUpdatedTime(DataType.getSensorValueUpdatedDataType(roadStationType));
+    public Instant getLatestSensorValueUpdatedTime(final RoadStationType roadStationType) {
+        return dataStatusService.findDataUpdatedInstant(DataType.getSensorValueUpdatedDataType(roadStationType));
     }
 
     @Transactional
@@ -109,15 +97,17 @@ public class RoadStationSensorService {
 
     @Transactional(readOnly = true)
     public Map<Long, List<SensorValue>> findNonObsoleteSensorvaluesListMappedByTmsLotjuId(final List<Long> lamLotjuIds,
-        final RoadStationType roadStationType) {
+                                                                                          final RoadStationType roadStationType) {
         final List<SensorValue> sensorValues = sensorValueRepository
-            .findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(lamLotjuIds, roadStationType);
+                .findByRoadStationObsoleteDateIsNullAndRoadStationSensorObsoleteDateIsNullAndRoadStationLotjuIdInAndRoadStationType(
+                        lamLotjuIds, roadStationType);
 
         final HashMap<Long, List<SensorValue>> sensorValuesListByTmsLotjuIdMap = new HashMap<>();
         for (final SensorValue sensorValue : sensorValues) {
             final Long rsLotjuId = sensorValue.getRoadStation().getLotjuId();
 
-            final List<SensorValue> list = sensorValuesListByTmsLotjuIdMap.computeIfAbsent(rsLotjuId, k -> new ArrayList<>());
+            final List<SensorValue> list =
+                    sensorValuesListByTmsLotjuIdMap.computeIfAbsent(rsLotjuId, k -> new ArrayList<>());
             list.add(sensorValue);
         }
 
@@ -125,15 +115,15 @@ public class RoadStationSensorService {
     }
 
     @Transactional(readOnly = true)
-    public List<SensorValueDtoV1> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(final ZonedDateTime updatedAfter, final RoadStationType roadStationType) {
+    public List<SensorValueDtoV1> findAllPublicNonObsoleteRoadStationSensorValuesUpdatedAfter(
+            final Instant updatedAfter, final RoadStationType roadStationType) {
         return roadStationSensorValueDtoRepository.findAllPublicPublishableRoadStationSensorValuesUpdatedAfter(
                 roadStationType,
-                updatedAfter.toInstant());
+                updatedAfter);
     }
 
     /**
-     *
-     * @param roadStationId station which sensors to update
+     * @param roadStationId   station which sensors to update
      * @param roadStationType what is type of station
      * @param sensorslotjuIds current anturis lotju ids
      * @return Pair of deleted and inserted count of sensors for given weather station
@@ -144,14 +134,14 @@ public class RoadStationSensorService {
                                                              final List<Long> sensorslotjuIds) {
 
         final int deleted = sensorslotjuIds.isEmpty() ?
-                                roadStationSensorRepository.deleteRoadStationsSensors(roadStationId) :
-                                roadStationSensorRepository.deleteNonExistingSensors(
+                            roadStationSensorRepository.deleteRoadStationsSensors(roadStationId) :
+                            roadStationSensorRepository.deleteNonExistingSensors(
                                     roadStationType, roadStationId, sensorslotjuIds);
 
         final int inserted = sensorslotjuIds.isEmpty() ?
-                                0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType,
-                                                                                         roadStationId,
-                                                                                         sensorslotjuIds);
+                             0 : roadStationSensorRepository.insertNonExistingSensors(roadStationType,
+                roadStationId,
+                sensorslotjuIds);
         if (deleted > 0 || inserted > 0) {
             log.info("method=updateSensorsOfRoadStation removeCount={} and insertCount={}", deleted, inserted);
         }
@@ -161,12 +151,14 @@ public class RoadStationSensorService {
     @Transactional
     public UpdateStatus updateOrInsert(final TiesaaLaskennallinenAnturiVO anturi) {
 
-        final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION, anturi.getId());
+        final RoadStationSensor sensor =
+                roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.WEATHER_STATION,
+                        anturi.getId());
 
         if (sensor != null) {
             final String before = ToStringHelper.toStringFull(sensor);
-            if ( updateRoadStationSensorAttributes(anturi, sensor) ) {
-                log.info("Updated RoadStationSensor:\n{} -> \n{}",  before , ToStringHelper.toStringFull(sensor));
+            if (updateRoadStationSensorAttributes(anturi, sensor)) {
+                log.info("Updated RoadStationSensor:\n{} -> \n{}", before, ToStringHelper.toStringFull(sensor));
                 return UpdateStatus.UPDATED;
             }
             return UpdateStatus.NOT_UPDATED;
@@ -182,12 +174,14 @@ public class RoadStationSensorService {
     @Transactional
     public UpdateStatus updateOrInsert(final LamLaskennallinenAnturiVO anturi) {
 
-        final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.TMS_STATION, anturi.getId());
+        final RoadStationSensor sensor =
+                roadStationSensorRepository.findByRoadStationTypeAndLotjuId(RoadStationType.TMS_STATION,
+                        anturi.getId());
 
         if (sensor != null) {
             final String before = ToStringHelper.toStringFull(sensor);
-            if ( updateRoadStationSensorAttributes(anturi, sensor) ) {
-                log.info("Updated RoadStationSensor:\n{} -> \n{}",  before , ToStringHelper.toStringFull(sensor));
+            if (updateRoadStationSensorAttributes(anturi, sensor)) {
+                log.info("Updated RoadStationSensor:\n{} -> \n{}", before, ToStringHelper.toStringFull(sensor));
                 return UpdateStatus.UPDATED;
             }
             return UpdateStatus.NOT_UPDATED;
@@ -201,7 +195,8 @@ public class RoadStationSensorService {
     }
 
     @Transactional
-    public int obsoleteSensorsExcludingLotjuIds(final RoadStationType roadStationType, final List<Long> sensorsLotjuIdsNotToObsolete) {
+    public int obsoleteSensorsExcludingLotjuIds(final RoadStationType roadStationType,
+                                                final List<Long> sensorsLotjuIdsNotToObsolete) {
         final CriteriaBuilder cb = createCriteriaBuilder();
         final CriteriaUpdate<RoadStationSensor> update = cb.createCriteriaUpdate(RoadStationSensor.class);
         final Root<RoadStationSensor> root = update.from(RoadStationSensor.class);
@@ -209,8 +204,9 @@ public class RoadStationSensorService {
         update.set("obsoleteDate", LocalDate.now());
 
         final List<Predicate> predicates = new ArrayList<>();
-        predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
-        predicates.add( cb.isNull(root.get("obsoleteDate")));
+        predicates.add(cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)),
+                roadStationType));
+        predicates.add(cb.isNull(root.get("obsoleteDate")));
         for (final List<Long> ids : Iterables.partition(sensorsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }
@@ -221,11 +217,13 @@ public class RoadStationSensorService {
 
     @Transactional
     public boolean obsoleteSensor(final long lotjuId, final RoadStationType roadStationType) {
-        final RoadStationSensor sensor = roadStationSensorRepository.findByRoadStationTypeAndLotjuId(roadStationType, lotjuId);
+        final RoadStationSensor sensor =
+                roadStationSensorRepository.findByRoadStationTypeAndLotjuId(roadStationType, lotjuId);
         return sensor.makeObsolete();
     }
 
-    private static boolean updateRoadStationSensorAttributes(final LamLaskennallinenAnturiVO from, final RoadStationSensor to) {
+    private static boolean updateRoadStationSensorAttributes(final LamLaskennallinenAnturiVO from,
+                                                             final RoadStationSensor to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setRoadStationType(RoadStationType.TMS_STATION);
@@ -254,7 +252,8 @@ public class RoadStationSensorService {
         return HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
-    private static boolean updateRoadStationSensorAttributes(final TiesaaLaskennallinenAnturiVO from, final RoadStationSensor to) {
+    private static boolean updateRoadStationSensorAttributes(final TiesaaLaskennallinenAnturiVO from,
+                                                             final RoadStationSensor to) {
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         to.setRoadStationType(RoadStationType.WEATHER_STATION);
@@ -278,5 +277,12 @@ public class RoadStationSensorService {
         to.setUnit(from.getYksikko());
 
         return HashCodeBuilder.reflectionHashCode(to) != hash;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Long> getIdToNaturalIdMap(final RoadStationType roadStationType) {
+        final List<IdNaturalIdPair> data =
+                roadStationSensorRepository.getIdNaturalIdPairs(roadStationType);
+        return IdNaturalIdPair.getAsIdToNaturalIdMapLongs(data);
     }
 }

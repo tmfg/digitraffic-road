@@ -44,7 +44,6 @@ import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorHistoryDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationsDataDtoV1;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
-import fi.livi.digitraffic.tie.service.weather.WeatherHistoryService;
 import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
@@ -72,7 +71,6 @@ public class WeatherControllerV1 {
     private final RoadStationSensorServiceV1 roadStationSensorServiceV1;
 
     private final ForecastWebDataServiceV1 forecastWebDataServiceV1;
-    private final WeatherHistoryService weatherHistoryService;
 
     /**
      * API paths:
@@ -108,13 +106,11 @@ public class WeatherControllerV1 {
     public WeatherControllerV1(final WeatherDataWebServiceV1 weatherDataWebServiceV1,
                                final WeatherStationMetadataWebServiceV1 weatherStationMetadataWebServiceV1,
                                final RoadStationSensorServiceV1 roadStationSensorServiceV1,
-                               final ForecastWebDataServiceV1 forecastWebDataServiceV1,
-                               final WeatherHistoryService weatherHistoryService) {
+                               final ForecastWebDataServiceV1 forecastWebDataServiceV1) {
         this.weatherDataWebServiceV1 = weatherDataWebServiceV1;
         this.weatherStationMetadataWebServiceV1 = weatherStationMetadataWebServiceV1;
         this.roadStationSensorServiceV1 = roadStationSensorServiceV1;
         this.forecastWebDataServiceV1 = forecastWebDataServiceV1;
-        this.weatherHistoryService = weatherHistoryService;
     }
 
     /* METADATA */
@@ -438,7 +434,7 @@ public class WeatherControllerV1 {
             @RequestParam(value="sensorId", required = false)
             final Long sensorId) {
 
-        return weatherHistoryService.findWeatherHistoryData(id, sensorId, from, to);
+        return weatherDataWebServiceV1.findPublishableWeatherHistoryData(id, sensorId, from, to);
     }
 }
 

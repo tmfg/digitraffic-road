@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.service;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -22,34 +20,27 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 
 import fi.livi.digitraffic.tie.conf.amazon.SensorDataS3Properties;
-import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryRepository;
-import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryDto;
+import fi.livi.digitraffic.tie.dao.roadstation.v1.RoadStationSensorValueHistoryDtoRepositoryV1;
+import fi.livi.digitraffic.tie.dto.weather.WeatherSensorValueHistoryS3CsvDto;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
-import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 
 @Component
 @ConditionalOnNotWebApplication
 public class SensorDataS3Writer {
     private static final Logger log = LoggerFactory.getLogger(SensorDataS3Writer.class);
 
-    private static final String CSV_HEADER =
-            "RoadStationId;SensorId;SensorValue;MeasuredTime;TimeWindowStart;TimeWindowEnd\n";
-    private static final String NOT_FOUND = "404";
+    //    private static final String[] CSV_HEADER =
+    //            new String[] { "RoadStationId", "SensorId", "Value", "Measured", "TimeWindowStart", "TimeWindowEnd" };
+
     private static final int BUFFER_SIZE = 65536;
 
-    private final RoadStationService roadStationService;
-    private final SensorValueHistoryRepository repository;
+    private final RoadStationSensorValueHistoryDtoRepositoryV1 repository;
     private final SensorDataS3Properties s3Properties;
     private final AmazonS3 s3Client;
 
-    // <road_station_id, natural_id>
-    private Map<Long, Long> roadStationNaturalIdMaps;
-
-    public SensorDataS3Writer(final RoadStationService roadStationService,
-                              final SensorValueHistoryRepository repository,
+    public SensorDataS3Writer(final RoadStationSensorValueHistoryDtoRepositoryV1 repository,
                               final SensorDataS3Properties sensorDataS3Properties,
                               final AmazonS3 s3Client) {
-        this.roadStationService = roadStationService;
         this.repository = repository;
         this.s3Properties = sensorDataS3Properties;
         this.s3Client = s3Client;
@@ -61,13 +52,9 @@ public class SensorDataS3Writer {
      * @return written sensor values count
      */
     @Transactional(readOnly = true)
-    public int writeSensorData(final ZonedDateTime from, final ZonedDateTime to) {
+    public int writeSensorData(final Instant from, final Instant to) {
         // Set current time window start
         s3Properties.setRefTime(from);
-
-        // Sensor values are stored using internal road_station_id from road_station-table. But API uses natural road_station ids ->
-        // Map internal road_station_id to naturalId from road_station-table
-        roadStationNaturalIdMaps = roadStationService.getNaturalIdMappings(RoadStationType.WEATHER_STATION);
 
         // Just collecting log data
         final AtomicInteger counter = new AtomicInteger(0);
@@ -81,20 +68,23 @@ public class SensorDataS3Writer {
             zos.putNextEntry(new ZipEntry(s3Properties.getFilename(SensorDataS3Properties.CSV)));
 
             // csv-builder
-            final StatefulBeanToCsv<WeatherSensorValueHistoryDto> csvWriter = new StatefulBeanToCsvBuilder<WeatherSensorValueHistoryDto>(osw)
-                    .withSeparator(';')
-                    .withApplyQuotesToAll(false)
-                    .build();
+            final StatefulBeanToCsv<WeatherSensorValueHistoryS3CsvDto> csvWriter =
+                    new StatefulBeanToCsvBuilder<WeatherSensorValueHistoryS3CsvDto>(osw)
+                            .withSeparator(';')
+                            .withApplyQuotesToAll(false)
+                            .build();
 
             csvWriter.write(
-                    repository.getAllByMeasuredTimeGreaterThanEqualAndMeasuredTimeLessThanOrderByMeasuredTimeAsc(
-                                    from.toInstant(), to.toInstant()).stream()
+                    repository.findAllPublicPublishableRoadStationSensorValuesBetween(
+                                    RoadStationType.WEATHER_STATION,
+                                    from, to).stream()
                             .map(item -> {
                                 counter.getAndIncrement();
-                                // Internal road_station_id must be mapped back to road_station's natural_id (API uses natural ids)
-                                return new WeatherSensorValueHistoryDto(mapToNaturalId(item),
-                                        item.getSensorId(),
-                                        item.getSensorValue(),
+                                // Use natural ids as API uses natural ids
+                                return new WeatherSensorValueHistoryS3CsvDto(
+                                        item.getRoadStationNaturalId(),
+                                        item.getSensorNaturalId(),
+                                        item.getValue(),
                                         item.getMeasuredTime(),
                                         item.getReliability());
                             })
@@ -116,7 +106,7 @@ public class SensorDataS3Writer {
             s3Client.putObject(s3Properties.getS3BucketName(), fileName, inputStream, metadata);
 
             // Local copy-to-file hack
-            //FileUtils.copyInputStreamToFile(inputStream, new File(fileName));
+            // FileUtils.copyInputStreamToFile(inputStream, new File(fileName));
 
             log.info("method=writeSensorData Collected addCount={} , window {} - {} , file {}", counter.get(), from, to,
                     fileName);
@@ -127,12 +117,5 @@ public class SensorDataS3Writer {
         }
 
         return -1;
-    }
-
-    private long mapToNaturalId(final SensorValueHistory item) {
-        final Long naturalId = roadStationNaturalIdMaps.get(item.getRoadStationId());
-
-        // NOTE! -1 is just for fail safe
-        return naturalId != null ? naturalId : -1;
     }
 }
