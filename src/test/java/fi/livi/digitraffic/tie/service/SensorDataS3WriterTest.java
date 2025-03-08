@@ -211,7 +211,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
             assertEquals(expectedSensorNaturalId, actual.getSensorNaturalId());
             assertEquals(expected.getSensorValue(), actual.getValue());
             assertEquals(expected.getMeasuredTime().truncatedTo(ChronoUnit.SECONDS), actual.getMeasuredTime());
-            // TODO FIXME add also timewindow times to test data
+            assertEquals(expected.getReliability(), actual.getReliability());
         }
     }
 

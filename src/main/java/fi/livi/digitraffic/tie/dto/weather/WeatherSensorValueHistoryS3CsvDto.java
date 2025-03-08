@@ -34,8 +34,7 @@ public class WeatherSensorValueHistoryS3CsvDto implements SensorValueHistoryDtoV
             writeFormatEqualsReadFormat = false)
     private Instant measured;
 
-    @CsvBindByPosition(position = 4,
-                       required = true)
+    @CsvBindByPosition(position = 4)
     private SensorValueReliability reliability;
 
     public WeatherSensorValueHistoryS3CsvDto() {

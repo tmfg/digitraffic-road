@@ -535,4 +535,8 @@ public class TestUtils {
         final int x = random.nextInt(clazz.getEnumConstants().length);
         return clazz.getEnumConstants()[x];
     }
+
+    public static boolean getRandomBoolean(){
+        return random.nextInt() % 2 == 0;
+    }
 }

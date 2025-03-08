@@ -140,8 +140,9 @@ public class SensorValueHistoryBuilder {
         model.setSensorId(sensorId);
         model.setSensorValue(roundToScale(value, 2));
         model.setMeasuredTime(time);
-        model.setReliability(TestUtils.getRandomEnum(SensorValueReliability.class));
-
+        if (TestUtils.getRandomBoolean()) {
+            model.setReliability(TestUtils.getRandomEnum(SensorValueReliability.class));
+        }
         return model;
     }
 }
