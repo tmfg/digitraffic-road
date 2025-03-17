@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -16,11 +15,17 @@ public class ForeignKeyIndexTest extends AbstractJpaTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final String IGNORED_CONSTRAINT_NAMES_REGEX =
+    private static final String[] IGNORED_CONSTRAINT_NAMES = new String[] {
+            "MAINTENANCE_TRACKING_DOMAIN_TASK_MAPPING_NAME_FKEY",
+            "OCPI_CPO_MODULE_ENDPOINT_DT_CPO_ID_OCPI_VERSION_FKEY",
+            "OCPI_LOCATION_DT_CPO_ID_OCPI_VERSION_FKEY",
+            "QRTZ_TRIGGERS_SCHED_NAME_JOB_NAME_JOB_GROUP_FKEY"
+            };
 //            ".*ABC.*" +
 //            "|CDE" +
             // No fk-index to save space and have better performance for insert and updates
-            "maintenance_tracking_data_tracking_tracking_id_fkey";
+            //"maintenance_tracking_data_tracking_tracking_id_fkey" +
+//            ".*MAINTENANCE_TRACKING_DOMAIN_TASK_MAPPING_NAME_FKEY_I.*";
 
     @Test
     public void testForeignKeysHaveIndex() {
@@ -45,20 +50,21 @@ public class ForeignKeyIndexTest extends AbstractJpaTest {
                   and i.oid = ix.indexrelid
                   and a.attrelid = i.oid
                   and t.relkind = 'r'
-                group by t.relname 
+                group by t.relname
                        , i.relname
                 order by t.relname
                        , i.relname
             )
             select * from constraints
-            where not exists(select * from indexes where indexes.cols like '' || constraints.cols || '%')""";
+            where not exists(select * from indexes where indexes.table_name = constraints.table_name AND indexes.cols like '' || constraints.cols || '%')""";
 
 
         final List<Map<String, Object>> foreignKeysWithoutIndex =
                 jdbcTemplate.queryForList(sql)
                         .stream()
-                        .filter(fk -> !fk.get("CONSTRAINT_NAME").toString().matches(IGNORED_CONSTRAINT_NAMES_REGEX))
-                        .collect(Collectors.toList());
+                        .filter(fk -> !StringUtils.containsAny(fk.get("CONSTRAINT_NAME").toString().toUpperCase(),
+                                IGNORED_CONSTRAINT_NAMES))
+                        .toList();
 
         final StringBuilder sb = new StringBuilder();
 
