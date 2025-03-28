@@ -3,11 +3,16 @@ package fi.livi.digitraffic.tie.controller.weathercam;
 import static fi.livi.digitraffic.tie.controller.weathercam.WeathercamPermissionControllerV1.WEATHERCAM_PATH;
 import static fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus.PUBLIC;
 
+import java.io.IOException;
+
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageThumbnailService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus;
 
@@ -30,27 +36,49 @@ public class WeathercamPermissionControllerV1 {
 
     public static final String WEATHERCAM_PATH = "/weathercam";
     private static final String VERSION_ID_PARAM = "versionId";
+    private static final String THUMBNAIL_PARAM = "thumbnail";
 
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
     private final WeathercamS3Properties weathercamS3Properties;
+    private final CameraImageThumbnailService cameraImageThumbnailService;
 
     @Autowired
     public WeathercamPermissionControllerV1(final CameraPresetHistoryDataService cameraPresetHistoryDataService,
-                                            final WeathercamS3Properties weathercamS3Properties) {
+                                            final WeathercamS3Properties weathercamS3Properties,
+                                            final CameraImageThumbnailService cameraImageThumbnailService) {
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
         this.weathercamS3Properties = weathercamS3Properties;
+        this.cameraImageThumbnailService = cameraImageThumbnailService;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "{imageName}")
-    public ResponseEntity<Void>  imageVersion(
+    public ResponseEntity<?>  imageVersion(
         @PathVariable final String imageName,
-        @RequestParam(value = VERSION_ID_PARAM) final String versionId) {
+        @RequestParam(value = VERSION_ID_PARAM, required = false) final String versionId,
+        @RequestParam(value = THUMBNAIL_PARAM, required = false, defaultValue = "false") final boolean thumbnail) {
 
         final HistoryStatus historyStatus = cameraPresetHistoryDataService.resolveHistoryStatusForVersion(imageName, versionId);
         log.debug("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
 
-        if ( historyStatus != PUBLIC ) {
+        if (historyStatus != PUBLIC) {
             return createNotFoundResponse();
+        }
+
+        if (thumbnail) {
+            final StopWatch stopWatch = StopWatch.createStarted();
+            try {
+                final byte[] thumbnailBytes = cameraImageThumbnailService.generateCameraImageThumbnail(imageName, versionId);
+                final HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.IMAGE_JPEG);
+                log.info(
+                        "method=imageVersion thumbnail generated for image {} tookMs={}",
+                        stopWatch.getDuration().toMillis());
+                return new ResponseEntity<>(thumbnailBytes, headers, HttpStatus.OK);
+            } catch (final IOException e) {
+                log.error("Error generating thumbnail for image {}", imageName, e);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
         }
 
         final ResponseEntity<Void> response = ResponseEntity.status(HttpStatus.FOUND)
