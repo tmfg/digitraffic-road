@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
+import static fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties.getPresetIdFromImageName;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,13 +31,6 @@ public class CameraImageThumbnailService {
 
     @Value("${dt.amazon.s3.weathercam.bucketName}")
     private String weathercamImageBucket;
-
-    private String getPresetIdFromImageName(final String imageName) {
-        if (imageName.endsWith(".jpg")) {
-            return imageName.substring(0, imageName.length() - 4);
-        }
-        return imageName;
-    }
 
     public byte[] generateCameraImageThumbnail(final String imageName, final String versionId) throws IOException {
         final String imageKey =
