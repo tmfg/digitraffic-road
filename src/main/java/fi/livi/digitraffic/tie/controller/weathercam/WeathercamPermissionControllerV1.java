@@ -51,17 +51,25 @@ public class WeathercamPermissionControllerV1 {
         this.cameraImageThumbnailService = cameraImageThumbnailService;
     }
 
+    /**
+     * This method handles requests for specific weathercam image versions as well as thumbnails of image versions AND thumbnails of current weathercam images.
+     * If versionId has a value, the publicity of the requested image version is checked first.
+     * If a current image is not public, the image file in the S3 bucket will be obscured and so will the resulting thumbnail.
+     */
     @RequestMapping(method = RequestMethod.GET, path = "{imageName}")
     public ResponseEntity<?>  imageVersion(
         @PathVariable final String imageName,
         @RequestParam(value = VERSION_ID_PARAM, required = false) final String versionId,
         @RequestParam(value = THUMBNAIL_PARAM, required = false, defaultValue = "false") final boolean thumbnail) {
 
-        final HistoryStatus historyStatus = cameraPresetHistoryDataService.resolveHistoryStatusForVersion(imageName, versionId);
-        log.debug("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
+        if (versionId != null && versionId != "") {
+            final HistoryStatus historyStatus =
+                    cameraPresetHistoryDataService.resolveHistoryStatusForVersion(imageName, versionId);
+            log.debug("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
 
-        if (historyStatus != PUBLIC) {
-            return createNotFoundResponse();
+            if (historyStatus != PUBLIC) {
+                return createNotFoundResponse();
+            }
         }
 
         if (thumbnail) {
@@ -71,7 +79,7 @@ public class WeathercamPermissionControllerV1 {
                 final HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.IMAGE_JPEG);
                 log.info(
-                        "method=imageVersion thumbnail generated for image {} tookMs={}",
+                        "method=imageVersion thumbnail generated for image {} tookMs={}", imageName,
                         stopWatch.getDuration().toMillis());
                 return new ResponseEntity<>(thumbnailBytes, headers, HttpStatus.OK);
             } catch (final IOException e) {
@@ -85,7 +93,7 @@ public class WeathercamPermissionControllerV1 {
             .location(weathercamS3Properties.getS3UriForVersion(imageName, versionId))
             .build();
 
-        log.debug("method=imageVersion response={}", response);
+        log.info("method=imageVersion response={}", response);
 
         return response;
     }

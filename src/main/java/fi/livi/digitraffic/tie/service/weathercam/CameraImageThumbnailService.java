@@ -1,8 +1,5 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import static fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties.getFullImageVersionS3Key;
-
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,26 +7,42 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 @Component
 public class CameraImageThumbnailService {
 
-    final double RESIZE_PERCENTAGE = 0.10;
+    private static final Logger log = LoggerFactory.getLogger(CameraImageThumbnailService.class);
+
+    final double RESIZE_PERCENTAGE = 0.3;
 
     @Value("${dt.amazon.s3.weathercam.bucketName}")
     private String weathercamImageBucket;
 
-    public byte[] generateCameraImageThumbnail(final String imageName, final String versionId) throws IOException {
-        final String imageKey = versionId != null ? getFullImageVersionS3Key(imageName, versionId) : imageName;
+    private String getPresetIdFromImageName(final String imageName) {
+        if (imageName.endsWith(".jpg")) {
+            return imageName.substring(0, imageName.length() - 4);
+        }
+        return imageName;
+    }
 
-        final byte[] image = readImage(weathercamImageBucket, imageKey);
+    public byte[] generateCameraImageThumbnail(final String imageName, final String versionId) throws IOException {
+        final String imageKey =
+                (versionId != null && versionId != "") ? getPresetIdFromImageName(imageName) + "-versions.jpg" :
+                imageName;
+
+        final byte[] image = readImage(weathercamImageBucket, imageKey, versionId);
 
         final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image));
         final BufferedImage thumbnailImage = resizeImageByPercentage(originalImage, RESIZE_PERCENTAGE);
@@ -40,19 +53,20 @@ public class CameraImageThumbnailService {
         return thumbnailData;
     }
 
-    private BufferedImage resizeImageByPercentage(final BufferedImage originalImage, final double percentage) {
-        final int width = (int) (originalImage.getWidth() * percentage);
-        final int height = (int) (originalImage.getHeight() * percentage);
-        final BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        final Graphics2D g = resizedImage.createGraphics();
-        g.drawImage(originalImage, 0, 0, width, height, null);
-        g.dispose();
-        return resizedImage;
+    private BufferedImage resizeImageByPercentage(final BufferedImage originalImage, final double percentage)
+            throws IOException {
+        return Thumbnails.of(originalImage)
+                .size((int) (originalImage.getWidth() * percentage), (int) (originalImage.getHeight() * percentage))
+                .asBufferedImage();
     }
 
-    private byte[] readImage(final String bucketName, final String key) throws IOException {
+    private byte[] readImage(final String bucketName, final String key, final String versionId) throws IOException {
         final AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
-        final S3Object s3Object = s3Client.getObject(bucketName, key);
+        log.info("method=readImage getting from bucket={} with key={} and versionId={}", bucketName, key, versionId);
+        final GetObjectRequest request =
+                (versionId != null && versionId != "") ? new GetObjectRequest(bucketName, key, versionId) :
+                new GetObjectRequest(bucketName, key);
+        final S3Object s3Object = s3Client.getObject(request);
         final S3ObjectInputStream s3InputStream = s3Object.getObjectContent();
 
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
