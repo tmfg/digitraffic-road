@@ -20,6 +20,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
+import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import net.coobird.thumbnailator.Thumbnails;
 
 @Service
@@ -32,6 +33,7 @@ public class CameraImageThumbnailService {
     @Value("${dt.amazon.s3.weathercam.bucketName}")
     private String weathercamImageBucket;
 
+    @NotTransactionalServiceMethod
     public byte[] generateCameraImageThumbnail(final String imageName, final String versionId) throws IOException {
         final String imageKey =
                 (versionId != null && versionId != "") ? getPresetIdFromImageName(imageName) + "-versions.jpg" :
