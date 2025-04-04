@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -22,7 +22,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
 import net.coobird.thumbnailator.Thumbnails;
 
-@Component
+@Service
 public class CameraImageThumbnailService {
 
     private static final Logger log = LoggerFactory.getLogger(CameraImageThumbnailService.class);
