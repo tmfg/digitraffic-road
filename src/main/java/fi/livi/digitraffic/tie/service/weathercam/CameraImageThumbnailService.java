@@ -52,10 +52,10 @@ public class CameraImageThumbnailService {
         return thumbnailData;
     }
 
-    private BufferedImage resizeImageByPercentage(final BufferedImage originalImage, final double percentage)
+    private BufferedImage resizeImageByPercentage(final BufferedImage originalImage, final double resizeFactor)
             throws IOException {
         return Thumbnails.of(originalImage)
-                .size((int) (originalImage.getWidth() * percentage), (int) (originalImage.getHeight() * percentage))
+                .size((int) (originalImage.getWidth() * resizeFactor), (int) (originalImage.getHeight() * resizeFactor))
                 .asBufferedImage();
     }
 
