@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryData
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class WeathercamPermissionControllerV1 {
         @RequestParam(value = VERSION_ID_PARAM, required = false) final String versionId,
         @RequestParam(value = THUMBNAIL_PARAM, required = false, defaultValue = "false") final boolean thumbnail) {
 
-        if (versionId != null && versionId != "") {
+        if (StringUtils.isNotBlank(versionId)) {
             final HistoryStatus historyStatus =
                     cameraPresetHistoryDataService.resolveHistoryStatusForVersion(imageName, versionId);
             log.debug("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
@@ -92,8 +93,6 @@ public class WeathercamPermissionControllerV1 {
         final ResponseEntity<Void> response = ResponseEntity.status(HttpStatus.FOUND)
             .location(weathercamS3Properties.getS3UriForVersion(imageName, versionId))
             .build();
-
-        log.info("method=imageVersion response={}", response);
 
         return response;
     }
