@@ -69,7 +69,7 @@ public class CameraImageThumbnailService {
         final S3ObjectInputStream s3InputStream = s3Object.getObjectContent();
 
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final byte[] buffer = new byte[8192];
+        final byte[] buffer = new byte[1024 * 100];
         int bytesRead;
         while ((bytesRead = s3InputStream.read(buffer)) != -1) {
             byteArrayOutputStream.write(buffer, 0, bytesRead);
