@@ -17,13 +17,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import fi.livi.digitraffic.common.service.locking.CachedLockingService;
 import fi.livi.digitraffic.common.service.locking.LockingService;
+import fi.livi.digitraffic.common.util.StringUtil;
 import jakarta.jms.ConnectionFactory;
 
 /**
  * Custom configurations for Artemis JMS
  */
 @ConditionalOnNotWebApplication
-@ConditionalOnProperty(name = "kca.artemis.jms.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "kca.artemis.jms.enabled",
+                       havingValue = "true")
 @Configuration
 @EnableJms // Enable Spring-artemis JMS auto configuration
 public class ArtemisJMSConfiguration {
@@ -54,7 +56,7 @@ public class ArtemisJMSConfiguration {
         if (lock.hasLock() && !jmsListenerEndpointRegistry.isRunning()) {
             log.info("method=connectDisconnect operation={} {}", Operation.CONNECTING, lock.getLockInfoForLogging());
             jmsListenerEndpointRegistry.start();
-        } else if (!lock.hasLock() && jmsListenerEndpointRegistry.isRunning() ) {
+        } else if (!lock.hasLock() && jmsListenerEndpointRegistry.isRunning()) {
             log.info("method=connectDisconnect operation={} {}", Operation.DISCONNECTING, lock.getLockInfoForLogging());
             jmsListenerEndpointRegistry.stop();
         }
@@ -80,14 +82,14 @@ public class ArtemisJMSConfiguration {
         configurer.configure(factory, connectionFactory);
         factory.setPubSubDomain(true); // Topic
         factory.setAutoStartup(false); // Startup only when instance has a lock
-
+        factory.setErrorHandler(t -> log.error(StringUtil.format(
+                "method=jmsListenerErrorHandler type={} Execution of JMS message listener failed.",
+                "Topic"), t));
         log.info("method=jmsListenerContainerFactory created type={} instanceId={}, connection info: {}",
                 "Topic", lock.getInstanceId(), getConnectionFactoryInfo(connectionFactory));
 
         return factory;
     }
-
-
 
     /**
      * DefaultJmsListenerContainerFactory for queues
@@ -106,7 +108,9 @@ public class ArtemisJMSConfiguration {
         configurer.configure(factory, connectionFactory);
         factory.setPubSubDomain(false); // Queue
         factory.setAutoStartup(false); // Startup only when instance has a lock
-
+        factory.setErrorHandler(t -> log.error(StringUtil.format(
+                "method=jmsListenerErrorHandler type={} Execution of JMS message listener failed.",
+                "Queue"), t));
         log.info("method=jmsListenerContainerFactory created type={} instanceId={}, connection info: {}",
                 "Queue", lock.getInstanceId(), getConnectionFactoryInfo(connectionFactory));
 
