@@ -3,15 +3,9 @@
 .idea/
 
 # Nämä tiedostot sisältävät salaisuuksia. Ignore.
-/src/test/resources/application-test.properties
 /src/test/resources/application-localhost.properties
-/src/test/resources/application-default.properties
-/src/main/resources/application-localhost.properties
-/src/main/resources/application-localhost-daemon.properties
-/src/main/resources/application-localhost-web.properties
-/src/main/resources/application-virtualbox.properties
-/src/main/resources/application-test-web.properties
-/src/main/resources/application-prod-web.properties
+/src/main/resources/application-*-web.properties
+/src/main/resources/application-*-daemon.properties
 
 # Käännösartifaktit
 /target
