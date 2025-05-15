@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.3</version>
+        <version>3.4.5</version>
         <relativePath/>
     </parent>
 
@@ -27,7 +27,7 @@
         <com.google.protobuf.version>4.28.3</com.google.protobuf.version>
         <org.apache.cxf.version>4.1.0</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
-        <spring.cloud.version>4.2.0</spring.cloud.version>
+        <spring.cloud.version>4.2.1</spring.cloud.version>
         <proj4j.version>1.3.0</proj4j.version>
         <org.jvnet.jaxb.version>4.0.8</org.jvnet.jaxb.version>
         <project.digitraffic-common-java.directory>lib/digitraffic-common-java
@@ -88,13 +88,22 @@
             <version>${spring.cloud.version}</version>
         </dependency>
 
+        <!-- TEMPORARY DEPS TO MITIGATE SECURITY VULNERABILITIES STARTS -->
         <!-- TODO: Temporary patch for CVE-2025-22228 in spring-security-crypto 6.4.3 -->
         <!-- Remove this dependency once spring-cloud-starter-bootstrap is updated -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>6.4.4</version>
+            <version>6.4.5</version>
         </dependency>
+        <!-- TODO: Temporary patch for CVE-2025-27820 in spring-cloud-starter-config:4.2.1:httpclient5 -->
+        <!-- Remove this dependency once spring-cloud-starter-config is updated -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.4.4</version>
+        </dependency>
+        <!-- TEMPORARY DEPS TO MITIGATE SECURITY VULNERABILITIES ENDS -->
 
         <dependency>
             <groupId>io.awspring.cloud</groupId>
