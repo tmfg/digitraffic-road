@@ -51,7 +51,11 @@ public class WeathercamS3Properties extends S3Properties {
         return presetId + CameraImageS3Writer.IMAGE_VERSION_KEY_SUFFIX;
     }
 
-    public String getPresetIdFromImageName(final String imageName) {
+    public String getFullImageVersionS3Key(final String imageName, final String versionId) {
+        return String.format("%s?versionId=%s", getImageVersionKey(getPresetIdFromImageName(imageName)), versionId);
+    }
+
+    public static String getPresetIdFromImageName(final String imageName) {
         return imageName.substring(0,8);
     }
 }
