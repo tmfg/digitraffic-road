@@ -26,6 +26,7 @@ import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageThumbnailService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus;
+import fi.livi.digitraffic.tie.service.weathercam.ThumbnailGenerationError;
 
 @RestController
 @Validated
@@ -57,11 +58,18 @@ public class WeathercamPermissionControllerV1 {
      * If versionId has a value, the publicity of the requested image version is checked first.
      * If a current image is not public, the image file in the S3 bucket will be obscured and so will the resulting thumbnail.
      */
-    @RequestMapping(method = RequestMethod.GET, path = "{imageName}")
-    public ResponseEntity<?>  imageVersion(
-        @PathVariable final String imageName,
-        @RequestParam(value = VERSION_ID_PARAM, required = false) final String versionId,
-        @RequestParam(value = THUMBNAIL_PARAM, required = false, defaultValue = "false") final boolean thumbnail) {
+    @RequestMapping(method = RequestMethod.GET,
+                    path = "{imageName}")
+    public ResponseEntity<?> imageVersion(
+            @PathVariable
+            final String imageName,
+            @RequestParam(value = VERSION_ID_PARAM,
+                          required = false)
+            final String versionId,
+            @RequestParam(value = THUMBNAIL_PARAM,
+                          required = false,
+                          defaultValue = "false")
+            final boolean thumbnail) {
 
         if (StringUtils.isNotBlank(versionId)) {
             final HistoryStatus historyStatus =
@@ -76,7 +84,8 @@ public class WeathercamPermissionControllerV1 {
         if (thumbnail) {
             final StopWatch stopWatch = StopWatch.createStarted();
             try {
-                final byte[] thumbnailBytes = cameraImageThumbnailService.generateCameraImageThumbnail(imageName, versionId);
+                final byte[] thumbnailBytes =
+                        cameraImageThumbnailService.generateCameraImageThumbnail(imageName, versionId);
                 final HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.IMAGE_JPEG);
                 log.info(
@@ -84,15 +93,19 @@ public class WeathercamPermissionControllerV1 {
                         stopWatch.getDuration().toMillis());
                 return new ResponseEntity<>(thumbnailBytes, headers, HttpStatus.OK);
             } catch (final IOException e) {
-                log.error("Error generating thumbnail for image {}", imageName, e);
+                log.error("IOException when generating thumbnail for image={} versionId={}", imageName, versionId, e);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            } catch (final ThumbnailGenerationError e) {
+                log.error("Thumbnail generation error: imageName={} versionId={} lastModified={}",
+                        e.getImageName(), e.getVersionId(), e.getLastModified(), e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
         }
 
         final ResponseEntity<Void> response = ResponseEntity.status(HttpStatus.FOUND)
-            .location(weathercamS3Properties.getS3UriForVersion(imageName, versionId))
-            .build();
+                .location(weathercamS3Properties.getS3UriForVersion(imageName, versionId))
+                .build();
 
         return response;
     }

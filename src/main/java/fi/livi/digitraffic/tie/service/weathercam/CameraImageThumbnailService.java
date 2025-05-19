@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
 
@@ -27,6 +28,9 @@ import net.coobird.thumbnailator.Thumbnails;
 @Service
 public class CameraImageThumbnailService {
 
+    public record S3ImageObject(byte[] data, Date lastModified) {
+    }
+
     private static final Logger log = LoggerFactory.getLogger(CameraImageThumbnailService.class);
 
     final double RESIZE_FACTOR = 0.3;
@@ -41,15 +45,19 @@ public class CameraImageThumbnailService {
 
                 imageName;
 
-        final byte[] image = readImage(weathercamImageBucket, imageKey, versionId);
+        final S3ImageObject image = readImage(weathercamImageBucket, imageKey, versionId);
 
-        final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image));
-        final BufferedImage thumbnailImage = resizeImageByPercentage(originalImage, RESIZE_FACTOR);
+        try {
+            final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.data()));
+            final BufferedImage thumbnailImage = resizeImageByPercentage(originalImage, RESIZE_FACTOR);
 
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(thumbnailImage, "jpg", baos);
-        final byte[] thumbnailData = baos.toByteArray();
-        return thumbnailData;
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(thumbnailImage, "jpg", baos);
+            final byte[] thumbnailData = baos.toByteArray();
+            return thumbnailData;
+        } catch (final Exception e) {
+            throw new ThumbnailGenerationError("Error generating thumbnail", imageName, versionId, image.lastModified(), e);
+        }
     }
 
     private BufferedImage resizeImageByPercentage(final BufferedImage originalImage, final double resizeFactor)
@@ -59,7 +67,7 @@ public class CameraImageThumbnailService {
                 .asBufferedImage();
     }
 
-    private byte[] readImage(final String bucketName, final String key, final String versionId) throws IOException {
+    private S3ImageObject readImage(final String bucketName, final String key, final String versionId) throws IOException {
         final AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
         log.info("method=readImage getting from bucket={} with key={} and versionId={}", bucketName, key, versionId);
         final GetObjectRequest request =
@@ -76,7 +84,7 @@ public class CameraImageThumbnailService {
         }
 
         s3InputStream.close();
-        return byteArrayOutputStream.toByteArray();
+        return new S3ImageObject(byteArrayOutputStream.toByteArray(), s3Object.getObjectMetadata().getLastModified());
     }
 
 }
